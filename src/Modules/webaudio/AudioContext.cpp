@@ -42,19 +42,19 @@
 #include "ConvolverNode.h"
 #include "DefaultAudioDestinationNode.h"
 #include "DelayNode.h"
-//dp #include "Document.h"
+//LabSound #include "Document.h"
 #include "DynamicsCompressorNode.h"
 #include "ExceptionCode.h"
 #include "FFTFrame.h"
 #include "GainNode.h"
 #include "HRTFDatabaseLoader.h"
 #include "HRTFPanner.h"
-//dp #include "OfflineAudioCompletionEvent.h"
+//LabSound #include "OfflineAudioCompletionEvent.h"
 #include "OfflineAudioDestinationNode.h"
 #include "OscillatorNode.h"
 #include "PannerNode.h"
-//dp #include "ScriptCallStack.h"
-//dp #include "ScriptProcessorNode.h"
+//LabSound #include "ScriptCallStack.h"
+//LabSound #include "ScriptProcessorNode.h"
 #include "WaveShaperNode.h"
 #include "WaveTable.h"
 #include "WebCoreMemoryInstrumentation.h"
@@ -440,7 +440,7 @@ PassRefPtr<MediaStreamAudioDestinationNode> AudioContext::createMediaStreamDesti
 }
 
 #endif
-/* dp
+/* LabSound
 PassRefPtr<ScriptProcessorNode> AudioContext::createScriptProcessor(size_t bufferSize, ExceptionCode& ec)
 {
     // Set number of input/output channels to stereo by default.
@@ -947,7 +947,7 @@ void AudioContext::processAutomaticPullNodes(size_t framesToProcess)
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
         m_renderingAutomaticPullNodes[i]->processIfNecessary(framesToProcess);
 }
-/* dp
+/* LabSound
 const AtomicString& AudioContext::interfaceName() const
 {
     return eventNames().interfaceForAudioContext;
@@ -974,7 +974,7 @@ void AudioContext::fireCompletionEvent()
     ASSERT(renderedBuffer);
     if (!renderedBuffer)
         return;
-    /* dp
+    /* LabSound
     // Avoid firing the event if the document has already gone away.
     if (scriptExecutionContext()) {
         // Call the offline rendering completion event listener.

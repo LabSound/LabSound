@@ -22,6 +22,8 @@ I only made an OSX main because I'm not set up for building on other platforms. 
 anyone wants to modify the premake.lua file to support other platforms, please send
 a pull request!
 
+The keyword LabSound marks any places the code was modified from the source distro.
+
 Building
 --------
 

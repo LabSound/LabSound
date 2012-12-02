@@ -31,7 +31,7 @@
 
 #include <string.h> // for memcpy
 #include <wtf/FastAllocBase.h>
-// dp suppress CoreGraphics until I can figure out how to include it
+// LabSound suppress CoreGraphics until I can figure out how to include it
 #if USE(CGx)
 #include <CoreGraphics/CGAffineTransform.h>
 #elif USE(CAIRO)

@@ -32,7 +32,7 @@
 
 #include "HRTFElevation.h"
 
-#include <wtf/HashMap.h> // dp
+#include <wtf/HashMap.h> // LabSound added
 
 #include "AudioBus.h"
 #include "AudioFileReader.h"
@@ -64,7 +64,7 @@ const size_t ResponseFrameSize = 256;
 // The impulse responses may be resampled to a different sample-rate (depending on the audio hardware) when they are loaded.
 const float ResponseSampleRate = 44100;
 
-    // dp temporarily turn this off - why doesn't HashMap compile?
+    // LabSound temporarily turn this off (MACx instead of MAC) - why doesn't HashMap compile?
 #if PLATFORM(MACx) || USE(WEBAUDIO_GSTREAMER)
 #define USE_CONCATENATED_IMPULSE_RESPONSES
 #endif

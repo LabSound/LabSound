@@ -29,9 +29,9 @@
 #ifndef FloatConversion_h
 #define FloatConversion_h
 
-//dp #if USE(CG)
-//dp #include <CoreGraphics/CGBase.h>
-//dp #endif
+//LabSound #if USE(CG)
+//LabSound #include <CoreGraphics/CGBase.h>
+//LabSound #endif
 
 namespace WebCore {
 

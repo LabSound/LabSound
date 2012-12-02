@@ -26,7 +26,7 @@
 
 #include "LayoutUnit.h"
 #include "Length.h"
-// dp #include "RenderView.h"
+// LabSound #include "RenderView.h"
 
 namespace WebCore {
 
@@ -52,7 +52,7 @@ LayoutUnit minimumValueForLength(const Length& length, LayoutUnit maximumValue, 
         return static_cast<LayoutUnit>(static_cast<float>(maximumValue * length.percent() / 100.0f));
     case Calculated:
         return length.nonNanCalculatedValue(maximumValue);
-/* dp   case ViewportPercentageWidth:
+/* LabSound   case ViewportPercentageWidth:
         if (renderView)
             return static_cast<LayoutUnit>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
         return 0;
@@ -124,7 +124,7 @@ float floatValueForLength(const Length& length, LayoutUnit maximumValue, RenderV
         return static_cast<float>(maximumValue);
     case Calculated:
         return length.nonNanCalculatedValue(maximumValue);                
-/* dp    case ViewportPercentageWidth:
+/* LabSound    case ViewportPercentageWidth:
         if (renderView)
             return static_cast<int>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
         return 0;
@@ -164,7 +164,7 @@ float floatValueForLength(const Length& length, float maximumValue, RenderView* 
         return static_cast<float>(maximumValue);
     case Calculated:
         return length.nonNanCalculatedValue(maximumValue);
-/* dp    case ViewportPercentageWidth:
+/* LabSound    case ViewportPercentageWidth:
         if (renderView)
             return static_cast<int>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
         return 0;
