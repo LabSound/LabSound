@@ -11,3 +11,19 @@
 *.lai
 *.la
 *.a
+
+# Xcode intermediate stuff
+*.dep
+*.hmap
+*.d
+*.dia
+*.dat
+*.pbxproj
+*.xcworkspacedata
+*.xcscheme
+*.xcuserstate
+*.xcsettings
+*.LinkFileList
+
+# other
+*.DS_Store
