@@ -1,0 +1,6 @@
+*.Makefile
+*.mk
+*.sln
+*.vcproj*
+*.vcxproj*
+WTF.xcodeproj
