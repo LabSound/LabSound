@@ -90,9 +90,72 @@ sample that plays a sine tone for a few seconds.
         return 0;
     }
 
+The key is to stick to the headers in the src/Modules/webaudio. These are the ones that
+correspond to the API you'd use from javascript.
+
 Generally, you can take any js sample code, and transliterate it exactly into C++. In some cases,
 there are extra parameters to specify, such as the input and output indices in the 
 oscillator example above.
+
+Playing a sound file is slightly more involved, but not much. Replace main with: 
+
+    int main(int, char**)
+    {
+        // Initialize threads for the WTF library
+        WTF::initializeThreading();
+        WTF::initializeMainThread();
+        
+        // Create an audio context object
+        Document d;
+        ExceptionCode ec;
+        PassRefPtr<AudioContext> context = AudioContext::create(&d, ec);
+    
+        FILE* f = fopen("tonbi.wav", "rb");
+        if (f) {
+            fseek(f, 0, SEEK_END);
+            int l = ftell(f);
+            fseek(f, 0, SEEK_SET);
+            char* a = new char[l];
+            fread(a, 1, l, f);
+            fclose(f);
+            
+            ExceptionCode ec;
+            bool mixToMono = true;
+            PassRefPtr<ArrayBuffer> tonbiDataBuffer = ArrayBuffer::create(a, l);
+            delete [] a;
+            PassRefPtr<AudioBuffer> tonbiBuffer = context->createBuffer(tonbiDataBuffer.get(), mixToMono, ec);
+            PassRefPtr<AudioBufferSourceNode> sourceBuffer = context->createBufferSource();
+            sourceBuffer->setBuffer(tonbiBuffer.get());
+            sourceBuffer->connect(context->destination(), 0, 0, ec);
+            sourceBuffer->start(0); // play now
+            
+            for (int i = 0; i < 300; ++i)
+                usleep(10000);
+        }
+        return 0;
+    }
+
+Substitute your own .wav file where it says "tonbi.wav", and make sure the file is located
+where fopen can find it. Compare this routine to the Loading Sounds and Playing Sounds
+section on this webaudio tutorial: <http://www.html5rocks.com/en/tutorials/webaudio/intro/>
+
+Notice that most of the APIs in webaudio return a PassRefPtr. These are smart pointers, and
+they'll stick around until there are no more references to them outstanding. Be sure to 
+manage them carefully. You'll notice in the example above that it was safe to delete the
+data read from the file after the ArrayBuffer was created. On the other hand, a raw pointer
+(obtained via get) was passed to sourceBuffer->setBuffer(). Since the sourceBuffer hasn't
+incremented a reference count on the tonbiBuffer, we're responsible for making sure the
+sourceBuffer lives long enough. sourceBuffer retains pointers into tonbiBuffer for playback,
+and bad things would happen if tonbiBuffer was discarded while sourceBuffer was holding a
+pointer.
+
+Another thing you'll probably notice is that webaudio objects are never created via new;
+instead there are either create methods on the context, or static factory methods, such
+as that on ArrayBuffer. The code is designed that way so that data won't leak, and that
+an application using the objects will shut down cleanly. 
+
+In case you're curious, the tonbi referred to in the example is the Japanese hawk that provides the cliche pterodactyl
+cry in every film and TV show for the last hundred years.
 
 License
 -------
