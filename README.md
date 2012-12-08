@@ -108,9 +108,9 @@ Playing a sound file is slightly more involved, but not much. Replace main with:
         // Create an audio context object
         Document d;
         ExceptionCode ec;
-        PassRefPtr<AudioContext> context = AudioContext::create(&d, ec);
+        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
     
-        FILE* f = fopen("tonbi.wav", "rb");
+        FILE* f = fopen("sample.wav", "rb");
         if (f) {
             fseek(f, 0, SEEK_END);
             int l = ftell(f);
@@ -121,11 +121,11 @@ Playing a sound file is slightly more involved, but not much. Replace main with:
             
             ExceptionCode ec;
             bool mixToMono = true;
-            PassRefPtr<ArrayBuffer> tonbiDataBuffer = ArrayBuffer::create(a, l);
+            PassRefPtr<ArrayBuffer> dataFileBuffer = ArrayBuffer::create(a, l);
             delete [] a;
-            PassRefPtr<AudioBuffer> tonbiBuffer = context->createBuffer(tonbiDataBuffer.get(), mixToMono, ec);
-            PassRefPtr<AudioBufferSourceNode> sourceBuffer = context->createBufferSource();
-            sourceBuffer->setBuffer(tonbiBuffer.get());
+            RefPtr<AudioBuffer> dataBuffer = context->createBuffer(dataFileBuffer.get(), mixToMono, ec);
+            RefPtr<AudioBufferSourceNode> sourceBuffer = context->createBufferSource();
+            sourceBuffer->setBuffer(dataBuffer.get());
             sourceBuffer->connect(context->destination(), 0, 0, ec);
             sourceBuffer->start(0); // play now
             
@@ -139,23 +139,24 @@ Substitute your own .wav file where it says "tonbi.wav", and make sure the file 
 where fopen can find it. Compare this routine to the Loading Sounds and Playing Sounds
 section on this webaudio tutorial: <http://www.html5rocks.com/en/tutorials/webaudio/intro/>
 
-Notice that most of the APIs in webaudio return a PassRefPtr. These are smart pointers, and
-they'll stick around until there are no more references to them outstanding. Be sure to 
-manage them carefully. You'll notice in the example above that it was safe to delete the
-data read from the file after the ArrayBuffer was created. On the other hand, a raw pointer
-(obtained via get) was passed to sourceBuffer->setBuffer(). Since the sourceBuffer hasn't
-incremented a reference count on the tonbiBuffer, we're responsible for making sure the
-sourceBuffer lives long enough. sourceBuffer retains pointers into tonbiBuffer for playback,
-and bad things would happen if tonbiBuffer was discarded while sourceBuffer was holding a
-pointer.
+Smart Pointers and Memory Management
+------------------------------------
+
+Notice that most of the APIs in webaudio return a PassRefPtr. These are smart pointers 
+that have the behavior that if they are assigned to another PassRefPtr, they will become
+zero, and the pointer they were assigned to will become non zero. PassRefPtrs can be
+assigned to RefPtrs, which is a smart pointer that can take ownership of memory from a
+PassRefPtr, and then it will stick around until there are no more references. Assigning
+one RefPtr to another will increment reference counts. Be sure to manage your pointers 
+carefully. In the example above, you'll notice that the dataFileBuffer is a PassRefPtr
+because it can disappear as soon as a buffer has been created from it. The dataBuffer
+and the sourceBuffer both need to exist until the sound is finished playing however, 
+because the buffer will play data from the databuffer.
 
 Another thing you'll probably notice is that webaudio objects are never created via new;
 instead there are either create methods on the context, or static factory methods, such
 as that on ArrayBuffer. The code is designed that way so that data won't leak, and that
 an application using the objects will shut down cleanly. 
-
-In case you're curious, the tonbi referred to in the example is the Japanese hawk that provides the cliche pterodactyl
-cry in every film and TV show for the last hundred years.
 
 License
 -------
