@@ -158,6 +158,118 @@ instead there are either create methods on the context, or static factory method
 as that on ArrayBuffer. The code is designed that way so that data won't leak, and that
 an application using the objects will shut down cleanly. 
 
+Playing a SoundBuffer Multiple Times
+------------------------------------
+
+Here's an example like the Playing Sounds With Rhythm sample from HTML5 Rocks:
+<http://www.html5rocks.com/en/tutorials/webaudio/intro/#toc-abstract>
+    
+    using namespace WebCore;
+    
+    namespace WebCore
+    {
+        class Document { public: };
+    }
+    
+    class SoundBuffer
+    {
+    public:
+        RefPtr<AudioBuffer> audioBuffer;
+        RefPtr<AudioContext> context;
+    
+        SoundBuffer(RefPtr<AudioContext> context, const char* path)
+        : context(context)
+        {
+            FILE* f = fopen(path, "rb");
+            if (f) {
+                fseek(f, 0, SEEK_END);
+                int l = ftell(f);
+                fseek(f, 0, SEEK_SET);
+                uint8_t* data = new uint8_t[l];
+                fread(data, 1, l, f);
+                fclose(f);
+                
+                ExceptionCode ec;
+                bool mixToMono = true;
+                PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(data, l);
+                delete [] data;
+    
+                // create an audio buffer from the file data. The file data will be
+                // parsed, and does not need to be retained.
+                audioBuffer = context->createBuffer(fileDataBuffer.get(), mixToMono, ec);
+            }
+        }
+        
+        ~SoundBuffer()
+        {
+        }
+        
+        PassRefPtr<AudioBufferSourceNode> play(float when = 0.0f)
+        {
+            if (audioBuffer) {
+                RefPtr<AudioBufferSourceNode> sourceBuffer;
+                sourceBuffer = context->createBufferSource();
+                
+                // Connect the source node to the parsed audio data for playback
+                sourceBuffer->setBuffer(audioBuffer.get());
+                
+                // bus the sound to the mixer.
+                ExceptionCode ec;
+                sourceBuffer->connect(context->destination(), 0, 0, ec);
+                sourceBuffer->start(when);
+                return sourceBuffer;
+            }
+            return 0;
+        }
+        
+    };
+    
+    int main(int, char**)
+    {
+        // Initialize threads for the WTF library
+        WTF::initializeThreading();
+        WTF::initializeMainThread();
+        
+        // Create an audio context object
+        Document d;
+        ExceptionCode ec;
+        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+    
+        SoundBuffer kick(context, "kick.wav");
+        SoundBuffer hihat(context, "hihat.wav");
+        SoundBuffer snare(context, "snare.wav");
+    
+        // Create a bunch of nodes that will play two bars of a rhythm.
+        float startTime = 0;
+        float eighthNoteTime = 1.0f/4.0f;
+        for (int bar = 0; bar < 2; ++bar) {
+            float time = startTime + bar * 8 * eighthNoteTime;
+
+            // Play the bass (kick) drum on beats 1, 5
+            kick.play(time);
+            kick.play(time + 4 * eighthNoteTime);
+            
+            // Play the snare drum on beats 3, 7
+            snare.play(time + 2 * eighthNoteTime);
+            snare.play(time + 6 * eighthNoteTime);
+            
+            // Play the hi-hat every eighth note.
+            for (int i = 0; i < 8; ++i) {
+                hihat.play(time + i * eighthNoteTime);
+            }
+        }
+
+        for (int i = 0; i < 300; ++i)
+            usleep(10000);
+        
+        return 0;
+    }
+
+Notice that every time play is called, a new AudioBufferSourceNode is created and connected
+to the context's destination node. When the node finishes, it automatically causes reference
+counting decrementing that results in the node's deallocation. The play routine returns
+a PassRefPtr which can be used by the caller if commands like stop need to be called on it.
+
 License
 -------
 Any bits not part of the WebKit code (such as the files in the shim) directory can
