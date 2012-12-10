@@ -309,6 +309,102 @@ play would be called again with the desired start time. Since the AudioBufferSou
 doesn't have a method to return the currently playing sample offset, you'll need to 
 use a real time clock instead.
 
+Bussing
+-------
+
+Let's modify the play routine to allow bussing to different nodes.
+
+    PassRefPtr<AudioBufferSourceNode> play(AudioNode* outputNode, float when = 0.0f)
+    {
+        if (audioBuffer) {
+            RefPtr<AudioBufferSourceNode> sourceBuffer;
+            sourceBuffer = context->createBufferSource();
+            
+            // Connect the source node to the parsed audio data for playback
+            sourceBuffer->setBuffer(audioBuffer.get());
+            
+            // bus the sound to the mixer.
+            ExceptionCode ec;
+            sourceBuffer->connect(outputNode, 0, 0, ec);
+            sourceBuffer->start(when);
+            return sourceBuffer;
+        }
+        return 0;
+    }
+    
+    PassRefPtr<AudioBufferSourceNode> play(float when = 0.0f)
+    {
+        if (audioBuffer) {
+            return play(context->destination(), when);
+        }
+        return 0;
+    }
+
+Now, we can write a routine that fades from one source to another. Following 
+<http://www.html5rocks.com/en/tutorials/webaudio/intro/#toc-xfade-ep> let's implement
+equal power cross fading. We'll create two gain nodes, and route them to the context's
+destinationNode. We'll create an oscillator and bus it to one gain node, and we'll play
+the drum notes from a previous demo into the other. We'll ramp one up whilst ramping the
+other down.
+    
+    int main(int, char**)
+    {
+        // Initialize threads for the WTF library
+        WTF::initializeThreading();
+        WTF::initializeMainThread();
+        
+        // Create an audio context object
+        Document d;
+        ExceptionCode ec;
+        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+        RefPtr<OscillatorNode> oscillator = context->createOscillator();
+    
+        SoundBuffer kick(context, "kick.wav");
+        SoundBuffer hihat(context, "hihat.wav");
+        SoundBuffer snare(context, "snare.wav");
+        
+        RefPtr<GainNode> oscGain = context->createGain();
+        oscillator->connect(oscGain.get(), 0, 0, ec);
+        oscGain->connect(context->destination(), 0, 0, ec);
+        oscGain->gain()->setValue(1.0f);
+        oscillator->start(0);
+        
+        RefPtr<GainNode> drumGain = context->createGain();
+        drumGain->connect(context->destination(), 0, 0, ec);
+        drumGain->gain()->setValue(1.0f);
+        
+        float startTime = 0;
+        float eighthNoteTime = 1.0f/4.0f;
+        for (int bar = 0; bar < 10; bar++) {
+            float time = startTime + bar * 8 * eighthNoteTime;
+            // Play the bass (kick) drum on beats 1, 5
+            kick.play(drumGain.get(), time);
+            kick.play(drumGain.get(), time + 4 * eighthNoteTime);
+            
+            // Play the snare drum on beats 3, 7
+            snare.play(drumGain.get(), time + 2 * eighthNoteTime);
+            snare.play(drumGain.get(), time + 6 * eighthNoteTime);
+            
+            // Play the hi-hat every eighth note.
+            for (int i = 0; i < 8; ++i) {
+                hihat.play(drumGain.get(), time + i * eighthNoteTime);
+            }
+        }
+        
+        // update gain at 10ms intervals, using equal power cross fading
+        for (float i = 0; i < 10.0f; i += 0.01f) {
+            float t1 = i / 10.0f;
+            float t2 = 1.0f - t1;
+            float gain1 = cosf(t1 * 0.5f * M_PI);
+            float gain2 = cosf(t2 * 0.5f * M_PI);
+            oscGain->gain()->setValue(gain1);
+            drumGain->gain()->setValue(gain2);
+            usleep(10000);
+        }
+        
+        return 0;
+    }
+
 License
 -------
 Any bits not part of the WebKit code (such as the files in the shim) directory can
