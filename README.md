@@ -405,6 +405,59 @@ other down.
         return 0;
     }
 
+Filtering
+---------
+A filter node can be inserted into a processing graph. A simple modification to the drums
+sample demonstrates it by subjecting the drums to a 500Hz lowpass filter:
+
+    SoundBuffer kick(context, "kick.wav");
+    SoundBuffer hihat(context, "hihat.wav");
+    SoundBuffer snare(context, "snare.wav");
+    
+    RefPtr<BiquadFilterNode > filter = context->createBiquadFilter();
+    filter->setType(BiquadFilterNode::LOWPASS, ec);
+    filter->frequency()->setValue(500.0f);
+    filter->connect(context->destination(), 0, 0, ec);
+    
+    float startTime = 0;
+    float eighthNoteTime = 1.0f/4.0f;
+    for (int bar = 0; bar < 2; bar++) {
+        float time = startTime + bar * 8 * eighthNoteTime;
+        // Play the bass (kick) drum on beats 1, 5
+        kick.play(filter.get(), time);
+        kick.play(filter.get(), time + 4 * eighthNoteTime);
+        
+        // Play the snare drum on beats 3, 7
+        snare.play(filter.get(), time + 2 * eighthNoteTime);
+        snare.play(filter.get(), time + 6 * eighthNoteTime);
+        
+        // Play the hi-hat every eighth note.
+        for (int i = 0; i < 8; ++i) {
+            hihat.play(filter.get(), time + i * eighthNoteTime);
+        }
+    }
+    for (float i = 0; i < 5.0f; i += 0.01f) {
+        usleep(10000);
+    } 
+
+Refer to the headers for interfaces on the biquad filter node.
+
+Headers
+-------
+Headers required by various portions of this tutorial are:
+
+    // For starting the WTF library
+    #include "MainThread.h"
+    
+    // webaudio specific headers
+    #include "AudioContext.h"
+    #include "ExceptionCode.h"
+    #include "AudioBufferSourceNode.h"
+    #include "BiquadFilterNode.h"
+    #include "GainNode.h"
+    #include "OscillatorNode.h"
+
+
 License
 -------
 Any bits not part of the WebKit code (such as the files in the shim) directory can
