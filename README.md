@@ -270,6 +270,45 @@ to the context's destination node. When the node finishes, it automatically caus
 counting decrementing that results in the node's deallocation. The play routine returns
 a PassRefPtr which can be used by the caller if commands like stop need to be called on it.
 
+This behavior is worth remembering; although a AudioBufferSourceNode can be set to loop
+constantly, it doesn't have a behavior of playing, stopping at the end, and waiting to be
+triggered again. Accordingly, the stop() method stops, and deallocates. The node does not
+have pause and resume, or set methods to set playback at arbitrary locations.
+
+Playing Part of a Buffer
+------------------------
+
+This variant of play starts a sound at a given offset relative to the beginning of the
+sample, ends it an offfset (relative to the beginning), and optional delays
+the start. If 0 is passed as end, then the sound will play to the end.
+
+    PassRefPtr<AudioBufferSourceNode> play(float start, float end, float when = 0.0f)
+    {
+        if (audioBuffer) {
+            if (end == 0)
+                end = audioBuffer->duration();
+            
+            RefPtr<AudioBufferSourceNode> sourceBuffer;
+            sourceBuffer = context->createBufferSource();
+            
+            // Connect the source node to the parsed audio data for playback
+            sourceBuffer->setBuffer(audioBuffer.get());
+            
+            // bus the sound to the mixer.
+            ExceptionCode ec;
+            sourceBuffer->connect(context->destination(), 0, 0, ec);
+            sourceBuffer->startGrain(when, start, end - start);
+            return sourceBuffer;
+        }
+        return 0;
+    }
+
+If you were to write a playback control, starting is simple. Pausing however is a bit
+more involved. You'd have to track the time the pause was pressed, and when play is pressed,
+play would be called again with the desired start time. Since the AudioBufferSourceNode
+doesn't have a method to return the currently playing sample offset, you'll need to 
+use a real time clock instead.
+
 License
 -------
 Any bits not part of the WebKit code (such as the files in the shim) directory can
