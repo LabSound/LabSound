@@ -7,6 +7,7 @@
 #include "BiquadFilterNode.h"
 #include "GainNode.h"
 #include "OscillatorNode.h"
+#include "PannerNode.h"
 
 #include <unistd.h>
 
@@ -126,6 +127,21 @@ int main(int, char**)
 
     for (int i = 0; i < 300; ++i)
         usleep(10000);
+#elif 1
+    SoundBuffer train(context, "trainrolling.wav");
+    RefPtr<PannerNode> panner = context->createPanner();
+    panner->connect(context->destination(), 0, 0, ec);
+    PassRefPtr<AudioBufferSourceNode> trainNode = train.play(panner.get(), 0.0f);
+    trainNode->setLooping(true);
+    context->listener()->setPosition(0, 0, 0);
+    panner->setVelocity(15, 0, 0);
+    for (float i = 0; i < 10.0f; i += 0.01f) {
+        float x = (i - 5.0f) / 5.0f;
+        // keep it a bit up and in front, because if it goes right through the listener
+        // at (0, 0, 0) it abruptly switches from left to right.
+        panner->setPosition(x, 0.1f, 0.1f);
+        usleep(10000);
+    }
 #elif 0
     SoundBuffer kick(context, "kick.wav");
     SoundBuffer hihat(context, "hihat.wav");
@@ -150,7 +166,7 @@ int main(int, char**)
     }
     for (int i = 0; i < 300; ++i)
         usleep(10000);
-#elif 1
+#elif 0
     SoundBuffer kick(context, "kick.wav");
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");

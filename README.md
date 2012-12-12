@@ -442,6 +442,32 @@ sample demonstrates it by subjecting the drums to a 500Hz lowpass filter:
 
 Refer to the headers for interfaces on the biquad filter node.
 
+Spatialization
+--------------
+
+The spatialization API is straight forward.
+
+    SoundBuffer train(context, "trainrolling.wav");
+    RefPtr<PannerNode> panner = context->createPanner();
+    panner->connect(context->destination(), 0, 0, ec);
+    PassRefPtr<AudioBufferSourceNode> trainNode = train.play(panner.get(), 0.0f);
+    trainNode->setLooping(true);
+    context->listener()->setPosition(0, 0, 0);
+    panner->setVelocity(15, 0, 0);
+    for (float i = 0; i < 10.0f; i += 0.01f) {
+        float x = (i - 5.0f) / 5.0f;
+        // keep it a bit up and in front, because if it goes right through the listener
+        // at (0, 0, 0) it abruptly switches from left to right.
+        panner->setPosition(x, 0.1f, 0.1f);
+        usleep(10000);
+    }
+    
+This sample moves a sample from left to right versus a listener located at (0, 0, 0). 
+An artificially high velocity is put on the panner node to exaggerate the Doppler shift.
+It appears that the spatialization is limited to stereo, with no support for surround
+encoding. It does however support Head Related Transfer Functions, which through headphones
+is probably the best way to hear spatialized audio.
+
 Headers
 -------
 Headers required by various portions of this tutorial are:
