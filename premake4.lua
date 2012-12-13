@@ -27,7 +27,8 @@ solution "LabSound"
                     "src/platform/graphics",
                     "src/platform/graphics/transforms",
                     "src/platform/text",
-                    "src/Modules/webaudio", "src/shim",
+                    "src/Modules/webaudio",
+                    "src/shim",
                     "src/WTF", "src/WTF/icu" }
       
       files { "**.h",     -- ** means recurse
@@ -65,14 +66,14 @@ solution "LabSound"
                 "src/platform/audio/ipp/**",
                 "src/platform/audio/mkl/**",
                 "src/platform/audio/qt/**",
-                 "src/Modules/webaudio/AudioProcessingEvent.cpp",
-                 "src/Modules/webaudio/ScriptProcessorNode.cpp",
-                 "src/Modules/webaudio/OfflineAudioCompletionEvent.cpp",
-                 "src/WTF/wtf/**GLib.cpp",
-                 "src/WTF/wtf/MemoryManager.cpp",
-                 "src/WTF/wtf/**Wx.cpp",
-                 "src/WTF/wtf/**Win.cpp"
-                 }
+                "src/Modules/webaudio/AudioProcessingEvent.cpp",
+                "src/Modules/webaudio/ScriptProcessorNode.cpp",
+                "src/Modules/webaudio/OfflineAudioCompletionEvent.cpp",
+                "src/WTF/wtf/**GLib.cpp",
+                "src/WTF/wtf/MemoryManager.cpp",
+                "src/WTF/wtf/**Wx.cpp",
+                "src/WTF/wtf/**Win.cpp"
+                }
 
       links { "icucore", "WTF",
               "Accelerate.framework",
