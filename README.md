@@ -486,9 +486,8 @@ Headers required by various portions of this tutorial are:
 Live Audio Input
 ----------------
 
-The live audio input seems to be a Stumbling block. This is accomplished via the MediaStream system which seems quite difficult
-to separate from the browser underpinnings. It will probably be necessary to write a custom
-node that does this in a more to-the-metal manner.
+Implemented a stub MediaStream object for live input. Need to hook it up and write a test
+program.
 
 License
 -------

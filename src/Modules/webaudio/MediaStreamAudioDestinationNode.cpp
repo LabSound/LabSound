@@ -30,10 +30,11 @@
 
 #include "AudioContext.h"
 #include "AudioNodeInput.h"
-#include "LocalMediaStream.h"
-#include "MediaStreamCenter.h"
-#include "RTCPeerConnectionHandler.h"
-#include "UUID.h"
+//#include "LocalMediaStream.h" // LabSound commented
+#include "MediaStream.h" // LabSound added
+//#include "MediaStreamCenter.h" LabSound commented
+//#include "RTCPeerConnectionHandler.h" LabSound commented
+//#include "UUID.h" LabSound commented
 #include <wtf/Locker.h>
 
 namespace WebCore {
@@ -48,14 +49,14 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(AudioContext* c
     , m_mixBus(numberOfChannels, ProcessingSizeInFrames)
 {
     setNodeType(NodeTypeMediaStreamAudioDestination);
-
+/* LabSound commented
     m_source = MediaStreamSource::create(ASCIILiteral("WebAudio-") + createCanonicalUUIDString(), MediaStreamSource::TypeAudio, "MediaStreamAudioDestinationNode", MediaStreamSource::ReadyStateLive, true);
     MediaStreamSourceVector audioSources;
     audioSources.append(m_source);
     MediaStreamSourceVector videoSources;
     m_stream = LocalMediaStream::create(context->scriptExecutionContext(), audioSources, videoSources);
     MediaStreamCenter::instance().didCreateMediaStream(m_stream->descriptor());
-
+*/
     initialize();
 }
 
@@ -72,7 +73,9 @@ MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
 void MediaStreamAudioDestinationNode::process(size_t numberOfFrames)
 {
     m_mixBus.copyFrom(*input(0)->bus());
+/* LabSound commented - will need to revisit later
     m_source->consumeAudio(&m_mixBus, numberOfFrames);
+ */
 }
 
 void MediaStreamAudioDestinationNode::reset()

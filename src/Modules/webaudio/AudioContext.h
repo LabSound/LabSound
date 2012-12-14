@@ -32,6 +32,7 @@
 #include "EventListener.h"
 #include "EventTarget.h"
 #include "HRTFDatabaseLoader.h"
+#include "MediaStream.h" // added for LabSound
 #include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
 #include <wtf/OwnPtr.h>
