@@ -486,8 +486,8 @@ Headers required by various portions of this tutorial are:
 Live Audio Input
 ----------------
 
-Implemented a stub MediaStream object for live input. Need to hook it up and write a test
-program.
+Implemented a stub MediaStream object for live input. The test program hooks it up to the
+destination, but I don't hear any output. Not sure what's up with that. More testing needed.
 
 License
 -------

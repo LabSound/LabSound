@@ -6,10 +6,13 @@
 #include "AudioBufferSourceNode.h"
 #include "BiquadFilterNode.h"
 #include "GainNode.h"
+#include "MediaStream.h"
+#include "MediaStreamAudioSourceNode.h"
 #include "OscillatorNode.h"
 #include "PannerNode.h"
 
 #include <unistd.h>
+#include <iostream>
 
 using namespace WebCore;
 
@@ -123,11 +126,18 @@ int main(int, char**)
         usleep(10000);
 
     SoundBuffer tonbi(context, "tonbi.wav");
-    tonbi.play(0);
+    tonbi.play(0.0f);
 
     for (int i = 0; i < 300; ++i)
         usleep(10000);
 #elif 1
+    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
+    input->connect(context->destination(), 0, 0, ec);
+    std::cout << "Starting echo" << std::endl;
+    for (int i = 0; i < 300; ++i)
+        usleep(100000);
+    std::cout << "Ending echo" << std::endl;
+#elif 0
     SoundBuffer train(context, "trainrolling.wav");
     RefPtr<PannerNode> panner = context->createPanner();
     panner->connect(context->destination(), 0, 0, ec);

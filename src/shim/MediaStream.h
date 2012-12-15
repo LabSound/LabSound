@@ -11,6 +11,10 @@ public:
         int length() const { return 2; }
     };
     
+    MediaStream() {
+        relaxAdoptionRequirement();
+    }
+    
     bool isLocal() const { return true; }
     Tracks* audioTracks() { return &_tracks; }
     
