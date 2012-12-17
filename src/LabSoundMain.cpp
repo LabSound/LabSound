@@ -1,10 +1,12 @@
 
-#include "AudioContext.h"
-#include "ExceptionCode.h"
+// For starting the WTF library
 #include "MainThread.h"
 
+// webaudio specific headers
 #include "AudioBufferSourceNode.h"
+#include "AudioContext.h"
 #include "BiquadFilterNode.h"
+#include "ExceptionCode.h"
 #include "GainNode.h"
 #include "MediaStream.h"
 #include "MediaStreamAudioSourceNode.h"
@@ -134,6 +136,7 @@ int main(int, char**)
     RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
     input->connect(context->destination(), 0, 0, ec);
     std::cout << "Starting echo" << std::endl;
+    
     for (int i = 0; i < 300; ++i)
         usleep(100000);
     std::cout << "Ending echo" << std::endl;

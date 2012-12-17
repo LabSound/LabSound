@@ -62,6 +62,9 @@ private:
 
     float m_sampleRate;
     bool m_isPlaying;
+    
+    class Input;    // LabSound
+    Input* m_input; // LabSound
 };
 
 } // namespace WebCore

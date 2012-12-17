@@ -468,6 +468,21 @@ It appears that the spatialization is limited to stereo, with no support for sur
 encoding. It does however support Head Related Transfer Functions, which through headphones
 is probably the best way to hear spatialized audio.
 
+Live Audio Input
+----------------
+
+The default input device can be hooked up as follows:
+
+    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
+    input->connect(context->destination(), 0, 0, ec);
+    std::cout << "Starting echo" << std::endl;
+    
+    for (int i = 0; i < 300; ++i)
+        usleep(100000);
+    std::cout << "Ending echo" << std::endl;
+
+This simple example merely wires the live audio input directly to the output.
+
 Headers
 -------
 Headers required by various portions of this tutorial are:
@@ -476,18 +491,15 @@ Headers required by various portions of this tutorial are:
     #include "MainThread.h"
     
     // webaudio specific headers
-    #include "AudioContext.h"
-    #include "ExceptionCode.h"
     #include "AudioBufferSourceNode.h"
+    #include "AudioContext.h"
     #include "BiquadFilterNode.h"
+    #include "ExceptionCode.h"
     #include "GainNode.h"
+    #include "MediaStream.h"
+    #include "MediaStreamAudioSourceNode.h"
     #include "OscillatorNode.h"
-
-Live Audio Input
-----------------
-
-Implemented a stub MediaStream object for live input. The test program hooks it up to the
-destination, but I don't hear any output. Not sure what's up with that. More testing needed.
+    #include "PannerNode.h"
 
 License
 -------
