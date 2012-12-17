@@ -1,11 +1,14 @@
 
+
 // For starting the WTF library
+#include <wtf/ExportMacros.h>
 #include "MainThread.h"
 
 // webaudio specific headers
 #include "AudioBufferSourceNode.h"
 #include "AudioContext.h"
 #include "BiquadFilterNode.h"
+#include "ConvolverNode.h"
 #include "ExceptionCode.h"
 #include "GainNode.h"
 #include "MediaStream.h"
@@ -121,6 +124,9 @@ int main(int, char**)
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
 
 #if 0
+    //--------------------------------------------------------------
+    // Play a tone and a sample at the same time.
+    //
     RefPtr<OscillatorNode> oscillator = context->createOscillator();
     oscillator->connect(context->destination(), 0, 0, ec);
     oscillator->start(0);   // play now
@@ -132,7 +138,10 @@ int main(int, char**)
 
     for (int i = 0; i < 300; ++i)
         usleep(10000);
-#elif 1
+#elif 0
+    //--------------------------------------------------------------
+    // Send live audio straight to the output
+    //
     RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
     input->connect(context->destination(), 0, 0, ec);
     std::cout << "Starting echo" << std::endl;
@@ -140,7 +149,62 @@ int main(int, char**)
     for (int i = 0; i < 300; ++i)
         usleep(100000);
     std::cout << "Ending echo" << std::endl;
+#elif 1
+    //--------------------------------------------------------------
+    // Play a sound file through a reverb convolution
+    //
+    SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
+    //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
+    
+    SoundBuffer sample(context, "human-voice.mp4");
+    
+    RefPtr<ConvolverNode> convolve = context->createConvolver();
+    convolve->setBuffer(ir.audioBuffer.get());
+    RefPtr<GainNode> wetGain = context->createGain();
+    wetGain->gain()->setValue(2.f);
+    RefPtr<GainNode> dryGain = context->createGain();
+    dryGain->gain()->setValue(1.f);
+    
+    convolve->connect(wetGain.get(), 0, 0, ec);
+    wetGain->connect(context->destination(), 0, 0, ec);
+    dryGain->connect(context->destination(), 0, 0, ec);
+    
+    sample.play(convolve.get(), 0);
+    
+    std::cout << "Starting convolved echo" << std::endl;
+    
+    for (int i = 0; i < 300; ++i)
+        usleep(100000);
+    std::cout << "Ending echo" << std::endl;
+#elif 1
+    //--------------------------------------------------------------
+    // Play live audio through a reverb convolution
+    //
+    //SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
+    SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
+    
+    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
+    RefPtr<ConvolverNode> convolve = context->createConvolver();
+    convolve->setBuffer(ir.audioBuffer.get());
+    RefPtr<GainNode> wetGain = context->createGain();
+    wetGain->gain()->setValue(2.f);
+    RefPtr<GainNode> dryGain = context->createGain();
+    dryGain->gain()->setValue(1.f);
+    
+    input->connect(convolve.get(), 0, 0, ec);
+    convolve->connect(wetGain.get(), 0, 0, ec);
+    wetGain->connect(context->destination(), 0, 0, ec);
+    dryGain->connect(context->destination(), 0, 0, ec);
+
+    std::cout << "Starting convolved echo" << std::endl;
+    
+    for (int i = 0; i < 300; ++i)
+        usleep(100000);
+    std::cout << "Ending echo" << std::endl;
 #elif 0
+    //--------------------------------------------------------------
+    // Demonstrate 3d spatialization and doppler shift
+    //
     SoundBuffer train(context, "trainrolling.wav");
     RefPtr<PannerNode> panner = context->createPanner();
     panner->connect(context->destination(), 0, 0, ec);
@@ -156,6 +220,9 @@ int main(int, char**)
         usleep(10000);
     }
 #elif 0
+    //--------------------------------------------------------------
+    // Play a rhythm
+    //
     SoundBuffer kick(context, "kick.wav");
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");
@@ -180,6 +247,9 @@ int main(int, char**)
     for (int i = 0; i < 300; ++i)
         usleep(10000);
 #elif 0
+    //--------------------------------------------------------------
+    // Play a rhythm through a low pass filter
+    //
     SoundBuffer kick(context, "kick.wav");
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");
@@ -210,6 +280,9 @@ int main(int, char**)
         usleep(10000);
     }
 #else
+    //--------------------------------------------------------------
+    // Demonstrate panning between a rhythm and a tone
+    //
     RefPtr<OscillatorNode> oscillator = context->createOscillator();
 
     SoundBuffer kick(context, "kick.wav");

@@ -170,15 +170,11 @@ public:
     static OSStatus inputCallback(void* inRefCon, AudioUnitRenderActionFlags* ioActionFlags, const AudioTimeStamp* inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
     {
         Input* input = reinterpret_cast<Input*>( inRefCon );
-        OSStatus result = AudioUnitRender(input->m_inputUnit,
-                                          ioActionFlags,
-                                          inTimeStamp,
-                                          inBusNumber,     //will be '1' for input data
-                                          inNumberFrames,  //# of frames requested
-                                          input->m_buffers);
+        OSStatus result = AudioUnitRender(input->m_inputUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, input->m_buffers);
         
-        if (result != noErr) {
-        }
+        if (result != noErr)
+            for (int i = 0; i < input->m_buffers->mNumberBuffers; ++i)
+                input->m_audioBus->channel(i)->zero();
         
         return noErr;
     }
