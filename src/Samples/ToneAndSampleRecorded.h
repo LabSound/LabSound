@@ -1,5 +1,5 @@
 //
-//  ToneAndSample.h
+//  ToneAndSampleRecorded.h
 //  LabSound
 //
 //  Created by Nick Porcino on 2012 12/18.

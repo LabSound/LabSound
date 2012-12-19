@@ -1,5 +1,5 @@
 //
-//  LiveEcho.h
+//  RhythmFiltered.h
 //  LabSound
 //
 //  Created by Nick Porcino on 2012 12/18.
@@ -10,5 +10,5 @@
 
 #include "AudioContext.h"
 
-void liveEcho(WTF::RefPtr<WebCore::AudioContext> context, float seconds);
+void rhythmFiltered(WTF::RefPtr<WebCore::AudioContext> context, float seconds);
 
