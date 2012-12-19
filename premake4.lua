@@ -33,6 +33,7 @@ solution "LabSound"
       
       files { "**.h",     -- ** means recurse
               "**.cpp",
+              "**.cc",
               "**.c",
               "**.mm",
               "osx/Info.plist",
@@ -75,7 +76,7 @@ solution "LabSound"
                 "src/WTF/wtf/**Win.cpp"
                 }
 
-      links { "icucore", "WTF",
+      links { "icucore",
               "Accelerate.framework",
               "ApplicationServices.framework",
               "AudioToolbox.framework",
@@ -91,7 +92,7 @@ solution "LabSound"
               --  os.findlib("X11") placeholder how to find system library
               }
 
-        libdirs { "src/WTF/build/Release" }
+        libdirs { }
         
         configuration "Debug"
             targetdir "build/Debug"

@@ -16,101 +16,26 @@
 #include "OscillatorNode.h"
 #include "PannerNode.h"
 
+// LabSound
+#include "RecorderNode.h"
+#include "SoundBuffer.h"
+
+// Examples
+#include "ToneAndSample.h"
+#include "ToneAndSampleRecorded.h"
+#include "LiveEcho.h"
+
 #include <unistd.h>
 #include <iostream>
 
 using namespace WebCore;
+using LabSound::RecorderNode;
 
 namespace WebCore
 {
     class Document { public: };
 }
 
-class SoundBuffer
-{
-public:
-    RefPtr<AudioBuffer> audioBuffer;
-    RefPtr<AudioContext> context;
-
-    SoundBuffer(RefPtr<AudioContext> context, const char* path)
-    : context(context)
-    {
-        FILE* f = fopen(path, "rb");
-        if (f) {
-            fseek(f, 0, SEEK_END);
-            int l = ftell(f);
-            fseek(f, 0, SEEK_SET);
-            uint8_t* data = new uint8_t[l];
-            fread(data, 1, l, f);
-            fclose(f);
-            
-            ExceptionCode ec;
-            bool mixToMono = true;
-            PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(data, l);
-            delete [] data;
-
-            // create an audio buffer from the file data. The file data will be
-            // parsed, and does not need to be retained.
-            audioBuffer = context->createBuffer(fileDataBuffer.get(), mixToMono, ec);
-        }
-    }
-    
-    ~SoundBuffer()
-    {
-    }
-    
-    PassRefPtr<AudioBufferSourceNode> play(AudioNode* outputNode, float when = 0.0f)
-    {
-        if (audioBuffer) {
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
-            sourceBuffer = context->createBufferSource();
-            
-            // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer.get());
-            
-            // bus the sound to the mixer.
-            ExceptionCode ec;
-            sourceBuffer->connect(outputNode, 0, 0, ec);
-            sourceBuffer->start(when);
-            return sourceBuffer;
-        }
-        return 0;
-    }
-    
-    PassRefPtr<AudioBufferSourceNode> play(float when = 0.0f)
-    {
-        if (audioBuffer) {
-            return play(context->destination(), when);
-        }
-        return 0;
-    }
-    
-    // This variant starts a sound at a given offset relative to the beginning of the
-    // sample, ends it an offfset (relative to the beginning), and optional delays
-    // the start. If 0 is passed as end, then the sound will play to the end.
-    PassRefPtr<AudioBufferSourceNode> play(float start, float end, float when = 0.0f)
-    {
-        if (audioBuffer) {
-            if (end == 0)
-                end = audioBuffer->duration();
-            
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
-            sourceBuffer = context->createBufferSource();
-            
-            // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer.get());
-            
-            // bus the sound to the mixer.
-            ExceptionCode ec;
-            sourceBuffer->connect(context->destination(), 0, 0, ec);
-            sourceBuffer->startGrain(when, start, end - start);
-            return sourceBuffer;
-        }
-        return 0;
-    }
-    
-    
-};
 
 int main(int, char**)
 {
@@ -123,33 +48,13 @@ int main(int, char**)
     ExceptionCode ec;
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
 
-#if 0
-    //--------------------------------------------------------------
-    // Play a tone and a sample at the same time.
-    //
-    RefPtr<OscillatorNode> oscillator = context->createOscillator();
-    oscillator->connect(context->destination(), 0, 0, ec);
-    oscillator->start(0);   // play now
-    for (int i = 0; i < 100; ++i)
-        usleep(10000);
-
-    SoundBuffer tonbi(context, "tonbi.wav");
-    tonbi.play(0.0f);
-
-    for (int i = 0; i < 300; ++i)
-        usleep(10000);
+#if 1
+    toneAndSample(context, 3.0f);
 #elif 0
-    //--------------------------------------------------------------
-    // Send live audio straight to the output
-    //
-    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
-    input->connect(context->destination(), 0, 0, ec);
-    std::cout << "Starting echo" << std::endl;
-    
-    for (int i = 0; i < 300; ++i)
-        usleep(100000);
-    std::cout << "Ending echo" << std::endl;
-#elif 1
+    toneAndSampleRecorded(context, 3.0f, "toneAndSample.raw");
+#elif 0
+    liveEcho(context, 3.0f);
+#elif 0
     //--------------------------------------------------------------
     // Play a sound file through a reverb convolution
     //
@@ -176,12 +81,12 @@ int main(int, char**)
     for (int i = 0; i < 300; ++i)
         usleep(100000);
     std::cout << "Ending echo" << std::endl;
-#elif 1
+#elif 0
     //--------------------------------------------------------------
     // Play live audio through a reverb convolution
     //
-    //SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
-    SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
+    SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
+    //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
     
     RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
     RefPtr<ConvolverNode> convolve = context->createConvolver();
@@ -196,11 +101,19 @@ int main(int, char**)
     wetGain->connect(context->destination(), 0, 0, ec);
     dryGain->connect(context->destination(), 0, 0, ec);
 
+    RefPtr<RecorderNode> recorder = RecorderNode::create(context.get(), 44100);
+    recorder->startRecording();
+    dryGain->connect(recorder.get(), 0, 0, ec);
+    wetGain->connect(recorder.get(), 0, 0, ec);
+    
     std::cout << "Starting convolved echo" << std::endl;
     
-    for (int i = 0; i < 300; ++i)
+    for (int i = 0; i < 100; ++i)
         usleep(100000);
     std::cout << "Ending echo" << std::endl;
+    
+    recorder->stopRecording();
+    recorder->save("livetest.raw");
 #elif 0
     //--------------------------------------------------------------
     // Demonstrate 3d spatialization and doppler shift
