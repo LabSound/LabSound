@@ -41,6 +41,18 @@ namespace LabSound {
     {
     }
     
+    PassRefPtr<AudioBufferSourceNode> SoundBuffer::create()
+    {
+        if (audioBuffer) {
+            RefPtr<AudioBufferSourceNode> sourceBuffer;
+            sourceBuffer = context->createBufferSource();
+            
+            // Connect the source node to the parsed audio data for playback
+            sourceBuffer->setBuffer(audioBuffer.get());
+            return sourceBuffer;
+        }
+        return 0;
+    }
     
     PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(AudioNode* outputNode, float when)
     {

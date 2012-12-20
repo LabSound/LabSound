@@ -23,6 +23,9 @@ public:
     // sample, ends it an offfset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
     PassRefPtr<WebCore::AudioBufferSourceNode> play(float start, float end, float when = 0.0f);
+
+    // creates a source node but does not connect it to anything
+    PassRefPtr<WebCore::AudioBufferSourceNode> create();
 };
 
 

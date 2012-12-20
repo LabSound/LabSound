@@ -30,6 +30,7 @@
 #include "Rhythm.h"
 #include "RhythmFiltered.h"
 #include "RhythmTonePanning.h"
+#include "DalekVoice.h"
 
 #include <unistd.h>
 #include <iostream>
@@ -70,8 +71,10 @@ int main(int, char**)
     rhythm(context, 3.0f);
 #elif 0
     rhythmFiltered(context, 3.0f);
-#else
+#elif 0
     rhythmTonePanning(context, 10.0f);
+#else
+    dalekVoice(context, 30.0f);
 #endif
     
     return 0;

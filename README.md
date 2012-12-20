@@ -7,7 +7,7 @@ My motivation for factoring it out is that the WebAudio engine is very well desi
 and well exercised. It does everything I would want an audio engine to do. If you have
 a look at the specification <https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html>
 you can see that it is an audio processing graph with a lot of default nodes, multiple
-sends, and wide platform support.
+sends, and wide platform support. See also <http://docs.webplatform.org/wiki/apis/webaudio>
 
 WebKit was obtained from the unofficial github mirror at <https://github.com/WebKit/webkit>
 
