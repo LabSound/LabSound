@@ -2,7 +2,7 @@
 
 // For starting the WTF library
 #include <wtf/ExportMacros.h>
-#include "MainThread.h"
+#include <wtf/MainThread.h>
 
 // webaudio specific headers
 #include "AudioBufferSourceNode.h"
@@ -55,7 +55,7 @@ int main(int, char**)
     ExceptionCode ec;
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
 
-#if 0
+#if 1
     toneAndSample(context, 3.0f);
 #elif 0
     toneAndSampleRecorded(context, 3.0f, "toneAndSample.raw");

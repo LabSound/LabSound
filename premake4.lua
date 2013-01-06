@@ -5,19 +5,64 @@
 -- A solution contains projects, and defines the available configurations
 solution "LabSound"
    configurations { "Debug", "Release" }
-
-   -- location is commented out because info.plist needs to be relative to xcodeproj
-   -- but premake doesn't know where to find it if it is called ../osx/Info.plist
-   -- location "build"
  
    -- A project defines one build target
-   project "LabSound"
-      kind "WindowedApp"  -- ConsoleApp, SharedLib are alternates
-      language "C++"
+   project "LabSoundDemo"
+        kind "WindowedApp"
+        language "C++"
+        
+        links { "LabSound" }
+        platforms { "x32", "x64" }
 
-      -- location is commented out because info.plist needs to be relative to xcodeproj
-      -- but premake doesn't know where to find it if it is called ../osx/Info.plist
-      -- location "build"
+        includedirs 
+        {
+              "src/WTF", "src/WTF/icu"
+            , "src/platform/audio"
+            , "src/platform/graphics"
+            , "src/Modules/webaudio"
+            , "src/shim"
+            , "src/LabSound"
+            , "src/Samples"
+        }
+      
+        files 
+        { 
+            "src/SampleApps/LabSoundMain.cpp"
+          , "src/SampleApps/osx/Info.plist"
+          , "src/platform/audio/resources/**"
+        }
+      
+        links { 
+            "icucore",
+            "Accelerate.framework",
+            "ApplicationServices.framework",
+            "AudioToolbox.framework",
+            "AudioUnit.framework",
+            "Carbon.framework",
+            "Cocoa.framework",
+            "CoreAudio.framework",
+            "CoreFoundation.framework",
+            "CoreMIDI.framework",
+            "CoreVideo.framework",
+            "OpenGL.framework",
+            "QTKit.framework",
+            --  os.findlib("X11") placeholder how to find system library
+        }
+        
+        configuration "Debug"
+            targetdir "build/Debug"
+            defines {  "ENABLE_MEDIA_STREAM=1", "ENABLE_WEB_AUDIO=1", "STATICALLY_LINKED_WITH_WTF", "DEBUG", "PD", "__MACOSX_CORE__", "HAVE_NO_OFLOG", "HAVE_BOOST_THREAD", "HAVE_LIBDL", "OSX", "HAVE_ALLOCA", "HAVE_UNISTD_H", "USEAPI_DUMMY" }
+            flags { "Symbols" }
+        
+        configuration "Release"
+            targetdir "build/Release"
+            defines { "ENABLE_MEDIA_STREAM=1", "ENABLE_WEB_AUDIO=1", "STATICALLY_LINKED_WITH_WTF", "NDEBUG", "PD", "__MACOSX_CORE__", "HAVE_NO_OFLOG", "HAVE_BOOST_THREAD", "HAVE_LIBDL", "OSX", "HAVE_ALLOCA", "HAVE_UNISTD_H", "USEAPI_DUMMY" }
+            flags { "Optimize" } 
+    
+   
+   project "LabSound"
+      kind "StaticLib"  -- ConsoleApp, SharedLib are alternates
+      language "C++"
 
       platforms { "x32", "x64" }
       
@@ -35,10 +80,7 @@ solution "LabSound"
               "**.cpp",
               "**.cc",
               "**.c",
-              "**.mm",
-              "osx/Info.plist",
-              "src/platform/audio/resources/**",
-              "Resources/**" }
+              "**.mm" }
               
       excludes { "src/WTF/build/**", 
                 "src/WTF/Configurations/**", 
@@ -73,24 +115,9 @@ solution "LabSound"
                 "src/WTF/wtf/**GLib.cpp",
                 "src/WTF/wtf/MemoryManager.cpp",
                 "src/WTF/wtf/**Wx.cpp",
-                "src/WTF/wtf/**Win.cpp"
+                "src/WTF/wtf/**Win.cpp",
+                "src/SampleApps/**.*"
                 }
-
-      links { "icucore",
-              "Accelerate.framework",
-              "ApplicationServices.framework",
-              "AudioToolbox.framework",
-              "AudioUnit.framework",
-              "Carbon.framework",
-              "Cocoa.framework",
-              "CoreAudio.framework",
-              "CoreFoundation.framework",
-              "CoreMIDI.framework",
-              "CoreVideo.framework",
-              "OpenGL.framework",
-              "QTKit.framework",
-              --  os.findlib("X11") placeholder how to find system library
-              }
 
         libdirs { }
         

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "RefCounted.h"
+#include <wtf/RefCounted.h>
 
 class MediaStream : public RefCounted<MediaStream>
 {
