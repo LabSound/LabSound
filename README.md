@@ -37,7 +37,7 @@ mostly works, but it doesn't copy the audio resources into the app bundle. At th
 you'll need to build the code once, then manually open the App and bundle, and copy
 the audio in yourself.
 
-    LabSound
+    Application
        |
        +--- Contents
                |
@@ -48,6 +48,13 @@ the audio in yourself.
                               +---- copy all the wav's here
 
 The wavs to copy are in src/platform/audio/resources/*.wav
+
+You'll need to do this manually for each sample you compile. Since these samples
+comprise 512k of data, I think I'm going to work out how not to have to do this, but
+allow it to work this way for when bundling in the resources does make sense.
+
+Note also that the sample data needs to be in the current working directory when you
+run the samples.
 
 Usage
 -----

@@ -55,27 +55,7 @@ int main(int, char**)
     ExceptionCode ec;
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
 
-#if 1
-    toneAndSample(context, 3.0f);
-#elif 0
-    toneAndSampleRecorded(context, 3.0f, "toneAndSample.raw");
-#elif 0
-    liveEcho(context, 3.0f);
-#elif 0
     reverbSample(context, 10.0f);
-#elif 0
-    liveReverbRecording(context, 10.0f, "liveReverb.raw");
-#elif 0
-    sampleSpatialization(context, 10.0f);
-#elif 0
-    rhythm(context, 3.0f);
-#elif 0
-    rhythmFiltered(context, 3.0f);
-#elif 0
-    rhythmTonePanning(context, 10.0f);
-#else
-    dalekVoice(context, 30.0f);
-#endif
     
     return 0;
 }
