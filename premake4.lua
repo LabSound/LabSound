@@ -5,6 +5,8 @@
 -- A solution contains projects, and defines the available configurations
 solution "LabSound"
    configurations { "Debug", "Release" }
+
+   include "src"
  
    project "DalekVoiceApp"
         kind "WindowedApp"
@@ -556,5 +558,3 @@ solution "LabSound"
             linkoptions  { "-std=c++11", "-stdlib=libc++" }
             buildoptions { "-std=c++11", "-stdlib=libc++" }
 
-
-include "src"

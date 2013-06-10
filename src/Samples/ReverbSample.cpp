@@ -50,8 +50,9 @@ void reverbSample(RefPtr<AudioContext> context, float seconds)
     convolve->connect(wetGain.get(), 0, 0, ec);
     wetGain->connect(context->destination(), 0, 0, ec);
     dryGain->connect(context->destination(), 0, 0, ec);
+    dryGain->connect(convolve.get(), 0, 0, ec);
     
-    sample.play(convolve.get(), 0);
+    sample.play(dryGain.get(), 0);
     
     std::cout << "Starting convolved echo" << std::endl;
     

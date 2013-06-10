@@ -9,6 +9,7 @@
 #include "SoundBuffer.h"
 
 #include <stdio.h>
+#include <iostream>
 
 namespace LabSound {
     
@@ -35,6 +36,8 @@ namespace LabSound {
             // parsed, and does not need to be retained.
             audioBuffer = context->createBuffer(fileDataBuffer.get(), mixToMono, ec);
         }
+        else
+            std::cerr << "File not found " << path << std::endl;
     }
     
     SoundBuffer::~SoundBuffer()
