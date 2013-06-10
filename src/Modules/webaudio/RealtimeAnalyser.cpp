@@ -268,6 +268,34 @@ void RealtimeAnalyser::getByteFrequencyData(Uint8Array* destinationArray)
     }
 }
 
+// LabSound begin
+void RealtimeAnalyser::getFloatTimeDomainData(Float32Array* destinationArray)
+{
+    ASSERT(isMainThread());
+    
+    if (!destinationArray)
+        return;
+    
+    unsigned fftSize = this->fftSize();
+    size_t len = min(fftSize, destinationArray->length());
+    if (len > 0) {
+        bool isInputBufferGood = m_inputBuffer.size() == InputBufferSize && m_inputBuffer.size() > fftSize;
+        ASSERT(isInputBufferGood);
+        if (!isInputBufferGood)
+            return;
+        
+        float* inputBuffer = m_inputBuffer.data();
+        float* destination = destinationArray->data();
+        
+        unsigned writeIndex = m_writeIndex;
+        
+        for (unsigned i = 0; i < len; ++i)
+            // Buffer access is protected due to modulo operation.
+            destination[i] = inputBuffer[(i + writeIndex - fftSize + InputBufferSize) % InputBufferSize];
+    }
+}
+// LabSound end
+
 void RealtimeAnalyser::getByteTimeDomainData(Uint8Array* destinationArray)
 {
     ASSERT(isMainThread());

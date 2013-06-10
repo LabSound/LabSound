@@ -13,7 +13,7 @@ project "LabSound"
                 "platform/text",
                 "Modules/webaudio",
                 "shim",
-                "WTF", "WTF/icu" }
+                "WTF", "WTF/icu", "WTF/wtf" }
                   
     files { 
             -- LabSound, extra processing, and binding classes
@@ -47,6 +47,7 @@ project "LabSound"
             "WTF/wtf/text/StringStatics.cpp", "WTF/wtf/text/StringImpl.*", "WTF/wtf/text/WTFString.*",
             "WTF/wtf/Threading.*", "WTF/wtf/WTFThreadData.*", "WTF/wtf/ThreadId*.*", "WTF/wtf/ThreadingP*",
             "WTF/wtf/unicode/*", "WTF/wtf/unicode/icu/*", 
+            "WTF/wtf/UnusedParam.h",
             -- platform specific stuff follows
             ---- OSX
             "platform/audio/mac/*", "platform/mac/AutoDrainedPool.mm", "WTF/wtf/mac/MainThreadMac.mm" }
