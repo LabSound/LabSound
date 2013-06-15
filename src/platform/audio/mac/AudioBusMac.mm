@@ -54,7 +54,14 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
 #else
     NSDataReadingOptions options = NSDataReadingMappedIfSafe;
 #endif
-    NSData *audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
+    NSData *audioData = 0;
+    
+    @try {  // @Lab added try/catch
+        audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
+    }
+    @catch(NSException *exc) {
+        return nullptr;
+    }
 
     if (audioData) {
         OwnPtr<AudioBus> bus(createBusFromInMemoryAudioFile([audioData bytes], [audioData length], false, sampleRate));

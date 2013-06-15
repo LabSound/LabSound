@@ -182,7 +182,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
 
     OwnPtr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.utf8().data(), sampleRate));
 
-    ASSERT(impulseResponse.get());
+    // @Lab removed ASSERT(impulseResponse.get());
     if (!impulseResponse.get())
         return false;
     

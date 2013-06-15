@@ -36,6 +36,8 @@
 #include "PlatformMemoryInstrumentation.h"
 #include <wtf/MainThread.h>
 
+#include <iostream>
+
 namespace WebCore {
 
 // Singleton
@@ -94,6 +96,9 @@ void HRTFDatabaseLoader::load()
     if (!m_hrtfDatabase.get()) {
         // Load the default HRTF database.
         m_hrtfDatabase = HRTFDatabase::create(m_databaseSampleRate);
+    }
+    if (!m_hrtfDatabase.get()) { // @Lab added error reporting
+        std::cerr << "HRTF database not loaded" << std::endl;
     }
 }
 

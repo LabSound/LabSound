@@ -60,7 +60,7 @@ HRTFDatabase::HRTFDatabase(float sampleRate)
     unsigned elevationIndex = 0;
     for (int elevation = MinElevation; elevation <= MaxElevation; elevation += RawElevationAngleSpacing) {
         OwnPtr<HRTFElevation> hrtfElevation = HRTFElevation::createForSubject("Composite", elevation, sampleRate);
-        ASSERT(hrtfElevation.get());
+        // @Lab removed ASSERT(hrtfElevation.get());
         if (!hrtfElevation.get())
             return;
         
