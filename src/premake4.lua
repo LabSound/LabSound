@@ -13,7 +13,8 @@ project "LabSound"
                 "platform/text",
                 "Modules/webaudio",
                 "shim",
-                "WTF", "WTF/icu", "WTF/wtf" }
+                "WTF", "WTF/icu", "WTF/wtf",
+                "../../ofxPd/src" }
                   
     files { 
             -- LabSound, extra processing, and binding classes

@@ -12,6 +12,7 @@
 #include "AudioBasicInspectorNode.h"
 #include <wtf/Forward.h>
 #include <vector>
+#include <mutex>
 
 namespace LabSound {
     
@@ -31,16 +32,22 @@ namespace LabSound {
         void startRecording() { m_recording = true; }
         void stopRecording() { m_recording = false; }
         
-        void save(char const*const path);
+        void mixToMono(bool m) { m_mixToMono = m; }
+
+        // replaces result with the currently recorded data.
+        // saved data is cleared.
+        void getData(std::vector<float>& result);
         
     private:
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }
         
         RecorderNode(WebCore::AudioContext*, float sampleRate);
-        
+
+        bool m_mixToMono;
         bool m_recording;
         std::vector<float> m_data;  // interleaved
+        mutable std::mutex m_mutex;
     };
     
 } // LabSound
