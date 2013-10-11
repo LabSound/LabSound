@@ -1,0 +1,3 @@
+[submodule "src/libpd"]
+	path = src/libpd
+	url = git://github.com/meshula/libpd.git
