@@ -190,7 +190,7 @@ inline ArrayElementType* binarySearch(ArrayElementType* array, size_t size, KeyT
     // If the array contains only one element, no need to do the comparison.
     while (size > 1) {
         // Pick an element to check, half way through the array, and read the value.
-        int pos = (size - 1) >> 1;
+        size_t pos = (size - 1) >> 1;
         KeyType val = extractKey(&array[pos]);
 
         // If the key matches, success!
@@ -231,7 +231,7 @@ inline ArrayElementType* binarySearchWithFunctor(ArrayElementType* array, size_t
     // If the array contains only one element, no need to do the comparison.
     while (size > 1) {
         // Pick an element to check, half way through the array, and read the value.
-        int pos = (size - 1) >> 1;
+        size_t pos = (size - 1) >> 1;
         KeyType val = extractKey(&array[pos]);
 
         // If the key matches, success!
@@ -273,7 +273,7 @@ inline ArrayElementType* genericBinarySearch(ArrayType& array, size_t size, KeyT
     size_t offset = 0;
     while (size > 1) {
         // Pick an element to check, half way through the array, and read the value.
-        int pos = (size - 1) >> 1;
+        size_t pos = (size - 1) >> 1;
         KeyType val = extractKey(&array[offset + pos]);
         
         // If the key matches, success!

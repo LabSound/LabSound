@@ -23,6 +23,7 @@
 #include "LiveEcho.h"
 
 #include <unistd.h>
+#include <stdio.h>
 #include <iostream>
 
 using namespace WebCore;
@@ -66,5 +67,11 @@ void liveReverbRecording(RefPtr<AudioContext> context, float seconds, char const
     std::cout << "Done" << std::endl;
     
     recorder->stopRecording();
-    recorder->save(path);
+    std::vector<float> data;
+    recorder->getData(data);
+    FILE* f = fopen(path, "wb");
+    if (f) {
+        fwrite(&data[0], 1, data.size(), f);
+        fclose(f);
+    }
 }

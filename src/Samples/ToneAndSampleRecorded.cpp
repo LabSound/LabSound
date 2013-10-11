@@ -52,5 +52,11 @@ void toneAndSampleRecorded(RefPtr<AudioContext> context, float seconds, char con
     }
     
     recorder->stopRecording();
-    recorder->save(path);
+    std::vector<float> data;
+    recorder->getData(data);
+    FILE* f = fopen(path, "wb");
+    if (f) {
+        fwrite(&data[0], 1, data.size(), f);
+        fclose(f);
+    }
 }
