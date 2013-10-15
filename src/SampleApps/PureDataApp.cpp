@@ -21,7 +21,16 @@
 #include "SoundBuffer.h"
 
 // Examples
+#include "ToneAndSample.h"
+#include "ToneAndSampleRecorded.h"
+#include "LiveEcho.h"
 #include "ReverbSample.h"
+#include "LiveReverbRecording.h"
+#include "SampleSpatialization.h"
+#include "Rhythm.h"
+#include "RhythmFiltered.h"
+#include "RhythmTonePanning.h"
+#include "DalekVoice.h"
 
 #include <unistd.h>
 #include <iostream>
@@ -45,7 +54,7 @@ int main(int, char**)
     Document d;
     ExceptionCode ec;
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
-
+    
     reverbSample(context, 10.0f);
     
     return 0;

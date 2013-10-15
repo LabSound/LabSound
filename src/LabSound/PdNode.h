@@ -8,6 +8,12 @@
 
 #include "AudioBasicProcessorNode.h"
 
+namespace pd {
+    class PdBase;
+    class PdMidiReceiver;
+    class PdReceiver;
+}
+
 class PdNode : public WebCore::AudioBasicProcessorNode
 {
 public:
@@ -16,7 +22,13 @@ public:
         return adoptRef(new PdNode(context, sampleRate));
     }
     
+    pd::PdBase& pd() const;
+    
 private:
     PdNode(WebCore::AudioContext*, float sampleRate);
+    virtual ~PdNode();
+    
+    class PdNodeInternal;
+    PdNodeInternal* data;
 };
 
