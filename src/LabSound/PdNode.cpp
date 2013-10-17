@@ -5,6 +5,8 @@
 #include "PdNode.h"
 
 #include "AudioBus.h"
+#include "AudioNodeInput.h"
+#include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
 
 #include "PdBase.hpp"
@@ -17,7 +19,7 @@ public:
 
     PdNodeInternal(float sampleRate)
     : AudioProcessor(sampleRate)
-    , numChannels(1)
+    , numChannels(2)
     , pdBuffSize(128)
     {
     }
@@ -27,15 +29,19 @@ public:
 
     // AudioProcessor interface
     virtual void initialize() {
-        initPure(numChannels, numChannels, sampleRate(), pdBuffSize);
     }
     
     virtual void uninitialize() { }
     
     // Processes the source to destination bus.  The number of channels must match in source and destination.
     virtual void process(const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
+        if (!numChannels)
+            return;
+        
         int ticks = framesToProcess >> blockSizeAsLog; // this is a faster way of computing (inNumberFrames / blockSize)
-        pd.processFloat(ticks, (float*)source->channel(0)->data(), destination->channel(0)->mutableData());
+        const float* inData = source->channel(0)->data();
+        float* outData = destination->channel(0)->mutableData();
+        pd.processFloat(ticks, inData, outData);
     }
     
     // Resets filter state
@@ -49,7 +55,7 @@ public:
     virtual double latencyTime() const { return 0; }
     
     // return true on successful initialization
-    bool initPure(const int numOutChannels, const int numInChannels,
+    bool initPure(const int numInChannels, const int numOutChannels,
                   const int sampleRate, const int ticksPerBuffer);
     
     /// print
@@ -65,7 +71,10 @@ public:
 namespace {
     //http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogObvious
     int log2int(int x) {
-        int y = 0;
+        if (x < 1) {
+            return -1;
+        }
+        int y = 1;
         while (x >>= 1) {
             ++y;
         }
@@ -75,14 +84,14 @@ namespace {
 
 
 // return true on successful initialization
-bool PdNode::PdNodeInternal::initPure(const int numOutChannels, const int numInChannels,
+bool PdNode::PdNodeInternal::initPure(const int numInChannels, const int numOutChannels,
                                       const int sampleRate, const int ticksPerBuffer) {
     
     if (!pd.init(numInChannels, numOutChannels, sampleRate)) {
         return false;
     }
     blockSizeAsLog = log2int(libpd_blocksize());
-
+    
     // subscribe to receive source names
     pd.subscribe("toOF");
     pd.subscribe("env");
@@ -110,12 +119,24 @@ PdNode::PdNode(WebCore::AudioContext* context, float sampleRate)
 , data(new PdNodeInternal(sampleRate))
 {
     // Initially setup as lowpass filter.
-    m_processor = adoptPtr(new PdNodeInternal(sampleRate));
-    setNodeType(NodeTypeBiquadFilter);
+    m_processor = adoptPtr(data);
+    
+    setNodeType(NodeTypeConvolver);  // pretend to be a convolver
+    
+    addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
+    addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+
+    data->initPure(2, 2, sampleRate, 128);
+    
+    initialize();
 }
 
 PdNode::~PdNode() {
-    delete data;
+    data->numChannels = 0;  // ensure there if there is a latent callback pending, pd is not invoked
+    data = 0;
+    uninitialize();
 }
 
-
+bool PdNode::propagatesSilence() const {
+    return !data->pd.isInited();
+}

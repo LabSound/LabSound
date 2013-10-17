@@ -24,6 +24,8 @@ public:
     
     pd::PdBase& pd() const;
     
+    virtual bool propagatesSilence() const OVERRIDE;
+    
 private:
     PdNode(WebCore::AudioContext*, float sampleRate);
     virtual ~PdNode();

@@ -266,8 +266,9 @@ void AudioNode::silenceOutputs()
 
 void AudioNode::unsilenceOutputs()
 {
-    for (unsigned i = 0; i < m_outputs.size(); ++i)
+    for (unsigned i = 0; i < m_outputs.size(); ++i) {
         output(i)->bus()->clearSilentFlag();
+    }
 }
 
 void AudioNode::enableOutputsIfNecessary()

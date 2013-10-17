@@ -10,6 +10,7 @@
 //
 
 #include "DiodeNode.h"
+#include <mutex>
 
 namespace LabSound {
 
