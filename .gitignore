@@ -27,3 +27,5 @@
 
 # other
 *.DS_Store
+
+build/
