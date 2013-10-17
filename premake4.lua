@@ -22,6 +22,7 @@ solution "LabSound"
             , "src/shim"
             , "src/LabSound"
             , "src/Samples"
+            , "../ofxPd/src"
         }
       
         files 
