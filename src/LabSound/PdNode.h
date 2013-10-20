@@ -14,6 +14,8 @@ namespace pd {
     class PdReceiver;
 }
 
+namespace LabSound {
+
 class PdNode : public WebCore::AudioBasicProcessorNode
 {
 public:
@@ -34,3 +36,4 @@ private:
     PdNodeInternal* data;
 };
 
+}

@@ -14,6 +14,8 @@
 
 #include <iostream>
 
+namespace LabSound {
+
 class PdNode::PdNodeInternal : public WebCore::AudioProcessor {
 public:
 
@@ -140,3 +142,7 @@ PdNode::~PdNode() {
 bool PdNode::propagatesSilence() const {
     return !data->pd.isInited();
 }
+    
+    
+} // LabSound
+
