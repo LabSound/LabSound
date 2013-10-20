@@ -48,15 +48,27 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
     AutodrainedPool pool;
     
     NSBundle *bundle = [NSBundle bundleForClass:[WebCoreAudioBundleClass class]];
-    NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"audio"];
+    /// @LabSound changed audio to HRTF
+    NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"HRTF"];
 #if !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED == 1060
     NSDataReadingOptions options = NSDataReadingMapped;
 #else
     NSDataReadingOptions options = NSDataReadingMappedIfSafe;
 #endif
     NSData *audioData = 0;
+
+    /// @LabSound added read from current working directory if bundle asset not available
+    /// Reading from HRTF instead of audio because every application might potentially have an audio folder.
+    if (!audioFileURL) {
+        NSString *path = [NSString stringWithFormat:@"HRTF/%s.wav", name];
+        audioFileURL = [NSURL fileURLWithPath:path];
+    }
     
-    @try {  // @Lab added try/catch
+    if (!audioFileURL) {
+        return nullptr;
+    }
+    
+    @try {  // @LabSound added try/catch
         audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
     }
     @catch(NSException *exc) {
@@ -68,7 +80,7 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
         return bus.release();
     }
 
-    ASSERT_NOT_REACHED();
+    /// @LabSound removed ASSERT_NOT_REACHED();
     return nullptr;
 }
 

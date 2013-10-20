@@ -101,7 +101,7 @@ void HRTFDatabase::getKernelsFromAzimuthElevation(double azimuthBlend, unsigned 
         elevationIndex = m_elevations.size() - 1;    
     
     HRTFElevation* hrtfElevation = m_elevations[elevationIndex].get();
-    ASSERT(hrtfElevation);
+    /// @LAB removed ASSERT(hrtfElevation);
     if (!hrtfElevation) {
         kernelL = 0;
         kernelR = 0;
