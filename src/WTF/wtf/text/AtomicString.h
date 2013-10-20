@@ -141,7 +141,7 @@ public:
     AtomicString(CFStringRef s) :  m_string(add(s)) { }
 #endif    
 #ifdef __OBJC__
-    AtomicString(NSString* s) : m_string(add((CFStringRef)s)) { }
+    AtomicString(NSString* s) : m_string(add((__bridge CFStringRef)s)) { }
     operator NSString*() const { return m_string; }
 #endif
 #if PLATFORM(QT)
