@@ -36,23 +36,25 @@
 #import <wtf/HashSet.h>
 #import <wtf/Threading.h>
 
-@interface JSWTFMainThreadCaller : NSObject {
+/// @LabSound renamed to LabJSWTFMainThreadCaller because it also exists in the JavaScriptCore framework.
+
+@interface LabJSWTFMainThreadCaller : NSObject {
 }
 - (void)call;
 @end
 
-@implementation JSWTFMainThreadCaller
+@implementation LabJSWTFMainThreadCaller
 
 - (void)call
 {
     WTF::dispatchFunctionsFromMainThread();
 }
 
-@end // implementation JSWTFMainThreadCaller
+@end // implementation LabJSWTFMainThreadCaller
 
 namespace WTF {
 
-static JSWTFMainThreadCaller* staticMainThreadCaller;
+static LabJSWTFMainThreadCaller* staticMainThreadCaller;
 static bool isTimerPosted; // This is only accessed on the 'main' thread.
 static bool mainThreadEstablishedAsPthreadMain;
 static pthread_t mainThreadPthread;
@@ -61,7 +63,7 @@ static NSThread* mainThreadNSThread;
 void initializeMainThreadPlatform()
 {
     ASSERT(!staticMainThreadCaller);
-    staticMainThreadCaller = [[JSWTFMainThreadCaller alloc] init];
+    staticMainThreadCaller = [[LabJSWTFMainThreadCaller alloc] init];
 
     mainThreadEstablishedAsPthreadMain = false;
     mainThreadPthread = pthread_self();
@@ -76,7 +78,7 @@ void initializeMainThreadToProcessMainThreadPlatform()
         NSLog(@"WebKit Threading Violation - initial use of WebKit from a secondary thread.");
 
     ASSERT(!staticMainThreadCaller);
-    staticMainThreadCaller = [[JSWTFMainThreadCaller alloc] init];
+    staticMainThreadCaller = [[LabJSWTFMainThreadCaller alloc] init];
 
     mainThreadEstablishedAsPthreadMain = true;
     mainThreadPthread = 0;
