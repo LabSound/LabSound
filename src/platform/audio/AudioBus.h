@@ -66,7 +66,7 @@ public:
     void setChannelMemory(unsigned channelIndex, float* storage, size_t length);
 
     // Channels
-    unsigned numberOfChannels() const { return m_channels.size(); }
+    unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
 
     AudioChannel* channel(unsigned channel) { return m_channels[channel].get(); }
     const AudioChannel* channel(unsigned channel) const { return const_cast<AudioBus*>(this)->m_channels[channel].get(); }

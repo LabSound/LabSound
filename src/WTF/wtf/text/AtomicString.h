@@ -102,11 +102,11 @@ public:
     bool contains(const String& s, bool caseSensitive = true) const
         { return m_string.contains(s, caseSensitive); }
 
-    size_t find(UChar c, size_t start = 0) const { return m_string.find(c, start); }
+    size_t find(UChar c, size_t start = 0) const { return m_string.find(c, (unsigned) start); }
     size_t find(const LChar* s, size_t start = 0, bool caseSentitive = true) const
-        { return m_string.find(s, start, caseSentitive); }
+        { return m_string.find(s, (unsigned) start, caseSentitive); }
     size_t find(const String& s, size_t start = 0, bool caseSentitive = true) const
-        { return m_string.find(s, start, caseSentitive); }
+        { return m_string.find(s, (unsigned) start, caseSentitive); }
     
     bool startsWith(const String& s, bool caseSensitive = true) const
         { return m_string.startsWith(s, caseSensitive); }
@@ -194,7 +194,7 @@ private:
 inline bool operator==(const AtomicString& a, const AtomicString& b) { return a.impl() == b.impl(); }
 bool operator==(const AtomicString&, const LChar*);
 inline bool operator==(const AtomicString& a, const char* b) { return WTF::equal(a.impl(), reinterpret_cast<const LChar*>(b)); }
-inline bool operator==(const AtomicString& a, const Vector<UChar>& b) { return a.impl() && equal(a.impl(), b.data(), b.size()); }    
+inline bool operator==(const AtomicString& a, const Vector<UChar>& b) { return a.impl() && equal(a.impl(), b.data(), (unsigned) b.size()); }
 inline bool operator==(const AtomicString& a, const String& b) { return equal(a.impl(), b.impl()); }
 inline bool operator==(const LChar* a, const AtomicString& b) { return b == a; }
 inline bool operator==(const String& a, const AtomicString& b) { return equal(a.impl(), b.impl()); }

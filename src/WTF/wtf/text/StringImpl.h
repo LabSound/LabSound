@@ -314,7 +314,7 @@ private:
         // keys means that we don't need them to match any other string (in fact,
         // that's exactly the oposite of what we want!), and teh normal hash would
         // lead to lots of conflicts.
-        unsigned hash = reinterpret_cast<uintptr_t>(this);
+        unsigned hash = (unsigned) reinterpret_cast<uintptr_t>(this);
         hash <<= s_flagCount;
         if (!hash)
             hash = 1 << s_flagCount;

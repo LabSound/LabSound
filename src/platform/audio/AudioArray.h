@@ -58,7 +58,7 @@ public:
         if (n > std::numeric_limits<unsigned>::max() / sizeof(T))
             CRASH();
       
-        unsigned initialSize = sizeof(T) * n;
+        unsigned initialSize = unsigned(sizeof(T) * n);
 
 #if USE(WEBAUDIO_FFMPEG)
         const size_t alignment = 32;

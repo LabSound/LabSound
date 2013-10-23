@@ -91,8 +91,8 @@ public:
     void move(int dx, int dy) { m_x += dx; m_y += dy; }
     void scale(float sx, float sy)
     {
-        m_x = lroundf(static_cast<float>(m_x * sx));
-        m_y = lroundf(static_cast<float>(m_y * sy));
+        m_x = (int) lroundf(static_cast<float>(m_x * sx));
+        m_y = (int) lroundf(static_cast<float>(m_y * sy));
     }
     
     IntPoint expandedTo(const IntPoint& other) const
