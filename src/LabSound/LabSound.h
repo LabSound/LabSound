@@ -1,15 +1,10 @@
-//
-//  LabSound.h
-//  LabSound
-//
-//  Created by Nick Porcino on 2013 10/18.
-//
-//
+// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
 #include "AudioContext.h"
 #include "AudioListener.h"
-#include "PannerNode.h"
+#include "SpatializationNode.h"
 #include "SoundBuffer.h"
 
 namespace LabSound {
@@ -29,7 +24,7 @@ namespace LabSound {
     // src/WTF src/WTF/icu src/platform/audio src/platform/graphics src/Modules/webaudio src/shim src/LabSound src/Samples src/libpd/cpp
     
     typedef WTF::RefPtr<WebCore::AudioContext> AudioContextPtr;
-    typedef WTF::RefPtr<WebCore::PannerNode> PannerNodePtr;
+    typedef WTF::RefPtr<SpatializationNode> SpatializationNodePtr;
     
     // when playing a sound from an AudioSoundBuffer, the pointer that comes
     // from play will be one of these.

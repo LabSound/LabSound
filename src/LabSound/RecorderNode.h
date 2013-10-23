@@ -1,10 +1,5 @@
-//
-//  RecorderNode.h
-//  LabSound
-//
-//  Created by Nick Porcino on 2012 12/17.
-//
-//
+// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
 #ifndef LabSound_RecorderNode_h
 #define LabSound_RecorderNode_h

@@ -1,10 +1,5 @@
-//
-//  SoundBuffer.cpp
-//  LabSound
-//
-//  Created by Nick Porcino on 2012 12/18.
-//
-//
+// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
 #include "SoundBuffer.h"
 
