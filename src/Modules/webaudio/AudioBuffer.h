@@ -54,7 +54,7 @@ public:
     float sampleRate() const { return m_sampleRate; }
 
     // Channel data access
-    unsigned numberOfChannels() const { return m_channels.size(); }
+    unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
     Float32Array* getChannelData(unsigned channelIndex, ExceptionCode&);
     Float32Array* getChannelData(unsigned channelIndex);
     void zero();

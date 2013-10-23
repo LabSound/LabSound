@@ -54,7 +54,7 @@ public:
     // JavaScript interface
     AudioGain* gain() { return m_gain.get(); }                                   
     
-private:
+protected:  /// @LabSound - was private
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
