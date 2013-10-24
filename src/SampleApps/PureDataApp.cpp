@@ -47,7 +47,7 @@ int main(int, char**)
     ExceptionCode ec;
     RefPtr<AudioContext> context = AudioContext::create(&d, ec);
     
-    RefPtr<PdNode> pdNode = PdNode::create(context.get(), 44100);
+    RefPtr<LabSound::PdNode> pdNode = LabSound::PdNode::create(context.get(), 44100);
     RefPtr<GainNode> dryGain = context->createGain();
     dryGain->gain()->setValue(1.f);
     pdNode->connect(dryGain.get(), 0, 0, ec);
@@ -65,8 +65,7 @@ int main(int, char**)
     pd.addSymbol("pitch");
     pd.addFloat(72);
 	pd.finishList("tone");
-    if (pd.sendBang("tone") < 0)
-        std::cout << "Couldn't bang tone\n";
+    pd.sendBang("tone");
 
     float seconds = 10.0f;
     while (seconds > 0) {

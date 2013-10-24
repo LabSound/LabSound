@@ -19,7 +19,9 @@ namespace LabSound {
         // Create an audio context object
         WebCore::Document d;
         WebCore::ExceptionCode ec;
-        return WebCore::AudioContext::create(&d, ec);
+        PassRefPtr<WebCore::AudioContext> ret = WebCore::AudioContext::create(&d, ec);
+        ret->lazyInitialize();
+        return ret;
     }
 
     bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
