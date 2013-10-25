@@ -43,7 +43,7 @@ namespace WebCore {
 
 	PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char *name, float sampleRate) {
 
-		char cwd[128];
+		char cwd[MAX_PATH];
 
 		_getcwd(cwd, MAX_PATH); 
 
@@ -58,14 +58,14 @@ namespace WebCore {
             fseek(f, 0, SEEK_END);
             int l = ftell(f);
             fseek(f, 0, SEEK_SET);
-            float* data = new float[l];
+            unsigned char* data = new unsigned char[l];
             fread(data, 1, l, f);
             fclose(f);
             
             ExceptionCode ec;
             bool mixToMono = false;
 
-            PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(data, l);
+            PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);
             delete [] data;
 
 			OwnPtr<AudioBus> bus(createBusFromInMemoryAudioFile(fileDataBuffer->data(), fileDataBuffer->byteLength(), false, 44100));
