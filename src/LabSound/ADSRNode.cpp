@@ -7,10 +7,8 @@ using namespace std;
 namespace LabSound {
 
 ADSRNode::ADSRNode(AudioContext* context, float sampleRate) : GainNode(context, sampleRate) {
-
-	WebCore::ExceptionCode ec;
-
-	// Duration, Duration, Level, Duration 
+    
+	// Duration, Duration, Level, Duration
 	m_attack = AudioParam::create(context, "attack", 1.0, 0, 120);
 	m_decay = AudioParam::create(context, "decay", 1.0, 0, 120);
 	m_sustain = AudioParam::create(context, "sustain", 0.75, 0, 120);
