@@ -7,6 +7,7 @@
 #pragma once
 
 #include "AudioBasicProcessorNode.h"
+#include "AudioParam.h"
 
 namespace LabSound {
 
@@ -21,6 +22,9 @@ namespace LabSound {
         }
 
         void setMode(Mode);
+
+        WebCore::AudioParam* minVal();
+		WebCore::AudioParam* maxVal();
 
     private:
         ClipNode(WebCore::AudioContext*, float sampleRate);

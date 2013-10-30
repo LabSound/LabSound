@@ -11,18 +11,20 @@
 
 #include <iostream>
 
+using namespace WebCore;
+
 namespace LabSound {
 
     class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        ClipNodeInternal(float sampleRate)
+        ClipNodeInternal(WebCore::AudioContext* context, float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(2)
-        , minVal(-1.0f)
-        , maxVal(1.0f)
         , mode(ClipNode::CLIP)
         {
+            minVal = AudioParam::create(context, "min", -1.0, -FLT_MAX, FLT_MAX);
+            maxVal = AudioParam::create(context, "max",  1.0, -FLT_MAX, FLT_MAX);
         }
 
         virtual ~ClipNodeInternal() {
@@ -42,17 +44,23 @@ namespace LabSound {
             const float* srcP = source->channel(0)->data();
             float* destP = destination->channel(0)->mutableData();
             size_t n = framesToProcess;
+
+            float minf = minVal->value();
+            float maxf = maxVal->value();
+
             if (mode == ClipNode::CLIP)
                 while (n--) {
                     float d = *srcP++;
-                    if (d < minVal) d = minVal;
-                    else if (d > maxVal) d = maxVal;
+                    if (d < minf) d = minf;
+                    else if (d > maxf) d = maxf;
                     *destP++ = d;
                 }
-            else
+            else {
+                // decide how to interpret min and max if at all for tanh
                 while (n--) {
                     *destP++ = tanhf(*srcP++);
                 }
+            }
         }
 
         // Resets filter state
@@ -67,13 +75,13 @@ namespace LabSound {
 
         int numChannels;
         ClipNode::Mode mode;
-        float minVal;
-        float maxVal;
+		RefPtr<AudioParam> minVal;
+		RefPtr<AudioParam> maxVal;
     };
 
     ClipNode::ClipNode(WebCore::AudioContext* context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
-    , data(new ClipNodeInternal(sampleRate))
+    , data(new ClipNodeInternal(context, sampleRate))
     {
         m_processor = adoptPtr(data);
 
@@ -94,6 +102,10 @@ namespace LabSound {
     void ClipNode::setMode(Mode m) {
         data->mode = m;
     }
+
+    AudioParam* ClipNode::minVal() { return data->minVal.get(); }
+    AudioParam* ClipNode::maxVal() { return data->maxVal.get(); }
+
 
 
 
