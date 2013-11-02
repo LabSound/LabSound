@@ -33,10 +33,8 @@
 #include "AudioNodeOutput.h"
 #include "AudioParam.h"
 #include "ExceptionCode.h"
-#include "WebCoreMemoryInstrumentation.h"
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
-#include <wtf/MemoryInstrumentationVector.h>
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
