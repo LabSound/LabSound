@@ -159,8 +159,6 @@ public:
     void enableOutputsIfNecessary();
     void disableOutputsIfNecessary();
 
-    void reportMemoryUsage(MemoryObjectInfo*) const;
-
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
     void addInput(PassOwnPtr<AudioNodeInput>);

@@ -405,14 +405,6 @@ void AudioNode::finishDeref(RefType refType)
     }
 }
 
-void AudioNode::reportMemoryUsage(MemoryObjectInfo* memoryObjectInfo) const
-{
-    MemoryClassInfo info(memoryObjectInfo, this, WebCoreMemoryTypes::Audio);
-    info.addMember(m_context);
-    info.addMember(m_inputs);
-    info.addMember(m_outputs);
-}
-
 #if DEBUG_AUDIONODE_REFERENCES
 
 bool AudioNode::s_isNodeCountInitialized = false;
