@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Apple Inc. All rights reserved.
+ * Copyright (C) 2007, 2013 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,34 +31,31 @@
 
 #include <wtf/Noncopyable.h>
 
-OBJC_CLASS NSAutoreleasePool;
+#if PLATFORM(MAC) && !defined(__OBJC__)
+typedef struct objc_object *id;
+#endif
 
-namespace WebCore {
+namespace WTF {
 
 class AutodrainedPool {
     WTF_MAKE_NONCOPYABLE(AutodrainedPool);
 public:
-    explicit AutodrainedPool(int iterationLimit = 1);
-    ~AutodrainedPool();
-    
-    void cycle();
+#if PLATFORM(MAC)
+    WTF_EXPORT_PRIVATE AutodrainedPool();
+    WTF_EXPORT_PRIVATE ~AutodrainedPool();
+#else
+    explicit AutodrainedPool() { }
+    ~AutodrainedPool() { }
+#endif
     
 private:
 #if PLATFORM(MAC)
-    int m_iterationLimit;
-    int m_iterationCount;
-    NSAutoreleasePool* m_pool;
+    id m_pool;
 #endif
 };
 
-#if !PLATFORM(MAC)
-inline AutodrainedPool::AutodrainedPool(int) { }
-inline AutodrainedPool::~AutodrainedPool() { }
-inline void AutodrainedPool::cycle() { }
-#endif
+} // namespace WTF
 
-} // namespace WebCore
+using WTF::AutodrainedPool;
 
 #endif
-
-
