@@ -14,9 +14,8 @@
 #include <wtf/RefPtr.h>
 #include "GainNode.h"
 
-using namespace WebCore;
-
 namespace LabSound {
+    using namespace WebCore;
 
     class ADSRNode : public WebCore::GainNode {
 
