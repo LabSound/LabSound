@@ -22,7 +22,7 @@ namespace LabSound {
         virtual void process(size_t framesToProcess);
         virtual void reset();
 
-        // SfxrNode
+        // SfxrNode - values in sfxr units
         AudioParam* waveType() { return _waveType.get(); }
 
 		AudioParam* attackTime() { return _attack.get(); }
@@ -37,7 +37,6 @@ namespace LabSound {
 
 		AudioParam* vibratoDepth() { return _vibratoDepth.get(); }
 		AudioParam* vibratoSpeed() { return _vibratoSpeed.get(); }
-        AudioParam* vibratoDelay() { return _vibratoDelay.get(); }
 
 		AudioParam* changeAmount() { return _changeAmount.get(); }
 		AudioParam* changeSpeed() { return _changeSpeed.get(); }
@@ -55,14 +54,27 @@ namespace LabSound {
 		AudioParam* hpFilterCutoff() { return _hpFilterCutoff.get(); }
 		AudioParam* hpFilterCutoffSweep() { return _hpFilterCutoffSweep.get(); }
 
+        void setStartFrequencyInHz(float);
+        void setVibratoSpeedInHz(float);
+
+        // sfxr uses a lot of weird parameters. These are utility functions to help with that.
+        float envelopeTimeInSeconds(float sfxrEnvTime);
+        float envelopeTimeInSfxrUnits(float t);
+        float frequencyInSfxrUnits(float hz);
+        float frequencyInHz(float sfxr);
+        float vibratoInSfxrUnits(float hz);
+        float vibratoInHz(float sfxr);
+        float filterFreqInHz(float sfxr);
+        float filterFreqInSfxrUnits(float hz);
+
         enum WaveType { SQUARE = 0, SAWTOOTH, SINE, NOISE };
 
         void noteOn();
 
         // some presets
         void setDefaultBeep();
-        void pickupCoin();
-        void laserShot();
+        void coin();
+        void laser();
         void explosion();
         void powerUp();
         void hit();
@@ -88,7 +100,6 @@ namespace LabSound {
 		RefPtr<AudioParam> _deltaSlide;
 		RefPtr<AudioParam> _vibratoDepth;
 		RefPtr<AudioParam> _vibratoSpeed;
-        RefPtr<AudioParam> _vibratoDelay;
 		RefPtr<AudioParam> _changeAmount;
 		RefPtr<AudioParam> _changeSpeed;
 		RefPtr<AudioParam> _squareDuty;

@@ -209,6 +209,7 @@ float rndr(float from, float to) {
 
 float sqr(float a) { return a * a; }
 float cube(float a) { return a * a * a; }
+float flurp(float a) { return a / (1.0f - a); }
 
 
 class SfxrNode::Sfxr {
@@ -579,7 +580,8 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
 	}
 }
 
-
+#pragma mark _______________________
+#pragma mark Node Interface
 
 namespace LabSound {
 
@@ -610,7 +612,6 @@ namespace LabSound {
 		_deltaSlide = AudioParam::create(context, "deltaSlide", 0, 0, 1);
 		_vibratoDepth = AudioParam::create(context, "vibratoDepth", 0, 0, 1);
 		_vibratoSpeed = AudioParam::create(context, "vibratoSpeed", 0, 0, 1);
-		_vibratoDelay = AudioParam::create(context, "vibratoDelay", 0, 0, 1);
 		_changeAmount = AudioParam::create(context, "changeAmount", 0, -1, 1);
 		_changeSpeed = AudioParam::create(context, "changeSpeed", 0, 0, 1);
 		_squareDuty = AudioParam::create(context, "squareDuty", 0, 0, 1);
@@ -635,7 +636,9 @@ namespace LabSound {
     }
 
     void SfxrNode::noteOn() {
+        start(0);
         sfxr->ResetSample(true);
+        sfxr->ResetSample(false);
         sfxr->PlaySample();
     }
 
@@ -664,36 +667,44 @@ namespace LabSound {
         destP += quantumFrameOffset;
         int n = nonSilentFramesToProcess;
 
-        sfxr->wave_type = _waveType->value();
-        sfxr->p_base_freq = _startFrequency->value();
-        sfxr->p_freq_limit = _minFrequency->value();
-        sfxr->p_freq_ramp = _slide->value();
-        sfxr->p_freq_dramp = _deltaSlide->value();
-        sfxr->p_duty = _squareDuty->value();
-        sfxr->p_duty_ramp = _dutySweep->value();
+#define UPDATE(typ, cur, val) \
+{ typ v = val->value(); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
 
-        sfxr->p_vib_strength = _vibratoDepth->value();
-        sfxr->p_vib_speed = _vibratoSpeed->value();
-        sfxr->p_vib_delay = _vibratoDelay->value();
+        bool needUpdate = false;
+        UPDATE(int, wave_type, _waveType)
+        UPDATE(float, p_base_freq, _startFrequency)
+        UPDATE(float, p_freq_limit, _minFrequency)
+        UPDATE(float, p_freq_ramp, _slide)
+        UPDATE(float, p_freq_dramp, _deltaSlide)
+        UPDATE(float, p_duty, _squareDuty)
+        UPDATE(float, p_duty_ramp, _dutySweep)
 
-        sfxr->p_env_attack = _attack->value();
-        sfxr->p_env_sustain = _sustainTime->value();
-        sfxr->p_env_decay = _decayTime->value();
-        sfxr->p_env_punch = _sustainPunch->value();
+        UPDATE(float, p_vib_strength, _vibratoDepth)
+        UPDATE(float, p_vib_speed, _vibratoSpeed)
 
-        sfxr->filter_on = sfxr->p_lpf_resonance > 0;    // &&&
-        sfxr->p_lpf_resonance = _lpFiterResonance->value();
-        sfxr->p_lpf_freq = _lpFilterCutoff->value();
-        sfxr->p_lpf_ramp = _lpFilterCutoffSweep->value();
-        sfxr->p_hpf_freq = _hpFilterCutoff->value();
-        sfxr->p_hpf_ramp = _hpFilterCutoffSweep->value();
+        UPDATE(float, p_env_attack, _attack)
+        UPDATE(float, p_env_sustain, _sustainTime)
+        UPDATE(float, p_env_decay, _decayTime)
+        UPDATE(float, p_env_punch, _sustainPunch)
+
+        UPDATE(float, p_lpf_resonance, _lpFiterResonance)
+        sfxr->filter_on = sfxr->p_lpf_resonance > 0;
+        UPDATE(float, p_lpf_freq, _lpFilterCutoff)
+        UPDATE(float, p_lpf_ramp, _lpFilterCutoffSweep)
+        UPDATE(float, p_hpf_freq, _hpFilterCutoff)
+        UPDATE(float, p_hpf_ramp, _hpFilterCutoffSweep)
+
+        UPDATE(float, p_pha_offset, _phaserOffset)
+        UPDATE(float, p_pha_ramp, _phaserSweep)
         
-        sfxr->p_pha_offset = _phaserOffset->value();
-        sfxr->p_pha_ramp = _phaserSweep->value();
-        
-        sfxr->p_repeat_speed = _repeatSpeed->value();
-        sfxr->p_arp_speed = _changeSpeed->value();
-        sfxr->p_arp_mod = _changeAmount->value();
+        UPDATE(float, p_repeat_speed, _repeatSpeed)
+        UPDATE(float, p_arp_speed, _changeSpeed)
+        UPDATE(float, p_arp_mod, _changeAmount)
+
+        if (needUpdate)
+            sfxr->ResetSample(false);
+
+#undef UPDATE
 
 		float* fbuf = (float*) alloca(sizeof(float) * n);
 		memset(fbuf, 0, sizeof(float) * n);
@@ -760,7 +771,7 @@ namespace LabSound {
         sfxr->wav_bits = 16;
     }
 
-    void SfxrNode::pickupCoin() {
+    void SfxrNode::coin() {
         setDefaultBeep();
         _startFrequency->setValue(0.4f + frnd(0.5f));
         _attack->setValue(0);
@@ -773,7 +784,7 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::laserShot() {
+    void SfxrNode::laser() {
         setDefaultBeep();
         _waveType->setValue(rnd(2));
         if(_waveType->value() == SINE && rnd(1))
@@ -922,7 +933,6 @@ namespace LabSound {
         if (rnd(1)) _dutySweep->setValue(_dutySweep->value() + frnd(0.1) - 0.05);
         if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value() + frnd(0.1) - 0.05);
         if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoDelay->setValue(_vibratoDelay->value() + frnd(0.1) - 0.05);
         if (rnd(1)) _attack->setValue(_attack->value() + frnd(0.1) - 0.05);
         if (rnd(1)) _sustainTime->setValue(_sustainTime->value() + frnd(0.1) - 0.05);
         if (rnd(1)) _decayTime->setValue(_decayTime->value() + frnd(0.1) - 0.05);
@@ -955,9 +965,9 @@ namespace LabSound {
         _dutySweep->setValue(powf(frnd(2) - 1, 3));
         _vibratoDepth->setValue(powf(frnd(2) - 1, 3));
         _vibratoSpeed->setValue(rndr(-1, 1));
-        _attack->setValue(cube(rndr(-1, 1)));
-        _sustainTime->setValue(sqr(rndr(-1, 1)));
-        _decayTime->setValue(rndr(-1, 1));
+        _attack->setValue(cube(rndr(0, 1)));
+        _sustainTime->setValue(sqr(rndr(0, 1)));
+        _decayTime->setValue(rndr(0, 1));
         _sustainPunch->setValue(powf(frnd(0.8), 2));
         if (_attack->value() + _sustainTime->value() + _decayTime->value() < 0.2) {
             _sustainTime->setValue(_sustainTime->value() + 0.2 + frnd(0.3));
@@ -985,10 +995,79 @@ namespace LabSound {
     {
         return !isPlayingOrScheduled() || hasFinished();
     }
-    
+
+#pragma mark ____________________________
+#pragma mark Conversions
+
+    // Conversion math was found here https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
+    // and inverted as necessary.
+
+    const float OVERSAMPLING = 8.0f;
+
+    float SfxrNode::envelopeTimeInSeconds(float p) {
+        return p * p * 100000.0f / 44100.0f;
+    }
+
+    float SfxrNode::envelopeTimeInSfxrUnits(float p) {
+        return sqrtf(p * 44100.0f / 100000.0f);
+    }
+
+    const float vibMagic = 44100 * 10 / 64.0f;
+    float SfxrNode::vibratoInSfxrUnits(float hz) {
+        float ret = hz * 100.0f;
+        ret /= vibMagic;
+        return sqrt(ret);
+    }
+    float SfxrNode::vibratoInHz(float sfxr) {
+        float ret = vibMagic * sqr(sfxr) / 100;
+        return ret;
+    }
+
+    float SfxrNode::frequencyInSfxrUnits(float p) {
+        p /= OVERSAMPLING * 441.0f;
+        p -= 0.001f;
+        if (p < 0) p = 0;
+        return sqrt(p);
+    }
+    float SfxrNode::frequencyInHz(float sfxr) {
+        float p = sfxr * sfxr;
+        p += 0.001f;
+        p *= OVERSAMPLING * 441.0f;
+        return p;
+    }
+
+
+    float SfxrNode::filterFreqInHz(float sfxr) {
+        if (sfxr >= 1.0f)
+            return 44100.0f;
+
+        return OVERSAMPLING * 44100.0f * flurp(cube(sfxr) / 10);
+    }
+    float SfxrNode::filterFreqInSfxrUnits(float hz) {
+        if (hz >= 44100.0f)
+            return 1.0f;
+
+        // if y = K x / (1 - x), then x = y / (y + K)
+        float s3 = hz / (hz + (OVERSAMPLING * 44100.0f));
+        return powf(s3, 1.0f/3.0f);
+    }
+
+#pragma mark ____________________________
+#pragma mark Convenience
+
+    void SfxrNode::setStartFrequencyInHz(float hz) {
+        _startFrequency->setValue(frequencyInSfxrUnits(hz));
+    }
+
+    void SfxrNode::setVibratoSpeedInHz(float hz) {
+        _vibratoSpeed->setValue(vibratoInSfxrUnits(hz));
+    }
+
+
 } // namespace LabSound
 
-
+#pragma mark ____________________________
+#pragma mark Reference stuff
 
 #if 0
 

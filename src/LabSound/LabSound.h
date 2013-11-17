@@ -8,7 +8,11 @@
 #include "SoundBuffer.h"
 
 namespace LabSound {
-    
+
+    // hoist WTF and WebCore within LabSound
+    using namespace WTF;
+    using namespace WebCore;
+
     // OSX will need the following dependencies:
     //
     // Accelerate.framework
