@@ -18,7 +18,6 @@
 *.d
 *.dia
 *.dat
-*.pbxproj
 *.xcworkspacedata
 *.xcscheme
 *.xcuserstate
