@@ -41,4 +41,5 @@ namespace LabSound {
     
     // returns true for success
     bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput);
+    bool disconnect(WebCore::AudioNode* thisOutput);
 }

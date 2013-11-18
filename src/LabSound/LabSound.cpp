@@ -30,5 +30,11 @@ namespace LabSound {
         return ec == -1;
     }
 
+    bool disconnect(WebCore::AudioNode* thisOutput) {
+        WebCore::ExceptionCode ec = -1;
+        thisOutput->disconnect(0, ec);
+        return ec == -1;
+    }
+
 } // LabSound
 

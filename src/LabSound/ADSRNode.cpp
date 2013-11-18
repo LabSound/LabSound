@@ -7,13 +7,10 @@ using namespace std;
 namespace LabSound {
 
 ADSRNode::ADSRNode(AudioContext* context, float sampleRate) : GainNode(context, sampleRate) {
-    
-	// Duration, Duration, Level, Duration
-	m_attack = AudioParam::create(context, "attack", 1.0, 0, 120);
-	m_decay = AudioParam::create(context, "decay", 1.0, 0, 120);
-	m_sustain = AudioParam::create(context, "sustain", 0.75, 0, 120);
-	m_release = AudioParam::create(context, "release", 1.0, 0, 120);
-
+	m_attack  = AudioParam::create(context, "attack",  0.05, 0, 120);   // duration
+	m_decay   = AudioParam::create(context, "decay",   0.1,  0, 120);   // duration
+	m_sustain = AudioParam::create(context, "sustain", 0.75, 0, 120);   // level
+	m_release = AudioParam::create(context, "release", 0.25, 0, 120);   // duration
 }
 
 ADSRNode::~ADSRNode() {

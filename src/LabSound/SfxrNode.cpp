@@ -720,6 +720,19 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
+    void SfxrNode::reset()
+    {
+    }
+
+    bool SfxrNode::propagatesSilence() const
+    {
+        return !isPlayingOrScheduled() || hasFinished();
+    }
+    
+
+#pragma mark ____________________________________
+#pragma mark Some default sounds
+
     // parameters for default sounds found here -
     // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
 
@@ -985,15 +998,6 @@ namespace LabSound {
         _repeatSpeed->setValue(frnd(2) - 1);
         _changeSpeed->setValue(frnd(2) - 1);
         _changeAmount->setValue(frnd(2) - 1);
-    }
-
-    void SfxrNode::reset()
-    {
-    }
-
-    bool SfxrNode::propagatesSilence() const
-    {
-        return !isPlayingOrScheduled() || hasFinished();
     }
 
 #pragma mark ____________________________

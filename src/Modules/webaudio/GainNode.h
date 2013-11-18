@@ -52,7 +52,7 @@ public:
     virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
 
     // JavaScript interface
-    AudioGain* gain() { return m_gain.get(); }                                   
+    AudioGain* gain() const { return m_gain.get(); }
     
 protected:  /// @LabSound - was private
     virtual double tailTime() const OVERRIDE { return 0; }

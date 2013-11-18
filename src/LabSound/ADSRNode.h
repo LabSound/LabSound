@@ -28,10 +28,10 @@ namespace LabSound {
 
 		virtual ~ADSRNode(); 
 
-		AudioParam* attack() { return m_attack.get(); }
-		AudioParam* decay() { return m_decay.get(); }
-		AudioParam* sustain() { return m_sustain.get(); }
-		AudioParam* release() { return m_release.get(); }
+		AudioParam* attack()  const { return m_attack.get(); }
+		AudioParam* decay()   const { return m_decay.get(); }
+		AudioParam* sustain() const { return m_sustain.get(); }
+		AudioParam* release() const { return m_release.get(); }
 
 		void noteOn();
 		void noteOff();
@@ -46,7 +46,6 @@ namespace LabSound {
 		RefPtr<AudioParam> m_decay;
 		RefPtr<AudioParam> m_sustain;
 		RefPtr<AudioParam> m_release;
-
     };
     
 }

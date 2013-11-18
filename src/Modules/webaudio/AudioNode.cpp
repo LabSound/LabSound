@@ -213,7 +213,8 @@ void AudioNode::processIfNecessary(size_t framesToProcess)
         if (!silentInputs)
             m_lastNonSilentTime = (context()->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
 
-        if (silentInputs && propagatesSilence())
+        bool ps = propagatesSilence();
+        if (silentInputs && ps)
             silenceOutputs();
         else {
             process(framesToProcess);
