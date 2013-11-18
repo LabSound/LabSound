@@ -63,7 +63,7 @@
 		0B2C258D023D2FF25B433AC2 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
 		0BC74421629D43F460C35926 /* IRC_Composite_C_R0195_T120_P075.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T120_P075.wav; sourceTree = "<group>"; };
 		0C73579A606D3A20369A6089 /* IRC_Composite_C_R0195_T045_P090.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T045_P090.wav; sourceTree = "<group>"; };
-		0C9543C14B8C15F936A73B4D /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabSound.xcodeproj; path = src/LabSound.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0C9543C14B8C15F936A73B4D /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabSound.xcodeproj; path = ../../src/LabSound.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0D7875E276E1608D72873815 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		0DCF398626F55A0E5A9634E8 /* IRC_Composite_C_R0195_T045_P045.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T045_P045.wav; sourceTree = "<group>"; };
 		0EE906D85F8465D64AD232F0 /* IRC_Composite_C_R0195_T060_P045.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T060_P045.wav; sourceTree = "<group>"; };
@@ -769,14 +769,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x32/Debug/LiveEchoApp;
 				ONLY_ACTIVE_ARCH = YES;
@@ -802,7 +802,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LiveEchoApp;
 			};
@@ -816,7 +816,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LiveEchoApp;
 			};
@@ -849,14 +849,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x64/Release/LiveEchoApp;
 				ONLY_ACTIVE_ARCH = NO;
@@ -901,14 +901,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x64/Debug/LiveEchoApp;
 				ONLY_ACTIVE_ARCH = YES;
@@ -934,7 +934,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LiveEchoApp;
 			};
@@ -967,14 +967,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x32/Release/LiveEchoApp;
 				ONLY_ACTIVE_ARCH = NO;
@@ -999,7 +999,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = LiveEchoApp;
 			};

@@ -40,10 +40,10 @@
 		E22C03D31808D6A8000547E1 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		E22C03DA1808DA4E000547E1 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		E25AFDA11808D3B9000316F8 /* PureDataApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PureDataApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E25AFDAD1808D474000316F8 /* PureDataApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PureDataApp.cpp; path = src/SampleApps/PureDataApp.cpp; sourceTree = SOURCE_ROOT; };
-		E25AFDAF1808D48D000316F8 /* PureDataApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; name = PureDataApp.1; path = src/SampleApps/PureDataApp.1; sourceTree = SOURCE_ROOT; };
-		E25AFDB01808D502000316F8 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
-		E25AFDB21808D508000316F8 /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
+		E25AFDAD1808D474000316F8 /* PureDataApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PureDataApp.cpp; path = ../../src/SampleApps/PureDataApp.cpp; sourceTree = SOURCE_ROOT; };
+		E25AFDAF1808D48D000316F8 /* PureDataApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; name = PureDataApp.1; path = ../../src/SampleApps/PureDataApp.1; sourceTree = SOURCE_ROOT; };
+		E25AFDB01808D502000316F8 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
+		E25AFDB21808D508000316F8 /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
 		E25AFDB41808D52A000316F8 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E25AFDB61808D550000316F8 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		E260996B1808D5BF004183B3 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -252,20 +252,20 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
-					src/libpd/cpp,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
+					../../src/libpd/cpp,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					/Users/dp/Code/LabSound/../../src/build/Debug,
+					/Users/dp/Code/LabSound/../../src/libpd/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -291,20 +291,20 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
-					src/libpd/cpp,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
+					../../src/libpd/cpp,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					/Users/dp/Code/LabSound/../../src/build/Debug,
+					/Users/dp/Code/LabSound/../../src/libpd/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
