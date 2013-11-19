@@ -297,7 +297,7 @@
 		1B30298D1146354B5BED3D15 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "OpenGL.framework"; path = "/System/Library/Frameworks/OpenGL.framework"; sourceTree = "<absolute>"; };
 		50261E414C7B5FC039A30DB0 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "QTKit.framework"; path = "/System/Library/Frameworks/QTKit.framework"; sourceTree = "<absolute>"; };
 		6F6D5EA949E03DD63B4B6D51 /* ToneAndSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "ToneAndSampleApp.app"; path = "ToneAndSampleApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7ECB5AC237635EFA2CF91B1D /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "LabSound.xcodeproj"; path = "src/LabSound.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		7ECB5AC237635EFA2CF91B1D /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "LabSound.xcodeproj"; path = "../../src/LabSound.xcodeproj"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -769,7 +769,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = "src/SampleApps/osx/Info.plist";
+				INFOPLIST_FILE = "../../src/SampleApps/osx/Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = "ToneAndSampleApp";
 			};
@@ -782,7 +782,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = "src/SampleApps/osx/Info.plist";
+				INFOPLIST_FILE = "../../src/SampleApps/osx/Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = "ToneAndSampleApp";
 			};
@@ -796,7 +796,7 @@
 				CONFIGURATION_BUILD_DIR = build/Release;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = "src/SampleApps/osx/Info.plist";
+				INFOPLIST_FILE = "../../src/SampleApps/osx/Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = "ToneAndSampleApp";
 			};
@@ -810,7 +810,7 @@
 				CONFIGURATION_BUILD_DIR = build/Release;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = "src/SampleApps/osx/Info.plist";
+				INFOPLIST_FILE = "../../src/SampleApps/osx/Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = "ToneAndSampleApp";
 			};
@@ -844,14 +844,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"src/WTF",
-					"src/WTF/icu",
-					"src/platform/audio",
-					"src/platform/graphics",
-					"src/Modules/webaudio",
-					"src/shim",
-					"src/LabSound",
-					"src/Samples",
+					"../../src/WTF",
+					"../../src/WTF/icu",
+					"../../src/platform/audio",
+					"../../src/platform/graphics",
+					"../../src/Modules/webaudio",
+					"../../src/shim",
+					"../../src/LabSound",
+					"../../src/Samples",
 				);
 				OBJROOT = "obj/x32/Debug/ToneAndSampleApp";
 				ONLY_ACTIVE_ARCH = YES;
@@ -896,14 +896,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"src/WTF",
-					"src/WTF/icu",
-					"src/platform/audio",
-					"src/platform/graphics",
-					"src/Modules/webaudio",
-					"src/shim",
-					"src/LabSound",
-					"src/Samples",
+					"../../src/WTF",
+					"../../src/WTF/icu",
+					"../../src/platform/audio",
+					"../../src/platform/graphics",
+					"../../src/Modules/webaudio",
+					"../../src/shim",
+					"../../src/LabSound",
+					"../../src/Samples",
 				);
 				OBJROOT = "obj/x64/Debug/ToneAndSampleApp";
 				ONLY_ACTIVE_ARCH = YES;
@@ -947,14 +947,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"src/WTF",
-					"src/WTF/icu",
-					"src/platform/audio",
-					"src/platform/graphics",
-					"src/Modules/webaudio",
-					"src/shim",
-					"src/LabSound",
-					"src/Samples",
+					"../../src/WTF",
+					"../../src/WTF/icu",
+					"../../src/platform/audio",
+					"../../src/platform/graphics",
+					"../../src/Modules/webaudio",
+					"../../src/shim",
+					"../../src/LabSound",
+					"../../src/Samples",
 				);
 				OBJROOT = "obj/x32/Release/ToneAndSampleApp";
 				ONLY_ACTIVE_ARCH = NO;
@@ -998,14 +998,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"src/WTF",
-					"src/WTF/icu",
-					"src/platform/audio",
-					"src/platform/graphics",
-					"src/Modules/webaudio",
-					"src/shim",
-					"src/LabSound",
-					"src/Samples",
+					"../../src/WTF",
+					"../../src/WTF/icu",
+					"../../src/platform/audio",
+					"../../src/platform/graphics",
+					"../../src/Modules/webaudio",
+					"../../src/shim",
+					"../../src/LabSound",
+					"../../src/Samples",
 				);
 				OBJROOT = "obj/x64/Release/ToneAndSampleApp";
 				ONLY_ACTIVE_ARCH = NO;

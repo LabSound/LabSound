@@ -10,6 +10,11 @@
 #include "src/LabSound/RecorderNode.h"
 #include "src/LabSound/SoundBuffer.h"
 #include "src/LabSound/SpatializationNode.h"
+#include "src/LabSound/SfxrNode.h"
+#include "src/LabSound/SupersawNode.h"
+#include "src/LabSound/NoiseNode.h"
+#include "src/LabSound/ClipNode.h"
+#include "src/LabSound/PdNode.h"
 
 // Important WTFs
 #include "src/WTF/wtf/ExportMacros.h"

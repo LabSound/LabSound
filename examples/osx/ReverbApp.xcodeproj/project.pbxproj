@@ -230,7 +230,7 @@
 		5D7D44614D09329779597F03 /* IRC_Composite_C_R0195_T120_P030.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T120_P030.wav; sourceTree = "<group>"; };
 		5DD21EF51B855FAF5F7308D4 /* IRC_Composite_C_R0195_T270_P000.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T270_P000.wav; sourceTree = "<group>"; };
 		5E073AB632BA5A1922BF6115 /* IRC_Composite_C_R0195_T240_P315.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T240_P315.wav; sourceTree = "<group>"; };
-		5E0F50D169015CF621176FC6 /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabSound.xcodeproj; path = src/LabSound.xcodeproj; sourceTree = SOURCE_ROOT; };
+		5E0F50D169015CF621176FC6 /* LabSound.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LabSound.xcodeproj; path = ../../src/LabSound.xcodeproj; sourceTree = SOURCE_ROOT; };
 		5E4F3D906D1A761A4FB25579 /* IRC_Composite_C_R0195_T150_P090.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T150_P090.wav; sourceTree = "<group>"; };
 		5F0F6EC157463BAA175B7952 /* IRC_Composite_C_R0195_T150_P000.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T150_P000.wav; sourceTree = "<group>"; };
 		5F1B6CF702257CC703BA510C /* IRC_Composite_C_R0195_T090_P045.wav */ = {isa = PBXFileReference; lastKnownFileType = text; path = IRC_Composite_C_R0195_T090_P045.wav; sourceTree = "<group>"; };
@@ -752,7 +752,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = ReverbApp;
 			};
@@ -766,7 +766,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = ReverbApp;
 			};
@@ -800,14 +800,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x32/Debug/ReverbApp;
 				ONLY_ACTIVE_ARCH = YES;
@@ -833,7 +833,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = ReverbApp;
 			};
@@ -866,14 +866,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x32/Release/ReverbApp;
 				ONLY_ACTIVE_ARCH = NO;
@@ -898,7 +898,7 @@
 				CONFIGURATION_BUILD_DIR = build/Debug;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = src/SampleApps/osx/Info.plist;
+				INFOPLIST_FILE = ../../src/SampleApps/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = ReverbApp;
 			};
@@ -931,14 +931,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x64/Release/ReverbApp;
 				ONLY_ACTIVE_ARCH = NO;
@@ -983,14 +983,14 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					src/WTF,
-					src/WTF/icu,
-					src/platform/audio,
-					src/platform/graphics,
-					src/Modules/webaudio,
-					src/shim,
-					src/LabSound,
-					src/Samples,
+					../../src/WTF,
+					../../src/WTF/icu,
+					../../src/platform/audio,
+					../../src/platform/graphics,
+					../../src/Modules/webaudio,
+					../../src/shim,
+					../../src/LabSound,
+					../../src/Samples,
 				);
 				OBJROOT = obj/x64/Debug/ReverbApp;
 				ONLY_ACTIVE_ARCH = YES;
