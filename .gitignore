@@ -18,8 +18,6 @@
 *.d
 *.dia
 *.dat
-*.xcworkspacedata
-*.xcscheme
 *.xcuserstate
 *.xcsettings
 *.LinkFileList
