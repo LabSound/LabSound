@@ -3,6 +3,9 @@
 #ifndef LabSoundIncludes_h
 #define LabSoundIncludes_h
 
+// Configuration
+#include "src/LabSound/LabSoundConfig.h"
+
 // LabSound Extensions
 #include "src/LabSound/LabSound.h"
 #include "src/LabSound/ADSRNode.h"

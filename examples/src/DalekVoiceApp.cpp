@@ -1,9 +1,5 @@
 
 
-// For starting the WTF library
-#include <wtf/ExportMacros.h>
-#include <wtf/MainThread.h>
-
 // webaudio specific headers
 #include "AudioBufferSourceNode.h"
 #include "AudioContext.h"

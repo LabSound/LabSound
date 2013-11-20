@@ -275,7 +275,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
-				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -300,7 +300,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
-				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Release;
 		};

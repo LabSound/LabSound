@@ -1,0 +1,595 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E208307D182B216400534C49 /* ShapeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E208307C182B216400534C49 /* ShapeButton.m */; };
+		E2083080182B296D00534C49 /* KeyboardWidget.mm in Sources */ = {isa = PBXBuildFile; fileRef = E208307F182B296D00534C49 /* KeyboardWidget.mm */; };
+		E2083083182B29E400534C49 /* SpriteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E2083082182B29E400534C49 /* SpriteButton.m */; };
+		E2083086182B362900534C49 /* OscillatorWidget.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2083085182B362900534C49 /* OscillatorWidget.mm */; };
+		E2083089182BF0DE00534C49 /* LFOWidget.m in Sources */ = {isa = PBXBuildFile; fileRef = E2083088182BF0DE00534C49 /* LFOWidget.m */; };
+		E24F79A7182F2B6500DD88E6 /* WidgetWrangler.m in Sources */ = {isa = PBXBuildFile; fileRef = E24F79A6182F2B6500DD88E6 /* WidgetWrangler.m */; };
+		E24F79AB1830622200DD88E6 /* FilterWidget.m in Sources */ = {isa = PBXBuildFile; fileRef = E24F79AA1830622200DD88E6 /* FilterWidget.m */; };
+		E24F79AE183130F900DD88E6 /* HandleWidget.m in Sources */ = {isa = PBXBuildFile; fileRef = E24F79AD183130F900DD88E6 /* HandleWidget.m */; };
+		E24F79B11831FC0400DD88E6 /* KnobWidget.m in Sources */ = {isa = PBXBuildFile; fileRef = E24F79B01831FC0400DD88E6 /* KnobWidget.m */; };
+		E2E0C897183A6F14007AFB48 /* libLabMidi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C896183A6F14007AFB48 /* libLabMidi.a */; };
+		E2E355D018294A3400768E56 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E355CF18294A3400768E56 /* Cocoa.framework */; };
+		E2E355D218294A3400768E56 /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E355D118294A3400768E56 /* SpriteKit.framework */; };
+		E2E355DC18294A3400768E56 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E2E355DA18294A3400768E56 /* InfoPlist.strings */; };
+		E2E355DE18294A3400768E56 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E355DD18294A3400768E56 /* main.m */; };
+		E2E355E218294A3400768E56 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E2E355E018294A3400768E56 /* Credits.rtf */; };
+		E2E355E418294A3400768E56 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E2E355E318294A3400768E56 /* MainMenu.xib */; };
+		E2E355E618294A3400768E56 /* SfxrMyScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2E355E518294A3400768E56 /* SfxrMyScene.mm */; };
+		E2E355E918294A3400768E56 /* SfxrAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E355E818294A3400768E56 /* SfxrAppDelegate.m */; };
+		E2E355EE18294A3400768E56 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2E355ED18294A3400768E56 /* Images.xcassets */; };
+		E2E355F518294A3400768E56 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E355F418294A3400768E56 /* XCTest.framework */; };
+		E2E355F618294A3400768E56 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E355CF18294A3400768E56 /* Cocoa.framework */; };
+		E2E355FE18294A3400768E56 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E2E355FC18294A3400768E56 /* InfoPlist.strings */; };
+		E2E3560018294A3400768E56 /* SfxrAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E355FF18294A3400768E56 /* SfxrAppTests.m */; };
+		E2E3560A18294B5600768E56 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3560918294B5600768E56 /* libLabSound.a */; };
+		E2E3560C18294CFF00768E56 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3560B18294CFF00768E56 /* AudioToolbox.framework */; };
+		E2E3560E18294D0500768E56 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3560D18294D0500768E56 /* AudioUnit.framework */; };
+		E2E3561018294D0A00768E56 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3560F18294D0A00768E56 /* Accelerate.framework */; };
+		E2E3561218294D1200768E56 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3561118294D1200768E56 /* CoreAudio.framework */; };
+		E2E3561418294D2900768E56 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E3561318294D2900768E56 /* libicucore.dylib */; };
+		E2E3561718294E6F00768E56 /* LabelButton.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E3561618294E6F00768E56 /* LabelButton.m */; };
+		E2E3561A1829D2E700768E56 /* ADSRWidget.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E356191829D2E700768E56 /* ADSRWidget.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E2E355F718294A3400768E56 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E2E355C418294A3300768E56 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E2E355CB18294A3400768E56;
+			remoteInfo = SfxrApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E208307B182B216400534C49 /* ShapeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeButton.h; sourceTree = "<group>"; };
+		E208307C182B216400534C49 /* ShapeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShapeButton.m; sourceTree = "<group>"; };
+		E208307E182B296D00534C49 /* KeyboardWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardWidget.h; sourceTree = "<group>"; };
+		E208307F182B296D00534C49 /* KeyboardWidget.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyboardWidget.mm; sourceTree = "<group>"; };
+		E2083081182B29E400534C49 /* SpriteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteButton.h; sourceTree = "<group>"; };
+		E2083082182B29E400534C49 /* SpriteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpriteButton.m; sourceTree = "<group>"; };
+		E2083084182B362900534C49 /* OscillatorWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscillatorWidget.h; sourceTree = "<group>"; };
+		E2083085182B362900534C49 /* OscillatorWidget.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OscillatorWidget.mm; sourceTree = "<group>"; };
+		E2083087182BF0DE00534C49 /* LFOWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFOWidget.h; sourceTree = "<group>"; };
+		E2083088182BF0DE00534C49 /* LFOWidget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFOWidget.m; sourceTree = "<group>"; };
+		E24F79A5182F2B6500DD88E6 /* WidgetWrangler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WidgetWrangler.h; sourceTree = "<group>"; };
+		E24F79A6182F2B6500DD88E6 /* WidgetWrangler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WidgetWrangler.m; sourceTree = "<group>"; };
+		E24F79A8182F2DB300DD88E6 /* Widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Widget.h; sourceTree = "<group>"; };
+		E24F79A91830622200DD88E6 /* FilterWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterWidget.h; sourceTree = "<group>"; };
+		E24F79AA1830622200DD88E6 /* FilterWidget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterWidget.m; sourceTree = "<group>"; };
+		E24F79AC183130F900DD88E6 /* HandleWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleWidget.h; sourceTree = "<group>"; };
+		E24F79AD183130F900DD88E6 /* HandleWidget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleWidget.m; sourceTree = "<group>"; };
+		E24F79AF1831FC0400DD88E6 /* KnobWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KnobWidget.h; sourceTree = "<group>"; };
+		E24F79B01831FC0400DD88E6 /* KnobWidget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KnobWidget.m; sourceTree = "<group>"; };
+		E2E0C896183A6F14007AFB48 /* libLabMidi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabMidi.a; path = ../../LabMidi/src/build/Debug/libLabMidi.a; sourceTree = "<group>"; };
+		E2E355CC18294A3400768E56 /* SfxrApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SfxrApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2E355CF18294A3400768E56 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		E2E355D118294A3400768E56 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		E2E355D418294A3400768E56 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		E2E355D518294A3400768E56 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		E2E355D618294A3400768E56 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		E2E355D918294A3400768E56 /* SfxrApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SfxrApp-Info.plist"; sourceTree = "<group>"; };
+		E2E355DB18294A3400768E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E2E355DD18294A3400768E56 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E2E355DF18294A3400768E56 /* SfxrApp-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SfxrApp-Prefix.pch"; sourceTree = "<group>"; };
+		E2E355E118294A3400768E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		E2E355E318294A3400768E56 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		E2E355E518294A3400768E56 /* SfxrMyScene.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SfxrMyScene.mm; sourceTree = "<group>"; };
+		E2E355E718294A3400768E56 /* SfxrMyScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SfxrMyScene.h; sourceTree = "<group>"; };
+		E2E355E818294A3400768E56 /* SfxrAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SfxrAppDelegate.m; sourceTree = "<group>"; };
+		E2E355EA18294A3400768E56 /* SfxrAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SfxrAppDelegate.h; sourceTree = "<group>"; };
+		E2E355ED18294A3400768E56 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		E2E355F318294A3400768E56 /* SfxrAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SfxrAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2E355F418294A3400768E56 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		E2E355FB18294A3400768E56 /* SfxrAppTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SfxrAppTests-Info.plist"; sourceTree = "<group>"; };
+		E2E355FD18294A3400768E56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E2E355FF18294A3400768E56 /* SfxrAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SfxrAppTests.m; sourceTree = "<group>"; };
+		E2E3560918294B5600768E56 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
+		E2E3560B18294CFF00768E56 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		E2E3560D18294D0500768E56 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		E2E3560F18294D0A00768E56 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		E2E3561118294D1200768E56 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		E2E3561318294D2900768E56 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		E2E3561518294E6F00768E56 /* LabelButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelButton.h; sourceTree = "<group>"; };
+		E2E3561618294E6F00768E56 /* LabelButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelButton.m; sourceTree = "<group>"; };
+		E2E356181829D2E700768E56 /* ADSRWidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRWidget.h; sourceTree = "<group>"; };
+		E2E356191829D2E700768E56 /* ADSRWidget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADSRWidget.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E2E355C918294A3400768E56 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E0C897183A6F14007AFB48 /* libLabMidi.a in Frameworks */,
+				E2E3560A18294B5600768E56 /* libLabSound.a in Frameworks */,
+				E2E3561418294D2900768E56 /* libicucore.dylib in Frameworks */,
+				E2E3561218294D1200768E56 /* CoreAudio.framework in Frameworks */,
+				E2E3561018294D0A00768E56 /* Accelerate.framework in Frameworks */,
+				E2E3560E18294D0500768E56 /* AudioUnit.framework in Frameworks */,
+				E2E3560C18294CFF00768E56 /* AudioToolbox.framework in Frameworks */,
+				E2E355D218294A3400768E56 /* SpriteKit.framework in Frameworks */,
+				E2E355D018294A3400768E56 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2E355F018294A3400768E56 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E355F618294A3400768E56 /* Cocoa.framework in Frameworks */,
+				E2E355F518294A3400768E56 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E2E355C318294A3300768E56 = {
+			isa = PBXGroup;
+			children = (
+				E2E355D718294A3400768E56 /* SfxrApp */,
+				E2E355F918294A3400768E56 /* SfxrAppTests */,
+				E2E355CE18294A3400768E56 /* Frameworks */,
+				E2E355CD18294A3400768E56 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E2E355CD18294A3400768E56 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355CC18294A3400768E56 /* SfxrApp.app */,
+				E2E355F318294A3400768E56 /* SfxrAppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E2E355CE18294A3400768E56 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E2E0C896183A6F14007AFB48 /* libLabMidi.a */,
+				E2E3561318294D2900768E56 /* libicucore.dylib */,
+				E2E3561118294D1200768E56 /* CoreAudio.framework */,
+				E2E3560F18294D0A00768E56 /* Accelerate.framework */,
+				E2E3560D18294D0500768E56 /* AudioUnit.framework */,
+				E2E3560B18294CFF00768E56 /* AudioToolbox.framework */,
+				E2E3560918294B5600768E56 /* libLabSound.a */,
+				E2E355CF18294A3400768E56 /* Cocoa.framework */,
+				E2E355D118294A3400768E56 /* SpriteKit.framework */,
+				E2E355F418294A3400768E56 /* XCTest.framework */,
+				E2E355D318294A3400768E56 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E2E355D318294A3400768E56 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355D418294A3400768E56 /* AppKit.framework */,
+				E2E355D518294A3400768E56 /* CoreData.framework */,
+				E2E355D618294A3400768E56 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		E2E355D718294A3400768E56 /* SfxrApp */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355ED18294A3400768E56 /* Images.xcassets */,
+				E2E355D818294A3400768E56 /* Supporting Files */,
+				E2E355E518294A3400768E56 /* SfxrMyScene.mm */,
+				E2E355E718294A3400768E56 /* SfxrMyScene.h */,
+				E2E3561518294E6F00768E56 /* LabelButton.h */,
+				E2E3561618294E6F00768E56 /* LabelButton.m */,
+				E2E356181829D2E700768E56 /* ADSRWidget.h */,
+				E2E356191829D2E700768E56 /* ADSRWidget.m */,
+				E208307B182B216400534C49 /* ShapeButton.h */,
+				E208307C182B216400534C49 /* ShapeButton.m */,
+				E208307E182B296D00534C49 /* KeyboardWidget.h */,
+				E208307F182B296D00534C49 /* KeyboardWidget.mm */,
+				E2083081182B29E400534C49 /* SpriteButton.h */,
+				E2083082182B29E400534C49 /* SpriteButton.m */,
+				E2083084182B362900534C49 /* OscillatorWidget.h */,
+				E2083085182B362900534C49 /* OscillatorWidget.mm */,
+				E2083087182BF0DE00534C49 /* LFOWidget.h */,
+				E2083088182BF0DE00534C49 /* LFOWidget.m */,
+				E24F79A5182F2B6500DD88E6 /* WidgetWrangler.h */,
+				E24F79A6182F2B6500DD88E6 /* WidgetWrangler.m */,
+				E24F79A8182F2DB300DD88E6 /* Widget.h */,
+				E24F79A91830622200DD88E6 /* FilterWidget.h */,
+				E24F79AA1830622200DD88E6 /* FilterWidget.m */,
+				E24F79AC183130F900DD88E6 /* HandleWidget.h */,
+				E24F79AD183130F900DD88E6 /* HandleWidget.m */,
+				E24F79AF1831FC0400DD88E6 /* KnobWidget.h */,
+				E24F79B01831FC0400DD88E6 /* KnobWidget.m */,
+			);
+			path = SfxrApp;
+			sourceTree = "<group>";
+		};
+		E2E355D818294A3400768E56 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355E318294A3400768E56 /* MainMenu.xib */,
+				E2E355E818294A3400768E56 /* SfxrAppDelegate.m */,
+				E2E355EA18294A3400768E56 /* SfxrAppDelegate.h */,
+				E2E355D918294A3400768E56 /* SfxrApp-Info.plist */,
+				E2E355DA18294A3400768E56 /* InfoPlist.strings */,
+				E2E355DD18294A3400768E56 /* main.m */,
+				E2E355DF18294A3400768E56 /* SfxrApp-Prefix.pch */,
+				E2E355E018294A3400768E56 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E2E355F918294A3400768E56 /* SfxrAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355FF18294A3400768E56 /* SfxrAppTests.m */,
+				E2E355FA18294A3400768E56 /* Supporting Files */,
+			);
+			path = SfxrAppTests;
+			sourceTree = "<group>";
+		};
+		E2E355FA18294A3400768E56 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E2E355FB18294A3400768E56 /* SfxrAppTests-Info.plist */,
+				E2E355FC18294A3400768E56 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E2E355CB18294A3400768E56 /* SfxrApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2E3560318294A3400768E56 /* Build configuration list for PBXNativeTarget "SfxrApp" */;
+			buildPhases = (
+				E2E355C818294A3400768E56 /* Sources */,
+				E2E355C918294A3400768E56 /* Frameworks */,
+				E2E355CA18294A3400768E56 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SfxrApp;
+			productName = SfxrApp;
+			productReference = E2E355CC18294A3400768E56 /* SfxrApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E2E355F218294A3400768E56 /* SfxrAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2E3560618294A3400768E56 /* Build configuration list for PBXNativeTarget "SfxrAppTests" */;
+			buildPhases = (
+				E2E355EF18294A3400768E56 /* Sources */,
+				E2E355F018294A3400768E56 /* Frameworks */,
+				E2E355F118294A3400768E56 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2E355F818294A3400768E56 /* PBXTargetDependency */,
+			);
+			name = SfxrAppTests;
+			productName = SfxrAppTests;
+			productReference = E2E355F318294A3400768E56 /* SfxrAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E2E355C418294A3300768E56 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = Sfxr;
+				LastUpgradeCheck = 0500;
+				ORGANIZATIONNAME = "Nick Porcino";
+				TargetAttributes = {
+					E2E355F218294A3400768E56 = {
+						TestTargetID = E2E355CB18294A3400768E56;
+					};
+				};
+			};
+			buildConfigurationList = E2E355C718294A3400768E56 /* Build configuration list for PBXProject "SfxrApp" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E2E355C318294A3300768E56;
+			productRefGroup = E2E355CD18294A3400768E56 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E2E355CB18294A3400768E56 /* SfxrApp */,
+				E2E355F218294A3400768E56 /* SfxrAppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E2E355CA18294A3400768E56 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E355EE18294A3400768E56 /* Images.xcassets in Resources */,
+				E2E355DC18294A3400768E56 /* InfoPlist.strings in Resources */,
+				E2E355E218294A3400768E56 /* Credits.rtf in Resources */,
+				E2E355E418294A3400768E56 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2E355F118294A3400768E56 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E355FE18294A3400768E56 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E2E355C818294A3400768E56 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2083086182B362900534C49 /* OscillatorWidget.mm in Sources */,
+				E24F79AE183130F900DD88E6 /* HandleWidget.m in Sources */,
+				E2E3561A1829D2E700768E56 /* ADSRWidget.m in Sources */,
+				E2E3561718294E6F00768E56 /* LabelButton.m in Sources */,
+				E2E355E918294A3400768E56 /* SfxrAppDelegate.m in Sources */,
+				E2E355DE18294A3400768E56 /* main.m in Sources */,
+				E2083089182BF0DE00534C49 /* LFOWidget.m in Sources */,
+				E24F79B11831FC0400DD88E6 /* KnobWidget.m in Sources */,
+				E2083083182B29E400534C49 /* SpriteButton.m in Sources */,
+				E24F79A7182F2B6500DD88E6 /* WidgetWrangler.m in Sources */,
+				E2083080182B296D00534C49 /* KeyboardWidget.mm in Sources */,
+				E2E355E618294A3400768E56 /* SfxrMyScene.mm in Sources */,
+				E208307D182B216400534C49 /* ShapeButton.m in Sources */,
+				E24F79AB1830622200DD88E6 /* FilterWidget.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2E355EF18294A3400768E56 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E3560018294A3400768E56 /* SfxrAppTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E2E355F818294A3400768E56 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E2E355CB18294A3400768E56 /* SfxrApp */;
+			targetProxy = E2E355F718294A3400768E56 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E2E355DA18294A3400768E56 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E2E355DB18294A3400768E56 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		E2E355E018294A3400768E56 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E2E355E118294A3400768E56 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		E2E355FC18294A3400768E56 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E2E355FD18294A3400768E56 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E2E3560118294A3400768E56 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E2E3560218294A3400768E56 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E2E3560418294A3400768E56 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SfxrApp/SfxrApp-Prefix.pch";
+				INFOPLIST_FILE = "SfxrApp/SfxrApp-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabMidi/src/build/Debug,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src/LabSound $(PROJECT_DIR)/../src/platform/audio $(PROJECT_DIR)/../src/Modules/webaudio $(PROJECT_DIR)/../src/shim $(PROJECT_DIR)/../src/WTF/icu $(PROJECT_DIR)/../src/WTF $(PROJECT_DIR)/../src/platform/graphics $(PROJECT_DIR)/../../LabMidi/src/LabMidi";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		E2E3560518294A3400768E56 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SfxrApp/SfxrApp-Prefix.pch";
+				INFOPLIST_FILE = "SfxrApp/SfxrApp-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabMidi/src/build/Debug,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../src/LabSound $(PROJECT_DIR)/../src/platform/audio $(PROJECT_DIR)/../src/Modules/webaudio $(PROJECT_DIR)/../src/shim $(PROJECT_DIR)/../src/WTF/icu $(PROJECT_DIR)/../src/WTF $(PROJECT_DIR)/../src/platform/graphics $(PROJECT_DIR)/../../LabMidi/src/LabMidi";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		E2E3560718294A3400768E56 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SfxrApp.app/Contents/MacOS/SfxrApp";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SfxrApp/SfxrApp-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "SfxrAppTests/SfxrAppTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		E2E3560818294A3400768E56 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SfxrApp.app/Contents/MacOS/SfxrApp";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SfxrApp/SfxrApp-Prefix.pch";
+				INFOPLIST_FILE = "SfxrAppTests/SfxrAppTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E2E355C718294A3400768E56 /* Build configuration list for PBXProject "SfxrApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2E3560118294A3400768E56 /* Debug */,
+				E2E3560218294A3400768E56 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2E3560318294A3400768E56 /* Build configuration list for PBXNativeTarget "SfxrApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2E3560418294A3400768E56 /* Debug */,
+				E2E3560518294A3400768E56 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2E3560618294A3400768E56 /* Build configuration list for PBXNativeTarget "SfxrAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2E3560718294A3400768E56 /* Debug */,
+				E2E3560818294A3400768E56 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E2E355C418294A3300768E56 /* Project object */;
+}

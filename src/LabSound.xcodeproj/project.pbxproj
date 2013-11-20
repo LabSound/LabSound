@@ -405,6 +405,8 @@
 		E24F79D11839617C00DD88E6 /* SupersawNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SupersawNode.h; sourceTree = "<group>"; };
 		E25AFD9518078FF1000316F8 /* PdNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PdNode.cpp; sourceTree = "<group>"; };
 		E25AFD9618078FF1000316F8 /* PdNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PdNode.h; sourceTree = "<group>"; };
+		E2E0C959183C45B2007AFB48 /* LabSoundConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabSoundConfig.h; sourceTree = "<group>"; };
+		E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LabSoundIncludes.h; path = ../LabSoundIncludes.h; sourceTree = "<group>"; };
 		E2E35563181DE9B700768E56 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2E35564181DE9B700768E56 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
 		E2E35568181EB77700768E56 /* NoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseNode.cpp; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 				E2E355C11827F67700768E56 /* SfxrNode.h */,
 				E24F79D01839617C00DD88E6 /* SupersawNode.cpp */,
 				E24F79D11839617C00DD88E6 /* SupersawNode.h */,
+				E2E0C959183C45B2007AFB48 /* LabSoundConfig.h */,
 			);
 			path = LabSound;
 			sourceTree = "<group>";
@@ -584,6 +587,7 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
+				E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */,
 				2BE82A90780A651634CF39D4 /* LabSound */,
 				02A4118553CF6A9859664DA5 /* Modules */,
 				26FD62D053AF40C4370F3A18 /* WTF */,
@@ -1056,6 +1060,12 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
+				);
 				PRODUCT_NAME = LabSound;
 			};
 			name = "Release Native 64-bit";
@@ -1120,6 +1130,12 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
+				);
 				PRODUCT_NAME = LabSound;
 			};
 			name = "Release Native 32-bit";
@@ -1132,6 +1148,12 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
+				);
 				PRODUCT_NAME = LabSound;
 			};
 			name = "Debug Native 64-bit";
@@ -1264,6 +1286,12 @@
 					WTF_IS_LINKED_IN_SAME_BINARY,
 				);
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/src/libpd/build/Debug,
+					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
+				);
 				PRODUCT_NAME = LabSound;
 			};
 			name = "Debug Native 32-bit";

@@ -6,6 +6,7 @@
 //
 //
 
+#include "LabSoundConfig.h"
 #include "DalekVoice.h"
 
 #include "DiodeNode.h"

@@ -9,7 +9,6 @@
 
 
 using namespace WebCore;
-using LabSound::RecorderNode;
 
 namespace WebCore
 {
