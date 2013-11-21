@@ -2,6 +2,7 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
+#include "LabSound.h"
 #include "ClipNode.h"
 
 #include "AudioBus.h"
@@ -85,7 +86,7 @@ namespace LabSound {
     {
         m_processor = adoptPtr(data);
 
-        setNodeType(NodeTypeConvolver);  // pretend to be a convolver
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeClip);
 
         addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
         addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
@@ -95,6 +96,7 @@ namespace LabSound {
     
     ClipNode::~ClipNode() {
         data->numChannels = 0;  // ensure there if there is a latent callback pending, pd is not invoked
+        delete data;
         data = 0;
         uninitialize();
     }

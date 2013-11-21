@@ -6,7 +6,7 @@
 #if ENABLE(WEB_AUDIO)
 
 #include "RecorderNode.h"
-
+#include "LabSound.h"
 #include "AudioBus.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
@@ -23,7 +23,7 @@ namespace LabSound {
         addInput(adoptPtr(new AudioNodeInput(this)));
         addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
         
-        setNodeType(NodeTypeAnalyser);
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeRecorder);
         
         initialize();
     }

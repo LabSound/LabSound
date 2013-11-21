@@ -27,7 +27,7 @@
  */
 
 #import "config.h"
-#import "AutodrainedPool.h"
+#import "wtf/AutodrainedPool.h"
 
 namespace WebCore {
 

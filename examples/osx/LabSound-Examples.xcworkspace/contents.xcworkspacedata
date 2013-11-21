@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../../osx/LabSound.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:DalekVoiceApp/DalekVoiceApp.xcodeproj">
    </FileRef>
    <FileRef
@@ -33,9 +36,6 @@
    </FileRef>
    <FileRef
       location = "group:ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:../../src/LabSound.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:../../src/libpd/libpd.xcodeproj">

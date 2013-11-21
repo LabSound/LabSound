@@ -1,4 +1,5 @@
 #include "ADSRNode.h"
+#include "LabSound.h"
 
 using namespace WebCore;
 using namespace LabSound; 
@@ -11,6 +12,8 @@ ADSRNode::ADSRNode(AudioContext* context, float sampleRate) : GainNode(context, 
 	m_decay   = AudioParam::create(context, "decay",   0.1,  0, 120);   // duration
 	m_sustain = AudioParam::create(context, "sustain", 0.75, 0, 120);   // level
 	m_release = AudioParam::create(context, "release", 0.25, 0, 120);   // duration
+    setNodeType((AudioNode::NodeType) LabSound::NodeTypeADSR);
+    initialize();
 }
 
 ADSRNode::~ADSRNode() {

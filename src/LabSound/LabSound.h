@@ -2,6 +2,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
+#include "LabSoundConfig.h"
 #include "AudioContext.h"
 #include "AudioListener.h"
 #include "SpatializationNode.h"
@@ -12,6 +13,41 @@ namespace LabSound {
     // hoist WTF and WebCore within LabSound
     using namespace WTF;
     using namespace WebCore;
+
+    enum NodeType {
+        // These are mirrored from AudioNode::NodeType
+        NodeTypeUnknown,
+        NodeTypeDestination,
+        NodeTypeOscillator,
+        NodeTypeAudioBufferSource,
+        NodeTypeMediaElementAudioSource,
+        NodeTypeMediaStreamAudioDestination,
+        NodeTypeMediaStreamAudioSource,
+        NodeTypeJavaScript,
+        NodeTypeBiquadFilter,
+        NodeTypePanner,
+        NodeTypeConvolver,
+        NodeTypeDelay,
+        NodeTypeGain,
+        NodeTypeChannelSplitter,
+        NodeTypeChannelMerger,
+        NodeTypeAnalyser,
+        NodeTypeDynamicsCompressor,
+        NodeTypeWaveShaper,
+        NodeTypeEnd,
+
+        // These are new LabSound nodes
+        NodeTypeADSR,
+        NodeTypeClip,
+        NodeTypeDiode,
+        NodeTypeNoise,
+        NodeTypePd,
+        NodeTypeRecorder,
+        NodeTypeSfxr,
+        NodeTypeSpatialization,
+        NodeTypeSupersaw,
+        NodeTypePWM,
+    };
 
     // OSX will need the following dependencies:
     //

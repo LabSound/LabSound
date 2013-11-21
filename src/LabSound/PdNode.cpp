@@ -2,6 +2,7 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
+#include "LabSound.h"
 #include "PdNode.h"
 
 #include "AudioBus.h"
@@ -123,7 +124,7 @@ PdNode::PdNode(WebCore::AudioContext* context, float sampleRate)
     // Initially setup as lowpass filter.
     m_processor = adoptPtr(data);
     
-    setNodeType(NodeTypeConvolver);  // pretend to be a convolver
+    setNodeType((AudioNode::NodeType) LabSound::NodeTypePd);
     
     addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
     addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo

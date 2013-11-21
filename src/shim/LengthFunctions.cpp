@@ -52,6 +52,10 @@ LayoutUnit minimumValueForLength(const Length& length, LayoutUnit maximumValue, 
         return static_cast<LayoutUnit>(static_cast<float>(maximumValue * length.percent() / 100.0f));
     case Calculated:
         return length.nonNanCalculatedValue(maximumValue);
+    case ViewportPercentageWidth:
+    case ViewportPercentageHeight:
+    case ViewportPercentageMin:
+            return 100;
 /* LabSound   case ViewportPercentageWidth:
         if (renderView)
             return static_cast<LayoutUnit>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
@@ -123,7 +127,12 @@ float floatValueForLength(const Length& length, LayoutUnit maximumValue, RenderV
     case Auto:
         return static_cast<float>(maximumValue);
     case Calculated:
-        return length.nonNanCalculatedValue(maximumValue);                
+        return length.nonNanCalculatedValue(maximumValue);
+    case ViewportPercentageWidth:
+    case ViewportPercentageHeight:
+    case ViewportPercentageMin:
+        return 100.0f;
+
 /* LabSound    case ViewportPercentageWidth:
         if (renderView)
             return static_cast<int>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
@@ -164,7 +173,11 @@ float floatValueForLength(const Length& length, float maximumValue, RenderView* 
         return static_cast<float>(maximumValue);
     case Calculated:
         return length.nonNanCalculatedValue(maximumValue);
-/* LabSound    case ViewportPercentageWidth:
+    case ViewportPercentageWidth:
+    case ViewportPercentageHeight:
+    case ViewportPercentageMin:
+        return 100.0f;
+            /* LabSound    case ViewportPercentageWidth:
         if (renderView)
             return static_cast<int>(renderView->viewportSize().width() * length.viewportPercentageLength() / 100.0f);
         return 0;

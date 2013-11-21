@@ -1,8 +1,5 @@
 
-
-// For starting the WTF library
-#include <wtf/ExportMacros.h>
-#include <wtf/MainThread.h>
+#include "LabSound.h"
 
 // webaudio specific headers
 #include "AudioBufferSourceNode.h"
@@ -23,28 +20,11 @@
 // Examples
 #include "ReverbSample.h"
 
-#include <unistd.h>
-#include <iostream>
-
-using namespace WebCore;
-using LabSound::RecorderNode;
-
-namespace WebCore
-{
-    class Document { public: };
-}
-
+using namespace LabSound;
 
 int main(int, char**)
 {
-    // Initialize threads for the WTF library
-    WTF::initializeThreading();
-    WTF::initializeMainThread();
-    
-    // Create an audio context object
-    Document d;
-    ExceptionCode ec;
-    RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+    RefPtr<AudioContext> context = LabSound::init();
 
     reverbSample(context, 10.0f);
     

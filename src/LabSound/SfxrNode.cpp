@@ -171,7 +171,7 @@
  
 */
 
-
+#include "LabSound.h"
 #include "config.h"
 
 #include <AudioNodeOutput.h>
@@ -594,7 +594,7 @@ namespace LabSound {
     : AudioScheduledSourceNode(context, sampleRate)
     , sfxr(new SfxrNode::Sfxr())
     {
-        setNodeType(NodeTypeOscillator);
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeSfxr);
 
         // Output is always mono.
         addOutput(adoptPtr(new AudioNodeOutput(this, 1)));

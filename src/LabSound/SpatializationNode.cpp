@@ -1,6 +1,7 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
+#include "LabSound.h"
 #include "SpatializationNode.h"
 #include <wtf/MathExtras.h>
 
@@ -63,6 +64,7 @@ namespace LabSound {
     
     SpatializationNode::SpatializationNode(WebCore::AudioContext* context, float sampleRate)
     : WebCore::PannerNode(context, sampleRate) {
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeSpatialization);
     }
     
     SpatializationNode::~SpatializationNode() {

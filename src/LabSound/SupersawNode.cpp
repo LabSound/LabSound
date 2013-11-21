@@ -6,6 +6,7 @@
 //
 //  reference http://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
 
+#include "LabSound.h"
 #include "SupersawNode.h"
 #include "ADSRNode.h"
 #include "AudioNodeInput.h"
@@ -93,7 +94,7 @@ namespace LabSound {
         addInput(adoptPtr(new AudioNodeInput(this)));
         addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
 
-        setNodeType(NodeTypeGain);
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
 
         initialize();
         LabSound::connect(_data->gainNode.get(), this);

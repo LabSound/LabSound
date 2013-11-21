@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+#include "LabSound.h"
 #include <AudioNodeOutput.h>
 #include "ExceptionCode.h"
 #include "NoiseNode.h"
@@ -26,7 +27,7 @@ namespace LabSound {
     , lastBrown(0)
     , pink0(0), pink1(0), pink2(0), pink3(0), pink4(0), pink5(0), pink6(0)
     {
-        setNodeType(NodeTypeOscillator);
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeNoise);
 
         // Noise is always mono.
         addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
