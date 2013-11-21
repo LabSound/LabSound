@@ -12,17 +12,32 @@
 *.la
 *.a
 
-# Xcode intermediate stuff
-*.dep
+# XCode stuff
 *.hmap
-*.d
-*.dia
-*.dat
 *.xcuserstate
-*.xcsettings
-*.LinkFileList
 
-# other
-*.DS_Store
-
-build/
+examples/osx/DalekVoiceApp/DalekVoiceApp.xcodeproj/xcuserdata/
+examples/osx/LabSound-Examples.xcworkspace/xcshareddata/
+examples/osx/LiveEchoApp/LiveEchoApp.xcodeproj/xcuserdata/
+examples/osx/LiveReverbRecordingApp/LiveReverbRecordingApp.xcodeproj/xcuserdata/
+examples/osx/PureDataApp/PureDataApp.xcodeproj/xcuserdata/
+examples/osx/ReverbApp/ReverbApp.xcodeproj/xcuserdata/
+examples/osx/RhythmApp/RhythmApp.xcodeproj/xcuserdata/
+examples/osx/RhythmFilteredApp/RhythmFilteredApp.xcodeproj/xcuserdata/
+examples/osx/RhythmTonePanningApp/RhythmTonePanningApp.xcodeproj/xcuserdata/
+examples/osx/SampleSpatializationApp/SampleSpatializationApp.xcodeproj/xcuserdata/
+examples/osx/ToneAndSampleApp/ToneAndSampleApp.xcodeproj/xcuserdata/
+examples/osx/ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj/xcuserdata/
+osx/LabSound.xcodeproj/xcuserdata/
+examples/osx/LiveEchoApp/build/
+examples/osx/LiveReverbRecordingApp/build/
+examples/osx/PureDataApp/build/
+examples/osx/ReverbApp/build/
+examples/osx/RhythmFilteredApp/build/
+examples/osx/RhythmTonePanningApp/build/
+examples/osx/SampleSpatializationApp/build/
+examples/osx/ToneAndSampleApp/build/
+examples/osx/ToneAndSampleRecordedApp/build/
+examples/osx/build/
+osx/LabSound.xcodeproj/project.xcworkspace/xcuserdata/
+osx/obj/
