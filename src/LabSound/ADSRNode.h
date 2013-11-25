@@ -33,10 +33,14 @@ namespace LabSound {
 		AudioParam* sustain() const { return m_sustain.get(); }
 		AudioParam* release() const { return m_release.get(); }
 
+        // If noteOn is called before noteOff has finished, a pop can occur. Polling
+        // finished and avoiding noteOn while finished is true can avoid the popping.
+        //
 		void noteOn();
 		void noteOff();
+        bool finished(); // if a noteOff has been issued, finished will be true after the release period
 
-		void set(float, float, float, float);
+		void set(float a, float d, float s, float r);
 
     private:
 
@@ -46,6 +50,8 @@ namespace LabSound {
 		RefPtr<AudioParam> m_decay;
 		RefPtr<AudioParam> m_sustain;
 		RefPtr<AudioParam> m_release;
+
+        double m_noteOffTime;
     };
     
 }
