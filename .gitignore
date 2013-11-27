@@ -15,6 +15,7 @@
 # XCode stuff
 *.hmap
 *.xcuserstate
+examples/osx/build/
 
 examples/osx/DalekVoiceApp/DalekVoiceApp.xcodeproj/xcuserdata/
 examples/osx/LabSound-Examples.xcworkspace/xcshareddata/
@@ -28,7 +29,6 @@ examples/osx/RhythmTonePanningApp/RhythmTonePanningApp.xcodeproj/xcuserdata/
 examples/osx/SampleSpatializationApp/SampleSpatializationApp.xcodeproj/xcuserdata/
 examples/osx/ToneAndSampleApp/ToneAndSampleApp.xcodeproj/xcuserdata/
 examples/osx/ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj/xcuserdata/
-osx/LabSound.xcodeproj/xcuserdata/
 examples/osx/LiveEchoApp/build/
 examples/osx/LiveReverbRecordingApp/build/
 examples/osx/PureDataApp/build/
@@ -38,6 +38,7 @@ examples/osx/RhythmTonePanningApp/build/
 examples/osx/SampleSpatializationApp/build/
 examples/osx/ToneAndSampleApp/build/
 examples/osx/ToneAndSampleRecordedApp/build/
-examples/osx/build/
+examples/osx/LabSound-Examples.xcworkspace/xcuserdata/
+osx/LabSound.xcodeproj/xcuserdata/
 osx/LabSound.xcodeproj/project.xcworkspace/xcuserdata/
 osx/obj/
