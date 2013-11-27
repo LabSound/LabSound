@@ -29,7 +29,7 @@ namespace LabSound {
     void Occluders::setOccluder(int id,
                                          float x, float y, float z,
                                          float radius) {
-        Occluder o = { x, y, z, radius };
+        Occluder o(x, y, z, radius);
         occluders[id] = o;
     }
     

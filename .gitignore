@@ -106,3 +106,4 @@ xcuserdata
 # Windows Specific Libraries that should be pulled in separately
 libsndfile/
 rtaudio/
+libs/*

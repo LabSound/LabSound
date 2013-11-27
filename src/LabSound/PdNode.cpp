@@ -2,6 +2,8 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
+#ifdef PD
+
 #include "LabSound.h"
 #include "PdNode.h"
 
@@ -147,3 +149,4 @@ bool PdNode::propagatesSilence() const {
     
 } // LabSound
 
+#endif

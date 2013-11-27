@@ -6,6 +6,8 @@
 
 #pragma once
 
+#ifdef PD
+
 #include "AudioBasicProcessorNode.h"
 
 namespace pd {
@@ -37,3 +39,6 @@ private:
 };
 
 }
+
+#endif 
+
