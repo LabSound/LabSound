@@ -8,6 +8,7 @@
 #include "AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
+#include "AudioBasicProcessorNode.h"
 #include "AudioBasicInspectorNode.h"
 #include <wtf/OwnArrayPtr.h>
 #include <wtf/PassRefPtr.h>
@@ -17,21 +18,13 @@
 namespace LabSound {
     using namespace WebCore;
 
-    class ADSRNode : public WebCore::GainNode {
-
+    class ADSRNode : public WebCore::AudioBasicProcessorNode
+    {
     public:
-
-		static PassRefPtr<ADSRNode> create(AudioContext* context, float sampleRate)
-		{
-			return adoptRef(new ADSRNode(context, sampleRate));      
-		}
-
-		virtual ~ADSRNode(); 
-
-		AudioParam* attack()  const { return m_attack.get(); }
-		AudioParam* decay()   const { return m_decay.get(); }
-		AudioParam* sustain() const { return m_sustain.get(); }
-		AudioParam* release() const { return m_release.get(); }
+        static WTF::PassRefPtr<ADSRNode> create(WebCore::AudioContext* context, float sampleRate)
+        {
+            return adoptRef(new ADSRNode(context, sampleRate));
+        }
 
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
@@ -40,18 +33,20 @@ namespace LabSound {
 		void noteOff();
         bool finished(); // if a noteOff has been issued, finished will be true after the release period
 
-		void set(float a, float d, float s, float r);
+		void set(float aT, float aL, float d, float s, float r);
+
+        AudioParam* attackTime() const;
+		AudioParam* attackLevel() const;
+		AudioParam* decayTime() const;
+		AudioParam* sustainLevel() const;
+		AudioParam* releaseTime() const;
 
     private:
+        ADSRNode(WebCore::AudioContext*, float sampleRate);
+        virtual ~ADSRNode();
 
-		ADSRNode(AudioContext*, float sampleRate);
-
-		RefPtr<AudioParam> m_attack;
-		RefPtr<AudioParam> m_decay;
-		RefPtr<AudioParam> m_sustain;
-		RefPtr<AudioParam> m_release;
-
-        double m_noteOffTime;
+        class AdsrNodeInternal;
+        AdsrNodeInternal* data;
     };
     
 }
