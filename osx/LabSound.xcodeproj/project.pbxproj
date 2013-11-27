@@ -102,7 +102,6 @@
 		E2FB870A183D202700A5A764 /* SizeLimits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB863F183D202600A5A764 /* SizeLimits.cpp */; };
 		E2FB870B183D202700A5A764 /* StackBounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8641183D202600A5A764 /* StackBounds.cpp */; };
 		E2FB870C183D202700A5A764 /* StackStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8643183D202600A5A764 /* StackStats.cpp */; };
-		E2FB870D183D202700A5A764 /* StringExtras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8648183D202700A5A764 /* StringExtras.cpp */; };
 		E2FB870E183D202700A5A764 /* StringPrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB864B183D202700A5A764 /* StringPrintStream.cpp */; };
 		E2FB870F183D202700A5A764 /* TCSystemAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8650183D202700A5A764 /* TCSystemAlloc.cpp */; };
 		E2FB8710183D202700A5A764 /* AtomicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8655183D202700A5A764 /* AtomicString.cpp */; };
@@ -687,7 +686,6 @@
 		E2FB8645183D202600A5A764 /* StaticConstructors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticConstructors.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
 		E2FB8647183D202600A5A764 /* StreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamBuffer.h; sourceTree = "<group>"; };
-		E2FB8648183D202700A5A764 /* StringExtras.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringExtras.cpp; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
 		E2FB864A183D202700A5A764 /* StringHasher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringHasher.h; sourceTree = "<group>"; };
 		E2FB864B183D202700A5A764 /* StringPrintStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPrintStream.cpp; sourceTree = "<group>"; };
@@ -1413,7 +1411,6 @@
 				E2FB8645183D202600A5A764 /* StaticConstructors.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
 				E2FB8647183D202600A5A764 /* StreamBuffer.h */,
-				E2FB8648183D202700A5A764 /* StringExtras.cpp */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,
 				E2FB864A183D202700A5A764 /* StringHasher.h */,
 				E2FB864B183D202700A5A764 /* StringPrintStream.cpp */,
@@ -2293,7 +2290,6 @@
 				E2FB88FB183D20E200A5A764 /* HRTFElevation.cpp in Sources */,
 				E2FB8A01183D20E200A5A764 /* ZeroPole.cpp in Sources */,
 				E2FB8706183D202700A5A764 /* RAMSize.cpp in Sources */,
-				E2FB870D183D202700A5A764 /* StringExtras.cpp in Sources */,
 				E2FB88F1183D20E200A5A764 /* FFTConvolver.cpp in Sources */,
 				E2FB8905183D20E200A5A764 /* Panner.cpp in Sources */,
 				E2FB870C183D202700A5A764 /* StackStats.cpp in Sources */,
@@ -2449,7 +2445,9 @@
 					/Users/dp/Code/LabSound/src/libpd/build/Debug,
 					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Release Native 64-bit";
 		};
@@ -2535,7 +2533,9 @@
 					/Users/dp/Code/LabSound/src/libpd/build/Debug,
 					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Release Native 32-bit";
 		};
@@ -2569,7 +2569,9 @@
 					/Users/dp/Code/LabSound/src/libpd/build/Debug,
 					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Debug Native 64-bit";
 		};
@@ -2723,7 +2725,9 @@
 					/Users/dp/Code/LabSound/src/libpd/build/Debug,
 					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
+				VALID_ARCHS = "x86_64 i386";
 			};
 			name = "Debug Native 32-bit";
 		};
