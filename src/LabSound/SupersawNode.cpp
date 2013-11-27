@@ -22,7 +22,6 @@ namespace LabSound {
     class SupersawNode::Data {
     public:
         RefPtr<ADSRNode> gainNode;
-        std::vector<RefPtr<OscillatorNode>> saws;
 
         Data(SupersawNode* self, AudioContext* context, float sampleRate)
         : gainNode(ADSRNode::create(context, sampleRate))
@@ -43,18 +42,20 @@ namespace LabSound {
             if (okayToReallocate && (n != currentN)) {
                 ExceptionCode ec;
 
-                for (auto i : saws) {
+                for (auto i : sawStorage) {
                     LabSound::disconnect(i.get());
                 }
+                sawStorage.clear();
                 saws.clear();
                 for (int i = 0; i < n; ++i)
-                    saws.push_back(OscillatorNode::create(context, sampleRate));
+                    sawStorage.push_back(OscillatorNode::create(context, sampleRate));
+                for (int i = 0; i < n; ++i)
+                    saws.push_back(sawStorage[i].get());
 
-                for (int i = 0; i < n; ++i) {
-                    RefPtr<OscillatorNode> &saw = saws[i];
-                    saw->setType(OscillatorNode::SAWTOOTH, ec);
-                    LabSound::connect(saw.get(), gainNode.get());
-                    saw->start(0);
+                for (auto i : saws) {
+                    i->setType(OscillatorNode::SAWTOOTH, ec);
+                    LabSound::connect(i, gainNode.get());
+                    i->start(0);
                 }
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
@@ -64,6 +65,7 @@ namespace LabSound {
                 cachedFrequency = frequency->value();
                 for (auto i : saws) {
                     i->frequency()->setValue(cachedFrequency);
+                    i->frequency()->resetSmoothedValue();
                 }
             }
 
@@ -81,6 +83,8 @@ namespace LabSound {
         RefPtr<AudioParam> detune;
         RefPtr<AudioParam> frequency;
         RefPtr<AudioParam> sawCount;
+        std::vector<RefPtr<OscillatorNode>> sawStorage;
+        std::vector<OscillatorNode*> saws;
 
         float sampleRate;
         float cachedDetune;
@@ -118,10 +122,10 @@ namespace LabSound {
         _data->update(true);
     }
 
-    AudioParam* SupersawNode::attack()    const { return _data->gainNode->attack(); }
-    AudioParam* SupersawNode::decay()     const { return _data->gainNode->decay(); }
-    AudioParam* SupersawNode::sustain()   const { return _data->gainNode->sustain(); }
-    AudioParam* SupersawNode::release()   const { return _data->gainNode->release(); }
+    AudioParam* SupersawNode::attack()    const { return _data->gainNode->attackTime(); }
+    AudioParam* SupersawNode::decay()     const { return _data->gainNode->decayTime(); }
+    AudioParam* SupersawNode::sustain()   const { return _data->gainNode->sustainLevel(); }
+    AudioParam* SupersawNode::release()   const { return _data->gainNode->releaseTime(); }
     AudioParam* SupersawNode::detune()    const { return _data->detune.get(); }
     AudioParam* SupersawNode::frequency() const { return _data->frequency.get(); }
     AudioParam* SupersawNode::sawCount()  const { return _data->sawCount.get(); }
