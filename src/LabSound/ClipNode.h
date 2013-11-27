@@ -23,8 +23,11 @@ namespace LabSound {
 
         void setMode(Mode);
 
-        WebCore::AudioParam* minVal();
-		WebCore::AudioParam* maxVal();
+        // in CLIP mode, a is the min value, and b is the max value.
+        // in TANH mode, a is the overall gain, and b is the input gain.
+        //   The higher the input gain the more severe the distortion.
+        WebCore::AudioParam* aVal();
+		WebCore::AudioParam* bVal();
 
     private:
         ClipNode(WebCore::AudioContext*, float sampleRate);

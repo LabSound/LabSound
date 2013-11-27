@@ -9,10 +9,14 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
+#include <audio/VectorMath.h>
 
 #include <iostream>
+#include <vector>
 
 using namespace WebCore;
+using namespace WebCore::VectorMath;
+using namespace std;
 
 namespace LabSound {
 
@@ -21,11 +25,11 @@ namespace LabSound {
 
         ClipNodeInternal(WebCore::AudioContext* context, float sampleRate)
         : AudioProcessor(sampleRate)
-        , numChannels(2)
+        , numChannels(1)
         , mode(ClipNode::CLIP)
         {
-            minVal = AudioParam::create(context, "min", -1.0, -FLT_MAX, FLT_MAX);
-            maxVal = AudioParam::create(context, "max",  1.0, -FLT_MAX, FLT_MAX);
+            aVal = AudioParam::create(context, "a", -1.0, -FLT_MAX, FLT_MAX);
+            bVal = AudioParam::create(context, "b",  1.0, -FLT_MAX, FLT_MAX);
         }
 
         virtual ~ClipNodeInternal() {
@@ -38,28 +42,43 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
+        virtual void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
             if (!numChannels)
                 return;
 
-            const float* srcP = source->channel(0)->data();
-            float* destP = destination->channel(0)->mutableData();
-            size_t n = framesToProcess;
+            // We handle both the 1 -> N and N -> N case here.
+            const float* source = sourceBus->channel(0)->data();
 
-            float minf = minVal->value();
-            float maxf = maxVal->value();
+            // this will only ever happen once, so if heap contention is an issue it should only ever cause one glitch
+            // what would be better, alloca? What does webaudio do elsewhere for this sort of thing?
+            if (gainValues.size() < framesToProcess)
+                gainValues.resize(framesToProcess);
 
-            if (mode == ClipNode::CLIP)
-                while (n--) {
-                    float d = *srcP++;
-                    if (d < minf) d = minf;
-                    else if (d > maxf) d = maxf;
-                    *destP++ = d;
+            if (mode == ClipNode::TANH) {
+                float outputGain = aVal->value();
+                float inputGain = bVal->value();
+                for (unsigned channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                    if (sourceBus->numberOfChannels() == numChannels)
+                        source = sourceBus->channel(channelIndex)->data();
+                    float* destination = destinationBus->channel(channelIndex)->mutableData();
+                    for (int i = 0; i < framesToProcess; ++i) {
+                        *destination++ = outputGain * tanhf(inputGain * source[i]);
+                    }
                 }
+            }
             else {
-                // decide how to interpret min and max if at all for tanh
-                while (n--) {
-                    *destP++ = tanhf(*srcP++);
+                float minf = aVal->value();
+                float maxf = bVal->value();
+                for (unsigned channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                    if (sourceBus->numberOfChannels() == numChannels)
+                        source = sourceBus->channel(channelIndex)->data();
+                    float* destination = destinationBus->channel(channelIndex)->mutableData();
+                    for (int i = 0; i < framesToProcess; ++i) {
+                        float d = source[i];
+                        if (d < minf) d = minf;
+                        else if (d > maxf) d = maxf;
+                        *destination++ = d;
+                    }
                 }
             }
         }
@@ -76,8 +95,9 @@ namespace LabSound {
 
         int numChannels;
         ClipNode::Mode mode;
-		RefPtr<AudioParam> minVal;
-		RefPtr<AudioParam> maxVal;
+		RefPtr<AudioParam> aVal;
+		RefPtr<AudioParam> bVal;
+        vector<float> gainValues;
     };
 
     ClipNode::ClipNode(WebCore::AudioContext* context, float sampleRate)
@@ -105,8 +125,8 @@ namespace LabSound {
         data->mode = m;
     }
 
-    AudioParam* ClipNode::minVal() { return data->minVal.get(); }
-    AudioParam* ClipNode::maxVal() { return data->maxVal.get(); }
+    AudioParam* ClipNode::aVal() { return data->aVal.get(); }
+    AudioParam* ClipNode::bVal() { return data->bVal.get(); }
 
 
 
