@@ -11,6 +11,9 @@
 *.lai
 *.la
 *.a
+*.lib
+*.def
+*.exp
 
 # XCode stuff
 *.hmap
