@@ -11,19 +11,102 @@
 *.lai
 *.la
 *.a
+*.lib
+*.def
+*.exp
 
-# Xcode intermediate stuff
-*.dep
+# XCode stuff
 *.hmap
-*.d
-*.dia
-*.dat
-*.pbxproj
-*.xcworkspacedata
-*.xcscheme
 *.xcuserstate
-*.xcsettings
-*.LinkFileList
 
-# other
-*.DS_Store
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+*_i.c
+*_p.c
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.log
+*.scc
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+
+# SQL Server files
+App_Data/*.mdf
+App_Data/*.ldf
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac Personal Files 
+xcuserdata
+
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# NB: also, whitelist the default ones, some projects need to use these
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+
+# Windows Specific Libraries that should be pulled in separately
+libsndfile/
+rtaudio/
+libs/*

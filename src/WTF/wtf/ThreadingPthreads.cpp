@@ -34,7 +34,7 @@
 #if USE(PTHREADS)
 
 #include "CurrentTime.h"
-#include "DateMath.h"
+//#include "DateMath.h"
 #include "dtoa.h"
 #include "dtoa/cached-powers.h"
 #include "HashMap.h"
@@ -142,7 +142,7 @@ void initializeThreading()
     StackStats::initialize();
     wtfThreadData();
     s_dtoaP5Mutex = new Mutex;
-    initializeDates();
+    //    initializeDates();
 }
 
 void lockAtomicallyInitializedStaticMutex()

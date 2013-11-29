@@ -1,17 +1,12 @@
-//
-//  RecorderNode.cpp
-//  LabSound
-//
-//  Created by Nick Porcino on 2012 12/17.
-//
-//
+// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
 #include "config.h"
 
 #if ENABLE(WEB_AUDIO)
 
 #include "RecorderNode.h"
-
+#include "LabSound.h"
 #include "AudioBus.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
@@ -28,7 +23,7 @@ namespace LabSound {
         addInput(adoptPtr(new AudioNodeInput(this)));
         addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
         
-        setNodeType(NodeTypeAnalyser);
+        setNodeType((AudioNode::NodeType) LabSound::NodeTypeRecorder);
         
         initialize();
     }

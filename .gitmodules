@@ -1,0 +1,6 @@
+[submodule "src/libpd"]
+	path = src/libpd
+	url = git://github.com/meshula/libpd.git
+[submodule "examples/LabMidi"]
+	path = examples/LabMidi
+	url = git://github.com/meshula/LabMidi.git

@@ -39,11 +39,11 @@
 #include "Biquad.h"
 #include "FFTFrame.h"
 #include "HRTFPanner.h"
-#include "PlatformMemoryInstrumentation.h"
 #include <algorithm>
 #include <math.h>
-#include <wtf/MemoryInstrumentationVector.h>
 #include <wtf/OwnPtr.h>
+
+#include <iostream>
 
 using namespace std;
  
@@ -183,8 +183,10 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     OwnPtr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.utf8().data(), sampleRate));
 
     // @Lab removed ASSERT(impulseResponse.get());
-    if (!impulseResponse.get())
+    if (!impulseResponse.get()) {
+        std::cerr << "Impulse response files not found " << resourceName.utf8().data() << std::endl;
         return false;
+    }
     
     size_t responseLength = impulseResponse->length();
     size_t expectedLength = static_cast<size_t>(256 * (sampleRate / 44100.0));
@@ -340,13 +342,6 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
     // Linearly interpolate delays.
     frameDelayL = (1.0 - azimuthBlend) * frameDelayL + azimuthBlend * frameDelay2L;
     frameDelayR = (1.0 - azimuthBlend) * frameDelayR + azimuthBlend * frameDelay2R;
-}
-
-void HRTFElevation::reportMemoryUsage(MemoryObjectInfo* memoryObjectInfo) const
-{
-    MemoryClassInfo info(memoryObjectInfo, this, PlatformMemoryTypes::AudioSharedData);
-    info.addMember(m_kernelListL);
-    info.addMember(m_kernelListR);
 }
 
 } // namespace WebCore

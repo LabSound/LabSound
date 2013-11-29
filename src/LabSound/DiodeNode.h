@@ -1,10 +1,6 @@
-//
-//  DiodeNode.h
-//  LabSound
-//
-//  Created by Nick Porcino on 2012 12/19.
-//
-//
+
+/// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
 #ifndef LabSound_DiodeNode_h
 #define LabSound_DiodeNode_h
@@ -13,10 +9,16 @@
 
 namespace LabSound {
 
+    /// @TODO DiodeNode should subclass waveShaper, then the create method will work
+    
     class DiodeNode
     {
     public:
         DiodeNode(WebCore::AudioContext*);
+        //static WTF::PassRefPtr<DiodeNode> create(WebCore::AudioContext* context, float sampleRate)
+        //{
+        //    return adoptRef(new DiodeNode(context));
+        //}
         
         void setDistortion(float distortion);
         WTF::PassRefPtr<WebCore::WaveShaperNode> node() const { return waveShaper; }

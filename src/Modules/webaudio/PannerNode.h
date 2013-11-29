@@ -127,11 +127,11 @@ public:
     virtual double tailTime() const OVERRIDE { return m_panner ? m_panner->tailTime() : 0; }
     virtual double latencyTime() const OVERRIDE { return m_panner ? m_panner->latencyTime() : 0; }
 
-private:
+protected: /// @LabSound was private
     PannerNode(AudioContext*, float sampleRate);
 
     // Returns the combined distance and cone gain attenuation.
-    float distanceConeGain();
+    virtual float distanceConeGain();   /// @LabSound virtual
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.

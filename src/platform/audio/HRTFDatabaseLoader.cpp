@@ -33,7 +33,6 @@
 #include "HRTFDatabaseLoader.h"
 
 #include "HRTFDatabase.h"
-#include "PlatformMemoryInstrumentation.h"
 #include <wtf/MainThread.h>
 
 #include <iostream>
@@ -135,12 +134,6 @@ HRTFDatabase* HRTFDatabaseLoader::defaultHRTFDatabase()
         return 0;
     
     return s_loader->database();
-}
-
-void HRTFDatabaseLoader::reportMemoryUsage(MemoryObjectInfo* memoryObjectInfo) const
-{
-    MemoryClassInfo info(memoryObjectInfo, this, PlatformMemoryTypes::AudioSharedData);
-    info.addMember(m_hrtfDatabase);
 }
 
 } // namespace WebCore

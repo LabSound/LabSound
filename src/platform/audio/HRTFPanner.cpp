@@ -220,7 +220,7 @@ void HRTFPanner::pan(double desiredAzimuth, double elevation, const AudioBus* in
         database->getKernelsFromAzimuthElevation(azimuthBlend, m_azimuthIndex2, m_elevation2, kernelL2, kernelR2, frameDelayL2, frameDelayR2);
 
         bool areKernelsGood = kernelL1 && kernelR1 && kernelL2 && kernelR2;
-        ASSERT(areKernelsGood);
+        /// @LabSound removed ASSERT(areKernelsGood);
         if (!areKernelsGood) {
             outputBus->zero();
             return;

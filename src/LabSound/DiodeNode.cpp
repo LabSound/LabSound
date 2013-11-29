@@ -5,11 +5,13 @@
 //  Based on the DiodeNode found at the BBC Radiophonic Workshop
 //  http://webaudio.prototyping.bbc.co.uk/ring-modulator/
 //
-//  Created by Nick Porcino on 2012 12/19.
-//
-//
+// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
+// PdNode wraps an instance of pure-data as a signal processing node
 
 #include "DiodeNode.h"
+#include <mutex>
 
 namespace LabSound {
 

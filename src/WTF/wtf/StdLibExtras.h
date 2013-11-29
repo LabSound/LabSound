@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008 Apple Inc. All Rights Reserved.
+ * Copyright (C) 2013 Patrick Gansterer <paroga@paroga.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,12 +21,13 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef WTF_StdLibExtras_h
 #define WTF_StdLibExtras_h
 
+#include <memory>
 #include <wtf/Assertions.h>
 #include <wtf/CheckedArithmetic.h>
 
@@ -35,11 +37,11 @@
 #ifndef DEFINE_STATIC_LOCAL
 #if COMPILER(GCC) && defined(__APPLE_CC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 1
 #define DEFINE_STATIC_LOCAL(type, name, arguments) \
-    static type* name##Ptr = new type arguments; \
-    type& name = *name##Ptr
+static type* name##Ptr = new type arguments; \
+type& name = *name##Ptr
 #else
 #define DEFINE_STATIC_LOCAL(type, name, arguments) \
-    static type& name = *new type arguments
+static type& name = *new type arguments
 #endif
 #endif
 
@@ -49,14 +51,14 @@
 #ifndef NDEBUG
 #if COMPILER(CLANG)
 #define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments) \
-    _Pragma("clang diagnostic push") \
-    _Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") \
-    _Pragma("clang diagnostic ignored \"-Wexit-time-destructors\"") \
-    static type name arguments; \
-    _Pragma("clang diagnostic pop")
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Wglobal-constructors\"") \
+_Pragma("clang diagnostic ignored \"-Wexit-time-destructors\"") \
+static type name arguments; \
+_Pragma("clang diagnostic pop")
 #else
 #define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments) \
-    static type name arguments;
+static type name arguments;
 #endif // COMPILER(CLANG)
 #else
 #define DEFINE_DEBUG_ONLY_GLOBAL(type, name, arguments)
@@ -83,27 +85,27 @@
  */
 #if (CPU(ARM) || CPU(MIPS)) && COMPILER(GCC)
 template<typename Type>
-bool isPointerTypeAlignmentOkay(Type* ptr)
+inline bool isPointerTypeAlignmentOkay(Type* ptr)
 {
     return !(reinterpret_cast<intptr_t>(ptr) % __alignof__(Type));
 }
 
 template<typename TypePtr>
-TypePtr reinterpret_cast_ptr(void* ptr)
+inline TypePtr reinterpret_cast_ptr(void* ptr)
 {
     ASSERT(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
     return reinterpret_cast<TypePtr>(ptr);
 }
 
 template<typename TypePtr>
-TypePtr reinterpret_cast_ptr(const void* ptr)
+inline TypePtr reinterpret_cast_ptr(const void* ptr)
 {
     ASSERT(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
     return reinterpret_cast<TypePtr>(ptr);
 }
 #else
 template<typename Type>
-bool isPointerTypeAlignmentOkay(Type*)
+inline bool isPointerTypeAlignmentOkay(Type*)
 {
     return true;
 }
@@ -112,194 +114,193 @@ bool isPointerTypeAlignmentOkay(Type*)
 
 namespace WTF {
 
-static const size_t KB = 1024;
-static const size_t MB = 1024 * 1024;
+    static const size_t KB = 1024;
+    static const size_t MB = 1024 * 1024;
 
-inline bool isPointerAligned(void* p)
-{
-    return !((intptr_t)(p) & (sizeof(char*) - 1));
-}
+    inline bool isPointerAligned(void* p)
+    {
+        return !((intptr_t)(p) & (sizeof(char*) - 1));
+    }
 
-inline bool is8ByteAligned(void* p)
-{
-    return !((uintptr_t)(p) & (sizeof(double) - 1));
-}
+    inline bool is8ByteAligned(void* p)
+    {
+        return !((uintptr_t)(p) & (sizeof(double) - 1));
+    }
 
-/*
- * C++'s idea of a reinterpret_cast lacks sufficient cojones.
- */
-template<typename TO, typename FROM>
-inline TO bitwise_cast(FROM from)
-{
-    COMPILE_ASSERT(sizeof(TO) == sizeof(FROM), WTF_bitwise_cast_sizeof_casted_types_is_equal);
-    union {
-        FROM from;
-        TO to;
-    } u;
-    u.from = from;
-    return u.to;
-}
+    /*
+     * C++'s idea of a reinterpret_cast lacks sufficient cojones.
+     */
+    template<typename ToType, typename FromType>
+    inline ToType bitwise_cast(FromType from)
+    {
+        static_assert(sizeof(FromType) == sizeof(ToType), "bitwise_cast size of FromType and ToType must be equal!");
+        union {
+            FromType from;
+            ToType to;
+        } u;
+        u.from = from;
+        return u.to;
+    }
 
-template<typename To, typename From>
-inline To safeCast(From value)
-{
-    ASSERT(isInBounds<To>(value));
-    return static_cast<To>(value);
-}
+    template<typename ToType, typename FromType>
+    inline ToType safeCast(FromType value)
+    {
+        ASSERT(isInBounds<ToType>(value));
+        return static_cast<ToType>(value);
+    }
 
-// Returns a count of the number of bits set in 'bits'.
-inline size_t bitCount(unsigned bits)
-{
-    bits = bits - ((bits >> 1) & 0x55555555);
-    bits = (bits & 0x33333333) + ((bits >> 2) & 0x33333333);
-    return (((bits + (bits >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
-}
+    // Returns a count of the number of bits set in 'bits'.
+    inline size_t bitCount(unsigned bits)
+    {
+        bits = bits - ((bits >> 1) & 0x55555555);
+        bits = (bits & 0x33333333) + ((bits >> 2) & 0x33333333);
+        return (((bits + (bits >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
+    }
 
-// Macro that returns a compile time constant with the length of an array, but gives an error if passed a non-array.
-template<typename T, size_t Size> char (&ArrayLengthHelperFunction(T (&)[Size]))[Size];
-// GCC needs some help to deduce a 0 length array.
+    inline size_t bitCount(uint64_t bits)
+    {
+        return bitCount(static_cast<unsigned>(bits)) + bitCount(static_cast<unsigned>(bits >> 32));
+    }
+
+    // Macro that returns a compile time constant with the length of an array, but gives an error if passed a non-array.
+    template<typename T, size_t Size> char (&ArrayLengthHelperFunction(T (&)[Size]))[Size];
+    // GCC needs some help to deduce a 0 length array.
 #if COMPILER(GCC)
-template<typename T> char (&ArrayLengthHelperFunction(T (&)[0]))[0];
+    template<typename T> char (&ArrayLengthHelperFunction(T (&)[0]))[0];
 #endif
 #define WTF_ARRAY_LENGTH(array) sizeof(::WTF::ArrayLengthHelperFunction(array))
 
-// Efficient implementation that takes advantage of powers of two.
-inline size_t roundUpToMultipleOf(size_t divisor, size_t x)
-{
-    ASSERT(divisor && !(divisor & (divisor - 1)));
-    size_t remainderMask = divisor - 1;
-    return (x + remainderMask) & ~remainderMask;
-}
-template<size_t divisor> inline size_t roundUpToMultipleOf(size_t x)
-{
-    COMPILE_ASSERT(divisor && !(divisor & (divisor - 1)), divisor_is_a_power_of_two);
-    return roundUpToMultipleOf(divisor, x);
-}
+    // Efficient implementation that takes advantage of powers of two.
+    inline size_t roundUpToMultipleOf(size_t divisor, size_t x)
+    {
+        ASSERT(divisor && !(divisor & (divisor - 1)));
+        size_t remainderMask = divisor - 1;
+        return (x + remainderMask) & ~remainderMask;
+    }
 
-enum BinarySearchMode {
-    KeyMustBePresentInArray,
-    KeyMustNotBePresentInArray
-};
+    template<size_t divisor> inline size_t roundUpToMultipleOf(size_t x)
+    {
+        static_assert(divisor && !(divisor & (divisor - 1)), "divisor must be a power of two!");
+        return roundUpToMultipleOf(divisor, x);
+    }
 
-// Binary search algorithm, calls extractKey on pre-sorted elements in array,
-// compares result with key (KeyTypes should be comparable with '==', and '<').
-template<typename ArrayElementType, typename KeyType, KeyType(*extractKey)(ArrayElementType*)>
-inline ArrayElementType* binarySearch(ArrayElementType* array, size_t size, KeyType key, BinarySearchMode mode = KeyMustBePresentInArray)
-{
-    // The array must contain at least one element (pre-condition, array does contain key).
-    // If the array contains only one element, no need to do the comparison.
-    while (size > 1) {
-        // Pick an element to check, half way through the array, and read the value.
-        size_t pos = (size - 1) >> 1;
-        KeyType val = extractKey(&array[pos]);
+    enum BinarySearchMode {
+        KeyMustBePresentInArray,
+        KeyMightNotBePresentInArray,
+        ReturnAdjacentElementIfKeyIsNotPresent
+    };
 
-        // If the key matches, success!
-        if (val == key)
-            return &array[pos];
-        // The item we are looking for is smaller than the item being check; reduce the value of 'size',
-        // chopping off the right hand half of the array.
-        else if (key < val)
-            size = pos;
-        // Discard all values in the left hand half of the array, up to and including the item at pos.
-        else {
-            size -= (pos + 1);
-            array += (pos + 1);
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey, BinarySearchMode mode>
+    inline ArrayElementType* binarySearchImpl(ArrayType& array, size_t size, KeyType key, const ExtractKey& extractKey = ExtractKey())
+    {
+        size_t offset = 0;
+        while (size > 1) {
+            size_t pos = (size - 1) >> 1;
+            KeyType val = extractKey(&array[offset + pos]);
+
+            if (val == key)
+                return &array[offset + pos];
+            // The item we are looking for is smaller than the item being check; reduce the value of 'size',
+            // chopping off the right hand half of the array.
+            if (key < val)
+                size = pos;
+            // Discard all values in the left hand half of the array, up to and including the item at pos.
+            else {
+                size -= (pos + 1);
+                offset += (pos + 1);
+            }
+
+            ASSERT(mode != KeyMustBePresentInArray || size);
         }
 
-        // In case of BinarySearchMode = KeyMustBePresentInArray 'size' should never reach zero.
-        if (mode == KeyMustBePresentInArray)
-            ASSERT(size);
-    }
+        if (mode == KeyMightNotBePresentInArray && !size)
+            return 0;
 
-    // In case of BinarySearchMode = KeyMustBePresentInArray if we reach this point
-    // we've chopped down to one element, no need to check it matches
-    if (mode == KeyMustBePresentInArray) {
-        ASSERT(size == 1);
-        ASSERT(key == extractKey(&array[0]));
-    }
+        ArrayElementType* result = &array[offset];
 
-    return &array[0];
-}
+        if (mode == KeyMightNotBePresentInArray && key != extractKey(result))
+            return 0;
 
-// Modified binary search algorithm that uses a functor. Note that this is strictly
-// more powerful than the above, but results in somewhat less template specialization.
-// Hence, depending on inlining heuristics, it might be slower.
-template<typename ArrayElementType, typename KeyType, typename ExtractKey>
-inline ArrayElementType* binarySearchWithFunctor(ArrayElementType* array, size_t size, KeyType key, BinarySearchMode mode = KeyMustBePresentInArray, const ExtractKey& extractKey = ExtractKey())
-{
-    // The array must contain at least one element (pre-condition, array does contain key).
-    // If the array contains only one element, no need to do the comparison.
-    while (size > 1) {
-        // Pick an element to check, half way through the array, and read the value.
-        size_t pos = (size - 1) >> 1;
-        KeyType val = extractKey(&array[pos]);
-
-        // If the key matches, success!
-        if (val == key)
-            return &array[pos];
-        // The item we are looking for is smaller than the item being check; reduce the value of 'size',
-        // chopping off the right hand half of the array.
-        else if (key < val)
-            size = pos;
-        // Discard all values in the left hand half of the array, up to and including the item at pos.
-        else {
-            size -= (pos + 1);
-            array += (pos + 1);
+        if (mode == KeyMustBePresentInArray) {
+            ASSERT(size == 1);
+            ASSERT(key == extractKey(result));
         }
 
-        // In case of BinarySearchMode = KeyMustBePresentInArray 'size' should never reach zero.
-        if (mode == KeyMustBePresentInArray)
-            ASSERT(size);
+        return result;
     }
 
-    // In case of BinarySearchMode = KeyMustBePresentInArray if we reach this point
-    // we've chopped down to one element, no need to check it matches
-    if (mode == KeyMustBePresentInArray) {
-        ASSERT(size == 1);
-        ASSERT(key == extractKey(&array[0]));
+    // If the element is not found, crash if asserts are enabled, and behave like approximateBinarySearch in release builds.
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* binarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMustBePresentInArray>(array, size, key, extractKey);
     }
 
-    return &array[0];
-}
-
-// Modified binarySearch() algorithm designed for array-like classes that support
-// operator[] but not operator+=. One example of a class that qualifies is
-// SegmentedVector.
-template<typename ArrayElementType, typename KeyType, KeyType(*extractKey)(ArrayElementType*), typename ArrayType>
-inline ArrayElementType* genericBinarySearch(ArrayType& array, size_t size, KeyType key)
-{
-    // The array must contain at least one element (pre-condition, array does conatin key).
-    // If the array only contains one element, no need to do the comparison.
-    size_t offset = 0;
-    while (size > 1) {
-        // Pick an element to check, half way through the array, and read the value.
-        size_t pos = (size - 1) >> 1;
-        KeyType val = extractKey(&array[offset + pos]);
-        
-        // If the key matches, success!
-        if (val == key)
-            return &array[offset + pos];
-        // The item we are looking for is smaller than the item being check; reduce the value of 'size',
-        // chopping off the right hand half of the array.
-        if (key < val)
-            size = pos;
-        // Discard all values in the left hand half of the array, up to and including the item at pos.
-        else {
-            size -= (pos + 1);
-            offset += (pos + 1);
-        }
-
-        // 'size' should never reach zero.
-        ASSERT(size);
+    // Return zero if the element is not found.
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* tryBinarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMightNotBePresentInArray>(array, size, key, extractKey);
     }
-    
-    // If we reach this point we've chopped down to one element, no need to check it matches
-    ASSERT(size == 1);
-    ASSERT(key == extractKey(&array[offset]));
-    return &array[offset];
-}
+
+    // Return the element that is either to the left, or the right, of where the element would have been found.
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* approximateBinarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, ReturnAdjacentElementIfKeyIsNotPresent>(array, size, key, extractKey);
+    }
+
+    // Variants of the above that use const.
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* binarySearch(const ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMustBePresentInArray>(const_cast<ArrayType&>(array), size, key, extractKey);
+    }
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* tryBinarySearch(const ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMightNotBePresentInArray>(const_cast<ArrayType&>(array), size, key, extractKey);
+    }
+    template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
+    inline ArrayElementType* approximateBinarySearch(const ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
+    {
+        return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, ReturnAdjacentElementIfKeyIsNotPresent>(const_cast<ArrayType&>(array), size, key, extractKey);
+    }
+
+    template<typename VectorType, typename ElementType>
+    inline void insertIntoBoundedVector(VectorType& vector, size_t size, const ElementType& element, size_t index)
+    {
+        for (size_t i = size; i-- > index + 1;)
+            vector[i] = vector[i - 1];
+        vector[index] = element;
+    }
 
 } // namespace WTF
+
+#if OS(WINCE)
+// Windows CE CRT has does not implement bsearch().
+inline void* wtf_bsearch(const void* key, const void* base, size_t count, size_t size, int (*compare)(const void *, const void *))
+{
+    const char* first = static_cast<const char*>(base);
+
+    while (count) {
+        size_t pos = (count - 1) >> 1;
+        const char* item = first + pos * size;
+        int compareResult = compare(item, key);
+        if (!compareResult)
+            return const_cast<char*>(item);
+        if (compareResult < 0) {
+            count -= (pos + 1);
+            first += (pos + 1) * size;
+        } else
+            count = pos;
+    }
+
+    return 0;
+}
+
+#define bsearch(key, base, count, size, compare) wtf_bsearch(key, base, count, size, compare)
+#endif
 
 // This version of placement new omits a 0 check.
 enum NotNullTag { NotNull };
@@ -309,11 +310,146 @@ inline void* operator new(size_t, NotNullTag, void* location)
     return location;
 }
 
+#if (defined(_MSC_VER) && _MSC_VER < 1700) || (COMPILER(GCC) && !COMPILER(CLANG) && !GCC_VERSION_AT_LEAST(4, 8, 1))
+
+// Work-around for Pre-C++11 syntax in MSVC 2010, and prior as well as GCC < 4.8.1.
+namespace std {
+    template<class T> struct is_trivially_destructible {
+        static const bool value = std::has_trivial_destructor<T>::value;
+    };
+}
+#endif
+
+// This adds various C++14 features for versions of the STL that may not yet have them.
+namespace std {
+    template<class T> struct _Unique_if {
+        typedef unique_ptr<T> _Single_object;
+    };
+
+    template<class T> struct _Unique_if<T[]> {
+        typedef unique_ptr<T[]> _Unknown_bound;
+    };
+
+    template<class T, size_t N> struct _Unique_if<T[N]> {
+        typedef void _Known_bound;
+    };
+
+#if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
+    template<class T, class... Args> inline typename _Unique_if<T>::_Single_object
+    make_unique(Args&&... args)
+    {
+        return unique_ptr<T>(new T(std::forward<Args>(args)...));
+    }
+#else
+    template<class T> inline typename _Unique_if<T>::_Single_object
+    make_unique()
+    {
+        return unique_ptr<T>(new T);
+    }
+
+    template<class T, class A1> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1)));
+    }
+
+    template<class T, class A1, class A2> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2)));
+    }
+
+    template<class T, class A1, class A2, class A3> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5, class A6> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8, A9&& a9)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8), std::forward<A9>(a9)));
+    }
+
+    template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> inline typename _Unique_if<T>::_Single_object
+    make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8, A9&& a9, A10&& a10)
+    {
+        return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8), std::forward<A9>(a9), std::forward<A10>(a10)));
+    }
+#endif
+
+    template<class T> inline typename _Unique_if<T>::_Unknown_bound
+    make_unique(size_t n)
+    {
+        typedef typename remove_extent<T>::type U;
+        return unique_ptr<T>(new U[n]());
+    }
+
+#if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
+    template<class T, class... Args> typename _Unique_if<T>::_Known_bound
+    make_unique(Args&&...) = delete;
+#endif
+
+#if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
+    // Compile-time integer sequences
+    // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3658.html
+    // (Note that we only implement index_sequence, and not the more generic integer_sequence).
+    template<size_t... indexes> struct index_sequence {
+        static size_t size() { return sizeof...(indexes); }
+    };
+
+    template<size_t currentIndex, size_t...indexes> struct make_index_sequence_helper;
+
+    template<size_t...indexes> struct make_index_sequence_helper<0, indexes...> {
+        typedef std::index_sequence<indexes...> type;
+    };
+    
+    template<size_t currentIndex, size_t...indexes> struct make_index_sequence_helper {
+        typedef typename make_index_sequence_helper<currentIndex - 1, currentIndex - 1, indexes...>::type type;
+    };
+    
+    template<size_t length> struct make_index_sequence : public make_index_sequence_helper<length>::type { };
+#endif
+}
+
 using WTF::KB;
 using WTF::MB;
+using WTF::insertIntoBoundedVector;
 using WTF::isPointerAligned;
 using WTF::is8ByteAligned;
 using WTF::binarySearch;
+using WTF::tryBinarySearch;
+using WTF::approximateBinarySearch;
 using WTF::bitwise_cast;
 using WTF::safeCast;
 

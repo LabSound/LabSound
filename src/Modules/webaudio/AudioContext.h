@@ -253,14 +253,16 @@ public:
     
     static unsigned s_hardwareContextCount;
 
-    virtual void reportMemoryUsage(MemoryObjectInfo*) const OVERRIDE;
+    /// @LabSound - external users shouldn't use this; it is called either by one of the
+    /// context's object creation routines, such as createGainNode, or by LabSound::init.
+    /// It *is* harmless to call it though, it's just not necessary.
+    void lazyInitialize();
 
 private:
     explicit AudioContext(Document*);
     AudioContext(Document*, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
     void constructCommon();
 
-    void lazyInitialize();
     void uninitialize();
 
     // ScriptExecutionContext calls stop twice.

@@ -52,7 +52,7 @@ public:
     void updateRenderingState();
 
     // Rendering code accesses its version of the current connections here.
-    unsigned numberOfRenderingConnections() const { return m_renderingOutputs.size(); }
+    unsigned numberOfRenderingConnections() const { return (unsigned) m_renderingOutputs.size(); }
     AudioNodeOutput* renderingOutput(unsigned i) { return m_renderingOutputs[i]; }
     const AudioNodeOutput* renderingOutput(unsigned i) const { return m_renderingOutputs[i]; }
     bool isConnected() const { return numberOfRenderingConnections() > 0; }

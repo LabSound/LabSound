@@ -117,7 +117,7 @@ class StringTypeAdapter<char*> {
 public:
     StringTypeAdapter<char*>(char* buffer)
         : m_buffer(buffer)
-        , m_length(strlen(buffer))
+        , m_length((unsigned) strlen(buffer))
     {
     }
 
@@ -149,7 +149,7 @@ class StringTypeAdapter<LChar*> {
 public:
     StringTypeAdapter<LChar*>(LChar* buffer)
     : m_buffer(buffer)
-    , m_length(strlen(reinterpret_cast<char*>(buffer)))
+    , m_length((unsigned) strlen(reinterpret_cast<char*>(buffer)))
     {
     }
 
@@ -186,7 +186,7 @@ public:
         if (len > std::numeric_limits<unsigned>::max())
             CRASH();
 
-        m_length = len;
+        m_length = (unsigned) len;
     }
 
     unsigned length() { return m_length; }
@@ -213,7 +213,7 @@ class StringTypeAdapter<const char*> {
 public:
     StringTypeAdapter<const char*>(const char* buffer)
         : m_buffer(buffer)
-        , m_length(strlen(buffer))
+        , m_length((unsigned) strlen(buffer))
     {
     }
 
@@ -244,7 +244,7 @@ class StringTypeAdapter<const LChar*> {
 public:
     StringTypeAdapter<const LChar*>(const LChar* buffer)
         : m_buffer(buffer)
-        , m_length(strlen(reinterpret_cast<const char*>(buffer)))
+        , m_length((unsigned) strlen(reinterpret_cast<const char*>(buffer)))
     {
     }
 

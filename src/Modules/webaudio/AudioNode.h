@@ -112,8 +112,8 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
-    unsigned numberOfInputs() const { return m_inputs.size(); }
-    unsigned numberOfOutputs() const { return m_outputs.size(); }
+    unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
+    unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
 
     AudioNodeInput* input(unsigned);
     AudioNodeOutput* output(unsigned);
@@ -158,8 +158,6 @@ public:
 
     void enableOutputsIfNecessary();
     void disableOutputsIfNecessary();
-
-    void reportMemoryUsage(MemoryObjectInfo*) const;
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.

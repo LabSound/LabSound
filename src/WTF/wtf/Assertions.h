@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003, 2006, 2007 Apple Inc.  All rights reserved.
+ * Copyright (C) 2003, 2006, 2007, 2013 Apple Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,27 +20,21 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef WTF_Assertions_h
 #define WTF_Assertions_h
 
 /*
-   no namespaces because this file has to be includable from C and Objective-C
+ no namespaces because this file has to be includable from C and Objective-C
 
-   Note, this file uses many GCC extensions, but it should be compatible with
-   C, Objective C, C++, and Objective C++.
+ Note, this file uses many GCC extensions, but it should be compatible with
+ C, Objective C, C++, and Objective C++.
 
-   For non-debug builds, everything is disabled by default.
-   Defining any of the symbols explicitly prevents this from having any effect.
-   
-   MSVC7 note: variadic macro support was added in MSVC8, so for now we disable
-   those macros in MSVC7. For more info, see the MSDN document on variadic 
-   macros here:
-   
-   http://msdn2.microsoft.com/en-us/library/ms177415(VS.80).aspx
-*/
+ For non-debug builds, everything is disabled by default.
+ Defining any of the symbols explicitly prevents this from having any effect.
+ */
 
 #include <wtf/Platform.h>
 #include <wtf/ExportMacros.h> // LabSound added this include
@@ -58,12 +52,6 @@
 #define ASSERTIONS_DISABLED_DEFAULT 0
 #endif
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define HAVE_VARIADIC_MACRO 0
-#else
-#define HAVE_VARIADIC_MACRO 1
-#endif
-
 #ifndef BACKTRACE_DISABLED
 #define BACKTRACE_DISABLED ASSERTIONS_DISABLED_DEFAULT
 #endif
@@ -73,11 +61,7 @@
 #endif
 
 #ifndef ASSERT_MSG_DISABLED
-#if HAVE(VARIADIC_MACRO)
 #define ASSERT_MSG_DISABLED ASSERTIONS_DISABLED_DEFAULT
-#else
-#define ASSERT_MSG_DISABLED 1
-#endif
 #endif
 
 #ifndef ASSERT_ARG_DISABLED
@@ -85,27 +69,15 @@
 #endif
 
 #ifndef FATAL_DISABLED
-#if HAVE(VARIADIC_MACRO)
 #define FATAL_DISABLED ASSERTIONS_DISABLED_DEFAULT
-#else
-#define FATAL_DISABLED 1
-#endif
 #endif
 
 #ifndef ERROR_DISABLED
-#if HAVE(VARIADIC_MACRO)
 #define ERROR_DISABLED ASSERTIONS_DISABLED_DEFAULT
-#else
-#define ERROR_DISABLED 1
-#endif
 #endif
 
 #ifndef LOG_DISABLED
-#if HAVE(VARIADIC_MACRO)
 #define LOG_DISABLED ASSERTIONS_DISABLED_DEFAULT
-#else
-#define LOG_DISABLED 1
-#endif
 #endif
 
 #if COMPILER(GCC)
@@ -115,13 +87,20 @@
 #endif
 
 /* WTF logging functions can process %@ in the format string to log a NSObject* but the printf format attribute
-   emits a warning when %@ is used in the format string.  Until <rdar://problem/5195437> is resolved we can't include
-   the attribute when being used from Objective-C code in case it decides to use %@. */
+ emits a warning when %@ is used in the format string.  Until <rdar://problem/5195437> is resolved we can't include
+ the attribute when being used from Objective-C code in case it decides to use %@. */
 #if COMPILER(GCC) && !defined(__OBJC__)
 #define WTF_ATTRIBUTE_PRINTF(formatStringArgument, extraArguments) __attribute__((__format__(printf, formatStringArgument, extraArguments)))
 #else
-#define WTF_ATTRIBUTE_PRINTF(formatStringArgument, extraArguments) 
+#define WTF_ATTRIBUTE_PRINTF(formatStringArgument, extraArguments)
 #endif
+
+#if PLATFORM(IOS)
+/* For a project that uses WTF but has no config.h, we need to explicitly set the export defines here. */
+#ifndef WTF_EXPORT_PRIVATE
+#define WTF_EXPORT_PRIVATE
+#endif
+#endif // PLATFORM(IOS)
 
 /* These helper functions are always declared, but not necessarily always defined if the corresponding function is disabled. */
 
@@ -129,72 +108,68 @@
 extern "C" {
 #endif
 
-typedef enum { WTFLogChannelOff, WTFLogChannelOn } WTFLogChannelState;
+    typedef enum { WTFLogChannelOff, WTFLogChannelOn } WTFLogChannelState;
 
-typedef struct {
-    unsigned mask;
-    const char *defaultName;
-    WTFLogChannelState state;
-} WTFLogChannel;
+    typedef struct {
+        WTFLogChannelState state;
+        const char* name;
+    } WTFLogChannel;
 
-WTF_EXPORT_PRIVATE void WTFReportAssertionFailure(const char* file, int line, const char* function, const char* assertion);
-WTF_EXPORT_PRIVATE void WTFReportAssertionFailureWithMessage(const char* file, int line, const char* function, const char* assertion, const char* format, ...) WTF_ATTRIBUTE_PRINTF(5, 6);
-WTF_EXPORT_PRIVATE void WTFReportArgumentAssertionFailure(const char* file, int line, const char* function, const char* argName, const char* assertion);
-WTF_EXPORT_PRIVATE void WTFReportFatalError(const char* file, int line, const char* function, const char* format, ...) WTF_ATTRIBUTE_PRINTF(4, 5);
-WTF_EXPORT_PRIVATE void WTFReportError(const char* file, int line, const char* function, const char* format, ...) WTF_ATTRIBUTE_PRINTF(4, 5);
-WTF_EXPORT_PRIVATE void WTFLog(WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(2, 3);
-WTF_EXPORT_PRIVATE void WTFLogVerbose(const char* file, int line, const char* function, WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(5, 6);
-WTF_EXPORT_PRIVATE void WTFLogAlways(const char* format, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
+    WTF_EXPORT_PRIVATE void WTFReportAssertionFailure(const char* file, int line, const char* function, const char* assertion);
+    WTF_EXPORT_PRIVATE void WTFReportAssertionFailureWithMessage(const char* file, int line, const char* function, const char* assertion, const char* format, ...) WTF_ATTRIBUTE_PRINTF(5, 6);
+    WTF_EXPORT_PRIVATE void WTFReportArgumentAssertionFailure(const char* file, int line, const char* function, const char* argName, const char* assertion);
+    WTF_EXPORT_PRIVATE void WTFReportFatalError(const char* file, int line, const char* function, const char* format, ...) WTF_ATTRIBUTE_PRINTF(4, 5);
+    WTF_EXPORT_PRIVATE void WTFReportError(const char* file, int line, const char* function, const char* format, ...) WTF_ATTRIBUTE_PRINTF(4, 5);
+    WTF_EXPORT_PRIVATE void WTFLog(WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(2, 3);
+    WTF_EXPORT_PRIVATE void WTFLogVerbose(const char* file, int line, const char* function, WTFLogChannel*, const char* format, ...) WTF_ATTRIBUTE_PRINTF(5, 6);
+    WTF_EXPORT_PRIVATE void WTFLogAlways(const char* format, ...) WTF_ATTRIBUTE_PRINTF(1, 2);
+    WTF_EXPORT_PRIVATE WTFLogChannel* WTFLogChannelByName(WTFLogChannel*[], size_t count, const char*);
+    WTF_EXPORT_PRIVATE void WTFInitializeLogChannelStatesFromString(WTFLogChannel*[], size_t count, const char*);
 
-WTF_EXPORT_PRIVATE void WTFGetBacktrace(void** stack, int* size);
-WTF_EXPORT_PRIVATE void WTFReportBacktrace();
-WTF_EXPORT_PRIVATE void WTFPrintBacktrace(void** stack, int size);
+    WTF_EXPORT_PRIVATE void WTFGetBacktrace(void** stack, int* size);
+    WTF_EXPORT_PRIVATE void WTFReportBacktrace();
+    WTF_EXPORT_PRIVATE void WTFPrintBacktrace(void** stack, int size);
 
-typedef void (*WTFCrashHookFunction)();
-WTF_EXPORT_PRIVATE void WTFSetCrashHook(WTFCrashHookFunction);
-WTF_EXPORT_PRIVATE void WTFInvokeCrashHook();
-WTF_EXPORT_PRIVATE void WTFInstallReportBacktraceOnCrashHook();
+    typedef void (*WTFCrashHookFunction)();
+    WTF_EXPORT_PRIVATE void WTFSetCrashHook(WTFCrashHookFunction);
+    WTF_EXPORT_PRIVATE void WTFInstallReportBacktraceOnCrashHook();
 
+    // Exist for binary compatibility with older Safari. Do not use.
+    WTF_EXPORT_PRIVATE void WTFInvokeCrashHook();
 #ifdef __cplusplus
 }
 #endif
 
 /* CRASH() - Raises a fatal error resulting in program termination and triggering either the debugger or the crash reporter.
 
-   Use CRASH() in response to known, unrecoverable errors like out-of-memory.
-   Macro is enabled in both debug and release mode.
-   To test for unknown errors and verify assumptions, use ASSERT instead, to avoid impacting performance in release builds.
+ Use CRASH() in response to known, unrecoverable errors like out-of-memory.
+ Macro is enabled in both debug and release mode.
+ To test for unknown errors and verify assumptions, use ASSERT instead, to avoid impacting performance in release builds.
 
-   Signals are ignored by the crash reporter on OS X so we must do better.
-*/
-#ifndef CRASH
-#if COMPILER(CLANG)
-#define CRASH() \
-    (WTFReportBacktrace(), \
-     WTFInvokeCrashHook(), \
-     (*(int *)(uintptr_t)0xbbadbeef = 0), \
-     __builtin_trap())
-#else
-#define CRASH() \
-    (WTFReportBacktrace(), \
-     WTFInvokeCrashHook(), \
-     (*(int *)(uintptr_t)0xbbadbeef = 0), \
-     ((void(*)())0)() /* More reliable, but doesn't say BBADBEEF */ \
-    )
-#endif
-#endif
-
+ Signals are ignored by the crash reporter on OS X so we must do better.
+ */
 #if COMPILER(CLANG)
 #define NO_RETURN_DUE_TO_CRASH NO_RETURN
 #else
 #define NO_RETURN_DUE_TO_CRASH
 #endif
 
+#ifndef CRASH
+#define CRASH() WTFCrash()
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    WTF_EXPORT_PRIVATE void WTFCrash() NO_RETURN_DUE_TO_CRASH;
+#ifdef __cplusplus
+}
+#endif
 
 /* BACKTRACE
 
-  Print a backtrace to the same location as ASSERT messages.
-*/
+ Print a backtrace to the same location as ASSERT messages.
+ */
 
 #if BACKTRACE_DISABLED
 
@@ -203,18 +178,18 @@ WTF_EXPORT_PRIVATE void WTFInstallReportBacktraceOnCrashHook();
 #else
 
 #define BACKTRACE() do { \
-    WTFReportBacktrace(); \
+WTFReportBacktrace(); \
 } while(false)
 
 #endif
 
 /* ASSERT, ASSERT_NOT_REACHED, ASSERT_UNUSED
 
-  These macros are compiled out of release builds.
-  Expressions inside them are evaluated in debug builds only.
-*/
+ These macros are compiled out of release builds.
+ Expressions inside them are evaluated in debug builds only.
+ */
 
-#if OS(WINCE) && !PLATFORM(TORCHMOBILE)
+#if OS(WINCE)
 /* FIXME: We include this here only to avoid a conflict with the ASSERT macro. */
 #include <windows.h>
 #undef min
@@ -245,20 +220,20 @@ inline void assertUnused(T& x) { (void)x; }
 #else
 
 #define ASSERT(assertion) \
-    (!(assertion) ? \
-        (WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion), \
-         CRASH()) : \
-        (void)0)
+(!(assertion) ? \
+(WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion), \
+CRASH()) : \
+(void)0)
 
 #define ASSERT_AT(assertion, file, line, function) \
-    (!(assertion) ? \
-        (WTFReportAssertionFailure(file, line, function, #assertion), \
-         CRASH()) :                                                   \
-        (void)0)
+(!(assertion) ? \
+(WTFReportAssertionFailure(file, line, function, #assertion), \
+CRASH()) :                                                   \
+(void)0)
 
 #define ASSERT_NOT_REACHED() do { \
-    WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, 0); \
-    CRASH(); \
+WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, 0); \
+CRASH(); \
 } while (0)
 
 #define ASSERT_UNUSED(variable, assertion) ASSERT(assertion)
@@ -267,26 +242,44 @@ inline void assertUnused(T& x) { (void)x; }
 
 #endif
 
+/* ASSERT_WITH_SECURITY_IMPLICATION
+
+ Failure of this assertion indicates a possible security vulnerability.
+ Class of vulnerabilities that it tests include bad casts, out of bounds
+ accesses, use-after-frees, etc. Please file a bug using the security
+ template - https://bugs.webkit.org/enter_bug.cgi?product=Security.
+
+ */
+#ifdef ADDRESS_SANITIZER
+
+#define ASSERT_WITH_SECURITY_IMPLICATION(assertion) \
+(!(assertion) ? \
+(WTFReportAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion), \
+CRASH()) : \
+(void)0)
+
+#else
+
+#define ASSERT_WITH_SECURITY_IMPLICATION(assertion) ASSERT(assertion)
+
+#endif
+
 /* ASSERT_WITH_MESSAGE */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define ASSERT_WITH_MESSAGE(assertion) ((void)0)
-#elif ASSERT_MSG_DISABLED
+#if ASSERT_MSG_DISABLED
 #define ASSERT_WITH_MESSAGE(assertion, ...) ((void)0)
 #else
 #define ASSERT_WITH_MESSAGE(assertion, ...) do \
-    if (!(assertion)) { \
-        WTFReportAssertionFailureWithMessage(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
-        CRASH(); \
-    } \
+if (!(assertion)) { \
+WTFReportAssertionFailureWithMessage(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
+CRASH(); \
+} \
 while (0)
 #endif
 
 /* ASSERT_WITH_MESSAGE_UNUSED */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define ASSERT_WITH_MESSAGE_UNUSED(variable, assertion) ((void)0)
-#elif ASSERT_MSG_DISABLED
+#if ASSERT_MSG_DISABLED
 #if COMPILER(INTEL) && !OS(WINDOWS) || COMPILER(RVCT)
 template<typename T>
 inline void assertWithMessageUnused(T& x) { (void)x; }
@@ -296,14 +289,14 @@ inline void assertWithMessageUnused(T& x) { (void)x; }
 #endif
 #else
 #define ASSERT_WITH_MESSAGE_UNUSED(variable, assertion, ...) do \
-    if (!(assertion)) { \
-        WTFReportAssertionFailureWithMessage(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
-        CRASH(); \
-    } \
+if (!(assertion)) { \
+WTFReportAssertionFailureWithMessage(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #assertion, __VA_ARGS__); \
+CRASH(); \
+} \
 while (0)
 #endif
-                        
-                        
+
+
 /* ASSERT_ARG */
 
 #if ASSERT_ARG_DISABLED
@@ -313,10 +306,10 @@ while (0)
 #else
 
 #define ASSERT_ARG(argName, assertion) do \
-    if (!(assertion)) { \
-        WTFReportArgumentAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #argName, #assertion); \
-        CRASH(); \
-    } \
+if (!(assertion)) { \
+WTFReportArgumentAssertionFailure(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, #argName, #assertion); \
+CRASH(); \
+} \
 while (0)
 
 #endif
@@ -324,7 +317,10 @@ while (0)
 /* COMPILE_ASSERT */
 #ifndef COMPILE_ASSERT
 #if COMPILER_SUPPORTS(C_STATIC_ASSERT)
+/* Unlike static_assert below, this also works in plain C code. */
 #define COMPILE_ASSERT(exp, name) _Static_assert((exp), #name)
+#elif COMPILER_SUPPORTS(CXX_STATIC_ASSERT)
+#define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #else
 #define COMPILE_ASSERT(exp, name) typedef int dummy##name [(exp) ? 1 : -1]
 #endif
@@ -332,22 +328,18 @@ while (0)
 
 /* FATAL */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define FATAL() ((void)0)
-#elif FATAL_DISABLED
+#if FATAL_DISABLED
 #define FATAL(...) ((void)0)
 #else
 #define FATAL(...) do { \
-    WTFReportFatalError(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, __VA_ARGS__); \
-    CRASH(); \
+WTFReportFatalError(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, __VA_ARGS__); \
+CRASH(); \
 } while (0)
 #endif
 
 /* LOG_ERROR */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define LOG_ERROR() ((void)0)
-#elif ERROR_DISABLED
+#if ERROR_DISABLED
 #define LOG_ERROR(...) ((void)0)
 #else
 #define LOG_ERROR(...) WTFReportError(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, __VA_ARGS__)
@@ -355,9 +347,7 @@ while (0)
 
 /* LOG */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define LOG() ((void)0)
-#elif LOG_DISABLED
+#if LOG_DISABLED
 #define LOG(channel, ...) ((void)0)
 #else
 #define LOG(channel, ...) WTFLog(&JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, channel), __VA_ARGS__)
@@ -367,9 +357,7 @@ while (0)
 
 /* LOG_VERBOSE */
 
-#if COMPILER(MSVC7_OR_LOWER)
-#define LOG_VERBOSE(channel) ((void)0)
-#elif LOG_DISABLED
+#if LOG_DISABLED
 #define LOG_VERBOSE(channel, ...) ((void)0)
 #else
 #define LOG_VERBOSE(channel, ...) WTFLogVerbose(__FILE__, __LINE__, WTF_PRETTY_FUNCTION, &JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, channel), __VA_ARGS__)
@@ -390,5 +378,41 @@ static inline void UNREACHABLE_FOR_PLATFORM()
 #else
 #define UNREACHABLE_FOR_PLATFORM() ASSERT_NOT_REACHED()
 #endif
+
+#if ASSERT_DISABLED
+#define RELEASE_ASSERT(assertion) (UNLIKELY(!(assertion)) ? (CRASH()) : (void)0)
+#define RELEASE_ASSERT_WITH_MESSAGE(assertion, ...) RELEASE_ASSERT(assertion)
+#define RELEASE_ASSERT_NOT_REACHED() CRASH()
+#else
+#define RELEASE_ASSERT(assertion) ASSERT(assertion)
+#define RELEASE_ASSERT_WITH_MESSAGE(assertion, ...) ASSERT_WITH_MESSAGE(assertion, __VA_ARGS__)
+#define RELEASE_ASSERT_NOT_REACHED() ASSERT_NOT_REACHED()
+#endif
+
+/* TYPE CAST */
+
+#define TYPE_CASTS_BASE(ToClassName, argumentType, argumentName, pointerPredicate, referencePredicate) \
+inline ToClassName* to##ToClassName(argumentType* argumentName) \
+{ \
+ASSERT_WITH_SECURITY_IMPLICATION(!argumentName || (pointerPredicate)); \
+return static_cast<ToClassName*>(argumentName); \
+} \
+inline const ToClassName* to##ToClassName(const argumentType* argumentName) \
+{ \
+ASSERT_WITH_SECURITY_IMPLICATION(!argumentName || (pointerPredicate)); \
+return static_cast<const ToClassName*>(argumentName); \
+} \
+inline ToClassName& to##ToClassName(argumentType& argumentName) \
+{ \
+ASSERT_WITH_SECURITY_IMPLICATION(referencePredicate); \
+return static_cast<ToClassName&>(argumentName); \
+} \
+inline const ToClassName& to##ToClassName(const argumentType& argumentName) \
+{ \
+ASSERT_WITH_SECURITY_IMPLICATION(referencePredicate); \
+return static_cast<const ToClassName&>(argumentName); \
+} \
+void to##ToClassName(const ToClassName*); \
+void to##ToClassName(const ToClassName&);
 
 #endif /* WTF_Assertions_h */

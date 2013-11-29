@@ -9,7 +9,6 @@ class ActiveDOMObject
 {
     public:
     ActiveDOMObject(void*, void*) { }
-    virtual void reportMemoryUsage(WTF::MemoryObjectInfo*) const {}
     
     void setPendingActivity(void*) { }
     void unsetPendingActivity(void*) { }
