@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E251D92718486BB600F7B7BC /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */; };
 		E2FB84B1183D1E8F00A5A764 /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */; };
 		E2FB84B2183D1E8F00A5A764 /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */; };
 		E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */; };
@@ -409,6 +410,8 @@
 
 /* Begin PBXFileReference section */
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
+		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
 		E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LabSoundIncludes.h; path = ../LabSoundIncludes.h; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2FB849B183D1E8F00A5A764 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
@@ -1150,6 +1153,8 @@
 				E2FB84A4183D1E8F00A5A764 /* NoiseNode.h */,
 				E2FB84A5183D1E8F00A5A764 /* PdNode.cpp */,
 				E2FB84A6183D1E8F00A5A764 /* PdNode.h */,
+				E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */,
+				E251D92618486BB600F7B7BC /* PowerMonitorNode.h */,
 				E2FB84A7183D1E8F00A5A764 /* RecorderNode.cpp */,
 				E2FB84A8183D1E8F00A5A764 /* RecorderNode.h */,
 				E2FB84A9183D1E8F00A5A764 /* SfxrNode.cpp */,
@@ -2303,6 +2308,7 @@
 				E2FB8546183D1F1F00A5A764 /* AudioParam.cpp in Sources */,
 				E2FB8701183D202700A5A764 /* PageBlock.cpp in Sources */,
 				E2FB88FF183D20E200A5A764 /* AudioBusMac.mm in Sources */,
+				E251D92718486BB600F7B7BC /* PowerMonitorNode.cpp in Sources */,
 				E2FB870A183D202700A5A764 /* SizeLimits.cpp in Sources */,
 				E2FB84B8183D1E8F00A5A764 /* SfxrNode.cpp in Sources */,
 				E2FB86DF183D202700A5A764 /* cached-powers.cc in Sources */,
