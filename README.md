@@ -24,10 +24,11 @@ a pull request!
 
 The keyword LabSound marks any places the code was modified from the source distro.
 
-Building
---------
+Building on OSX using premake
+-----------------------------
 
-So far, I haven't got a handle fully on creating an xcode project using premake.
+The premake support for xcode4 is very preliminary, and is apparently going to be
+rewritten soon. Hopefully the build set up will be better then.
 
 Typing 
 
@@ -37,13 +38,23 @@ mostly works, but it doesn't copy the audio resources into the app bundle. At th
 you'll need to build the code once, then manually open the App and bundle, and copy
 the audio in yourself.
 
+
+Building on OSX using supplied xcode workspace
+----------------------------------------------
+
+Open and build in the usual way.
+
+
+Copying the HRTF database
+-------------------------
+
     Application
        |
        +--- Contents
                |
                +--- Resources
                        |
-                       +--- audio
+                       +--- HRTF
                               |
                               +---- copy all the wav's here
 
@@ -56,39 +67,27 @@ allow it to work this way for when bundling in the resources does make sense.
 Note also that the sample data needs to be in the current working directory when you
 run the samples.
 
+As an alternative, if the HRTF folder is not found in the resource bundle, LabSound will 
+check in the cwd for a folder called HRTF, and if found it will fetch the data from there.
+
 Usage
 -----
 
-After factoring free of WebKit, the audio engine is ridiculously easy to use. Here's a
+After factoring free of WebKit, the audio engine is easy to use. Here's a
 sample that plays a sine tone for a few seconds.
 
-    #include "AudioContext.h"
-    #include "ExceptionCode.h"
-    #include "MainThread.h"
+    #include "LabSound.h"
     #include "OscillatorNode.h"
     
     #include <unistd.h> // for usleep
     
     using namespace WebCore;
-    
-    namespace WebCore
-    {
-        class Document { public: }; // dummy class
-    }
-    
+
     int main(int, char**)
     {
-        // Initialize threads for the WTF library
-        WTF::initializeThreading();
-        WTF::initializeMainThread();
-        
-        // Create an audio context object
-        Document d;
-        ExceptionCode ec;
-        PassRefPtr<AudioContext> context = AudioContext::create(&d, ec);
-    
+        LabSound::AudioContextPtr audioContext = LabSound::init();
         PassRefPtr<OscillatorNode> oscillator = context->createOscillator();
-        oscillator->connect(context->destination(), 0, 0, ec);
+        LabSound::connect(oscillator.get(), context->destination());
         oscillator->start(0);
         
         for (int i = 0; i < 300; ++i)
@@ -97,8 +96,9 @@ sample that plays a sine tone for a few seconds.
         return 0;
     }
 
-The key is to stick to the headers in the src/Modules/webaudio. These are the ones that
-correspond to the API you'd use from javascript.
+The key is to use the interfaces in LabSound.h, and if what you need isn't there, stick to the 
+headers in the src/Modules/webaudio. These are the ones that correspond to the API you'd use 
+from javascript.
 
 Generally, you can take any js sample code, and transliterate it exactly into C++. In some cases,
 there are extra parameters to specify, such as the input and output indices in the 
@@ -108,14 +108,7 @@ Playing a sound file is slightly more involved, but not much. Replace main with:
 
     int main(int, char**)
     {
-        // Initialize threads for the WTF library
-        WTF::initializeThreading();
-        WTF::initializeMainThread();
-        
-        // Create an audio context object
-        Document d;
-        ExceptionCode ec;
-        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+        LabSound::AudioContextPtr audioContext = LabSound::init();
     
         FILE* f = fopen("sample.wav", "rb");
         if (f) {
@@ -130,10 +123,10 @@ Playing a sound file is slightly more involved, but not much. Replace main with:
             bool mixToMono = true;
             PassRefPtr<ArrayBuffer> dataFileBuffer = ArrayBuffer::create(a, l);
             delete [] a;
-            RefPtr<AudioBuffer> dataBuffer = context->createBuffer(dataFileBuffer.get(), mixToMono, ec);
-            RefPtr<AudioBufferSourceNode> sourceBuffer = context->createBufferSource();
+            LabSound::SoundBuffer* dataBuffer = context->createBuffer(dataFileBuffer.get(), mixToMono, ec);
+            LabSound::AudioSoundBufferPtr sourceBuffer = context->createBufferSource();
             sourceBuffer->setBuffer(dataBuffer.get());
-            sourceBuffer->connect(context->destination(), 0, 0, ec);
+            LabSound::connect(sourceBuffer, context->destination());
             sourceBuffer->start(0); // play now
             
             for (int i = 0; i < 300; ++i)
@@ -173,18 +166,13 @@ Here's an example like the Playing Sounds With Rhythm sample from HTML5 Rocks:
     
     using namespace WebCore;
     
-    namespace WebCore
-    {
-        class Document { public: };
-    }
-    
     class SoundBuffer
     {
     public:
-        RefPtr<AudioBuffer> audioBuffer;
-        RefPtr<AudioContext> context;
+        LabSound::SoundBuffer* audioBuffer;
+        LabSound::AudioContextPtr context;
     
-        SoundBuffer(RefPtr<AudioContext> context, const char* path)
+        SoundBuffer(LabSound::AudioContextPtr context, const char* path)
         : context(context)
         {
             FILE* f = fopen(path, "rb");
@@ -214,15 +202,13 @@ Here's an example like the Playing Sounds With Rhythm sample from HTML5 Rocks:
         PassRefPtr<AudioBufferSourceNode> play(float when = 0.0f)
         {
             if (audioBuffer) {
-                RefPtr<AudioBufferSourceNode> sourceBuffer;
-                sourceBuffer = context->createBufferSource();
+                LabSound::AudioSoundBufferPtr sourceBuffer = context->createBufferSource();
                 
                 // Connect the source node to the parsed audio data for playback
                 sourceBuffer->setBuffer(audioBuffer.get());
                 
                 // bus the sound to the mixer.
-                ExceptionCode ec;
-                sourceBuffer->connect(context->destination(), 0, 0, ec);
+                LabSound::connect(sourceBuffer, context->destination());
                 sourceBuffer->start(when);
                 return sourceBuffer;
             }
@@ -233,14 +219,7 @@ Here's an example like the Playing Sounds With Rhythm sample from HTML5 Rocks:
     
     int main(int, char**)
     {
-        // Initialize threads for the WTF library
-        WTF::initializeThreading();
-        WTF::initializeMainThread();
-        
-        // Create an audio context object
-        Document d;
-        ExceptionCode ec;
-        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+        LabSound::AudioContextPtr context = LabSound::init();
     
         SoundBuffer kick(context, "kick.wav");
         SoundBuffer hihat(context, "hihat.wav");
@@ -289,21 +268,20 @@ This variant of play starts a sound at a given offset relative to the beginning 
 sample, ends it an offfset (relative to the beginning), and optional delays
 the start. If 0 is passed as end, then the sound will play to the end.
 
-    PassRefPtr<AudioBufferSourceNode> play(float start, float end, float when = 0.0f)
+    LabSound::AudioSoundBufferPtr play(float start, float end, float when = 0.0f)
     {
         if (audioBuffer) {
             if (end == 0)
                 end = audioBuffer->duration();
             
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
+            LabSound::AudioSoundBufferPtr sourceBuffer;
             sourceBuffer = context->createBufferSource();
             
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(audioBuffer.get());
             
             // bus the sound to the mixer.
-            ExceptionCode ec;
-            sourceBuffer->connect(context->destination(), 0, 0, ec);
+            LabSound::connect(sourceBuffer, context->destination());
             sourceBuffer->startGrain(when, start, end - start);
             return sourceBuffer;
         }
@@ -321,7 +299,7 @@ Bussing
 
 Let's modify the play routine to allow bussing to different nodes.
 
-    PassRefPtr<AudioBufferSourceNode> play(AudioNode* outputNode, float when = 0.0f)
+    LabSound::AudioSoundBufferPtr play(AudioNode* outputNode, float when = 0.0f)
     {
         if (audioBuffer) {
             RefPtr<AudioBufferSourceNode> sourceBuffer;
@@ -332,7 +310,7 @@ Let's modify the play routine to allow bussing to different nodes.
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBuffer->connect(outputNode, 0, 0, ec);
+            LabSound::connect(sourceBuffer, outputNode);
             sourceBuffer->start(when);
             return sourceBuffer;
         }
@@ -356,14 +334,7 @@ other down.
     
     int main(int, char**)
     {
-        // Initialize threads for the WTF library
-        WTF::initializeThreading();
-        WTF::initializeMainThread();
-        
-        // Create an audio context object
-        Document d;
-        ExceptionCode ec;
-        RefPtr<AudioContext> context = AudioContext::create(&d, ec);
+        LabSound::AudioContextPtr context = LabSound::init();
         RefPtr<OscillatorNode> oscillator = context->createOscillator();
     
         SoundBuffer kick(context, "kick.wav");

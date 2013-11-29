@@ -20,11 +20,6 @@
 #include "RecorderNode.h"
 #include "SoundBuffer.h"
 
-#include "LiveEcho.h"
-
-#include <unistd.h>
-#include <iostream>
-
 using namespace WebCore;
 using LabSound::RecorderNode;
 using LabSound::SoundBuffer;
