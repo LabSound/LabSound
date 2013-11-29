@@ -48,13 +48,13 @@
 #include <signal.h>
 #endif
 
-#if USE(CF)
+#if PLATFORM(MAC)
 #include <CoreFoundation/CFString.h>
 #if PLATFORM(IOS) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
 #define WTF_USE_APPLE_SYSTEM_LOG 1
 #include <asl.h>
 #endif
-#endif // USE(CF)
+#endif // Mac Platform
 
 #if COMPILER(MSVC) && !OS(WINCE)
 #include <crtdbg.h>

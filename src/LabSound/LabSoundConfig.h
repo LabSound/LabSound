@@ -20,10 +20,6 @@
 # define STATICALLY_LINKED_WITH_WTF 1
 #endif
 
-// Pd features
-#ifndef PD
-# define PD 1
-#endif
 #if !defined(HAVE_LIBDL) && (defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC))
 # define HAVE_LIBDL 1
 # define HAVE_ALLOCA 1

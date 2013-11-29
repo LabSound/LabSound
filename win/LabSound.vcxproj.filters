@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{B34F3A21-3FD7-A647-BAB3-2AB1240B6002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\LabSound">
+      <UniqueIdentifier>{06C8DAF6-DF13-AB47-A55D-F807FA6CD775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\shim">
+      <UniqueIdentifier>{269DCF57-C5C7-924D-AE21-1A449E034F73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules">
+      <UniqueIdentifier>{C4888C24-F803-DF40-9A59-A42D19AEDC51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Modules\webaudio">
+      <UniqueIdentifier>{AEF867FC-A0DA-3F40-B982-AF879A676308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform">
+      <UniqueIdentifier>{6DC741D8-F40A-3D48-B80D-A1D4BAD89160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\audio">
+      <UniqueIdentifier>{A728D39C-BF00-6141-98A0-42A69E50EFD2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\graphics">
+      <UniqueIdentifier>{C61B48E9-EBE4-EC4A-976F-81685FBDDAAC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF">
+      <UniqueIdentifier>{6E4ACF82-449A-9C46-A197-C1A1746114E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf">
+      <UniqueIdentifier>{A6315907-33E4-CB49-ADB9-7A2988D844E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf\dtoa">
+      <UniqueIdentifier>{B0F712FA-B103-AF4D-B1D2-DF1B72167668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf\text">
+      <UniqueIdentifier>{DD4C50C6-927B-6D44-AD97-0C5F91B35614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf\unicode">
+      <UniqueIdentifier>{0ACDACA3-2869-344F-9036-B28F36401CCD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf\unicode\icu">
+      <UniqueIdentifier>{407583C3-9E42-124B-B348-5EEA77B83201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\audio\win">
+      <UniqueIdentifier>{5710202E-F1B6-3742-8911-192EDBD63B6D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\Modules\webaudio\AnalyserNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioBuffer.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioBufferCallback.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioBufferSourceNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioContext.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioDestinationNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioGain.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioListener.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioParam.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\AudioSourceNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\BiquadFilterNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\ChannelMergerNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\ChannelSplitterNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\ConvolverNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\DelayNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\DOMWindowWebAudio.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\DynamicsCompressorNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\GainNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\OscillatorNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\PannerNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\WaveShaperNode.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+    <None Include="..\src\Modules\webaudio\WaveTable.idl">
+      <Filter>src\Modules\webaudio</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\LabSound\ADSRNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\ClipNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\DiodeNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\LabSound.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\LabSoundConfig.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\NoiseNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\PdNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\PWMNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\RecorderNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\SfxrNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\SoundBuffer.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\SpatializationNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\SupersawNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\ActiveDOMObject.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\ContextDestructionObserver.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\EventListener.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\EventTarget.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\ExceptionCode.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\LengthFunctions.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shim\MediaStream.h">
+      <Filter>src\shim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AnalyserNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AsyncAudioDecoder.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioBasicInspectorNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioBasicProcessorNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioBuffer.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioBufferCallback.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioBufferSourceNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioContext.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioDestinationNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioGain.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioListener.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioNodeInput.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioNodeOutput.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioParam.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioParamTimeline.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioScheduledSourceNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioSourceNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\AudioSummingJunction.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\BiquadDSPKernel.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\BiquadFilterNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\BiquadProcessor.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\ChannelMergerNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\ChannelSplitterNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\ConvolverNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\DefaultAudioDestinationNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\DelayDSPKernel.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\DelayNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\DelayProcessor.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\DynamicsCompressorNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\GainNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\OfflineAudioDestinationNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\OscillatorNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\PannerNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\RealtimeAnalyser.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperDSPKernel.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperNode.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperProcessor.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Modules\webaudio\WaveTable.h">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioArray.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioBus.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioChannel.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioDestination.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioDestinationConsumer.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioDSPKernel.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioDSPKernelProcessor.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioFIFO.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioFileReader.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioIOCallback.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioProcessor.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioPullFIFO.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioResampler.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioResamplerKernel.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioSourceProvider.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioSourceProviderClient.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\AudioUtilities.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\Biquad.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\Cone.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\DenormalDisabler.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\DirectConvolver.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\Distance.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\DynamicsCompressor.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\DynamicsCompressorKernel.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\EqualPowerPanner.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\FFTConvolver.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\FFTFrame.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\HRTFDatabase.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\HRTFElevation.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\HRTFKernel.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\HRTFPanner.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\MultiChannelResampler.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\Panner.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\Reverb.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\ReverbAccumulationBuffer.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\ReverbConvolver.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\ReverbConvolverStage.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\ReverbInputBuffer.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\SincResampler.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\VectorMath.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\ZeroPole.h">
+      <Filter>src\platform\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\AutodrainedPool.h">
+      <Filter>src\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\graphics\FloatPoint3D.h">
+      <Filter>src\platform\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\Logging.h">
+      <Filter>src\platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\ArrayBuffer.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\ArrayBufferView.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\Assertions.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\CurrentTime.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\DataLog.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum-dtoa.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\cached-powers.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\diy-fp.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\double-conversion.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\double.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\fast-dtoa.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\fixed-dtoa.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\strtod.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\dtoa\utils.h">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\FastMalloc.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\FilePrintStream.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\Float32Array.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\MainThread.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\PrintStream.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\StackBounds.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\TCSystemAlloc.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\CString.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicString.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringHash.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringImpl.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\StringImpl.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\text\WTFString.h">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\Threading.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\WTFThreadData.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\CharacterNames.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\Collator.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\ScriptCodesFromICU.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\Unicode.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\UnicodeMacrosFromICU.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\UTF8.h">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\unicode\icu\UnicodeIcu.h">
+      <Filter>src\WTF\wtf\unicode\icu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\UnusedParam.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\win\AudioDestinationWin.h">
+      <Filter>src\platform\audio\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\platform\audio\win\AudioFileReaderWin.h">
+      <Filter>src\platform\audio\win</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\ClipNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\DiodeNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\LabSound.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\NoiseNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\PdNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\PWMNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\RecorderNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SfxrNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SoundBuffer.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shim\LengthFunctions.cpp">
+      <Filter>src\shim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBasicProcessorNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBuffer.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBufferSourceNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioContext.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioDestinationNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioListener.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNodeInput.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNodeOutput.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioParam.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioParamTimeline.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioScheduledSourceNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioSummingJunction.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadDSPKernel.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadFilterNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadProcessor.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ChannelMergerNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ChannelSplitterNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ConvolverNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DefaultAudioDestinationNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayDSPKernel.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayProcessor.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DynamicsCompressorNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\OfflineAudioDestinationNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\OscillatorNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\PannerNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\RealtimeAnalyser.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperDSPKernel.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperNode.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperProcessor.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveTable.cpp">
+      <Filter>src\Modules\webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioBus.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioChannel.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioDSPKernelProcessor.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioFIFO.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioPullFIFO.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioResampler.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioResamplerKernel.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioUtilities.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Biquad.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Cone.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DirectConvolver.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Distance.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DynamicsCompressor.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DynamicsCompressorKernel.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\EqualPowerPanner.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTConvolver.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrame.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrameStub.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFDatabase.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFDatabaseLoader.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFElevation.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFKernel.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFPanner.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\MultiChannelResampler.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Panner.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Reverb.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbAccumulationBuffer.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbConvolver.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbConvolverStage.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbInputBuffer.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\SincResampler.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\VectorMath.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
+      <Filter>src\platform\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\graphics\FloatPoint3D.cpp">
+      <Filter>src\platform\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\Logging.cpp">
+      <Filter>src\platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Assertions.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\DataLog.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum-dtoa.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\cached-powers.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\diy-fp.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\double-conversion.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\fast-dtoa.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\fixed-dtoa.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\strtod.cc">
+      <Filter>src\WTF\wtf\dtoa</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\FastMalloc.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\FilePrintStream.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\PrintStream.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\StackBounds.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\TCSystemAlloc.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\CString.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\AtomicString.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringBuilder.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringStatics.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringImpl.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\WTFString.cpp">
+      <Filter>src\WTF\wtf\text</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\WTFThreadData.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
+      <Filter>src\WTF\wtf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\CollatorDefault.cpp">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\UTF8.cpp">
+      <Filter>src\WTF\wtf\unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\icu\CollatorICU.cpp">
+      <Filter>src\WTF\wtf\unicode\icu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
+      <Filter>src\platform\audio\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioDestinationWin.cpp">
+      <Filter>src\platform\audio\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
+      <Filter>src\platform\audio\win</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,654 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C2C11853-81F3-C348-8C6E-8DA318E0C84E}</ProjectGuid>
+    <RootNamespace>LabSound</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseIntelIPP>Sequential</UseIntelIPP>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\src\build\Debug\</OutDir>
+    <IntDir>obj\x32\Debug\</IntDir>
+    <TargetName>LabSound</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\src\build\Debug\</OutDir>
+    <IntDir>obj\x64\Debug\</IntDir>
+    <TargetName>LabSound</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\src\build\Release\</OutDir>
+    <IntDir>obj\x32\Release\</IntDir>
+    <TargetName>LabSound</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\src\build\Release\</OutDir>
+    <IntDir>obj\x64\Release\</IntDir>
+    <TargetName>LabSound</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>icuin.lib;icuio.lib;icuuc.lib;libsndfile-1.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+    </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
+      <AdditionalOptions>"icuin.lib" "icuio.lib" "icuuc.lib" "libsndfile-1.lib" "dsound.lib" "dxguid.lib" "winmm.lib" /LIBPATH:"libs" %(AdditionalOptions)</AdditionalOptions>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
+      <AdditionalOptions>"icuin.lib" "icuio.lib" "icuuc.lib" "libsndfile-1.lib" "dsound.lib" "dxguid.lib" "winmm.lib" /LIBPATH:"libs" %(AdditionalOptions)</AdditionalOptions>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>icuin.lib;icuio.lib;icuuc.lib;libsndfile-1.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+    </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
+      <AdditionalOptions>"icuin.lib" "icuio.lib" "icuuc.lib" "libsndfile-1.lib" "dsound.lib" "dxguid.lib" "winmm.lib" /LIBPATH:"libs" %(AdditionalOptions)</AdditionalOptions>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\LabSound\ADSRNode.h" />
+    <ClInclude Include="..\src\LabSound\ClipNode.h" />
+    <ClInclude Include="..\src\LabSound\DiodeNode.h" />
+    <ClInclude Include="..\src\LabSound\LabSound.h" />
+    <ClInclude Include="..\src\LabSound\LabSoundConfig.h" />
+    <ClInclude Include="..\src\LabSound\NoiseNode.h" />
+    <ClInclude Include="..\src\LabSound\PdNode.h" />
+    <ClInclude Include="..\src\LabSound\PWMNode.h" />
+    <ClInclude Include="..\src\LabSound\RecorderNode.h" />
+    <ClInclude Include="..\src\LabSound\SfxrNode.h" />
+    <ClInclude Include="..\src\LabSound\SoundBuffer.h" />
+    <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
+    <ClInclude Include="..\src\LabSound\SupersawNode.h" />
+    <ClInclude Include="..\src\shim\ActiveDOMObject.h" />
+    <ClInclude Include="..\src\shim\ContextDestructionObserver.h" />
+    <ClInclude Include="..\src\shim\EventListener.h" />
+    <ClInclude Include="..\src\shim\EventTarget.h" />
+    <ClInclude Include="..\src\shim\ExceptionCode.h" />
+    <ClInclude Include="..\src\shim\LengthFunctions.h" />
+    <ClInclude Include="..\src\shim\MediaStream.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AnalyserNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AsyncAudioDecoder.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioBasicInspectorNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioBasicProcessorNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioBuffer.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioBufferCallback.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioBufferSourceNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioContext.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioDestinationNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioGain.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioListener.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioNodeInput.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioNodeOutput.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioParam.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioParamTimeline.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioScheduledSourceNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioSourceNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\AudioSummingJunction.h" />
+    <ClInclude Include="..\src\Modules\webaudio\BiquadDSPKernel.h" />
+    <ClInclude Include="..\src\Modules\webaudio\BiquadFilterNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\BiquadProcessor.h" />
+    <ClInclude Include="..\src\Modules\webaudio\ChannelMergerNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\ChannelSplitterNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\ConvolverNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\DefaultAudioDestinationNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\DelayDSPKernel.h" />
+    <ClInclude Include="..\src\Modules\webaudio\DelayNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\DelayProcessor.h" />
+    <ClInclude Include="..\src\Modules\webaudio\DynamicsCompressorNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\GainNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\OfflineAudioDestinationNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\OscillatorNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\PannerNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\RealtimeAnalyser.h" />
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperDSPKernel.h" />
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperNode.h" />
+    <ClInclude Include="..\src\Modules\webaudio\WaveShaperProcessor.h" />
+    <ClInclude Include="..\src\Modules\webaudio\WaveTable.h" />
+    <ClInclude Include="..\src\platform\audio\AudioArray.h" />
+    <ClInclude Include="..\src\platform\audio\AudioBus.h" />
+    <ClInclude Include="..\src\platform\audio\AudioChannel.h" />
+    <ClInclude Include="..\src\platform\audio\AudioDestination.h" />
+    <ClInclude Include="..\src\platform\audio\AudioDestinationConsumer.h" />
+    <ClInclude Include="..\src\platform\audio\AudioDSPKernel.h" />
+    <ClInclude Include="..\src\platform\audio\AudioDSPKernelProcessor.h" />
+    <ClInclude Include="..\src\platform\audio\AudioFIFO.h" />
+    <ClInclude Include="..\src\platform\audio\AudioFileReader.h" />
+    <ClInclude Include="..\src\platform\audio\AudioIOCallback.h" />
+    <ClInclude Include="..\src\platform\audio\AudioProcessor.h" />
+    <ClInclude Include="..\src\platform\audio\AudioPullFIFO.h" />
+    <ClInclude Include="..\src\platform\audio\AudioResampler.h" />
+    <ClInclude Include="..\src\platform\audio\AudioResamplerKernel.h" />
+    <ClInclude Include="..\src\platform\audio\AudioSourceProvider.h" />
+    <ClInclude Include="..\src\platform\audio\AudioSourceProviderClient.h" />
+    <ClInclude Include="..\src\platform\audio\AudioUtilities.h" />
+    <ClInclude Include="..\src\platform\audio\Biquad.h" />
+    <ClInclude Include="..\src\platform\audio\Cone.h" />
+    <ClInclude Include="..\src\platform\audio\DenormalDisabler.h" />
+    <ClInclude Include="..\src\platform\audio\DirectConvolver.h" />
+    <ClInclude Include="..\src\platform\audio\Distance.h" />
+    <ClInclude Include="..\src\platform\audio\DynamicsCompressor.h" />
+    <ClInclude Include="..\src\platform\audio\DynamicsCompressorKernel.h" />
+    <ClInclude Include="..\src\platform\audio\EqualPowerPanner.h" />
+    <ClInclude Include="..\src\platform\audio\FFTConvolver.h" />
+    <ClInclude Include="..\src\platform\audio\FFTFrame.h" />
+    <ClInclude Include="..\src\platform\audio\HRTFDatabase.h" />
+    <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h" />
+    <ClInclude Include="..\src\platform\audio\HRTFElevation.h" />
+    <ClInclude Include="..\src\platform\audio\HRTFKernel.h" />
+    <ClInclude Include="..\src\platform\audio\HRTFPanner.h" />
+    <ClInclude Include="..\src\platform\audio\MultiChannelResampler.h" />
+    <ClInclude Include="..\src\platform\audio\Panner.h" />
+    <ClInclude Include="..\src\platform\audio\Reverb.h" />
+    <ClInclude Include="..\src\platform\audio\ReverbAccumulationBuffer.h" />
+    <ClInclude Include="..\src\platform\audio\ReverbConvolver.h" />
+    <ClInclude Include="..\src\platform\audio\ReverbConvolverStage.h" />
+    <ClInclude Include="..\src\platform\audio\ReverbInputBuffer.h" />
+    <ClInclude Include="..\src\platform\audio\SincResampler.h" />
+    <ClInclude Include="..\src\platform\audio\VectorMath.h" />
+    <ClInclude Include="..\src\platform\audio\ZeroPole.h" />
+    <ClInclude Include="..\src\platform\AutodrainedPool.h" />
+    <ClInclude Include="..\src\platform\graphics\FloatPoint3D.h" />
+    <ClInclude Include="..\src\platform\Logging.h" />
+    <ClInclude Include="..\src\WTF\wtf\ArrayBuffer.h" />
+    <ClInclude Include="..\src\WTF\wtf\ArrayBufferView.h" />
+    <ClInclude Include="..\src\WTF\wtf\Assertions.h" />
+    <ClInclude Include="..\src\WTF\wtf\CurrentTime.h" />
+    <ClInclude Include="..\src\WTF\wtf\DataLog.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum-dtoa.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\cached-powers.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\diy-fp.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\double-conversion.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\double.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\fast-dtoa.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\fixed-dtoa.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\strtod.h" />
+    <ClInclude Include="..\src\WTF\wtf\dtoa\utils.h" />
+    <ClInclude Include="..\src\WTF\wtf\FastMalloc.h" />
+    <ClInclude Include="..\src\WTF\wtf\FilePrintStream.h" />
+    <ClInclude Include="..\src\WTF\wtf\Float32Array.h" />
+    <ClInclude Include="..\src\WTF\wtf\MainThread.h" />
+    <ClInclude Include="..\src\WTF\wtf\PrintStream.h" />
+    <ClInclude Include="..\src\WTF\wtf\StackBounds.h" />
+    <ClInclude Include="..\src\WTF\wtf\TCSystemAlloc.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\CString.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicString.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringHash.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringImpl.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\StringImpl.h" />
+    <ClInclude Include="..\src\WTF\wtf\text\WTFString.h" />
+    <ClInclude Include="..\src\WTF\wtf\Threading.h" />
+    <ClInclude Include="..\src\WTF\wtf\WTFThreadData.h" />
+    <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h" />
+    <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\CharacterNames.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\Collator.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\ScriptCodesFromICU.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\Unicode.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\UnicodeMacrosFromICU.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\UTF8.h" />
+    <ClInclude Include="..\src\WTF\wtf\unicode\icu\UnicodeIcu.h" />
+    <ClInclude Include="..\src\WTF\wtf\UnusedParam.h" />
+    <ClInclude Include="..\src\platform\audio\win\AudioDestinationWin.h" />
+    <ClInclude Include="..\src\platform\audio\win\AudioFileReaderWin.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\ClipNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\DiodeNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\LabSound.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\NoiseNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\PdNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\PWMNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\RecorderNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SfxrNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SoundBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\shim\LengthFunctions.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBasicProcessorNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioBufferSourceNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioContext.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioDestinationNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioListener.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNodeInput.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioNodeOutput.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioParam.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioParamTimeline.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioScheduledSourceNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioSummingJunction.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadDSPKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadFilterNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\BiquadProcessor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ChannelMergerNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ChannelSplitterNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\ConvolverNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DefaultAudioDestinationNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayDSPKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DelayProcessor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\DynamicsCompressorNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\OfflineAudioDestinationNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\OscillatorNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\PannerNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\RealtimeAnalyser.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperDSPKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperNode.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveShaperProcessor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\WaveTable.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioBus.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioChannel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioDSPKernelProcessor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioFIFO.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioPullFIFO.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioResampler.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioResamplerKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\AudioUtilities.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Biquad.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Cone.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DirectConvolver.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Distance.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DynamicsCompressor.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\DynamicsCompressorKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\EqualPowerPanner.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTConvolver.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrame.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrameStub.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFDatabase.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFDatabaseLoader.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFElevation.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFKernel.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\HRTFPanner.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\MultiChannelResampler.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Panner.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\Reverb.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbAccumulationBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbConvolver.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbConvolverStage.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ReverbInputBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\SincResampler.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\VectorMath.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\graphics\FloatPoint3D.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\Logging.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Assertions.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\DataLog.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum-dtoa.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\cached-powers.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\diy-fp.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\double-conversion.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\fast-dtoa.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\fixed-dtoa.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\dtoa\strtod.cc">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\FastMalloc.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\FilePrintStream.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\PrintStream.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\StackBounds.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\TCSystemAlloc.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\CString.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\AtomicString.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringBuilder.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringStatics.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\StringImpl.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\text\WTFString.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\WTFThreadData.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\CollatorDefault.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\UTF8.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\unicode\icu\CollatorICU.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioDestinationWin.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\Modules\webaudio\AnalyserNode.idl" />
+    <None Include="..\src\Modules\webaudio\AudioBuffer.idl" />
+    <None Include="..\src\Modules\webaudio\AudioBufferCallback.idl" />
+    <None Include="..\src\Modules\webaudio\AudioBufferSourceNode.idl" />
+    <None Include="..\src\Modules\webaudio\AudioContext.idl" />
+    <None Include="..\src\Modules\webaudio\AudioDestinationNode.idl" />
+    <None Include="..\src\Modules\webaudio\AudioGain.idl" />
+    <None Include="..\src\Modules\webaudio\AudioListener.idl" />
+    <None Include="..\src\Modules\webaudio\AudioNode.idl" />
+    <None Include="..\src\Modules\webaudio\AudioParam.idl" />
+    <None Include="..\src\Modules\webaudio\AudioSourceNode.idl" />
+    <None Include="..\src\Modules\webaudio\BiquadFilterNode.idl" />
+    <None Include="..\src\Modules\webaudio\ChannelMergerNode.idl" />
+    <None Include="..\src\Modules\webaudio\ChannelSplitterNode.idl" />
+    <None Include="..\src\Modules\webaudio\ConvolverNode.idl" />
+    <None Include="..\src\Modules\webaudio\DelayNode.idl" />
+    <None Include="..\src\Modules\webaudio\DOMWindowWebAudio.idl" />
+    <None Include="..\src\Modules\webaudio\DynamicsCompressorNode.idl" />
+    <None Include="..\src\Modules\webaudio\GainNode.idl" />
+    <None Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.idl" />
+    <None Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.idl" />
+    <None Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.idl" />
+    <None Include="..\src\Modules\webaudio\OscillatorNode.idl" />
+    <None Include="..\src\Modules\webaudio\PannerNode.idl" />
+    <None Include="..\src\Modules\webaudio\WaveShaperNode.idl" />
+    <None Include="..\src\Modules\webaudio\WaveTable.idl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

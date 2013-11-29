@@ -40,7 +40,7 @@ namespace LabSound {
         uninitialize();
     }
 
-    void NoiseNode::setType(unsigned short type, ExceptionCode& ec)
+    void NoiseNode::setType(unsigned short type, WebCore::ExceptionCode& ec)
     {
         switch (type) {
             case WHITE:
