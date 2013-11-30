@@ -42,7 +42,6 @@
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Threading.h>
 #include <vector>
-#include <wtf/text/AtomicStringHash.h>
 
 namespace WebCore {
 

@@ -46,7 +46,6 @@
 #include "UnusedParam.h"
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/WTFThreadData.h>
 #include <errno.h>
 
 #if !COMPILER(MSVC)
@@ -131,14 +130,10 @@ void initializeThreading()
 #endif
 
     WTF::double_conversion::initialize();
-    // StringImpl::empty() does not construct its static string in a threadsafe fashion,
-    // so ensure it has been initialized from here.
-    StringImpl::empty();
     atomicallyInitializedStaticMutex = new Mutex;
     threadMapMutex();
     initializeRandomNumberGenerator();
     ThreadIdentifierData::initializeOnce();
-    wtfThreadData();
     s_dtoaP5Mutex = new Mutex;
 }
 

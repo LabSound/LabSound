@@ -27,7 +27,6 @@
 #include "DataLog.h"
 #include <stdarg.h>
 #include <wtf/FilePrintStream.h>
-#include <wtf/WTFThreadData.h>
 #include <wtf/Threading.h>
 
 #if OS(UNIX)
