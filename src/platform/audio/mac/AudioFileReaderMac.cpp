@@ -36,7 +36,6 @@
 #include "AudioFileReader.h"
 #include "FloatConversion.h"
 #include <CoreFoundation/CoreFoundation.h>
-#include <wtf/RetainPtr.h>
 
 namespace WebCore {
 
@@ -63,12 +62,12 @@ AudioFileReader::AudioFileReader(const char* filePath)
     , m_audioFileID(0)
     , m_extAudioFileRef(0)
 {
-    RetainPtr<CFStringRef> filePathString(AdoptCF, CFStringCreateWithCString(kCFAllocatorDefault, filePath, kCFStringEncodingUTF8));
-    RetainPtr<CFURLRef> url(AdoptCF, CFURLCreateWithFileSystemPath(kCFAllocatorDefault, filePathString.get(), kCFURLPOSIXPathStyle, false));
-    if (!url)
+    m_filePathStringRef = CFStringCreateWithCString(kCFAllocatorDefault, filePath, kCFStringEncodingUTF8);
+    m_urlRef = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, m_filePathStringRef, kCFURLPOSIXPathStyle, false);
+    if (!m_urlRef)
         return;
 
-    ExtAudioFileOpenURL(url.get(), &m_extAudioFileRef);
+    ExtAudioFileOpenURL(m_urlRef, &m_extAudioFileRef);
 }
 
 AudioFileReader::AudioFileReader(const void* data, size_t dataSize)
@@ -76,6 +75,8 @@ AudioFileReader::AudioFileReader(const void* data, size_t dataSize)
     , m_dataSize(dataSize)
     , m_audioFileID(0)
     , m_extAudioFileRef(0)
+    , m_urlRef(0)
+    , m_filePathStringRef(0)
 {
     OSStatus result = AudioFileOpenWithCallbacks(this, readProc, 0, getSizeProc, 0, 0, &m_audioFileID);
 
@@ -98,6 +99,11 @@ AudioFileReader::~AudioFileReader()
         AudioFileClose(m_audioFileID);
         
     m_audioFileID = 0;
+
+    if (m_urlRef)
+        CFRelease(m_urlRef);
+    if (m_filePathStringRef)
+        CFRelease(m_filePathStringRef);
 }
 
 OSStatus AudioFileReader::readProc(void* clientData, SInt64 position, UInt32 requestCount, void* buffer, UInt32* actualCount)

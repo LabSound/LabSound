@@ -63,6 +63,9 @@ private:
 
     AudioStreamBasicDescription m_fileDataFormat;
     AudioStreamBasicDescription m_clientDataFormat;
+
+    CFURLRef m_urlRef;
+    CFStringRef m_filePathStringRef;
 };
 
 } // namespace WebCore

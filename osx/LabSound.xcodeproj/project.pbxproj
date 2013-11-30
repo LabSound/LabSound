@@ -579,7 +579,6 @@
 		E2FB8631183D202600A5A764 /* RefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCounted.h; sourceTree = "<group>"; };
 		E2FB8635183D202600A5A764 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtr.h; sourceTree = "<group>"; };
 		E2FB8636183D202600A5A764 /* RefPtrHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtrHashMap.h; sourceTree = "<group>"; };
-		E2FB8637183D202600A5A764 /* RetainPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetainPtr.h; sourceTree = "<group>"; };
 		E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaturatedArithmetic.h; sourceTree = "<group>"; };
 		E2FB863A183D202600A5A764 /* SentinelLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SentinelLinkedList.h; sourceTree = "<group>"; };
 		E2FB863D183D202600A5A764 /* SimpleStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleStats.h; sourceTree = "<group>"; };
@@ -1216,7 +1215,6 @@
 				E2FB8631183D202600A5A764 /* RefCounted.h */,
 				E2FB8635183D202600A5A764 /* RefPtr.h */,
 				E2FB8636183D202600A5A764 /* RefPtrHashMap.h */,
-				E2FB8637183D202600A5A764 /* RetainPtr.h */,
 				E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */,
 				E2FB863A183D202600A5A764 /* SentinelLinkedList.h */,
 				E2FB863D183D202600A5A764 /* SimpleStats.h */,
