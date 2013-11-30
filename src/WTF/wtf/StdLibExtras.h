@@ -142,13 +142,6 @@ namespace WTF {
         return u.to;
     }
 
-    template<typename ToType, typename FromType>
-    inline ToType safeCast(FromType value)
-    {
-        ASSERT(isInBounds<ToType>(value));
-        return static_cast<ToType>(value);
-    }
-
     // Returns a count of the number of bits set in 'bits'.
     inline size_t bitCount(unsigned bits)
     {
@@ -451,6 +444,5 @@ using WTF::binarySearch;
 using WTF::tryBinarySearch;
 using WTF::approximateBinarySearch;
 using WTF::bitwise_cast;
-using WTF::safeCast;
 
 #endif // WTF_StdLibExtras_h

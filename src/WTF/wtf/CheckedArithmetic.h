@@ -27,7 +27,6 @@
 #define CheckedArithmetic_h
 
 #include <wtf/Assertions.h>
-#include <wtf/TypeTraits.h>
 
 #include <limits>
 #include <stdint.h>
@@ -153,7 +152,7 @@ template <typename Target, typename Source> struct BoundsChecker<Target, Source,
         return true;
     }
 };
-
+/*
 template <typename Target, typename Source, bool CanElide = IsSameType<Target, Source>::value || (sizeof(Target) > sizeof(Source)) > struct BoundsCheckElider;
 template <typename Target, typename Source> struct BoundsCheckElider<Target, Source, true> {
     static bool inBounds(Source) { return true; }
@@ -165,7 +164,7 @@ template <typename Target, typename Source> static inline bool isInBounds(Source
 {
     return BoundsCheckElider<Target, Source>::inBounds(value);
 }
-
+*/
 template <typename T> struct RemoveChecked {
     typedef T CleanType;
     static const CleanType DefaultValue = 0;    
@@ -427,21 +426,21 @@ public:
         if (workAroundClangBug())
             this->overflowed();
     }
-
+/*
     template <typename U> Checked(U value)
     {
         if (!isInBounds<T>(value))
             this->overflowed();
         m_value = static_cast<T>(value);
     }
-    
+*/
     template <typename V> Checked(const Checked<T, V>& rhs)
         : m_value(rhs.m_value)
     {
         if (rhs.hasOverflowed())
             this->overflowed();
     }
-    
+/*
     template <typename U> Checked(const Checked<U, OverflowHandler>& rhs)
         : OverflowHandler(rhs)
     {
@@ -458,7 +457,7 @@ public:
             this->overflowed();
         m_value = static_cast<T>(rhs.m_value);
     }
-    
+    */
     const Checked& operator=(Checked rhs)
     {
         this->clearOverflow();

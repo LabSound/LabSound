@@ -51,9 +51,9 @@ namespace WebCore {
 
         // It's OK to call allocate() multiple times, but data will *not* be copied from an initial allocation
         // if re-allocated. Allocations are zero-initialized.
-        void allocate(Checked<size_t> n)
+        void allocate(size_t n)
         {
-            Checked<unsigned> initialSize = sizeof(T) * n;
+            size_t initialSize = sizeof(T) * n;
 
 #if USE(WEBAUDIO_FFMPEG) || USE(WEBAUDIO_OPENMAX_DL_FFT)
             const size_t alignment = 32;
@@ -71,7 +71,7 @@ namespace WebCore {
                 // then we'll have to reallocate and from then on allocate extra.
                 static size_t extraAllocationBytes = 0;
 
-                T* allocation = static_cast<T*>(fastMalloc((initialSize + extraAllocationBytes).unsafeGet()));
+                T* allocation = static_cast<T*>(fastMalloc(initialSize + extraAllocationBytes));
                 if (!allocation)
                     CRASH();
                 T* alignedData = alignedAddress(allocation, alignment);
@@ -79,7 +79,7 @@ namespace WebCore {
                 if (alignedData == allocation || extraAllocationBytes == alignment) {
                     m_allocation = allocation;
                     m_alignedData = alignedData;
-                    m_size = n.unsafeGet();
+                    m_size = n;
                     isAllocationGood = true;
                     zero();
                 } else {

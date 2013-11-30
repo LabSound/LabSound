@@ -36,8 +36,7 @@
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
-#include <wtf/text/CString.h>
-#include <wtf/text/WTFString.h>
+#include <string>
 
 namespace WebCore {
 
@@ -50,7 +49,7 @@ public:
     // Normally, there will only be a single HRTF database set, but this API supports the possibility of multiple ones with different names.
     // Interpolated azimuths will be generated based on InterpolationFactor.
     // Valid values for elevation are -45 -> +90 in 15 degree increments.
-    static PassOwnPtr<HRTFElevation> createForSubject(const String& subjectName, int elevation, float sampleRate);
+    static PassOwnPtr<HRTFElevation> createForSubject(const std::string& subjectName, int elevation, float sampleRate);
 
     // Given two HRTFElevations, and an interpolation factor x: 0 -> 1, returns an interpolated HRTFElevation.
     static PassOwnPtr<HRTFElevation> createByInterpolatingSlices(HRTFElevation* hrtfElevation1, HRTFElevation* hrtfElevation2, float x, float sampleRate);
@@ -83,13 +82,13 @@ public:
     // Valid values for azimuth are 0 -> 345 in 15 degree increments.
     // Valid values for elevation are -45 -> +90 in 15 degree increments.
     // Returns true on success.
-    static bool calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const String& subjectName,
+    static bool calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
                                                     RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR);
 
     // Given a specific azimuth and elevation angle, returns the left and right HRTFKernel in kernelL and kernelR.
     // This method averages the measured response using symmetry of azimuth (for example by averaging the -30.0 and +30.0 azimuth responses).
     // Returns true on success.
-    static bool calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const String& subjectName,
+    static bool calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
                                                              RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR);
 
 private:

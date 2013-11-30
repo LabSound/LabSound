@@ -44,6 +44,7 @@
 #include <wtf/OwnPtr.h>
 
 #include <iostream>
+#include <string>
 
 using namespace std;
  
@@ -72,15 +73,15 @@ const float ResponseSampleRate = 44100;
 #ifdef USE_CONCATENATED_IMPULSE_RESPONSES
 // Lazily load a concatenated HRTF database for given subject and store it in a
 // local hash table to ensure quicok efficient future retrievals.
-static AudioBus* getConcatenatedImpulseResponsesForSubject(const String& subjectName)
+static AudioBus* getConcatenatedImpulseResponsesForSubject(const std::string& subjectName)
 {
-    typedef HashMap<String, AudioBus*> AudioBusMap;
+    typedef HashMap<std::string, AudioBus*> AudioBusMap;
     DEFINE_STATIC_LOCAL(AudioBusMap, audioBusMap, ());
 
     AudioBus* bus;
     AudioBusMap::iterator iterator = audioBusMap.find(subjectName);
     if (iterator == audioBusMap.end()) {
-        OwnPtr<AudioBus> concatenatedImpulseResponses = AudioBus::loadPlatformResource(subjectName.utf8().data(), ResponseSampleRate);
+        OwnPtr<AudioBus> concatenatedImpulseResponses = AudioBus::loadPlatformResource(subjectName.c_str(), ResponseSampleRate);
         bus = concatenatedImpulseResponses.leakPtr();
         audioBusMap.set(subjectName, bus);
     } else
@@ -101,7 +102,7 @@ static AudioBus* getConcatenatedImpulseResponsesForSubject(const String& subject
 
 // Takes advantage of the symmetry and creates a composite version of the two measured versions.  For example, we have both azimuth 30 and -30 degrees
 // where the roles of left and right ears are reversed with respect to each other.
-bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const String& subjectName,
+bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
                                                                  RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR)
 {
     RefPtr<HRTFKernel> kernelL1;
@@ -126,7 +127,7 @@ bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(int azimuth, in
     return true;
 }
 
-bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const String& subjectName,
+bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
                                                         RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR)
 {
     // Valid values for azimuth are 0 -> 345 in 15 degree increments.
@@ -178,13 +179,14 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     AudioChannel* leftEarImpulseResponse = response->channel(AudioBus::ChannelLeft);
     AudioChannel* rightEarImpulseResponse = response->channel(AudioBus::ChannelRight);
 #else
-    String resourceName = String::format("IRC_%s_C_R0195_T%03d_P%03d", subjectName.utf8().data(), azimuth, positiveElevation);
-
-    OwnPtr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.utf8().data(), sampleRate));
+    char tempStr[16];
+    sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
+    std::string resourceName = "IRC_" + subjectName + "_C_R0195_T" + tempStr;
+    OwnPtr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.c_str(), sampleRate));
 
     // @Lab removed ASSERT(impulseResponse.get());
     if (!impulseResponse.get()) {
-        std::cerr << "Impulse response files not found " << resourceName.utf8().data() << std::endl;
+        std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
         return false;
     }
     
@@ -241,7 +243,7 @@ static int maxElevations[] = {
     45 //  345 
 };
 
-PassOwnPtr<HRTFElevation> HRTFElevation::createForSubject(const String& subjectName, int elevation, float sampleRate)
+    PassOwnPtr<HRTFElevation> HRTFElevation::createForSubject(const std::string& subjectName, int elevation, float sampleRate)
 {
     bool isElevationGood = elevation >= -45 && elevation <= 90 && (elevation / 15) * 15 == elevation;
     ASSERT(isElevationGood);

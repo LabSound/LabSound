@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>DBF8CCF6-8B15-4DD7-9AFE-4287CA99A00C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>LabSound-Examples</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>79E35EB3-F7FA-4E2F-972B-BBCA57C6C919</key>
+		<string>https://github.com/meshula/libpd.git</string>
+		<key>EDAAAC06-2D62-4B79-A6F3-2BAE549B76B3</key>
+		<string>ssh://github.com/meshula/LabSound.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>examples/osx/LabSound-Examples.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>79E35EB3-F7FA-4E2F-972B-BBCA57C6C919</key>
+		<string>../../../src/libpd</string>
+		<key>EDAAAC06-2D62-4B79-A6F3-2BAE549B76B3</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/meshula/LabSound.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EDAAAC06-2D62-4B79-A6F3-2BAE549B76B3</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EDAAAC06-2D62-4B79-A6F3-2BAE549B76B3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>LabSound</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>79E35EB3-F7FA-4E2F-972B-BBCA57C6C919</string>
+			<key>IDESourceControlWCCName</key>
+			<string>libpd</string>
+		</dict>
+	</array>
+</dict>
+</plist>

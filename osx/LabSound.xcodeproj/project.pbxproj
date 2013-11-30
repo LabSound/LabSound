@@ -112,7 +112,6 @@
 		E2FB8718183D202700A5A764 /* Threading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866D183D202700A5A764 /* Threading.cpp */; };
 		E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866F183D202700A5A764 /* ThreadingNone.cpp */; };
 		E2FB871A183D202700A5A764 /* ThreadingPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8671183D202700A5A764 /* ThreadingPthreads.cpp */; };
-		E2FB871F183D202700A5A764 /* TypeTraits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB867D183D202700A5A764 /* TypeTraits.cpp */; };
 		E2FB8720183D202700A5A764 /* CollatorDefault.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8686183D202700A5A764 /* CollatorDefault.cpp */; };
 		E2FB8722183D202700A5A764 /* CollatorICU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB868B183D202700A5A764 /* CollatorICU.cpp */; };
 		E2FB8723183D202700A5A764 /* UTF8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8692183D202700A5A764 /* UTF8.cpp */; };
@@ -571,7 +570,6 @@
 		E2FB85C0183D202600A5A764 /* dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dtoa.h; sourceTree = "<group>"; };
 		E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicAnnotations.cpp; sourceTree = "<group>"; };
 		E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicAnnotations.h; sourceTree = "<group>"; };
-		E2FB85C8183D202600A5A764 /* Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Encoder.h; sourceTree = "<group>"; };
 		E2FB85C9183D202600A5A764 /* ExportMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportMacros.h; sourceTree = "<group>"; };
 		E2FB85CA183D202600A5A764 /* FastAllocBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAllocBase.h; sourceTree = "<group>"; };
 		E2FB85CB183D202600A5A764 /* FastBitVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastBitVector.h; sourceTree = "<group>"; };
@@ -702,7 +700,6 @@
 		E2FB8679183D202700A5A764 /* ThreadSafeRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadSafeRefCounted.h; sourceTree = "<group>"; };
 		E2FB867A183D202700A5A764 /* ThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadSpecific.h; sourceTree = "<group>"; };
 		E2FB867C183D202700A5A764 /* TypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypedArrayBase.h; sourceTree = "<group>"; };
-		E2FB867D183D202700A5A764 /* TypeTraits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeTraits.cpp; sourceTree = "<group>"; };
 		E2FB867E183D202700A5A764 /* TypeTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeTraits.h; sourceTree = "<group>"; };
 		E2FB867F183D202700A5A764 /* Uint16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint16Array.h; sourceTree = "<group>"; };
 		E2FB8680183D202700A5A764 /* Uint32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint32Array.h; sourceTree = "<group>"; };
@@ -1268,7 +1265,6 @@
 				E2FB85C0183D202600A5A764 /* dtoa.h */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
 				E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */,
-				E2FB85C8183D202600A5A764 /* Encoder.h */,
 				E2FB85C9183D202600A5A764 /* ExportMacros.h */,
 				E2FB85CA183D202600A5A764 /* FastAllocBase.h */,
 				E2FB85CB183D202600A5A764 /* FastBitVector.h */,
@@ -1381,7 +1377,6 @@
 				E2FB8679183D202700A5A764 /* ThreadSafeRefCounted.h */,
 				E2FB867A183D202700A5A764 /* ThreadSpecific.h */,
 				E2FB867C183D202700A5A764 /* TypedArrayBase.h */,
-				E2FB867D183D202700A5A764 /* TypeTraits.cpp */,
 				E2FB867E183D202700A5A764 /* TypeTraits.h */,
 				E2FB867F183D202700A5A764 /* Uint16Array.h */,
 				E2FB8680183D202700A5A764 /* Uint32Array.h */,
@@ -2268,7 +2263,6 @@
 				E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */,
 				E2FB86DC183D202700A5A764 /* DecimalNumber.cpp in Sources */,
 				E2FB8718183D202700A5A764 /* Threading.cpp in Sources */,
-				E2FB871F183D202700A5A764 /* TypeTraits.cpp in Sources */,
 				E2FB86E7183D202700A5A764 /* strtod.cc in Sources */,
 				E2FB84BB183D1E8F00A5A764 /* SupersawNode.cpp in Sources */,
 				E2FB8A15183D20E300A5A764 /* LayoutBoxExtent.cpp in Sources */,
