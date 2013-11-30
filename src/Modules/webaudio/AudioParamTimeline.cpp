@@ -97,7 +97,7 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
             break;
     }
 
-    m_events.insert(i, event);
+    m_events.insert(m_events.begin() + i, event);
 }
 
 void AudioParamTimeline::cancelScheduledValues(float startTime)
@@ -107,7 +107,7 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     // Remove all events starting at startTime.
     for (unsigned i = 0; i < m_events.size(); ++i) {
         if (m_events[i].time() >= startTime) {
-            m_events.remove(i, m_events.size() - i);
+            m_events.erase(m_events.begin() + i, m_events.end());
             break;
         }
     }

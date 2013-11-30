@@ -35,7 +35,7 @@
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -91,7 +91,7 @@ private:
     float m_sampleRate;
 };
 
-typedef Vector<RefPtr<HRTFKernel> > HRTFKernelList;
+typedef std::vector<RefPtr<HRTFKernel> > HRTFKernelList;
 
 } // namespace WebCore
 

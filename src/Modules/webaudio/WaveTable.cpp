@@ -158,7 +158,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
 
-    m_bandLimitedTables.reserveCapacity(m_numberOfRanges);
+    m_bandLimitedTables.reserve(m_numberOfRanges);
 
     for (unsigned rangeIndex = 0; rangeIndex < m_numberOfRanges; ++rangeIndex) {
         // This FFTFrame is used to cull partials (represented by frequency bins).
@@ -199,7 +199,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
 
         // Create the band-limited table.
         OwnPtr<AudioFloatArray> table = adoptPtr(new AudioFloatArray(m_waveTableSize));
-        m_bandLimitedTables.append(table.release());
+        m_bandLimitedTables.push_back(table.release());
 
         // Apply an inverse FFT to generate the time-domain table data.
         float* data = m_bandLimitedTables[rangeIndex]->data();

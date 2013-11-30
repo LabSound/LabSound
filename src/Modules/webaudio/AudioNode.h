@@ -28,7 +28,7 @@
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 0
 
@@ -173,8 +173,8 @@ private:
     NodeType m_nodeType;
     RefPtr<AudioContext> m_context;
     float m_sampleRate;
-    Vector<OwnPtr<AudioNodeInput> > m_inputs;
-    Vector<OwnPtr<AudioNodeOutput> > m_outputs;
+    std::vector<OwnPtr<AudioNodeInput> > m_inputs;
+    std::vector<OwnPtr<AudioNodeOutput> > m_outputs;
 
     double m_lastProcessingTime;
     double m_lastNonSilentTime;

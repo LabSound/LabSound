@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MidiSampleApp/MidiSampleApp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../LabMidi/src/LabMidi.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:../../osx/LabSound.xcodeproj">
    </FileRef>
    <FileRef

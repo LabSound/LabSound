@@ -117,14 +117,14 @@ void Reverb::initialize(AudioBus* impulseResponseBuffer, size_t renderSliceSize,
 
     // The reverb can handle a mono impulse response and still do stereo processing
     size_t numResponseChannels = impulseResponseBuffer->numberOfChannels();
-    m_convolvers.reserveCapacity(numberOfChannels);
+    m_convolvers.reserve(numberOfChannels);
 
     int convolverRenderPhase = 0;
     for (size_t i = 0; i < numResponseChannels; ++i) {
         AudioChannel* channel = impulseResponseBuffer->channel(i);
 
         OwnPtr<ReverbConvolver> convolver = adoptPtr(new ReverbConvolver(channel, renderSliceSize, maxFFTSize, convolverRenderPhase, useBackgroundThreads));
-        m_convolvers.append(convolver.release());
+        m_convolvers.push_back(convolver.release());
 
         convolverRenderPhase += renderSliceSize;
     }
@@ -243,7 +243,7 @@ void Reverb::reset()
 
 size_t Reverb::latencyFrames() const
 {
-    return !m_convolvers.isEmpty() ? m_convolvers.first()->latencyFrames() : 0;
+    return !m_convolvers.empty() ? (*m_convolvers.begin())->latencyFrames() : 0;
 }
 
 } // namespace WebCore

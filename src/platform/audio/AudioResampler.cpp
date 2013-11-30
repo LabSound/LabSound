@@ -41,7 +41,7 @@ const double AudioResampler::MaxRate = 8.0;
 AudioResampler::AudioResampler()
     : m_rate(1.0)
 {
-    m_kernels.append(adoptPtr(new AudioResamplerKernel(this)));
+    m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
     m_sourceBus = adoptPtr(new AudioBus(1, 0, false));
 }
 
@@ -49,7 +49,7 @@ AudioResampler::AudioResampler(unsigned numberOfChannels)
     : m_rate(1.0)
 {
     for (unsigned i = 0; i < numberOfChannels; ++i)
-        m_kernels.append(adoptPtr(new AudioResamplerKernel(this)));
+        m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
 
     m_sourceBus = adoptPtr(new AudioBus(numberOfChannels, 0, false));
 }
@@ -63,7 +63,7 @@ void AudioResampler::configureChannels(unsigned numberOfChannels)
     // First deal with adding or removing kernels.
     if (numberOfChannels > currentSize) {
         for (unsigned i = currentSize; i < numberOfChannels; ++i)
-            m_kernels.append(adoptPtr(new AudioResamplerKernel(this)));
+            m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
     } else
         m_kernels.resize(numberOfChannels);
 

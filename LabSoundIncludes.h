@@ -77,7 +77,6 @@
 
 // Shims
 #include "src/shim/ActiveDOMObject.h"
-#include "src/shim/ContextDestructionObserver.h"
 #include "src/shim/EventListener.h"
 #include "src/shim/EventTarget.h"
 #include "src/shim/ExceptionCode.h"

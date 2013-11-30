@@ -41,7 +41,7 @@
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Threading.h>
-#include <wtf/Vector.h>
+#include <vector>
 #include <wtf/text/AtomicStringHash.h>
 
 namespace WebCore {
@@ -234,16 +234,6 @@ public:
     // Must be called on main thread.
     void removeMarkedSummingJunction(AudioSummingJunction*);
 
-    // EventTarget
-/* LabSound    
-    virtual const AtomicString& interfaceName() const;
-    virtual ScriptExecutionContext* scriptExecutionContext() const;
-    virtual EventTargetData* eventTargetData() { return &m_eventTargetData; }
-    virtual EventTargetData* ensureEventTargetData() { return &m_eventTargetData; }
-
-    DEFINE_ATTRIBUTE_EVENT_LISTENER(complete);
-*/
-    
     // Reconcile ref/deref which are defined both in ThreadSafeRefCounted and EventTarget.
     using ThreadSafeRefCounted<AudioContext>::ref;
     using ThreadSafeRefCounted<AudioContext>::deref;
@@ -292,21 +282,21 @@ private:
     RefPtr<AudioListener> m_listener;
 
     // Only accessed in the audio thread.
-    Vector<AudioNode*> m_finishedNodes;
+    std::vector<AudioNode*> m_finishedNodes;
 
     // We don't use RefPtr<AudioNode> here because AudioNode has a more complex ref() / deref() implementation
     // with an optional argument for refType.  We need to use the special refType: RefTypeConnection
     // Either accessed when the graph lock is held, or on the main thread when the audio thread has finished.
-    Vector<AudioNode*> m_referencedNodes;
+    std::vector<AudioNode*> m_referencedNodes;
 
     // Accumulate nodes which need to be deleted here.
     // This is copied to m_nodesToDelete at the end of a render cycle in handlePostRenderTasks(), where we're assured of a stable graph
     // state which will have no references to any of the nodes in m_nodesToDelete once the context lock is released
     // (when handlePostRenderTasks() has completed).
-    Vector<AudioNode*> m_nodesMarkedForDeletion;
+    std::vector<AudioNode*> m_nodesMarkedForDeletion;
 
     // They will be scheduled for deletion (on the main thread) at the end of a render cycle (in realtime thread).
-    Vector<AudioNode*> m_nodesToDelete;
+    std::vector<AudioNode*> m_nodesToDelete;
     bool m_isDeletionScheduled;
 
     // Only accessed when the graph lock is held.
@@ -315,10 +305,10 @@ private:
     void handleDirtyAudioSummingJunctions();
     void handleDirtyAudioNodeOutputs();
 
-    // For the sake of thread safety, we maintain a seperate Vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
+    // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
     // It will be copied from m_automaticPullNodes by updateAutomaticPullNodes() at the very start or end of the rendering quantum.
     HashSet<AudioNode*> m_automaticPullNodes;
-    Vector<AudioNode*> m_renderingAutomaticPullNodes;
+    std::vector<AudioNode*> m_renderingAutomaticPullNodes;
     // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
     bool m_automaticPullNodesNeedUpdating;
     void updateAutomaticPullNodes();
@@ -331,7 +321,7 @@ private:
     volatile ThreadIdentifier m_graphOwnerThread; // if the lock is held then this is the thread which owns it, otherwise == UndefinedThreadIdentifier
     
     // Only accessed in the audio thread.
-    Vector<AudioNode*> m_deferredFinishDerefList;
+    std::vector<AudioNode*> m_deferredFinishDerefList;
     
     // HRTF Database loader
     RefPtr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;

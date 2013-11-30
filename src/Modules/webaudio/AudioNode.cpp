@@ -97,12 +97,12 @@ void AudioNode::lazyInitialize()
 
 void AudioNode::addInput(PassOwnPtr<AudioNodeInput> input)
 {
-    m_inputs.append(input);
+    m_inputs.push_back(input);
 }
 
 void AudioNode::addOutput(PassOwnPtr<AudioNodeOutput> output)
 {
-    m_outputs.append(output);
+    m_outputs.push_back(output);
 }
 
 AudioNodeInput* AudioNode::input(unsigned i)
@@ -227,8 +227,7 @@ void AudioNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 {
     ASSERT(context()->isAudioThread() && context()->isGraphOwner());
 
-    ASSERT(m_inputs.contains(input));
-    if (!m_inputs.contains(input))
+    if (std::find(m_inputs.begin(), m_inputs.end(), input) == m_inputs.end())
         return;
 
     input->updateInternalBus();

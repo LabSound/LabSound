@@ -29,11 +29,11 @@
 #include "ArrayBufferView.h"
 
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WTF {
 
-bool ArrayBuffer::transfer(ArrayBufferContents& result, Vector<RefPtr<ArrayBufferView> >& neuteredViews)
+    bool ArrayBuffer::transfer(ArrayBufferContents& result, std::vector<RefPtr<ArrayBufferView> >& neuteredViews)
 {
     RefPtr<ArrayBuffer> keepAlive(this);
 
@@ -48,7 +48,7 @@ bool ArrayBuffer::transfer(ArrayBufferContents& result, Vector<RefPtr<ArrayBuffe
         ArrayBufferView* current = m_firstView;
         removeView(current);
         current->neuter();
-        neuteredViews.append(current);
+        neuteredViews.push_back(current);
     }
     return true;
 }

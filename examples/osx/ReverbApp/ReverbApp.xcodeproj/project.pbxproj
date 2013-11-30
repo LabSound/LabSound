@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E251D9A21849D26000F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9A11849D26000F7B7BC /* libLabSound.a */; };
 		E2E0C903183C42F9007AFB48 /* ReverbApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0C902183C42F9007AFB48 /* ReverbApp.1 */; };
 		E2E0C90A183C431C007AFB48 /* ReverbApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C909183C431C007AFB48 /* ReverbApp.cpp */; };
 		E2E0C90C183C43AD007AFB48 /* ReverbSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C90B183C43AD007AFB48 /* ReverbSample.cpp */; };
-		E2E0C90E183C43BE007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C90D183C43BE007AFB48 /* libLabSound.a */; };
 		E2E0C91A183C43E6007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C90F183C43E5007AFB48 /* Accelerate.framework */; };
 		E2E0C91B183C43E6007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C910183C43E5007AFB48 /* ApplicationServices.framework */; };
 		E2E0C91C183C43E6007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C911183C43E5007AFB48 /* AudioToolbox.framework */; };
@@ -38,6 +38,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E251D9A11849D26000F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0C8FD183C42F9007AFB48 /* ReverbApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ReverbApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0C902183C42F9007AFB48 /* ReverbApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ReverbApp.1; sourceTree = "<group>"; };
 		E2E0C909183C431C007AFB48 /* ReverbApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbApp.cpp; path = ../../../src/ReverbApp.cpp; sourceTree = "<group>"; };
@@ -61,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E251D9A21849D26000F7B7BC /* libLabSound.a in Frameworks */,
 				E2E0C91A183C43E6007AFB48 /* Accelerate.framework in Frameworks */,
 				E2E0C91B183C43E6007AFB48 /* ApplicationServices.framework in Frameworks */,
 				E2E0C91C183C43E6007AFB48 /* AudioToolbox.framework in Frameworks */,
@@ -72,7 +74,6 @@
 				E2E0C922183C43E6007AFB48 /* CoreMIDI.framework in Frameworks */,
 				E2E0C923183C43E6007AFB48 /* CoreVideo.framework in Frameworks */,
 				E2E0C924183C43E6007AFB48 /* libicucore.dylib in Frameworks */,
-				E2E0C90E183C43BE007AFB48 /* libLabSound.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +110,7 @@
 		E2E0C925183C43EB007AFB48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E251D9A11849D26000F7B7BC /* libLabSound.a */,
 				E2E0C90F183C43E5007AFB48 /* Accelerate.framework */,
 				E2E0C910183C43E5007AFB48 /* ApplicationServices.framework */,
 				E2E0C911183C43E5007AFB48 /* AudioToolbox.framework */,
@@ -270,6 +272,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
@@ -294,6 +297,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
@@ -319,6 +323,7 @@
 				E2E0C908183C42F9007AFB48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

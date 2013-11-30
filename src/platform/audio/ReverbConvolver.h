@@ -38,7 +38,7 @@
 #include <wtf/OwnPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Threading.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -65,8 +65,8 @@ public:
 
     size_t latencyFrames() const;
 private:
-    Vector<OwnPtr<ReverbConvolverStage> > m_stages;
-    Vector<OwnPtr<ReverbConvolverStage> > m_backgroundStages;
+    std::vector<OwnPtr<ReverbConvolverStage> > m_stages;
+    std::vector<OwnPtr<ReverbConvolverStage> > m_backgroundStages;
     size_t m_impulseResponseLength;
 
     ReverbAccumulationBuffer m_accumulationBuffer;

@@ -58,11 +58,11 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate)
     if (numberOfChannels > MaxBusChannels)
         return;
 
-    m_channels.reserveInitialCapacity(numberOfChannels);
+    m_channels.reserve(numberOfChannels);
 
     for (unsigned i = 0; i < numberOfChannels; ++i) {
         PassOwnPtr<AudioChannel> channel = allocate ? adoptPtr(new AudioChannel(length)) : adoptPtr(new AudioChannel(0, length));
-        m_channels.append(channel);
+        m_channels.push_back(channel);
     }
 
     m_layout = LayoutCanonical; // for now this is the only layout we define

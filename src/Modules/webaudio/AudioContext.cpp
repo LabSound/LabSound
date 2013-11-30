@@ -251,7 +251,7 @@ void AudioContext::clear()
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
     do {
         deleteMarkedNodes();
-        m_nodesToDelete.append(m_nodesMarkedForDeletion);
+        m_nodesToDelete.insert(m_nodesToDelete.end(), m_nodesMarkedForDeletion.begin(), m_nodesMarkedForDeletion.end());
         m_nodesMarkedForDeletion.clear();
     } while (m_nodesToDelete.size());
 
@@ -602,7 +602,7 @@ PassRefPtr<WaveTable> AudioContext::createWaveTable(Float32Array* real, Float32A
 void AudioContext::notifyNodeFinishedProcessing(AudioNode* node)
 {
     ASSERT(isAudioThread());
-    m_finishedNodes.append(node);
+    m_finishedNodes.push_back(node);
 }
 
 void AudioContext::derefFinishedSourceNodes()
@@ -621,7 +621,7 @@ void AudioContext::refNode(AudioNode* node)
     AutoLocker locker(this);
     
     node->ref(AudioNode::RefTypeConnection);
-    m_referencedNodes.append(node);
+    m_referencedNodes.push_back(node);
 }
 
 void AudioContext::derefNode(AudioNode* node)
@@ -630,9 +630,9 @@ void AudioContext::derefNode(AudioNode* node)
     
     node->deref(AudioNode::RefTypeConnection);
 
-    for (unsigned i = 0; i < m_referencedNodes.size(); ++i) {
-        if (node == m_referencedNodes[i]) {
-            m_referencedNodes.remove(i);
+    for (std::vector<AudioNode*>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
+        if (node == *i) {
+            m_referencedNodes.erase(i);
             break;
         }
     }
@@ -719,7 +719,7 @@ bool AudioContext::isGraphOwner() const
 void AudioContext::addDeferredFinishDeref(AudioNode* node)
 {
     ASSERT(isAudioThread());
-    m_deferredFinishDerefList.append(node);
+    m_deferredFinishDerefList.push_back(node);
 }
 
 void AudioContext::handlePreRenderTasks()
@@ -787,9 +787,9 @@ void AudioContext::markForDeletion(AudioNode* node)
     ASSERT(isGraphOwner());
 
     if (isAudioThreadFinished())
-        m_nodesToDelete.append(node);
+        m_nodesToDelete.push_back(node);
     else
-        m_nodesMarkedForDeletion.append(node);
+        m_nodesMarkedForDeletion.push_back(node);
 
     // This is probably the best time for us to remove the node from automatic pull list,
     // since all connections are gone and we hold the graph lock. Then when handlePostRenderTasks()
@@ -807,7 +807,7 @@ void AudioContext::scheduleNodeDeletion()
 
     // Make sure to call deleteMarkedNodes() on main thread.    
     if (m_nodesMarkedForDeletion.size() && !m_isDeletionScheduled) {
-        m_nodesToDelete.append(m_nodesMarkedForDeletion);
+        m_nodesToDelete.insert(m_nodesToDelete.end(), m_nodesMarkedForDeletion.begin(), m_nodesMarkedForDeletion.end());
         m_nodesMarkedForDeletion.clear();
 
         m_isDeletionScheduled = true;
@@ -841,7 +841,7 @@ void AudioContext::deleteMarkedNodes()
 
         while (size_t n = m_nodesToDelete.size()) {
             AudioNode* node = m_nodesToDelete[n - 1];
-            m_nodesToDelete.removeLast();
+            m_nodesToDelete.pop_back();
 
             // Before deleting the node, clear out any AudioNodeInputs from m_dirtySummingJunctions.
             unsigned numberOfInputs = node->numberOfInputs();
@@ -944,17 +944,7 @@ void AudioContext::processAutomaticPullNodes(size_t framesToProcess)
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
         m_renderingAutomaticPullNodes[i]->processIfNecessary(framesToProcess);
 }
-/* LabSound
-const AtomicString& AudioContext::interfaceName() const
-{
-    return eventNames().interfaceForAudioContext;
-}
 
-ScriptExecutionContext* AudioContext::scriptExecutionContext() const
-{
-    return m_isStopScheduled ? 0 : ActiveDOMObject::scriptExecutionContext();
-}
-*/
 void AudioContext::startRendering()
 {
     destination()->startRendering();

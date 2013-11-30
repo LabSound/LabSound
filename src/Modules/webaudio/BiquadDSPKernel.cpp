@@ -31,7 +31,7 @@
 #include "BiquadProcessor.h"
 #include "FloatConversion.h"
 #include <limits.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -134,7 +134,7 @@ void BiquadDSPKernel::getFrequencyResponse(int nFrequencies,
     if (!isGood)
         return;
 
-    Vector<float> frequency(nFrequencies);
+    std::vector<float> frequency(nFrequencies);
 
     double nyquist = this->nyquist();
 
@@ -150,7 +150,7 @@ void BiquadDSPKernel::getFrequencyResponse(int nFrequencies,
 
     updateCoefficientsIfNecessary(false, true);
 
-    m_biquad.getFrequencyResponse(nFrequencies, frequency.data(), magResponse, phaseResponse);
+    m_biquad.getFrequencyResponse(nFrequencies, &frequency[0], magResponse, phaseResponse);
 }
 
 double BiquadDSPKernel::tailTime() const

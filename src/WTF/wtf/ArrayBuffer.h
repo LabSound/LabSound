@@ -29,7 +29,7 @@
 #include <wtf/HashSet.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WTF {
 
@@ -123,7 +123,7 @@ public:
     void addView(ArrayBufferView*);
     void removeView(ArrayBufferView*);
 
-    WTF_EXPORT_PRIVATE bool transfer(ArrayBufferContents&, Vector<RefPtr<ArrayBufferView> >& neuteredViews);
+    WTF_EXPORT_PRIVATE bool transfer(ArrayBufferContents&, std::vector<RefPtr<ArrayBufferView> >& neuteredViews);
     bool isNeutered() { return !m_contents.m_data; }
 
 #if defined(WTF_USE_V8)

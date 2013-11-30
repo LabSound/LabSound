@@ -78,7 +78,7 @@ void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 
     m_preDelayBuffers.clear();
     for (unsigned i = 0; i < numberOfChannels; ++i)
-        m_preDelayBuffers.append(adoptPtr(new AudioFloatArray(MaxPreDelayFrames)));
+        m_preDelayBuffers.push_back(adoptPtr(new AudioFloatArray(MaxPreDelayFrames)));
 }
 
 void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime)

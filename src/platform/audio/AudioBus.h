@@ -32,7 +32,7 @@
 #include "AudioChannel.h"
 #include <wtf/Noncopyable.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -143,7 +143,7 @@ protected:
     AudioBus() { };
 
     size_t m_length;
-    Vector<OwnPtr<AudioChannel> > m_channels;
+    std::vector<OwnPtr<AudioChannel> > m_channels;
     int m_layout;
     float m_busGain;
     OwnPtr<AudioFloatArray> m_dezipperGainValues;

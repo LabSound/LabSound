@@ -33,7 +33,7 @@
 
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -89,7 +89,7 @@ protected:
     unsigned m_lastPreDelayFrames;
     void setPreDelayTime(float);
 
-    Vector<OwnPtr<AudioFloatArray> > m_preDelayBuffers;
+    std::vector<OwnPtr<AudioFloatArray> > m_preDelayBuffers;
     int m_preDelayReadIndex;
     int m_preDelayWriteIndex;
 

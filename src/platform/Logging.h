@@ -27,7 +27,7 @@
 #define Logging_h
 
 #include <wtf/Assertions.h>
-#include <wtf/text/WTFString.h>
+#include <string>
 
 #if !LOG_DISABLED
 
@@ -79,8 +79,8 @@ extern WTFLogChannel JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, name);
     extern WTFLogChannel* logChannels[];
     extern size_t logChannelCount;
 
-    String logLevelString();
-    WTFLogChannel* logChannelByName(const String&);
+    std::string logLevelString();
+    WTFLogChannel* logChannelByName(const std::string&);
     void initializeLoggingChannelsIfNecessary();
 }
 

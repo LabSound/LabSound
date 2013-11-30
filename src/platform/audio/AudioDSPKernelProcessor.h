@@ -35,7 +35,7 @@
 #include "AudioProcessor.h"
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -70,7 +70,7 @@ public:
 
 protected:
     unsigned m_numberOfChannels;
-    Vector<OwnPtr<AudioDSPKernel> > m_kernels;
+    std::vector<OwnPtr<AudioDSPKernel> > m_kernels;
     bool m_hasJustReset;
 };
 

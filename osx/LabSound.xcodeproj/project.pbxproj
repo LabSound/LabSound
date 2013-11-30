@@ -94,7 +94,6 @@
 		E2FB86FF183D202700A5A764 /* OSRandomSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB860E183D202600A5A764 /* OSRandomSource.cpp */; };
 		E2FB8700183D202700A5A764 /* PageAllocationAligned.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8615183D202600A5A764 /* PageAllocationAligned.cpp */; };
 		E2FB8701183D202700A5A764 /* PageBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8617183D202600A5A764 /* PageBlock.cpp */; };
-		E2FB8702183D202700A5A764 /* ParallelJobsGeneric.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB861B183D202600A5A764 /* ParallelJobsGeneric.cpp */; };
 		E2FB8703183D202700A5A764 /* PrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8625183D202600A5A764 /* PrintStream.cpp */; };
 		E2FB8706183D202700A5A764 /* RAMSize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB862A183D202600A5A764 /* RAMSize.cpp */; };
 		E2FB8707183D202700A5A764 /* RandomNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB862C183D202600A5A764 /* RandomNumber.cpp */; };
@@ -407,7 +406,7 @@
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
 		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
-		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
+		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
 		E251D99E1849B24100F7B7BC /* ForwardDeclarations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForwardDeclarations.h; sourceTree = "<group>"; };
 		E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LabSoundIncludes.h; path = ../LabSoundIncludes.h; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
@@ -631,11 +630,6 @@
 		E2FB8617183D202600A5A764 /* PageBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PageBlock.cpp; sourceTree = "<group>"; };
 		E2FB8618183D202600A5A764 /* PageBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageBlock.h; sourceTree = "<group>"; };
 		E2FB8619183D202600A5A764 /* PageReservation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageReservation.h; sourceTree = "<group>"; };
-		E2FB861A183D202600A5A764 /* ParallelJobs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParallelJobs.h; sourceTree = "<group>"; };
-		E2FB861B183D202600A5A764 /* ParallelJobsGeneric.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParallelJobsGeneric.cpp; sourceTree = "<group>"; };
-		E2FB861C183D202600A5A764 /* ParallelJobsGeneric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParallelJobsGeneric.h; sourceTree = "<group>"; };
-		E2FB861D183D202600A5A764 /* ParallelJobsLibdispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParallelJobsLibdispatch.h; sourceTree = "<group>"; };
-		E2FB861E183D202600A5A764 /* ParallelJobsOpenMP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParallelJobsOpenMP.h; sourceTree = "<group>"; };
 		E2FB861F183D202600A5A764 /* PassOwnArrayPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnArrayPtr.h; sourceTree = "<group>"; };
 		E2FB8620183D202600A5A764 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnPtr.h; sourceTree = "<group>"; };
 		E2FB8621183D202600A5A764 /* PassRefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassRefPtr.h; sourceTree = "<group>"; };
@@ -652,12 +646,10 @@
 		E2FB862F183D202600A5A764 /* RawPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawPointer.h; sourceTree = "<group>"; };
 		E2FB8630183D202600A5A764 /* RedBlackTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RedBlackTree.h; sourceTree = "<group>"; };
 		E2FB8631183D202600A5A764 /* RefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCounted.h; sourceTree = "<group>"; };
-		E2FB8632183D202600A5A764 /* RefCountedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCountedArray.h; sourceTree = "<group>"; };
 		E2FB8635183D202600A5A764 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtr.h; sourceTree = "<group>"; };
 		E2FB8636183D202600A5A764 /* RefPtrHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtrHashMap.h; sourceTree = "<group>"; };
 		E2FB8637183D202600A5A764 /* RetainPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetainPtr.h; sourceTree = "<group>"; };
 		E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaturatedArithmetic.h; sourceTree = "<group>"; };
-		E2FB8639183D202600A5A764 /* SegmentedVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentedVector.h; sourceTree = "<group>"; };
 		E2FB863A183D202600A5A764 /* SentinelLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SentinelLinkedList.h; sourceTree = "<group>"; };
 		E2FB863D183D202600A5A764 /* SimpleStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleStats.h; sourceTree = "<group>"; };
 		E2FB863E183D202600A5A764 /* SinglyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SinglyLinkedList.h; sourceTree = "<group>"; };
@@ -669,7 +661,6 @@
 		E2FB8644183D202600A5A764 /* StackStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackStats.h; sourceTree = "<group>"; };
 		E2FB8645183D202600A5A764 /* StaticConstructors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticConstructors.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
-		E2FB8647183D202600A5A764 /* StreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamBuffer.h; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
 		E2FB864A183D202700A5A764 /* StringHasher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringHasher.h; sourceTree = "<group>"; };
 		E2FB864B183D202700A5A764 /* StringPrintStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPrintStream.cpp; sourceTree = "<group>"; };
@@ -1069,7 +1060,6 @@
 		E2FB88D7183D20E200A5A764 /* Logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logging.cpp; sourceTree = "<group>"; };
 		E2FB88D8183D20E200A5A764 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E2FB8A1A183D217D00A5A764 /* ActiveDOMObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveDOMObject.h; sourceTree = "<group>"; };
-		E2FB8A1B183D217D00A5A764 /* ContextDestructionObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextDestructionObserver.h; sourceTree = "<group>"; };
 		E2FB8A1C183D217D00A5A764 /* EventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListener.h; sourceTree = "<group>"; };
 		E2FB8A1D183D217D00A5A764 /* EventTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventTarget.h; sourceTree = "<group>"; };
 		E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionCode.h; sourceTree = "<group>"; };
@@ -1337,11 +1327,6 @@
 				E2FB8617183D202600A5A764 /* PageBlock.cpp */,
 				E2FB8618183D202600A5A764 /* PageBlock.h */,
 				E2FB8619183D202600A5A764 /* PageReservation.h */,
-				E2FB861A183D202600A5A764 /* ParallelJobs.h */,
-				E2FB861B183D202600A5A764 /* ParallelJobsGeneric.cpp */,
-				E2FB861C183D202600A5A764 /* ParallelJobsGeneric.h */,
-				E2FB861D183D202600A5A764 /* ParallelJobsLibdispatch.h */,
-				E2FB861E183D202600A5A764 /* ParallelJobsOpenMP.h */,
 				E2FB861F183D202600A5A764 /* PassOwnArrayPtr.h */,
 				E2FB8620183D202600A5A764 /* PassOwnPtr.h */,
 				E2FB8621183D202600A5A764 /* PassRefPtr.h */,
@@ -1358,12 +1343,10 @@
 				E2FB862F183D202600A5A764 /* RawPointer.h */,
 				E2FB8630183D202600A5A764 /* RedBlackTree.h */,
 				E2FB8631183D202600A5A764 /* RefCounted.h */,
-				E2FB8632183D202600A5A764 /* RefCountedArray.h */,
 				E2FB8635183D202600A5A764 /* RefPtr.h */,
 				E2FB8636183D202600A5A764 /* RefPtrHashMap.h */,
 				E2FB8637183D202600A5A764 /* RetainPtr.h */,
 				E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */,
-				E2FB8639183D202600A5A764 /* SegmentedVector.h */,
 				E2FB863A183D202600A5A764 /* SentinelLinkedList.h */,
 				E2FB863D183D202600A5A764 /* SimpleStats.h */,
 				E2FB863E183D202600A5A764 /* SinglyLinkedList.h */,
@@ -1375,7 +1358,6 @@
 				E2FB8644183D202600A5A764 /* StackStats.h */,
 				E2FB8645183D202600A5A764 /* StaticConstructors.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
-				E2FB8647183D202600A5A764 /* StreamBuffer.h */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,
 				E2FB864A183D202700A5A764 /* StringHasher.h */,
 				E2FB864B183D202700A5A764 /* StringPrintStream.cpp */,
@@ -1900,7 +1882,6 @@
 			isa = PBXGroup;
 			children = (
 				E2FB8A1A183D217D00A5A764 /* ActiveDOMObject.h */,
-				E2FB8A1B183D217D00A5A764 /* ContextDestructionObserver.h */,
 				E2FB8A1C183D217D00A5A764 /* EventListener.h */,
 				E2FB8A1D183D217D00A5A764 /* EventTarget.h */,
 				E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */,
@@ -2355,7 +2336,6 @@
 				E2FB88EB183D20E200A5A764 /* Distance.cpp in Sources */,
 				E2FB86E1183D202700A5A764 /* diy-fp.cc in Sources */,
 				E2FB86F9183D202700A5A764 /* MediaTime.cpp in Sources */,
-				E2FB8702183D202700A5A764 /* ParallelJobsGeneric.cpp in Sources */,
 				E2FB86D2183D202700A5A764 /* AutodrainedPoolMac.mm in Sources */,
 				E2FB86D1183D202700A5A764 /* Assertions.cpp in Sources */,
 				E2FB8536183D1F1F00A5A764 /* AudioBuffer.cpp in Sources */,

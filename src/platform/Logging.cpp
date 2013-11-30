@@ -27,8 +27,7 @@
 #include "Logging.h"
 
 #include <wtf/StdLibExtras.h>
-#include <wtf/text/CString.h>
-#include <wtf/text/WTFString.h>
+#include <string>
 
 #if !LOG_DISABLED
 
@@ -36,8 +35,8 @@ namespace WebCore {
 
     /// @LabSound added, since the WebKit string database is not part of LabSound.
     /// Change this to some other value, such as "all" to enable logging.
-    String logLevelString() {
-        return String();
+    std::string logLevelString() {
+        return std::string();
     }
 
 #define DEFINE_LOG_CHANNEL(name) \
@@ -51,9 +50,9 @@ WTFLogChannel JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, name) = { WTFLogC
 
     size_t logChannelCount = WTF_ARRAY_LENGTH(logChannels);
 
-    WTFLogChannel* logChannelByName(const String& name)
+    WTFLogChannel* logChannelByName(const std::string& name)
     {
-        return WTFLogChannelByName(logChannels, logChannelCount, name.utf8().data());
+        return WTFLogChannelByName(logChannels, logChannelCount, name.c_str());
     }
 
     void initializeLoggingChannelsIfNecessary()
@@ -63,7 +62,7 @@ WTFLogChannel JOIN_LOG_CHANNEL_WITH_PREFIX(LOG_CHANNEL_PREFIX, name) = { WTFLogC
             return;
         haveInitializedLoggingChannels = true;
 
-        WTFInitializeLogChannelStatesFromString(logChannels, logChannelCount, logLevelString().utf8().data());
+        WTFInitializeLogChannelStatesFromString(logChannels, logChannelCount, logLevelString().c_str());
     }
     
 }

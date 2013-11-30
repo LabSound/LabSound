@@ -34,6 +34,7 @@
 #include "ZeroPole.h"
 
 #include <wtf/OwnArrayPtr.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -100,8 +101,8 @@ protected:
     } ZeroPoleFilterPack4;
 
     // Per-channel emphasis filters.
-    Vector<OwnPtr<ZeroPoleFilterPack4> > m_preFilterPacks;
-    Vector<OwnPtr<ZeroPoleFilterPack4> > m_postFilterPacks;
+    std::vector<OwnPtr<ZeroPoleFilterPack4> > m_preFilterPacks;
+    std::vector<OwnPtr<ZeroPoleFilterPack4> > m_postFilterPacks;
 
     OwnArrayPtr<const float*> m_sourceChannels;
     OwnArrayPtr<float*> m_destinationChannels;

@@ -62,11 +62,11 @@ AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float
     , m_sampleRate(sampleRate)
     , m_length(numberOfFrames)
 {
-    m_channels.reserveCapacity(numberOfChannels);
+    m_channels.reserve(numberOfChannels);
 
     for (unsigned i = 0; i < numberOfChannels; ++i) {
         RefPtr<Float32Array> channelDataArray = Float32Array::create(m_length);
-        m_channels.append(channelDataArray);
+        m_channels.push_back(channelDataArray);
     }
 }
 
@@ -77,11 +77,11 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
 {
     // Copy audio data from the bus to the Float32Arrays we manage.
     unsigned numberOfChannels = bus->numberOfChannels();
-    m_channels.reserveCapacity(numberOfChannels);
+    m_channels.reserve(numberOfChannels);
     for (unsigned i = 0; i < numberOfChannels; ++i) {
         RefPtr<Float32Array> channelDataArray = Float32Array::create(m_length);
         channelDataArray->setRange(bus->channel(i)->data(), m_length, 0);
-        m_channels.append(channelDataArray);
+        m_channels.push_back(channelDataArray);
     }
 }
 

@@ -34,7 +34,7 @@
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Threading.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -105,7 +105,7 @@ private:
     void insertEvent(const ParamEvent&);
     float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue, float* values, unsigned numberOfValues, double sampleRate, double controlRate);
 
-    Vector<ParamEvent> m_events;
+    std::vector<ParamEvent> m_events;
 
     Mutex m_eventsLock;
 };

@@ -55,7 +55,7 @@ void AudioDSPKernelProcessor::initialize()
 
     // Create processing kernels, one per channel.
     for (unsigned i = 0; i < numberOfChannels(); ++i)
-        m_kernels.append(createKernel());
+        m_kernels.push_back(createKernel());
         
     m_initialized = true;
     m_hasJustReset = true;
@@ -118,13 +118,13 @@ void AudioDSPKernelProcessor::setNumberOfChannels(unsigned numberOfChannels)
 double AudioDSPKernelProcessor::tailTime() const
 {
     // It is expected that all the kernels have the same tailTime.
-    return !m_kernels.isEmpty() ? m_kernels.first()->tailTime() : 0;
+    return !m_kernels.empty() ? (*m_kernels.begin())->tailTime() : 0;
 }
 
 double AudioDSPKernelProcessor::latencyTime() const
 {
     // It is expected that all the kernels have the same latencyTime.
-    return !m_kernels.isEmpty() ? m_kernels.first()->latencyTime() : 0;
+    return !m_kernels.empty() ? (*m_kernels.begin())->latencyTime() : 0;
 }
 
 } // namespace WebCore

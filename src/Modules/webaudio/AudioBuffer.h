@@ -33,7 +33,7 @@
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
-#include <wtf/Vector.h>
+#include <vector>
 
 namespace WebCore {
 
@@ -76,7 +76,7 @@ protected:
     float m_sampleRate;
     size_t m_length;
 
-    Vector<RefPtr<Float32Array> > m_channels;
+    std::vector<RefPtr<Float32Array> > m_channels;
 };
 
 } // namespace WebCore

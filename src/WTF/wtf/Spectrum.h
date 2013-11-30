@@ -27,7 +27,7 @@
 #define Spectrum_h
 
 #include <wtf/HashMap.h>
-#include <wtf/Vector.h>
+#include <vector>
 #include <algorithm>
 
 namespace WTF {
@@ -84,11 +84,11 @@ public:
     };
     
     // Returns a list ordered from lowest-count to highest-count.
-    Vector<KeyAndCount> buildList() const
+    std::vector<KeyAndCount> buildList() const
     {
-        Vector<KeyAndCount> list;
+        std::vector<KeyAndCount> list;
         for (const_iterator iter = begin(); iter != end(); ++iter)
-            list.append(KeyAndCount(iter->key, iter->value));
+            list.push_back(KeyAndCount(iter->key, iter->value));
         
         std::sort(list.begin(), list.end());
         return list;

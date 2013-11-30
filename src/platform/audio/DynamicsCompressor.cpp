@@ -270,8 +270,8 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
     m_preFilterPacks.clear();
     m_postFilterPacks.clear();
     for (unsigned i = 0; i < numberOfChannels; ++i) {
-        m_preFilterPacks.append(adoptPtr(new ZeroPoleFilterPack4()));
-        m_postFilterPacks.append(adoptPtr(new ZeroPoleFilterPack4()));
+        m_preFilterPacks.push_back(adoptPtr(new ZeroPoleFilterPack4()));
+        m_postFilterPacks.push_back(adoptPtr(new ZeroPoleFilterPack4()));
     }
 
     m_sourceChannels = adoptArrayPtr(new const float* [numberOfChannels]);

@@ -38,7 +38,8 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/StringExtras.h>
 #include <wtf/text/CString.h>
-#include <wtf/text/WTFString.h>
+#include <vector>
+#include <string>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -455,12 +456,14 @@ extern "C" {
     
     void WTFInitializeLogChannelStatesFromString(WTFLogChannel* channels[], size_t count, const char* logLevel)
     {
-        String logLevelString = logLevel;
-        Vector<String> components;
-        logLevelString.split(',', components);
+#if 0
+        TODO make this work again (or remove it)
+        std::string logLevelString = logLevel;
+        std::vector<std::string> components;
+        //logLevelString.split(',', components);    // todo make this work again
         
         for (size_t i = 0; i < components.size(); ++i) {
-            String component = components[i];
+            std::string component = components[i];
             
             WTFLogChannelState logChannelState = WTFLogChannelOn;
             if (component.startsWith('-')) {
@@ -478,6 +481,7 @@ extern "C" {
             else
                 WTFLogAlways("Unknown logging channel: %s", component.utf8().data());
         }
+#endif
     }
     
 } // extern "C"
