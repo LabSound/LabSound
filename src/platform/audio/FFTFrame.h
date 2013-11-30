@@ -64,7 +64,6 @@ struct RDFTContext;
 #include <ipps.h>
 #endif // USE(WEBAUDIO_IPP)
 
-#include <wtf/Forward.h>
 #include <wtf/PassOwnPtr.h>
 #include <wtf/Platform.h>
 #include <wtf/Threading.h>

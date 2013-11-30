@@ -25,7 +25,6 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include <wtf/Forward.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <wtf/RefPtr.h>

@@ -26,8 +26,9 @@
 #include <emmintrin.h>
 #endif
 #include <stdint.h>
-#include <wtf/Alignment.h>
+#include <wtf/StdLibExtras.h>
 #include <wtf/unicode/Unicode.h>
+#include <wtf/Alignment.h>
 
 namespace WTF {
 
@@ -38,7 +39,7 @@ const uintptr_t machineWordAlignmentMask = sizeof(MachineWord) - 1;
 
 inline bool isAlignedToMachineWord(const void* pointer)
 {
-    return !(reinterpret_cast<uintptr_t>(pointer) & machineWordAlignmentMask);
+    return isAlignedTo<machineWordAlignmentMask>(pointer);
 }
 
 template<typename T> inline T* alignToMachineWord(T* pointer)
@@ -85,7 +86,7 @@ inline bool charactersAreAllASCII(const CharacterType* characters, size_t length
     const CharacterType* wordEnd = alignToMachineWord(end);
     const size_t loopIncrement = sizeof(MachineWord) / sizeof(CharacterType);
     while (characters < wordEnd) {
-        allCharBits |= *(reinterpret_cast<const MachineWord*>(characters));
+        allCharBits |= *(reinterpret_cast_ptr<const MachineWord*>(characters));
         characters += loopIncrement;
     }
 
@@ -112,9 +113,9 @@ inline void copyLCharsFromUCharSource(LChar* destination, const UChar* source, s
     }
 
     const uintptr_t sourceLoadSize = 32; // Process 32 bytes (16 UChars) each iteration
-    const unsigned ucharsPerLoop = sourceLoadSize / sizeof(UChar);
+    const size_t ucharsPerLoop = sourceLoadSize / sizeof(UChar);
     if (length > ucharsPerLoop) {
-        const unsigned endLength = unsigned(length - ucharsPerLoop + 1);
+        const size_t endLength = length - ucharsPerLoop + 1;
         for (; i < endLength; i += ucharsPerLoop) {
 #ifndef NDEBUG
             for (unsigned checkIndex = 0; checkIndex < ucharsPerLoop; ++checkIndex)
@@ -131,6 +132,27 @@ inline void copyLCharsFromUCharSource(LChar* destination, const UChar* source, s
         ASSERT(!(source[i] & 0xff00));
         destination[i] = static_cast<LChar>(source[i]);
     }
+#elif COMPILER(GCC) && CPU(ARM64) && defined(NDEBUG)
+    const LChar* const end = destination + length;
+    const uintptr_t memoryAccessSize = 16;
+
+    if (length >= memoryAccessSize) {
+        const uintptr_t memoryAccessMask = memoryAccessSize - 1;
+
+        // Vector interleaved unpack, we only store the lower 8 bits.
+        const uintptr_t lengthLeft = end - destination;
+        const LChar* const simdEnd = destination + (lengthLeft & ~memoryAccessMask);
+        do {
+            asm("ld2   { v0.16B, v1.16B }, [%[SOURCE]], #32\n\t"
+                "st1   { v0.16B }, [%[DESTINATION]], #16\n\t"
+                : [SOURCE]"+r" (source), [DESTINATION]"+r" (destination)
+                :
+                : "memory", "v0", "v1");
+        } while (destination != simdEnd);
+    }
+
+    while (destination != end)
+        *destination++ = static_cast<LChar>(*source++);
 #elif COMPILER(GCC) && CPU(ARM_NEON) && !(PLATFORM(BIG_ENDIAN) || PLATFORM(MIDDLE_ENDIAN)) && defined(NDEBUG)
     const LChar* const end = destination + length;
     const uintptr_t memoryAccessSize = 8;
@@ -138,9 +160,8 @@ inline void copyLCharsFromUCharSource(LChar* destination, const UChar* source, s
     if (length >= (2 * memoryAccessSize) - 1) {
         // Prefix: align dst on 64 bits.
         const uintptr_t memoryAccessMask = memoryAccessSize - 1;
-        do {
+        while (!isAlignedTo<memoryAccessMask>(destination))
             *destination++ = static_cast<LChar>(*source++);
-        } while (!isAlignedTo<memoryAccessMask>(destination));
 
         // Vector interleaved unpack, we only store the lower 8 bits.
         const uintptr_t lengthLeft = end - destination;

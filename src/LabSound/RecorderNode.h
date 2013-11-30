@@ -5,7 +5,6 @@
 #define LabSound_RecorderNode_h
 
 #include "AudioBasicInspectorNode.h"
-#include <wtf/Forward.h>
 #include <vector>
 #include <mutex>
 

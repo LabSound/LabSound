@@ -27,7 +27,7 @@
 #define Logging_h
 
 #include <wtf/Assertions.h>
-#include <wtf/Forward.h>
+#include <wtf/text/WTFString.h>
 
 #if !LOG_DISABLED
 

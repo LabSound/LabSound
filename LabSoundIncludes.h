@@ -130,7 +130,6 @@
 #include "src/platform/audio/ZeroPole.h"
 
 #include "src/platform/graphics/FloatPoint.h"
-#include "src/platform/graphics/FloatPoint3D.h"
 #include "src/platform/graphics/FloatQuad.h"
 #include "src/platform/graphics/FloatRect.h"
 #include "src/platform/graphics/FloatSize.h"

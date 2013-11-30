@@ -25,17 +25,22 @@
 #ifndef AsyncAudioDecoder_h
 #define AsyncAudioDecoder_h
 
-#include <wtf/Forward.h>
 #include <wtf/MessageQueue.h>
 #include <wtf/PassOwnPtr.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
 
+namespace WTF {
+    class ArrayBuffer;
+}
+
 namespace WebCore {
 
 class AudioBuffer;
 class AudioBufferCallback;
+
+using namespace WTF;
 
 // AsyncAudioDecoder asynchronously decodes audio file data from an ArrayBuffer in a worker thread.
 // Upon successful decoding, a completion callback will be invoked with the decoded PCM data in an AudioBuffer.

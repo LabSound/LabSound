@@ -28,7 +28,6 @@
 #include "AudioBasicProcessorNode.h"
 #include "BiquadProcessor.h"
 #include "WaveShaperProcessor.h"
-#include <wtf/Forward.h>
 
 namespace WebCore {
     

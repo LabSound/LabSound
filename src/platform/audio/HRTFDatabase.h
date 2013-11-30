@@ -30,7 +30,6 @@
 #define HRTFDatabase_h
 
 #include "HRTFElevation.h"
-#include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>

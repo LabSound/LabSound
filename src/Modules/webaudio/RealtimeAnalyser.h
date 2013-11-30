@@ -26,11 +26,17 @@
 #define RealtimeAnalyser_h
 
 #include "AudioArray.h"
-#include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/OwnPtr.h>
 
+namespace WTF {
+    class Uint8Array;
+    class Float32Array;
+}
+
 namespace WebCore {
+
+    using namespace WTF;
 
 class AudioBus;
 class FFTFrame;

@@ -5,7 +5,6 @@
 
 
 #include "AudioBasicInspectorNode.h"
-#include <wtf/Forward.h>
 #include <vector>
 #include <mutex>
 

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <wtf/Forward.h>
 #include <AudioScheduledSourceNode.h>
 
 namespace LabSound {
