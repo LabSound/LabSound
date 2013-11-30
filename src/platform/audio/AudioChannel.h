@@ -31,6 +31,8 @@
 
 #include "AudioArray.h"
 #include <wtf/PassOwnPtr.h>
+#include <wtf/Noncopyable.h>
+#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 

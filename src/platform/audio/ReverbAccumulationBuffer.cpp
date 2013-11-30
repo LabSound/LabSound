@@ -33,6 +33,7 @@
 #include "ReverbAccumulationBuffer.h"
 
 #include "VectorMath.h"
+#include <algorithm>
 
 namespace WebCore {
 

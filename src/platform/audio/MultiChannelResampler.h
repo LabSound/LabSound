@@ -31,6 +31,7 @@
 
 #include "SincResampler.h"
 #include <wtf/OwnPtr.h>
+#include <wtf/Vector.h>
 
 namespace WebCore {
 

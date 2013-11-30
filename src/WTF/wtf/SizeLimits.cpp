@@ -36,7 +36,6 @@
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadRestrictionVerifier.h>
-#include <wtf/Vector.h>
 
 namespace WTF {
 
@@ -60,6 +59,5 @@ COMPILE_ASSERT(sizeof(PassRefPtr<RefCounted<int> >) == sizeof(int*), PassRefPtr_
 COMPILE_ASSERT(sizeof(RefCounted<int>) == sizeof(SameSizeAsRefCounted), RefCounted_should_stay_small);
 COMPILE_ASSERT(sizeof(RefCountedCustomAllocated<int>) == sizeof(SameSizeAsRefCounted), RefCountedCustomAllocated_should_stay_small);
 COMPILE_ASSERT(sizeof(RefPtr<RefCounted<int> >) == sizeof(int*), RefPtr_should_stay_small);
-COMPILE_ASSERT(sizeof(Vector<int>) == 3 * sizeof(int*), Vector_should_stay_small);
 
 }
