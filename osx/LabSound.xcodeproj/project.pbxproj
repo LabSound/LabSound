@@ -99,7 +99,6 @@
 		E2FB8707183D202700A5A764 /* RandomNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB862C183D202600A5A764 /* RandomNumber.cpp */; };
 		E2FB870A183D202700A5A764 /* SizeLimits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB863F183D202600A5A764 /* SizeLimits.cpp */; };
 		E2FB870B183D202700A5A764 /* StackBounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8641183D202600A5A764 /* StackBounds.cpp */; };
-		E2FB870C183D202700A5A764 /* StackStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8643183D202600A5A764 /* StackStats.cpp */; };
 		E2FB870E183D202700A5A764 /* StringPrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB864B183D202700A5A764 /* StringPrintStream.cpp */; };
 		E2FB870F183D202700A5A764 /* TCSystemAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8650183D202700A5A764 /* TCSystemAlloc.cpp */; };
 		E2FB8710183D202700A5A764 /* AtomicString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8655183D202700A5A764 /* AtomicString.cpp */; };
@@ -655,8 +654,6 @@
 		E2FB8640183D202600A5A764 /* Spectrum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spectrum.h; sourceTree = "<group>"; };
 		E2FB8641183D202600A5A764 /* StackBounds.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StackBounds.cpp; sourceTree = "<group>"; };
 		E2FB8642183D202600A5A764 /* StackBounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackBounds.h; sourceTree = "<group>"; };
-		E2FB8643183D202600A5A764 /* StackStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StackStats.cpp; sourceTree = "<group>"; };
-		E2FB8644183D202600A5A764 /* StackStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StackStats.h; sourceTree = "<group>"; };
 		E2FB8645183D202600A5A764 /* StaticConstructors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticConstructors.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
@@ -1350,8 +1347,6 @@
 				E2FB8640183D202600A5A764 /* Spectrum.h */,
 				E2FB8641183D202600A5A764 /* StackBounds.cpp */,
 				E2FB8642183D202600A5A764 /* StackBounds.h */,
-				E2FB8643183D202600A5A764 /* StackStats.cpp */,
-				E2FB8644183D202600A5A764 /* StackStats.h */,
 				E2FB8645183D202600A5A764 /* StaticConstructors.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,
@@ -2227,7 +2222,6 @@
 				E2FB8706183D202700A5A764 /* RAMSize.cpp in Sources */,
 				E2FB88F1183D20E200A5A764 /* FFTConvolver.cpp in Sources */,
 				E2FB8905183D20E200A5A764 /* Panner.cpp in Sources */,
-				E2FB870C183D202700A5A764 /* StackStats.cpp in Sources */,
 				E2FB8562183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp in Sources */,
 				E2FB88F3183D20E200A5A764 /* FFTFrameStub.cpp in Sources */,
 				E2FB88E6183D20E200A5A764 /* AudioResamplerKernel.cpp in Sources */,

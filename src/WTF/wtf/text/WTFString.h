@@ -697,5 +697,4 @@ using WTF::isSpaceOrNewline;
 using WTF::reverseFind;
 using WTF::ASCIILiteral;
 
-#include <wtf/text/AtomicString.h>
 #endif
