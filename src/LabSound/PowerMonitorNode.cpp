@@ -22,6 +22,7 @@ namespace LabSound {
     PowerMonitorNode::PowerMonitorNode(AudioContext* context, float sampleRate)
     : AudioBasicInspectorNode(context, sampleRate)
     , _db(0)
+    , _windowSize(128)
     {
         addInput(adoptPtr(new AudioNodeInput(this)));
         setNodeType(NodeTypeAnalyser);
@@ -60,9 +61,14 @@ namespace LabSound {
             for (int c = 0; c < numberOfChannels; ++ c)
                 channels.push_back(bus->channel(c)->data());
 
+            int start = framesToProcess - _windowSize;
+            int end = framesToProcess;
+            if (start < 0)
+                start = 0;
+
             float power = 0;
             for (int c = 0; c < numberOfChannels; ++c)
-                for (int i = 0; i < framesToProcess; ++i) {
+                for (int i = start; i < end; ++i) {
                     float p = channels[c][i];
                     power += p * p;
                 }
