@@ -32,8 +32,6 @@
 
 #include "HRTFElevation.h"
 
-#include <wtf/HashMap.h> // LabSound added
-
 #include "AudioBus.h"
 #include "AudioFileReader.h"
 #include "Biquad.h"
@@ -44,6 +42,7 @@
 #include <wtf/OwnPtr.h>
 
 #include <iostream>
+#include <map>
 #include <string>
 
 using namespace std;
@@ -65,7 +64,6 @@ const size_t ResponseFrameSize = 256;
 // The impulse responses may be resampled to a different sample-rate (depending on the audio hardware) when they are loaded.
 const float ResponseSampleRate = 44100;
 
-    // LabSound temporarily turn this off (MACx instead of MAC) - why doesn't HashMap compile?
 #if PLATFORM(MACx) || USE(WEBAUDIO_GSTREAMER)
 #define USE_CONCATENATED_IMPULSE_RESPONSES
 #endif
@@ -75,7 +73,7 @@ const float ResponseSampleRate = 44100;
 // local hash table to ensure quicok efficient future retrievals.
 static AudioBus* getConcatenatedImpulseResponsesForSubject(const std::string& subjectName)
 {
-    typedef HashMap<std::string, AudioBus*> AudioBusMap;
+    typedef std::map<std::string, AudioBus*> AudioBusMap;
     DEFINE_STATIC_LOCAL(AudioBusMap, audioBusMap, ());
 
     AudioBus* bus;
@@ -83,9 +81,9 @@ static AudioBus* getConcatenatedImpulseResponsesForSubject(const std::string& su
     if (iterator == audioBusMap.end()) {
         OwnPtr<AudioBus> concatenatedImpulseResponses = AudioBus::loadPlatformResource(subjectName.c_str(), ResponseSampleRate);
         bus = concatenatedImpulseResponses.leakPtr();
-        audioBusMap.set(subjectName, bus);
+        audioBusMap[subjectName] = bus;
     } else
-        bus = iterator->value;
+        bus = iterator->second;
 
     size_t responseLength = bus->length();
     size_t expectedLength = static_cast<size_t>(TotalNumberOfResponses * ResponseFrameSize);

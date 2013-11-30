@@ -34,7 +34,6 @@
 #if USE(PTHREADS)
 
 #include "CurrentTime.h"
-#include "HashMap.h"
 #include "RandomNumberSeed.h"
 #include "StdLibExtras.h"
 #include "ThreadFunctionInvocation.h"
@@ -44,6 +43,7 @@
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <errno.h>
+#include <map>
 
 #if !COMPILER(MSVC)
 #include <limits.h>
@@ -92,7 +92,7 @@ private:
     pthread_t m_pthreadHandle;
 };
 
-typedef HashMap<ThreadIdentifier, OwnPtr<PthreadState> > ThreadMap;
+typedef std::map<ThreadIdentifier, OwnPtr<PthreadState> > ThreadMap;
 
 static Mutex* atomicallyInitializedStaticMutex;
 
@@ -155,8 +155,8 @@ static ThreadIdentifier identifierByPthreadHandle(const pthread_t& pthreadHandle
 
     ThreadMap::iterator i = threadMap().begin();
     for (; i != threadMap().end(); ++i) {
-        if (pthread_equal(i->value->pthreadHandle(), pthreadHandle) && !i->value->hasExited())
-            return i->key;
+        if (pthread_equal(i->second->pthreadHandle(), pthreadHandle) && !i->second->hasExited())
+            return i->first;
     }
 
     return 0;
@@ -167,13 +167,17 @@ static ThreadIdentifier establishIdentifierForPthreadHandle(const pthread_t& pth
     ASSERT(!identifierByPthreadHandle(pthreadHandle));
     MutexLocker locker(threadMapMutex());
     static ThreadIdentifier identifierCount = 1;
-    threadMap().add(identifierCount, adoptPtr(new PthreadState(pthreadHandle)));
+    threadMap()[identifierCount] =adoptPtr(new PthreadState(pthreadHandle));
     return identifierCount++;
 }
 
 static pthread_t pthreadHandleForIdentifierWithLockAlreadyHeld(ThreadIdentifier id)
 {
-    return threadMap().get(id)->pthreadHandle();
+    auto i = threadMap().find(id);
+    if (i != threadMap().end())
+        return i->second->pthreadHandle();
+    else
+        return 0;
 }
 
 static void* wtfThreadEntryPoint(void* param)
@@ -245,13 +249,15 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
         LOG_ERROR("ThreadIdentifier %u was unable to be joined.\n", threadID);
 
     MutexLocker locker(threadMapMutex());
-    PthreadState* state = threadMap().get(threadID);
+    auto i = threadMap().find(threadID);
+    ASSERT(i != threadMap().end());
+    PthreadState* state = i->second.get();
     ASSERT(state);
     ASSERT(state->joinableState() == PthreadState::Joinable);
 
     // The thread has already exited, so clean up after it.
     if (state->hasExited())
-        threadMap().remove(threadID);
+        threadMap().erase(i);
     // The thread hasn't exited yet, so don't clean anything up. Just signal that we've already joined on it so that it will clean up after itself.
     else
         state->didJoin();
@@ -271,24 +277,28 @@ void detachThread(ThreadIdentifier threadID)
     if (detachResult)
         LOG_ERROR("ThreadIdentifier %u was unable to be detached\n", threadID);
 
-    PthreadState* state = threadMap().get(threadID);
+    auto i = threadMap().find(threadID);
+    ASSERT(i != threadMap().end());
+    PthreadState* state = i->second.get();
     ASSERT(state);
     if (state->hasExited())
-        threadMap().remove(threadID);
+        threadMap().erase(i);
     else
-        threadMap().get(threadID)->didBecomeDetached();
+        i->second->didBecomeDetached();
 }
 
 void threadDidExit(ThreadIdentifier threadID)
 {
     MutexLocker locker(threadMapMutex());
-    PthreadState* state = threadMap().get(threadID);
+    auto i = threadMap().find(threadID);
+    ASSERT(i != threadMap().end());
+    PthreadState* state = i->second.get();
     ASSERT(state);
     
     state->didExit();
 
     if (state->joinableState() != PthreadState::Joinable)
-        threadMap().remove(threadID);
+        threadMap().erase(i);
 }
 
 void yield()

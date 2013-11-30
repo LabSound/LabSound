@@ -522,7 +522,6 @@
 		E2FB85D5183D202600A5A764 /* Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functional.h; sourceTree = "<group>"; };
 		E2FB85E4183D202600A5A764 /* HashFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashFunctions.h; sourceTree = "<group>"; };
 		E2FB85E5183D202600A5A764 /* HashIterators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashIterators.h; sourceTree = "<group>"; };
-		E2FB85E6183D202600A5A764 /* HashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashMap.h; sourceTree = "<group>"; };
 		E2FB85E7183D202600A5A764 /* HashSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashSet.h; sourceTree = "<group>"; };
 		E2FB85E8183D202600A5A764 /* HashTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashTable.cpp; sourceTree = "<group>"; };
 		E2FB85E9183D202600A5A764 /* HashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashTable.h; sourceTree = "<group>"; };
@@ -578,13 +577,11 @@
 		E2FB8630183D202600A5A764 /* RedBlackTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RedBlackTree.h; sourceTree = "<group>"; };
 		E2FB8631183D202600A5A764 /* RefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCounted.h; sourceTree = "<group>"; };
 		E2FB8635183D202600A5A764 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtr.h; sourceTree = "<group>"; };
-		E2FB8636183D202600A5A764 /* RefPtrHashMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtrHashMap.h; sourceTree = "<group>"; };
 		E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaturatedArithmetic.h; sourceTree = "<group>"; };
 		E2FB863A183D202600A5A764 /* SentinelLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SentinelLinkedList.h; sourceTree = "<group>"; };
 		E2FB863D183D202600A5A764 /* SimpleStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleStats.h; sourceTree = "<group>"; };
 		E2FB863E183D202600A5A764 /* SinglyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SinglyLinkedList.h; sourceTree = "<group>"; };
 		E2FB863F183D202600A5A764 /* SizeLimits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SizeLimits.cpp; sourceTree = "<group>"; };
-		E2FB8640183D202600A5A764 /* Spectrum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spectrum.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
 		E2FB864D183D202700A5A764 /* TCPackedCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPackedCache.h; sourceTree = "<group>"; };
@@ -1158,7 +1155,6 @@
 				E2FB85D5183D202600A5A764 /* Functional.h */,
 				E2FB85E4183D202600A5A764 /* HashFunctions.h */,
 				E2FB85E5183D202600A5A764 /* HashIterators.h */,
-				E2FB85E6183D202600A5A764 /* HashMap.h */,
 				E2FB85E7183D202600A5A764 /* HashSet.h */,
 				E2FB85E8183D202600A5A764 /* HashTable.cpp */,
 				E2FB85E9183D202600A5A764 /* HashTable.h */,
@@ -1214,13 +1210,11 @@
 				E2FB8630183D202600A5A764 /* RedBlackTree.h */,
 				E2FB8631183D202600A5A764 /* RefCounted.h */,
 				E2FB8635183D202600A5A764 /* RefPtr.h */,
-				E2FB8636183D202600A5A764 /* RefPtrHashMap.h */,
 				E2FB8638183D202600A5A764 /* SaturatedArithmetic.h */,
 				E2FB863A183D202600A5A764 /* SentinelLinkedList.h */,
 				E2FB863D183D202600A5A764 /* SimpleStats.h */,
 				E2FB863E183D202600A5A764 /* SinglyLinkedList.h */,
 				E2FB863F183D202600A5A764 /* SizeLimits.cpp */,
-				E2FB8640183D202600A5A764 /* Spectrum.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,
 				E2FB864D183D202700A5A764 /* TCPackedCache.h */,
