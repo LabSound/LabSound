@@ -66,48 +66,26 @@
 		E2FB86D3183D202700A5A764 /* BitVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8589183D202600A5A764 /* BitVector.cpp */; };
 		E2FB86D8183D202700A5A764 /* CryptographicallyRandomNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859B183D202600A5A764 /* CryptographicallyRandomNumber.cpp */; };
 		E2FB86D9183D202700A5A764 /* CurrentTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859D183D202600A5A764 /* CurrentTime.cpp */; };
-		E2FB86DA183D202700A5A764 /* DataLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859F183D202600A5A764 /* DataLog.cpp */; };
-		E2FB86DD183D202700A5A764 /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85AA183D202600A5A764 /* bignum-dtoa.cc */; };
-		E2FB86DE183D202700A5A764 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85AC183D202600A5A764 /* bignum.cc */; };
-		E2FB86DF183D202700A5A764 /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85AE183D202600A5A764 /* cached-powers.cc */; };
-		E2FB86E0183D202700A5A764 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = E2FB85B0183D202600A5A764 /* COPYING */; };
-		E2FB86E1183D202700A5A764 /* diy-fp.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85B1183D202600A5A764 /* diy-fp.cc */; };
-		E2FB86E2183D202700A5A764 /* double-conversion.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85B3183D202600A5A764 /* double-conversion.cc */; };
-		E2FB86E3183D202700A5A764 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85B6183D202600A5A764 /* fast-dtoa.cc */; };
-		E2FB86E4183D202700A5A764 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85B8183D202600A5A764 /* fixed-dtoa.cc */; };
-		E2FB86E5183D202700A5A764 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E2FB85BA183D202600A5A764 /* LICENSE */; };
-		E2FB86E6183D202700A5A764 /* README in Resources */ = {isa = PBXBuildFile; fileRef = E2FB85BB183D202600A5A764 /* README */; };
-		E2FB86E7183D202700A5A764 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85BC183D202600A5A764 /* strtod.cc */; };
-		E2FB86E8183D202700A5A764 /* dtoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85BF183D202600A5A764 /* dtoa.cpp */; };
 		E2FB86E9183D202700A5A764 /* DynamicAnnotations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */; };
 		E2FB86ED183D202700A5A764 /* FastMalloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85CC183D202600A5A764 /* FastMalloc.cpp */; };
-		E2FB86EE183D202700A5A764 /* FilePrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85CE183D202600A5A764 /* FilePrintStream.cpp */; };
 		E2FB86EF183D202700A5A764 /* Float32Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85D1183D202600A5A764 /* Float32Array.cpp */; };
 		E2FB86F5183D202700A5A764 /* HashTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85E8183D202600A5A764 /* HashTable.cpp */; };
 		E2FB86F6183D202700A5A764 /* MainThreadMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85F5183D202600A5A764 /* MainThreadMac.mm */; };
 		E2FB86F7183D202700A5A764 /* MainThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85F6183D202600A5A764 /* MainThread.cpp */; };
 		E2FB86F9183D202700A5A764 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85FC183D202600A5A764 /* MediaTime.cpp */; };
 		E2FB86FB183D202700A5A764 /* NullPtr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8606183D202600A5A764 /* NullPtr.cpp */; };
-		E2FB86FC183D202700A5A764 /* NumberOfCores.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8608183D202600A5A764 /* NumberOfCores.cpp */; };
 		E2FB86FD183D202700A5A764 /* OSAllocatorPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB860C183D202600A5A764 /* OSAllocatorPosix.cpp */; };
 		E2FB86FF183D202700A5A764 /* OSRandomSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB860E183D202600A5A764 /* OSRandomSource.cpp */; };
 		E2FB8700183D202700A5A764 /* PageAllocationAligned.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8615183D202600A5A764 /* PageAllocationAligned.cpp */; };
 		E2FB8701183D202700A5A764 /* PageBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8617183D202600A5A764 /* PageBlock.cpp */; };
-		E2FB8703183D202700A5A764 /* PrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8625183D202600A5A764 /* PrintStream.cpp */; };
 		E2FB8706183D202700A5A764 /* RAMSize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB862A183D202600A5A764 /* RAMSize.cpp */; };
 		E2FB8707183D202700A5A764 /* RandomNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB862C183D202600A5A764 /* RandomNumber.cpp */; };
 		E2FB870A183D202700A5A764 /* SizeLimits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB863F183D202600A5A764 /* SizeLimits.cpp */; };
-		E2FB870E183D202700A5A764 /* StringPrintStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB864B183D202700A5A764 /* StringPrintStream.cpp */; };
 		E2FB870F183D202700A5A764 /* TCSystemAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8650183D202700A5A764 /* TCSystemAlloc.cpp */; };
-		E2FB8712183D202700A5A764 /* CString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB865B183D202700A5A764 /* CString.cpp */; };
 		E2FB8717183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */; };
 		E2FB8718183D202700A5A764 /* Threading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866D183D202700A5A764 /* Threading.cpp */; };
 		E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866F183D202700A5A764 /* ThreadingNone.cpp */; };
 		E2FB871A183D202700A5A764 /* ThreadingPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8671183D202700A5A764 /* ThreadingPthreads.cpp */; };
-		E2FB8720183D202700A5A764 /* CollatorDefault.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8686183D202700A5A764 /* CollatorDefault.cpp */; };
-		E2FB8722183D202700A5A764 /* CollatorICU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB868B183D202700A5A764 /* CollatorICU.cpp */; };
-		E2FB8723183D202700A5A764 /* UTF8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8692183D202700A5A764 /* UTF8.cpp */; };
-		E2FB8724183D202700A5A764 /* UnicodeWchar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8695183D202700A5A764 /* UnicodeWchar.cpp */; };
 		E2FB88E0183D20E200A5A764 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8749183D20E100A5A764 /* AudioBus.cpp */; };
 		E2FB88E1183D20E200A5A764 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB874B183D20E100A5A764 /* AudioChannel.cpp */; };
 		E2FB88E2183D20E200A5A764 /* AudioDSPKernelProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8750183D20E100A5A764 /* AudioDSPKernelProcessor.cpp */; };
@@ -397,7 +375,6 @@
 		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
 		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
 		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
-		E251D99E1849B24100F7B7BC /* ForwardDeclarations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ForwardDeclarations.h; sourceTree = "<group>"; };
 		E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LabSoundIncludes.h; path = ../LabSoundIncludes.h; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2FB849B183D1E8F00A5A764 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
@@ -529,34 +506,9 @@
 		E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptographicallyRandomNumber.h; sourceTree = "<group>"; };
 		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
 		E2FB859E183D202600A5A764 /* CurrentTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentTime.h; sourceTree = "<group>"; };
-		E2FB859F183D202600A5A764 /* DataLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataLog.cpp; sourceTree = "<group>"; };
-		E2FB85A0183D202600A5A764 /* DataLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataLog.h; sourceTree = "<group>"; };
 		E2FB85A6183D202600A5A764 /* Deque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Deque.h; sourceTree = "<group>"; };
 		E2FB85A7183D202600A5A764 /* DisallowCType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisallowCType.h; sourceTree = "<group>"; };
 		E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoublyLinkedList.h; sourceTree = "<group>"; };
-		E2FB85AA183D202600A5A764 /* bignum-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "bignum-dtoa.cc"; sourceTree = "<group>"; };
-		E2FB85AB183D202600A5A764 /* bignum-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "bignum-dtoa.h"; sourceTree = "<group>"; };
-		E2FB85AC183D202600A5A764 /* bignum.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bignum.cc; sourceTree = "<group>"; };
-		E2FB85AD183D202600A5A764 /* bignum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bignum.h; sourceTree = "<group>"; };
-		E2FB85AE183D202600A5A764 /* cached-powers.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cached-powers.cc"; sourceTree = "<group>"; };
-		E2FB85AF183D202600A5A764 /* cached-powers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cached-powers.h"; sourceTree = "<group>"; };
-		E2FB85B0183D202600A5A764 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
-		E2FB85B1183D202600A5A764 /* diy-fp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "diy-fp.cc"; sourceTree = "<group>"; };
-		E2FB85B2183D202600A5A764 /* diy-fp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "diy-fp.h"; sourceTree = "<group>"; };
-		E2FB85B3183D202600A5A764 /* double-conversion.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "double-conversion.cc"; sourceTree = "<group>"; };
-		E2FB85B4183D202600A5A764 /* double-conversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "double-conversion.h"; sourceTree = "<group>"; };
-		E2FB85B5183D202600A5A764 /* double.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = double.h; sourceTree = "<group>"; };
-		E2FB85B6183D202600A5A764 /* fast-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "fast-dtoa.cc"; sourceTree = "<group>"; };
-		E2FB85B7183D202600A5A764 /* fast-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fast-dtoa.h"; sourceTree = "<group>"; };
-		E2FB85B8183D202600A5A764 /* fixed-dtoa.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "fixed-dtoa.cc"; sourceTree = "<group>"; };
-		E2FB85B9183D202600A5A764 /* fixed-dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fixed-dtoa.h"; sourceTree = "<group>"; };
-		E2FB85BA183D202600A5A764 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		E2FB85BB183D202600A5A764 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		E2FB85BC183D202600A5A764 /* strtod.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = strtod.cc; sourceTree = "<group>"; };
-		E2FB85BD183D202600A5A764 /* strtod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strtod.h; sourceTree = "<group>"; };
-		E2FB85BE183D202600A5A764 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
-		E2FB85BF183D202600A5A764 /* dtoa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dtoa.cpp; sourceTree = "<group>"; };
-		E2FB85C0183D202600A5A764 /* dtoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dtoa.h; sourceTree = "<group>"; };
 		E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicAnnotations.cpp; sourceTree = "<group>"; };
 		E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicAnnotations.h; sourceTree = "<group>"; };
 		E2FB85C9183D202600A5A764 /* ExportMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportMacros.h; sourceTree = "<group>"; };
@@ -564,8 +516,6 @@
 		E2FB85CB183D202600A5A764 /* FastBitVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastBitVector.h; sourceTree = "<group>"; };
 		E2FB85CC183D202600A5A764 /* FastMalloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastMalloc.cpp; sourceTree = "<group>"; };
 		E2FB85CD183D202600A5A764 /* FastMalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastMalloc.h; sourceTree = "<group>"; };
-		E2FB85CE183D202600A5A764 /* FilePrintStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePrintStream.cpp; sourceTree = "<group>"; };
-		E2FB85CF183D202600A5A764 /* FilePrintStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilePrintStream.h; sourceTree = "<group>"; };
 		E2FB85D0183D202600A5A764 /* FixedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedArray.h; sourceTree = "<group>"; };
 		E2FB85D1183D202600A5A764 /* Float32Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Float32Array.cpp; sourceTree = "<group>"; };
 		E2FB85D2183D202600A5A764 /* Float32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Float32Array.h; sourceTree = "<group>"; };
@@ -600,8 +550,6 @@
 		E2FB8605183D202600A5A764 /* NotFound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotFound.h; sourceTree = "<group>"; };
 		E2FB8606183D202600A5A764 /* NullPtr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NullPtr.cpp; sourceTree = "<group>"; };
 		E2FB8607183D202600A5A764 /* NullPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullPtr.h; sourceTree = "<group>"; };
-		E2FB8608183D202600A5A764 /* NumberOfCores.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NumberOfCores.cpp; sourceTree = "<group>"; };
-		E2FB8609183D202600A5A764 /* NumberOfCores.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberOfCores.h; sourceTree = "<group>"; };
 		E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntimeExtras.h; sourceTree = "<group>"; };
 		E2FB860B183D202600A5A764 /* OSAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSAllocator.h; sourceTree = "<group>"; };
 		E2FB860C183D202600A5A764 /* OSAllocatorPosix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OSAllocatorPosix.cpp; sourceTree = "<group>"; };
@@ -623,8 +571,6 @@
 		E2FB8622183D202600A5A764 /* PassTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassTraits.h; sourceTree = "<group>"; };
 		E2FB8623183D202600A5A764 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		E2FB8624183D202600A5A764 /* PossiblyNull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PossiblyNull.h; sourceTree = "<group>"; };
-		E2FB8625183D202600A5A764 /* PrintStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrintStream.cpp; sourceTree = "<group>"; };
-		E2FB8626183D202600A5A764 /* PrintStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintStream.h; sourceTree = "<group>"; };
 		E2FB862A183D202600A5A764 /* RAMSize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RAMSize.cpp; sourceTree = "<group>"; };
 		E2FB862B183D202600A5A764 /* RAMSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RAMSize.h; sourceTree = "<group>"; };
 		E2FB862C183D202600A5A764 /* RandomNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RandomNumber.cpp; sourceTree = "<group>"; };
@@ -644,23 +590,12 @@
 		E2FB8640183D202600A5A764 /* Spectrum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spectrum.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
-		E2FB864A183D202700A5A764 /* StringHasher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringHasher.h; sourceTree = "<group>"; };
-		E2FB864B183D202700A5A764 /* StringPrintStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPrintStream.cpp; sourceTree = "<group>"; };
-		E2FB864C183D202700A5A764 /* StringPrintStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringPrintStream.h; sourceTree = "<group>"; };
 		E2FB864D183D202700A5A764 /* TCPackedCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPackedCache.h; sourceTree = "<group>"; };
 		E2FB864E183D202700A5A764 /* TCPageMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPageMap.h; sourceTree = "<group>"; };
 		E2FB864F183D202700A5A764 /* TCSpinLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSpinLock.h; sourceTree = "<group>"; };
 		E2FB8650183D202700A5A764 /* TCSystemAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TCSystemAlloc.cpp; sourceTree = "<group>"; };
 		E2FB8651183D202700A5A764 /* TCSystemAlloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCSystemAlloc.h; sourceTree = "<group>"; };
 		E2FB8652183D202700A5A764 /* TemporaryChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemporaryChange.h; sourceTree = "<group>"; };
-		E2FB865B183D202700A5A764 /* CString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CString.cpp; sourceTree = "<group>"; };
-		E2FB865C183D202700A5A764 /* CString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CString.h; sourceTree = "<group>"; };
-		E2FB865D183D202700A5A764 /* IntegerToStringConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntegerToStringConversion.h; sourceTree = "<group>"; };
-		E2FB865E183D202700A5A764 /* StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringBuffer.h; sourceTree = "<group>"; };
-		E2FB8661183D202700A5A764 /* StringConcatenate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringConcatenate.h; sourceTree = "<group>"; };
-		E2FB8664183D202700A5A764 /* StringImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringImpl.h; sourceTree = "<group>"; };
-		E2FB8665183D202700A5A764 /* StringOperators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringOperators.h; sourceTree = "<group>"; };
-		E2FB8667183D202700A5A764 /* TextPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextPosition.h; sourceTree = "<group>"; };
 		E2FB866A183D202700A5A764 /* ThreadFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadFunctionInvocation.h; sourceTree = "<group>"; };
 		E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadIdentifierDataPthreads.cpp; sourceTree = "<group>"; };
 		E2FB866C183D202700A5A764 /* ThreadIdentifierDataPthreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadIdentifierDataPthreads.h; sourceTree = "<group>"; };
@@ -678,18 +613,6 @@
 		E2FB8680183D202700A5A764 /* Uint32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint32Array.h; sourceTree = "<group>"; };
 		E2FB8681183D202700A5A764 /* Uint8Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint8Array.h; sourceTree = "<group>"; };
 		E2FB8682183D202700A5A764 /* Uint8ClampedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint8ClampedArray.h; sourceTree = "<group>"; };
-		E2FB8684183D202700A5A764 /* CharacterNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterNames.h; sourceTree = "<group>"; };
-		E2FB8685183D202700A5A764 /* Collator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Collator.h; sourceTree = "<group>"; };
-		E2FB8686183D202700A5A764 /* CollatorDefault.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollatorDefault.cpp; sourceTree = "<group>"; };
-		E2FB868B183D202700A5A764 /* CollatorICU.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CollatorICU.cpp; sourceTree = "<group>"; };
-		E2FB868C183D202700A5A764 /* UnicodeIcu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnicodeIcu.h; sourceTree = "<group>"; };
-		E2FB868F183D202700A5A764 /* ScriptCodesFromICU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptCodesFromICU.h; sourceTree = "<group>"; };
-		E2FB8690183D202700A5A764 /* Unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unicode.h; sourceTree = "<group>"; };
-		E2FB8691183D202700A5A764 /* UnicodeMacrosFromICU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnicodeMacrosFromICU.h; sourceTree = "<group>"; };
-		E2FB8692183D202700A5A764 /* UTF8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UTF8.cpp; sourceTree = "<group>"; };
-		E2FB8693183D202700A5A764 /* UTF8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UTF8.h; sourceTree = "<group>"; };
-		E2FB8695183D202700A5A764 /* UnicodeWchar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnicodeWchar.cpp; sourceTree = "<group>"; };
-		E2FB8696183D202700A5A764 /* UnicodeWchar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnicodeWchar.h; sourceTree = "<group>"; };
 		E2FB8697183D202700A5A764 /* UnionFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnionFind.h; sourceTree = "<group>"; };
 		E2FB8698183D202700A5A764 /* UnusedParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnusedParam.h; sourceTree = "<group>"; };
 		E2FB86BF183D202700A5A764 /* ValueCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ValueCheck.h; sourceTree = "<group>"; };
@@ -1224,14 +1147,9 @@
 				E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */,
 				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
 				E2FB859E183D202600A5A764 /* CurrentTime.h */,
-				E2FB859F183D202600A5A764 /* DataLog.cpp */,
-				E2FB85A0183D202600A5A764 /* DataLog.h */,
 				E2FB85A6183D202600A5A764 /* Deque.h */,
 				E2FB85A7183D202600A5A764 /* DisallowCType.h */,
 				E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */,
-				E2FB85A9183D202600A5A764 /* dtoa */,
-				E2FB85BF183D202600A5A764 /* dtoa.cpp */,
-				E2FB85C0183D202600A5A764 /* dtoa.h */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
 				E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */,
 				E2FB85C9183D202600A5A764 /* ExportMacros.h */,
@@ -1239,8 +1157,6 @@
 				E2FB85CB183D202600A5A764 /* FastBitVector.h */,
 				E2FB85CC183D202600A5A764 /* FastMalloc.cpp */,
 				E2FB85CD183D202600A5A764 /* FastMalloc.h */,
-				E2FB85CE183D202600A5A764 /* FilePrintStream.cpp */,
-				E2FB85CF183D202600A5A764 /* FilePrintStream.h */,
 				E2FB85D0183D202600A5A764 /* FixedArray.h */,
 				E2FB85D1183D202600A5A764 /* Float32Array.cpp */,
 				E2FB85D2183D202600A5A764 /* Float32Array.h */,
@@ -1275,8 +1191,6 @@
 				E2FB8605183D202600A5A764 /* NotFound.h */,
 				E2FB8606183D202600A5A764 /* NullPtr.cpp */,
 				E2FB8607183D202600A5A764 /* NullPtr.h */,
-				E2FB8608183D202600A5A764 /* NumberOfCores.cpp */,
-				E2FB8609183D202600A5A764 /* NumberOfCores.h */,
 				E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */,
 				E2FB860B183D202600A5A764 /* OSAllocator.h */,
 				E2FB860C183D202600A5A764 /* OSAllocatorPosix.cpp */,
@@ -1298,8 +1212,6 @@
 				E2FB8622183D202600A5A764 /* PassTraits.h */,
 				E2FB8623183D202600A5A764 /* Platform.h */,
 				E2FB8624183D202600A5A764 /* PossiblyNull.h */,
-				E2FB8625183D202600A5A764 /* PrintStream.cpp */,
-				E2FB8626183D202600A5A764 /* PrintStream.h */,
 				E2FB862A183D202600A5A764 /* RAMSize.cpp */,
 				E2FB862B183D202600A5A764 /* RAMSize.h */,
 				E2FB862C183D202600A5A764 /* RandomNumber.cpp */,
@@ -1319,16 +1231,12 @@
 				E2FB8640183D202600A5A764 /* Spectrum.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,
-				E2FB864A183D202700A5A764 /* StringHasher.h */,
-				E2FB864B183D202700A5A764 /* StringPrintStream.cpp */,
-				E2FB864C183D202700A5A764 /* StringPrintStream.h */,
 				E2FB864D183D202700A5A764 /* TCPackedCache.h */,
 				E2FB864E183D202700A5A764 /* TCPageMap.h */,
 				E2FB864F183D202700A5A764 /* TCSpinLock.h */,
 				E2FB8650183D202700A5A764 /* TCSystemAlloc.cpp */,
 				E2FB8651183D202700A5A764 /* TCSystemAlloc.h */,
 				E2FB8652183D202700A5A764 /* TemporaryChange.h */,
-				E2FB8653183D202700A5A764 /* text */,
 				E2FB866A183D202700A5A764 /* ThreadFunctionInvocation.h */,
 				E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */,
 				E2FB866C183D202700A5A764 /* ThreadIdentifierDataPthreads.h */,
@@ -1346,45 +1254,15 @@
 				E2FB8680183D202700A5A764 /* Uint32Array.h */,
 				E2FB8681183D202700A5A764 /* Uint8Array.h */,
 				E2FB8682183D202700A5A764 /* Uint8ClampedArray.h */,
-				E2FB8683183D202700A5A764 /* unicode */,
 				E2FB8697183D202700A5A764 /* UnionFind.h */,
 				E2FB8698183D202700A5A764 /* UnusedParam.h */,
 				E2FB86BF183D202700A5A764 /* ValueCheck.h */,
 				E2FB86C0183D202700A5A764 /* Vector.h */,
 				E2FB86C1183D202700A5A764 /* VectorTraits.h */,
 				E2FB86C2183D202700A5A764 /* VMTags.h */,
-				E251D99E1849B24100F7B7BC /* ForwardDeclarations.h */,
 			);
 			name = wtf;
 			path = ../src/WTF/wtf;
-			sourceTree = "<group>";
-		};
-		E2FB85A9183D202600A5A764 /* dtoa */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB85AA183D202600A5A764 /* bignum-dtoa.cc */,
-				E2FB85AB183D202600A5A764 /* bignum-dtoa.h */,
-				E2FB85AC183D202600A5A764 /* bignum.cc */,
-				E2FB85AD183D202600A5A764 /* bignum.h */,
-				E2FB85AE183D202600A5A764 /* cached-powers.cc */,
-				E2FB85AF183D202600A5A764 /* cached-powers.h */,
-				E2FB85B0183D202600A5A764 /* COPYING */,
-				E2FB85B1183D202600A5A764 /* diy-fp.cc */,
-				E2FB85B2183D202600A5A764 /* diy-fp.h */,
-				E2FB85B3183D202600A5A764 /* double-conversion.cc */,
-				E2FB85B4183D202600A5A764 /* double-conversion.h */,
-				E2FB85B5183D202600A5A764 /* double.h */,
-				E2FB85B6183D202600A5A764 /* fast-dtoa.cc */,
-				E2FB85B7183D202600A5A764 /* fast-dtoa.h */,
-				E2FB85B8183D202600A5A764 /* fixed-dtoa.cc */,
-				E2FB85B9183D202600A5A764 /* fixed-dtoa.h */,
-				E2FB85BA183D202600A5A764 /* LICENSE */,
-				E2FB85BB183D202600A5A764 /* README */,
-				E2FB85BC183D202600A5A764 /* strtod.cc */,
-				E2FB85BD183D202600A5A764 /* strtod.h */,
-				E2FB85BE183D202600A5A764 /* utils.h */,
-			);
-			path = dtoa;
 			sourceTree = "<group>";
 		};
 		E2FB85F4183D202600A5A764 /* mac */ = {
@@ -1393,56 +1271,6 @@
 				E2FB85F5183D202600A5A764 /* MainThreadMac.mm */,
 			);
 			path = mac;
-			sourceTree = "<group>";
-		};
-		E2FB8653183D202700A5A764 /* text */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB865B183D202700A5A764 /* CString.cpp */,
-				E2FB865C183D202700A5A764 /* CString.h */,
-				E2FB865D183D202700A5A764 /* IntegerToStringConversion.h */,
-				E2FB865E183D202700A5A764 /* StringBuffer.h */,
-				E2FB8661183D202700A5A764 /* StringConcatenate.h */,
-				E2FB8664183D202700A5A764 /* StringImpl.h */,
-				E2FB8665183D202700A5A764 /* StringOperators.h */,
-				E2FB8667183D202700A5A764 /* TextPosition.h */,
-			);
-			path = text;
-			sourceTree = "<group>";
-		};
-		E2FB8683183D202700A5A764 /* unicode */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB8684183D202700A5A764 /* CharacterNames.h */,
-				E2FB8685183D202700A5A764 /* Collator.h */,
-				E2FB8686183D202700A5A764 /* CollatorDefault.cpp */,
-				E2FB868A183D202700A5A764 /* icu */,
-				E2FB868F183D202700A5A764 /* ScriptCodesFromICU.h */,
-				E2FB8690183D202700A5A764 /* Unicode.h */,
-				E2FB8691183D202700A5A764 /* UnicodeMacrosFromICU.h */,
-				E2FB8692183D202700A5A764 /* UTF8.cpp */,
-				E2FB8693183D202700A5A764 /* UTF8.h */,
-				E2FB8694183D202700A5A764 /* wchar */,
-			);
-			path = unicode;
-			sourceTree = "<group>";
-		};
-		E2FB868A183D202700A5A764 /* icu */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB868B183D202700A5A764 /* CollatorICU.cpp */,
-				E2FB868C183D202700A5A764 /* UnicodeIcu.h */,
-			);
-			path = icu;
-			sourceTree = "<group>";
-		};
-		E2FB8694183D202700A5A764 /* wchar */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB8695183D202700A5A764 /* UnicodeWchar.cpp */,
-				E2FB8696183D202700A5A764 /* UnicodeWchar.h */,
-			);
-			path = wchar;
 			sourceTree = "<group>";
 		};
 		E2FB873F183D20E100A5A764 /* platform */ = {
@@ -2013,7 +1841,6 @@
 				E2FB89C5183D20E200A5A764 /* IRC_Composite_C_R0195_T285_P000.wav in Resources */,
 				E2FB89E5183D20E200A5A764 /* IRC_Composite_C_R0195_T330_P030.wav in Resources */,
 				E2FB896D183D20E200A5A764 /* IRC_Composite_C_R0195_T150_P030.wav in Resources */,
-				E2FB86E6183D202700A5A764 /* README in Resources */,
 				E2FB8951183D20E200A5A764 /* IRC_Composite_C_R0195_T105_P060.wav in Resources */,
 				E2FB897E183D20E200A5A764 /* IRC_Composite_C_R0195_T165_P345.wav in Resources */,
 				E2FB893F183D20E200A5A764 /* IRC_Composite_C_R0195_T075_P090.wav in Resources */,
@@ -2030,7 +1857,6 @@
 				E2FB8959183D20E200A5A764 /* IRC_Composite_C_R0195_T120_P030.wav in Resources */,
 				E2FB893E183D20E200A5A764 /* IRC_Composite_C_R0195_T075_P075.wav in Resources */,
 				E2FB897D183D20E200A5A764 /* IRC_Composite_C_R0195_T165_P330.wav in Resources */,
-				E2FB86E0183D202700A5A764 /* COPYING in Resources */,
 				E2FB890D183D20E200A5A764 /* IRC_Composite_C_R0195_T000_P090.wav in Resources */,
 				E2FB8927183D20E200A5A764 /* IRC_Composite_C_R0195_T045_P030.wav in Resources */,
 				E2FB8911183D20E200A5A764 /* IRC_Composite_C_R0195_T015_P000.wav in Resources */,
@@ -2107,7 +1933,6 @@
 				E2FB89B7183D20E200A5A764 /* IRC_Composite_C_R0195_T255_P090.wav in Resources */,
 				E2FB89AC183D20E200A5A764 /* IRC_Composite_C_R0195_T240_P075.wav in Resources */,
 				E2FB89B1183D20E200A5A764 /* IRC_Composite_C_R0195_T255_P000.wav in Resources */,
-				E2FB86E5183D202700A5A764 /* LICENSE in Resources */,
 				E2FB8945183D20E200A5A764 /* IRC_Composite_C_R0195_T090_P030.wav in Resources */,
 				E2FB89AA183D20E200A5A764 /* IRC_Composite_C_R0195_T240_P045.wav in Resources */,
 				E2FB898B183D20E200A5A764 /* IRC_Composite_C_R0195_T195_P030.wav in Resources */,
@@ -2148,7 +1973,6 @@
 				E2FB84BA183D1E8F00A5A764 /* SpatializationNode.cpp in Sources */,
 				E2FB89F7183D20E200A5A764 /* Reverb.cpp in Sources */,
 				E2FB854B183D1F1F00A5A764 /* AudioScheduledSourceNode.cpp in Sources */,
-				E2FB8722183D202700A5A764 /* CollatorICU.cpp in Sources */,
 				E2FB854E183D1F1F00A5A764 /* BiquadDSPKernel.cpp in Sources */,
 				E2FB8A17183D20E300A5A764 /* Logging.cpp in Sources */,
 				E2FB853D183D1F1F00A5A764 /* AudioDestinationNode.cpp in Sources */,
@@ -2161,7 +1985,6 @@
 				E2FB84B7183D1E8F00A5A764 /* RecorderNode.cpp in Sources */,
 				E2FB8576183D1F1F00A5A764 /* WaveTable.cpp in Sources */,
 				E2FB854D183D1F1F00A5A764 /* AudioSummingJunction.cpp in Sources */,
-				E2FB8724183D202700A5A764 /* UnicodeWchar.cpp in Sources */,
 				E2FB84B5183D1E8F00A5A764 /* NoiseNode.cpp in Sources */,
 				E2FB8572183D1F1F00A5A764 /* WaveShaperDSPKernel.cpp in Sources */,
 				E2FB8558183D1F1F00A5A764 /* DefaultAudioDestinationNode.cpp in Sources */,
@@ -2188,7 +2011,6 @@
 				E251D92718486BB600F7B7BC /* PowerMonitorNode.cpp in Sources */,
 				E2FB870A183D202700A5A764 /* SizeLimits.cpp in Sources */,
 				E2FB84B8183D1E8F00A5A764 /* SfxrNode.cpp in Sources */,
-				E2FB86DF183D202700A5A764 /* cached-powers.cc in Sources */,
 				E2FB8540183D1F1F00A5A764 /* AudioListener.cpp in Sources */,
 				E2FB8554183D1F1F00A5A764 /* ChannelSplitterNode.cpp in Sources */,
 				E2FB88ED183D20E200A5A764 /* DynamicsCompressorKernel.cpp in Sources */,
@@ -2197,35 +2019,26 @@
 				E2FB89FB183D20E200A5A764 /* ReverbInputBuffer.cpp in Sources */,
 				E2FB8902183D20E200A5A764 /* FFTFrameMac.cpp in Sources */,
 				E2FB8544183D1F1F00A5A764 /* AudioNodeInput.cpp in Sources */,
-				E2FB8720183D202700A5A764 /* CollatorDefault.cpp in Sources */,
-				E2FB86DE183D202700A5A764 /* bignum.cc in Sources */,
 				E2FB89FA183D20E200A5A764 /* ReverbConvolverStage.cpp in Sources */,
 				E2FB8901183D20E200A5A764 /* AudioFileReaderMac.cpp in Sources */,
 				E2FB86CF183D202700A5A764 /* ArrayBuffer.cpp in Sources */,
 				E2FB855A183D1F1F00A5A764 /* DelayNode.cpp in Sources */,
 				E2FB86ED183D202700A5A764 /* FastMalloc.cpp in Sources */,
 				E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */,
-				E2FB8723183D202700A5A764 /* UTF8.cpp in Sources */,
 				E2FB8531183D1F1F00A5A764 /* AnalyserNode.cpp in Sources */,
 				E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */,
 				E2FB8718183D202700A5A764 /* Threading.cpp in Sources */,
-				E2FB86E7183D202700A5A764 /* strtod.cc in Sources */,
 				E2FB84BB183D1E8F00A5A764 /* SupersawNode.cpp in Sources */,
 				E2FB8A15183D20E300A5A764 /* LayoutBoxExtent.cpp in Sources */,
-				E2FB86E3183D202700A5A764 /* fast-dtoa.cc in Sources */,
 				E2FB86F7183D202700A5A764 /* MainThread.cpp in Sources */,
 				E2FB88F9183D20E200A5A764 /* HRTFDatabase.cpp in Sources */,
-				E2FB86DD183D202700A5A764 /* bignum-dtoa.cc in Sources */,
 				E2FB88E1183D20E200A5A764 /* AudioChannel.cpp in Sources */,
 				E2FB88E2183D20E200A5A764 /* AudioDSPKernelProcessor.cpp in Sources */,
 				E2FB88FD183D20E200A5A764 /* HRTFPanner.cpp in Sources */,
 				E2FB8707183D202700A5A764 /* RandomNumber.cpp in Sources */,
-				E2FB86EE183D202700A5A764 /* FilePrintStream.cpp in Sources */,
 				E2FB8535183D1F1F00A5A764 /* AudioBasicProcessorNode.cpp in Sources */,
-				E2FB8703183D202700A5A764 /* PrintStream.cpp in Sources */,
 				E2FB8551183D1F1F00A5A764 /* BiquadProcessor.cpp in Sources */,
 				E2FB89FC183D20E200A5A764 /* SincResampler.cpp in Sources */,
-				E2FB870E183D202700A5A764 /* StringPrintStream.cpp in Sources */,
 				E2FB86D8183D202700A5A764 /* CryptographicallyRandomNumber.cpp in Sources */,
 				E2FB86E9183D202700A5A764 /* DynamicAnnotations.cpp in Sources */,
 				E2FB8575183D1F1F00A5A764 /* WaveShaperProcessor.cpp in Sources */,
@@ -2233,10 +2046,7 @@
 				E2FB86F6183D202700A5A764 /* MainThreadMac.mm in Sources */,
 				E2FB88FA183D20E200A5A764 /* HRTFDatabaseLoader.cpp in Sources */,
 				E2FB84B1183D1E8F00A5A764 /* ADSRNode.cpp in Sources */,
-				E2FB86DA183D202700A5A764 /* DataLog.cpp in Sources */,
 				E2FB8533183D1F1F00A5A764 /* AsyncAudioDecoder.cpp in Sources */,
-				E2FB8712183D202700A5A764 /* CString.cpp in Sources */,
-				E2FB86FC183D202700A5A764 /* NumberOfCores.cpp in Sources */,
 				E2FB88E5183D20E200A5A764 /* AudioResampler.cpp in Sources */,
 				E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */,
 				E2FB89FD183D20E200A5A764 /* VectorMath.cpp in Sources */,
@@ -2259,18 +2069,14 @@
 				E2FB88F2183D20E200A5A764 /* FFTFrame.cpp in Sources */,
 				E2FB84B6183D1E8F00A5A764 /* PdNode.cpp in Sources */,
 				E2FB8573183D1F1F00A5A764 /* WaveShaperNode.cpp in Sources */,
-				E2FB86E2183D202700A5A764 /* double-conversion.cc in Sources */,
-				E2FB86E8183D202700A5A764 /* dtoa.cpp in Sources */,
 				E2FB88E8183D20E200A5A764 /* Biquad.cpp in Sources */,
 				E2FB86FD183D202700A5A764 /* OSAllocatorPosix.cpp in Sources */,
 				E2FB84B4183D1E8F00A5A764 /* LabSound.cpp in Sources */,
 				E2FB8542183D1F1F00A5A764 /* AudioNode.cpp in Sources */,
 				E2FB870F183D202700A5A764 /* TCSystemAlloc.cpp in Sources */,
-				E2FB86E4183D202700A5A764 /* fixed-dtoa.cc in Sources */,
 				E2FB871A183D202700A5A764 /* ThreadingPthreads.cpp in Sources */,
 				E2FB88EF183D20E200A5A764 /* EqualPowerPanner.cpp in Sources */,
 				E2FB88EB183D20E200A5A764 /* Distance.cpp in Sources */,
-				E2FB86E1183D202700A5A764 /* diy-fp.cc in Sources */,
 				E2FB86F9183D202700A5A764 /* MediaTime.cpp in Sources */,
 				E2FB86D2183D202700A5A764 /* AutodrainedPoolMac.mm in Sources */,
 				E2FB86D1183D202700A5A764 /* Assertions.cpp in Sources */,

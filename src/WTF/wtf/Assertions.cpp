@@ -37,7 +37,6 @@
 #include "Compiler.h"
 #include <wtf/StdLibExtras.h>
 #include <wtf/StringExtras.h>
-#include <wtf/text/CString.h>
 #include <vector>
 #include <string>
 

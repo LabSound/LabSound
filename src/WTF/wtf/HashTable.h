@@ -24,7 +24,6 @@
 
 #include <wtf/Alignment.h>
 #include <wtf/Assertions.h>
-#include <wtf/DataLog.h>
 #include <wtf/FastMalloc.h>
 #include <wtf/HashTraits.h>
 #include <wtf/StdLibExtras.h>

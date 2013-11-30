@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <wtf/Assertions.h>
-#include <wtf/PrintStream.h>
 #include <wtf/StdLibExtras.h>
 
 namespace WTF {
@@ -168,8 +167,6 @@ public:
         else
             clear(bit);
     }
-    
-    void dump(PrintStream& out);
     
 private:
     static unsigned bitsInPointer()

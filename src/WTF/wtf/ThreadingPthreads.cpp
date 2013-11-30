@@ -34,9 +34,6 @@
 #if USE(PTHREADS)
 
 #include "CurrentTime.h"
-//#include "DateMath.h"
-#include "dtoa.h"
-#include "dtoa/cached-powers.h"
 #include "HashMap.h"
 #include "RandomNumberSeed.h"
 #include "StdLibExtras.h"
@@ -129,12 +126,10 @@ void initializeThreading()
     enableIEEE754Denormal();
 #endif
 
-    WTF::double_conversion::initialize();
     atomicallyInitializedStaticMutex = new Mutex;
     threadMapMutex();
     initializeRandomNumberGenerator();
     ThreadIdentifierData::initializeOnce();
-    s_dtoaP5Mutex = new Mutex;
 }
 
 void lockAtomicallyInitializedStaticMutex()

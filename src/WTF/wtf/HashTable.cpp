@@ -19,7 +19,6 @@
 
 #include "config.h"
 #include "HashTable.h"
-#include "DataLog.h"
 
 namespace WTF {
 
