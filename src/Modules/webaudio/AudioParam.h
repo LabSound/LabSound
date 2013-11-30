@@ -36,7 +36,7 @@
 #include <wtf/Float32Array.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefCounted.h>
-#include <wtf/text/WTFString.h>
+#include <string.h>
 
 namespace WebCore {
 
@@ -47,7 +47,7 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    static PassRefPtr<AudioParam> create(AudioContext* context, const String& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+    static PassRefPtr<AudioParam> create(AudioContext* context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
     {
         return adoptRef(new AudioParam(context, name, defaultValue, minValue, maxValue, units));
     }
@@ -64,7 +64,7 @@ public:
     // Must be called in the audio thread.
     float finalValue();
 
-    String name() const { return m_name; }
+    std::string name() const { return m_name; }
 
     float minValue() const { return static_cast<float>(m_minValue); }
     float maxValue() const { return static_cast<float>(m_maxValue); }
@@ -103,7 +103,7 @@ public:
     void disconnect(AudioNodeOutput*);
 
 protected:
-    AudioParam(AudioContext* context, const String& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+    AudioParam(AudioContext* context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
         : AudioSummingJunction(context)
         , m_name(name)
         , m_value(defaultValue)
@@ -121,7 +121,7 @@ private:
     void calculateFinalValues(float* values, unsigned numberOfValues, bool sampleAccurate);
     void calculateTimelineValues(float* values, unsigned numberOfValues);
 
-    String m_name;
+    std::string m_name;
     double m_value;
     double m_defaultValue;
     double m_minValue;

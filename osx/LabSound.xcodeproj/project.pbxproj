@@ -546,7 +546,6 @@
 		E2FB85A0183D202600A5A764 /* DataLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataLog.h; sourceTree = "<group>"; };
 		E2FB85A3183D202600A5A764 /* DecimalNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DecimalNumber.cpp; sourceTree = "<group>"; };
 		E2FB85A4183D202600A5A764 /* DecimalNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DecimalNumber.h; sourceTree = "<group>"; };
-		E2FB85A5183D202600A5A764 /* Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
 		E2FB85A6183D202600A5A764 /* Deque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Deque.h; sourceTree = "<group>"; };
 		E2FB85A7183D202600A5A764 /* DisallowCType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisallowCType.h; sourceTree = "<group>"; };
 		E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoublyLinkedList.h; sourceTree = "<group>"; };
@@ -1277,7 +1276,6 @@
 				E2FB85A0183D202600A5A764 /* DataLog.h */,
 				E2FB85A3183D202600A5A764 /* DecimalNumber.cpp */,
 				E2FB85A4183D202600A5A764 /* DecimalNumber.h */,
-				E2FB85A5183D202600A5A764 /* Decoder.h */,
 				E2FB85A6183D202600A5A764 /* Deque.h */,
 				E2FB85A7183D202600A5A764 /* DisallowCType.h */,
 				E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */,
