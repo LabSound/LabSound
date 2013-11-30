@@ -399,12 +399,9 @@
 		E2FB89FC183D20E200A5A764 /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8897183D20E200A5A764 /* SincResampler.cpp */; };
 		E2FB89FD183D20E200A5A764 /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8899183D20E200A5A764 /* VectorMath.cpp */; };
 		E2FB8A01183D20E200A5A764 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88A1183D20E200A5A764 /* ZeroPole.cpp */; };
-		E2FB8A02183D20E200A5A764 /* CalculationValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88A3183D20E200A5A764 /* CalculationValue.cpp */; };
 		E2FB8A04183D20E300A5A764 /* FloatPoint3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88A9183D20E200A5A764 /* FloatPoint3D.cpp */; };
 		E2FB8A15183D20E300A5A764 /* LayoutBoxExtent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88D2183D20E200A5A764 /* LayoutBoxExtent.cpp */; };
-		E2FB8A16183D20E300A5A764 /* Length.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88D5183D20E200A5A764 /* Length.cpp */; };
 		E2FB8A17183D20E300A5A764 /* Logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88D7183D20E200A5A764 /* Logging.cpp */; };
-		E2FB8A22183D217D00A5A764 /* LengthFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8A1F183D217D00A5A764 /* LengthFunctions.cpp */; };
 		E2FB8A25183DA85700A5A764 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8A23183DA85700A5A764 /* PWMNode.cpp */; };
 /* End PBXBuildFile section */
 
@@ -1070,16 +1067,12 @@
 		E2FB889A183D20E200A5A764 /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorMath.h; sourceTree = "<group>"; };
 		E2FB88A1183D20E200A5A764 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
 		E2FB88A2183D20E200A5A764 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZeroPole.h; sourceTree = "<group>"; };
-		E2FB88A3183D20E200A5A764 /* CalculationValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CalculationValue.cpp; sourceTree = "<group>"; };
-		E2FB88A4183D20E200A5A764 /* CalculationValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalculationValue.h; sourceTree = "<group>"; };
 		E2FB88A5183D20E200A5A764 /* FloatConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatConversion.h; sourceTree = "<group>"; };
 		E2FB88A9183D20E200A5A764 /* FloatPoint3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatPoint3D.cpp; sourceTree = "<group>"; };
 		E2FB88AA183D20E200A5A764 /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
 		E2FB88D2183D20E200A5A764 /* LayoutBoxExtent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LayoutBoxExtent.cpp; sourceTree = "<group>"; };
 		E2FB88D3183D20E200A5A764 /* LayoutBoxExtent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutBoxExtent.h; sourceTree = "<group>"; };
 		E2FB88D4183D20E200A5A764 /* LayoutUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutUnit.h; sourceTree = "<group>"; };
-		E2FB88D5183D20E200A5A764 /* Length.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Length.cpp; sourceTree = "<group>"; };
-		E2FB88D6183D20E200A5A764 /* Length.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Length.h; sourceTree = "<group>"; };
 		E2FB88D7183D20E200A5A764 /* Logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logging.cpp; sourceTree = "<group>"; };
 		E2FB88D8183D20E200A5A764 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E2FB8A1A183D217D00A5A764 /* ActiveDOMObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveDOMObject.h; sourceTree = "<group>"; };
@@ -1087,8 +1080,6 @@
 		E2FB8A1C183D217D00A5A764 /* EventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListener.h; sourceTree = "<group>"; };
 		E2FB8A1D183D217D00A5A764 /* EventTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventTarget.h; sourceTree = "<group>"; };
 		E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionCode.h; sourceTree = "<group>"; };
-		E2FB8A1F183D217D00A5A764 /* LengthFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LengthFunctions.cpp; sourceTree = "<group>"; };
-		E2FB8A20183D217D00A5A764 /* LengthFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LengthFunctions.h; sourceTree = "<group>"; };
 		E2FB8A21183D217D00A5A764 /* MediaStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaStream.h; sourceTree = "<group>"; };
 		E2FB8A23183DA85700A5A764 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PWMNode.cpp; sourceTree = "<group>"; };
 		E2FB8A24183DA85700A5A764 /* PWMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMNode.h; sourceTree = "<group>"; };
@@ -1543,15 +1534,11 @@
 			children = (
 				E2FB8740183D20E100A5A764 /* animation */,
 				E2FB8747183D20E100A5A764 /* audio */,
-				E2FB88A3183D20E200A5A764 /* CalculationValue.cpp */,
-				E2FB88A4183D20E200A5A764 /* CalculationValue.h */,
 				E2FB88A5183D20E200A5A764 /* FloatConversion.h */,
 				E2FB88A6183D20E200A5A764 /* graphics */,
 				E2FB88D2183D20E200A5A764 /* LayoutBoxExtent.cpp */,
 				E2FB88D3183D20E200A5A764 /* LayoutBoxExtent.h */,
 				E2FB88D4183D20E200A5A764 /* LayoutUnit.h */,
-				E2FB88D5183D20E200A5A764 /* Length.cpp */,
-				E2FB88D6183D20E200A5A764 /* Length.h */,
 				E2FB88D7183D20E200A5A764 /* Logging.cpp */,
 				E2FB88D8183D20E200A5A764 /* Logging.h */,
 			);
@@ -1929,8 +1916,6 @@
 				E2FB8A1C183D217D00A5A764 /* EventListener.h */,
 				E2FB8A1D183D217D00A5A764 /* EventTarget.h */,
 				E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */,
-				E2FB8A1F183D217D00A5A764 /* LengthFunctions.cpp */,
-				E2FB8A20183D217D00A5A764 /* LengthFunctions.h */,
 				E2FB8A21183D217D00A5A764 /* MediaStream.h */,
 			);
 			name = shim;
@@ -2285,7 +2270,6 @@
 				E2FB8700183D202700A5A764 /* PageAllocationAligned.cpp in Sources */,
 				E2FB855C183D1F1F00A5A764 /* DelayProcessor.cpp in Sources */,
 				E2FB8545183D1F1F00A5A764 /* AudioNodeOutput.cpp in Sources */,
-				E2FB8A02183D20E200A5A764 /* CalculationValue.cpp in Sources */,
 				E2FB8546183D1F1F00A5A764 /* AudioParam.cpp in Sources */,
 				E2FB8701183D202700A5A764 /* PageBlock.cpp in Sources */,
 				E2FB88FF183D20E200A5A764 /* AudioBusMac.mm in Sources */,
@@ -2306,7 +2290,6 @@
 				E2FB86DE183D202700A5A764 /* bignum.cc in Sources */,
 				E2FB89FA183D20E200A5A764 /* ReverbConvolverStage.cpp in Sources */,
 				E2FB8901183D20E200A5A764 /* AudioFileReaderMac.cpp in Sources */,
-				E2FB8A22183D217D00A5A764 /* LengthFunctions.cpp in Sources */,
 				E2FB873C183D202700A5A764 /* WTFThreadData.cpp in Sources */,
 				E2FB86CF183D202700A5A764 /* ArrayBuffer.cpp in Sources */,
 				E2FB855A183D1F1F00A5A764 /* DelayNode.cpp in Sources */,
@@ -2346,7 +2329,6 @@
 				E2FB86FF183D202700A5A764 /* OSRandomSource.cpp in Sources */,
 				E2FB86F6183D202700A5A764 /* MainThreadMac.mm in Sources */,
 				E2FB88FA183D20E200A5A764 /* HRTFDatabaseLoader.cpp in Sources */,
-				E2FB8A16183D20E300A5A764 /* Length.cpp in Sources */,
 				E2FB84B1183D1E8F00A5A764 /* ADSRNode.cpp in Sources */,
 				E2FB86DA183D202700A5A764 /* DataLog.cpp in Sources */,
 				E2FB8533183D1F1F00A5A764 /* AsyncAudioDecoder.cpp in Sources */,
