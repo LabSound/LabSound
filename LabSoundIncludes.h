@@ -76,8 +76,6 @@
 #include "src/Modules/webaudio/BiquadProcessor.h"
 
 // Shims
-#include "src/shim/ActiveDOMObject.h"
-#include "src/shim/EventListener.h"
 #include "src/shim/EventTarget.h"
 #include "src/shim/ExceptionCode.h"
 #include "src/shim/LengthFunctions.h"

@@ -29,7 +29,6 @@
 #include "AsyncAudioDecoder.h"
 #include "AudioBus.h"
 #include "AudioDestinationNode.h"
-#include "EventListener.h"
 #include "EventTarget.h"
 #include "HRTFDatabaseLoader.h"
 #include "MediaStream.h" // added for LabSound
