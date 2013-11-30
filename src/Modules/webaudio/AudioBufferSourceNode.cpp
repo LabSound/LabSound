@@ -32,9 +32,8 @@
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
-//LabSound #include "ScriptCallStack.h"
-//LabSound #include "ScriptExecutionContext.h"
 #include <algorithm>
+#include <wtf/ArrayBuffer.h>
 #include <wtf/MainThread.h>
 #include <wtf/MathExtras.h>
 

@@ -844,13 +844,17 @@ void AudioContext::deleteMarkedNodes()
 
             // Before deleting the node, clear out any AudioNodeInputs from m_dirtySummingJunctions.
             unsigned numberOfInputs = node->numberOfInputs();
-            for (unsigned i = 0; i < numberOfInputs; ++i)
-                m_dirtySummingJunctions.remove(node->input(i));
+            for (unsigned i = 0; i < numberOfInputs; ++i) {
+                auto it = m_dirtySummingJunctions.find(node->input(i));
+                m_dirtySummingJunctions.erase(it);
+            }
 
             // Before deleting the node, clear out any AudioNodeOutputs from m_dirtyAudioNodeOutputs.
             unsigned numberOfOutputs = node->numberOfOutputs();
-            for (unsigned i = 0; i < numberOfOutputs; ++i)
-                m_dirtyAudioNodeOutputs.remove(node->output(i));
+            for (unsigned i = 0; i < numberOfOutputs; ++i) {
+                auto it = m_dirtyAudioNodeOutputs.find(node->output(i));
+                m_dirtyAudioNodeOutputs.erase(it);
+            }
 
             // Finally, delete it.
             delete node;
@@ -862,27 +866,28 @@ void AudioContext::deleteMarkedNodes()
 void AudioContext::markSummingJunctionDirty(AudioSummingJunction* summingJunction)
 {
     ASSERT(isGraphOwner());    
-    m_dirtySummingJunctions.add(summingJunction);
+    m_dirtySummingJunctions.insert(summingJunction);
 }
 
 void AudioContext::removeMarkedSummingJunction(AudioSummingJunction* summingJunction)
 {
     ASSERT(isMainThread());
     AutoLocker locker(this);
-    m_dirtySummingJunctions.remove(summingJunction);
+    auto it = m_dirtySummingJunctions.find(summingJunction);
+    m_dirtySummingJunctions.erase(it);
 }
 
 void AudioContext::markAudioNodeOutputDirty(AudioNodeOutput* output)
 {
     ASSERT(isGraphOwner());    
-    m_dirtyAudioNodeOutputs.add(output);
+    m_dirtyAudioNodeOutputs.insert(output);
 }
 
 void AudioContext::handleDirtyAudioSummingJunctions()
 {
     ASSERT(isGraphOwner());    
 
-    for (HashSet<AudioSummingJunction*>::iterator i = m_dirtySummingJunctions.begin(); i != m_dirtySummingJunctions.end(); ++i)
+    for (auto i = m_dirtySummingJunctions.begin(); i != m_dirtySummingJunctions.end(); ++i)
         (*i)->updateRenderingState();
 
     m_dirtySummingJunctions.clear();
@@ -892,7 +897,7 @@ void AudioContext::handleDirtyAudioNodeOutputs()
 {
     ASSERT(isGraphOwner());    
 
-    for (HashSet<AudioNodeOutput*>::iterator i = m_dirtyAudioNodeOutputs.begin(); i != m_dirtyAudioNodeOutputs.end(); ++i)
+    for (auto i = m_dirtyAudioNodeOutputs.begin(); i != m_dirtyAudioNodeOutputs.end(); ++i)
         (*i)->updateRenderingState();
 
     m_dirtyAudioNodeOutputs.clear();
@@ -902,8 +907,8 @@ void AudioContext::addAutomaticPullNode(AudioNode* node)
 {
     ASSERT(isGraphOwner());
 
-    if (!m_automaticPullNodes.contains(node)) {
-        m_automaticPullNodes.add(node);
+    if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end()) {
+        m_automaticPullNodes.insert(node);
         m_automaticPullNodesNeedUpdating = true;
     }
 }
@@ -912,8 +917,9 @@ void AudioContext::removeAutomaticPullNode(AudioNode* node)
 {
     ASSERT(isGraphOwner());
 
-    if (m_automaticPullNodes.contains(node)) {
-        m_automaticPullNodes.remove(node);
+    auto it = m_automaticPullNodes.find(node);
+    if (it != m_automaticPullNodes.end()) {
+        m_automaticPullNodes.erase(it);
         m_automaticPullNodesNeedUpdating = true;
     }
 }
@@ -927,7 +933,7 @@ void AudioContext::updateAutomaticPullNodes()
         m_renderingAutomaticPullNodes.resize(m_automaticPullNodes.size());
 
         unsigned j = 0;
-        for (HashSet<AudioNode*>::iterator i = m_automaticPullNodes.begin(); i != m_automaticPullNodes.end(); ++i, ++j) {
+        for (auto i = m_automaticPullNodes.begin(); i != m_automaticPullNodes.end(); ++i, ++j) {
             AudioNode* output = *i;
             m_renderingAutomaticPullNodes[j] = output;
         }

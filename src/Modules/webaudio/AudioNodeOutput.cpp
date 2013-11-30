@@ -167,7 +167,7 @@ void AudioNodeOutput::addInput(AudioNodeInput* input)
     if (!input)
         return;
 
-    m_inputs.add(input);
+    m_inputs.insert(input);
 }
 
 void AudioNodeOutput::removeInput(AudioNodeInput* input)
@@ -178,7 +178,9 @@ void AudioNodeOutput::removeInput(AudioNodeInput* input)
     if (!input)
         return;
 
-    m_inputs.remove(input);
+    auto it = m_inputs.find(input);
+    if (it != m_inputs.end())
+        m_inputs.erase(it);
 }
 
 void AudioNodeOutput::disconnectAllInputs()
@@ -186,7 +188,7 @@ void AudioNodeOutput::disconnectAllInputs()
     ASSERT(context()->isGraphOwner());
     
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
-    while (!m_inputs.isEmpty()) {
+    while (m_inputs.size()) {
         AudioNodeInput* input = *m_inputs.begin();
         input->disconnect(this);
     }
@@ -200,7 +202,7 @@ void AudioNodeOutput::addParam(AudioParam* param)
     if (!param)
         return;
 
-    m_params.add(param);
+    m_params.insert(param);
 }
 
 void AudioNodeOutput::removeParam(AudioParam* param)
@@ -211,7 +213,9 @@ void AudioNodeOutput::removeParam(AudioParam* param)
     if (!param)
         return;
 
-    m_params.remove(param);
+    auto it = m_params.find(param);
+    if (it != m_params.end())
+        m_params.erase(it);
 }
 
 void AudioNodeOutput::disconnectAllParams()
@@ -219,8 +223,8 @@ void AudioNodeOutput::disconnectAllParams()
     ASSERT(context()->isGraphOwner());
 
     // AudioParam::disconnect() changes m_params by calling removeParam().
-    while (!m_params.isEmpty()) {
-        AudioParam* param = m_params.begin()->get();
+    while (m_params.size()) {
+        AudioParam* param = *m_params.begin();
         param->disconnect(this);
     }
 }

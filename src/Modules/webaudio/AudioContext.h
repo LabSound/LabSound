@@ -33,7 +33,6 @@
 #include "EventTarget.h"
 #include "HRTFDatabaseLoader.h"
 #include "MediaStream.h" // added for LabSound
-#include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
@@ -42,6 +41,7 @@
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Threading.h>
 #include <vector>
+#include <set>
 
 namespace WebCore {
 
@@ -299,14 +299,14 @@ private:
     bool m_isDeletionScheduled;
 
     // Only accessed when the graph lock is held.
-    HashSet<AudioSummingJunction*> m_dirtySummingJunctions;
-    HashSet<AudioNodeOutput*> m_dirtyAudioNodeOutputs;
+    std::set<AudioSummingJunction*> m_dirtySummingJunctions;
+    std::set<AudioNodeOutput*> m_dirtyAudioNodeOutputs;
     void handleDirtyAudioSummingJunctions();
     void handleDirtyAudioNodeOutputs();
 
     // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
     // It will be copied from m_automaticPullNodes by updateAutomaticPullNodes() at the very start or end of the rendering quantum.
-    HashSet<AudioNode*> m_automaticPullNodes;
+    std::set<AudioNode*> m_automaticPullNodes;
     std::vector<AudioNode*> m_renderingAutomaticPullNodes;
     // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
     bool m_automaticPullNodesNeedUpdating;

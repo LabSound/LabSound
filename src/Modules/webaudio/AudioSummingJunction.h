@@ -26,7 +26,8 @@
 #define AudioSummingJunction_h
 
 #include "AudioBus.h"
-#include <wtf/HashSet.h>
+#include <wtf/RefPtr.h>
+#include <set>
 #include <vector>
 
 namespace WebCore {
@@ -65,11 +66,11 @@ protected:
 
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
-    HashSet<AudioNodeOutput*> m_outputs;
+    std::set<AudioNodeOutput*> m_outputs;
 
     // numberOfConnections() should never be called from the audio rendering thread.
     // Instead numberOfRenderingConnections() and renderingOutput() should be used.
-    unsigned numberOfConnections() const { return m_outputs.size(); }
+    size_t numberOfConnections() const { return m_outputs.size(); }
 
     // m_renderingOutputs is a copy of m_outputs which will never be modified during the graph rendering on the audio thread.
     // This is the list which is used by the rendering code.

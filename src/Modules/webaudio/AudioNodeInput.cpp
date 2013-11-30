@@ -54,11 +54,11 @@ void AudioNodeInput::connect(AudioNodeOutput* output)
         return;
 
     // Check if we're already connected to this output.
-    if (m_outputs.contains(output))
+    if (m_outputs.find(output) != m_outputs.end())
         return;
-        
+
     output->addInput(this);
-    m_outputs.add(output);
+    m_outputs.insert(output);
     changedOutputs();
 
     // Sombody has just connected to us, so count it as a reference.
@@ -74,8 +74,9 @@ void AudioNodeInput::disconnect(AudioNodeOutput* output)
         return;
 
     // First try to disconnect from "active" connections.
-    if (m_outputs.contains(output)) {
-        m_outputs.remove(output);
+    auto it = m_outputs.find(output);
+    if (it != m_outputs.end()) {
+        m_outputs.erase(it);
         changedOutputs();
         output->removeInput(this);
         node()->deref(AudioNode::RefTypeConnection); // Note: it's important to return immediately after all deref() calls since the node may be deleted.
@@ -83,8 +84,9 @@ void AudioNodeInput::disconnect(AudioNodeOutput* output)
     }
     
     // Otherwise, try to disconnect from disabled connections.
-    if (m_disabledOutputs.contains(output)) {
-        m_disabledOutputs.remove(output);
+    auto it2 = m_disabledOutputs.find(output);
+    if (it2 != m_disabledOutputs.end()) {
+        m_disabledOutputs.erase(it2);
         output->removeInput(this);
         node()->deref(AudioNode::RefTypeConnection); // Note: it's important to return immediately after all deref() calls since the node may be deleted.
         return;
@@ -101,10 +103,11 @@ void AudioNodeInput::disable(AudioNodeOutput* output)
     if (!output || !node())
         return;
 
-    ASSERT(m_outputs.contains(output));
+    auto it = m_outputs.find(output);
+    ASSERT(it != m_outputs.end());
     
-    m_disabledOutputs.add(output);
-    m_outputs.remove(output);
+    m_disabledOutputs.insert(output);
+    m_outputs.erase(it);
     changedOutputs();
 
     // Propagate disabled state to outputs.
@@ -119,11 +122,12 @@ void AudioNodeInput::enable(AudioNodeOutput* output)
     if (!output || !node())
         return;
 
-    ASSERT(m_disabledOutputs.contains(output));
+    auto it = m_disabledOutputs.find(output);
+    ASSERT(it != m_disabledOutputs.end());
 
     // Move output from disabled list to active list.
-    m_outputs.add(output);
-    m_disabledOutputs.remove(output);
+    m_outputs.insert(output);
+    m_disabledOutputs.erase(it);
     changedOutputs();
 
     // Propagate enabled state to outputs.
@@ -152,7 +156,7 @@ unsigned AudioNodeInput::numberOfChannels() const
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (HashSet<AudioNodeOutput*>::iterator i = m_outputs.begin(); i != m_outputs.end(); ++i) {
+    for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i) {
         AudioNodeOutput* output = *i;
         maxChannels = max(maxChannels, output->bus()->numberOfChannels());
     }

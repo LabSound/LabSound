@@ -28,7 +28,7 @@
 #include "AudioBus.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
-#include <wtf/HashSet.h>
+#include <set>
 #include <wtf/OwnPtr.h>
 
 namespace WebCore {
@@ -135,8 +135,8 @@ private:
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
 
-    HashSet<AudioNodeInput*> m_inputs;
-    typedef HashSet<AudioNodeInput*>::iterator InputsIterator;
+    std::set<AudioNodeInput*> m_inputs;
+    typedef std::set<AudioNodeInput*>::iterator InputsIterator;
     bool m_isEnabled;
 
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
@@ -144,8 +144,8 @@ private:
     unsigned m_renderingFanOutCount;
     unsigned m_renderingParamFanOutCount;
 
-    HashSet<RefPtr<AudioParam> > m_params;
-    typedef HashSet<RefPtr<AudioParam> >::iterator ParamsIterator;
+    std::set<AudioParam*> m_params;
+    typedef std::set<AudioParam*>::iterator ParamsIterator;
 };
 
 } // namespace WebCore

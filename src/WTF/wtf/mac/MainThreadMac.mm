@@ -33,7 +33,6 @@
 #import <Foundation/NSThread.h>
 #import <stdio.h>
 #import <wtf/Assertions.h>
-#import <wtf/HashSet.h>
 #import <wtf/Threading.h>
 
 /// @LabSound renamed to LabJSWTFMainThreadCaller because it also exists in the JavaScriptCore framework.

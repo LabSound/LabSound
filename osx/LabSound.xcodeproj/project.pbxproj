@@ -531,8 +531,6 @@
 		E2FB85EE183D202600A5A764 /* Int32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Int32Array.h; sourceTree = "<group>"; };
 		E2FB85EF183D202600A5A764 /* Int8Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Int8Array.h; sourceTree = "<group>"; };
 		E2FB85F0183D202600A5A764 /* IntegralTypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntegralTypedArrayBase.h; sourceTree = "<group>"; };
-		E2FB85F1183D202600A5A764 /* ListHashSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListHashSet.h; sourceTree = "<group>"; };
-		E2FB85F2183D202600A5A764 /* ListRefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListRefPtr.h; sourceTree = "<group>"; };
 		E2FB85F3183D202600A5A764 /* Locker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Locker.h; sourceTree = "<group>"; };
 		E2FB85F5183D202600A5A764 /* MainThreadMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MainThreadMac.mm; sourceTree = "<group>"; };
 		E2FB85F6183D202600A5A764 /* MainThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MainThread.cpp; sourceTree = "<group>"; };
@@ -1164,8 +1162,6 @@
 				E2FB85EE183D202600A5A764 /* Int32Array.h */,
 				E2FB85EF183D202600A5A764 /* Int8Array.h */,
 				E2FB85F0183D202600A5A764 /* IntegralTypedArrayBase.h */,
-				E2FB85F1183D202600A5A764 /* ListHashSet.h */,
-				E2FB85F2183D202600A5A764 /* ListRefPtr.h */,
 				E2FB85F3183D202600A5A764 /* Locker.h */,
 				E2FB85F4183D202600A5A764 /* mac */,
 				E2FB85F6183D202600A5A764 /* MainThread.cpp */,
