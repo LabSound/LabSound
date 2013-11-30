@@ -27,10 +27,11 @@
 
 #include "AudioBuffer.h"
 #include "AudioBus.h"
-#include "AudioGain.h"
+#include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
+#include "ExceptionCode.h"
 #include "PannerNode.h"
-#include <wtf/OwnArrayPtr.h>
+#include <memory>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
@@ -43,30 +44,30 @@ class AudioContext;
 // It generally will be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
 
 class AudioBufferSourceNode : public AudioScheduledSourceNode {
-public:    
+public:
     static PassRefPtr<AudioBufferSourceNode> create(AudioContext*, float sampleRate);
 
     virtual ~AudioBufferSourceNode();
-    
+
     // AudioNode
-    virtual void process(size_t framesToProcess);
-    virtual void reset();
-    
+    virtual void process(size_t framesToProcess) OVERRIDE;
+    virtual void reset() OVERRIDE;
+
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
     bool setBuffer(AudioBuffer*);
     AudioBuffer* buffer() { return m_buffer.get(); }
-                    
+
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
     unsigned numberOfChannels();
-                    
+
     // Play-state
-    void startGrain(double when, double grainOffset);
-    void startGrain(double when, double grainOffset, double grainDuration);
+    void startGrain(double when, double grainOffset, ExceptionCode&);
+    void startGrain(double when, double grainOffset, double grainDuration, ExceptionCode&);
 
 #if ENABLE(LEGACY_WEB_AUDIO)
-    void noteGrainOn(double when, double grainOffset, double grainDuration);
+    void noteGrainOn(double when, double grainOffset, double grainDuration, ExceptionCode&);
 #endif
 
     // Note: the attribute was originally exposed as .looping, but to be more consistent in naming with <audio>
@@ -85,7 +86,7 @@ public:
     bool looping();
     void setLooping(bool);
 
-    AudioGain* gain() { return m_gain.get(); }                                        
+    AudioParam* gain() { return m_gain.get(); }
     AudioParam* playbackRate() { return m_playbackRate.get(); }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
@@ -93,13 +94,16 @@ public:
     void clearPannerNode();
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
-    virtual bool propagatesSilence() const;
+    virtual bool propagatesSilence() const OVERRIDE;
 
     // AudioScheduledSourceNode
     virtual void finish() OVERRIDE;
 
 private:
     AudioBufferSourceNode(AudioContext*, float sampleRate);
+
+    virtual double tailTime() const OVERRIDE { return 0; }
+    virtual double latencyTime() const OVERRIDE { return 0; }
 
     // Returns true on success.
     bool renderFromBuffer(AudioBus*, unsigned destinationFrameOffset, size_t numberOfFrames);
@@ -111,11 +115,11 @@ private:
     RefPtr<AudioBuffer> m_buffer;
 
     // Pointers for the buffer and destination.
-    OwnArrayPtr<const float*> m_sourceChannels;
-    OwnArrayPtr<float*> m_destinationChannels;
+    std::unique_ptr<const float*[]> m_sourceChannels;
+    std::unique_ptr<float*[]> m_destinationChannels;
 
     // Used for the "gain" and "playbackRate" attributes.
-    RefPtr<AudioGain> m_gain;
+    RefPtr<AudioParam> m_gain;
     RefPtr<AudioParam> m_playbackRate;
 
     // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
@@ -140,7 +144,7 @@ private:
 
     // m_lastGain provides continuity when we dynamically adjust the gain.
     float m_lastGain;
-    
+
     // We optionally keep track of a panner node which has a doppler shift that is incorporated into
     // the pitch rate. We manually manage ref-counting because we want to use RefTypeConnection.
     PannerNode* m_pannerNode;

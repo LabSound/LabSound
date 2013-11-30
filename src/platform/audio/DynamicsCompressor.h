@@ -33,7 +33,6 @@
 #include "DynamicsCompressorKernel.h"
 #include "ZeroPole.h"
 
-#include <wtf/OwnArrayPtr.h>
 #include <vector>
 
 namespace WebCore {
@@ -104,8 +103,8 @@ protected:
     std::vector<OwnPtr<ZeroPoleFilterPack4> > m_preFilterPacks;
     std::vector<OwnPtr<ZeroPoleFilterPack4> > m_postFilterPacks;
 
-    OwnArrayPtr<const float*> m_sourceChannels;
-    OwnArrayPtr<float*> m_destinationChannels;
+    std::unique_ptr<const float*[]> m_sourceChannels;
+    std::unique_ptr<float*[]> m_destinationChannels;
 
     void setEmphasisStageParameters(unsigned stageIndex, float gain, float normalizedFrequency /* 0 -> 1 */);
     void setEmphasisParameters(float gain, float anchorFreq, float filterStageRatio);

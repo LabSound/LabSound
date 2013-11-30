@@ -21,7 +21,6 @@
 
 // Important WTFs
 #include "src/WTF/wtf/ExportMacros.h"
-#include "src/WTF/wtf/OwnArrayPtr.h"
 #include "src/WTF/wtf/PassRefPtr.h"
 #include "src/WTF/wtf/RefPtr.h"
 #include "src/WTF/wtf/Threading.h"
@@ -76,11 +75,8 @@
 #include "src/Modules/webaudio/BiquadProcessor.h"
 
 // Shims
-#include "src/shim/EventTarget.h"
 #include "src/shim/ExceptionCode.h"
-#include "src/shim/LengthFunctions.h"
 #include "src/shim/MediaStream.h"
-// #include "src/shim/WebCoreMemoryInstrumentation.h
 
 // Not-so-internal things
 #include "src/platform/audio/AudioArray.h"
@@ -126,15 +122,6 @@
 #include "src/platform/audio/VectorMath.h"
 #include "src/platform/audio/ZeroPole.h"
 
-#include "src/platform/graphics/FloatPoint.h"
-#include "src/platform/graphics/FloatQuad.h"
-#include "src/platform/graphics/FloatRect.h"
-#include "src/platform/graphics/FloatSize.h"
-#include "src/platform/graphics/IntPoint.h"
-#include "src/platform/graphics/IntRect.h"
-#include "src/platform/graphics/IntSize.h"
-// #include "src/platform/graphics/LayoutPoint.h"
-// #include "src/platform/graphics/LayoutRect.h"
-// #include "src/platform/graphics/LayoutSize.h"
+#include "src/platform/graphics/FloatPoint3D.h"
 
 #endif

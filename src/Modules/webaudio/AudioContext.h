@@ -29,7 +29,6 @@
 #include "AsyncAudioDecoder.h"
 #include "AudioBus.h"
 #include "AudioDestinationNode.h"
-#include "EventTarget.h"
 #include "HRTFDatabaseLoader.h"
 #include "MediaStream.h" // added for LabSound
 #include <wtf/MainThread.h>
@@ -71,7 +70,7 @@ class WaveTable;
 // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
 // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
 
-class AudioContext : public ActiveDOMObject, public ThreadSafeRefCounted<AudioContext>, public EventTarget {
+class AudioContext : public ActiveDOMObject, public ThreadSafeRefCounted<AudioContext> {
 public:
     // Create an AudioContext for rendering to the audio hardware.
     static PassRefPtr<AudioContext> create(Document*, ExceptionCode&);
@@ -323,11 +322,6 @@ private:
     
     // HRTF Database loader
     RefPtr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
-
-    // EventTarget
-    virtual void refEventTarget() { ref(); }
-    virtual void derefEventTarget() { deref(); }
-    EventTargetData m_eventTargetData;
 
     RefPtr<AudioBuffer> m_renderTarget;
     

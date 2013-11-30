@@ -26,18 +26,26 @@
 
 #if ENABLE(WEB_AUDIO)
 
+#define NO_JS_INTEGRATION 1
+
 #include "AudioBufferSourceNode.h"
 
 #include "AudioContext.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
+
+#ifndef NO_JS_INTEGRATION
+#include "ScriptCallStack.h"
+#include "ScriptController.h"
+#include "ScriptExecutionContext.h"
+#endif
+
+
 #include <algorithm>
-#include <wtf/ArrayBuffer.h>
 #include <wtf/MainThread.h>
 #include <wtf/MathExtras.h>
-
-using namespace std;
+#include <wtf/StdLibExtras.h>
 
 namespace WebCore {
 
@@ -68,9 +76,9 @@ AudioBufferSourceNode::AudioBufferSourceNode(AudioContext* context, float sample
 {
     setNodeType(NodeTypeAudioBufferSource);
 
-    m_gain = AudioGain::create(context, "gain", 1.0, 0.0, 1.0);
+    m_gain = AudioParam::create(context, "gain", 1.0, 0.0, 1.0);
     m_playbackRate = AudioParam::create(context, "playbackRate", 1.0, 0.0, MaxRate);
-    
+
     // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
     addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
 
@@ -96,6 +104,14 @@ void AudioBufferSourceNode::process(size_t framesToProcess)
     MutexTryLocker tryLocker(m_processLock);
     if (tryLocker.locked()) {
         if (!buffer()) {
+            outputBus->zero();
+            return;
+        }
+
+        // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
+        // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
+        // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
+        if (numberOfChannels() != buffer()->numberOfChannels()) {
             outputBus->zero();
             return;
         }
@@ -154,7 +170,7 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus*, unsign
 bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
     ASSERT(context()->isAudioThread());
-    
+
     // Basic sanity checking
     ASSERT(bus);
     ASSERT(buffer());
@@ -220,7 +236,7 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
         double loopStartFrame = m_loopStart * buffer()->sampleRate();
         double loopEndFrame = m_loopEnd * buffer()->sampleRate();
 
-        virtualEndFrame = min(loopEndFrame, virtualEndFrame);
+        virtualEndFrame = std::min(loopEndFrame, virtualEndFrame);
         virtualDeltaFrames = virtualEndFrame - loopStartFrame;
     }
 
@@ -250,8 +266,8 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
         endFrame = static_cast<unsigned>(virtualEndFrame);
         while (framesToProcess > 0) {
             int framesToEnd = endFrame - readIndex;
-            int framesThisTime = min(framesToProcess, framesToEnd);
-            framesThisTime = max(0, framesThisTime);
+            int framesThisTime = std::min(framesToProcess, framesToEnd);
+            framesThisTime = std::max(0, framesThisTime);
 
             for (unsigned i = 0; i < numberOfChannels; ++i) 
                 memcpy(destinationChannels[i] + writeIndex, sourceChannels[i] + readIndex, sizeof(float) * framesThisTime);
@@ -345,8 +361,8 @@ bool AudioBufferSourceNode::setBuffer(AudioBuffer* buffer)
 
         output(0)->setNumberOfChannels(numberOfChannels);
 
-        m_sourceChannels = adoptArrayPtr(new const float* [numberOfChannels]);
-        m_destinationChannels = adoptArrayPtr(new float* [numberOfChannels]);
+        m_sourceChannels = std::make_unique<const float*[]>(numberOfChannels);
+        m_destinationChannels = std::make_unique<float*[]>(numberOfChannels);
 
         for (unsigned i = 0; i < numberOfChannels; ++i) 
             m_sourceChannels[i] = buffer->getChannelData(i)->data();
@@ -363,18 +379,23 @@ unsigned AudioBufferSourceNode::numberOfChannels()
     return output(0)->numberOfChannels();
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset)
+void AudioBufferSourceNode::startGrain(double when, double grainOffset, ExceptionCode& ec)
 {
     // Duration of 0 has special value, meaning calculate based on the entire buffer's duration.
-    startGrain(when, grainOffset, 0);
+    startGrain(when, grainOffset, 0, ec);
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration)
+void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration, ExceptionCode& ec)
 {
     ASSERT(isMainThread());
-
-    if (m_playbackState != UNSCHEDULED_STATE)
+#ifndef NO_JS_INTEGRATION
+    if (ScriptController::processingUserGesture())
+        context()->removeBehaviorRestriction(AudioContext::RequireUserGestureForAudioStartRestriction);
+#endif
+    if (m_playbackState != UNSCHEDULED_STATE) {
+        ec = INVALID_STATE_ERR;
         return;
+    }
 
     if (!buffer())
         return;
@@ -382,8 +403,8 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     // Do sanity checking of grain parameters versus buffer size.
     double bufferDuration = buffer()->duration();
 
-    grainOffset = max(0.0, grainOffset);
-    grainOffset = min(bufferDuration, grainOffset);
+    grainOffset = std::max(0.0, grainOffset);
+    grainOffset = std::min(bufferDuration, grainOffset);
     m_grainOffset = grainOffset;
 
     // Handle default/unspecified duration.
@@ -391,8 +412,8 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     if (!grainDuration)
         grainDuration = maxDuration;
 
-    grainDuration = max(0.0, grainDuration);
-    grainDuration = min(maxDuration, grainDuration);
+    grainDuration = std::max(0.0, grainDuration);
+    grainDuration = std::min(maxDuration, grainDuration);
     m_grainDuration = grainDuration;
 
     m_isGrain = true;
@@ -408,9 +429,9 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
 }
 
 #if ENABLE(LEGACY_WEB_AUDIO)
-void AudioBufferSourceNode::noteGrainOn(double when, double grainOffset, double grainDuration)
+void AudioBufferSourceNode::noteGrainOn(double when, double grainOffset, double grainDuration, ExceptionCode& ec)
 {
-    startGrain(when, grainOffset, grainDuration);
+    startGrain(when, grainOffset, grainDuration, ec);
 }
 #endif
 
@@ -431,12 +452,12 @@ double AudioBufferSourceNode::totalPitchRate()
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
 
     // Sanity check the total rate.  It's very important that the resampler not get any bad rate values.
-    totalRate = max(0.0, totalRate);
+    totalRate = std::max(0.0, totalRate);
     if (!totalRate)
         totalRate = 1; // zero rate is considered illegal
-    totalRate = min(MaxRate, totalRate);
+    totalRate = std::min(MaxRate, totalRate);
     
-    bool isTotalRateValid = !isnan(totalRate) && !isinf(totalRate);
+    bool isTotalRateValid = !std::isnan(totalRate) && !std::isinf(totalRate);
     ASSERT(isTotalRateValid);
     if (!isTotalRateValid)
         totalRate = 1.0;
@@ -446,25 +467,27 @@ double AudioBufferSourceNode::totalPitchRate()
 
 bool AudioBufferSourceNode::looping()
 {
-    /* LabSound
+#ifndef NO_JS_INTEGRATION
     static bool firstTime = true;
     if (firstTime && context() && context()->scriptExecutionContext()) {
-        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, LogMessageType, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
+        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
         firstTime = false;
     }
-*/
+#endif
+
     return m_isLooping;
 }
 
 void AudioBufferSourceNode::setLooping(bool looping)
 {
-    /* LabSound
+#ifndef NO_JS_INTEGRATION
     static bool firstTime = true;
     if (firstTime && context() && context()->scriptExecutionContext()) {
-        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, LogMessageType, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
+        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
         firstTime = false;
     }
-*/
+#endif
+    
     m_isLooping = looping;
 }
 

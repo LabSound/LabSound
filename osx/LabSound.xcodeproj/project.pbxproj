@@ -514,10 +514,8 @@
 		E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntimeExtras.h; sourceTree = "<group>"; };
 		E2FB860E183D202600A5A764 /* OSRandomSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OSRandomSource.cpp; sourceTree = "<group>"; };
 		E2FB860F183D202600A5A764 /* OSRandomSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSRandomSource.h; sourceTree = "<group>"; };
-		E2FB8610183D202600A5A764 /* OwnArrayPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnArrayPtr.h; sourceTree = "<group>"; };
 		E2FB8611183D202600A5A764 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtr.h; sourceTree = "<group>"; };
 		E2FB8612183D202600A5A764 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtrCommon.h; sourceTree = "<group>"; };
-		E2FB861F183D202600A5A764 /* PassOwnArrayPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnArrayPtr.h; sourceTree = "<group>"; };
 		E2FB8620183D202600A5A764 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnPtr.h; sourceTree = "<group>"; };
 		E2FB8621183D202600A5A764 /* PassRefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassRefPtr.h; sourceTree = "<group>"; };
 		E2FB8623183D202600A5A764 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
@@ -875,8 +873,6 @@
 		E2FB88AA183D20E200A5A764 /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
 		E2FB88D7183D20E200A5A764 /* Logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logging.cpp; sourceTree = "<group>"; };
 		E2FB88D8183D20E200A5A764 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
-		E2FB8A1C183D217D00A5A764 /* EventListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventListener.h; sourceTree = "<group>"; };
-		E2FB8A1D183D217D00A5A764 /* EventTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventTarget.h; sourceTree = "<group>"; };
 		E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionCode.h; sourceTree = "<group>"; };
 		E2FB8A21183D217D00A5A764 /* MediaStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaStream.h; sourceTree = "<group>"; };
 		E2FB8A23183DA85700A5A764 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PWMNode.cpp; sourceTree = "<group>"; };
@@ -1088,10 +1084,8 @@
 				E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */,
 				E2FB860E183D202600A5A764 /* OSRandomSource.cpp */,
 				E2FB860F183D202600A5A764 /* OSRandomSource.h */,
-				E2FB8610183D202600A5A764 /* OwnArrayPtr.h */,
 				E2FB8611183D202600A5A764 /* OwnPtr.h */,
 				E2FB8612183D202600A5A764 /* OwnPtrCommon.h */,
-				E2FB861F183D202600A5A764 /* PassOwnArrayPtr.h */,
 				E2FB8620183D202600A5A764 /* PassOwnPtr.h */,
 				E2FB8621183D202600A5A764 /* PassRefPtr.h */,
 				E2FB8623183D202600A5A764 /* Platform.h */,
@@ -1506,8 +1500,6 @@
 			isa = PBXGroup;
 			children = (
 				E251D9A3184AA43400F7B7BC /* ActiveDOMObject.h */,
-				E2FB8A1C183D217D00A5A764 /* EventListener.h */,
-				E2FB8A1D183D217D00A5A764 /* EventTarget.h */,
 				E2FB8A1E183D217D00A5A764 /* ExceptionCode.h */,
 				E2FB8A21183D217D00A5A764 /* MediaStream.h */,
 			);

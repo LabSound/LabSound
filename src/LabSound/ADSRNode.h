@@ -10,7 +10,6 @@
 #include "AudioScheduledSourceNode.h"
 #include "AudioBasicProcessorNode.h"
 #include "AudioBasicInspectorNode.h"
-#include <wtf/OwnArrayPtr.h>
 #include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include "GainNode.h"
