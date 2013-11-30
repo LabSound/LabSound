@@ -46,7 +46,7 @@ public:
     size_t fftSize() const { return m_fftSize; }
     bool setFftSize(size_t);
 
-    unsigned frequencyBinCount() const { return m_fftSize / 2; }
+    size_t frequencyBinCount() const { return m_fftSize / 2; }
 
     void setMinDecibels(float k) { m_minDecibels = k; }
     float minDecibels() const { return static_cast<float>(m_minDecibels); }

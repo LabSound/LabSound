@@ -155,7 +155,12 @@ extern "C" {
 #endif
 
 #ifndef CRASH
+#if COMPILER(CLANG)
+// @LabSound I can't get the WTFCrash symbol to export reliably.
+#define CRASH() ((void)0)
+#else
 #define CRASH() WTFCrash()
+#endif
 #endif
 
 #ifdef __cplusplus

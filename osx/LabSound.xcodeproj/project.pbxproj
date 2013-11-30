@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E251D92718486BB600F7B7BC /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */; };
+		E251D99B18497FFA00F7B7BC /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D99A18497FFA00F7B7BC /* libpd-osx.a */; };
 		E2FB84B1183D1E8F00A5A764 /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */; };
 		E2FB84B2183D1E8F00A5A764 /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */; };
 		E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */; };
@@ -412,6 +413,7 @@
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
 		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
+		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
 		E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LabSoundIncludes.h; path = ../LabSoundIncludes.h; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2FB849B183D1E8F00A5A764 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
@@ -1109,6 +1111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E251D99B18497FFA00F7B7BC /* libpd-osx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1126,6 +1129,7 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
+				E251D99A18497FFA00F7B7BC /* libpd-osx.a */,
 				E2E0DB9A183C478A007AFB48 /* LabSoundIncludes.h */,
 				E2FB8A19183D217D00A5A764 /* shim */,
 				E2FB873F183D20E100A5A764 /* platform */,
@@ -2467,7 +2471,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
-					STATICALLY_LINKED_WITH_WTF,
 					NDEBUG,
 					PD,
 					__MACOSX_CORE__,
@@ -2478,6 +2481,7 @@
 					HAVE_ALLOCA,
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
+					"BUILDING_WTF=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2592,7 +2596,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
-					STATICALLY_LINKED_WITH_WTF,
 					DEBUG,
 					PD,
 					__MACOSX_CORE__,
@@ -2603,6 +2606,7 @@
 					HAVE_ALLOCA,
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
+					"BUILDING_WTF=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2644,7 +2648,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
-					STATICALLY_LINKED_WITH_WTF,
 					DEBUG,
 					PD,
 					__MACOSX_CORE__,
@@ -2655,6 +2658,7 @@
 					HAVE_ALLOCA,
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
+					"BUILDING_WTF=1",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2747,7 +2751,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
-					STATICALLY_LINKED_WITH_WTF,
+					"BUILDING_WTF=1",
 					NDEBUG,
 					PD,
 					__MACOSX_CORE__,

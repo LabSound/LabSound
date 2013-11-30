@@ -45,10 +45,10 @@ public:
     virtual void reset();
 
     // Javascript bindings
-    unsigned fftSize() const { return m_analyser.fftSize(); }
+    size_t fftSize() const { return m_analyser.fftSize(); }
     void setFftSize(unsigned size, ExceptionCode&);
 
-    unsigned frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
+    size_t frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
 
     void setMinDecibels(float k) { m_analyser.setMinDecibels(k); }
     float minDecibels() const { return m_analyser.minDecibels(); }

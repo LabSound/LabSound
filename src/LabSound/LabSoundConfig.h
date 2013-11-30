@@ -16,9 +16,6 @@
 #ifndef ENABLE_MEDIA_STREAM
 # define ENABLE_WEB_AUDIO 1
 #endif
-#ifndef STATICALLY_LINKED_WITH_WTF
-# define STATICALLY_LINKED_WITH_WTF 1
-#endif
 
 #if !defined(HAVE_LIBDL) && (defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC))
 # define HAVE_LIBDL 1
