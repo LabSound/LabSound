@@ -31,6 +31,7 @@
 #include <sys/mman.h>
 #include <wtf/Assertions.h>
 #include <wtf/UnusedParam.h>
+#include <stdlib.h>
 
 namespace WTF {
 

@@ -27,6 +27,7 @@
 #define OSAllocator_h
 
 #include <algorithm>
+#include <wtf/Assertions.h>
 #include <wtf/UnusedParam.h>
 #include <wtf/VMTags.h>
 

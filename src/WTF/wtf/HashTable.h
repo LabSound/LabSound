@@ -24,7 +24,6 @@
 
 #include <wtf/Alignment.h>
 #include <wtf/Assertions.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashTraits.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Threading.h>
@@ -35,6 +34,8 @@
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #endif
+
+#include <stdlib.h>
 
 namespace WTF {
 
@@ -1071,9 +1072,12 @@ namespace WTF {
     {
         // would use a template member function with explicit specializations here, but
         // gcc doesn't appear to support that
-        if (Traits::emptyValueIsZero)
-            return static_cast<ValueType*>(fastZeroedMalloc(size * sizeof(ValueType)));
-        ValueType* result = static_cast<ValueType*>(fastMalloc(size * sizeof(ValueType)));
+        if (Traits::emptyValueIsZero) {
+            ValueType* result = static_cast<ValueType*>(malloc(size * sizeof(ValueType)));
+            memset(result, 0, size * sizeof(ValueType));
+            return result;
+        }
+        ValueType* result = static_cast<ValueType*>(malloc(size * sizeof(ValueType)));
         for (int i = 0; i < size; i++)
             initializeBucket(result[i]);
         return result;

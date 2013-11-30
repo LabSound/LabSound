@@ -22,7 +22,6 @@
 #define RefCounted_h
 
 #include <wtf/Assertions.h>
-#include <wtf/FastAllocBase.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/ThreadRestrictionVerifier.h>
@@ -194,7 +193,7 @@ inline void adopted(RefCountedBase* object)
 #endif
 
 template<typename T> class RefCounted : public RefCountedBase {
-    WTF_MAKE_NONCOPYABLE(RefCounted); WTF_MAKE_FAST_ALLOCATED;
+    WTF_MAKE_NONCOPYABLE(RefCounted);
 public:
     void deref()
     {

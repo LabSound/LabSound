@@ -30,6 +30,7 @@
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
+#include <stdlib.h>
 
 namespace WTF {
 
@@ -256,11 +257,16 @@ void ArrayBufferContents::tryAllocate(unsigned numElements, unsigned elementByte
         }
     }
     bool allocationSucceeded = false;
-    if (policy == ZeroInitialize)
-        allocationSucceeded = WTF::tryFastCalloc(numElements, elementByteSize).getValue(result.m_data);
+    if (policy == ZeroInitialize) {
+        result.m_data = malloc(numElements * elementByteSize);
+        allocationSucceeded = result.m_data != 0;
+        if (allocationSucceeded)
+            memset(result.m_data, 0, numElements * elementByteSize);
+    }
     else {
         ASSERT(policy == DontInitialize);
-        allocationSucceeded = WTF::tryFastMalloc(numElements * elementByteSize).getValue(result.m_data);
+        result.m_data = malloc(numElements * elementByteSize);
+        allocationSucceeded = result.m_data != 0;
     }
 
     if (allocationSucceeded) {
@@ -276,7 +282,7 @@ ArrayBufferContents::~ArrayBufferContents()
     if (m_deallocationObserver)
         m_deallocationObserver->ArrayBufferDeallocated(m_sizeInBytes);
 #endif
-    WTF::fastFree(m_data);
+    free(m_data);
 }
 
 } // namespace WTF

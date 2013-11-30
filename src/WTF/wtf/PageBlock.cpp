@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "PageBlock.h"
+#include "Assertions.h"
 
 #if OS(UNIX)
 #include <unistd.h>

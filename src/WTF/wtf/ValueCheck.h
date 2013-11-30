@@ -26,8 +26,6 @@
 #ifndef ValueCheck_h
 #define ValueCheck_h
 
-#include <wtf/FastMalloc.h>
-
 namespace WTF {
 
 template<typename T> struct ValueCheck {
@@ -42,7 +40,6 @@ template<typename P> struct ValueCheck<P*> {
     {
         if (!p)
             return;
-        ASSERT(fastMallocSize(p));
         ValueCheck<P>::checkConsistency(*p);
     }
 };

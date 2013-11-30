@@ -31,7 +31,7 @@
 
 #include <string.h>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/FastMalloc.h>
+#include <stdlib.h>
 
 namespace WebCore {
 
@@ -46,7 +46,7 @@ namespace WebCore {
 
         ~AudioArray()
         {
-            fastFree(m_allocation);
+            free(m_allocation);
         }
 
         // It's OK to call allocate() multiple times, but data will *not* be copied from an initial allocation
@@ -62,7 +62,7 @@ namespace WebCore {
 #endif
 
             if (m_allocation)
-                fastFree(m_allocation);
+                free(m_allocation);
 
             bool isAllocationGood = false;
 
@@ -71,9 +71,10 @@ namespace WebCore {
                 // then we'll have to reallocate and from then on allocate extra.
                 static size_t extraAllocationBytes = 0;
 
-                T* allocation = static_cast<T*>(fastMalloc(initialSize + extraAllocationBytes));
-                if (!allocation)
+                T* allocation = static_cast<T*>(malloc(initialSize + extraAllocationBytes));
+                if (!allocation) {
                     CRASH();
+                }
                 T* alignedData = alignedAddress(allocation, alignment);
 
                 if (alignedData == allocation || extraAllocationBytes == alignment) {
@@ -84,7 +85,7 @@ namespace WebCore {
                     zero();
                 } else {
                     extraAllocationBytes = alignment; // always allocate extra after the first alignment failure.
-                    fastFree(allocation);
+                    free(allocation);
                 }
             }
         }

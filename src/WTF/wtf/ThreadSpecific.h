@@ -44,6 +44,7 @@
 
 #include <wtf/Noncopyable.h>
 #include <wtf/StdLibExtras.h>
+#include <stdlib.h>
 
 #if USE(PTHREADS)
 #include <pthread.h>
@@ -228,7 +229,7 @@ inline void ThreadSpecific<T>::destroy(void* ptr)
 #endif
 
     data->value->~T();
-    fastFree(data->value);
+    free(data->value);
 
 #if USE(PTHREADS)
     pthread_setspecific(data->owner->m_key, 0);
@@ -254,7 +255,8 @@ inline ThreadSpecific<T>::operator T*()
     if (!ptr) {
         // Set up thread-specific value's memory pointer before invoking constructor, in case any function it calls
         // needs to access the value, to avoid recursion.
-        ptr = static_cast<T*>(fastZeroedMalloc(sizeof(T)));
+        ptr = static_cast<T*>(malloc(sizeof(T)));
+        memset(ptr, 0, sizeof(T));
         set(ptr);
         new (NotNull, ptr) T;
     }

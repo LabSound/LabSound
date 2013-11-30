@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "OSRandomSource.h"
+#include "Assertions.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -46,11 +47,13 @@ void cryptographicallyRandomValuesFromOS(unsigned char* buffer, size_t length)
 {
 #if OS(UNIX)
     int fd = open("/dev/urandom", O_RDONLY, 0);
-    if (fd < 0)
+    if (fd < 0) {
         CRASH(); // We need /dev/urandom for this API to work...
+    }
 
-    if (read(fd, buffer, length) != static_cast<ssize_t>(length))
+    if (read(fd, buffer, length) != static_cast<ssize_t>(length)) {
         CRASH();
+    }
 
     close(fd);
 #elif OS(WINDOWS)

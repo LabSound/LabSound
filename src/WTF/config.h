@@ -56,13 +56,7 @@
 
 #define WTF_CHANGES 1
 
-#ifdef __cplusplus
-#undef new
-#undef delete
-#include <wtf/FastMalloc.h>
-#endif
-
-#include <wtf/DisallowCType.h>
+#include <ctype.h>
 
 #if COMPILER(MSVC)
 #define SKIP_STATIC_CONSTRUCTORS_ON_MSVC 1

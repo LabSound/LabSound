@@ -34,7 +34,6 @@
 #include <wtf/Platform.h>
 
 #include <wtf/Assertions.h>
-#include <wtf/FastAllocBase.h>
 #include <wtf/Locker.h>
 #include <wtf/Noncopyable.h>
 
@@ -73,7 +72,7 @@ typedef void* PlatformCondition;
 #endif
     
 class Mutex {
-    WTF_MAKE_NONCOPYABLE(Mutex); WTF_MAKE_FAST_ALLOCATED;
+    WTF_MAKE_NONCOPYABLE(Mutex);
 public:
     WTF_EXPORT_PRIVATE Mutex();
     WTF_EXPORT_PRIVATE ~Mutex();

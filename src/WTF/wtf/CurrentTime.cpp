@@ -31,6 +31,7 @@
  */
 
 #include "config.h"
+#include "Assertions.h"
 #include "CurrentTime.h"
 
 #if PLATFORM(MAC)

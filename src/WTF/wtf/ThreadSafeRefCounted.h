@@ -69,7 +69,6 @@ namespace WTF {
 
 class ThreadSafeRefCountedBase {
     WTF_MAKE_NONCOPYABLE(ThreadSafeRefCountedBase);
-    WTF_MAKE_FAST_ALLOCATED;
 public:
     ThreadSafeRefCountedBase(int initialRefCount = 1)
         : m_refCount(initialRefCount)

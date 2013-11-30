@@ -22,6 +22,7 @@
 #define WTF_HashFunctions_h
 
 #include <wtf/RefPtr.h>
+#include <wtf/StdLibExtras.h>
 #include <stdint.h>
 
 namespace WTF {

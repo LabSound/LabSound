@@ -63,11 +63,9 @@
 		E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */; };
 		E2FB86D1183D202700A5A764 /* Assertions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8581183D202600A5A764 /* Assertions.cpp */; };
 		E2FB86D2183D202700A5A764 /* AutodrainedPoolMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */; };
-		E2FB86D3183D202700A5A764 /* BitVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8589183D202600A5A764 /* BitVector.cpp */; };
 		E2FB86D8183D202700A5A764 /* CryptographicallyRandomNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859B183D202600A5A764 /* CryptographicallyRandomNumber.cpp */; };
 		E2FB86D9183D202700A5A764 /* CurrentTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859D183D202600A5A764 /* CurrentTime.cpp */; };
 		E2FB86E9183D202700A5A764 /* DynamicAnnotations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */; };
-		E2FB86ED183D202700A5A764 /* FastMalloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85CC183D202600A5A764 /* FastMalloc.cpp */; };
 		E2FB86EF183D202700A5A764 /* Float32Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85D1183D202600A5A764 /* Float32Array.cpp */; };
 		E2FB86F5183D202700A5A764 /* HashTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85E8183D202600A5A764 /* HashTable.cpp */; };
 		E2FB86F6183D202700A5A764 /* MainThreadMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85F5183D202600A5A764 /* MainThreadMac.mm */; };
@@ -485,7 +483,6 @@
 		E2FB857D183D202600A5A764 /* ArrayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayBuffer.h; sourceTree = "<group>"; };
 		E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayBufferView.cpp; sourceTree = "<group>"; };
 		E2FB857F183D202600A5A764 /* ArrayBufferView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayBufferView.h; sourceTree = "<group>"; };
-		E2FB8580183D202600A5A764 /* ASCIICType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCIICType.h; sourceTree = "<group>"; };
 		E2FB8581183D202600A5A764 /* Assertions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Assertions.cpp; sourceTree = "<group>"; };
 		E2FB8582183D202600A5A764 /* Assertions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Assertions.h; sourceTree = "<group>"; };
 		E2FB8583183D202600A5A764 /* Atomics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Atomics.h; sourceTree = "<group>"; };
@@ -493,8 +490,6 @@
 		E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AutodrainedPoolMac.mm; sourceTree = "<group>"; };
 		E2FB8586183D202600A5A764 /* AVLTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVLTree.h; sourceTree = "<group>"; };
 		E2FB8587183D202600A5A764 /* BitArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitArray.h; sourceTree = "<group>"; };
-		E2FB8589183D202600A5A764 /* BitVector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BitVector.cpp; sourceTree = "<group>"; };
-		E2FB858A183D202600A5A764 /* BitVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitVector.h; sourceTree = "<group>"; };
 		E2FB858F183D202600A5A764 /* BoundsCheckedPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoundsCheckedPointer.h; sourceTree = "<group>"; };
 		E2FB8590183D202600A5A764 /* BumpPointerAllocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BumpPointerAllocator.h; sourceTree = "<group>"; };
 		E2FB8591183D202600A5A764 /* ByteOrder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ByteOrder.h; sourceTree = "<group>"; };
@@ -506,15 +501,11 @@
 		E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptographicallyRandomNumber.h; sourceTree = "<group>"; };
 		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
 		E2FB859E183D202600A5A764 /* CurrentTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentTime.h; sourceTree = "<group>"; };
-		E2FB85A7183D202600A5A764 /* DisallowCType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisallowCType.h; sourceTree = "<group>"; };
 		E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoublyLinkedList.h; sourceTree = "<group>"; };
 		E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicAnnotations.cpp; sourceTree = "<group>"; };
 		E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicAnnotations.h; sourceTree = "<group>"; };
 		E2FB85C9183D202600A5A764 /* ExportMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExportMacros.h; sourceTree = "<group>"; };
-		E2FB85CA183D202600A5A764 /* FastAllocBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastAllocBase.h; sourceTree = "<group>"; };
 		E2FB85CB183D202600A5A764 /* FastBitVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastBitVector.h; sourceTree = "<group>"; };
-		E2FB85CC183D202600A5A764 /* FastMalloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FastMalloc.cpp; sourceTree = "<group>"; };
-		E2FB85CD183D202600A5A764 /* FastMalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastMalloc.h; sourceTree = "<group>"; };
 		E2FB85D0183D202600A5A764 /* FixedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FixedArray.h; sourceTree = "<group>"; };
 		E2FB85D1183D202600A5A764 /* Float32Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Float32Array.cpp; sourceTree = "<group>"; };
 		E2FB85D2183D202600A5A764 /* Float32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Float32Array.h; sourceTree = "<group>"; };
@@ -522,7 +513,6 @@
 		E2FB85D5183D202600A5A764 /* Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Functional.h; sourceTree = "<group>"; };
 		E2FB85E4183D202600A5A764 /* HashFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashFunctions.h; sourceTree = "<group>"; };
 		E2FB85E5183D202600A5A764 /* HashIterators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashIterators.h; sourceTree = "<group>"; };
-		E2FB85E7183D202600A5A764 /* HashSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashSet.h; sourceTree = "<group>"; };
 		E2FB85E8183D202600A5A764 /* HashTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HashTable.cpp; sourceTree = "<group>"; };
 		E2FB85E9183D202600A5A764 /* HashTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashTable.h; sourceTree = "<group>"; };
 		E2FB85EA183D202600A5A764 /* HashTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HashTraits.h; sourceTree = "<group>"; };
@@ -1116,7 +1106,6 @@
 				E2FB857D183D202600A5A764 /* ArrayBuffer.h */,
 				E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */,
 				E2FB857F183D202600A5A764 /* ArrayBufferView.h */,
-				E2FB8580183D202600A5A764 /* ASCIICType.h */,
 				E2FB8581183D202600A5A764 /* Assertions.cpp */,
 				E2FB8582183D202600A5A764 /* Assertions.h */,
 				E2FB8583183D202600A5A764 /* Atomics.h */,
@@ -1124,8 +1113,6 @@
 				E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */,
 				E2FB8586183D202600A5A764 /* AVLTree.h */,
 				E2FB8587183D202600A5A764 /* BitArray.h */,
-				E2FB8589183D202600A5A764 /* BitVector.cpp */,
-				E2FB858A183D202600A5A764 /* BitVector.h */,
 				E2FB858F183D202600A5A764 /* BoundsCheckedPointer.h */,
 				E2FB8590183D202600A5A764 /* BumpPointerAllocator.h */,
 				E2FB8591183D202600A5A764 /* ByteOrder.h */,
@@ -1137,15 +1124,11 @@
 				E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */,
 				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
 				E2FB859E183D202600A5A764 /* CurrentTime.h */,
-				E2FB85A7183D202600A5A764 /* DisallowCType.h */,
 				E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
 				E2FB85C2183D202600A5A764 /* DynamicAnnotations.h */,
 				E2FB85C9183D202600A5A764 /* ExportMacros.h */,
-				E2FB85CA183D202600A5A764 /* FastAllocBase.h */,
 				E2FB85CB183D202600A5A764 /* FastBitVector.h */,
-				E2FB85CC183D202600A5A764 /* FastMalloc.cpp */,
-				E2FB85CD183D202600A5A764 /* FastMalloc.h */,
 				E2FB85D0183D202600A5A764 /* FixedArray.h */,
 				E2FB85D1183D202600A5A764 /* Float32Array.cpp */,
 				E2FB85D2183D202600A5A764 /* Float32Array.h */,
@@ -1153,7 +1136,6 @@
 				E2FB85D5183D202600A5A764 /* Functional.h */,
 				E2FB85E4183D202600A5A764 /* HashFunctions.h */,
 				E2FB85E5183D202600A5A764 /* HashIterators.h */,
-				E2FB85E7183D202600A5A764 /* HashSet.h */,
 				E2FB85E8183D202600A5A764 /* HashTable.cpp */,
 				E2FB85E9183D202600A5A764 /* HashTable.h */,
 				E2FB85EA183D202600A5A764 /* HashTraits.h */,
@@ -2003,7 +1985,6 @@
 				E2FB8901183D20E200A5A764 /* AudioFileReaderMac.cpp in Sources */,
 				E2FB86CF183D202700A5A764 /* ArrayBuffer.cpp in Sources */,
 				E2FB855A183D1F1F00A5A764 /* DelayNode.cpp in Sources */,
-				E2FB86ED183D202700A5A764 /* FastMalloc.cpp in Sources */,
 				E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */,
 				E2FB8531183D1F1F00A5A764 /* AnalyserNode.cpp in Sources */,
 				E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */,
@@ -2031,7 +2012,6 @@
 				E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */,
 				E2FB89FD183D20E200A5A764 /* VectorMath.cpp in Sources */,
 				E2FB8904183D20E200A5A764 /* MultiChannelResampler.cpp in Sources */,
-				E2FB86D3183D202700A5A764 /* BitVector.cpp in Sources */,
 				E2FB89F8183D20E200A5A764 /* ReverbAccumulationBuffer.cpp in Sources */,
 				E2FB8A04183D20E300A5A764 /* FloatPoint3D.cpp in Sources */,
 				E2FB88E3183D20E200A5A764 /* AudioFIFO.cpp in Sources */,

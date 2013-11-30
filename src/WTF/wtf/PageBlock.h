@@ -26,6 +26,8 @@
 #ifndef PageBlock_h
 #define PageBlock_h
 
+#include <stdint.h>
+
 namespace WTF {
 
 WTF_EXPORT_PRIVATE size_t pageSize();

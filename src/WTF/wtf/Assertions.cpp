@@ -42,6 +42,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.H>
 #include <string.h>
 
 #if HAVE(SIGNAL_H)
