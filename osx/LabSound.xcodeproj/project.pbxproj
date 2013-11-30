@@ -506,7 +506,6 @@
 		E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptographicallyRandomNumber.h; sourceTree = "<group>"; };
 		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
 		E2FB859E183D202600A5A764 /* CurrentTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentTime.h; sourceTree = "<group>"; };
-		E2FB85A6183D202600A5A764 /* Deque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Deque.h; sourceTree = "<group>"; };
 		E2FB85A7183D202600A5A764 /* DisallowCType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisallowCType.h; sourceTree = "<group>"; };
 		E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoublyLinkedList.h; sourceTree = "<group>"; };
 		E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicAnnotations.cpp; sourceTree = "<group>"; };
@@ -558,7 +557,6 @@
 		E2FB8610183D202600A5A764 /* OwnArrayPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnArrayPtr.h; sourceTree = "<group>"; };
 		E2FB8611183D202600A5A764 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtr.h; sourceTree = "<group>"; };
 		E2FB8612183D202600A5A764 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtrCommon.h; sourceTree = "<group>"; };
-		E2FB8613183D202600A5A764 /* PackedIntVector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PackedIntVector.h; sourceTree = "<group>"; };
 		E2FB8614183D202600A5A764 /* PageAllocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageAllocation.h; sourceTree = "<group>"; };
 		E2FB8615183D202600A5A764 /* PageAllocationAligned.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PageAllocationAligned.cpp; sourceTree = "<group>"; };
 		E2FB8616183D202600A5A764 /* PageAllocationAligned.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageAllocationAligned.h; sourceTree = "<group>"; };
@@ -616,8 +614,6 @@
 		E2FB8697183D202700A5A764 /* UnionFind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnionFind.h; sourceTree = "<group>"; };
 		E2FB8698183D202700A5A764 /* UnusedParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnusedParam.h; sourceTree = "<group>"; };
 		E2FB86BF183D202700A5A764 /* ValueCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ValueCheck.h; sourceTree = "<group>"; };
-		E2FB86C0183D202700A5A764 /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
-		E2FB86C1183D202700A5A764 /* VectorTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorTraits.h; sourceTree = "<group>"; };
 		E2FB86C2183D202700A5A764 /* VMTags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMTags.h; sourceTree = "<group>"; };
 		E2FB8745183D20E100A5A764 /* AnimationUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationUtilities.h; sourceTree = "<group>"; };
 		E2FB8748183D20E100A5A764 /* AudioArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioArray.h; sourceTree = "<group>"; };
@@ -1147,7 +1143,6 @@
 				E2FB859C183D202600A5A764 /* CryptographicallyRandomNumber.h */,
 				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
 				E2FB859E183D202600A5A764 /* CurrentTime.h */,
-				E2FB85A6183D202600A5A764 /* Deque.h */,
 				E2FB85A7183D202600A5A764 /* DisallowCType.h */,
 				E2FB85A8183D202600A5A764 /* DoublyLinkedList.h */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
@@ -1199,7 +1194,6 @@
 				E2FB8610183D202600A5A764 /* OwnArrayPtr.h */,
 				E2FB8611183D202600A5A764 /* OwnPtr.h */,
 				E2FB8612183D202600A5A764 /* OwnPtrCommon.h */,
-				E2FB8613183D202600A5A764 /* PackedIntVector.h */,
 				E2FB8614183D202600A5A764 /* PageAllocation.h */,
 				E2FB8615183D202600A5A764 /* PageAllocationAligned.cpp */,
 				E2FB8616183D202600A5A764 /* PageAllocationAligned.h */,
@@ -1257,8 +1251,6 @@
 				E2FB8697183D202700A5A764 /* UnionFind.h */,
 				E2FB8698183D202700A5A764 /* UnusedParam.h */,
 				E2FB86BF183D202700A5A764 /* ValueCheck.h */,
-				E2FB86C0183D202700A5A764 /* Vector.h */,
-				E2FB86C1183D202700A5A764 /* VectorTraits.h */,
 				E2FB86C2183D202700A5A764 /* VMTags.h */,
 			);
 			name = wtf;

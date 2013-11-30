@@ -436,7 +436,6 @@ extern "C" WTF_EXPORT_PRIVATE const int jscore_fastmalloc_introspection = 0;
 #if OS(DARWIN)
 #include "MallocZoneSupport.h"
 #include <wtf/HashSet.h>
-#include <wtf/Vector.h>
 #endif
 
 #if HAVE(HEADER_DETECTION_H)

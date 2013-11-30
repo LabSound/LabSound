@@ -30,10 +30,10 @@
 #include "MainThread.h"
 
 #include "CurrentTime.h"
-#include "Deque.h"
 #include "Functional.h"
 #include "StdLibExtras.h"
 #include "Threading.h"
+#include <deque>
 #include <wtf/ThreadSpecific.h>
 
 #if PLATFORM(CHROMIUM)
@@ -69,7 +69,7 @@ public:
 };
 
 
-typedef Deque<FunctionWithContext> FunctionQueue;
+typedef std::deque<FunctionWithContext> FunctionQueue;
 
 static bool callbacksPaused; // This global variable is only accessed from main thread.
 #if !PLATFORM(MAC)
@@ -150,7 +150,8 @@ void dispatchFunctionsFromMainThread()
             MutexLocker locker(mainThreadFunctionQueueMutex());
             if (!functionQueue().size())
                 break;
-            invocation = functionQueue().takeFirst();
+            invocation = functionQueue().front();
+            functionQueue().pop_front();
         }
 
         invocation.function(invocation.context);
@@ -177,7 +178,7 @@ void callOnMainThread(MainThreadFunction* function, void* context)
     {
         MutexLocker locker(mainThreadFunctionQueueMutex());
         needToSchedule = functionQueue().size() == 0;
-        functionQueue().append(FunctionWithContext(function, context));
+        functionQueue().push_back(FunctionWithContext(function, context));
     }
     if (needToSchedule)
         scheduleDispatchFunctionsOnMainThread();
@@ -195,7 +196,7 @@ void callOnMainThreadAndWait(MainThreadFunction* function, void* context)
     ThreadCondition syncFlag;
     Mutex& functionQueueMutex = mainThreadFunctionQueueMutex();
     MutexLocker locker(functionQueueMutex);
-    functionQueue().append(FunctionWithContext(function, context, &syncFlag));
+    functionQueue().push_back(FunctionWithContext(function, context, &syncFlag));
     if (functionQueue().size() == 1)
         scheduleDispatchFunctionsOnMainThread();
     syncFlag.wait(functionQueueMutex);
@@ -209,14 +210,18 @@ void cancelCallOnMainThread(MainThreadFunction* function, void* context)
 
     FunctionWithContextFinder pred(FunctionWithContext(function, context));
 
+    functionQueue().erase( std::remove_if(functionQueue().begin(), functionQueue().end(), pred), functionQueue().end() );
+#if 0
     while (true) {
         // We must redefine 'i' each pass, because the itererator's operator= 
         // requires 'this' to be valid, and remove() invalidates all iterators
+
         FunctionQueue::iterator i(functionQueue().findIf(pred));
         if (i == functionQueue().end())
             break;
         functionQueue().remove(i);
     }
+#endif
 }
 
 static void callFunctionObject(void* context)

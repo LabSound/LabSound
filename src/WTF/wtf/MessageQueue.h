@@ -32,9 +32,10 @@
 
 #include <limits>
 #include <wtf/Assertions.h>
-#include <wtf/Deque.h>
+#include <deque>
 #include <wtf/Noncopyable.h>
 #include <wtf/Threading.h>
+#include <wtf/PassOwnPtr.h>
 
 namespace WTF {
 
@@ -80,21 +81,22 @@ namespace WTF {
 
         mutable Mutex m_mutex;
         ThreadCondition m_condition;
-        Deque<DataType*> m_queue;
+        std::deque<DataType*> m_queue;
         bool m_killed;
     };
 
     template<typename DataType>
     MessageQueue<DataType>::~MessageQueue()
     {
-        deleteAllValues(m_queue);
+        m_queue.clear();
+        //deleteAllValues(m_queue);
     }
 
     template<typename DataType>
     inline void MessageQueue<DataType>::append(PassOwnPtr<DataType> message)
     {
         MutexLocker lock(m_mutex);
-        m_queue.append(message.leakPtr());
+        m_queue.push_back(message.leakPtr());
         m_condition.signal();
     }
 
@@ -104,7 +106,7 @@ namespace WTF {
     {
         MutexLocker lock(m_mutex);
         bool wasEmpty = m_queue.isEmpty();
-        m_queue.append(message.leakPtr());
+        m_queue.push_back(message.leakPtr());
         m_condition.signal();
         return wasEmpty;
     }
@@ -113,7 +115,7 @@ namespace WTF {
     inline void MessageQueue<DataType>::prepend(PassOwnPtr<DataType> message)
     {
         MutexLocker lock(m_mutex);
-        m_queue.prepend(message.leakPtr());
+        m_queue.push_front(message.leakPtr());
         m_condition.signal();
     }
 
@@ -133,8 +135,9 @@ namespace WTF {
         MutexLocker lock(m_mutex);
         bool timedOut = false;
 
-        DequeConstIterator<DataType*> found = m_queue.end();
-        while (!m_killed && !timedOut && (found = m_queue.findIf(predicate)) == m_queue.end())
+        typename std::deque<DataType*>::const_iterator found = m_queue.end();
+
+        while (!m_killed && !timedOut && (found = std::find_if(m_queue.begin(), m_queue.end(), predicate)) == m_queue.end())
             timedOut = !m_condition.timedWait(m_mutex, absoluteTime);
 
         ASSERT(!timedOut || absoluteTime != infiniteTime());
@@ -151,7 +154,7 @@ namespace WTF {
 
         ASSERT(found != m_queue.end());
         OwnPtr<DataType> message = adoptPtr(*found);
-        m_queue.remove(found);
+        m_queue.erase(found);
         result = MessageQueueMessageReceived;
         return message.release();
     }
@@ -183,7 +186,7 @@ namespace WTF {
     inline void MessageQueue<DataType>::removeIf(Predicate& predicate)
     {
         MutexLocker lock(m_mutex);
-        DequeConstIterator<DataType*> found = m_queue.end();
+        typename std::deque<DataType*>::const_iterator found = m_queue.end();
         while ((found = m_queue.findIf(predicate)) != m_queue.end()) {
             DataType* message = *found;
             m_queue.remove(found);

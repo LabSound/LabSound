@@ -67,9 +67,9 @@ namespace WTF {
 
 class CrashOnOverflow {
 protected:
-    NO_RETURN_DUE_TO_CRASH void overflowed()
+    void overflowed()
     {
-        CRASH();
+        ((void)0);
     }
 
     void clearOverflow() { }
