@@ -37,7 +37,6 @@
 #include "ReverbConvolver.h"
 #include "ReverbInputBuffer.h"
 #include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WebCore {
 

@@ -81,7 +81,6 @@
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 #include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 
 // FIXME: check the proper way to reference an undefined thread ID
 const int UndefinedThreadIdentifier = 0xffffffff;

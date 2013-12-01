@@ -31,10 +31,13 @@
 
 #include "AudioChannel.h"
 #include <wtf/Noncopyable.h>
+#include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <vector>
 
 namespace WebCore {
+
+    using namespace WTF;
 
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".

@@ -39,7 +39,6 @@
 #include <math.h>
 #include <wtf/MathExtras.h>
 #include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 
 #if OS(DARWIN)
 using namespace std;

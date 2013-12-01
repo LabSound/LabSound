@@ -30,9 +30,6 @@
 #define DynamicsCompressorKernel_h
 
 #include "AudioArray.h"
-
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
 #include <vector>
 
 namespace WebCore {
@@ -89,7 +86,7 @@ protected:
     unsigned m_lastPreDelayFrames;
     void setPreDelayTime(float);
 
-    std::vector<OwnPtr<AudioFloatArray> > m_preDelayBuffers;
+    std::vector<std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
     int m_preDelayReadIndex;
     int m_preDelayWriteIndex;
 

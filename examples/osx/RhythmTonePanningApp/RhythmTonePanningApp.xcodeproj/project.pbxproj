@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E251D9A5184ACB7200F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9A4184ACB7200F7B7BC /* libLabSound.a */; };
 		E2E0DCB9183C4DDF007AFB48 /* RhythmTonePanningApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DCB8183C4DDF007AFB48 /* RhythmTonePanningApp.1 */; };
-		E2E0DCCB183C4DFA007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCBF183C4DFA007AFB48 /* libLabSound.a */; };
 		E2E0DCCC183C4DFA007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC0183C4DFA007AFB48 /* Accelerate.framework */; };
 		E2E0DCCD183C4DFA007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC1183C4DFA007AFB48 /* ApplicationServices.framework */; };
 		E2E0DCCE183C4DFA007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC2183C4DFA007AFB48 /* AudioToolbox.framework */; };
@@ -38,6 +38,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E251D9A4184ACB7200F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DCB3183C4DDF007AFB48 /* RhythmTonePanningApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RhythmTonePanningApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0DCB8183C4DDF007AFB48 /* RhythmTonePanningApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RhythmTonePanningApp.1; sourceTree = "<group>"; };
 		E2E0DCBF183C4DFA007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
@@ -62,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0DCCB183C4DFA007AFB48 /* libLabSound.a in Frameworks */,
+				E251D9A5184ACB7200F7B7BC /* libLabSound.a in Frameworks */,
 				E2E0DCCC183C4DFA007AFB48 /* Accelerate.framework in Frameworks */,
 				E2E0DCCD183C4DFA007AFB48 /* ApplicationServices.framework in Frameworks */,
 				E2E0DCCE183C4DFA007AFB48 /* AudioToolbox.framework in Frameworks */,
@@ -111,6 +112,7 @@
 		E2E0DCD7183C4E0E007AFB48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E251D9A4184ACB7200F7B7BC /* libLabSound.a */,
 				E2E0DCBF183C4DFA007AFB48 /* libLabSound.a */,
 				E2E0DCC0183C4DFA007AFB48 /* Accelerate.framework */,
 				E2E0DCC1183C4DFA007AFB48 /* ApplicationServices.framework */,
@@ -272,6 +274,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
@@ -296,6 +299,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/dp/Code/LabSound/src/build/Debug,
+					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
