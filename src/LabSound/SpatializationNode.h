@@ -43,7 +43,7 @@ namespace LabSound {
         
         void removeOccluder(int id);
         
-        float occlusion(const WebCore::FloatPoint3D& sourcePos, const WebCore::FloatPoint3D& listenerPos) const;
+        float occlusion(const FloatPoint3D& sourcePos, const FloatPoint3D& listenerPos) const;
 
     private:
         std::map<int, Occluder> occluders;

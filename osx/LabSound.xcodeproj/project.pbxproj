@@ -355,7 +355,6 @@
 		E2FB89FC183D20E200A5A764 /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8897183D20E200A5A764 /* SincResampler.cpp */; };
 		E2FB89FD183D20E200A5A764 /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8899183D20E200A5A764 /* VectorMath.cpp */; };
 		E2FB8A01183D20E200A5A764 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88A1183D20E200A5A764 /* ZeroPole.cpp */; };
-		E2FB8A04183D20E300A5A764 /* FloatPoint3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88A9183D20E200A5A764 /* FloatPoint3D.cpp */; };
 		E2FB8A17183D20E300A5A764 /* Logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB88D7183D20E200A5A764 /* Logging.cpp */; };
 		E2FB8A25183DA85700A5A764 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8A23183DA85700A5A764 /* PWMNode.cpp */; };
 /* End PBXBuildFile section */
@@ -868,7 +867,6 @@
 		E2FB88A1183D20E200A5A764 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
 		E2FB88A2183D20E200A5A764 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZeroPole.h; sourceTree = "<group>"; };
 		E2FB88A5183D20E200A5A764 /* FloatConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatConversion.h; sourceTree = "<group>"; };
-		E2FB88A9183D20E200A5A764 /* FloatPoint3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FloatPoint3D.cpp; sourceTree = "<group>"; };
 		E2FB88AA183D20E200A5A764 /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
 		E2FB88D7183D20E200A5A764 /* Logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logging.cpp; sourceTree = "<group>"; };
 		E2FB88D8183D20E200A5A764 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
@@ -1488,7 +1486,6 @@
 		E2FB88A6183D20E200A5A764 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
-				E2FB88A9183D20E200A5A764 /* FloatPoint3D.cpp */,
 				E2FB88AA183D20E200A5A764 /* FloatPoint3D.h */,
 			);
 			path = graphics;
@@ -1886,7 +1883,6 @@
 				E2FB89FD183D20E200A5A764 /* VectorMath.cpp in Sources */,
 				E2FB8904183D20E200A5A764 /* MultiChannelResampler.cpp in Sources */,
 				E2FB89F8183D20E200A5A764 /* ReverbAccumulationBuffer.cpp in Sources */,
-				E2FB8A04183D20E300A5A764 /* FloatPoint3D.cpp in Sources */,
 				E2FB88E3183D20E200A5A764 /* AudioFIFO.cpp in Sources */,
 				E2FB8717183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp in Sources */,
 				E2FB88E4183D20E200A5A764 /* AudioPullFIFO.cpp in Sources */,

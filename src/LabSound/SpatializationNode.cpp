@@ -7,9 +7,6 @@
 
 namespace LabSound {
     
-    using WebCore::FloatPoint3D;
-    
-
     // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
     float distanceFromPointToLine(const FloatPoint3D& x0,
                                   const FloatPoint3D& x1, const FloatPoint3D& x2,
@@ -39,7 +36,7 @@ namespace LabSound {
             occluders.erase(i);
     }
     
-    float Occluders::occlusion(const WebCore::FloatPoint3D& sourcePos, const WebCore::FloatPoint3D& listenerPos) const {
+    float Occluders::occlusion(const FloatPoint3D& sourcePos, const FloatPoint3D& listenerPos) const {
         float occlusionAttenuation = 1.0f;
         for (auto i : occluders) {
             FloatPoint3D occPos(i.second.x, i.second.y, i.second.z);
