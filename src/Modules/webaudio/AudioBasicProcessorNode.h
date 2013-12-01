@@ -26,8 +26,7 @@
 #define AudioBasicProcessorNode_h
 
 #include "AudioNode.h"
-#include <wtf/PassRefPtr.h>
-#include <wtf/Threading.h>
+#include <memory>
 
 namespace WebCore {
 
@@ -58,7 +57,7 @@ protected:
     virtual double latencyTime() const OVERRIDE;
 
     AudioProcessor* processor() { return m_processor.get(); }
-    OwnPtr<AudioProcessor> m_processor;
+    std::unique_ptr<AudioProcessor> m_processor;
 };
 
 } // namespace WebCore

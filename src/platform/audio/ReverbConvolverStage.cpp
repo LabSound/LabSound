@@ -36,7 +36,6 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolver.h"
 #include "ReverbInputBuffer.h"
-#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 

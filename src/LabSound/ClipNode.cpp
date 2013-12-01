@@ -104,7 +104,7 @@ namespace LabSound {
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new ClipNodeInternal(context, sampleRate))
     {
-        m_processor = adoptPtr(data);
+        m_processor = std::unique_ptr<WebCore::AudioProcessor>(data);
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeClip);
 
@@ -116,7 +116,7 @@ namespace LabSound {
     
     ClipNode::~ClipNode() {
         data->numChannels = 0;  // ensure there if there is a latent callback pending, pd is not invoked
-        delete data;
+        //delete data; // not deleting it because the unique_ptr will take care of that
         data = 0;
         uninitialize();
     }

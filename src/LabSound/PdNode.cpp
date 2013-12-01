@@ -124,7 +124,7 @@ PdNode::PdNode(WebCore::AudioContext* context, float sampleRate)
 , data(new PdNodeInternal(sampleRate))
 {
     // Initially setup as lowpass filter.
-    m_processor = adoptPtr(data);
+    m_processor = std::unique_ptr<WebCore::AudioProcessor>(data);
     
     setNodeType((AudioNode::NodeType) LabSound::NodeTypePd);
     

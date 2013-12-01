@@ -36,7 +36,6 @@
 #include "AudioContext.h"
 #include "AudioFileReader.h"
 #include "ExceptionCode.h"
-#include <wtf/OwnPtr.h>
 
 namespace WebCore {
 

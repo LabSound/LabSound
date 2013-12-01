@@ -73,7 +73,7 @@ namespace LabSound {
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new PWMNodeInternal(context, sampleRate))
     {
-        m_processor = adoptPtr(data);
+        m_processor = std::unique_ptr<WebCore::AudioProcessor>(data);
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePWM);
 
@@ -84,7 +84,7 @@ namespace LabSound {
     }
 
     PWMNode::~PWMNode() {
-        delete data;
+        // no need to delete data because the m_processor unique_ptr will take care of it
         data = 0;
         uninitialize();
     }
