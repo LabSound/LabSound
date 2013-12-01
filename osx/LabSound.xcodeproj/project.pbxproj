@@ -538,7 +538,6 @@
 		E2FB8679183D202700A5A764 /* ThreadSafeRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadSafeRefCounted.h; sourceTree = "<group>"; };
 		E2FB867A183D202700A5A764 /* ThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadSpecific.h; sourceTree = "<group>"; };
 		E2FB867C183D202700A5A764 /* TypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypedArrayBase.h; sourceTree = "<group>"; };
-		E2FB867E183D202700A5A764 /* TypeTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeTraits.h; sourceTree = "<group>"; };
 		E2FB867F183D202700A5A764 /* Uint16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint16Array.h; sourceTree = "<group>"; };
 		E2FB8680183D202700A5A764 /* Uint32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint32Array.h; sourceTree = "<group>"; };
 		E2FB8681183D202700A5A764 /* Uint8Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uint8Array.h; sourceTree = "<group>"; };
@@ -1108,7 +1107,6 @@
 				E2FB8679183D202700A5A764 /* ThreadSafeRefCounted.h */,
 				E2FB867A183D202700A5A764 /* ThreadSpecific.h */,
 				E2FB867C183D202700A5A764 /* TypedArrayBase.h */,
-				E2FB867E183D202700A5A764 /* TypeTraits.h */,
 				E2FB867F183D202700A5A764 /* Uint16Array.h */,
 				E2FB8680183D202700A5A764 /* Uint32Array.h */,
 				E2FB8681183D202700A5A764 /* Uint8Array.h */,

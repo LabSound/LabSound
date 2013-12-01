@@ -29,7 +29,7 @@
 #include <wtf/Assertions.h>
 #include <wtf/NullPtr.h>
 #include <wtf/OwnPtrCommon.h>
-#include <wtf/TypeTraits.h>
+#include <type_traits>
 
 namespace WTF {
 
@@ -41,7 +41,7 @@ namespace WTF {
 
     template<typename T> class PassOwnPtr {
     public:
-        typedef typename RemovePointer<T>::Type ValueType;
+        typedef typename std::remove_pointer<T>::type ValueType;
         typedef ValueType* PtrType;
 
         PassOwnPtr() : m_ptr(0) { }
