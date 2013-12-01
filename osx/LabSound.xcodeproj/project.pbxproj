@@ -513,7 +513,6 @@
 		E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntimeExtras.h; sourceTree = "<group>"; };
 		E2FB860E183D202600A5A764 /* OSRandomSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OSRandomSource.cpp; sourceTree = "<group>"; };
 		E2FB860F183D202600A5A764 /* OSRandomSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OSRandomSource.h; sourceTree = "<group>"; };
-		E2FB8611183D202600A5A764 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtr.h; sourceTree = "<group>"; };
 		E2FB8612183D202600A5A764 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2FB8620183D202600A5A764 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnPtr.h; sourceTree = "<group>"; };
 		E2FB8623183D202600A5A764 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
@@ -1079,7 +1078,6 @@
 				E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */,
 				E2FB860E183D202600A5A764 /* OSRandomSource.cpp */,
 				E2FB860F183D202600A5A764 /* OSRandomSource.h */,
-				E2FB8611183D202600A5A764 /* OwnPtr.h */,
 				E2FB8612183D202600A5A764 /* OwnPtrCommon.h */,
 				E2FB8620183D202600A5A764 /* PassOwnPtr.h */,
 				E2FB8623183D202600A5A764 /* Platform.h */,

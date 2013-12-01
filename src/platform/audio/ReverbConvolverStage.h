@@ -31,7 +31,7 @@
 
 #include "AudioArray.h"
 #include "FFTFrame.h"
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

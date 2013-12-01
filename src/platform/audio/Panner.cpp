@@ -34,7 +34,7 @@
 
 #include "EqualPowerPanner.h"
 #include "HRTFPanner.h"
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

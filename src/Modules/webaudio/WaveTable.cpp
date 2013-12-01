@@ -36,7 +36,7 @@
 #include "OscillatorNode.h"
 #include "VectorMath.h"
 #include <algorithm>
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 
 const unsigned WaveTableSize = 4096; // This must be a power of two.
 const unsigned NumberOfRanges = 36; // There should be 3 * log2(WaveTableSize) 1/3 octave ranges.

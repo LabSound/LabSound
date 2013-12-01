@@ -31,7 +31,7 @@
 
 #include "HRTFElevation.h"
 #include <wtf/Noncopyable.h>
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 #include <vector>
 
 namespace WebCore {

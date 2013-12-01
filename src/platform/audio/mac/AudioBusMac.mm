@@ -30,7 +30,7 @@
 
 #import "AudioFileReader.h"
 #import "AutodrainedPool.h"
-#import <wtf/OwnPtr.h>
+#import <wtf/RefPtr.h>
 #import <wtf/PassOwnPtr.h>
 #import <Foundation/Foundation.h>
 

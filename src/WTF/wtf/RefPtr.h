@@ -2,6 +2,9 @@
 #ifndef included_wtf_RefPtr_h
 #define included_wtf_RefPtr_h
 
+#include <wtf/Assertions.h>
+#include <wtf/Noncopyable.h>
+#include <wtf/PassOwnPtr.h>
 #include <algorithm>
 
 namespace WTF {
@@ -154,11 +157,94 @@ namespace WTF {
         _ptr = 0;
         return ptr;
     }
+
+    //----------------------------------------------------
+    // OwnPtr
+
+    template<typename T> class PassOwnPtr;
+    template<typename T> PassOwnPtr<T> adoptPtr(T*);
+
+    template<typename T> class OwnPtr {
+    public:
+        typedef typename std::remove_pointer<T>::type ValueType;
+        typedef ValueType* PtrType;
+
+        OwnPtr() : _ptr(0) { }
+        OwnPtr(std::nullptr_t) : _ptr(0) { }
+        OwnPtr(const OwnPtr& rhs) : _ptr(rhs.leakPtr()) { }
+        ~OwnPtr() { deleteOwnedPtr(_ptr); }
+
+        template<typename U>
+        OwnPtr(const PassOwnPtr<U>& o)
+        : _ptr(o.leakPtr())
+        {
+        }
+
+        template<typename U>
+        OwnPtr(PassOwnPtr<U>& o)
+        : _ptr(o.leakPtr())
+        {
+        }
+
+        PtrType get() const { return _ptr; }
+        ValueType& operator*() const { return *_ptr; }
+        PtrType operator->() const { return _ptr; }
+        ALWAYS_INLINE bool operator!() const { return 0 == _ptr; }
+        ALWAYS_INLINE operator bool() const { return 0 != _ptr; }
+
+        ALWAYS_INLINE PassOwnPtr<T> release() {
+            PtrType ptr = _ptr;
+            _ptr = 0;
+            return adoptPtr(ptr);
+        }
+
+        ALWAYS_INLINE void clear() {
+            PtrType ptr = _ptr;
+            _ptr = 0;
+            deleteOwnedPtr(ptr);
+        }
+
+        ALWAYS_INLINE typename OwnPtr<T>::PtrType leakPtr() const {
+            PtrType ptr = _ptr;
+            _ptr = 0;
+            return ptr;
+        }
+
+        ALWAYS_INLINE OwnPtr<T>& operator=(const PassOwnPtr<T>& o) {
+            PtrType ptr = _ptr;
+            _ptr = o.leakPtr();
+            ASSERT(!ptr || _ptr != ptr);
+            deleteOwnedPtr(ptr);
+            return *this;
+        }
+
+        template<typename U>
+        ALWAYS_INLINE OwnPtr<T>& operator=(const PassOwnPtr<U>& o)  {
+            PtrType ptr = _ptr;
+            _ptr = o.leakPtr();
+            ASSERT(!ptr || _ptr != ptr);
+            deleteOwnedPtr(ptr);
+            return *this;
+        }
+
+        mutable PtrType _ptr;
+    };
+
+    template<typename T, typename PtrT>
+    ALWAYS_INLINE
+    bool operator==(const OwnPtr<T>& ref, PtrT* ptr) { return ref.get() == ptr; }
+
+    template<typename T, typename PtrT>
+    ALWAYS_INLINE
+    bool operator==(PtrT* ptr, const OwnPtr<T>& ref) { return ref.get() == ptr; }
+
 }
 
+using WTF::adoptRef;
+using WTF::OwnPtr;
+using WTF::PassOwnPtr;
 using WTF::PassRefPtr;
 using WTF::RefPtr;
-using WTF::adoptRef;
 
 #endif // WTF_RefPtr_h
 

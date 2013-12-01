@@ -40,7 +40,7 @@
 #include <wtf/Complex.h>
 #include <wtf/MathExtras.h>
 #include <wtf/MemoryObjectInfo.h>
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

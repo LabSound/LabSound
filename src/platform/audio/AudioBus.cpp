@@ -39,8 +39,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <math.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

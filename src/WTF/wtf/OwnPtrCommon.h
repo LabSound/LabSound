@@ -28,29 +28,6 @@
 #ifndef WTF_OwnPtrCommon_h
 #define WTF_OwnPtrCommon_h
 
-#if OS(WINDOWS)
-typedef struct HBITMAP__* HBITMAP;
-typedef struct HBRUSH__* HBRUSH;
-typedef struct HDC__* HDC;
-typedef struct HFONT__* HFONT;
-typedef struct HPALETTE__* HPALETTE;
-typedef struct HPEN__* HPEN;
-typedef struct HRGN__* HRGN;
-#endif
-
-#if PLATFORM(EFL)
-typedef struct _Ecore_Evas Ecore_Evas;
-typedef struct _Ecore_IMF_Context Ecore_IMF_Context;
-typedef struct _Ecore_Pipe Ecore_Pipe;
-typedef struct _Ecore_Timer Ecore_Timer;
-typedef struct _Eina_Hash Eina_Hash;
-typedef struct _Eina_Module Eina_Module;
-typedef struct _Evas_Object Evas_Object;
-#if USE(ACCELERATED_COMPOSITING)
-typedef struct _Evas_GL Evas_GL;
-#endif
-#endif
-
 namespace WTF {
 
     template <typename T> inline void deleteOwnedPtr(T* ptr)
@@ -59,29 +36,6 @@ namespace WTF {
         if (sizeof(known))
             delete ptr;
     }
-
-#if OS(WINDOWS)
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HBITMAP);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HBRUSH);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HDC);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HFONT);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HPALETTE);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HPEN);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(HRGN);
-#endif
-
-#if PLATFORM(EFL)
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Ecore_Evas*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Ecore_IMF_Context*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Ecore_Pipe*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Ecore_Timer*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Eina_Hash*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Eina_Module*);
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Evas_Object*);
-#if USE(ACCELERATED_COMPOSITING)
-    WTF_EXPORT_PRIVATE void deleteOwnedPtr(Evas_GL*);
-#endif
-#endif
 
 } // namespace WTF
 

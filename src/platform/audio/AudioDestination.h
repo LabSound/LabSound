@@ -29,7 +29,7 @@
 #ifndef AudioDestination_h
 #define AudioDestination_h
 
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 #include <wtf/PassOwnPtr.h>
 
 namespace WebCore {

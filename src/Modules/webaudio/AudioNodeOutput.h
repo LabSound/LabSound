@@ -29,7 +29,7 @@
 #include "AudioNode.h"
 #include "AudioParam.h"
 #include <set>
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

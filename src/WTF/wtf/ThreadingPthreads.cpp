@@ -40,7 +40,7 @@
 #include "ThreadIdentifierDataPthreads.h"
 #include "ThreadSpecific.h"
 #include "UnusedParam.h"
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <errno.h>
 #include <map>

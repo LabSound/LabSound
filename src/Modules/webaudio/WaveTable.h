@@ -31,7 +31,6 @@
 
 #include "AudioArray.h"
 #include <wtf/Float32Array.h>
-#include <wtf/OwnPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>

@@ -31,7 +31,7 @@
 
 #include "AudioChannel.h"
 #include <wtf/Noncopyable.h>
-#include <wtf/OwnPtr.h>
+#include <wtf/RefPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <vector>
 
