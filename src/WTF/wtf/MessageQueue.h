@@ -35,7 +35,6 @@
 #include <deque>
 #include <wtf/Noncopyable.h>
 #include <wtf/Threading.h>
-#include <wtf/PassOwnPtr.h>
 
 namespace WTF {
 
@@ -47,7 +46,7 @@ namespace WTF {
 
     // The queue takes ownership of messages and transfer it to the new owner
     // when messages are fetched from the queue.
-    // Essentially, MessageQueue acts as a queue of OwnPtr<DataType>.
+    // Essentially, MessageQueue acts as a queue of std::unique_ptr<DataType>.
     template<typename DataType>
     class MessageQueue {
         WTF_MAKE_NONCOPYABLE(MessageQueue);
@@ -55,18 +54,21 @@ namespace WTF {
         MessageQueue() : m_killed(false) { }
         ~MessageQueue();
 
-        void append(PassOwnPtr<DataType>);
-        bool appendAndCheckEmpty(PassOwnPtr<DataType>);
-        void prepend(PassOwnPtr<DataType>);
+        void append(std::unique_ptr<DataType>);
+        void appendAndKill(std::unique_ptr<DataType>);
+        bool appendAndCheckEmpty(std::unique_ptr<DataType>);
+        void prepend(std::unique_ptr<DataType>);
 
-        PassOwnPtr<DataType> waitForMessage();
-        PassOwnPtr<DataType> tryGetMessage();
-        PassOwnPtr<DataType> tryGetMessageIgnoringKilled();
-        template<typename Predicate>
-        PassOwnPtr<DataType> waitForMessageFilteredWithTimeout(MessageQueueWaitResult&, Predicate&, double absoluteTime);
+        inline std::unique_ptr<DataType> waitForMessage();
+
+        std::unique_ptr<DataType> tryGetMessage();
+        std::unique_ptr<DataType> tryGetMessageIgnoringKilled();
 
         template<typename Predicate>
-        void removeIf(Predicate&);
+        std::unique_ptr<DataType> waitForMessageFilteredWithTimeout(MessageQueueWaitResult&, Predicate&, double absoluteTime);
+
+        template<typename Predicate>
+        void removeIf(Predicate&&);
 
         void kill();
         bool killed() const;
@@ -77,68 +79,82 @@ namespace WTF {
         static double infiniteTime() { return std::numeric_limits<double>::max(); }
 
     private:
-        static bool alwaysTruePredicate(DataType*) { return true; }
-
         mutable Mutex m_mutex;
         ThreadCondition m_condition;
-        std::deque<DataType*> m_queue;
+        std::deque<std::unique_ptr<DataType>> m_queue;
         bool m_killed;
     };
 
     template<typename DataType>
     MessageQueue<DataType>::~MessageQueue()
     {
-        m_queue.clear();
-        //deleteAllValues(m_queue);
     }
 
     template<typename DataType>
-    inline void MessageQueue<DataType>::append(PassOwnPtr<DataType> message)
+    inline void MessageQueue<DataType>::append(std::unique_ptr<DataType> message)
     {
         MutexLocker lock(m_mutex);
-        m_queue.push_back(message.leakPtr());
+        m_queue.push_back(std::move(message));
         m_condition.signal();
+    }
+
+    template<typename DataType>
+    inline void MessageQueue<DataType>::appendAndKill(std::unique_ptr<DataType> message)
+    {
+        MutexLocker lock(m_mutex);
+        m_queue.push_back(std::move(message));
+        m_killed = true;
+        m_condition.broadcast();
     }
 
     // Returns true if the queue was empty before the item was added.
     template<typename DataType>
-    inline bool MessageQueue<DataType>::appendAndCheckEmpty(PassOwnPtr<DataType> message)
+    inline bool MessageQueue<DataType>::appendAndCheckEmpty(std::unique_ptr<DataType> message)
     {
         MutexLocker lock(m_mutex);
         bool wasEmpty = m_queue.isEmpty();
-        m_queue.push_back(message.leakPtr());
+        m_queue.push_back(std::move(message));
         m_condition.signal();
         return wasEmpty;
     }
 
     template<typename DataType>
-    inline void MessageQueue<DataType>::prepend(PassOwnPtr<DataType> message)
+    inline void MessageQueue<DataType>::prepend(std::unique_ptr<DataType> message)
     {
         MutexLocker lock(m_mutex);
-        m_queue.push_front(message.leakPtr());
+        m_queue.push_front(std::move(message));
         m_condition.signal();
     }
 
     template<typename DataType>
-    inline PassOwnPtr<DataType> MessageQueue<DataType>::waitForMessage()
+    struct TruePredicate { inline bool operator()(const std::unique_ptr<DataType>& m) const { return true; } };
+
+    template<typename DataType>
+    inline std::unique_ptr<DataType> MessageQueue<DataType>::waitForMessage()
     {
-        MessageQueueWaitResult exitReason; 
-        OwnPtr<DataType> result = waitForMessageFilteredWithTimeout(exitReason, MessageQueue<DataType>::alwaysTruePredicate, infiniteTime());
+        MessageQueueWaitResult exitReason;
+        TruePredicate<DataType> tp;
+        std::unique_ptr<DataType> result = waitForMessageFilteredWithTimeout(exitReason, tp, infiniteTime());
         ASSERT(exitReason == MessageQueueTerminated || exitReason == MessageQueueMessageReceived);
-        return result.release();
+        return result;
     }
 
     template<typename DataType>
     template<typename Predicate>
-    inline PassOwnPtr<DataType> MessageQueue<DataType>::waitForMessageFilteredWithTimeout(MessageQueueWaitResult& result, Predicate& predicate, double absoluteTime)
+    inline std::unique_ptr<DataType> MessageQueue<DataType>::waitForMessageFilteredWithTimeout(MessageQueueWaitResult& result, Predicate& predicate, double absoluteTime)
     {
         MutexLocker lock(m_mutex);
         bool timedOut = false;
 
-        typename std::deque<DataType*>::const_iterator found = m_queue.end();
+        auto found = m_queue.end();
+        while (!m_killed && !timedOut) {
+            found = std::find_if(m_queue.begin(), m_queue.end(), predicate);
+            if (found != m_queue.end()) {
+                break;
+            }
 
-        while (!m_killed && !timedOut && (found = std::find_if(m_queue.begin(), m_queue.end(), predicate)) == m_queue.end())
             timedOut = !m_condition.timedWait(m_mutex, absoluteTime);
+        }
 
         ASSERT(!timedOut || absoluteTime != infiniteTime());
 
@@ -153,14 +169,14 @@ namespace WTF {
         }
 
         ASSERT(found != m_queue.end());
-        OwnPtr<DataType> message = adoptPtr(*found);
+        std::unique_ptr<DataType> message = std::move(*found);
         m_queue.erase(found);
         result = MessageQueueMessageReceived;
-        return message.release();
+        return message;
     }
 
     template<typename DataType>
-    inline PassOwnPtr<DataType> MessageQueue<DataType>::tryGetMessage()
+    inline auto MessageQueue<DataType>::tryGetMessage() -> std::unique_ptr<DataType>
     {
         MutexLocker lock(m_mutex);
         if (m_killed)
@@ -168,29 +184,38 @@ namespace WTF {
         if (m_queue.isEmpty())
             return nullptr;
 
-        return adoptPtr(m_queue.takeFirst());
+        DataType result = m_queue.front();
+        m_queue.pop_front();
+        return result;
     }
 
     template<typename DataType>
-    inline PassOwnPtr<DataType> MessageQueue<DataType>::tryGetMessageIgnoringKilled()
+    inline auto MessageQueue<DataType>::tryGetMessageIgnoringKilled() -> std::unique_ptr<DataType>
     {
         MutexLocker lock(m_mutex);
         if (m_queue.isEmpty())
             return nullptr;
 
-        return adoptPtr(m_queue.takeFirst());
+        DataType result = m_queue.front();
+        m_queue.pop_front();
+        return result;
     }
 
     template<typename DataType>
     template<typename Predicate>
-    inline void MessageQueue<DataType>::removeIf(Predicate& predicate)
+    inline void MessageQueue<DataType>::removeIf(Predicate&& predicate)
     {
         MutexLocker lock(m_mutex);
-        typename std::deque<DataType*>::const_iterator found = m_queue.end();
-        while ((found = m_queue.findIf(predicate)) != m_queue.end()) {
-            DataType* message = *found;
-            m_queue.remove(found);
-            delete message;
+        while (true) {
+            auto found = m_queue.findIf([&predicate](const std::unique_ptr<DataType>& ptr) -> bool {
+                ASSERT(ptr);
+                return predicate(*ptr);
+            });
+
+            if (found == m_queue.end())
+                break;
+
+            m_queue.erase(found);
         }
     }
 
