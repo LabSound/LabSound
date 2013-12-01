@@ -32,7 +32,6 @@
 #include "HRTFDatabaseLoader.h"
 #include "MediaStream.h" // added for LabSound
 #include <wtf/MainThread.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Threading.h>

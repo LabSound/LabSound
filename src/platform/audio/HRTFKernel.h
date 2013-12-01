@@ -32,7 +32,6 @@
 #include "FFTFrame.h"
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
@@ -91,7 +90,7 @@ private:
     float m_sampleRate;
 };
 
-typedef std::vector<RefPtr<HRTFKernel> > HRTFKernelList;
+typedef std::vector<WTF::RefPtr<HRTFKernel> > HRTFKernelList;
 
 } // namespace WebCore
 

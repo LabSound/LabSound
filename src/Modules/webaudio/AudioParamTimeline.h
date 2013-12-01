@@ -31,7 +31,6 @@
 
 #include "AudioContext.h"
 #include <wtf/Float32Array.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/Threading.h>
 #include <vector>
 
@@ -83,6 +82,26 @@ private:
             , m_duration(duration)
             , m_curve(curve)
         {
+        }
+
+        ParamEvent(const ParamEvent& rhs)
+        : m_type(rhs.m_type)
+        , m_value(rhs.m_value)
+        , m_time(rhs.m_time)
+        , m_timeConstant(rhs.m_timeConstant)
+        , m_duration(rhs.m_duration)
+        , m_curve(rhs.m_curve)
+        {
+        }
+
+        const ParamEvent& operator=(const ParamEvent& rhs) {
+            m_type = rhs.m_type;
+            m_value = rhs.m_value;
+            m_time = rhs.m_time;
+            m_timeConstant = rhs.m_timeConstant;
+            m_duration = rhs.m_duration;
+            m_curve = rhs.m_curve;
+            return *this;
         }
 
         unsigned type() const { return m_type; }

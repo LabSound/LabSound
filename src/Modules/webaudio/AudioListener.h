@@ -30,7 +30,7 @@
 #define AudioListener_h
 
 #include "FloatPoint3D.h"
-#include <wtf/PassRefPtr.h>
+#include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 
 namespace WebCore {

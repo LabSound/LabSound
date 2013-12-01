@@ -32,12 +32,13 @@
 #include "AudioArray.h"
 #include <wtf/Float32Array.h>
 #include <wtf/OwnPtr.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 
 namespace WebCore {
+
+using namespace WTF;
 
 class WaveTable : public ThreadSafeRefCounted<WaveTable> {
 public:

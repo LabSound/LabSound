@@ -30,12 +30,13 @@
 #define AudioBuffer_h
 
 #include <wtf/Float32Array.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 
 namespace WebCore {
+
+using namespace WTF;
 
 class AudioBus;
 

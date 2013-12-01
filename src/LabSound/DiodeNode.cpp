@@ -15,6 +15,8 @@
 
 namespace LabSound {
 
+    using namespace WTF;
+
     DiodeNode::DiodeNode(WebCore::AudioContext* context)
     : vb(0.2f)
     , vl(0.4f)

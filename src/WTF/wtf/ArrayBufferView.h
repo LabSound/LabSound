@@ -30,7 +30,6 @@
 
 #include <algorithm>
 #include <limits.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 

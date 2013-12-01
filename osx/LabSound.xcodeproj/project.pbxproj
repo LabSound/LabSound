@@ -516,7 +516,6 @@
 		E2FB8611183D202600A5A764 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtr.h; sourceTree = "<group>"; };
 		E2FB8612183D202600A5A764 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2FB8620183D202600A5A764 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnPtr.h; sourceTree = "<group>"; };
-		E2FB8621183D202600A5A764 /* PassRefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassRefPtr.h; sourceTree = "<group>"; };
 		E2FB8623183D202600A5A764 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		E2FB862C183D202600A5A764 /* RandomNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RandomNumber.cpp; sourceTree = "<group>"; };
 		E2FB862D183D202600A5A764 /* RandomNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RandomNumber.h; sourceTree = "<group>"; };
@@ -1083,7 +1082,6 @@
 				E2FB8611183D202600A5A764 /* OwnPtr.h */,
 				E2FB8612183D202600A5A764 /* OwnPtrCommon.h */,
 				E2FB8620183D202600A5A764 /* PassOwnPtr.h */,
-				E2FB8621183D202600A5A764 /* PassRefPtr.h */,
 				E2FB8623183D202600A5A764 /* Platform.h */,
 				E2FB862C183D202600A5A764 /* RandomNumber.cpp */,
 				E2FB862D183D202600A5A764 /* RandomNumber.h */,

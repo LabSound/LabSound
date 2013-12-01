@@ -55,7 +55,7 @@ namespace LabSound {
     public:
         static WTF::PassRefPtr<SpatializationNode> create(WebCore::AudioContext* context, float sampleRate)
         {
-            return adoptRef(new SpatializationNode(context, sampleRate));
+            return WTF::adoptRef(new SpatializationNode(context, sampleRate));
         }
         
         void setOccluders(OccludersPtr);

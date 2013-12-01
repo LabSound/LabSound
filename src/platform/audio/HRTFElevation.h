@@ -33,11 +33,12 @@
 #include <wtf/Noncopyable.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <string>
 
 namespace WebCore {
+
+using namespace WTF;
 
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
 

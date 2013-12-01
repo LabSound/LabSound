@@ -32,7 +32,6 @@
 #include "ExceptionCode.h"
 #include "PannerNode.h"
 #include <memory>
-#include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
 

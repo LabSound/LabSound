@@ -27,7 +27,6 @@
 #define WTF_Functional_h
 
 #include <wtf/Assertions.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 

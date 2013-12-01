@@ -30,7 +30,6 @@
 #define HRTFDatabaseLoader_h
 
 #include "HRTFDatabase.h"
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>

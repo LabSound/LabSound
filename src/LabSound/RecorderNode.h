@@ -14,7 +14,7 @@ namespace LabSound {
     public:
         static WTF::PassRefPtr<RecorderNode> create(WebCore::AudioContext* context, float sampleRate)
         {
-            return adoptRef(new RecorderNode(context, sampleRate));
+            return WTF::adoptRef(new RecorderNode(context, sampleRate));
         }
         
         virtual ~RecorderNode();

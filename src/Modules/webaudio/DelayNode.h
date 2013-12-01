@@ -28,7 +28,6 @@
 #include "AudioBasicProcessorNode.h"
 #include "DelayProcessor.h"
 #include "ExceptionCode.h"
-#include <wtf/PassRefPtr.h>
 
 namespace WebCore {
 

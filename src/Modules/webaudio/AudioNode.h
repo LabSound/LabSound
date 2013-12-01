@@ -39,6 +39,8 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
 
+using namespace WTF;
+
 typedef int ExceptionCode;
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.

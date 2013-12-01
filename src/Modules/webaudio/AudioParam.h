@@ -34,7 +34,6 @@
 #include "AudioSummingJunction.h"
 #include <sys/types.h>
 #include <wtf/Float32Array.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <string.h>
 

@@ -6,8 +6,11 @@
 #include "AudioBuffer.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioContext.h"
+#include <wtf/RefPtr.h>
 
 namespace LabSound {
+
+using namespace WTF;
 
 class SoundBuffer
 {

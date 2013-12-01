@@ -30,7 +30,6 @@
 #define AudioGain_h
 
 #include "AudioParam.h"
-#include <wtf/PassRefPtr.h>
 
 namespace WebCore {
 

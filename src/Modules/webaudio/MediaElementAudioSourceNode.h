@@ -32,7 +32,6 @@
 #include "HTMLMediaElement.h"
 #include "MultiChannelResampler.h"
 #include <wtf/OwnPtr.h>
-#include <wtf/PassRefPtr.h>
 #include <wtf/Threading.h>
 
 namespace WebCore {

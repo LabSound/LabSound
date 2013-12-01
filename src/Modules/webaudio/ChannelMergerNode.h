@@ -30,8 +30,7 @@
 #define ChannelMergerNode_h
 
 #include "AudioNode.h"
-#include <wtf/PassRefPtr.h>
-
+\
 namespace WebCore {
 
 class AudioContext;
