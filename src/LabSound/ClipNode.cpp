@@ -57,7 +57,7 @@ namespace LabSound {
             if (mode == ClipNode::TANH) {
                 float outputGain = aVal->value();
                 float inputGain = bVal->value();
-                for (unsigned channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();
@@ -69,7 +69,7 @@ namespace LabSound {
             else {
                 float minf = aVal->value();
                 float maxf = bVal->value();
-                for (unsigned channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();

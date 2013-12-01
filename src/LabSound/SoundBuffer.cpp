@@ -22,7 +22,7 @@ namespace LabSound {
             fread(data, 1, l, f);
             fclose(f);
             
-            ExceptionCode ec;
+            WebCore::ExceptionCode ec;
             bool mixToMono = true;
             PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(data, l);
             delete [] data;
@@ -62,7 +62,7 @@ namespace LabSound {
             sourceBuffer->setBuffer(audioBuffer.get());
             
             // bus the sound to the mixer.
-            ExceptionCode ec;
+            WebCore::ExceptionCode ec;
             sourceBuffer->connect(outputNode, 0, 0, ec);
             sourceBuffer->start(when);
             return sourceBuffer;
@@ -94,7 +94,7 @@ namespace LabSound {
             sourceBuffer->setBuffer(audioBuffer.get());
             
             // bus the sound to the mixer.
-            ExceptionCode ec;
+            WebCore::ExceptionCode ec;
             sourceBuffer->connect(context->destination(), 0, 0, ec);
             sourceBuffer->startGrain(when, start, end - start, ec);
             return sourceBuffer;

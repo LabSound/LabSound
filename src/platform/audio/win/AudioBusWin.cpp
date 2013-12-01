@@ -31,10 +31,7 @@
 #include "AudioBus.h"
 #include "AudioFileReader.h"
 #include "AutodrainedPool.h"
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
-#include <wtf/text/CString.h>
-#include <wtf/text/StringConcatenate.h>
+
 #include "ExceptionCode.h"
 #include "SoundBuffer.h"
 #include <direct.h>
@@ -47,9 +44,9 @@ namespace WebCore {
 
 		_getcwd(cwd, MAX_PATH); 
 
-		String pathToFile(makeString(std::string(cwd ).c_str(), "\\resources\\", name, ".wav"));
+		std::string pathToFile( std::string(cwd) + "\\resources\\" + name + ".wav");
 
-		FILE* f = fopen(pathToFile.utf8().data(), "rb");
+		FILE* f = fopen(pathToFile.c_str(), "rb");
 
 		// printf("Resource: %s \n", pathToFile.utf8().data()); 
 

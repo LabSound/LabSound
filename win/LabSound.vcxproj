@@ -233,11 +233,7 @@
     <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
     <ClInclude Include="..\src\LabSound\SupersawNode.h" />
     <ClInclude Include="..\src\shim\ActiveDOMObject.h" />
-    <ClInclude Include="..\src\shim\ContextDestructionObserver.h" />
-    <ClInclude Include="..\src\shim\EventListener.h" />
-    <ClInclude Include="..\src\shim\EventTarget.h" />
     <ClInclude Include="..\src\shim\ExceptionCode.h" />
-    <ClInclude Include="..\src\shim\LengthFunctions.h" />
     <ClInclude Include="..\src\shim\MediaStream.h" />
     <ClInclude Include="..\src\Modules\webaudio\AnalyserNode.h" />
     <ClInclude Include="..\src\Modules\webaudio\AsyncAudioDecoder.h" />
@@ -323,49 +319,16 @@
     <ClInclude Include="..\src\platform\audio\SincResampler.h" />
     <ClInclude Include="..\src\platform\audio\VectorMath.h" />
     <ClInclude Include="..\src\platform\audio\ZeroPole.h" />
-    <ClInclude Include="..\src\platform\AutodrainedPool.h" />
-    <ClInclude Include="..\src\platform\graphics\FloatPoint3D.h" />
     <ClInclude Include="..\src\platform\Logging.h" />
     <ClInclude Include="..\src\WTF\wtf\ArrayBuffer.h" />
     <ClInclude Include="..\src\WTF\wtf\ArrayBufferView.h" />
     <ClInclude Include="..\src\WTF\wtf\Assertions.h" />
     <ClInclude Include="..\src\WTF\wtf\CurrentTime.h" />
-    <ClInclude Include="..\src\WTF\wtf\DataLog.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum-dtoa.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\cached-powers.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\diy-fp.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\double-conversion.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\double.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\fast-dtoa.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\fixed-dtoa.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\strtod.h" />
-    <ClInclude Include="..\src\WTF\wtf\dtoa\utils.h" />
-    <ClInclude Include="..\src\WTF\wtf\FastMalloc.h" />
-    <ClInclude Include="..\src\WTF\wtf\FilePrintStream.h" />
     <ClInclude Include="..\src\WTF\wtf\Float32Array.h" />
     <ClInclude Include="..\src\WTF\wtf\MainThread.h" />
-    <ClInclude Include="..\src\WTF\wtf\PrintStream.h" />
-    <ClInclude Include="..\src\WTF\wtf\StackBounds.h" />
-    <ClInclude Include="..\src\WTF\wtf\TCSystemAlloc.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\CString.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicString.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringHash.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringImpl.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\StringImpl.h" />
-    <ClInclude Include="..\src\WTF\wtf\text\WTFString.h" />
     <ClInclude Include="..\src\WTF\wtf\Threading.h" />
-    <ClInclude Include="..\src\WTF\wtf\WTFThreadData.h" />
     <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h" />
     <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\CharacterNames.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\Collator.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\ScriptCodesFromICU.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\Unicode.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\UnicodeMacrosFromICU.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\UTF8.h" />
-    <ClInclude Include="..\src\WTF\wtf\unicode\icu\UnicodeIcu.h" />
     <ClInclude Include="..\src\WTF\wtf\UnusedParam.h" />
     <ClInclude Include="..\src\platform\audio\win\AudioDestinationWin.h" />
     <ClInclude Include="..\src\platform\audio\win\AudioFileReaderWin.h" />
@@ -394,8 +357,6 @@
     <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\shim\LengthFunctions.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
     </ClCompile>
@@ -541,8 +502,6 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\platform\graphics\FloatPoint3D.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\platform\Logging.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
@@ -553,65 +512,15 @@
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\DataLog.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum-dtoa.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\cached-powers.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\diy-fp.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\double-conversion.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\fast-dtoa.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\fixed-dtoa.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\strtod.cc">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\FastMalloc.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\FilePrintStream.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\PrintStream.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\StackBounds.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\TCSystemAlloc.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\CString.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\AtomicString.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringBuilder.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringStatics.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringImpl.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\WTFString.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\WTFThreadData.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\CollatorDefault.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\UTF8.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\icu\CollatorICU.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
     </ClCompile>

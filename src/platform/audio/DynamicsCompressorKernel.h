@@ -31,6 +31,7 @@
 
 #include "AudioArray.h"
 #include <vector>
+#include <memory>
 
 namespace WebCore {
 
@@ -86,7 +87,8 @@ protected:
     unsigned m_lastPreDelayFrames;
     void setPreDelayTime(float);
 
-    std::vector<std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
+    std::vector< std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
+
     int m_preDelayReadIndex;
     int m_preDelayWriteIndex;
 
