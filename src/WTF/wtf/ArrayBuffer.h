@@ -27,7 +27,7 @@
 #define ArrayBuffer_h
 
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 #include <stdlib.h>
@@ -104,7 +104,7 @@ private:
 #endif
 };
 
-class ArrayBuffer : public RefCounted<ArrayBuffer> {
+class ArrayBuffer : public ThreadSafeRefCounted<ArrayBuffer> {
 public:
     static inline PassRefPtr<ArrayBuffer> create(unsigned numElements, unsigned elementByteSize);
     static inline PassRefPtr<ArrayBuffer> create(ArrayBuffer*);

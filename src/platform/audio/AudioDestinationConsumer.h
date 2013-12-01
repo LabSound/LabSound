@@ -31,13 +31,13 @@
 #ifndef AudioDestinationConsumer_h
 #define AudioDestinationConsumer_h
 
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 
 namespace WebCore {
 
 class AudioBus;
 
-class AudioDestinationConsumer : public RefCounted<AudioDestinationConsumer> {
+class AudioDestinationConsumer : public ThreadSafeRefCounted<AudioDestinationConsumer> {
 public:
     virtual ~AudioDestinationConsumer() { }
 

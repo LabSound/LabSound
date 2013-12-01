@@ -31,12 +31,12 @@
 #include <algorithm>
 #include <limits.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 
 namespace WTF {
 
-class WTF_EXPORT_PRIVATE_RTTI ArrayBufferView : public RefCounted<ArrayBufferView> {
+class WTF_EXPORT_PRIVATE_RTTI ArrayBufferView : public ThreadSafeRefCounted<ArrayBufferView> {
   public:
     enum ViewType {
         TypeInt8,

@@ -31,7 +31,7 @@
 
 #include <wtf/Float32Array.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 
@@ -41,7 +41,7 @@ class AudioBus;
 
 typedef int ExceptionCode;
 
-class AudioBuffer : public RefCounted<AudioBuffer> {
+class AudioBuffer : public ThreadSafeRefCounted<AudioBuffer> {
 public:   
     static PassRefPtr<AudioBuffer> create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
 

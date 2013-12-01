@@ -33,7 +33,7 @@
 #include <wtf/OwnPtr.h>
 #include <wtf/PassOwnPtr.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 
@@ -47,7 +47,7 @@ class AudioChannel;
 // The leading delay (average group delay) for each impulse response is extracted:
 //      m_fftFrame is the frequency-domain representation of the impulse response with the delay removed
 //      m_frameDelay is the leading delay of the original impulse response.
-class HRTFKernel : public RefCounted<HRTFKernel> {
+class HRTFKernel : public ThreadSafeRefCounted<HRTFKernel> {
 public:
     // Note: this is destructive on the passed in AudioChannel.
     // The length of channel must be a power of two.

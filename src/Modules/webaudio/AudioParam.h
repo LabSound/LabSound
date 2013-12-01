@@ -35,14 +35,14 @@
 #include <sys/types.h>
 #include <wtf/Float32Array.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <string.h>
 
 namespace WebCore {
 
 class AudioNodeOutput;
 
-class AudioParam : public AudioSummingJunction, public RefCounted<AudioParam> {
+class AudioParam : public AudioSummingJunction, public ThreadSafeRefCounted<AudioParam> {
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;

@@ -521,7 +521,6 @@
 		E2FB862C183D202600A5A764 /* RandomNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RandomNumber.cpp; sourceTree = "<group>"; };
 		E2FB862D183D202600A5A764 /* RandomNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RandomNumber.h; sourceTree = "<group>"; };
 		E2FB862E183D202600A5A764 /* RandomNumberSeed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RandomNumberSeed.h; sourceTree = "<group>"; };
-		E2FB8631183D202600A5A764 /* RefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefCounted.h; sourceTree = "<group>"; };
 		E2FB8635183D202600A5A764 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefPtr.h; sourceTree = "<group>"; };
 		E2FB8646183D202600A5A764 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StdLibExtras.h; sourceTree = "<group>"; };
 		E2FB8649183D202700A5A764 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExtras.h; sourceTree = "<group>"; };
@@ -1089,7 +1088,6 @@
 				E2FB862C183D202600A5A764 /* RandomNumber.cpp */,
 				E2FB862D183D202600A5A764 /* RandomNumber.h */,
 				E2FB862E183D202600A5A764 /* RandomNumberSeed.h */,
-				E2FB8631183D202600A5A764 /* RefCounted.h */,
 				E2FB8635183D202600A5A764 /* RefPtr.h */,
 				E2FB8646183D202600A5A764 /* StdLibExtras.h */,
 				E2FB8649183D202700A5A764 /* StringExtras.h */,

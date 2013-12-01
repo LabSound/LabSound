@@ -33,13 +33,13 @@
 #include <wtf/Float32Array.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <vector>
 
 namespace WebCore {
 
-class WaveTable : public RefCounted<WaveTable> {
+class WaveTable : public ThreadSafeRefCounted<WaveTable> {
 public:
     static PassRefPtr<WaveTable> createSine(float sampleRate);
     static PassRefPtr<WaveTable> createSquare(float sampleRate);

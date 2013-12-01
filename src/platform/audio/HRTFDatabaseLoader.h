@@ -31,7 +31,7 @@
 
 #include "HRTFDatabase.h"
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
 
@@ -39,7 +39,7 @@ namespace WebCore {
 
 // HRTFDatabaseLoader will asynchronously load the default HRTFDatabase in a new thread.
 
-class HRTFDatabaseLoader : public RefCounted<HRTFDatabaseLoader> {
+class HRTFDatabaseLoader : public ThreadSafeRefCounted<HRTFDatabaseLoader> {
 public:
     // Lazily creates the singleton HRTFDatabaseLoader (if not already created) and starts loading asynchronously (when created the first time).
     // Returns the singleton HRTFDatabaseLoader.

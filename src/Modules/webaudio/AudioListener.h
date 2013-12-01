@@ -31,13 +31,13 @@
 
 #include "FloatPoint3D.h"
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 
 namespace WebCore {
 
 // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
 
-class AudioListener : public RefCounted<AudioListener> {
+class AudioListener : public ThreadSafeRefCounted<AudioListener> {
 public:
     static PassRefPtr<AudioListener> create()
     {

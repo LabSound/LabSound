@@ -27,13 +27,13 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 
 namespace WebCore {
 
 class AudioBuffer;
 
-class AudioBufferCallback : public RefCounted<AudioBufferCallback> {
+class AudioBufferCallback : public ThreadSafeRefCounted<AudioBufferCallback> {
 public:
     virtual ~AudioBufferCallback() { }
     virtual bool handleEvent(AudioBuffer*) = 0;

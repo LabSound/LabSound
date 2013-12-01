@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 
-class MediaStream : public RefCounted<MediaStream>
+class MediaStream : public ThreadSafeRefCounted<MediaStream>
 {
 public:
     class Tracks {
@@ -12,7 +12,6 @@ public:
     };
     
     MediaStream() {
-        relaxAdoptionRequirement();
     }
     
     bool isLocal() const { return true; }
@@ -22,7 +21,7 @@ private:
     Tracks _tracks;
 };
 
-class MediaStreamSource : public RefCounted<MediaStreamSource>
+class MediaStreamSource : public ThreadSafeRefCounted<MediaStreamSource>
 {
 public:
 };

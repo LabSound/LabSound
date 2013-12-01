@@ -34,7 +34,6 @@
 #include <wtf/MainThread.h>
 #include <wtf/OwnPtr.h>
 #include <wtf/PassRefPtr.h>
-#include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Threading.h>

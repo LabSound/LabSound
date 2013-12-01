@@ -36,7 +36,6 @@
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
 #include <wtf/OwnPtr.h>
-#include <wtf/RefCounted.h>
 #include <wtf/Threading.h>
 #include <vector>
 
