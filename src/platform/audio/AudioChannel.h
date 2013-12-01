@@ -56,7 +56,7 @@ public:
         , m_rawPointer(0)
         , m_silent(true)
     {
-        m_memBuffer = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(length));
+        m_memBuffer = std::move(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(length)));
     }
 
     // A "blank" audio channel -- must call set() before it's useful...

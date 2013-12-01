@@ -187,7 +187,7 @@ namespace LabSound {
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new AdsrNodeInternal(context, sampleRate))
     {
-        m_processor = std::unique_ptr<WebCore::AudioProcessor>(data);
+        m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeADSR);
 

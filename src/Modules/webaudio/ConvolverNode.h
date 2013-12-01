@@ -26,7 +26,6 @@
 #define ConvolverNode_h
 
 #include "AudioNode.h"
-#include <wtf/OwnPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
 
@@ -63,7 +62,7 @@ private:
     virtual double tailTime() const OVERRIDE;
     virtual double latencyTime() const OVERRIDE;
 
-    OwnPtr<Reverb> m_reverb;
+    std::unique_ptr<Reverb> m_reverb;
     RefPtr<AudioBuffer> m_buffer;
 
     // This synchronizes dynamic changes to the convolution impulse response with process().

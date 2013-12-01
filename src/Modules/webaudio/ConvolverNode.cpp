@@ -105,7 +105,7 @@ void ConvolverNode::uninitialize()
     if (!isInitialized())
         return;
 
-    m_reverb.clear();
+    m_reverb.reset();
     AudioNode::uninitialize();
 }
 
@@ -135,12 +135,11 @@ void ConvolverNode::setBuffer(AudioBuffer* buffer)
 
     // Create the reverb with the given impulse response.
     bool useBackgroundThreads = !context()->isOfflineContext();
-    OwnPtr<Reverb> reverb = adoptPtr(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, useBackgroundThreads, m_normalize));
-
+    std::unique_ptr<Reverb> reverb(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, useBackgroundThreads, m_normalize));
     {
         // Synchronize with process().
         MutexLocker locker(m_processLock);
-        m_reverb = reverb.release();
+        m_reverb = std::move(reverb);
         m_buffer = buffer;
     }
 }
