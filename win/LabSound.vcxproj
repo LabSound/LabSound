@@ -232,6 +232,7 @@
     <ClInclude Include="..\src\LabSound\SoundBuffer.h" />
     <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
     <ClInclude Include="..\src\LabSound\SupersawNode.h" />
+    <ClInclude Include="..\src\LabSound\WindowFunctions.h" />
     <ClInclude Include="..\src\shim\ActiveDOMObject.h" />
     <ClInclude Include="..\src\shim\ExceptionCode.h" />
     <ClInclude Include="..\src\shim\MediaStream.h" />
