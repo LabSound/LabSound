@@ -1,28 +1,15 @@
 LabSound
 ========
 
-The WebAudio engine, factored out of WebKit.
+LabSound is the WebAudio implementation factored out of WebKit, with reimplementations of many copyleft / GPL files. 
 
-My motivation for factoring it out is that the WebAudio engine is very well designed,
-and well exercised. It does everything I would want an audio engine to do. If you have
-a look at the specification <https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html>
-you can see that it is an audio processing graph with a lot of default nodes, multiple
-sends, and wide platform support. See also <http://docs.webplatform.org/wiki/apis/webaudio>
+The motivation behind LabSound is that the [WebAudio specification](https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html) is a well-designed API for an audio engine. Coupled with a well executed implementation provided by WebKit contributors, LabSound is a powerful and extensible audio engine for C++. 
 
-WebKit was obtained from the unofficial github mirror at <https://github.com/WebKit/webkit>
+LabSound’s internals were disconnected from Javascript and the browser infrastructure. The cross-platform nature of WebKit means that LabSound enjoys wide platform support across OSX 10.6+, Windows 7+, and although presently untested, Linux and iOS. 
 
-The WebKit distro is about 2Gb of stuff, the audio engine is about 32Mb including
-the impulse response wav files. 
+One of LabSound’s goals is to provide higher-level DSP and signal generation nodes for use with the engine. To this end, integrations with PureData (PD), SFXR, and the STK are either complete or in progress.
 
-I disconnected the audio engine from Javascript and from the browser infrastructure,
-and also replaced a few files with new implementations where those files had an LGLPL
-notice on them.
-
-I only made an OSX main because I'm not set up for building on other platforms. If
-anyone wants to modify the premake.lua file to support other platforms, please send
-a pull request!
-
-The keyword LabSound marks any places the code was modified from the source distro.
+The keyword LabSound marks any places the code was modified from the original WebKit source. The engine has been slowly integrating newer C++11 features while trying to remain as compiler-portable as possible. 
 
 Building on OSX using premake
 -----------------------------
