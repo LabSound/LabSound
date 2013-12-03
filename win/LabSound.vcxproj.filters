@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
@@ -22,26 +22,11 @@
     <Filter Include="src\platform\audio">
       <UniqueIdentifier>{A728D39C-BF00-6141-98A0-42A69E50EFD2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\platform\graphics">
-      <UniqueIdentifier>{C61B48E9-EBE4-EC4A-976F-81685FBDDAAC}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\WTF">
       <UniqueIdentifier>{6E4ACF82-449A-9C46-A197-C1A1746114E3}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\WTF\wtf">
       <UniqueIdentifier>{A6315907-33E4-CB49-ADB9-7A2988D844E4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\WTF\wtf\dtoa">
-      <UniqueIdentifier>{B0F712FA-B103-AF4D-B1D2-DF1B72167668}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\WTF\wtf\text">
-      <UniqueIdentifier>{DD4C50C6-927B-6D44-AD97-0C5F91B35614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\WTF\wtf\unicode">
-      <UniqueIdentifier>{0ACDACA3-2869-344F-9036-B28F36401CCD}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\WTF\wtf\unicode\icu">
-      <UniqueIdentifier>{407583C3-9E42-124B-B348-5EEA77B83201}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\platform\audio\win">
       <UniqueIdentifier>{5710202E-F1B6-3742-8911-192EDBD63B6D}</UniqueIdentifier>
@@ -170,19 +155,7 @@
     <ClInclude Include="..\src\shim\ActiveDOMObject.h">
       <Filter>src\shim</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shim\ContextDestructionObserver.h">
-      <Filter>src\shim</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shim\EventListener.h">
-      <Filter>src\shim</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shim\EventTarget.h">
-      <Filter>src\shim</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\shim\ExceptionCode.h">
-      <Filter>src\shim</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shim\LengthFunctions.h">
       <Filter>src\shim</Filter>
     </ClInclude>
     <ClInclude Include="..\src\shim\MediaStream.h">
@@ -440,12 +413,6 @@
     <ClInclude Include="..\src\platform\audio\ZeroPole.h">
       <Filter>src\platform\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\platform\AutodrainedPool.h">
-      <Filter>src\platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\platform\graphics\FloatPoint3D.h">
-      <Filter>src\platform\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\platform\Logging.h">
       <Filter>src\platform</Filter>
     </ClInclude>
@@ -461,85 +428,13 @@
     <ClInclude Include="..\src\WTF\wtf\CurrentTime.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\DataLog.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum-dtoa.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\bignum.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\cached-powers.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\diy-fp.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\double-conversion.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\double.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\fast-dtoa.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\fixed-dtoa.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\strtod.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\dtoa\utils.h">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\FastMalloc.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\FilePrintStream.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\Float32Array.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\MainThread.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\PrintStream.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\StackBounds.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\TCSystemAlloc.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\CString.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicString.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringHash.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\AtomicStringImpl.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\StringImpl.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\text\WTFString.h">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\Threading.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\WTFThreadData.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h">
@@ -547,27 +442,6 @@
     </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h">
       <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\CharacterNames.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\Collator.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\ScriptCodesFromICU.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\Unicode.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\UnicodeMacrosFromICU.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\UTF8.h">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\unicode\icu\UnicodeIcu.h">
-      <Filter>src\WTF\wtf\unicode\icu</Filter>
     </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\UnusedParam.h">
       <Filter>src\WTF\wtf</Filter>
@@ -577,6 +451,9 @@
     </ClInclude>
     <ClInclude Include="..\src\platform\audio\win\AudioFileReaderWin.h">
       <Filter>src\platform\audio\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\LabSound\WindowFunctions.h">
+      <Filter>src\LabSound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -615,9 +492,6 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
       <Filter>src\LabSound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shim\LengthFunctions.cpp">
-      <Filter>src\shim</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
       <Filter>src\Modules\webaudio</Filter>
@@ -835,9 +709,6 @@
     <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
       <Filter>src\platform\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\platform\graphics\FloatPoint3D.cpp">
-      <Filter>src\platform\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\platform\Logging.cpp">
       <Filter>src\platform</Filter>
     </ClCompile>
@@ -853,79 +724,13 @@
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
       <Filter>src\WTF\wtf</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\DataLog.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum-dtoa.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\bignum.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\cached-powers.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\diy-fp.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\double-conversion.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\fast-dtoa.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\fixed-dtoa.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\dtoa\strtod.cc">
-      <Filter>src\WTF\wtf\dtoa</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\FastMalloc.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\FilePrintStream.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
       <Filter>src\WTF\wtf</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
       <Filter>src\WTF\wtf</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\PrintStream.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\StackBounds.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\TCSystemAlloc.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\CString.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\AtomicString.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringBuilder.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringStatics.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\StringImpl.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\text\WTFString.cpp">
-      <Filter>src\WTF\wtf\text</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\WTFThreadData.cpp">
       <Filter>src\WTF\wtf</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
@@ -933,15 +738,6 @@
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
       <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\CollatorDefault.cpp">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\UTF8.cpp">
-      <Filter>src\WTF\wtf\unicode</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\unicode\icu\CollatorICU.cpp">
-      <Filter>src\WTF\wtf\unicode\icu</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
       <Filter>src\platform\audio\win</Filter>

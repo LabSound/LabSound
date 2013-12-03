@@ -40,7 +40,7 @@ namespace LabSound {
             int currentN = saws.size();
             int n = int(sawCount->value() + 0.5f);
             if (okayToReallocate && (n != currentN)) {
-                ExceptionCode ec;
+                WebCore::ExceptionCode ec;
 
                 for (auto i : sawStorage) {
                     LabSound::disconnect(i.get());
