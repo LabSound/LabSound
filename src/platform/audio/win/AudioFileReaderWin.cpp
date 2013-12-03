@@ -39,8 +39,6 @@
 #include <string>
 #include <iostream>
 #include "sndfile.h"
-#include <wtf/text/CString.h>
-#include <wtf/text/StringConcatenate.h>
 
 namespace WebCore {
 
