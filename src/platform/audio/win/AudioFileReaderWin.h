@@ -29,7 +29,7 @@
 #ifndef AudioFileReaderWin_h
 #define AudioFileReaderWin_h
 
-#include "../../../wtf/PassOwnPtr.h"
+#include "PassOwnPtr.h"
 #include "sndfile.h"
 
 namespace WebCore {
