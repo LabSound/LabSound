@@ -32,7 +32,7 @@
 #include <limits>
 #include <stdint.h>
 #include <stdlib.h>
-#include <wtf/StdLibExtras.h>
+#include "StdLibExtras.h"
 
 #if OS(SOLARIS)
 #include <ieeefp.h>

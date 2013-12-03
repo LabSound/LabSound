@@ -25,8 +25,8 @@
 #ifndef AudioSummingJunction_h
 #define AudioSummingJunction_h
 
-#include "AudioBus.h"
-#include <wtf/RefPtr.h>
+#include "../../platform/audio/AudioBus.h"
+#include "../../WTF/wtf/RefPtr.h"
 #include <set>
 #include <vector>
 

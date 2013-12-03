@@ -2,9 +2,9 @@
 #ifndef included_wtf_RefPtr_h
 #define included_wtf_RefPtr_h
 
-#include <wtf/Assertions.h>
-#include <wtf/Noncopyable.h>
-#include <wtf/PassOwnPtr.h>
+#include "Assertions.h"
+#include "Noncopyable.h"
+#include "PassOwnPtr.h"
 #include <algorithm>
 
 namespace WTF {

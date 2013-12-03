@@ -28,7 +28,7 @@
 #if ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)
 
 #include "AudioBasicInspectorNode.h"
-#include "AudioBus.h"
+#include "../../platform/audio/AudioBus.h"
 #include "MediaStream.h"
 
 namespace WebCore {

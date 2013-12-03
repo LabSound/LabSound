@@ -27,8 +27,8 @@
 
 #include "AudioBuffer.h"
 #include "AudioDestinationNode.h"
-#include <wtf/RefPtr.h>
-#include <wtf/Threading.h>
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/Threading.h"
 
 namespace WebCore {
 

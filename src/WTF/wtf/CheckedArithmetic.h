@@ -26,7 +26,7 @@
 #ifndef CheckedArithmetic_h
 #define CheckedArithmetic_h
 
-#include <wtf/Assertions.h>
+#include "Assertions.h"
 
 #include <limits>
 #include <stdint.h>

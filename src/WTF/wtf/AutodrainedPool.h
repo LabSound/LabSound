@@ -29,7 +29,7 @@
 #ifndef AutodrainedPool_h
 #define AutodrainedPool_h
 
-#include <wtf/Noncopyable.h>
+#include "Noncopyable.h"
 
 #if PLATFORM(MAC) && !defined(__OBJC__)
 typedef struct objc_object *id;

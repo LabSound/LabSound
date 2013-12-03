@@ -29,7 +29,7 @@
 #ifndef AudioDestinationMac_h
 #define AudioDestinationMac_h
 
-#include "AudioBus.h"
+#include "../../platform/audio/AudioBus.h"
 #include "AudioDestination.h"
 #include <AudioUnit/AudioUnit.h>
 

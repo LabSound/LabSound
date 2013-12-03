@@ -262,13 +262,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
+					"$(PROJECT_DIR)/../../../include",
 					"$(PROJECT_DIR)/../../../src/Samples",
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -287,13 +281,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
+					"$(PROJECT_DIR)/../../../include",
 					"$(PROJECT_DIR)/../../../src/Samples",
 				);
 				LIBRARY_SEARCH_PATHS = (

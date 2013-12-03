@@ -64,9 +64,9 @@ struct RDFTContext;
 #include <ipps.h>
 #endif // USE(WEBAUDIO_IPP)
 
-#include <wtf/PassOwnPtr.h>
-#include <wtf/Platform.h>
-#include <wtf/Threading.h>
+#include "../../WTF/wtf/PassOwnPtr.h"
+#include "../../WTF/wtf/Platform.h"
+#include "../../WTF/wtf/Threading.h"
 
 namespace WebCore {
 

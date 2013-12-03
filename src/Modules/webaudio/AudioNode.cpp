@@ -33,8 +33,8 @@
 #include "AudioNodeOutput.h"
 #include "AudioParam.h"
 #include "ExceptionCode.h"
-#include <wtf/Atomics.h>
-#include <wtf/MainThread.h>
+#include "../../WTF/wtf/Atomics.h"
+#include "../../WTF/wtf/MainThread.h"
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>

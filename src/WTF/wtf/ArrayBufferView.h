@@ -26,12 +26,11 @@
 #ifndef ArrayBufferView_h
 #define ArrayBufferView_h
 
-#include <wtf/ArrayBuffer.h>
-
+#include "ArrayBuffer.h"
+#include "ThreadSafeRefCounted.h"
+#include "RefPtr.h"
 #include <algorithm>
 #include <limits.h>
-#include <wtf/ThreadSafeRefCounted.h>
-#include <wtf/RefPtr.h>
 
 namespace WTF {
 

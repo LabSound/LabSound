@@ -28,7 +28,7 @@
 #ifndef Locker_h
 #define Locker_h
 
-#include <wtf/Noncopyable.h>
+#include "Noncopyable.h"
 
 namespace WTF {
 

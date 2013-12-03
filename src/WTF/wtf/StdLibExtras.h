@@ -28,8 +28,8 @@
 #define WTF_StdLibExtras_h
 
 #include <memory>
-#include <wtf/Assertions.h>
-#include <wtf/CheckedArithmetic.h>
+#include "Assertions.h"
+#include "CheckedArithmetic.h"
 
 // Use these to declare and define a static local variable (static T;) so that
 //  it is leaked so that its destructors are not called at exit. Using this

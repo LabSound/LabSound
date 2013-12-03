@@ -27,9 +27,9 @@
 #ifndef IntegralTypedArrayBase_h
 #define IntegralTypedArrayBase_h
 
-#include <wtf/TypedArrayBase.h>
+#include "TypedArrayBase.h"
+#include "MathExtras.h"
 #include <limits>
-#include <wtf/MathExtras.h>
 
 // Base class for all WebGL<T>Array types holding integral
 // (non-floating-point) values.

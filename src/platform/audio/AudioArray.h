@@ -29,9 +29,9 @@
 #ifndef AudioArray_h
 #define AudioArray_h
 
-#include <string.h>
-#include <wtf/CheckedArithmetic.h>
+#include "../../WTF/wtf/CheckedArithmetic.h"
 #include <stdlib.h>
+#include <string.h>
 
 namespace WebCore {
 

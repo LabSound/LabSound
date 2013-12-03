@@ -59,11 +59,11 @@
 #ifndef ThreadSafeRefCounted_h
 #define ThreadSafeRefCounted_h
 
-#include <wtf/Platform.h>
+#include "Platform.h"
 
-#include <wtf/Atomics.h>
-#include <wtf/DynamicAnnotations.h>
-#include <wtf/ThreadingPrimitives.h>
+#include "Atomics.h"
+#include "DynamicAnnotations.h"
+#include "ThreadingPrimitives.h"
 
 namespace WTF {
 

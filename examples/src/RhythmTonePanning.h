@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "AudioContext.h"
+#include "LabSound/AudioContext.h"
 
 void rhythmTonePanning(WTF::RefPtr<WebCore::AudioContext> context, float seconds);
 

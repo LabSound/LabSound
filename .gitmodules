@@ -4,3 +4,6 @@
 [submodule "examples/LabMidi"]
 	path = examples/LabMidi
 	url = git://github.com/meshula/LabMidi.git
+[submodule "examples/TonicAudio"]
+	path = examples/TonicAudio
+	url = https://github.com/TonicAudio/Tonic.git

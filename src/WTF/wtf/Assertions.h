@@ -36,8 +36,8 @@
  Defining any of the symbols explicitly prevents this from having any effect.
  */
 
-#include <wtf/Platform.h>
-#include <wtf/ExportMacros.h> // LabSound added this include
+#include "Platform.h"
+#include "ExportMacros.h" // LabSound added this include
 
 #include <stddef.h>
 

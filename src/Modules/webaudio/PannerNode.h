@@ -25,15 +25,15 @@
 #ifndef PannerNode_h
 #define PannerNode_h
 
-#include "AudioBus.h"
 #include "AudioGain.h"
 #include "AudioListener.h"
 #include "AudioNode.h"
-#include "Cone.h"
-#include "Distance.h"
-#include "FloatPoint3D.h"
-#include "Panner.h"
-#include <wtf/RefPtr.h>
+#include "../../platform/audio/AudioBus.h"
+#include "../../platform/audio/Cone.h"
+#include "../../platform/audio/Distance.h"
+#include "../../platform/graphics/FloatPoint3D.h"
+#include "../../platform/audio/Panner.h"
+#include "../../WTF/wtf/RefPtr.h"
 
 namespace WebCore {
 

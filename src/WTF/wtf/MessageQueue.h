@@ -31,10 +31,10 @@
 #define MessageQueue_h
 
 #include <limits>
-#include <wtf/Assertions.h>
 #include <deque>
-#include <wtf/Noncopyable.h>
-#include <wtf/Threading.h>
+#include "Assertions.h"
+#include "Noncopyable.h"
+#include "Threading.h"
 
 namespace WTF {
 

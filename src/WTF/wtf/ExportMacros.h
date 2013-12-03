@@ -30,7 +30,7 @@
 #ifndef ExportMacros_h
 #define ExportMacros_h
 
-#include <wtf/Platform.h>
+#include "Platform.h"
 
 // Different platforms have different defaults for symbol visibility. Usually
 // the compiler and the linker just take care of it. However for references to

@@ -25,7 +25,7 @@
 #ifndef DenormalDisabler_h
 #define DenormalDisabler_h
 
-#include <wtf/MathExtras.h>
+#include "../../WTF/wtf/MathExtras.h"
 
 namespace WebCore {
 

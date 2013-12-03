@@ -44,6 +44,9 @@
       location = "group:ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:TonicAudioApp/TonicAudioApp.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:../../src/libpd/libpd.xcodeproj">
    </FileRef>
 </Workspace>

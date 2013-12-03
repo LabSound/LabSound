@@ -25,8 +25,8 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include <wtf/PassOwnPtr.h>
-#include <wtf/RefPtr.h>
+#include "../../WTF/wtf/PassOwnPtr.h"
+#include "../../WTF/wtf/RefPtr.h"
 #include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 0

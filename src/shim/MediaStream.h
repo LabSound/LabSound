@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <wtf/ThreadSafeRefCounted.h>
+#include "../WTF/wtf/ThreadSafeRefCounted.h"
 
 class MediaStream : public ThreadSafeRefCounted<MediaStream>
 {

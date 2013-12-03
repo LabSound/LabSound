@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "AudioBasicProcessorNode.h"
-#include "AudioParam.h"
+#include "../Modules/webaudio/AudioBasicProcessorNode.h"
+#include "../Modules/webaudio/AudioParam.h"
 
 namespace LabSound {
 

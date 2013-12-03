@@ -28,7 +28,7 @@
 #include "AudioBus.h"
 #include "AudioResamplerKernel.h"
 #include "AudioSourceProvider.h"
-#include <wtf/RefPtr.h>
+#include "../../WTF/wtf/RefPtr.h"
 #include <vector>
 
 namespace WebCore {

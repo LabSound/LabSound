@@ -33,8 +33,8 @@
 
 #include "AudioBus.h"
 #include "AudioProcessor.h"
-#include <wtf/RefPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/PassOwnPtr.h"
 #include <vector>
 
 namespace WebCore {

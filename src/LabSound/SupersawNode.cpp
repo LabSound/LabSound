@@ -6,14 +6,14 @@
 //
 //  reference http://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
 
-#include "LabSound.h"
 #include "SupersawNode.h"
+
+#include "../Modules/webaudio/OscillatorNode.h"
+
+#include "LabSound.h"
 #include "ADSRNode.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
-#include "LabSound.h"
-#include "OscillatorNode.h"
-#include <vector>
 
 using namespace WebCore;
 

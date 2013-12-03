@@ -27,7 +27,7 @@
 
 #include "AudioGain.h"
 #include "AudioNode.h"
-#include <wtf/Threading.h>
+#include "../../WTF/wtf/Threading.h"
 
 namespace WebCore {
 

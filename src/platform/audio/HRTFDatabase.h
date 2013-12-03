@@ -30,8 +30,8 @@
 #define HRTFDatabase_h
 
 #include "HRTFElevation.h"
-#include <wtf/Noncopyable.h>
-#include <wtf/RefPtr.h>
+#include "../../WTF/wtf/Noncopyable.h"
+#include "../../WTF/wtf/RefPtr.h"
 #include <vector>
 
 namespace WebCore {

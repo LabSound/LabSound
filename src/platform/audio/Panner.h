@@ -29,7 +29,7 @@
 #ifndef Panner_h
 #define Panner_h
 
-#include <wtf/PassOwnPtr.h>
+#include "../../WTF/wtf/PassOwnPtr.h"
 
 namespace WebCore {
 

@@ -30,10 +30,9 @@
 #define HRTFElevation_h
 
 #include "HRTFKernel.h"
-#include <wtf/Noncopyable.h>
-#include <wtf/RefPtr.h>
-#include <wtf/PassOwnPtr.h>
-#include <wtf/RefPtr.h>
+#include "../../WTF/wtf/Noncopyable.h"
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/PassOwnPtr.h"
 #include <string>
 
 namespace WebCore {

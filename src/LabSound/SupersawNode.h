@@ -7,8 +7,9 @@
 #ifndef __LabSound__SupersawNode__
 #define __LabSound__SupersawNode__
 
-#include "AudioNode.h"
-#include "AudioParam.h"
+#include "../Modules/webaudio/AudioContext.h"
+#include "../Modules/webaudio/AudioNode.h"
+#include "../Modules/webaudio/AudioParam.h"
 
 namespace LabSound {
     using namespace WebCore;

@@ -59,15 +59,15 @@
 #ifndef Threading_h
 #define Threading_h
 
-#include <wtf/Platform.h>
+#include "Platform.h"
+#include "Assertions.h"
+#include "Atomics.h"
+#include "Locker.h"
+#include "Noncopyable.h"
+#include "ThreadSafeRefCounted.h"
+#include "ThreadingPrimitives.h"
 
 #include <stdint.h>
-#include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
-#include <wtf/Locker.h>
-#include <wtf/Noncopyable.h>
-#include <wtf/ThreadSafeRefCounted.h>
-#include <wtf/ThreadingPrimitives.h>
 
 // For portability, we do not use thread-safe statics natively supported by some compilers (e.g. gcc).
 #define AtomicallyInitializedStatic(T, name) \

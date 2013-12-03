@@ -1,17 +1,17 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef LabSound_ADSRNode_h
-#define LabSound_ADSRNode_h
+#ifndef LabSound_ADSRNode_h_impl
+#define LabSound_ADSRNode_h_impl
 
-#include "AudioContext.h"
-#include "AudioBus.h"
-#include "AudioParam.h"
-#include "AudioScheduledSourceNode.h"
-#include "AudioBasicProcessorNode.h"
-#include "AudioBasicInspectorNode.h"
-#include <wtf/RefPtr.h>
-#include "GainNode.h"
+#include "../Modules/webaudio/AudioContext.h"
+#include "../platform/audio/AudioBus.h"
+#include "../Modules/webaudio/AudioParam.h"
+#include "../Modules/webaudio/AudioScheduledSourceNode.h"
+#include "../Modules/webaudio/AudioBasicProcessorNode.h"
+#include "../Modules/webaudio/AudioBasicInspectorNode.h"
+#include "../WTF/wtf/RefPtr.h"
+#include "../Modules/webaudio/GainNode.h"
 
 namespace LabSound {
     using namespace WebCore;

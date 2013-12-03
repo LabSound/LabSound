@@ -31,11 +31,11 @@
 #ifndef ThreadingPrimitives_h
 #define ThreadingPrimitives_h
 
-#include <wtf/Platform.h>
+#include "Platform.h"
 
-#include <wtf/Assertions.h>
-#include <wtf/Locker.h>
-#include <wtf/Noncopyable.h>
+#include "Assertions.h"
+#include "Locker.h"
+#include "Noncopyable.h"
 
 #if OS(WINDOWS)
 #include <windows.h>

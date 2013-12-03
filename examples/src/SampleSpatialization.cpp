@@ -1,27 +1,11 @@
 
-
-
-// webaudio specific headers
-#include "AudioBufferSourceNode.h"
-#include "AudioContext.h"
-#include "BiquadFilterNode.h"
-#include "ConvolverNode.h"
-#include "ExceptionCode.h"
-#include "GainNode.h"
-#include "MediaStream.h"
-#include "MediaStreamAudioSourceNode.h"
-#include "OscillatorNode.h"
-#include "PannerNode.h"
-
-// LabSound
-#include "RecorderNode.h"
-#include "SoundBuffer.h"
-
+#include "LabSound/LabSound.h"
+#include "LabSound/AudioContext.h"
+#include "LabSound/SoundBuffer.h"
+#include "LabSound/PannerNode.h"
 #include <iostream>
 
-using namespace WebCore;
-using LabSound::RecorderNode;
-using LabSound::SoundBuffer;
+using namespace LabSound;
 
 void sampleSpatialization(RefPtr<AudioContext> context, float seconds)
 {

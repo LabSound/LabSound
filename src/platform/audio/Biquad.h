@@ -31,8 +31,8 @@
 
 #include "AudioArray.h"
 #include <sys/types.h>
-#include <wtf/Complex.h>
-#include <wtf/Platform.h>
+#include "../../WTF/wtf/Complex.h"
+#include "../../WTF/wtf/Platform.h"
  
 #if USE(WEBAUDIO_IPP)
 #include <ipps.h>

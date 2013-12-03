@@ -2,6 +2,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "LabSound.h"
+#include "PannerNode.h"
 #include "SpatializationNode.h"
 #include <wtf/MathExtras.h>
 

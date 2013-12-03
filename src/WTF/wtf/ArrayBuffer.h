@@ -26,8 +26,8 @@
 #ifndef ArrayBuffer_h
 #define ArrayBuffer_h
 
-#include <wtf/ThreadSafeRefCounted.h>
-#include <wtf/RefPtr.h>
+#include "ThreadSafeRefCounted.h"
+#include "RefPtr.h"
 #include <vector>
 #include <stdlib.h>
 

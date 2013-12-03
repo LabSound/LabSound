@@ -31,7 +31,7 @@
 #ifndef AudioDestinationConsumer_h
 #define AudioDestinationConsumer_h
 
-#include <wtf/ThreadSafeRefCounted.h>
+#include "../../WTF/wtf/ThreadSafeRefCounted.h"
 
 namespace WebCore {
 

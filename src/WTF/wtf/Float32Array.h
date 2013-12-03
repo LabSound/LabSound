@@ -27,8 +27,8 @@
 #ifndef Float32Array_h
 #define Float32Array_h
 
-#include <wtf/TypedArrayBase.h>
-#include <wtf/MathExtras.h>
+#include "TypedArrayBase.h"
+#include "MathExtras.h"
 
 namespace WTF {
 

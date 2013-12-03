@@ -25,16 +25,16 @@
 #ifndef AudioContext_h
 #define AudioContext_h
 
-#include "ActiveDOMObject.h"
 #include "AsyncAudioDecoder.h"
-#include "AudioBus.h"
 #include "AudioDestinationNode.h"
-#include "HRTFDatabaseLoader.h"
-#include "MediaStream.h" // added for LabSound
-#include <wtf/MainThread.h>
-#include <wtf/RefPtr.h>
-#include <wtf/ThreadSafeRefCounted.h>
-#include <wtf/Threading.h>
+#include "../../shim/ActiveDOMObject.h"
+#include "../../shim/MediaStream.h"
+#include "../../platform/audio/AudioBus.h"
+#include "../../platform/audio/HRTFDatabaseLoader.h"
+#include "../../WTF/wtf/MainThread.h"
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/ThreadSafeRefCounted.h"
+#include "../../WTF/wtf/Threading.h"
 #include <vector>
 #include <set>
 

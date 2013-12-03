@@ -28,9 +28,9 @@
 #include "AudioDSPKernel.h"
 #include "AudioDSPKernelProcessor.h"
 #include "AudioNode.h"
-#include <wtf/Float32Array.h>
-#include <wtf/RefPtr.h>
-#include <wtf/Threading.h>
+#include "../../WTF/wtf/Float32Array.h"
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/Threading.h"
 
 namespace WebCore {
 

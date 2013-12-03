@@ -31,7 +31,7 @@
 #ifndef ThreadIdentifierDataPthreads_h
 #define ThreadIdentifierDataPthreads_h
 
-#include <wtf/Threading.h>
+#include "Threading.h"
 
 namespace WTF {
 

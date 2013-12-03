@@ -26,14 +26,14 @@
 #define AudioBufferSourceNode_h
 
 #include "AudioBuffer.h"
-#include "AudioBus.h"
+#include "../../platform/audio/AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
-#include "ExceptionCode.h"
+#include "../../shim/ExceptionCode.h"
 #include "PannerNode.h"
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/Threading.h"
 #include <memory>
-#include <wtf/RefPtr.h>
-#include <wtf/Threading.h>
 
 namespace WebCore {
 

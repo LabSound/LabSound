@@ -29,7 +29,7 @@
 #define WTF_Platform_h
 
 /* Include compiler specific macros */
-#include <wtf/Compiler.h>
+#include "Compiler.h"
 
 /* ==== PLATFORM handles OS, operating environment, graphics API, and
    CPU. This macro will be phased out in favor of platform adaptation
@@ -1121,7 +1121,7 @@
 #endif
 
 #if ENABLE(GLIB_SUPPORT)
-#include <wtf/gobject/GTypedefs.h>
+#include "gobject/GTypedefs.h"
 #endif
 
 /* FIXME: This define won't be needed once #27551 is fully landed. However, 

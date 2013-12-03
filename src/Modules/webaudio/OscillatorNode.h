@@ -25,11 +25,11 @@
 #ifndef OscillatorNode_h
 #define OscillatorNode_h
 
-#include "AudioBus.h"
+#include "../../platform/audio/AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
-#include <wtf/RefPtr.h>
-#include <wtf/Threading.h>
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/Threading.h"
 
 namespace WebCore {
 

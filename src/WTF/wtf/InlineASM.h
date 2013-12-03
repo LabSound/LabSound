@@ -26,7 +26,7 @@
 #ifndef InlineASM_h
 #define InlineASM_h
 
-#include <wtf/Platform.h>
+#include "Platform.h"
 
 /* asm directive helpers */ 
 

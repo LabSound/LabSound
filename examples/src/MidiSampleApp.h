@@ -31,12 +31,12 @@
 
 
 #pragma once
-#include "AudioContext.h"
+#include "LabSound/AudioContext.h"
 
 class MidiSampleApp
 {
 public:
-    MidiSampleApp(WebCore::AudioContext*);
+    MidiSampleApp(LabSound::AudioContext*);
     ~MidiSampleApp();
 
 	void setup();

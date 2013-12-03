@@ -38,13 +38,13 @@
 #include "ConcurrentQueue.h"
 #include "OptionParser.h"
 
-#include "LabSound.h"
+#include "LabSound/LabSound.h"
 
-#include "ADSRNode.h"
-#include "ClipNode.h"
-#include "SfxrNode.h"
-#include "OscillatorNode.h"
-#include "SupersawNode.h"
+#include "LabSound/ADSRNode.h"
+#include "LabSound/ClipNode.h"
+#include "LabSound/SfxrNode.h"
+#include "LabSound/OscillatorNode.h"
+#include "LabSound/SupersawNode.h"
 
 #include "LabMidi/LabMidiCommand.h"
 #include "LabMidi/LabMidiIn.h"

@@ -30,8 +30,8 @@
 #define AudioFileReader_h
 
 #include <stdlib.h>
-#include <wtf/RefPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include "../../WTF/wtf/RefPtr.h"
+#include "../../WTF/wtf/PassOwnPtr.h"
 
 namespace WebCore {
 

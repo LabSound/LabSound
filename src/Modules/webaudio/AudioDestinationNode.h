@@ -26,10 +26,10 @@
 #define AudioDestinationNode_h
 
 #include "AudioBuffer.h"
-#include "AudioBus.h"
-#include "AudioIOCallback.h"
 #include "AudioNode.h"
-#include "AudioSourceProvider.h"
+#include "../../platform/audio/AudioBus.h"
+#include "../../platform/audio/AudioIOCallback.h"
+#include "../../platform/audio/AudioSourceProvider.h"
 
 namespace WebCore {
 
