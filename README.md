@@ -1,7 +1,8 @@
 LabSound
 ========
 
-LabSound is the WebAudio implementation factored out of WebKit, with reimplementations of many copyleft / GPL files. 
+LabSound is the WebAudio implementation factored out of WebKit. All copyleft sources have been removed
+so that the entire library can be released under MIT/BSD style licenses.
 
 The motivation behind LabSound is that the [WebAudio specification](https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html) is a well-designed API for an audio engine. Coupled with a well executed implementation provided by WebKit contributors, LabSound is a powerful and extensible audio engine for C++. 
 
@@ -9,7 +10,18 @@ LabSound’s internals were disconnected from Javascript and the browser infrast
 
 One of LabSound’s goals is to provide higher-level DSP and signal generation nodes for use with the engine. To this end, integrations with PureData (PD), SFXR, and the STK are either complete or in progress.
 
-The keyword LabSound marks any places the code was modified from the original WebKit source. The engine has been slowly integrating newer C++11 features while trying to remain as compiler-portable as possible. 
+The keyword LabSound marks any places the code was modified from the original WebKit source. The engine has been slowly integrating newer C++11 features while trying to remain as compiler-portable as possible. All exposed interfaces have been renamed into the LabSound namespace. 
+
+Including LabSound in your project
+----------------------------------
+
+It is only necessary to have the includes directory in your path. Include the LabSound library. On OSX, you will need to also include
+the Cocoa, Accelerate, CoreAudio, AudioUnit, and AudioToolbox frameworks.
+
+Building on OSX using supplied xcode workspace
+----------------------------------------------
+
+Open and build in the usual way.
 
 Building on OSX using premake
 -----------------------------
@@ -24,13 +36,6 @@ Typing
 mostly works, but it doesn't copy the audio resources into the app bundle. At the moment,
 you'll need to build the code once, then manually open the App and bundle, and copy
 the audio in yourself.
-
-
-Building on OSX using supplied xcode workspace
-----------------------------------------------
-
-Open and build in the usual way.
-
 
 Copying the HRTF database
 -------------------------
@@ -63,8 +68,8 @@ Usage
 After factoring free of WebKit, the audio engine is easy to use. Here's a
 sample that plays a sine tone for a few seconds.
 
-    #include "LabSound.h"
-    #include "OscillatorNode.h"
+    #include "LabSound/LabSound.h"
+    #include "LabSound/OscillatorNode.h"
     
     #include <unistd.h> // for usleep
     
@@ -151,7 +156,7 @@ Playing a SoundBuffer Multiple Times
 Here's an example like the Playing Sounds With Rhythm sample from HTML5 Rocks:
 <http://www.html5rocks.com/en/tutorials/webaudio/intro/#toc-abstract>
     
-    using namespace WebCore;
+    using namespace LabSound;
     
     class SoundBuffer
     {
@@ -479,25 +484,6 @@ rest of the Chrome codebase.
 Passing the output of the live audio into the reverb node doesn't sound right, more work
 is necessary.
 
-Headers
--------
-Headers required by various portions of this tutorial are:
-
-    // For starting the WTF library
-    #include <wtf/ExportMacros.h>
-    #include "MainThread.h"
-    
-    // webaudio specific headers
-    #include "AudioBufferSourceNode.h"
-    #include "AudioContext.h"
-    #include "BiquadFilterNode.h"
-    #include "ExceptionCode.h"
-    #include "GainNode.h"
-    #include "MediaStream.h"
-    #include "MediaStreamAudioSourceNode.h"
-    #include "OscillatorNode.h"
-    #include "PannerNode.h"
-
 License
 -------
 Any bits not part of the WebKit code (such as the files in the shim) directory can
@@ -506,4 +492,3 @@ be assumed to be under a BSD 3-clause license. <http://opensource.org/licenses/B
 The license on the WebKit files is the Google/Apple BSD 2 clause modified license on
 most of the Webkit sources. Note that the WTF library in particular is intended to be
 used outside of WebKit.  cf <http://lists.macosforge.org/pipermail/webkit-dev/2007-November/002729.html>
-
