@@ -93,7 +93,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -234,6 +234,8 @@
     <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
     <ClInclude Include="..\src\LabSound\SupersawNode.h" />
     <ClInclude Include="..\src\LabSound\WindowFunctions.h" />
+    <ClInclude Include="..\src\rtaudio\RtAudio.h" />
+    <ClInclude Include="..\src\rtaudio\RtError.h" />
     <ClInclude Include="..\src\shim\ActiveDOMObject.h" />
     <ClInclude Include="..\src\shim\ExceptionCode.h" />
     <ClInclude Include="..\src\shim\MediaStream.h" />
@@ -329,7 +331,6 @@
     <ClInclude Include="..\src\WTF\wtf\Float32Array.h" />
     <ClInclude Include="..\src\WTF\wtf\MainThread.h" />
     <ClInclude Include="..\src\WTF\wtf\Threading.h" />
-    <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h" />
     <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h" />
     <ClInclude Include="..\src\WTF\wtf\UnusedParam.h" />
     <ClInclude Include="..\src\platform\audio\win\AudioDestinationWin.h" />
@@ -484,6 +485,7 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\HRTFPanner.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ipp\FFTFrameIPP.cpp" />
     <ClCompile Include="..\src\platform\audio\MultiChannelResampler.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\Panner.cpp">
@@ -506,6 +508,7 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\Logging.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\rtaudio\RtAudio.cpp" />
     <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
@@ -520,16 +523,16 @@
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioDestinationWin.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp" />
+    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp" />
+    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp" />
+    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\Modules\webaudio\AnalyserNode.idl" />
