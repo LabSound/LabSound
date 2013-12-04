@@ -59,7 +59,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E251D9A7184CE3DE00F7B7BC = {
+		E2301558184F0A2500FEC991 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				E251D9F8184D7C1F00F7B7BC /* AudioToolbox.framework */,
@@ -68,7 +68,15 @@
 				E251D9F2184D753800F7B7BC /* libLabSound.a */,
 				E251D9F0184D752400F7B7BC /* AudioUnit.framework */,
 				E251D9EE184D751400F7B7BC /* Accelerate.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E251D9A7184CE3DE00F7B7BC = {
+			isa = PBXGroup;
+			children = (
 				E251D9B2184CE3DE00F7B7BC /* TonicAudioApp */,
+				E2301558184F0A2500FEC991 /* Frameworks */,
 				E251D9B1184CE3DE00F7B7BC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -269,6 +277,7 @@
 				E251D9BB184CE3DE00F7B7BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

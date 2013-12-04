@@ -7,7 +7,9 @@
 #include "LabSound/AudioProcessor.h"
 #include "LabSound/GainNode.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace LabSound;
 
@@ -140,11 +142,12 @@ int main(int, char**)
 
     std::cout << "Starting tonic" << std::endl;
 
-    float seconds = 10.0f;
-    while (seconds > 0) {
-        seconds -= 0.01f;
-        usleep(10000);
+    // update gain at 10ms intervals
+    const float seconds = 10.0f;
+    for (float i = 0; i < seconds; i += 0.01f) {
+		std::this_thread::sleep_for(std::chrono::microseconds(10000));
     }
+
     std::cout << "Ending tonic" << std::endl;
     
     return 0;
