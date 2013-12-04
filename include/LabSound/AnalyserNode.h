@@ -12,7 +12,7 @@
 #include "../../src/Modules/webaudio/AnalyserNode.h"
 
 namespace LabSound {
-    using WebCore::AnalyserNode.h;
+    using WebCore::AnalyserNode;
 }
 
 #endif

@@ -25,7 +25,7 @@
 #ifndef AudioNodeOutput_h
 #define AudioNodeOutput_h
 
-#include "../platform/audio/AudioBus.h"
+#include "../../platform/audio/AudioBus.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
 #include <set>

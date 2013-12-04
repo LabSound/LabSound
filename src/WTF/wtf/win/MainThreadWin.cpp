@@ -40,7 +40,7 @@ namespace WTF {
 
 static HWND threadingWindowHandle;
 static UINT threadingFiredMessage;
-const LPCWSTR kThreadingWindowClassName = L"ThreadingWindowClass";
+const LPCSTR kThreadingWindowClassName = "ThreadingWindowClass";
 
 LRESULT CALLBACK ThreadingWindowWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -76,7 +76,7 @@ void initializeMainThreadPlatform()
 
     threadingWindowHandle = CreateWindow(kThreadingWindowClassName, 0, 0,
        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, hWndParent, 0, 0, 0);
-    threadingFiredMessage = RegisterWindowMessage(L"com.apple.WebKit.MainThreadFired");
+    threadingFiredMessage = RegisterWindowMessage("com.apple.WebKit.MainThreadFired");
 
     initializeCurrentThreadInternal("Main Thread");
 }

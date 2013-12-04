@@ -93,28 +93,44 @@ PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono
     int channelCount = FileInfos.channels;
     int fsampleRate = FileInfos.samplerate;
     int numSamples = static_cast<std::size_t>(FileInfos.frames) * channelCount;
+	int samplesPerChannel = numSamples / channelCount; 
 
-	float *audioData = new float[numSamples]; 
+	float *frameData = new float[FileInfos.channels]; 
+
+	float *dataLeft = new float[samplesPerChannel]; 
+	float *dataRight = new float[samplesPerChannel]; 
 
 	// Unless the end of the file was reached during the read, the return value should equal the number of items requested. 
 	// So: Num_items == Num
-	int success = sf_read_float(myFile, audioData, numSamples);
+	// int success = sf_read_float(myFile, audioData, numSamples);
+
+	// Read Frames & Deinterleave if stereo
+	for(int count = 0; count < FileInfos.frames; count++) {
+
+		sf_readf_float(myFile,frameData,(sf_count_t)1);
+
+		if (FileInfos.channels == 2) {
+			dataLeft[count] = frameData[0]; 
+			dataRight[count] = frameData[1]; 
+		} else {
+			dataLeft[count] = frameData[0]; 
+			dataRight[count] = frameData[0]; 
+		}
+
+	}
 
 	// Assume stereo...
-	OwnPtr<AudioBus> audioBus = adoptPtr(new AudioBus(2, numSamples));
+	OwnPtr<AudioBus> audioBus = adoptPtr(new AudioBus(2, samplesPerChannel));
     audioBus->setSampleRate(sampleRate); // save for later
 
-	// Mono to Stereo
-	if (true) {
-		memcpy(audioBus->channel(0)->mutableData(), (float*) audioData, sizeof(float) * numSamples); // Left
-		memcpy(audioBus->channel(1)->mutableData(), (float*) audioData, sizeof(float) * numSamples); // Right 
-	} else {
-		printf("Stereo not supported \n"); 
-	}
+	memcpy(audioBus->channel(0)->mutableData(), (float*) dataLeft, sizeof(float) * samplesPerChannel);
+	memcpy(audioBus->channel(1)->mutableData(), (float*) dataRight, sizeof(float) * samplesPerChannel);
 
 	sf_close(myFile);
 
-	delete[] audioData;
+	delete[] dataLeft;
+	delete[] dataRight;
+	delete[] frameData;
 
 	// Cleanup
     return audioBus.release();

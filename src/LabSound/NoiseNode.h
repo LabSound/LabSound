@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include <AudioScheduledSourceNode.h>
+#include "../Modules/webaudio/AudioScheduledSourceNode.h"
+#include "../Modules/webaudio/AudioNode.h"
+#include "../Modules/webaudio/AudioParam.h"
 
 namespace LabSound {
 

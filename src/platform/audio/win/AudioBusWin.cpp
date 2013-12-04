@@ -35,6 +35,7 @@
 #include "ExceptionCode.h"
 #include "SoundBuffer.h"
 #include <direct.h>
+#include <iostream>
 
 namespace WebCore {
 
@@ -44,11 +45,11 @@ namespace WebCore {
 
 		_getcwd(cwd, MAX_PATH); 
 
-		std::string pathToFile( std::string(cwd) + "\\resources\\" + name + ".wav");
+		std::string pathToFile( std::string(cwd) + std::string("\\resources\\") + std::string(name) + std::string(".wav"));
 
 		FILE* f = fopen(pathToFile.c_str(), "rb");
 
-		// printf("Resource: %s \n", pathToFile.utf8().data()); 
+		std::cout << pathToFile << std::endl; 
 
         if (f) {
 

@@ -25,7 +25,7 @@
 #ifndef RealtimeAnalyser_h
 #define RealtimeAnalyser_h
 
-#include "AudioArray.h"
+#include "../../platform/audio/AudioArray.h"
 #include "../../WTF/wtf/Noncopyable.h"
 #include "../../WTF/wtf/RefPtr.h"
 

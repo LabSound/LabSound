@@ -9,7 +9,7 @@
 #ifndef LabSound_DelayNode_h
 #define LabSound_DelayNode_h
 
-#include "../../src/Modules/webaudio/DelayNode"
+#include "../../src/Modules/webaudio/DelayNode.h"
 
 namespace LabSound {
     using WebCore::DelayNode;
