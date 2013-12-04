@@ -4,6 +4,8 @@
 #include "LabSound/GainNode.h"
 #include "LabSound/OscillatorNode.h"
 #include "LabSound/SoundBuffer.h"
+#include <chrono>
+#include <thread>
 
 using namespace LabSound;
 
@@ -56,6 +58,6 @@ void rhythmTonePanning(RefPtr<AudioContext> context, float seconds)
         float gain2 = cosf(t2 * 0.5f * M_PI);
         oscGain->gain()->setValue(gain1);
         drumGain->gain()->setValue(gain2);
-        usleep(10000);
+		std::this_thread::sleep_for(std::chrono::microseconds(10000));
     }
 }
