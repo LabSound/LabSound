@@ -31,6 +31,15 @@
     <Filter Include="src\platform\audio\win">
       <UniqueIdentifier>{5710202E-F1B6-3742-8911-192EDBD63B6D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\rtaudio">
+      <UniqueIdentifier>{cfa7c5d9-f96f-4c90-b6e5-5cacb1339831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\platform\fft">
+      <UniqueIdentifier>{cc7f7b81-61a4-41e7-b2fd-bfd08dd6205a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\WTF\wtf\win">
+      <UniqueIdentifier>{6400bf36-182a-4093-aba4-161868025508}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\Modules\webaudio\AnalyserNode.idl">
@@ -437,9 +446,6 @@
     <ClInclude Include="..\src\WTF\wtf\Threading.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.h">
-      <Filter>src\WTF\wtf</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\ThreadingPrimitives.h">
       <Filter>src\WTF\wtf</Filter>
     </ClInclude>
@@ -454,6 +460,12 @@
     </ClInclude>
     <ClInclude Include="..\src\LabSound\WindowFunctions.h">
       <Filter>src\LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rtaudio\RtAudio.h">
+      <Filter>src\rtaudio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rtaudio\RtError.h">
+      <Filter>src\rtaudio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -733,12 +745,6 @@
     <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
       <Filter>src\WTF\wtf</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadIdentifierDataPthreads.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingPthreads.cpp">
-      <Filter>src\WTF\wtf</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
       <Filter>src\platform\audio\win</Filter>
     </ClCompile>
@@ -747,6 +753,24 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
       <Filter>src\platform\audio\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\rtaudio\RtAudio.cpp">
+      <Filter>src\rtaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\ipp\FFTFrameIPP.cpp">
+      <Filter>src\platform\fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
+      <Filter>src\WTF\wtf\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp">
+      <Filter>src\WTF\wtf\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp">
+      <Filter>src\WTF\wtf\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp">
+      <Filter>src\WTF\wtf\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

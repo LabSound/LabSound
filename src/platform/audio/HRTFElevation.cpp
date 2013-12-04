@@ -193,6 +193,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
 
     // Check number of channels and length.  For now these are fixed and known.
     bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == 2;
+
     ASSERT(isBusGood);
     if (!isBusGood)
         return false;

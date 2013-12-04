@@ -85,20 +85,18 @@
 
 #include "config.h"
 #include "Threading.h"
-#include "DateMath.h"
-#include "dtoa.h"
-#include "dtoa/cached-powers.h"
 
 #include "MainThread.h"
 #include "ThreadFunctionInvocation.h"
 #include <windows.h>
 #include <wtf/CurrentTime.h>
-#include <wtf/HashMap.h>
 #include <wtf/MathExtras.h>
-#include <wtf/OwnPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include <map>
+
+#include "../../WTF/wtf/PassOwnPtr.h"
+#include "../../WTF/wtf/RefPtr.h"
+
 #include <wtf/RandomNumberSeed.h>
-#include <wtf/WTFThreadData.h>
 
 #if !USE(PTHREADS) && OS(WINDOWS)
 #include "ThreadSpecific.h"
@@ -169,42 +167,38 @@ void initializeThreading()
     if (atomicallyInitializedStaticMutex)
         return;
 
-    WTF::double_conversion::initialize();
-    // StringImpl::empty() does not construct its static string in a threadsafe fashion,
-    // so ensure it has been initialized from here.
-    StringImpl::empty();
     atomicallyInitializedStaticMutex = new Mutex;
     threadMapMutex();
     initializeRandomNumberGenerator();
-    wtfThreadData();
-    s_dtoaP5Mutex = new Mutex;
-    initializeDates();
+
+    // wtfThreadData();
+
 }
 
-static HashMap<DWORD, HANDLE>& threadMap()
+static std::map<DWORD, HANDLE>& threadMap()
 {
-    static HashMap<DWORD, HANDLE> map;
+    static std::map<DWORD, HANDLE> map;
     return map;
 }
 
 static void storeThreadHandleByIdentifier(DWORD threadID, HANDLE threadHandle)
 {
     MutexLocker locker(threadMapMutex());
-    ASSERT(!threadMap().contains(threadID));
-    threadMap().add(threadID, threadHandle);
+    ASSERT(!threadMap().count(threadID));
+    threadMap().insert(std::make_pair(threadID, threadHandle));
 }
 
 static HANDLE threadHandleForIdentifier(ThreadIdentifier id)
 {
     MutexLocker locker(threadMapMutex());
-    return threadMap().get(id);
+    return threadMap().find(id)->second;
 }
 
 static void clearThreadHandleForIdentifier(ThreadIdentifier id)
 {
     MutexLocker locker(threadMapMutex());
-    ASSERT(threadMap().contains(id));
-    threadMap().remove(id);
+    ASSERT(threadMap().count(id));
+    threadMap().erase(id);
 }
 
 static unsigned __stdcall wtfThreadEntryPoint(void* param)

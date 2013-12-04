@@ -42,7 +42,13 @@ namespace WebCore {
 
 // DirectSound needs a larger buffer than 128. This number also needs 
 // to be changed in AudioNode.h where ProcessingSizeInFrames = 1024;
-const int kBufferSize = 1024;
+
+#if OS(WINDOWS) {
+	const int kBufferSize = 1024;
+#elif
+	const int kBufferSize = 128;
+#endif
+
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
     

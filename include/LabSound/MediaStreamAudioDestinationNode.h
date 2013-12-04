@@ -9,7 +9,7 @@
 #ifndef LabSound_MediaStreamAudioDestinationNode_h
 #define LabSound_MediaStreamAudioDestinationNode_h
 
-#include "../../src/Modules/webaudio/MediaStreamAudioDestinationNode"
+#include "../../src/Modules/webaudio/MediaStreamAudioDestinationNode.h"
 
 namespace LabSound {
     using WebCore::MediaStreamAudioDestinationNode;

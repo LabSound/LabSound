@@ -50,7 +50,16 @@ typedef int ExceptionCode;
 
 class AudioNode {
 public:
-    enum { ProcessingSizeInFrames = 128 };
+
+    enum { 
+
+		#if OS(WINDOWS) {
+			ProcessingSizeInFrames = 1024 
+		#elif
+			ProcessingSizeInFrames = 128 
+		#endif
+		
+	};
 
     AudioNode(AudioContext*, float sampleRate);
     virtual ~AudioNode();

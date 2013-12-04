@@ -24,9 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#include "config.h"
-#include "OwnPtr.h"
+#include "../../WTF/wtf/PassOwnPtr.h"
 
+#include "config.h"
 #include <windows.h>
 
 namespace WTF {

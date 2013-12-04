@@ -9,6 +9,6 @@
 #ifndef LabSound_NoiseNode_h
 #define LabSound_NoiseNode_h
 
-#include "../../src/LabSound/NoiseNode"
+#include "../../src/LabSound/NoiseNode.h"
 
 #endif

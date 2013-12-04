@@ -25,8 +25,8 @@
 #ifndef DelayProcessor_h
 #define DelayProcessor_h
 
-#include "AudioDSPKernelProcessor.h"
-#include "AudioParam.h"
+#include "../../platform/audio/AudioDSPKernelProcessor.h"
+#include "../../modules/webaudio/AudioParam.h"
 
 #include "../../WTF/wtf/PassOwnPtr.h"
 #include "../../WTF/wtf/RefPtr.h"
