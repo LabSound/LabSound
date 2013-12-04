@@ -14,7 +14,7 @@ void rhythmTonePanning(RefPtr<AudioContext> context, float seconds)
     ExceptionCode ec;
     
     //--------------------------------------------------------------
-    // Demonstrate panning between a rhythm and a tone
+    // Demonstrate equal power panning between a rhythm and a tone
     //
     RefPtr<OscillatorNode> oscillator = context->createOscillator();
     
