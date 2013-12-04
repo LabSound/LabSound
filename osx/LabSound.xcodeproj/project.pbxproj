@@ -361,6 +361,7 @@
 
 /* Begin PBXFileReference section */
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2301557184EE31C00FEC991 /* RecorderNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecorderNode.h; sourceTree = "<group>"; };
 		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
 		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
 		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
@@ -1008,6 +1009,7 @@
 				E251D9C7184CE9E500F7B7BC /* SpatializationNode.h */,
 				E251D9CF184CEAFC00F7B7BC /* SupersawNode.h */,
 				E251D9ED184D74A800F7B7BC /* WaveShaperNode.h */,
+				E2301557184EE31C00FEC991 /* RecorderNode.h */,
 			);
 			path = LabSound;
 			sourceTree = "<group>";

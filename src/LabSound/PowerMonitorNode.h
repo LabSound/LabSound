@@ -4,7 +4,7 @@
 #pragma once
 
 
-#include "AudioBasicInspectorNode.h"
+#include "../Modules/webaudio/AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
 

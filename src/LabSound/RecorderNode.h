@@ -1,10 +1,10 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef LabSound_RecorderNode_h
-#define LabSound_RecorderNode_h
+#ifndef LabSound_src_RecorderNode_h
+#define LabSound_src_RecorderNode_h
 
-#include "AudioBasicInspectorNode.h"
+#include "../Modules/webaudio/AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
 

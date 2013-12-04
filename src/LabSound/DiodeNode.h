@@ -2,10 +2,10 @@
 /// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef LabSound_DiodeNode_h
-#define LabSound_DiodeNode_h
+#ifndef LabSound_src_DiodeNode_h
+#define LabSound_src_DiodeNode_h
 
-#include "WaveShaperNode.h"
+#include "../Modules/webaudio/WaveShaperNode.h"
 
 namespace LabSound {
 
