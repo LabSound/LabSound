@@ -7,3 +7,6 @@
 [submodule "examples/TonicAudio"]
 	path = examples/TonicAudio
 	url = https://github.com/TonicAudio/Tonic.git
+[submodule "examples/Tonic"]
+	path = examples/Tonic
+	url = https://github.com/TonicAudio/Tonic.git
