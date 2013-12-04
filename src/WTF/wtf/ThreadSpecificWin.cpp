@@ -1,9 +1,6 @@
-// Copyright (c) 2013 Dimitri Diakopoulos, All rights reserved.
-// License is MIT: http://opensource.org/licenses/MIT
 
 #include "config.h"
 #include "ThreadSpecific.h"
-
 #include "StdLibExtras.h"
 #include "ThreadingPrimitives.h"
 #include "DoublyLinkedList.h"

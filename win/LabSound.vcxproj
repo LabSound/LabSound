@@ -112,7 +112,7 @@
     <Lib>
       <OutputFile>$(OutDir)LabSound.lib</OutputFile>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>icuin.lib;icuio.lib;icuuc.lib;libsndfile-1.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
     </Lib>
     <Link>
