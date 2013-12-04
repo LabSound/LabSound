@@ -259,6 +259,7 @@
 		E2E0DCBD183C4DDF007AFB48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -272,12 +273,14 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../include";
 			};
 			name = Debug;
 		};
 		E2E0DCBE183C4DDF007AFB48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -291,6 +294,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../include";
 			};
 			name = Release;
 		};

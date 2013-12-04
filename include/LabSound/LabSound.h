@@ -3,10 +3,11 @@
 
 #pragma once
 #include "LabSoundConfig.h"
-#include "AudioContext.h"
-#include "AudioListener.h"
-#include "SpatializationNode.h"
-#include "SoundBuffer.h"
+#include "../../src/WTF/wtf/RefPtr.h"
+#include "../../src/Modules/webaudio/AudioContext.h"
+#include "../../src/LabSound/SpatializationNode.h"
+#include "../../src/Modules/webaudio/AudioNode.h"
+#include "../../src/Modules/webaudio/AudioBufferSourceNode.h"
 
 namespace LabSound {
 
@@ -43,27 +44,27 @@ namespace LabSound {
         NodeTypeDiode,
         NodeTypeNoise,
         NodeTypePd,
+        NodeTypePWM,
         NodeTypeRecorder,
         NodeTypeSfxr,
         NodeTypeSpatialization,
         NodeTypeSupersaw,
-        NodeTypePWM,
 
     };
     
-    typedef WTF::RefPtr<WebCore::AudioContext> AudioContextPtr;
-    typedef WTF::RefPtr<SpatializationNode> SpatializationNodePtr;
+    typedef RefPtr<AudioContext> AudioContextPtr;
+    typedef RefPtr<SpatializationNode> SpatializationNodePtr;
     
     // init() will return an audio context object, which must be assigned to
     // a LabSound::AudioContextPtr.
-    WTF::PassRefPtr<WebCore::AudioContext> init();
+    PassRefPtr<AudioContext> init();
     
     // Connect/Disconnect return true on success
-    bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput);
-    bool disconnect(WebCore::AudioNode* thisOutput);
+    bool connect(AudioNode* thisOutput, AudioNode* toThisInput);
+    bool disconnect(AudioNode* thisOutput);
 
     // When playing a sound from an AudioSoundBuffer, the pointer that comes
     // from play will be one of these.
-    typedef WTF::RefPtr<WebCore::AudioBufferSourceNode> AudioSoundBufferPtr;
+    typedef RefPtr<AudioBufferSourceNode> AudioSoundBufferPtr;
 
 }

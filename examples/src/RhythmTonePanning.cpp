@@ -3,6 +3,7 @@
 #include "LabSound/AudioContext.h"
 #include "LabSound/GainNode.h"
 #include "LabSound/OscillatorNode.h"
+#include "LabSound/SoundBuffer.h"
 
 using namespace LabSound;
 
