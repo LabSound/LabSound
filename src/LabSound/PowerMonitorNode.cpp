@@ -3,8 +3,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "PowerMonitorNode.h"
-
-#include "config.h"
+#include "LabSound.h"
 
 #if ENABLE(WEB_AUDIO)
 
@@ -25,7 +24,7 @@ namespace LabSound {
     , _windowSize(128)
     {
         addInput(adoptPtr(new AudioNodeInput(this)));
-        setNodeType(NodeTypeAnalyser);
+        setNodeType((AudioNode::NodeType) NodeTypePowerMonitor);
         initialize();
     }
     

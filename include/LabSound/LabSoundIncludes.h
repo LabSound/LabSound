@@ -7,6 +7,7 @@
 #include "LabSound/DiodeNode.h"
 #include "LabSound/PowerMonitorNode.h"
 #include "LabSound/PdNode.h"
+#include "LabSound/PeakCompNode.h"
 #include "LabSound/PWMNode.h"
 #include "LabSound/SpatializationNode.h"
 #include "LabSound/SoundBuffer.h"

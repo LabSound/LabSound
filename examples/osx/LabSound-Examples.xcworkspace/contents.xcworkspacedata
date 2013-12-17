@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:PeakCompApp/PeakCompApp.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:MidiSampleApp/MidiSampleApp.xcodeproj">
    </FileRef>
    <FileRef
@@ -48,5 +51,8 @@
    </FileRef>
    <FileRef
       location = "group:../../src/libpd/libpd.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../TonicAudio/lib/TonicLib.xcodeproj">
    </FileRef>
 </Workspace>

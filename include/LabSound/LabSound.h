@@ -44,6 +44,8 @@ namespace LabSound {
         NodeTypeDiode,
         NodeTypeNoise,
         NodeTypePd,
+        NodeTypePeakComp,
+        NodeTypePowerMonitor,
         NodeTypePWM,
         NodeTypeRecorder,
         NodeTypeSfxr,

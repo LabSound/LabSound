@@ -34,10 +34,9 @@ void reverbSample(RefPtr<AudioContext> context, float seconds)
     sample.play(dryGain.get(), 0);
     
     std::cout << "Starting convolved echo" << std::endl;
-    
-    while (seconds > 0) {
-        seconds -= 0.01f;
-        usleep(10000);
+    const float seconds = 10.0f;
+    for (float i = 0; i < seconds; i += 0.01f) {
+		std::this_thread::sleep_for(std::chrono::microseconds(10000));
     }
     std::cout << "Ending echo" << std::endl;
 }
