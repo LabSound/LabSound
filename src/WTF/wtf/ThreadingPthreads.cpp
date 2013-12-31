@@ -34,7 +34,6 @@
 #if USE(PTHREADS)
 
 #include "CurrentTime.h"
-#include "RandomNumberSeed.h"
 #include "StdLibExtras.h"
 #include "ThreadFunctionInvocation.h"
 #include "ThreadIdentifierDataPthreads.h"
@@ -127,7 +126,6 @@ void initializeThreading()
 
     atomicallyInitializedStaticMutex = new Mutex;
     threadMapMutex();
-    initializeRandomNumberGenerator();
     ThreadIdentifierData::initializeOnce();
 }
 
