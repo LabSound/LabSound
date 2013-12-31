@@ -175,7 +175,6 @@
 #include "config.h"
 
 #include <AudioNodeOutput.h>
-#include "ExceptionCode.h"
 #include "SfxrNode.h"
 #include "ThreadingPrimitives.h"
 

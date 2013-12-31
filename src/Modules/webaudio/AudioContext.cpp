@@ -42,19 +42,14 @@
 #include "ConvolverNode.h"
 #include "DefaultAudioDestinationNode.h"
 #include "DelayNode.h"
-//LabSound #include "Document.h"
 #include "DynamicsCompressorNode.h"
-#include "ExceptionCode.h"
 #include "FFTFrame.h"
 #include "GainNode.h"
 #include "HRTFDatabaseLoader.h"
 #include "HRTFPanner.h"
-//LabSound #include "OfflineAudioCompletionEvent.h"
 #include "OfflineAudioDestinationNode.h"
 #include "OscillatorNode.h"
 #include "PannerNode.h"
-//LabSound #include "ScriptCallStack.h"
-//LabSound #include "ScriptProcessorNode.h"
 #include "WaveShaperNode.h"
 #include "WaveTable.h"
 
@@ -113,7 +108,6 @@ PassRefPtr<AudioContext> AudioContext::create(Document* document, ExceptionCode&
         return 0;
 
     RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(document)));
-    audioContext->suspendIfNeeded();
     return audioContext.release();
 }
 
@@ -130,14 +124,12 @@ PassRefPtr<AudioContext> AudioContext::createOfflineContext(Document* document, 
     }
 
     RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(document, numberOfChannels, numberOfFrames, sampleRate)));
-    audioContext->suspendIfNeeded();
     return audioContext.release();
 }
 
 // Constructor for rendering to the audio hardware.
 AudioContext::AudioContext(Document* document)
-    : ActiveDOMObject(document, this)
-    , m_isStopScheduled(false)
+    : m_isStopScheduled(false)
     , m_isInitialized(false)
     , m_isAudioThreadFinished(false)
     , m_destinationNode(0)
@@ -162,8 +154,7 @@ AudioContext::AudioContext(Document* document)
 
 // Constructor for offline (non-realtime) rendering.
 AudioContext::AudioContext(Document* document, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
-    : ActiveDOMObject(document, this)
-    , m_isStopScheduled(false)
+    : m_isStopScheduled(false)
     , m_isInitialized(false)
     , m_isAudioThreadFinished(false)
     , m_destinationNode(0)
@@ -186,10 +177,6 @@ AudioContext::AudioContext(Document* document, unsigned numberOfChannels, size_t
 
 void AudioContext::constructCommon()
 {
-    // According to spec AudioContext must die only after page navigate.
-    // Lets mark it as ActiveDOMObject with pending activity and unmark it in clear method.
-    setPendingActivity(this);
-
 #if USE(GSTREAMER)
     initializeGStreamer();
 #endif
@@ -250,9 +237,6 @@ void AudioContext::clear()
         m_nodesToDelete.insert(m_nodesToDelete.end(), m_nodesMarkedForDeletion.begin(), m_nodesMarkedForDeletion.end());
         m_nodesMarkedForDeletion.clear();
     } while (m_nodesToDelete.size());
-
-    // It was set in constructCommon.
-    unsetPendingActivity(this);
 }
 
 void AudioContext::uninitialize()

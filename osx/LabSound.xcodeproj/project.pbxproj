@@ -182,9 +182,6 @@
 		E252457E187242CC00983485 /* WindowFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowFunctions.h; sourceTree = "<group>"; };
 		E252458018724D0F00983485 /* fftsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fftsg.cpp; sourceTree = "<group>"; };
 		E252458118724D0F00983485 /* fftsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftsg.h; sourceTree = "<group>"; };
-		E252458318724D9000983485 /* ActiveDOMObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveDOMObject.h; sourceTree = "<group>"; };
-		E252458418724D9000983485 /* ExceptionCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExceptionCode.h; sourceTree = "<group>"; };
-		E252458518724D9000983485 /* MediaStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaStream.h; sourceTree = "<group>"; };
 		E252458618724DB000983485 /* Logging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logging.cpp; sourceTree = "<group>"; };
 		E252458718724DB000983485 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E252458918724DC000983485 /* FloatPoint3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
@@ -473,7 +470,6 @@
 				E251D9BE184CE6C900F7B7BC /* include */,
 				E252457F18724D0F00983485 /* ooura */,
 				E2FB873F183D20E100A5A764 /* platform */,
-				E2FB8A19183D217D00A5A764 /* shim */,
 				E2FB84BC183D1F1F00A5A764 /* webaudio */,
 				E2FB8579183D202600A5A764 /* wtf */,
 				E2FB8499183D1E8F00A5A764 /* LabSound */,
@@ -887,17 +883,6 @@
 			path = graphics;
 			sourceTree = "<group>";
 		};
-		E2FB8A19183D217D00A5A764 /* shim */ = {
-			isa = PBXGroup;
-			children = (
-				E252458318724D9000983485 /* ActiveDOMObject.h */,
-				E252458418724D9000983485 /* ExceptionCode.h */,
-				E252458518724D9000983485 /* MediaStream.h */,
-			);
-			name = shim;
-			path = ../src/shim;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1119,7 +1104,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
 					NDEBUG,
 					PD,
@@ -1244,7 +1228,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
 					DEBUG,
 					PD,
@@ -1295,21 +1278,6 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_MEDIA_STREAM=1",
-					"ENABLE_WEB_AUDIO=1",
-					DEBUG,
-					PD,
-					__MACOSX_CORE__,
-					HAVE_NO_OFLOG,
-					HAVE_BOOST_THREAD,
-					HAVE_LIBDL,
-					OSX,
-					HAVE_ALLOCA,
-					HAVE_UNISTD_H,
-					USEAPI_DUMMY,
-					"BUILDING_WTF=1",
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -1347,7 +1315,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
 					STATICALLY_LINKED_WITH_WTF,
 					DEBUG,
@@ -1399,7 +1366,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_MEDIA_STREAM=1",
 					"ENABLE_WEB_AUDIO=1",
 					"BUILDING_WTF=1",
 					NDEBUG,

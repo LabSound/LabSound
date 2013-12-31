@@ -5,7 +5,6 @@
 
 #include "LabSound.h"
 #include <AudioNodeOutput.h>
-#include "ExceptionCode.h"
 #include "NoiseNode.h"
 #include "ThreadingPrimitives.h"
 

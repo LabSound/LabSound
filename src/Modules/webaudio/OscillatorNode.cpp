@@ -31,7 +31,6 @@
 #include "AudioContext.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
-#include "ExceptionCode.h"
 #include "VectorMath.h"
 #include "WaveTable.h"
 #include <algorithm>

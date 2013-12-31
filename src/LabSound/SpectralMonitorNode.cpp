@@ -10,7 +10,6 @@
 #include "AudioBus.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
-#include "ExceptionCode.h"
 #include "WindowFunctions.h"
 #include "../ooura/fftsg.h"
 

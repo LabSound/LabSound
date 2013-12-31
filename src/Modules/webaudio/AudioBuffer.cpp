@@ -35,7 +35,6 @@
 #include "AudioBus.h"
 #include "AudioContext.h"
 #include "AudioFileReader.h"
-#include "ExceptionCode.h"
 
 namespace WebCore {
 

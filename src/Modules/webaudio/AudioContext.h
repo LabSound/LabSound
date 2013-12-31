@@ -27,8 +27,6 @@
 
 #include "AsyncAudioDecoder.h"
 #include "AudioDestinationNode.h"
-#include "../../shim/ActiveDOMObject.h"
-#include "../../shim/MediaStream.h"
 #include "../../platform/audio/AudioBus.h"
 #include "../../platform/audio/HRTFDatabaseLoader.h"
 #include "../../WTF/wtf/MainThread.h"
@@ -67,7 +65,7 @@ class WaveTable;
 // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
 // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
 
-class AudioContext : public ActiveDOMObject, public ThreadSafeRefCounted<AudioContext> {
+class AudioContext : public ThreadSafeRefCounted<AudioContext> {
 public:
     // Create an AudioContext for rendering to the audio hardware.
     static PassRefPtr<AudioContext> create(Document*, ExceptionCode&);

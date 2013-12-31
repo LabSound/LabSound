@@ -33,7 +33,6 @@
 #include "AudioContext.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
-#include "ExceptionCode.h"
 #include "HRTFPanner.h"
 #include <wtf/MathExtras.h>
 

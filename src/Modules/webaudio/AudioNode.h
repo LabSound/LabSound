@@ -42,6 +42,13 @@ using namespace WTF;
 
 typedef int ExceptionCode;
 
+enum ExceptionCodes {
+    INVALID_STATE_ERR = 1,
+    SYNTAX_ERR = 2,
+    NOT_SUPPORTED_ERR = 3,
+    INDEX_SIZE_ERR
+};
+
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.

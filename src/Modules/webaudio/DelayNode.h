@@ -27,7 +27,6 @@
 
 #include "../../modules/webaudio/AudioBasicProcessorNode.h"
 #include "../../modules/webaudio/DelayProcessor.h"
-#include "../../shim/ExceptionCode.h"
 
 namespace WebCore {
 

@@ -29,7 +29,6 @@
 #include "../../platform/audio/AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
-#include "../../shim/ExceptionCode.h"
 #include "PannerNode.h"
 #include "../../WTF/wtf/RefPtr.h"
 #include "../../WTF/wtf/Threading.h"

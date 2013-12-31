@@ -11,9 +11,6 @@
 
 // Configure Webaudio features
 #ifndef ENABLE_MEDIA_STREAM
-# define ENABLE_MEDIA_STREAM 1
-#endif
-#ifndef ENABLE_MEDIA_STREAM
 # define ENABLE_WEB_AUDIO 1
 #endif
 
