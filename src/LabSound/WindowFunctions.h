@@ -1,3 +1,4 @@
+
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
@@ -34,89 +35,181 @@ enum WindowType {
 	window_parzen
 };
 
-void applyWindow(WindowType wType, RefPtr<Float32Array> &buffer) {
+    /// @TODO precompute the windows... Then these loops will look like
+    //int sz = buffer->size();
+    //float* window = getWindow(wType, sz);
+    //for (int i = 0; i < sz; ++i)
+    //    buffer[i] *= window[i];
 
-	int bSize = buffer->length();
+    void applyWindow(WindowType wType, RefPtr<Float32Array> &buffer) {
 
-	switch (wType) {
+        int bSize = buffer->length();
 
-		case window_rectangle: {
-			for (int i = 0; i< bSize; i++) {
-				buffer->data()[i] *= 0.5;
-			}
-		}
-		break;
+        switch (wType) {
 
-		case window_hamming: {
-			for (int i = 0; i< bSize; i++) {
-				buffer->data()[i] *= 0.54 - 0.46 * cos(TWO_PI * i / ( bSize));
-			}
-		}
-		break;
+            case window_rectangle: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer->data()[i] *= 0.5;
+                }
+            }
+            break;
 
-		case window_hanning: {
-			for (int i = 0; i< bSize; i++) {
-				buffer->data()[i] *= 0.5 - (0.5 * cos(TWO_PI * i / ( bSize)));
-			}
-		}
-		break;
+            case window_hamming: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer->data()[i] *= 0.54 - 0.46 * cos(TWO_PI * i / ( bSize));
+                }
+            }
+            break;
 
-		case window_hanningz: {
-			for (int i = 0; i< bSize; i++) {
-				buffer->data()[i] *= 0.5 * (1.0 - cos(TWO_PI * i / ( bSize)));
-			}
-		}
-		break;
+            case window_hanning: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer->data()[i] *= 0.5 - (0.5 * cos(TWO_PI * i / ( bSize)));
+                }
+            }
+            break;
 
-		case window_blackman: {
+            case window_hanningz: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer->data()[i] *= 0.5 * (1.0 - cos(TWO_PI * i / ( bSize)));
+                }
+            }
+            break;
 
-			for (int i= 0; i < bSize; i++) {
-				buffer->data()[i] *= 0.42 - 0.50 * cos(TWO_PI * i / (bSize - 1.0)) + 0.08 * cos(4.0 * TWO_PI * i / (bSize - 1.0));
-			} 
-		}
-		break;
+            case window_blackman: {
 
-		case window_blackman_harris: {
-			for (int i = 0; i < bSize; i++) {
-				buffer->data()[i] *= 0.35875 - 0.48829 * cos(TWO_PI * i / (bSize - 1.0)) + 0.14128 * cos(2.0 * TWO_PI * i / (bSize - 1.0)) - 0.01168 * cos(3.0*TWO_PI*i/( bSize - 1.0));
-			}
-		}
-		break;
+                for (int i= 0; i < bSize; i++) {
+                    buffer->data()[i] *= 0.42 - 0.50 * cos(TWO_PI * i / (bSize - 1.0)) + 0.08 * cos(4.0 * TWO_PI * i / (bSize - 1.0));
+                } 
+            }
+            break;
 
-		case window_gaussian: {
-			float a, b, c = 0.5;
-			int n;
-			for (n = 0; n <  bSize; n++) {
-				a = (n - c * (bSize - 1)) / (sqrt(c) * (bSize - 1));
-				b = -c * sqrt(a);
-				buffer->data()[n] *= exp(b);
-			}
-		}
-		break;
+            case window_blackman_harris: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer->data()[i] *= 0.35875 - 0.48829 * cos(TWO_PI * i / (bSize - 1.0)) + 0.14128 * cos(2.0 * TWO_PI * i / (bSize - 1.0)) - 0.01168 * cos(3.0*TWO_PI*i/( bSize - 1.0));
+                }
+            }
+            break;
 
-		case window_welch: {
-			for (int i = 0; i < bSize; i++) {
-				buffer->data()[i] *= 1.0 - sqrt((2.0 * i - bSize) / (bSize + 1.0));
-			}
-		}
-		break;
+            case window_gaussian: {
+                float a, b, c = 0.5;
+                int n;
+                for (n = 0; n <  bSize; n++) {
+                    a = (n - c * (bSize - 1)) / (sqrt(c) * (bSize - 1));
+                    b = -c * sqrt(a);
+                    buffer->data()[n] *= exp(b);
+                }
+            }
+            break;
 
-		case window_bartlett: {
-			for (int i = 0; i < bSize; i++) {
-			  buffer->data()[i] *= 1.0 - fabs(2.0 * (i / bSize) - 1.0);
-			}
-		}
-		break; 
+            case window_welch: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer->data()[i] *= 1.0 - sqrt((2.0 * i - bSize) / (bSize + 1.0));
+                }
+            }
+            break;
 
-		case window_parzen: {
-			for (int i = 0; i < bSize; i++) {
-				buffer->data()[i] *= 1.0 - abs((2.0 * i - bSize) / ( bSize + 1.0));
-			}
-		}
-		break;
+            case window_bartlett: {
+                for (int i = 0; i < bSize; i++) {
+                  buffer->data()[i] *= 1.0 - fabs(2.0 * (i / bSize) - 1.0);
+                }
+            }
+            break; 
 
-	}
+            case window_parzen: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer->data()[i] *= 1.0 - abs((2.0 * i - bSize) / ( bSize + 1.0));
+                }
+            }
+            break;
 
-}
+        }
+
+    }
+
+
+
+    void applyWindow(WindowType wType, std::vector<float> &buffer) {
+
+        int bSize = buffer.size();
+
+        switch (wType) {
+
+            case window_rectangle: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer[i] *= 0.5;
+                }
+            }
+            break;
+
+            case window_hamming: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer[i] *= 0.54 - 0.46 * cos(TWO_PI * i / ( bSize));
+                }
+            }
+            break;
+
+            case window_hanning: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer[i] *= 0.5 - (0.5 * cos(TWO_PI * i / ( bSize)));
+                }
+            }
+            break;
+
+            case window_hanningz: {
+                for (int i = 0; i< bSize; i++) {
+                    buffer[i] *= 0.5 * (1.0 - cos(TWO_PI * i / ( bSize)));
+                }
+            }
+            break;
+
+            case window_blackman: {
+                for (int i= 0; i < bSize; i++) {
+                    buffer[i] *= 0.42 - 0.50 * cos(TWO_PI * i / (bSize - 1.0)) + 0.08 * cos(4.0 * TWO_PI * i / (bSize - 1.0));
+                }
+            }
+            break;
+
+            case window_blackman_harris: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer[i] *= 0.35875 - 0.48829 * cos(TWO_PI * i / (bSize - 1.0)) + 0.14128 * cos(2.0 * TWO_PI * i / (bSize - 1.0)) - 0.01168 * cos(3.0*TWO_PI*i/( bSize - 1.0));
+                }
+            }
+            break;
+
+            case window_gaussian: {
+                float a, b, c = 0.5;
+                int n;
+                for (n = 0; n <  bSize; n++) {
+                    a = (n - c * (bSize - 1)) / (sqrt(c) * (bSize - 1));
+                    b = -c * sqrt(a);
+                    buffer[n] *= exp(b);
+                }
+            }
+            break;
+                
+            case window_welch: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer[i] *= 1.0 - sqrt((2.0 * i - bSize) / (bSize + 1.0));
+                }
+            }
+            break;
+                
+            case window_bartlett: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer[i] *= 1.0 - fabs(2.0 * (i / bSize) - 1.0);
+                }
+            }
+            break; 
+                
+            case window_parzen: {
+                for (int i = 0; i < bSize; i++) {
+                    buffer[i] *= 1.0 - abs((2.0 * i - bSize) / ( bSize + 1.0));
+                }
+            }
+            break;
+                
+        }
+        
+    }
 
 } // End namespace LabSound

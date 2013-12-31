@@ -23,7 +23,8 @@ namespace LabSound {
         virtual void process(size_t framesToProcess);
         virtual void reset();
         // ..AudioNode
-        
+
+        // instantaneous estimation of power
         float db() const { return _db; }
 
         // Could be better. Power is computed on the most recent frame. If the framesize is greater

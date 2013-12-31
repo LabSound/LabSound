@@ -5,8 +5,6 @@
 #include "PowerMonitorNode.h"
 #include "LabSound.h"
 
-#if ENABLE(WEB_AUDIO)
-
 #include "RecorderNode.h"
 
 #include "AudioBus.h"
@@ -97,5 +95,3 @@ namespace LabSound {
     }
     
 } // namespace LabSound
-
-#endif // ENABLE(WEB_AUDIO)

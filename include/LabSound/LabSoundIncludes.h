@@ -4,18 +4,19 @@
 #define LabSoundIncludes_h
 
 // LabSound Nodes
+#include "LabSound/ADSRNode.h"
+#include "LabSound/ClipNode.h"
 #include "LabSound/DiodeNode.h"
-#include "LabSound/PowerMonitorNode.h"
+#include "LabSound/NoiseNode.h"
 #include "LabSound/PdNode.h"
 #include "LabSound/PeakCompNode.h"
+#include "LabSound/PowerMonitorNode.h"
 #include "LabSound/PWMNode.h"
-#include "LabSound/SpatializationNode.h"
-#include "LabSound/SoundBuffer.h"
 #include "LabSound/SfxrNode.h"
+#include "LabSound/SoundBuffer.h"
 #include "LabSound/SupersawNode.h"
-#include "LabSound/NoiseNode.h"
-#include "LabSound/ClipNode.h"
-#include "LabSound/ADSRNode.h"
+#include "LabSound/SpatializationNode.h"
+#include "LabSound/SpectralMonitorNode.h"
 
 // WebAudio Nodes
 #include "LabSound/WaveShaperNode.h"

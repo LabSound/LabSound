@@ -50,6 +50,7 @@ namespace LabSound {
         NodeTypeRecorder,
         NodeTypeSfxr,
         NodeTypeSpatialization,
+        NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
 
     };

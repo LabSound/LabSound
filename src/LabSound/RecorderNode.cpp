@@ -36,7 +36,6 @@ namespace LabSound {
     void RecorderNode::getData(std::vector<float>& result)
     {
         result.clear();
-        
         // swap is quick enough that process should not be adversely affected
         std::lock_guard<std::mutex> lock(m_mutex);
         result.swap(m_data);
@@ -101,7 +100,6 @@ namespace LabSound {
     
     void RecorderNode::reset()
     {
-        // swap is quick enough that process should not be adversely affected
         std::vector<float> clear;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
