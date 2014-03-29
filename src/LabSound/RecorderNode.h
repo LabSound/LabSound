@@ -41,7 +41,7 @@ namespace LabSound {
         bool m_mixToMono;
         bool m_recording;
         std::vector<float> m_data;  // interleaved
-        mutable std::mutex m_mutex;
+        mutable std::recursive_mutex m_mutex;
     };
     
 } // LabSound

@@ -36,7 +36,7 @@ namespace LabSound {
     {
         result.clear();
         // swap is quick enough that process should not be adversely affected
-        std::lock_guard<std::mutex> lock(m_mutex);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
         result.swap(m_data);
     }
 
@@ -67,7 +67,7 @@ namespace LabSound {
 
             // mix down the output, or interleave the output
             // use the tightest loop possible since this is part of the processing step
-            std::lock_guard<std::mutex> lock(m_mutex);
+            std::lock_guard<std::recursive_mutex> lock(m_mutex);
             m_data.reserve(framesToProcess * (m_mixToMono ? 1 : 2));
             if (m_mixToMono) {
                 if (numberOfChannels == 1)
@@ -101,7 +101,7 @@ namespace LabSound {
     {
         std::vector<float> clear;
         {
-            std::lock_guard<std::mutex> lock(m_mutex);
+            std::lock_guard<std::recursive_mutex> lock(m_mutex);
             m_data.swap(clear);
         }
         // release the data in clear's destructor after the mutex has been released

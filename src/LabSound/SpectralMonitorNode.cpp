@@ -93,7 +93,7 @@ namespace LabSound {
         size_t windowSize;
         int cursor;
         std::vector<float> buffer;
-        std::mutex magMutex;
+        std::recursive_mutex magMutex;
         FFT* fft;
     };
 
@@ -150,7 +150,7 @@ namespace LabSound {
                 framesToProcess = detail->windowSize - detail->cursor;
 
             {
-                std::lock_guard<std::mutex> lock(detail->magMutex);
+                std::lock_guard<std::recursive_mutex> lock(detail->magMutex);
 
                 detail->buffer.resize(detail->windowSize);
                 for (int i = 0; i < framesToProcess; ++i) {
@@ -186,7 +186,7 @@ namespace LabSound {
     void SpectralMonitorNode::spectralMag(std::vector<float>& result) {
         std::vector<float> window;
         {
-            std::lock_guard<std::mutex> lock(detail->magMutex);
+            std::lock_guard<std::recursive_mutex> lock(detail->magMutex);
             window.swap(detail->buffer);
             detail->setWindowSize(detail->windowSize);
         }
