@@ -11,6 +11,8 @@
 #include <kiss_fft.hpp>
 #include <wtf/MathExtras.h>
 
+// To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines
+
 namespace WebCore {
     
 	const int kMaxFFTPow2Size = 24;
