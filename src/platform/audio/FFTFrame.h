@@ -31,7 +31,7 @@
 
 #include "AudioArray.h"
 
-#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG)
+#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
 #define USE_ACCELERATE_FFT 1
 #else
 #define USE_ACCELERATE_FFT 0
@@ -39,30 +39,15 @@
 
 #if USE_ACCELERATE_FFT
 #include <Accelerate/Accelerate.h>
-#endif
-
-#if !USE_ACCELERATE_FFT
-
-#if USE(WEBAUDIO_MKL)
-#include "mkl_dfti.h"
-#endif // USE(WEBAUDIO_MKL)
-
-#if USE(WEBAUDIO_GSTREAMER)
-#include <glib.h>
-G_BEGIN_DECLS
-#include <gst/fft/gstfftf32.h>
-G_END_DECLS
-#endif // USE(WEBAUDIO_GSTREAMER)
-
-#if USE(WEBAUDIO_FFMPEG)
-struct RDFTContext;
-#endif // USE(WEBAUDIO_FFMPEG)
-
 #endif // !USE_ACCELERATE_FFT
 
 #if USE(WEBAUDIO_IPP)
 #include <ipps.h>
 #endif // USE(WEBAUDIO_IPP)
+
+#if USE(WEBAUDIO_KISSFFT)
+#include <kiss_fft.hpp>
+#endif // USE(WEBAUDIO_KISSFFT)
 
 #include "../../WTF/wtf/PassOwnPtr.h"
 #include "../../WTF/wtf/Platform.h"
@@ -127,44 +112,6 @@ private:
     AudioFloatArray m_imagData;
 #else // !USE_ACCELERATE_FFT
 
-#if USE(WEBAUDIO_MKL)
-    // Interleaves the planar real and imaginary data and returns a
-    // pointer to the resulting storage which can be used for in-place
-    // or out-of-place operations. FIXME: ideally all of the MKL
-    // routines would operate on planar data and this method would be
-    // removed.
-    float* getUpToDateComplexData();
-
-    static DFTI_DESCRIPTOR_HANDLE descriptorHandleForSize(unsigned fftSize);
-
-    static DFTI_DESCRIPTOR_HANDLE* descriptorHandles;
-
-    DFTI_DESCRIPTOR_HANDLE m_handle;
-    AudioFloatArray m_complexData;
-    AudioFloatArray m_realData;
-    AudioFloatArray m_imagData;
-#endif // USE(WEBAUDIO_MKL)
-
-#if USE(WEBAUDIO_FFMPEG)
-    static RDFTContext* contextForSize(unsigned fftSize, int trans);
-
-    RDFTContext* m_forwardContext;
-    RDFTContext* m_inverseContext;
-
-    float* getUpToDateComplexData();
-    AudioFloatArray m_complexData;
-    AudioFloatArray m_realData;
-    AudioFloatArray m_imagData;
-#endif // USE(WEBAUDIO_FFMPEG)
-
-#if USE(WEBAUDIO_GSTREAMER)
-    GstFFTF32* m_fft;
-    GstFFTF32* m_inverseFft;
-    GstFFTF32Complex* m_complexData;
-    AudioFloatArray m_realData;
-    AudioFloatArray m_imagData;
-#endif // USE(WEBAUDIO_GSTREAMER)
-
 #if USE(WEBAUDIO_IPP)
     Ipp8u* m_buffer;
     IppsDFTSpec_R_32f* m_DFTSpec;
@@ -174,6 +121,20 @@ private:
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;
 #endif // USE(WEBAUDIO_IPP)
+    
+#if USE(WEBAUDIO_KISSFFT)
+    
+    static kiss_fft_cfg contextForSize(unsigned fftSize, int trans);
+
+    kiss_fft_cfg m_forwardContext;
+    kiss_fft_cfg m_inverseContext;
+
+    kiss_fft_cpx* m_cpxInputData;
+    kiss_fft_cpx* m_cpxOutputData;
+    AudioFloatArray m_realData;
+    AudioFloatArray m_imagData;
+    
+#endif
 
 #endif // !USE_ACCELERATE_FFT
 };

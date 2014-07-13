@@ -36,6 +36,8 @@ void vsma(const float* sourceP, int sourceStride, const float* scale, float* des
 
 void vsmul(const float* sourceP, int sourceStride, const float* scale, float* destP, int destStride, size_t framesToProcess);
 void vadd(const float* source1P, int sourceStride1, const float* source2P, int sourceStride2, float* destP, int destStride, size_t framesToProcess);
+void vintlve(const float* realSrcP, const float* imagSrcP, float* destP, size_t framesToProcess); // for KissFFT
+void vdeintlve(const float* sourceP, float* realDestP, float* imagDestP, size_t framesToProcess); // for KissFFT
 
 // Finds the maximum magnitude of a float vector.
 void vmaxmgv(const float* sourceP, int sourceStride, float* maxP, size_t framesToProcess);

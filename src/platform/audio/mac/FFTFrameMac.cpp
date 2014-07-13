@@ -32,10 +32,9 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG)
+#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
 
 #include "FFTFrame.h"
-
 #include "VectorMath.h"
 
 namespace WebCore {
