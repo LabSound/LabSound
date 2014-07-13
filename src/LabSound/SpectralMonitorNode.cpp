@@ -34,7 +34,7 @@ namespace LabSound {
         // does an in place transform of waveform to real and imag.
         // real values are on even, imag on odd
         void forward( std::vector<float>& waveform) {
-            assert(waveform.size() == size);
+            ASSERT(waveform.size() == size);
             ooura::rdft( size, 1, &waveform[0], oouraIp, oouraW );
         }
 
