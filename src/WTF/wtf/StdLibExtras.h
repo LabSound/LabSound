@@ -333,7 +333,7 @@ namespace std {
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
-#else
+#elif (defined(_MSC_VER) && _MSC_VER < 1700) 
     template<class T> inline typename _Unique_if<T>::_Single_object
     make_unique()
     {
@@ -399,7 +399,7 @@ namespace std {
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8), std::forward<A9>(a9), std::forward<A10>(a10)));
     }
-#endif
+
 
     template<class T> inline typename _Unique_if<T>::_Unknown_bound
     make_unique(size_t n)
@@ -407,6 +407,9 @@ namespace std {
         typedef typename remove_extent<T>::type U;
         return unique_ptr<T>(new U[n]());
     }
+
+
+#endif
 
 #if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
     template<class T, class... Args> typename _Unique_if<T>::_Known_bound

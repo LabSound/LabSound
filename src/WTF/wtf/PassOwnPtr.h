@@ -38,6 +38,7 @@ namespace WTF {
     template<typename T> class OwnPtr;
     template<typename T> class PassOwnPtr;
     template<typename T> PassOwnPtr<T> adoptPtr(T*);
+	template<typename T> PassOwnPtr<T[]> adoptArrayPtr(T*);
 
     template<typename T> class PassOwnPtr {
     public:
@@ -71,6 +72,7 @@ namespace WTF {
         PassOwnPtr& operator=(const PassOwnPtr&) { COMPILE_ASSERT(!sizeof(T*), PassOwnPtr_should_never_be_assigned_to); return *this; }
 
         template<typename U> friend PassOwnPtr<U> adoptPtr(U*);
+		template<typename U> friend PassOwnPtr<U[]> adoptArrayPtr(U*);
 
     private:
         explicit PassOwnPtr(PtrType ptr) : m_ptr(ptr) { }
@@ -147,6 +149,11 @@ namespace WTF {
         return PassOwnPtr<T>(ptr);
     }
 
+	template<typename T> inline PassOwnPtr<T[]> adoptArrayPtr(T* ptr)
+	{
+		return PassOwnPtr<T[]>(ptr);
+	}
+
     template<typename T, typename U> inline PassOwnPtr<T> static_pointer_cast(const PassOwnPtr<U>& p) 
     {
         return adoptPtr(static_cast<T*>(p.leakPtr()));
@@ -166,6 +173,7 @@ namespace WTF {
 
 using WTF::PassOwnPtr;
 using WTF::adoptPtr;
+using WTF::adoptArrayPtr;
 using WTF::const_pointer_cast;
 using WTF::static_pointer_cast;
 

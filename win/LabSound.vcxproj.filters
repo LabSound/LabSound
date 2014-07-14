@@ -467,6 +467,12 @@
     <ClInclude Include="..\src\rtaudio\RtError.h">
       <Filter>src\rtaudio</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\CPU.h">
+      <Filter>src\WTF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\WTFExport.h">
+      <Filter>src\WTF</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">

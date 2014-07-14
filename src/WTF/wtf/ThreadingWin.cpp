@@ -96,8 +96,6 @@
 #include "../../WTF/wtf/PassOwnPtr.h"
 #include "../../WTF/wtf/RefPtr.h"
 
-#include <wtf/RandomNumberSeed.h>
-
 #if !USE(PTHREADS) && OS(WINDOWS)
 #include "ThreadSpecific.h"
 #endif
@@ -169,7 +167,6 @@ void initializeThreading()
 
     atomicallyInitializedStaticMutex = new Mutex;
     threadMapMutex();
-    initializeRandomNumberGenerator();
 
     // wtfThreadData();
 

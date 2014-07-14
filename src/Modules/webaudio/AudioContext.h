@@ -22,6 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Visual Studio 2013 will not compile with ENABLE_MEDIA_STREAM=1
+
 #ifndef AudioContext_h
 #define AudioContext_h
 

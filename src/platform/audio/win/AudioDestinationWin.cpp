@@ -106,7 +106,7 @@ void AudioDestinationWin::configure() {
 	try {
 		dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
 		printf("RTAudio Stream Opened!\n"); 
-	} catch (RtError& e) {
+	} catch (RtAudioError & e) {
 		e.printMessage();
 	}
 
@@ -118,7 +118,7 @@ void AudioDestinationWin::start() {
 	try {
 		dac.startStream();
 		m_isPlaying = true;
-	} catch (RtError& e) {
+	} catch (RtAudioError & e) {
 		m_isPlaying = false; 
 		e.printMessage();
 	}
@@ -131,7 +131,7 @@ void AudioDestinationWin::stop() {
 		dac.stopStream();
 		m_isPlaying = false;
 	}
-	catch (RtError& e) {
+	catch (RtAudioError & e) {
 		m_isPlaying = true; 
 		e.printMessage();
 	}
