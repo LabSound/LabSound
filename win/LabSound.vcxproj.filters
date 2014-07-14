@@ -464,14 +464,23 @@
     <ClInclude Include="..\src\rtaudio\RtAudio.h">
       <Filter>src\rtaudio</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\rtaudio\RtError.h">
-      <Filter>src\rtaudio</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\CPU.h">
       <Filter>src\WTF</Filter>
     </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\WTFExport.h">
       <Filter>src\WTF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\kissfft\_kiss_fft_guts.hpp">
+      <Filter>src\platform\fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\kissfft\kiss_fft.hpp">
+      <Filter>src\platform\fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\kissfft\kiss_fftr.hpp">
+      <Filter>src\platform\fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\kissfft\kissfft.hpp">
+      <Filter>src\platform\fft</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -763,9 +772,6 @@
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp">
       <Filter>src\rtaudio</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\platform\audio\ipp\FFTFrameIPP.cpp">
-      <Filter>src\platform\fft</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
       <Filter>src\WTF\wtf\win</Filter>
     </ClCompile>
@@ -777,6 +783,15 @@
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp">
       <Filter>src\WTF\wtf\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\kissfft\kiss_fft.cpp">
+      <Filter>src\platform\fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\kissfft\kiss_fftr.cpp">
+      <Filter>src\platform\fft</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrameKissFFT.cpp">
+      <Filter>src\platform\fft</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -46,6 +46,10 @@
 #include <cstring>
 #include <climits>
 
+#include <algorithm>
+#include <stdio.h>
+#include <wtf/MathExtras.h>
+
 // Static variable definitions.
 const unsigned int RtApi::MAX_SAMPLE_RATES = 14;
 const unsigned int RtApi::SAMPLE_RATES[] = {

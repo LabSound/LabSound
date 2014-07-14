@@ -25,7 +25,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
@@ -67,10 +67,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\src\build\Debug\</OutDir>
-    <IntDir>obj\x32\Debug\</IntDir>
+    <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>LabSound</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\src\build\Debug\</OutDir>
@@ -94,7 +94,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -119,6 +119,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>../src/libs/libsndfile-1.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -221,6 +222,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\kissfft\kissfft.hpp" />
+    <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />
+    <ClInclude Include="..\src\kissfft\kiss_fftr.hpp" />
+    <ClInclude Include="..\src\kissfft\_kiss_fft_guts.hpp" />
     <ClInclude Include="..\src\LabSound\ADSRNode.h" />
     <ClInclude Include="..\src\LabSound\ClipNode.h" />
     <ClInclude Include="..\src\LabSound\DiodeNode.h" />
@@ -236,7 +241,6 @@
     <ClInclude Include="..\src\LabSound\SupersawNode.h" />
     <ClInclude Include="..\src\LabSound\WindowFunctions.h" />
     <ClInclude Include="..\src\rtaudio\RtAudio.h" />
-    <ClInclude Include="..\src\rtaudio\RtError.h" />
     <ClInclude Include="..\src\shim\ActiveDOMObject.h" />
     <ClInclude Include="..\src\shim\ExceptionCode.h" />
     <ClInclude Include="..\src\shim\MediaStream.h" />
@@ -340,6 +344,8 @@
     <ClInclude Include="..\src\WTF\wtf\WTFExport.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\kissfft\kiss_fft.cpp" />
+    <ClCompile Include="..\src\kissfft\kiss_fftr.cpp" />
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\ClipNode.cpp">
@@ -476,6 +482,7 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\FFTFrame.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\platform\audio\FFTFrameKissFFT.cpp" />
     <ClCompile Include="..\src\platform\audio\FFTFrameStub.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\HRTFDatabase.cpp">
@@ -488,7 +495,6 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\HRTFPanner.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\platform\audio\ipp\FFTFrameIPP.cpp" />
     <ClCompile Include="..\src\platform\audio\MultiChannelResampler.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\Panner.cpp">
