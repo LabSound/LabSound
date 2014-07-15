@@ -333,7 +333,7 @@ namespace std {
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
-#elif (defined(_MSC_VER) && _MSC_VER < 1700) 
+#elif (defined(_MSC_VER) && _MSC_VER <= 1700) 
     template<class T> inline typename _Unique_if<T>::_Single_object
     make_unique()
     {

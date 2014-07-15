@@ -33,14 +33,16 @@
 #if COMPILER(MSVC)
 #include "wtf/Assertions.h"
 #include <stdint.h>
-
 #endif
 
-#if COMPILER(MSVC) && (_MSC_VER == 1800)
+#if COMPILER(MSVC) && (_MSC_VER <= 1800)
 #define _USE_MATH_DEFINES
 #include <math.h>
-#else
 #include <cmath>
+#endif
+
+#if COMPILER(MSVC) && (_MSC_VER == 1700)
+#include <float.h> 
 #endif
 
 #if OS(OPENBSD)
