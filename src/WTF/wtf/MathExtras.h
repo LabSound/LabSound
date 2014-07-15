@@ -26,12 +26,12 @@
 #ifndef WTF_MathExtras_h
 #define WTF_MathExtras_h
 
-#include "wtf/CPU.h"
+#include "CPU.h"
 
 #include <limits>
 
 #if COMPILER(MSVC)
-#include "wtf/Assertions.h"
+#include "Assertions.h"
 #include <stdint.h>
 #endif
 

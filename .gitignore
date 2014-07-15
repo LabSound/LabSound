@@ -109,3 +109,6 @@ xcuserdata
 # Windows Specific Libraries that should be pulled in separately
 libsndfile/
 libs/*
+examples/*.dll
+examples/*.def
+

@@ -27,7 +27,7 @@
 */
 #ifndef WTF_CPU_h
 #define WTF_CPU_h
-#include "wtf/Compiler.h"
+#include "Compiler.h"
 /* CPU() - the target CPU architecture */
 #define CPU(WTF_FEATURE) (defined WTF_CPU_##WTF_FEATURE && WTF_CPU_##WTF_FEATURE)
 /* ==== CPU() - the target CPU architecture ==== */

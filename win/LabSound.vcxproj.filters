@@ -464,9 +464,6 @@
     <ClInclude Include="..\src\rtaudio\RtAudio.h">
       <Filter>src\rtaudio</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\WTF\wtf\CPU.h">
-      <Filter>src\WTF</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\WTF\wtf\WTFExport.h">
       <Filter>src\WTF</Filter>
     </ClInclude>
@@ -481,6 +478,15 @@
     </ClInclude>
     <ClInclude Include="..\src\kissfft\kissfft.hpp">
       <Filter>src\platform\fft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\CPU.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\MathExtras.h">
+      <Filter>src\WTF\wtf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\WTF\wtf\StdLibExtras.h">
+      <Filter>src\WTF\wtf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
