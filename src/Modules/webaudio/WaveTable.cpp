@@ -37,6 +37,7 @@
 #include "VectorMath.h"
 #include <algorithm>
 #include <wtf/RefPtr.h>
+#include <iostream>
 
 const unsigned WaveTableSize = 4096; // This must be a power of two.
 const unsigned NumberOfRanges = 36; // There should be 3 * log2(WaveTableSize) 1/3 octave ranges.
@@ -153,10 +154,12 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
     float normalizationScale = 1;
 
     unsigned fftSize = m_waveTableSize;
-    unsigned halfSize = fftSize / 2;
+    unsigned halfSize = fftSize / 2 + 1;
     unsigned i;
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
+
+	std::cout << numberOfComponents << std::endl;
 
     m_bandLimitedTables.reserve(m_numberOfRanges);
 
@@ -190,9 +193,20 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
             realP[i] = 0;
             imagP[i] = 0;
         }
+
         // Clear packed-nyquist if necessary.
-        if (numberOfPartials < halfSize)
+        if (numberOfPartials < halfSize) {
             imagP[0] = 0;
+		}
+
+		// Clear nyquist if necessary {
+        if (numberOfPartials < halfSize) {
+            realP[halfSize-1] = 0;
+		}
+		
+		// Clear values which have no effect
+		imagP[0] = 0;
+        imagP[halfSize-1] = 0;
 
         // Clear any DC-offset.
         realP[0] = 0;

@@ -44,7 +44,7 @@ namespace WebCore {
 // to be changed in AudioNode.h where ProcessingSizeInFrames = 1024;
 
 #if OS(WINDOWS) {
-	const int kBufferSize = 1024;
+	const int kBufferSize =1024;
 #elif
 	const int kBufferSize = 128;
 #endif
@@ -70,7 +70,7 @@ AudioDestinationWin::AudioDestinationWin(AudioIOCallback& callback, float sample
 	m_sampleRate(sampleRate), 
 	m_isPlaying(false) {
 
-	printf("%f", sampleRate);
+	printf("\nInitializing RtAudio Subsystem @ %f \n", sampleRate);
 
 	m_renderBus.setSampleRate(hardwareSampleRate());
 
@@ -102,6 +102,7 @@ void AudioDestinationWin::configure() {
 
 	RtAudio::StreamOptions options;
 	options.flags |= RTAUDIO_NONINTERLEAVED;
+	//options.numberOfBuffers = 2; 
 
 	try {
 		dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);

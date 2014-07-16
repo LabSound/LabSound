@@ -30,6 +30,7 @@
 #define FFTFrame_h
 
 #include "AudioArray.h"
+#include <vector>
 
 #if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
 #define USE_ACCELERATE_FFT 1
@@ -47,6 +48,7 @@
 
 #if USE(WEBAUDIO_KISSFFT)
 #include <kiss_fft.hpp>
+#include <kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
 #include "../../WTF/wtf/PassOwnPtr.h"
@@ -131,6 +133,9 @@ private:
 
     kiss_fft_cpx* m_cpxInputData;
     kiss_fft_cpx* m_cpxOutputData;
+
+	std::vector<kiss_fft_cpx> mOutputBuffer; 
+
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;
     

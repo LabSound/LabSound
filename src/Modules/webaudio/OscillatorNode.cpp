@@ -312,6 +312,7 @@ void OscillatorNode::setWaveTable(WaveTable* waveTable)
     MutexLocker processLocker(m_processLock);
     m_waveTable = waveTable;
     m_type = CUSTOM;
+
 }
 
 bool OscillatorNode::propagatesSilence() const

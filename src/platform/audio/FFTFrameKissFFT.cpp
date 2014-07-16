@@ -8,8 +8,9 @@
 #include "FFTFrame.h"
 
 #include "VectorMath.h"
-#include <kiss_fft.hpp>
+#include <kiss_fftr.hpp>
 #include <wtf/MathExtras.h>
+#include <iostream>
 
 // To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines
 
@@ -19,14 +20,22 @@ namespace WebCore {
     
 	// Normal constructor: allocates for a given fftSize.
 	FFTFrame::FFTFrame(unsigned fftSize) : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double)fftSize))), m_forwardContext(0), m_inverseContext(0), m_realData(fftSize / 2), m_imagData(fftSize / 2) {
+		
 		// We only allow power of two.
 		ASSERT(1UL << m_log2FFTSize == m_FFTSize);
         
+		const int mBinSize = m_FFTSize / 2 + 1; 
+
 		m_forwardContext = contextForSize(fftSize, 0);
 		m_inverseContext = contextForSize(fftSize, 1);
         
-		m_cpxInputData = new kiss_fft_cpx[m_FFTSize / 2];
-		m_cpxOutputData = new kiss_fft_cpx[m_FFTSize / 2];
+		m_cpxInputData = new kiss_fft_cpx[mBinSize];
+		m_cpxOutputData = new kiss_fft_cpx[mBinSize];
+
+		size_t nbytes = sizeof(float) * mBinSize;
+		memset(realData(), 0, nbytes);
+		memset(imagData(), 0, nbytes);
+
 	}
     
     // Creates a blank/empty frame (interpolate() must later be called).
@@ -40,7 +49,9 @@ namespace WebCore {
     
     // Copy constructor.
 	FFTFrame::FFTFrame(const FFTFrame& frame) : m_FFTSize(frame.m_FFTSize) , m_log2FFTSize(frame.m_log2FFTSize) , m_forwardContext(0) , m_inverseContext(0) , m_realData(frame.m_FFTSize / 2) , m_imagData(frame.m_FFTSize / 2)
-	{
+	{ 
+
+		/* 
 		m_forwardContext = contextForSize(m_FFTSize, 0);
 		m_inverseContext = contextForSize(m_FFTSize, 1);
         
@@ -51,6 +62,8 @@ namespace WebCore {
         
 		m_cpxInputData = new kiss_fft_cpx[m_FFTSize / 2];
 		m_cpxOutputData = new kiss_fft_cpx[m_FFTSize / 2];
+		*/
+
 	}
     
 	void FFTFrame::initialize()
@@ -100,9 +113,10 @@ namespace WebCore {
     
 	void FFTFrame::doFFT(const float* data)
 	{
+		/* 
 		float* srcData = const_cast<float*>(data);
 		// Compute Forward transform.
-		kiss_fft(m_forwardContext, reinterpret_cast<kiss_fft_cpx*>(srcData), m_cpxOutputData);
+		kiss_fftr(m_forwardContext, reinterpret_cast<kiss_fft_cpx*>(srcData), m_cpxOutputData);
         
 		// FIXME: see above comment in multiply() about scaling.
 		const float scale = 2.0f;
@@ -112,22 +126,64 @@ namespace WebCore {
         
 		// De-interleave to separate real and complex arrays.
 		VectorMath::vdeintlve(outputData, m_realData.data(), m_imagData.data(), m_FFTSize);
+		*/ 
 	}
     
 	void FFTFrame::doInverseFFT(float* data)
 	{
+
+		/*
+		float *input = reinterpret_cast<float*>(m_cpxInputData); 
+	
+		// Get interleaved real and complex samples (m_cpxInputData[e].i / m_cpxInputData[e].r)
+		// VectorMath::vintlve(m_realData.data(), m_imagData.data(), input, m_FFTSize / 2);
+
+		const uint32_t inputSize = m_FFTSize / 2 + 1;
+
+		 for (uint32_t i = 0; i < inputSize; ++i) {
+			m_cpxInputData[i].r = m_realData.data()[i];
+			m_cpxInputData[i].i =  m_imagData.data()[i];
+		 }
+
+		// Has real and imaginary values... output to data 
+		//kiss_fftri(m_inverseContext, m_cpxInputData, data);
+		kiss_fft(m_inverseContext, m_cpxInputData, m_cpxOutputData);
+
+		for (uint32_t i = 0; i < m_FFTSize; ++i) {
+			//data[i] /= m_FFTSize;
+		}
+
+		// Prepare interleaved data.
+		 float* interleavedData = reinterpret_cast<float*>(m_cpxOutputData);
+
+		// Scale so that a forward then inverse FFT yields exactly the original data.
+		const float scale = 1.0 / m_FFTSize;
+		//std::cout << "Scale: " << scale << std::endl;
+		VectorMath::vsmul(interleavedData, 1, &scale, data, 1, m_FFTSize);
+		
+		*/
+
 		// Get interleaved real and complex samples
-		VectorMath::vintlve(m_realData.data(), m_imagData.data(), reinterpret_cast<float*>(m_cpxInputData), m_FFTSize);
-        
+		//VectorMath::vintlve(m_realData.data(), m_imagData.data(), reinterpret_cast<float*>(m_cpxInputData), m_FFTSize);
+
+		const uint32_t inputSize = m_FFTSize / 2 + 1;
+
+		 for (uint32_t i = 0; i < inputSize; ++i) {
+			m_cpxInputData[i].r = m_realData.data()[i];
+			m_cpxInputData[i].i =  m_imagData.data()[i];
+		 }
+
 		// Compute inverse transform.
 		kiss_fft(m_inverseContext, m_cpxInputData, m_cpxOutputData);
-        
+
 		// Prepare interleaved data.
 		float* interleavedData = reinterpret_cast<float*>(m_cpxOutputData);
-        
+
 		// Scale so that a forward then inverse FFT yields exactly the original data.
 		const float scale = 1.0 / m_FFTSize;
 		VectorMath::vsmul(interleavedData, 1, &scale, data, 1, m_FFTSize);
+
+
 	}
     
 	float* FFTFrame::realData() const

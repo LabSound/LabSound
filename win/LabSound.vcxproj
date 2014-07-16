@@ -94,7 +94,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -158,8 +158,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;ASSERT_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;ASSERT_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
