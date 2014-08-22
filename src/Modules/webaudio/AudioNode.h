@@ -61,7 +61,7 @@ public:
     enum { 
 
 		#if OS(WINDOWS)
-			ProcessingSizeInFrames = 1024 
+			ProcessingSizeInFrames = 128
 		#else
 			ProcessingSizeInFrames = 128 
 		#endif

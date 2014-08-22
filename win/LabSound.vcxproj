@@ -5,17 +5,9 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -28,14 +20,8 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
-    <UseIntelIPP>Sequential</UseIntelIPP>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
+    <UseIntelIPP>Sequential</UseIntelIPP>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -44,25 +30,13 @@
     <PlatformToolset>v110</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -72,21 +46,9 @@
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\src\build\Debug\</OutDir>
-    <IntDir>obj\x64\Debug\</IntDir>
-    <TargetName>LabSound</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>LabSound</TargetName>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\src\build\Release\</OutDir>
-    <IntDir>obj\x64\Release\</IntDir>
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -94,7 +56,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -125,35 +87,6 @@
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Lib>
-      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
-      <AdditionalOptions>"icuin.lib" "icuio.lib" "icuuc.lib" "libsndfile-1.lib" "dsound.lib" "dxguid.lib" "winmm.lib" /LIBPATH:"libs" %(AdditionalOptions)</AdditionalOptions>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Lib>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -191,37 +124,6 @@
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <Lib>
-      <OutputFile>$(OutDir)LabSound.lib</OutputFile>
-      <AdditionalOptions>"icuin.lib" "icuio.lib" "icuuc.lib" "libsndfile-1.lib" "dsound.lib" "dxguid.lib" "winmm.lib" /LIBPATH:"libs" %(AdditionalOptions)</AdditionalOptions>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Lib>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\kissfft\kissfft.hpp" />
@@ -521,6 +423,9 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\Logging.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\rtaudio\asiodrivers.cpp" />
+    <ClCompile Include="..\src\rtaudio\asiolist.cpp" />
+    <ClCompile Include="..\src\rtaudio\iasiothiscallresolver.cpp" />
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp" />
     <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
     </ClCompile>

@@ -37,17 +37,13 @@
 #include "AudioIOCallback.h"
 #include "FloatConversion.h"
 #include "VectorMath.h"
+#include "AudioNode.h"
 
 namespace WebCore {
 
 // DirectSound needs a larger buffer than 128. This number also needs 
 // to be changed in AudioNode.h where ProcessingSizeInFrames = 1024;
 
-#if OS(WINDOWS) {
-	const int kBufferSize =1024;
-#elif
-	const int kBufferSize = 128;
-#endif
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
@@ -66,7 +62,7 @@ float AudioDestination::hardwareSampleRate() {
 
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback& callback, float sampleRate) :
 	m_callback(callback), 
-	m_renderBus(2, kBufferSize, false), 
+	m_renderBus(2, AudioNode::ProcessingSizeInFrames, false), 
 	m_sampleRate(sampleRate), 
 	m_isPlaying(false) {
 
@@ -98,7 +94,7 @@ void AudioDestinationWin::configure() {
 	parameters.firstChannel = 0;
 	unsigned int sampleRate = hardwareSampleRate();
 
-	unsigned int bufferFrames = kBufferSize;
+	unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
 	RtAudio::StreamOptions options;
 	options.flags |= RTAUDIO_NONINTERLEAVED;
@@ -106,7 +102,7 @@ void AudioDestinationWin::configure() {
 
 	try {
 		dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
-		printf("RTAudio Stream Opened!\n"); 
+		printf("\nRTAudio Stream Opened!\n"); 
 	} catch (RtAudioError & e) {
 		e.printMessage();
 	}
@@ -136,6 +132,7 @@ void AudioDestinationWin::stop() {
 		m_isPlaying = true; 
 		e.printMessage();
 	}
+
 }
 
 // Pulls on our provider to get rendered audio stream.
@@ -160,6 +157,8 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
 
 // RTAudio callback ticks and asks for some output... 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ) {
+
+	// printf("%u \n", status); 
 	
 	float *fBufOut = (float*) outputBuffer;
 

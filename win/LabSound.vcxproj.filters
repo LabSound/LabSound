@@ -799,5 +799,14 @@
     <ClCompile Include="..\src\platform\audio\FFTFrameKissFFT.cpp">
       <Filter>src\platform\fft</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\rtaudio\asiodrivers.cpp">
+      <Filter>src\rtaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\rtaudio\asiolist.cpp">
+      <Filter>src\rtaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\rtaudio\iasiothiscallresolver.cpp">
+      <Filter>src\rtaudio</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

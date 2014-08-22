@@ -49,6 +49,7 @@ using namespace VectorMath;
 
 PassRefPtr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Float32Array* imag)
 {
+
     bool isGood = real && imag && real->length() == imag->length();
     ASSERT(isGood);
     if (isGood) {
@@ -94,6 +95,7 @@ WaveTable::WaveTable(float sampleRate)
     , m_numberOfRanges(NumberOfRanges)
     , m_centsPerRange(CentsPerRange)
 {
+
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
     m_rateScale = m_waveTableSize / m_sampleRate;
@@ -151,6 +153,7 @@ unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
 // Thus, higher ranges have more high-frequency partials culled out.
 void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, unsigned numberOfComponents)
 {
+
     float normalizationScale = 1;
 
     unsigned fftSize = m_waveTableSize;

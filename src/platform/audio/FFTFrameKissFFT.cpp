@@ -19,7 +19,7 @@ namespace WebCore {
 	const int kMaxFFTPow2Size = 24;
     
 	// Normal constructor: allocates for a given fftSize.
-	FFTFrame::FFTFrame(unsigned fftSize) : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double)fftSize))), m_forwardContext(0), m_inverseContext(0), m_realData(fftSize / 2), m_imagData(fftSize / 2) {
+	FFTFrame::FFTFrame(unsigned fftSize) : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double)fftSize))), m_forwardContext(0), m_inverseContext(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1) {
 		
 		// We only allow power of two.
 		ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -201,7 +201,7 @@ namespace WebCore {
 		// FIXME: This is non-optimal. Ideally, we'd like to share the contexts for FFTFrames of the same size.
 		ASSERT(fftSize);
         
-		kiss_fft_cfg context = kiss_fft_alloc(fftSize / 2, trans, 0, 0);
+		kiss_fft_cfg context = kiss_fft_alloc(fftSize / 2 + 1, trans, 0, 0);
 		return context;
 	}
     
