@@ -10,60 +10,115 @@
 #include "../Modules/webaudio/AudioContext.h"
 #include "../Modules/webaudio/AudioNode.h"
 #include "../Modules/webaudio/AudioParam.h"
+
 #include "ADSRNode.h"
 #include "STKIncludes.h"
+
 #include <direct.h>
 
 namespace LabSound {
 
-    using namespace WebCore;
+	using namespace WebCore;
 
+	template <class InternalSTKType>
 	class STKNode : public AudioScheduledSourceNode {
 
-    public:
+	public:
 
 		static PassRefPtr<STKNode> create(AudioContext* context, float sampleRate) {
 
-			// Oops, windows for now...
+			// Oops, Windows platform for now...
 			char cwd[MAX_PATH];
 			_getcwd(cwd, MAX_PATH);
 
 			std::string resourcePath = std::string(cwd) + std::string("\\stkresources\\");
-			std::cout << "STK Resource Path: " << resourcePath << std::endl;
 			stk::Stk::setRawwavePath(resourcePath);
+			std::cout << "STK Resource Path: " << resourcePath << std::endl;
 
 			return adoptRef(new STKNode(context, sampleRate));
 
 		}
 
-		AudioParam* attack()  const;
-		AudioParam* decay()   const;
-		AudioParam* sustain() const;
-		AudioParam* release() const;
+		STKNode(AudioContext* context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
 
-		void noteOn(float frequency);
-		void noteOff();
+			stk::Stk::setSampleRate(sampleRate);
 
-        void update(); 
+			// addInput(adoptPtr(new AudioNodeInput(this)));
 
-    private:
-        
-		STKNode(WebCore::AudioContext*, float sampleRate);
+			// Two channels 
+			addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
 
-        // Satisfy the AudioNode interface
-        virtual void process(size_t);
-        virtual void reset() { /*m_currentSampleFrame = 0;*/ }
+			setNodeType((AudioNode::NodeType) LabSound::NodeTypeSTK);
+
+			initialize();
+
+			std::cout << "Initializing STKNode \n";
+
+			//gainNode = ADSRNode::create(context, sampleRate);
+			//LabSound::connect(this->gainNode.get(), this);
+
+		}
+
+		void process(size_t framesToProcess) {
+
+			// First output bus 
+			AudioBus* outputBus = output(0)->bus();
+
+			if (!isInitialized() || !outputBus->numberOfChannels()) {
+				outputBus->zero();
+				return;
+			}
+
+			size_t quantumFrameOffset;
+			size_t nonSilentFramesToProcess;
+
+			updateSchedulingInfo(framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+
+			if (!nonSilentFramesToProcess) {
+				outputBus->zero();
+				return;
+			}
+
+			float* leftChannel = outputBus->channel(0)->mutableData();
+			//float* rightChannel = outputBus->channel(1)->mutableData();
+
+			stk::StkFrames synthFrames(framesToProcess, 1);
+			synth.tick(synthFrames);
+
+			// ??? 
+			for (uint32_t i = 0; i < framesToProcess; i++) {
+				leftChannel[i] = float(synthFrames(i, 0));
+				// rightChannel[i] = synthFrames(i, 1);
+			}
+
+			//AudioBus* inputBus = input(0)->bus();
+			//outputBus->copyFrom(*inputBus);
+			outputBus->clearSilentFlag();
+
+		}
+
+		InternalSTKType getSynth() { return synth; }
+
+	private:
+
+		//STKNode(WebCore::AudioContext*, float sampleRate);
+
+		// Satisfy the AudioNode interface
+		//virtual void process(size_t);
+		virtual void reset() { /*m_currentSampleFrame = 0;*/ }
 
 		// virtual double tailTime() const OVERRIDE { return 0; }
 		// virtual double latencyTime() const OVERRIDE { return 0; }
 
-        virtual bool propagatesSilence() const OVERRIDE;
+		virtual bool propagatesSilence() const OVERRIDE{
+			return false;
+		}
 
-		RefPtr<ADSRNode> gainNode; 
+		RefPtr<ADSRNode> gainNode;
 
-		stk::BeeThree synth;
+		InternalSTKType synth;
 
-    };
+	};
 }
 
 #endif
