@@ -142,6 +142,7 @@
     <ClInclude Include="..\src\LabSound\SfxrNode.h" />
     <ClInclude Include="..\src\LabSound\SoundBuffer.h" />
     <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
+    <ClInclude Include="..\src\LabSound\STKNode.h" />
     <ClInclude Include="..\src\LabSound\SupersawNode.h" />
     <ClInclude Include="..\src\LabSound\WindowFunctions.h" />
     <ClInclude Include="..\src\rtaudio\RtAudio.h" />
@@ -363,6 +364,7 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\LabSound\STKNode.cpp" />
     <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">

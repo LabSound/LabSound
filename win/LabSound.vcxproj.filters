@@ -764,6 +764,9 @@
     <ClInclude Include="..\src\STK\include\BiquadSTK.h">
       <Filter>src\STK</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\LabSound\STKNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
@@ -1314,6 +1317,9 @@
     </ClCompile>
     <ClCompile Include="..\src\STK\src\BiquadSTK.cpp">
       <Filter>src\STK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\STKNode.cpp">
+      <Filter>src\LabSound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
