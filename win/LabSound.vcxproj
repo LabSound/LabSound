@@ -27,7 +27,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -55,7 +55,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;..\src\STK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -233,6 +233,95 @@
     <ClInclude Include="..\src\platform\audio\VectorMath.h" />
     <ClInclude Include="..\src\platform\audio\ZeroPole.h" />
     <ClInclude Include="..\src\platform\Logging.h" />
+    <ClInclude Include="..\src\STK\include\ADSR.h" />
+    <ClInclude Include="..\src\STK\include\Asymp.h" />
+    <ClInclude Include="..\src\STK\include\BandedWG.h" />
+    <ClInclude Include="..\src\STK\include\BeeThree.h" />
+    <ClInclude Include="..\src\STK\include\BiquadSTK.h" />
+    <ClInclude Include="..\src\STK\include\Blit.h" />
+    <ClInclude Include="..\src\STK\include\BlitSaw.h" />
+    <ClInclude Include="..\src\STK\include\BlitSquare.h" />
+    <ClInclude Include="..\src\STK\include\BlowBotl.h" />
+    <ClInclude Include="..\src\STK\include\BlowHole.h" />
+    <ClInclude Include="..\src\STK\include\Bowed.h" />
+    <ClInclude Include="..\src\STK\include\BowTable.h" />
+    <ClInclude Include="..\src\STK\include\Brass.h" />
+    <ClInclude Include="..\src\STK\include\Chorus.h" />
+    <ClInclude Include="..\src\STK\include\Clarinet.h" />
+    <ClInclude Include="..\src\STK\include\Cubic.h" />
+    <ClInclude Include="..\src\STK\include\Delay.h" />
+    <ClInclude Include="..\src\STK\include\DelayA.h" />
+    <ClInclude Include="..\src\STK\include\DelayL.h" />
+    <ClInclude Include="..\src\STK\include\Drummer.h" />
+    <ClInclude Include="..\src\STK\include\Echo.h" />
+    <ClInclude Include="..\src\STK\include\Effect.h" />
+    <ClInclude Include="..\src\STK\include\Envelope.h" />
+    <ClInclude Include="..\src\STK\include\FileLoop.h" />
+    <ClInclude Include="..\src\STK\include\FileRead.h" />
+    <ClInclude Include="..\src\STK\include\FileWrite.h" />
+    <ClInclude Include="..\src\STK\include\FileWvIn.h" />
+    <ClInclude Include="..\src\STK\include\FileWvOut.h" />
+    <ClInclude Include="..\src\STK\include\Filter.h" />
+    <ClInclude Include="..\src\STK\include\Fir.h" />
+    <ClInclude Include="..\src\STK\include\Flute.h" />
+    <ClInclude Include="..\src\STK\include\FM.h" />
+    <ClInclude Include="..\src\STK\include\FMVoices.h" />
+    <ClInclude Include="..\src\STK\include\FormSwep.h" />
+    <ClInclude Include="..\src\STK\include\FreeVerb.h" />
+    <ClInclude Include="..\src\STK\include\Function.h" />
+    <ClInclude Include="..\src\STK\include\Generator.h" />
+    <ClInclude Include="..\src\STK\include\Granulate.h" />
+    <ClInclude Include="..\src\STK\include\Guitar.h" />
+    <ClInclude Include="..\src\STK\include\HevyMetl.h" />
+    <ClInclude Include="..\src\STK\include\Iir.h" />
+    <ClInclude Include="..\src\STK\include\Instrmnt.h" />
+    <ClInclude Include="..\src\STK\include\JCRev.h" />
+    <ClInclude Include="..\src\STK\include\JetTable.h" />
+    <ClInclude Include="..\src\STK\include\LentPitShift.h" />
+    <ClInclude Include="..\src\STK\include\Mandolin.h" />
+    <ClInclude Include="..\src\STK\include\Mesh2D.h" />
+    <ClInclude Include="..\src\STK\include\Messager.h" />
+    <ClInclude Include="..\src\STK\include\MidiFileIn.h" />
+    <ClInclude Include="..\src\STK\include\Modal.h" />
+    <ClInclude Include="..\src\STK\include\ModalBar.h" />
+    <ClInclude Include="..\src\STK\include\Modulate.h" />
+    <ClInclude Include="..\src\STK\include\Moog.h" />
+    <ClInclude Include="..\src\STK\include\Noise.h" />
+    <ClInclude Include="..\src\STK\include\NRev.h" />
+    <ClInclude Include="..\src\STK\include\OnePole.h" />
+    <ClInclude Include="..\src\STK\include\OneZero.h" />
+    <ClInclude Include="..\src\STK\include\PercFlut.h" />
+    <ClInclude Include="..\src\STK\include\Phonemes.h" />
+    <ClInclude Include="..\src\STK\include\PitShift.h" />
+    <ClInclude Include="..\src\STK\include\Plucked.h" />
+    <ClInclude Include="..\src\STK\include\PoleZero.h" />
+    <ClInclude Include="..\src\STK\include\PRCRev.h" />
+    <ClInclude Include="..\src\STK\include\ReedTable.h" />
+    <ClInclude Include="..\src\STK\include\Resonate.h" />
+    <ClInclude Include="..\src\STK\include\Rhodey.h" />
+    <ClInclude Include="..\src\STK\include\Sampler.h" />
+    <ClInclude Include="..\src\STK\include\Saxofony.h" />
+    <ClInclude Include="..\src\STK\include\Shakers.h" />
+    <ClInclude Include="..\src\STK\include\Simple.h" />
+    <ClInclude Include="..\src\STK\include\SineWave.h" />
+    <ClInclude Include="..\src\STK\include\SingWave.h" />
+    <ClInclude Include="..\src\STK\include\Sitar.h" />
+    <ClInclude Include="..\src\STK\include\Skini.h" />
+    <ClInclude Include="..\src\STK\include\Sphere.h" />
+    <ClInclude Include="..\src\STK\include\StifKarp.h" />
+    <ClInclude Include="..\src\STK\include\Stk.h" />
+    <ClInclude Include="..\src\STK\include\TapDelay.h" />
+    <ClInclude Include="..\src\STK\include\TubeBell.h" />
+    <ClInclude Include="..\src\STK\include\Twang.h" />
+    <ClInclude Include="..\src\STK\include\TwoPole.h" />
+    <ClInclude Include="..\src\STK\include\TwoZero.h" />
+    <ClInclude Include="..\src\STK\include\Vector3D.h" />
+    <ClInclude Include="..\src\STK\include\Voicer.h" />
+    <ClInclude Include="..\src\STK\include\VoicForm.h" />
+    <ClInclude Include="..\src\STK\include\Whistle.h" />
+    <ClInclude Include="..\src\STK\include\Wurley.h" />
+    <ClInclude Include="..\src\STK\include\WvIn.h" />
+    <ClInclude Include="..\src\STK\include\WvOut.h" />
     <ClInclude Include="..\src\WTF\wtf\ArrayBuffer.h" />
     <ClInclude Include="..\src\WTF\wtf\ArrayBufferView.h" />
     <ClInclude Include="..\src\WTF\wtf\Assertions.h" />
@@ -427,6 +516,83 @@
     <ClCompile Include="..\src\rtaudio\asiolist.cpp" />
     <ClCompile Include="..\src\rtaudio\iasiothiscallresolver.cpp" />
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp" />
+    <ClCompile Include="..\src\STK\src\ADSR.cpp" />
+    <ClCompile Include="..\src\STK\src\Asymp.cpp" />
+    <ClCompile Include="..\src\STK\src\BandedWG.cpp" />
+    <ClCompile Include="..\src\STK\src\BeeThree.cpp" />
+    <ClCompile Include="..\src\STK\src\BiquadSTK.cpp" />
+    <ClCompile Include="..\src\STK\src\Blit.cpp" />
+    <ClCompile Include="..\src\STK\src\BlitSaw.cpp" />
+    <ClCompile Include="..\src\STK\src\BlitSquare.cpp" />
+    <ClCompile Include="..\src\STK\src\BlowBotl.cpp" />
+    <ClCompile Include="..\src\STK\src\BlowHole.cpp" />
+    <ClCompile Include="..\src\STK\src\Bowed.cpp" />
+    <ClCompile Include="..\src\STK\src\Brass.cpp" />
+    <ClCompile Include="..\src\STK\src\Chorus.cpp" />
+    <ClCompile Include="..\src\STK\src\Clarinet.cpp" />
+    <ClCompile Include="..\src\STK\src\Delay.cpp" />
+    <ClCompile Include="..\src\STK\src\DelayA.cpp" />
+    <ClCompile Include="..\src\STK\src\DelayL.cpp" />
+    <ClCompile Include="..\src\STK\src\Drummer.cpp" />
+    <ClCompile Include="..\src\STK\src\Echo.cpp" />
+    <ClCompile Include="..\src\STK\src\Envelope.cpp" />
+    <ClCompile Include="..\src\STK\src\FileLoop.cpp" />
+    <ClCompile Include="..\src\STK\src\FileRead.cpp" />
+    <ClCompile Include="..\src\STK\src\FileWrite.cpp" />
+    <ClCompile Include="..\src\STK\src\FileWvIn.cpp" />
+    <ClCompile Include="..\src\STK\src\FileWvOut.cpp" />
+    <ClCompile Include="..\src\STK\src\Fir.cpp" />
+    <ClCompile Include="..\src\STK\src\Flute.cpp" />
+    <ClCompile Include="..\src\STK\src\FM.cpp" />
+    <ClCompile Include="..\src\STK\src\FMVoices.cpp" />
+    <ClCompile Include="..\src\STK\src\FormSwep.cpp" />
+    <ClCompile Include="..\src\STK\src\FreeVerb.cpp" />
+    <ClCompile Include="..\src\STK\src\Granulate.cpp" />
+    <ClCompile Include="..\src\STK\src\Guitar.cpp" />
+    <ClCompile Include="..\src\STK\src\HevyMetl.cpp" />
+    <ClCompile Include="..\src\STK\src\Iir.cpp" />
+    <ClCompile Include="..\src\STK\src\JCRev.cpp" />
+    <ClCompile Include="..\src\STK\src\LentPitShift.cpp" />
+    <ClCompile Include="..\src\STK\src\Mandolin.cpp" />
+    <ClCompile Include="..\src\STK\src\Mesh2D.cpp" />
+    <ClCompile Include="..\src\STK\src\Messager.cpp" />
+    <ClCompile Include="..\src\STK\src\MidiFileIn.cpp" />
+    <ClCompile Include="..\src\STK\src\Modal.cpp" />
+    <ClCompile Include="..\src\STK\src\ModalBar.cpp" />
+    <ClCompile Include="..\src\STK\src\Modulate.cpp" />
+    <ClCompile Include="..\src\STK\src\Moog.cpp" />
+    <ClCompile Include="..\src\STK\src\Noise.cpp" />
+    <ClCompile Include="..\src\STK\src\NRev.cpp" />
+    <ClCompile Include="..\src\STK\src\OnePole.cpp" />
+    <ClCompile Include="..\src\STK\src\OneZero.cpp" />
+    <ClCompile Include="..\src\STK\src\PercFlut.cpp" />
+    <ClCompile Include="..\src\STK\src\Phonemes.cpp" />
+    <ClCompile Include="..\src\STK\src\PitShift.cpp" />
+    <ClCompile Include="..\src\STK\src\Plucked.cpp" />
+    <ClCompile Include="..\src\STK\src\PoleZero.cpp" />
+    <ClCompile Include="..\src\STK\src\PRCRev.cpp" />
+    <ClCompile Include="..\src\STK\src\Resonate.cpp" />
+    <ClCompile Include="..\src\STK\src\Rhodey.cpp" />
+    <ClCompile Include="..\src\STK\src\Sampler.cpp" />
+    <ClCompile Include="..\src\STK\src\Saxofony.cpp" />
+    <ClCompile Include="..\src\STK\src\Shakers.cpp" />
+    <ClCompile Include="..\src\STK\src\Simple.cpp" />
+    <ClCompile Include="..\src\STK\src\SineWave.cpp" />
+    <ClCompile Include="..\src\STK\src\SingWave.cpp" />
+    <ClCompile Include="..\src\STK\src\Sitar.cpp" />
+    <ClCompile Include="..\src\STK\src\Skini.cpp" />
+    <ClCompile Include="..\src\STK\src\Sphere.cpp" />
+    <ClCompile Include="..\src\STK\src\StifKarp.cpp" />
+    <ClCompile Include="..\src\STK\src\Stk.cpp" />
+    <ClCompile Include="..\src\STK\src\TapDelay.cpp" />
+    <ClCompile Include="..\src\STK\src\TubeBell.cpp" />
+    <ClCompile Include="..\src\STK\src\Twang.cpp" />
+    <ClCompile Include="..\src\STK\src\TwoPole.cpp" />
+    <ClCompile Include="..\src\STK\src\TwoZero.cpp" />
+    <ClCompile Include="..\src\STK\src\Voicer.cpp" />
+    <ClCompile Include="..\src\STK\src\VoicForm.cpp" />
+    <ClCompile Include="..\src\STK\src\Whistle.cpp" />
+    <ClCompile Include="..\src\STK\src\Wurley.cpp" />
     <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
@@ -479,6 +645,8 @@
     <None Include="..\src\Modules\webaudio\PannerNode.idl" />
     <None Include="..\src\Modules\webaudio\WaveShaperNode.idl" />
     <None Include="..\src\Modules\webaudio\WaveTable.idl" />
+    <None Include="..\src\STK\include\SKINI.msg" />
+    <None Include="..\src\STK\include\SKINI.tbl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
