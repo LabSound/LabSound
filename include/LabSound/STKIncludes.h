@@ -3,7 +3,7 @@
 #include "../../src/STK/include/Asymp.h"
 #include "../../src/STK/include/BandedWG.h"
 #include "../../src/STK/include/BeeThree.h"
-#include "../../src/STK/include/BiQuad.h"
+#include "../../src/STK/include/BiquadSTK.h"
 #include "../../src/STK/include/Blit.h"
 #include "../../src/STK/include/BlitSaw.h"
 #include "../../src/STK/include/BlitSquare.h"

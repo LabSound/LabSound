@@ -114,8 +114,8 @@ inline StkFloat Filter :: phaseDelay( StkFloat frequency )
     imag -= a_[i] * std::sin( i * omegaT );
   }
 
-  phase -= std::atan2( imag, real );
-  phase = std::fmod( -phase, 2 * PI );
+  phase -= atan2( imag, real );
+  phase = fmod( -phase, 2 * PI );
   return phase / omegaT;
 }
 

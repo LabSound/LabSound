@@ -5,6 +5,7 @@
 #include "LabSound.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
+#include "STKIncludes.h"
 
 using namespace WebCore;
 
