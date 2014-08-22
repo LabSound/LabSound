@@ -10,18 +10,23 @@ int main(int argc, char *argv[], char *envp[]) {
     WebCore::ExceptionCode ec;
 	RefPtr<AudioContext> context = LabSound::init(); 
 
-	/* 
-	RefPtr<OscillatorNode> oscillator = context->createOscillator();
+	RefPtr<STKNode> beeThree =  STKNode::create(context.get(), context->sampleRate());
 
-	oscillator->connect(context->destination(), 0, 0, ec);
-	oscillator->start(0);
-	oscillator->setType(0, ec); // Default SinOsc
-	oscillator->frequency()->setValue(440.f); 
+	beeThree->connect(context->destination(), 0, 0, ec);
 
-    for (float i = 0; i < 10; i += 0.01f) {
-		std::this_thread::sleep_for(std::chrono::microseconds(4000));
+	beeThree->start(0);
+
+    for (float i = 0; i < 20; i += 0.1f) {
+
+		std::cout << "Note on! " << i * 10 << std::endl; 
+
+		beeThree->noteOn(i * 10); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+		//beeThree->noteOff();
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
     }
-	*/
 
     return 0;
 

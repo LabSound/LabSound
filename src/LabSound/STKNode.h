@@ -11,17 +11,29 @@
 #include "../Modules/webaudio/AudioNode.h"
 #include "../Modules/webaudio/AudioParam.h"
 #include "ADSRNode.h"
+#include "STKIncludes.h"
+#include <direct.h>
 
 namespace LabSound {
 
     using namespace WebCore;
 
-    class STKNode : public AudioNode {
+	class STKNode : public AudioScheduledSourceNode {
 
     public:
 
 		static PassRefPtr<STKNode> create(AudioContext* context, float sampleRate) {
+
+			// Oops, windows for now...
+			char cwd[MAX_PATH];
+			_getcwd(cwd, MAX_PATH);
+
+			std::string resourcePath = std::string(cwd) + std::string("\\stkresources\\");
+			std::cout << "STK Resource Path: " << resourcePath << std::endl;
+			stk::Stk::setRawwavePath(resourcePath);
+
 			return adoptRef(new STKNode(context, sampleRate));
+
 		}
 
 		AudioParam* attack()  const;
@@ -29,7 +41,7 @@ namespace LabSound {
 		AudioParam* sustain() const;
 		AudioParam* release() const;
 
-		void noteOn();
+		void noteOn(float frequency);
 		void noteOff();
 
         void update(); 
@@ -41,11 +53,15 @@ namespace LabSound {
         // Satisfy the AudioNode interface
         virtual void process(size_t);
         virtual void reset() { /*m_currentSampleFrame = 0;*/ }
-        virtual double tailTime() const OVERRIDE { return 0; }
-        virtual double latencyTime() const OVERRIDE { return 0; }
+
+		// virtual double tailTime() const OVERRIDE { return 0; }
+		// virtual double latencyTime() const OVERRIDE { return 0; }
+
         virtual bool propagatesSilence() const OVERRIDE;
 
 		RefPtr<ADSRNode> gainNode; 
+
+		stk::BeeThree synth;
 
     };
 }

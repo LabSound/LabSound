@@ -53,4 +53,7 @@
 #include "LabSound/AsyncAudioDecoder.h"
 #include "LabSound/AnalyserNode.h"
 
+// WIP Nodes
+#include "../../src/LabSound/STKNode.h"
+
 #endif
