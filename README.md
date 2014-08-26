@@ -30,7 +30,6 @@ On Windows, user projects will also need the following dependencies:
 +   dsound.lib
 +   dxguid.lib
 +   winmm.lib
-+   Intel IPP 8.0+
 
 LabSound includes WebAudio HRTF implementation. This creates an additional dependency on a folder of HRTF impulse wav files. These files should be located in a directory called `resources/` in the current working directory of the application. 
 
@@ -40,7 +39,7 @@ Premake4 was used to generate the platform-specific project files, however both 
 
 ## Building Library on Windows 
 
-Windows requires additional libraries that aren't included in the repository. libsndfile and rtaudio are both requirements. `libsndfile-1.lib` should be added as an additional dependency along with the appropriate header file, and the .dll copied into the directory of examples or applications built with LabSound. rtaudio can be built directly into the project by adding `rtaudio.h`, `rterror.h and` `rtaudio.cpp`. Placeholder directories for these files are located in the `src/` directory. At present, an FFT implementation is required to make use of the full functionality of LabSound -- for this, the project needs Intel IPP 8.0, however freely licenced alternates are being tested. 
+Windows requires number of additional dependencies that are included, under their respective license terms, in this repository. These include RTAudio, KissFFT, and libsndfile. Of these, RTAudio and KissFFT have nonrestrictive licenses, although libsndfile is GPL. The functionality of KissFFT is cross platform, although the Windows ifft implementation produces noisy output when generating the wavetables for the standard oscillators. 
 
 ## Examples + Wiki
 
