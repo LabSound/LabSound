@@ -91,7 +91,7 @@ void AudioDestinationWin::configure() {
 	parameters.deviceId = dac.getDefaultOutputDevice();
 	parameters.nChannels = 2;
 	parameters.firstChannel = 0;
-	unsigned int sampleRate = hardwareSampleRate();
+	unsigned int sampleRate = unsigned int ( hardwareSampleRate() );
 
 	unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 

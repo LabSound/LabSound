@@ -20,21 +20,25 @@ int main(int argc, char *argv[], char *envp[]) {
     WebCore::ExceptionCode ec;
 	RefPtr<AudioContext> context = LabSound::init(); 
 
-	BeeThree myTB303 = STKNode<stk::BeeThree>::create(context.get(), context->sampleRate());
+	Rhodey myRhodey = STKNode<stk::Rhodey>::create(context.get(), 44100);
 
-	myTB303->connect(context->destination(), 0, 0, ec);
+	SoundBuffer tonbi(context, "tonbi.wav");
 
-	myTB303->start(0);
+	tonbi.play(0.0f);
 
-    for (float i = 0; i < 20; i += 0.1f) {
+	myRhodey->connect(context->destination(), 0, 0, ec);
 
-		std::cout << "Note on! " << i * 10 << std::endl; 
+	myRhodey->start(0);
 
-		myTB303->getSynth().noteOn(i * 10, 0.25);
+	stk::Rhodey gimmeSomeRhodey = myRhodey->getSynth();
+
+    for (float i = 1; i < 6; i++) {
+
+		gimmeSomeRhodey.noteOn(220 * i, 0);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		gimmeSomeRhodey.noteOff(32);
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
-
-		//beeThree->noteOff();
-		//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     }
 

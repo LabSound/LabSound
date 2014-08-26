@@ -67,7 +67,7 @@ namespace stk {
 */
 /***************************************************/
 
-//#define _STK_DEBUG_
+#define _STK_DEBUG_
 
 // Most data in STK is passed and calculated with the
 // following user-definable floating-point type.  You
@@ -508,7 +508,7 @@ const StkFloat SRATE = 44100.0;
 // clicks are occuring in the input and/or output sound stream, a
 // larger buffer size may help.  Larger buffer sizes, however, produce
 // more latency.
-const unsigned int RT_BUFFER_SIZE = 512;
+const unsigned int RT_BUFFER_SIZE = 256;
 
 // The default rawwave path value is set with the preprocessor
 // definition RAWWAVE_PATH.  This can be specified as an argument to

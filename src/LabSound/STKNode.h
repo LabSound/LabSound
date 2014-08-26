@@ -33,7 +33,12 @@ namespace LabSound {
 
 			std::string resourcePath = std::string(cwd) + std::string("\\stkresources\\");
 			stk::Stk::setRawwavePath(resourcePath);
-			std::cout << "STK Resource Path: " << resourcePath << std::endl;
+
+			std::cout << "\n STK Resource Path: " << resourcePath << std::endl;
+
+			stk::Stk::showWarnings(true);
+			stk::Stk::printErrors(true);
+			stk::Stk::setSampleRate(sampleRate);
 
 			return adoptRef(new STKNode(context, sampleRate));
 
@@ -41,23 +46,13 @@ namespace LabSound {
 
 		STKNode(AudioContext* context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
 
-			stk::Stk::setSampleRate(sampleRate);
-
-			// addInput(adoptPtr(new AudioNodeInput(this)));
-
-			// Two channels 
 			addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
-
 			setNodeType((AudioNode::NodeType) LabSound::NodeTypeSTK);
-
 			initialize();
 
-			std::cout << "Initializing STKNode \n";
-
-			//gainNode = ADSRNode::create(context, sampleRate);
-			//LabSound::connect(this->gainNode.get(), this);
-
 		}
+
+		~STKNode() { }
 
 		void process(size_t framesToProcess) {
 
@@ -79,20 +74,17 @@ namespace LabSound {
 				return;
 			}
 
-			float* leftChannel = outputBus->channel(0)->mutableData();
-			//float* rightChannel = outputBus->channel(1)->mutableData();
+			float* monoChannel = outputBus->channel(0)->mutableData();
 
 			stk::StkFrames synthFrames(framesToProcess, 1);
 			synth.tick(synthFrames);
 
+
 			// ??? 
-			for (uint32_t i = 0; i < framesToProcess; i++) {
-				leftChannel[i] = float(synthFrames(i, 0));
-				// rightChannel[i] = synthFrames(i, 1);
+			for (uint32_t i = 0; i < framesToProcess; ++i) {
+				monoChannel[i] = synthFrames(i, 0);
 			}
 
-			//AudioBus* inputBus = input(0)->bus();
-			//outputBus->copyFrom(*inputBus);
 			outputBus->clearSilentFlag();
 
 		}
@@ -101,10 +93,7 @@ namespace LabSound {
 
 	private:
 
-		//STKNode(WebCore::AudioContext*, float sampleRate);
-
 		// Satisfy the AudioNode interface
-		//virtual void process(size_t);
 		virtual void reset() { /*m_currentSampleFrame = 0;*/ }
 
 		// virtual double tailTime() const OVERRIDE { return 0; }
@@ -114,9 +103,9 @@ namespace LabSound {
 			return false;
 		}
 
-		RefPtr<ADSRNode> gainNode;
-
 		InternalSTKType synth;
+
+		stk::FileWvOut* waveOut;
 
 	};
 }

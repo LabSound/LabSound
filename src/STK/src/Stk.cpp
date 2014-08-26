@@ -79,6 +79,7 @@ Stk :: ~Stk( void )
 
 void Stk :: setSampleRate( StkFloat rate )
 {
+
   if ( rate > 0.0 && rate != srate_ ) {
     StkFloat oldRate = srate_;
     srate_ = rate;
@@ -125,6 +126,9 @@ void Stk :: setRawwavePath( std::string path )
 
 void Stk :: swap16(unsigned char *ptr)
 {
+	
+  //std::cout << "SWAP 16";
+
   register unsigned char val;
 
   // Swap 1st and 2nd bytes
@@ -135,6 +139,7 @@ void Stk :: swap16(unsigned char *ptr)
 
 void Stk :: swap32(unsigned char *ptr)
 {
+
   register unsigned char val;
 
   // Swap 1st and 4th bytes
@@ -151,6 +156,7 @@ void Stk :: swap32(unsigned char *ptr)
 
 void Stk :: swap64(unsigned char *ptr)
 {
+
   register unsigned char val;
 
   // Swap 1st and 8th bytes
