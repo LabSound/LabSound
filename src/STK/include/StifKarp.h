@@ -110,6 +110,8 @@ inline StkFloat StifKarp :: tick( unsigned int )
 {
   StkFloat temp = delayLine_.lastOut() * loopGain_;
 
+  std::cout << delayLine_.lastOut() << std::endl;
+
   // Calculate allpass stretching.
   for (int i=0; i<4; i++)
     temp = biquad_[i].tick(temp);

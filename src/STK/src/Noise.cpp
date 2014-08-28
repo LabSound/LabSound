@@ -12,21 +12,41 @@
 
 #include "Noise.h"
 #include <time.h>
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <functional>
+#include <random>
+#include <vector>
 
 namespace stk {
 
-Noise :: Noise( unsigned int seed )
-{
-  // Seed the random number generator
+Noise::Noise( unsigned int seed ) {
+
   this->setSeed( seed );
+
 }
 
-void Noise :: setSeed( unsigned int seed )
-{
-  if ( seed == 0 )
-    srand( (unsigned int) time( NULL ) );
-  else
-    srand( seed );
+// Ignore passed in seed.
+void Noise::setSeed( unsigned int seed ) {
+
+	// http://i4.connect.microsoft.com/VisualStudio/feedbackdetail/view/875492/compile-error-passing-a-random-device-to-mersenne-twister-engine
+
+	auto newSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+	mt_rand.seed(newSeed);
+
+}
+
+StkFloat Noise::generateRandom() {
+
+	// Vs mt_rand()
+	// The std::uniform_real_distribution::operator() takes a Generator & so you will have to bind using std::ref 
+	auto randomNumber = std::bind(std::uniform_real_distribution<double>(-1, 1), std::ref(mt_rand));
+
+	auto result = randomNumber(); 
+
+	return StkFloat(result);
+
 }
 
 } // stk namespace

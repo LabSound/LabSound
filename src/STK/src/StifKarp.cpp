@@ -131,7 +131,8 @@ void StifKarp :: pluck( StkFloat amplitude )
   }
 
   pluckAmplitude_ = amplitude;
-  for ( unsigned long i=0; i<length_; i++ ) {
+
+  for (unsigned long i = 0; i<length_; i++) {
     // Fill delay with noise additively with current contents.
     delayLine_.tick( (delayLine_.lastOut() * 0.6) + 0.4 * noise_.tick() * pluckAmplitude_ );
     //delayLine_.tick( combDelay_.tick((delayLine_.lastOut() * 0.6) + 0.4 * noise->tick() * pluckAmplitude_) );

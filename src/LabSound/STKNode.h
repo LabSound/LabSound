@@ -34,7 +34,7 @@ namespace LabSound {
 			std::string resourcePath = std::string(cwd) + std::string("\\stkresources\\");
 			stk::Stk::setRawwavePath(resourcePath);
 
-			std::cout << "\n STK Resource Path: " << resourcePath << std::endl;
+			std::cout << "\nSTK Resource Path: " << resourcePath << std::endl;
 
 			stk::Stk::showWarnings(true);
 			stk::Stk::printErrors(true);
@@ -79,8 +79,6 @@ namespace LabSound {
 			stk::StkFrames synthFrames(framesToProcess, 1);
 			synth.tick(synthFrames);
 
-
-			// ??? 
 			for (uint32_t i = 0; i < framesToProcess; ++i) {
 				monoChannel[i] = synthFrames(i, 0);
 			}

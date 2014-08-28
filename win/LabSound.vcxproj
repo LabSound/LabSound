@@ -133,8 +133,6 @@
     <ClInclude Include="..\src\LabSound\ADSRNode.h" />
     <ClInclude Include="..\src\LabSound\ClipNode.h" />
     <ClInclude Include="..\src\LabSound\DiodeNode.h" />
-    <ClInclude Include="..\src\LabSound\LabSound.h" />
-    <ClInclude Include="..\src\LabSound\LabSoundConfig.h" />
     <ClInclude Include="..\src\LabSound\NoiseNode.h" />
     <ClInclude Include="..\src\LabSound\PdNode.h" />
     <ClInclude Include="..\src\LabSound\PWMNode.h" />

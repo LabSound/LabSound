@@ -103,7 +103,7 @@ protected:
 
 inline StkFloat Modal :: tick( unsigned int )
 {
-  StkFloat temp = masterGain_ * onepole_.tick( wave_->tick() * envelope_.tick() );
+  StkFloat temp = masterGain_ * onepole_.tick( wave_->tick());
 
   StkFloat temp2 = 0.0;
   for ( unsigned int i=0; i<nModes_; i++ )
@@ -117,7 +117,7 @@ inline StkFloat Modal :: tick( unsigned int )
     temp = 1.0 + ( vibrato_.tick() * vibratoGain_ );
     temp2 = temp * temp2;
   }
-    
+
   lastFrame_[0] = temp2;
   return lastFrame_[0];
 }

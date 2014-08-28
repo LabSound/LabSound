@@ -140,12 +140,6 @@
     <ClInclude Include="..\src\LabSound\DiodeNode.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\LabSound\LabSound.h">
-      <Filter>src\LabSound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\LabSound\LabSoundConfig.h">
-      <Filter>src\LabSound</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\LabSound\NoiseNode.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>

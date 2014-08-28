@@ -4,6 +4,15 @@
 #include "Generator.h"
 #include <stdlib.h>
 
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <map>
+#include <random>
+#include <cmath>
+
+// Dimitri: Added C++ PRNG replacement 
+
 namespace stk {
 
 /***************************************************/
@@ -36,6 +45,8 @@ public:
   */
   void setSeed( unsigned int seed = 0 );
 
+  StkFloat generateRandom(); 
+
   //! Return the last computed output value.
   StkFloat lastOut( void ) const { return lastFrame_[0]; };
 
@@ -54,11 +65,13 @@ public:
 
 protected:
 
+	std::mt19937 mt_rand; 
+
 };
 
 inline StkFloat Noise :: tick( void )
 {
-  return lastFrame_[0] = (StkFloat) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+	return lastFrame_[0] = generateRandom(); 
 }
 
 inline StkFrames& Noise :: tick( StkFrames& frames, unsigned int channel )
@@ -73,7 +86,7 @@ inline StkFrames& Noise :: tick( StkFrames& frames, unsigned int channel )
   StkFloat *samples = &frames[channel];
   unsigned int hop = frames.channels();
   for ( unsigned int i=0; i<frames.frames(); i++, samples += hop )
-    *samples = (StkFloat) ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+	  *samples = generateRandom();
 
   lastFrame_[0] = *(samples-hop);
   return frames;

@@ -39,7 +39,7 @@ class Mandolin : public Instrmnt
 {
  public:
   //! Class constructor, taking the lowest desired playing frequency.
-  Mandolin( StkFloat lowestFrequency );
+  Mandolin( StkFloat lowestFrequency = 8.0 );
 
   //! Class destructor.
   ~Mandolin( void );
