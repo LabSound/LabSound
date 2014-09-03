@@ -5,7 +5,8 @@ namespace LabSound {
 
 	SampledInstrumentNode::SampledInstrumentNode(WebCore::AudioContext*, float sampleRate) : context(context) {
 
-		samples.push_back(new SamplerSound(context, "bells_C4.wav", "C4", "C4", "C5")); 
+		samples.push_back(new SamplerSound(context, "bells_C4.wav", "C4", "C4", "B4")); 
+		samples.push_back(new SamplerSound(context, "bells_C4.wav", "C5", "C5", "B5"));
 
 	}
 
