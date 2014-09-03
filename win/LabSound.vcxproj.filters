@@ -761,6 +761,9 @@
     <ClInclude Include="..\src\LabSound\STKNode.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\LabSound\SampledInstrumentNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
@@ -1313,6 +1316,9 @@
       <Filter>src\STK</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LabSound\STKNode.cpp">
+      <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\SampledInstrumentNode.cpp">
       <Filter>src\LabSound</Filter>
     </ClCompile>
   </ItemGroup>

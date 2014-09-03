@@ -12,18 +12,19 @@ namespace LabSound {
 
 using namespace WTF;
 
-class SoundBuffer
-{
+class SoundBuffer {
+
 public:
+
     RefPtr<WebCore::AudioBuffer> audioBuffer;
     RefPtr<WebCore::AudioContext> context;
     
     SoundBuffer(RefPtr<WebCore::AudioContext> context, const char* path);
     ~SoundBuffer();
     
+	PassRefPtr<WebCore::AudioBufferSourceNode> play(float when = 0.0f);
     PassRefPtr<WebCore::AudioBufferSourceNode> play(WebCore::AudioNode* outputNode, float when = 0.0f);
-    PassRefPtr<WebCore::AudioBufferSourceNode> play(float when = 0.0f);
-    
+
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
