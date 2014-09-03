@@ -1,11 +1,16 @@
 #include "../Modules/webaudio/AudioContext.h"
 #include "../Modules/webaudio/AudioNode.h"
 #include "../Modules/webaudio/AudioParam.h"
+#include "../Modules/webaudio/AudioBufferSourceNode.h"
+#include "../WTF/wtf/RefPtr.h"
 #include "SoundBuffer.h"
+#include <iostream> 
 #include <array>
 
 namespace LabSound {
-	
+
+	using namespace WebCore;
+
 	struct SamplerSound {
 
 		SamplerSound(RefPtr<WebCore::AudioContext> context, std::string path, std::string baseMidiNote, std::string midiNoteLow, std::string midiNoteHigh) {
@@ -13,19 +18,24 @@ namespace LabSound {
 			audioBuffer = new SoundBuffer(context, path.c_str()); 
 
 			this->context = context;
-			this->baseMidiNote = SampledInstrumentNode::getMIDIFromNoteString(baseMidiNote); 
-			this->midiNoteLow = SampledInstrumentNode::getMIDIFromNoteString(midiNoteLow);
-			this->midiNoteHigh = SampledInstrumentNode::getMIDIFromNoteString(midiNoteHigh);
+			this->baseMidiNote = getMIDIFromNoteString(baseMidiNote); 
+			this->midiNoteLow = getMIDIFromNoteString(midiNoteLow);
+			this->midiNoteHigh = getMIDIFromNoteString(midiNoteHigh);
 
 		}
 
-		const std::string& getPath() const; 
+		// const std::string& getPath() const; 
 
 		bool appliesToNote(uint8_t note) {
 
+			std::cout << "Base: " << int(baseMidiNote) << std::endl;
+			std::cout << "Low: " << int(midiNoteLow) << std::endl;
+			std::cout << "High: " << int(midiNoteHigh) << std::endl;
+
 			if (baseMidiNote == note) {
 				return true; 
-			} else if (midiNoteLow >= note && midiNoteHigh <= note) {
+			}
+			else if (note >= midiNoteLow && note <= midiNoteHigh) {
 				return true; 
 			}
 
@@ -33,10 +43,10 @@ namespace LabSound {
 
 		}
 
-		PassRefPtr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber, SamplerSound &sound) {
+		PassRefPtr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber) {
 
 			// var semitoneRatio = Math.pow(2, 1/12);
-			double pitchRatio = pow(2.0, (midiNoteNumber - sound.baseMidiNote) / 12.0);
+			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
 
 			RefPtr<AudioBufferSourceNode> theSample = audioBuffer->create();
 
@@ -54,11 +64,47 @@ namespace LabSound {
 
 		}
 
+		// Ex: F#6. Assumes uppercase note names, hash symbol, and octave. 
+		uint8_t getMIDIFromNoteString(std::string noteName) {
+
+			std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+			// Ocatve is always last character, as an integer 
+			std::string octaveString = noteName.substr(noteName.length() - 1, 1);
+			int octave = std::stoi(octaveString);
+
+			std::string noteString = noteName.erase(noteName.length() - 1, 1); 
+
+			// Note name is now the first or second character 
+			int notePos = -1;
+			for (int i = 0; i < 12; ++i) {
+				if (noteString == midiTranslationArray[i]) {
+					
+					notePos = i;
+					break;
+				}
+			}
+
+			return uint8_t((octave * 12.0) + notePos);
+
+		}
+
+		std::string getNoteStringFromMIDI(uint8_t note) {
+
+			std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+			int octave = int(note / 12) - 1;
+			int positionInOctave = note % 12;
+
+			return midiTranslationArray[positionInOctave] + std::to_string(octave);
+
+		}
+
 		void stopNote(); 
 
 		RefPtr<WebCore::AudioContext> context;
 
-		RefPtr<SoundBuffer> audioBuffer;
+		SoundBuffer *audioBuffer;
 
 		uint8_t baseMidiNote;
 		uint8_t midiNoteLow;
@@ -66,10 +112,7 @@ namespace LabSound {
 
 	};
 
-
-	using namespace WebCore;
-
-	class SampledInstrumentNode : public AudioNode {
+	class SampledInstrumentNode {
 
 	public:
 
@@ -84,51 +127,10 @@ namespace LabSound {
 
 		void stopAll(); 
 
-		static double MIDIToFrequency(int MIDINote) {
-			return 8.1757989156 * pow(2, MIDINote / 12);
-		}
-
-		static float truncate(float d, unsigned int numberOfDecimalsToKeep) {
-			return roundf(d * powf(10, numberOfDecimalsToKeep)) / powf(10, numberOfDecimalsToKeep);
-		}
-
-		// Ex: F#6. Assumes uppercase note names, hash symbol, and octave. 
-		static float getMIDIFromNoteString(std::string noteName) {
-
-			std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-			// Ocatve is always last character, as an integer 
-			std::string octaveString = noteName.erase(noteName.length() - 1, 1);
-			int octave = std::stoi(octaveString);
-
-			// Note name is now the first or second character 
-			int notePos = -1;
-			for (int i = 0; i < 12; ++i) {
-				if (noteName == midiTranslationArray[i]) {
-					notePos = i;
-					break;
-				}
-			}
-
-			return (octave * 12.0) + notePos;
-
-		}
-
-		static std::string getNoteStringFromMIDI(uint8_t note) {
-
-			std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-			int octave = int(note / 12) - 1;
-			int positionInOctave = note % 12;
-
-			return midiTranslationArray[positionInOctave] + std::to_string(octave);
-
-		}
-
 	private:
 
-		void startVoice(SamplerVoice const &voice, SamplerSound const &sound, const uint8_t midiNoteNumber, const float velocity);
-		void stopVoice(SamplerVoice const &voice);
+		// void startVoice(SamplerVoice const &voice, SamplerSound const &sound, const uint8_t midiNoteNumber, const float velocity);
+		// void stopVoice(SamplerVoice const &voice);
 
 		// Sample Map => Audio Buffers
 
@@ -136,20 +138,20 @@ namespace LabSound {
 		// ADSR? 
 		// Filter? 
 
+		// Blech
 		std::vector<SamplerSound*> samples;
+		RefPtr<WebCore::AudioContext> localContext;
 
-		RefPtr<WebCore::AudioContext> context;
-
-		SampledInstrumentNode(WebCore::AudioContext*, float sampleRate);
+		SampledInstrumentNode(AudioContext*, float sampleRate);
 
 		// Satisfy the AudioNode interface
-		virtual void process(size_t);
+		//virtual void process(size_t);
 
-		virtual void reset() { /*m_currentSampleFrame = 0;*/ }
+		//virtual void reset() { /*m_currentSampleFrame = 0;*/ }
 
-		virtual double tailTime() const OVERRIDE{ return 0; }
-		virtual double latencyTime() const OVERRIDE{ return 0; }
-		virtual bool propagatesSilence() const OVERRIDE;
+		//virtual double tailTime() const OVERRIDE{ return 0; }
+		//virtual double latencyTime() const OVERRIDE{ return 0; }
+		//virtual bool propagatesSilence() const OVERRIDE;
 
 	};
 

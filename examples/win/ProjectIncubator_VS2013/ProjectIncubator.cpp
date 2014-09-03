@@ -1,7 +1,6 @@
 #include "ProjectIncubator.h"
-
-#include "LabSound/LabSound.h"
-#include "LabSound/LabSoundIncludes.h"
+#include <cstdlib>
+#include <ctime>
 
 using namespace LabSound;
 
@@ -17,43 +16,26 @@ typedef RefPtr<LabSound::STKNode<stk::StifKarp> > StifKarp;
 typedef RefPtr<LabSound::STKNode<stk::Sitar> > Sitar;
 typedef RefPtr<LabSound::STKNode<stk::BlowBotl> > BlowBotl;
 
-#include <cstdlib>
-#include <ctime>
-
 int main(int argc, char *argv[], char *envp[]) {
 
     WebCore::ExceptionCode ec;
 	RefPtr<AudioContext> context = LabSound::init(); 
 
-	StifKarp myString = STKNode<stk::StifKarp>::create(context.get(), 44100);
+	// StifKarp myString = STKNode<stk::StifKarp>::create(context.get(), 44100);
 
 	SoundBuffer tonbi(context, "tonbi.wav");
-	// tonbi.play(0.0f);
+	tonbi.play(0.0f);
 
-	myString->connect(context->destination(), 0, 0, ec);
+	// RefPtr<SampledInstrumentNode> sampledBell = 
 
-	myString->start(0);
+	PassRefPtr<SampledInstrumentNode> test = SampledInstrumentNode::create(context.get(), 44100);
 
-	stk::StifKarp pluckedString = myString->getSynth();
+	for (int i = 0; i < 12; ++i) {
 
-	// pluckedString.setPreset(3);
+		test->noteOn(60 + i, 0.0); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-    for (float i = 1; i < 100; i++) {
-
-		// 0 to 1
-		float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-
-		// pluckedString.noteOn(880, 0.75);
-
-		//pluckedString.noteOn(220 * i, 1);
-		// pluckedString.setPluckPosition(0.65);
-		//pluckedString.setStretch(0.95);
-		pluckedString.noteOn(880, 0.5);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-
-    }
+	}
 
     return 0;
 

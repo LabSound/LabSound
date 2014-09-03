@@ -55,5 +55,6 @@
 
 // WIP Nodes
 #include "../../src/LabSound/STKNode.h"
+#include "../../src/LabSound/SampledInstrumentNode.h"
 
 #endif
