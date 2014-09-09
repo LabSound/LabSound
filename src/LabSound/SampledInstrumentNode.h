@@ -6,6 +6,8 @@
 #include "SoundBuffer.h"
 #include <iostream> 
 #include <array>
+#include <string>
+#include <algorithm>
 
 namespace LabSound {
 
@@ -28,14 +30,15 @@ namespace LabSound {
 
 		bool appliesToNote(uint8_t note) {
 
+			std::cout << "Note: " << int(note) << std::endl;
 			std::cout << "Base: " << int(baseMidiNote) << std::endl;
 			std::cout << "Low: " << int(midiNoteLow) << std::endl;
 			std::cout << "High: " << int(midiNoteHigh) << std::endl;
+			std::cout << std::endl << std::endl;
 
 			if (baseMidiNote == note) {
 				return true; 
-			}
-			else if (note >= midiNoteLow && note <= midiNoteHigh) {
+			} else if (note >= midiNoteLow && note <= midiNoteHigh) {
 				return true; 
 			}
 
@@ -75,11 +78,16 @@ namespace LabSound {
 
 			std::string noteString = noteName.erase(noteName.length() - 1, 1); 
 
+			// Uppercase the incoming note 
+			std::transform(noteString.begin(), noteString.end(), noteString.begin(), ::toupper);
+
+			// IF we don't use # notation, convert S to #
+			std::replace(noteString.begin(), noteString.end(), 'S', '#'); // replace all 'x' to 'y'
+
 			// Note name is now the first or second character 
 			int notePos = -1;
 			for (int i = 0; i < 12; ++i) {
 				if (noteString == midiTranslationArray[i]) {
-					
 					notePos = i;
 					break;
 				}

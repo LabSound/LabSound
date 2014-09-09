@@ -23,17 +23,15 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	// StifKarp myString = STKNode<stk::StifKarp>::create(context.get(), 44100);
 
-	SoundBuffer tonbi(context, "tonbi.wav");
-	tonbi.play(0.0f);
-
-	// RefPtr<SampledInstrumentNode> sampledBell = 
+	//SoundBuffer tonbi(context, "tonbi.wav");
+	//tonbi.play(0.0f);
 
 	PassRefPtr<SampledInstrumentNode> test = SampledInstrumentNode::create(context.get(), 44100);
 
-	for (int i = 0; i < 12; ++i) {
+	for (int i = 0; i < 46; ++i) {
 
-		test->noteOn(60 + i, 0.0); 
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		test->noteOn(i, 0.0); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
 	}
 
