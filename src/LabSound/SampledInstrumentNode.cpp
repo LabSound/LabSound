@@ -1,18 +1,20 @@
 #include "SampledInstrumentNode.h"
-
+#include "LabSound.h"
+#include "json11.hpp"
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 namespace LabSound {
 
+	using namespace json11;
+
 	SampledInstrumentNode::SampledInstrumentNode(AudioContext* context, float sampleRate) : localContext(context) {
 
-		samples.push_back(new SamplerSound(context, "cello_pluck_As0.wav", "As0", "C0", "Cs1")); 
-		samples.push_back(new SamplerSound(context, "cello_pluck_Ds1.wav", "Ds1", "D1", "Fs1"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_Gs1.wav", "Gs1", "G1", "B1"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_Cs2.wav", "Cs2", "C2", "E2"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_Fs2.wav", "Fs2", "F2", "A2"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_B2.wav", "B2", "As2", "D3"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_E3.wav", "E3", "Ds3", "G3"));
-		samples.push_back(new SamplerSound(context, "cello_pluck_A3.wav", "A3", "Gs3", "A3"));
+		// All samples bus their output to this node... 
+		gainNode = context->createGain(); 
+		gainNode->gain()->setValue(4.0); 
+
 
 	}
 
@@ -26,6 +28,42 @@ namespace LabSound {
 				sample->startNote(midiNoteNumber);
 			}
 
+		}
+
+	}
+
+	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {
+
+		std::ifstream fileStream(path);
+		std::string jsonString;
+
+		fileStream.seekg(0, std::ios::end);
+		jsonString.reserve(fileStream.tellg());
+		fileStream.seekg(0, std::ios::beg);
+
+		jsonString.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
+
+		std::string err;
+		auto jsonConfig = Json::parse(jsonString, err);
+
+		if (err.empty()) {
+
+			for (auto &samp : jsonConfig["samples"].array_items()) {
+				// std::cout << "Loading Sample: " << samp.dump() << "\n";
+				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
+				samples.push_back(new SamplerSound(
+					localContext, gainNode.get(),
+					samp["sample"].string_value(),
+					samp["baseNote"].string_value(),
+					samp["lowNote"].string_value(),
+					samp["highNote"].string_value()
+					));
+			}
+
+		}
+		
+		else {
+			std::cout << "JSON Parse Error: " << err << std::endl;
 		}
 
 	}

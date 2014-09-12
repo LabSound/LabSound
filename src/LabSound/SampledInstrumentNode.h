@@ -3,6 +3,7 @@
 #include "../Modules/webaudio/AudioParam.h"
 #include "../Modules/webaudio/AudioBufferSourceNode.h"
 #include "../WTF/wtf/RefPtr.h"
+#include "../LabSound/ADSRNode.h"
 #include "SoundBuffer.h"
 #include <iostream> 
 #include <array>
@@ -15,7 +16,13 @@ namespace LabSound {
 
 	struct SamplerSound {
 
-		SamplerSound(RefPtr<WebCore::AudioContext> context, std::string path, std::string baseMidiNote, std::string midiNoteLow, std::string midiNoteHigh) {
+		SamplerSound(
+			RefPtr<AudioContext> context, 
+			RefPtr<GainNode> destination, 
+			std::string path, 
+			std::string baseMidiNote, 
+			std::string midiNoteLow, 
+			std::string midiNoteHigh) {
 
 			audioBuffer = new SoundBuffer(context, path.c_str()); 
 
@@ -24,17 +31,19 @@ namespace LabSound {
 			this->midiNoteLow = getMIDIFromNoteString(midiNoteLow);
 			this->midiNoteHigh = getMIDIFromNoteString(midiNoteHigh);
 
+			this->destinationNode = destination;
+
 		}
 
 		// const std::string& getPath() const; 
 
 		bool appliesToNote(uint8_t note) {
 
-			std::cout << "Note: " << int(note) << std::endl;
-			std::cout << "Base: " << int(baseMidiNote) << std::endl;
-			std::cout << "Low: " << int(midiNoteLow) << std::endl;
-			std::cout << "High: " << int(midiNoteHigh) << std::endl;
-			std::cout << std::endl << std::endl;
+			//std::cout << "Note: " << int(note) << std::endl;
+			//std::cout << "Base: " << int(baseMidiNote) << std::endl;
+			//std::cout << "Low: " << int(midiNoteLow) << std::endl;
+			//std::cout << "High: " << int(midiNoteHigh) << std::endl;
+			// std::cout << std::endl << std::endl;
 
 			if (baseMidiNote == note) {
 				return true; 
@@ -58,9 +67,9 @@ namespace LabSound {
 			// Connect the source node to the parsed audio data for playback
 			theSample->setBuffer(audioBuffer->audioBuffer.get());
 
-			// Bus the sound to the mixer.
+			// Bus the sound to the output destination .
 			WebCore::ExceptionCode ec;
-			theSample->connect(context->destination(), 0, 0, ec);
+			theSample->connect(destinationNode.get(), 0, 0, ec);
 			theSample->start(0.0);
 
 			return theSample;
@@ -104,13 +113,18 @@ namespace LabSound {
 			int octave = int(note / 12) - 1;
 			int positionInOctave = note % 12;
 
-			return midiTranslationArray[positionInOctave] + std::to_string(octave);
+			std::string originalNote = midiTranslationArray[positionInOctave];
+
+			std::replace(originalNote.begin(), originalNote.end(), '#', 'S'); // replace all 'x' to 'y'
+
+			return  originalNote + std::to_string(octave);
 
 		}
 
 		void stopNote(); 
 
-		RefPtr<WebCore::AudioContext> context;
+		RefPtr<AudioContext> context;
+		RefPtr<GainNode> destinationNode; 
 
 		SoundBuffer *audioBuffer;
 
@@ -128,12 +142,14 @@ namespace LabSound {
 			return adoptRef(new SampledInstrumentNode(context, sampleRate));
 		}
 
-		void loadInstrumentFromPath(std::string path);
+		void loadInstrumentConfiguration(std::string path);
 
 		void noteOn(float frequency, float amplitude);
 		float noteOff(float amplitude); 
 
 		void stopAll(); 
+
+		RefPtr<GainNode> gainNode;
 
 	private:
 
@@ -143,7 +159,6 @@ namespace LabSound {
 		// Sample Map => Audio Buffers
 
 		// Loop? 
-		// ADSR? 
 		// Filter? 
 
 		// Blech
@@ -153,13 +168,11 @@ namespace LabSound {
 		SampledInstrumentNode(AudioContext*, float sampleRate);
 
 		// Satisfy the AudioNode interface
-		//virtual void process(size_t);
-
-		//virtual void reset() { /*m_currentSampleFrame = 0;*/ }
-
-		//virtual double tailTime() const OVERRIDE{ return 0; }
-		//virtual double latencyTime() const OVERRIDE{ return 0; }
-		//virtual bool propagatesSilence() const OVERRIDE;
+		//virtual void process(size_t) {}
+		//virtual void reset() {}
+		//virtual double tailTime() const OVERRIDE { return 0; }
+		//virtual double latencyTime() const OVERRIDE { return 0; }
+		//virtual bool propagatesSilence() const OVERRIDE { return 1; }
 
 	};
 

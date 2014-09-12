@@ -33,7 +33,7 @@ void Noise::setSeed( unsigned int seed ) {
 	// http://i4.connect.microsoft.com/VisualStudio/feedbackdetail/view/875492/compile-error-passing-a-random-device-to-mersenne-twister-engine
 
 	auto newSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-	mt_rand.seed(newSeed);
+	mt_rand.seed((unsigned long)newSeed);
 
 }
 

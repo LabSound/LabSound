@@ -43,6 +43,9 @@
     <Filter Include="src\STK">
       <UniqueIdentifier>{39b4c2c4-df47-4b14-b05d-cdb17560e916}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\json11">
+      <UniqueIdentifier>{9bc22e16-52ef-45be-b0ca-63dfeee6bff7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\Modules\webaudio\AnalyserNode.idl">
@@ -764,6 +767,9 @@
     <ClInclude Include="..\src\LabSound\SampledInstrumentNode.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\json11\json11.hpp">
+      <Filter>src\json11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
@@ -1320,6 +1326,9 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SampledInstrumentNode.cpp">
       <Filter>src\LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\json11\json11.cpp">
+      <Filter>src\json11</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
