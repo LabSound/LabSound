@@ -35,15 +35,13 @@ namespace LabSound {
 
 		}
 
-		// const std::string& getPath() const; 
-
 		bool appliesToNote(uint8_t note) {
 
 			//std::cout << "Note: " << int(note) << std::endl;
 			//std::cout << "Base: " << int(baseMidiNote) << std::endl;
 			//std::cout << "Low: " << int(midiNoteLow) << std::endl;
 			//std::cout << "High: " << int(midiNoteHigh) << std::endl;
-			// std::cout << std::endl << std::endl;
+			//std::cout << std::endl << std::endl;
 
 			if (baseMidiNote == note) {
 				return true; 
