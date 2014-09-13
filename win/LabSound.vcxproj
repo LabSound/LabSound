@@ -134,6 +134,7 @@
     <ClInclude Include="..\src\LabSound\ADSRNode.h" />
     <ClInclude Include="..\src\LabSound\ClipNode.h" />
     <ClInclude Include="..\src\LabSound\DiodeNode.h" />
+    <ClInclude Include="..\src\LabSound\EasyVerbNode.h" />
     <ClInclude Include="..\src\LabSound\NoiseNode.h" />
     <ClInclude Include="..\src\LabSound\PdNode.h" />
     <ClInclude Include="..\src\LabSound\PWMNode.h" />
@@ -349,6 +350,7 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\DiodeNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\LabSound\EasyVerbNode.cpp" />
     <ClCompile Include="..\src\LabSound\LabSound.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\NoiseNode.cpp">

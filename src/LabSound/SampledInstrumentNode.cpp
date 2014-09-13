@@ -25,7 +25,7 @@ namespace LabSound {
 
 			// Find note in sample map
 			if (sample->appliesToNote(midiNoteNumber)) {
-				sample->startNote(midiNoteNumber);
+				sample->startNote(midiNoteNumber, amplitude);
 			}
 
 		}

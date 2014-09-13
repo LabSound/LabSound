@@ -770,6 +770,9 @@
     <ClInclude Include="..\src\json11\json11.hpp">
       <Filter>src\json11</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\LabSound\EasyVerbNode.h">
+      <Filter>src\LabSound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
@@ -1329,6 +1332,9 @@
     </ClCompile>
     <ClCompile Include="..\src\json11\json11.cpp">
       <Filter>src\json11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\LabSound\EasyVerbNode.cpp">
+      <Filter>src\LabSound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -55,7 +55,7 @@ namespace LabSound {
 
 		}
 
-		PassRefPtr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber) {
+		PassRefPtr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber, float amplitude = 1.0) {
 
 			// var semitoneRatio = Math.pow(2, 1/12);
 			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
@@ -63,6 +63,7 @@ namespace LabSound {
 			RefPtr<AudioBufferSourceNode> theSample = audioBuffer->create();
 
 			theSample->playbackRate()->setValue(pitchRatio); 
+			theSample->gain()->setValue(amplitude); 
 
 			// Connect the source node to the parsed audio data for playback
 			theSample->setBuffer(audioBuffer->audioBuffer.get());

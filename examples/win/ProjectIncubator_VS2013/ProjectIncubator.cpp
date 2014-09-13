@@ -49,20 +49,26 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	convolve->setBuffer(ir.audioBuffer.get());
 
-	PassRefPtr<SampledInstrumentNode> test = SampledInstrumentNode::create(context.get(), 44100);
 
-	test->loadInstrumentConfiguration("cello_pluck.json"); 
+	RefPtr<EasyVerbNode> perryNode = EasyVerbNode::create(context.get(), 44100); 
 
-	// Connect gain to the reverb
-	test->gainNode->connect(convolve.get(), 0, 0, ec); 
+	PassRefPtr<SampledInstrumentNode> sampledCello = SampledInstrumentNode::create(context.get(), 44100);
+	sampledCello->loadInstrumentConfiguration("cello_pluck.json");
 
-	// Reverb to the master bus 
-	convolve->connect(context->destination(), 0, 0, ec); 
+	// Connect internal to the reverb
+	sampledCello->gainNode->connect(perryNode.get(), 0, 0, ec);
+
+	// Perry to the master bus 
+	perryNode->connect(context->destination(), 0, 0, ec); 
+
+	// 8 Second Verb! 
+	perryNode->delayTime()->setValue(2);
 
 	for (int i = 0; i < 46; ++i) {
 
+
 		std::cout << i << std::endl; 
-		test->noteOn(i, 0.0); 
+		sampledCello->noteOn(i, 0.5);
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
 	}
