@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
+#include "Assertions.h"
 
 namespace LabSound {
 
@@ -36,7 +37,12 @@ namespace LabSound {
 
 		std::ifstream fileStream(path);
 		std::string jsonString;
-
+        
+        if ( !fileStream.is_open() ) {
+            LOG_ERROR("Instrument JSON failed to open with path %s: ", path.c_str());
+            return;
+        }
+        
 		fileStream.seekg(0, std::ios::end);
 		jsonString.reserve(fileStream.tellg());
 		fileStream.seekg(0, std::ios::beg);
@@ -63,7 +69,7 @@ namespace LabSound {
 		}
 		
 		else {
-			std::cout << "JSON Parse Error: " << err << std::endl;
+			LOG_ERROR("JSON Parse Error: %s", err.c_str());
 		}
 
 	}

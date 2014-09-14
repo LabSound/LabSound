@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		082FE02519C6497900046275 /* ProjectIncubator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 082FE02319C6497900046275 /* ProjectIncubator.cpp */; };
 		082FE02719C64A7700046275 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 082FE02619C64A7700046275 /* libLabSound.a */; };
+		082FE03319C6530300046275 /* ProjectIncubator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 082FE03119C6530300046275 /* ProjectIncubator.cpp */; };
 		E2E0C8DB183BCB06007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8DA183BCB06007AFB48 /* Accelerate.framework */; };
 		E2E0C8DD183BCB07007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8DC183BCB06007AFB48 /* ApplicationServices.framework */; };
 		E2E0C8E6183BCB30007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8DE183BCB30007AFB48 /* AudioToolbox.framework */; };
@@ -35,9 +35,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		082FE02319C6497900046275 /* ProjectIncubator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectIncubator.cpp; path = ../../../src/ProjectIncubator.cpp; sourceTree = "<group>"; };
-		082FE02419C6497900046275 /* ProjectIncubator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectIncubator.h; path = ../../../src/ProjectIncubator.h; sourceTree = "<group>"; };
 		082FE02619C64A7700046275 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
+		082FE03119C6530300046275 /* ProjectIncubator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProjectIncubator.cpp; path = ../../src/ProjectIncubator.cpp; sourceTree = "<group>"; };
+		082FE03219C6530300046275 /* ProjectIncubator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProjectIncubator.h; path = ../../src/ProjectIncubator.h; sourceTree = "<group>"; };
 		E2E0C8B2183BC952007AFB48 /* IncubatorApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = IncubatorApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0C8DA183BCB06007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0C8DC183BCB06007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -78,8 +78,9 @@
 		E2E0C8A9183BC952007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				082FE03119C6530300046275 /* ProjectIncubator.cpp */,
+				082FE03219C6530300046275 /* ProjectIncubator.h */,
 				E2E0C8EE183BCB3F007AFB48 /* Frameworks */,
-				E2E0C8B4183BC952007AFB48 /* IncubatorApp */,
 				E2E0C8B3183BC952007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,15 +91,6 @@
 				E2E0C8B2183BC952007AFB48 /* IncubatorApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0C8B4183BC952007AFB48 /* IncubatorApp */ = {
-			isa = PBXGroup;
-			children = (
-				082FE02319C6497900046275 /* ProjectIncubator.cpp */,
-				082FE02419C6497900046275 /* ProjectIncubator.h */,
-			);
-			path = IncubatorApp;
 			sourceTree = "<group>";
 		};
 		E2E0C8EE183BCB3F007AFB48 /* Frameworks */ = {
@@ -171,7 +163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				082FE02519C6497900046275 /* ProjectIncubator.cpp in Sources */,
+				082FE03319C6530300046275 /* ProjectIncubator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
