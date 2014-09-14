@@ -113,20 +113,20 @@ inline bool isPointerTypeAlignmentOkay(Type*)
 #endif
 
 namespace WTF {
-
+    
     static const size_t KB = 1024;
     static const size_t MB = 1024 * 1024;
-
+    
     inline bool isPointerAligned(void* p)
     {
         return !((intptr_t)(p) & (sizeof(char*) - 1));
     }
-
+    
     inline bool is8ByteAligned(void* p)
     {
         return !((uintptr_t)(p) & (sizeof(double) - 1));
     }
-
+    
     /*
      * C++'s idea of a reinterpret_cast lacks sufficient cojones.
      */
@@ -141,7 +141,7 @@ namespace WTF {
         u.from = from;
         return u.to;
     }
-
+    
     // Returns a count of the number of bits set in 'bits'.
     inline size_t bitCount(unsigned bits)
     {
@@ -149,12 +149,12 @@ namespace WTF {
         bits = (bits & 0x33333333) + ((bits >> 2) & 0x33333333);
         return (((bits + (bits >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
     }
-
+    
     inline size_t bitCount(uint64_t bits)
     {
         return bitCount(static_cast<unsigned>(bits)) + bitCount(static_cast<unsigned>(bits >> 32));
     }
-
+    
     // Macro that returns a compile time constant with the length of an array, but gives an error if passed a non-array.
     template<typename T, size_t Size> char (&ArrayLengthHelperFunction(T (&)[Size]))[Size];
     // GCC needs some help to deduce a 0 length array.
@@ -162,7 +162,7 @@ namespace WTF {
     template<typename T> char (&ArrayLengthHelperFunction(T (&)[0]))[0];
 #endif
 #define WTF_ARRAY_LENGTH(array) sizeof(::WTF::ArrayLengthHelperFunction(array))
-
+    
     // Efficient implementation that takes advantage of powers of two.
     inline size_t roundUpToMultipleOf(size_t divisor, size_t x)
     {
@@ -170,19 +170,19 @@ namespace WTF {
         size_t remainderMask = divisor - 1;
         return (x + remainderMask) & ~remainderMask;
     }
-
+    
     template<size_t divisor> inline size_t roundUpToMultipleOf(size_t x)
     {
         static_assert(divisor && !(divisor & (divisor - 1)), "divisor must be a power of two!");
         return roundUpToMultipleOf(divisor, x);
     }
-
+    
     enum BinarySearchMode {
         KeyMustBePresentInArray,
         KeyMightNotBePresentInArray,
         ReturnAdjacentElementIfKeyIsNotPresent
     };
-
+    
     template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey, BinarySearchMode mode>
     inline ArrayElementType* binarySearchImpl(ArrayType& array, size_t size, KeyType key, const ExtractKey& extractKey = ExtractKey())
     {
@@ -190,7 +190,7 @@ namespace WTF {
         while (size > 1) {
             size_t pos = (size - 1) >> 1;
             KeyType val = extractKey(&array[offset + pos]);
-
+            
             if (val == key)
                 return &array[offset + pos];
             // The item we are looking for is smaller than the item being check; reduce the value of 'size',
@@ -202,47 +202,47 @@ namespace WTF {
                 size -= (pos + 1);
                 offset += (pos + 1);
             }
-
+            
             ASSERT(mode != KeyMustBePresentInArray || size);
         }
-
+        
         if (mode == KeyMightNotBePresentInArray && !size)
             return 0;
-
+        
         ArrayElementType* result = &array[offset];
-
+        
         if (mode == KeyMightNotBePresentInArray && key != extractKey(result))
             return 0;
-
+        
         if (mode == KeyMustBePresentInArray) {
             ASSERT(size == 1);
             ASSERT(key == extractKey(result));
         }
-
+        
         return result;
     }
-
+    
     // If the element is not found, crash if asserts are enabled, and behave like approximateBinarySearch in release builds.
     template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
     inline ArrayElementType* binarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
     {
         return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMustBePresentInArray>(array, size, key, extractKey);
     }
-
+    
     // Return zero if the element is not found.
     template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
     inline ArrayElementType* tryBinarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
     {
         return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, KeyMightNotBePresentInArray>(array, size, key, extractKey);
     }
-
+    
     // Return the element that is either to the left, or the right, of where the element would have been found.
     template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
     inline ArrayElementType* approximateBinarySearch(ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
     {
         return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, ReturnAdjacentElementIfKeyIsNotPresent>(array, size, key, extractKey);
     }
-
+    
     // Variants of the above that use const.
     template<typename ArrayElementType, typename KeyType, typename ArrayType, typename ExtractKey>
     inline ArrayElementType* binarySearch(const ArrayType& array, size_t size, KeyType key, ExtractKey extractKey = ExtractKey())
@@ -259,7 +259,7 @@ namespace WTF {
     {
         return binarySearchImpl<ArrayElementType, KeyType, ArrayType, ExtractKey, ReturnAdjacentElementIfKeyIsNotPresent>(const_cast<ArrayType&>(array), size, key, extractKey);
     }
-
+    
     template<typename VectorType, typename ElementType>
     inline void insertIntoBoundedVector(VectorType& vector, size_t size, const ElementType& element, size_t index)
     {
@@ -267,7 +267,7 @@ namespace WTF {
             vector[i] = vector[i - 1];
         vector[index] = element;
     }
-
+    
 } // namespace WTF
 
 #if OS(WINCE)
@@ -275,7 +275,7 @@ namespace WTF {
 inline void* wtf_bsearch(const void* key, const void* base, size_t count, size_t size, int (*compare)(const void *, const void *))
 {
     const char* first = static_cast<const char*>(base);
-
+    
     while (count) {
         size_t pos = (count - 1) >> 1;
         const char* item = first + pos * size;
@@ -288,7 +288,7 @@ inline void* wtf_bsearch(const void* key, const void* base, size_t count, size_t
         } else
             count = pos;
     }
-
+    
     return 0;
 }
 
@@ -318,104 +318,101 @@ namespace std {
     template<class T> struct _Unique_if {
         typedef unique_ptr<T> _Single_object;
     };
-
+    
     template<class T> struct _Unique_if<T[]> {
         typedef unique_ptr<T[]> _Unknown_bound;
     };
-
+    
     template<class T, size_t N> struct _Unique_if<T[N]> {
         typedef void _Known_bound;
     };
-
+    
 #if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
     template<class T, class... Args> inline typename _Unique_if<T>::_Single_object
     make_unique(Args&&... args)
     {
         return unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
-#elif (defined(_MSC_VER) && _MSC_VER <= 1700) 
+#else
     template<class T> inline typename _Unique_if<T>::_Single_object
     make_unique()
     {
         return unique_ptr<T>(new T);
     }
-
+    
     template<class T, class A1> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1)));
     }
-
+    
     template<class T, class A1, class A2> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2)));
     }
-
+    
     template<class T, class A1, class A2, class A3> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5, class A6> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8, A9&& a9)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8), std::forward<A9>(a9)));
     }
-
+    
     template<class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> inline typename _Unique_if<T>::_Single_object
     make_unique(A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, A8&& a8, A9&& a9, A10&& a10)
     {
         return unique_ptr<T>(new T(std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7), std::forward<A8>(a8), std::forward<A9>(a9), std::forward<A10>(a10)));
     }
-
-
+#endif
+    
     template<class T> inline typename _Unique_if<T>::_Unknown_bound
     make_unique(size_t n)
     {
         typedef typename remove_extent<T>::type U;
         return unique_ptr<T>(new U[n]());
     }
-
-
-#endif
-
+    
 #if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
     template<class T, class... Args> typename _Unique_if<T>::_Known_bound
     make_unique(Args&&...) = delete;
 #endif
-
+    
 #if COMPILER_SUPPORTS(CXX_VARIADIC_TEMPLATES)
     // Compile-time integer sequences
     // http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3658.html
@@ -423,9 +420,9 @@ namespace std {
     template<size_t... indexes> struct index_sequence {
         static size_t size() { return sizeof...(indexes); }
     };
-
+    
     template<size_t currentIndex, size_t...indexes> struct make_index_sequence_helper;
-
+    
     template<size_t...indexes> struct make_index_sequence_helper<0, indexes...> {
         typedef std::index_sequence<indexes...> type;
     };

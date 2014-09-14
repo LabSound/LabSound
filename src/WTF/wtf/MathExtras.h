@@ -50,6 +50,12 @@
 #include <machine/ieee.h>
 #endif
 
+#if OS(DARWIN)
+#include <math.h>
+#include <cmath>
+#endif
+
+
 const double piDouble = M_PI;
 const float piFloat = static_cast<float>(M_PI);
 
