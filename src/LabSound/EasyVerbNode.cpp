@@ -36,7 +36,7 @@ namespace LabSound {
 		virtual void uninitialize() { }
 
 		// Processes the source to destination bus.  The number of channels must match in source and destination.
-		void NodeInternal::process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+		void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
 
 			perryVerb.setT60(m_delayTime->value());
 

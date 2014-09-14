@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08D67A051972E67D0061116A /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08D67A041972E67D0061116A /* libLabSound.a */; };
 		E2E0DD1F183C4EFE007AFB48 /* ToneAndSampleApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DD1E183C4EFE007AFB48 /* ToneAndSampleApp.1 */; };
-		E2E0DD31183C4F2D007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD25183C4F2D007AFB48 /* libLabSound.a */; };
 		E2E0DD32183C4F2D007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */; };
 		E2E0DD33183C4F2D007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */; };
 		E2E0DD34183C4F2D007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD28183C4F2D007AFB48 /* AudioToolbox.framework */; };
@@ -38,9 +38,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		08D67A041972E67D0061116A /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DD19183C4EFE007AFB48 /* ToneAndSampleApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToneAndSampleApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0DD1E183C4EFE007AFB48 /* ToneAndSampleApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ToneAndSampleApp.1; sourceTree = "<group>"; };
-		E2E0DD25183C4F2D007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		E2E0DD28183C4F2D007AFB48 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -62,10 +62,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0DD31183C4F2D007AFB48 /* libLabSound.a in Frameworks */,
 				E2E0DD32183C4F2D007AFB48 /* Accelerate.framework in Frameworks */,
 				E2E0DD33183C4F2D007AFB48 /* ApplicationServices.framework in Frameworks */,
 				E2E0DD34183C4F2D007AFB48 /* AudioToolbox.framework in Frameworks */,
+				08D67A051972E67D0061116A /* libLabSound.a in Frameworks */,
 				E2E0DD35183C4F2D007AFB48 /* AudioUnit.framework in Frameworks */,
 				E2E0DD36183C4F2D007AFB48 /* Carbon.framework in Frameworks */,
 				E2E0DD37183C4F2D007AFB48 /* Cocoa.framework in Frameworks */,
@@ -111,7 +111,7 @@
 		E2E0DD3D183C4F32007AFB48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E2E0DD25183C4F2D007AFB48 /* libLabSound.a */,
+				08D67A041972E67D0061116A /* libLabSound.a */,
 				E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */,
 				E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */,
 				E2E0DD28183C4F2D007AFB48 /* AudioToolbox.framework */,
@@ -257,22 +257,14 @@
 		E2E0DD23183C4EFE007AFB48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
-				);
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				HEADER_SEARCH_PATHS = /Users/ddiakopoulos/Desktop/LabSound/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
+					"$(PROJECT_DIR)/../../osx/build/Debug",
+					/Users/ddiakopoulos/Desktop/LabSound/osx/build/Debug,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
 			};
@@ -281,22 +273,14 @@
 		E2E0DD24183C4EFE007AFB48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
-				);
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				HEADER_SEARCH_PATHS = /Users/ddiakopoulos/Desktop/LabSound/include;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
+					"$(PROJECT_DIR)/../../osx/build/Debug",
+					/Users/ddiakopoulos/Desktop/LabSound/osx/build/Debug,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SYMROOT = ../build;
 			};

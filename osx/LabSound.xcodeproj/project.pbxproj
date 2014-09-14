@@ -87,6 +87,8 @@
 		082FDFBE19C6006400046275 /* Wurley.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 082FDF7119C6006400046275 /* Wurley.cpp */; };
 		082FE01A19C6006B00046275 /* SKINI.msg in Resources */ = {isa = PBXBuildFile; fileRef = 082FE00919C6006B00046275 /* SKINI.msg */; };
 		082FE01B19C6006B00046275 /* SKINI.tbl in Resources */ = {isa = PBXBuildFile; fileRef = 082FE00A19C6006B00046275 /* SKINI.tbl */; };
+		082FE02C19C64F1300046275 /* EasyVerbNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 082FE02819C64F1300046275 /* EasyVerbNode.cpp */; };
+		082FE02D19C64F1300046275 /* SampledInstrumentNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 082FE02A19C64F1300046275 /* SampledInstrumentNode.cpp */; };
 		08D67A0D1972E9930061116A /* kiss_fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08D67A081972E9930061116A /* kiss_fft.cpp */; };
 		08D67A0E1972E9930061116A /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08D67A0A1972E9930061116A /* kiss_fftr.cpp */; };
 		08D67A111972F3F00061116A /* FFTFrameKissFFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08D67A0F1972F3F00061116A /* FFTFrameKissFFT.cpp */; };
@@ -371,6 +373,10 @@
 		082FE01719C6006B00046275 /* Wurley.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Wurley.h; path = ../src/STK/include/Wurley.h; sourceTree = "<group>"; };
 		082FE01819C6006B00046275 /* WvIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WvIn.h; path = ../src/STK/include/WvIn.h; sourceTree = "<group>"; };
 		082FE01919C6006B00046275 /* WvOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WvOut.h; path = ../src/STK/include/WvOut.h; sourceTree = "<group>"; };
+		082FE02819C64F1300046275 /* EasyVerbNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EasyVerbNode.cpp; sourceTree = "<group>"; };
+		082FE02919C64F1300046275 /* EasyVerbNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EasyVerbNode.h; sourceTree = "<group>"; };
+		082FE02A19C64F1300046275 /* SampledInstrumentNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampledInstrumentNode.cpp; sourceTree = "<group>"; };
+		082FE02B19C64F1300046275 /* SampledInstrumentNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampledInstrumentNode.h; sourceTree = "<group>"; };
 		08D67A071972E9930061116A /* _kiss_fft_guts.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = _kiss_fft_guts.hpp; path = ../src/kissfft/_kiss_fft_guts.hpp; sourceTree = "<group>"; };
 		08D67A081972E9930061116A /* kiss_fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fft.cpp; path = ../src/kissfft/kiss_fft.cpp; sourceTree = "<group>"; };
 		08D67A091972E9930061116A /* kiss_fft.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = kiss_fft.hpp; path = ../src/kissfft/kiss_fft.hpp; sourceTree = "<group>"; };
@@ -1016,6 +1022,10 @@
 		E2FB8499183D1E8F00A5A764 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
+				082FE02819C64F1300046275 /* EasyVerbNode.cpp */,
+				082FE02919C64F1300046275 /* EasyVerbNode.h */,
+				082FE02A19C64F1300046275 /* SampledInstrumentNode.cpp */,
+				082FE02B19C64F1300046275 /* SampledInstrumentNode.h */,
 				E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */,
 				E2FB849B183D1E8F00A5A764 /* ADSRNode.h */,
 				E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */,
@@ -1500,6 +1510,7 @@
 				E2FB84BB183D1E8F00A5A764 /* SupersawNode.cpp in Sources */,
 				082FDF7A19C6006400046275 /* BlowBotl.cpp in Sources */,
 				E25245BA18724E4A00983485 /* Cone.cpp in Sources */,
+				082FE02C19C64F1300046275 /* EasyVerbNode.cpp in Sources */,
 				082FDF7319C6006400046275 /* Asymp.cpp in Sources */,
 				E25245FD18724EC300983485 /* ReverbInputBuffer.cpp in Sources */,
 				E25245A918724E3200983485 /* AudioResampler.cpp in Sources */,
@@ -1544,6 +1555,7 @@
 				082FDFAC19C6006400046275 /* Saxofony.cpp in Sources */,
 				E2FB854F183D1F1F00A5A764 /* BiquadFilterNode.cpp in Sources */,
 				082FDF9E19C6006400046275 /* Moog.cpp in Sources */,
+				082FE02D19C64F1300046275 /* SampledInstrumentNode.cpp in Sources */,
 				E23015D2185EC9EB00FEC991 /* PeakCompNode.cpp in Sources */,
 				E2FB8A25183DA85700A5A764 /* PWMNode.cpp in Sources */,
 				082FDFB319C6006400046275 /* Sphere.cpp in Sources */,

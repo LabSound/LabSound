@@ -10,11 +10,14 @@
 #include "../Modules/webaudio/AudioContext.h"
 #include "../Modules/webaudio/AudioNode.h"
 #include "../Modules/webaudio/AudioParam.h"
+#include "../Modules/webaudio/AudioNodeOutput.h"
 
 #include "ADSRNode.h"
-#include "STKIncludes.h"
+#include "../../include/LabSound/STKIncludes.h"
 
+#if OS(WINDOWS)
 #include <direct.h>
+#endif
 
 namespace LabSound {
 
@@ -28,10 +31,10 @@ namespace LabSound {
 		static PassRefPtr<STKNode> create(AudioContext* context, float sampleRate) {
 
 			// Oops, Windows platform for now...
-			char cwd[MAX_PATH];
-			_getcwd(cwd, MAX_PATH);
+			// char cwd[MAX_PATH];
+			// _getcwd(cwd, MAX_PATH);
 
-			std::string resourcePath = std::string(cwd) + std::string("\\stkresources\\");
+			std::string resourcePath = std::string("stkresources\\");
 			stk::Stk::setRawwavePath(resourcePath);
 
 			std::cout << "\nSTK Resource Path: " << resourcePath << std::endl;
