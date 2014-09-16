@@ -10,6 +10,12 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\ProjectIncubator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\ProjectIncubator.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9C88A880-EB5A-4BF2-8837-D6828C46E32E}</ProjectGuid>
     <RootNamespace>ProjectIncubator</RootNamespace>
@@ -78,12 +84,6 @@
       <Command>xcopy /Y $(ProjectDir)\..\..\..\src\libs\libsndfile-1.dll $(ProjectDir)\$(Configuration)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ProjectIncubator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ProjectIncubator.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

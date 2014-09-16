@@ -155,9 +155,6 @@
     <ClInclude Include="..\src\LabSound\RecorderNode.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\LabSound\SfxrNode.h">
-      <Filter>src\LabSound</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\LabSound\SoundBuffer.h">
       <Filter>src\LabSound</Filter>
     </ClInclude>
@@ -797,9 +794,6 @@
       <Filter>src\LabSound</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LabSound\RecorderNode.cpp">
-      <Filter>src\LabSound</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LabSound\SfxrNode.cpp">
       <Filter>src\LabSound</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SoundBuffer.cpp">

@@ -37,7 +37,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	RefPtr<EasyVerbNode> perryNode = EasyVerbNode::create(context.get(), 44100); 
 
 	PassRefPtr<SampledInstrumentNode> sampledCello = SampledInstrumentNode::create(context.get(), 44100);
-	sampledCello->loadInstrumentConfiguration("../../../data/cello_pluck.json");
+	sampledCello->loadInstrumentConfiguration("cello_pluck.json");
 
 	// Connect internal output to the reverb
 	sampledCello->gainNode->connect(perryNode.get(), 0, 0, ec);

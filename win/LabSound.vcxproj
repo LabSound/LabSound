@@ -140,7 +140,6 @@
     <ClInclude Include="..\src\LabSound\PWMNode.h" />
     <ClInclude Include="..\src\LabSound\RecorderNode.h" />
     <ClInclude Include="..\src\LabSound\SampledInstrumentNode.h" />
-    <ClInclude Include="..\src\LabSound\SfxrNode.h" />
     <ClInclude Include="..\src\LabSound\SoundBuffer.h" />
     <ClInclude Include="..\src\LabSound\SpatializationNode.h" />
     <ClInclude Include="..\src\LabSound\STKNode.h" />
@@ -362,8 +361,6 @@
     <ClCompile Include="..\src\LabSound\RecorderNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SampledInstrumentNode.cpp" />
-    <ClCompile Include="..\src\LabSound\SfxrNode.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\LabSound\SoundBuffer.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">

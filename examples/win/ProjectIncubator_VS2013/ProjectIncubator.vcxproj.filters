@@ -11,12 +11,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ProjectIncubator.cpp">
+    <ClCompile Include="..\..\src\ProjectIncubator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProjectIncubator.h">
+    <ClInclude Include="..\..\src\ProjectIncubator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

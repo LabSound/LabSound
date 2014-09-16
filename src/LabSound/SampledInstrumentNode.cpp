@@ -6,6 +6,12 @@
 #include <streambuf>
 #include "Assertions.h"
 
+#if OS(WINDOWS)
+#include <direct.h>
+#endif
+
+//
+
 namespace LabSound {
 
 	using namespace json11;
@@ -34,6 +40,11 @@ namespace LabSound {
 	}
 
 	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {
+
+		char cwd[MAX_PATH];
+		_getcwd(cwd, MAX_PATH);
+
+		std::string swdString(cwd);
 
 		std::ifstream fileStream(path);
 		std::string jsonString;
