@@ -1,0 +1,52 @@
+{
+	"samples": [
+		{
+			"sample": "samples/cello_pluck_As0.wav",
+			"baseNote": "As0",
+			"lowNote": "C0",
+			"highNote": "Cs1"
+		},
+		{
+			"sample": "samples/cello_pluck_Ds1.wav",
+			"baseNote": "Ds1",
+			"lowNote": "D1",
+			"highNote": "Fs1"
+		},
+		{
+			"sample": "samples/cello_pluck_Gs1.wav",
+			"baseNote": "Gs1",
+			"lowNote": "G1",
+			"highNote": "B1"
+		},
+		{
+			"sample": "samples/cello_pluck_Cs2.wav",
+			"baseNote": "Cs2",
+			"lowNote": "C2",
+			"highNote": "E2"
+		},
+		{
+			"sample": "samples/cello_pluck_Fs2.wav",
+			"baseNote": "Fs2",
+			"lowNote": "F2",
+			"highNote": "A2"
+		},
+		{
+			"sample": "samples/cello_pluck_B2.wav",
+			"baseNote": "B2",
+			"lowNote": "As2",
+			"highNote": "D3"
+		},
+		{
+			"sample": "samples/cello_pluck_E3.wav",
+			"baseNote": "E3",
+			"lowNote": "Ds3",
+			"highNote": "G3"
+		},
+		{
+			"sample": "samples/cello_pluck_A3.wav",
+			"baseNote": "A3",
+			"lowNote": "Gs3",
+			"highNote": "A3"
+		}
+	]
+}

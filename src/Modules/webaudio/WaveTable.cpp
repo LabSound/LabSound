@@ -37,6 +37,7 @@
 #include "VectorMath.h"
 #include <algorithm>
 #include <wtf/RefPtr.h>
+#include <iostream>
 
 const unsigned WaveTableSize = 4096; // This must be a power of two.
 const unsigned NumberOfRanges = 36; // There should be 3 * log2(WaveTableSize) 1/3 octave ranges.
@@ -48,6 +49,7 @@ using namespace VectorMath;
 
 PassRefPtr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Float32Array* imag)
 {
+
     bool isGood = real && imag && real->length() == imag->length();
     ASSERT(isGood);
     if (isGood) {
@@ -93,6 +95,7 @@ WaveTable::WaveTable(float sampleRate)
     , m_numberOfRanges(NumberOfRanges)
     , m_centsPerRange(CentsPerRange)
 {
+
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
     m_rateScale = m_waveTableSize / m_sampleRate;
@@ -150,13 +153,16 @@ unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
 // Thus, higher ranges have more high-frequency partials culled out.
 void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, unsigned numberOfComponents)
 {
+
     float normalizationScale = 1;
 
     unsigned fftSize = m_waveTableSize;
-    unsigned halfSize = fftSize / 2;
+    unsigned halfSize = fftSize / 2 + 1;
     unsigned i;
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
+
+	std::cout << numberOfComponents << std::endl;
 
     m_bandLimitedTables.reserve(m_numberOfRanges);
 
@@ -190,9 +196,20 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
             realP[i] = 0;
             imagP[i] = 0;
         }
+
         // Clear packed-nyquist if necessary.
-        if (numberOfPartials < halfSize)
+        if (numberOfPartials < halfSize) {
             imagP[0] = 0;
+		}
+
+		// Clear nyquist if necessary {
+        if (numberOfPartials < halfSize) {
+            realP[halfSize-1] = 0;
+		}
+		
+		// Clear values which have no effect
+		imagP[0] = 0;
+        imagP[halfSize-1] = 0;
 
         // Clear any DC-offset.
         realP[0] = 0;

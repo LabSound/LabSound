@@ -48,7 +48,8 @@ namespace WTF {
         mutable T* _ptr;
     };
 
-    template<typename T> ALWAYS_INLINE PassRefPtr<T> adoptRef(T* p) {
+	// Don't force inline or VS2012+ will hella complain
+    template<typename T> PassRefPtr<T> adoptRef(T* p) {
         return PassRefPtr<T>(p, true);
     }
 

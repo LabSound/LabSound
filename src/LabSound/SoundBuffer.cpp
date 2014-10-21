@@ -38,7 +38,7 @@ namespace LabSound {
     SoundBuffer::~SoundBuffer()
     {
     }
-    
+  
     PassRefPtr<AudioBufferSourceNode> SoundBuffer::create()
     {
         if (audioBuffer) {
@@ -52,6 +52,16 @@ namespace LabSound {
         return 0;
     }
     
+	// Output to the default context output 
+	PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(float when)
+	{
+		if (audioBuffer) {
+			return play(context->destination(), when);
+		}
+		return 0;
+	}
+
+	// Output to a specific note 
     PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(AudioNode* outputNode, float when)
     {
         if (audioBuffer) {
@@ -70,20 +80,13 @@ namespace LabSound {
         return 0;
     }
     
-    PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(float when)
-    {
-        if (audioBuffer) {
-            return play(context->destination(), when);
-        }
-        return 0;
-    }
-    
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offfset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
     PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(float start, float end, float when)
     {
         if (audioBuffer) {
+
             if (end == 0)
                 end = audioBuffer->duration();
             
@@ -95,11 +98,16 @@ namespace LabSound {
             
             // bus the sound to the mixer.
             WebCore::ExceptionCode ec;
+
             sourceBuffer->connect(context->destination(), 0, 0, ec);
             sourceBuffer->startGrain(when, start, end - start, ec);
+
             return sourceBuffer;
+
         }
+
         return 0;
+
     }
 
 } // LabSound

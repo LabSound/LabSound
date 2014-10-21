@@ -25,9 +25,10 @@
 #ifndef OscillatorNode_h
 #define OscillatorNode_h
 
-#include "../../platform/audio/AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
+
+#include "../../platform/audio/AudioBus.h"
 #include "../../WTF/wtf/RefPtr.h"
 #include "../../WTF/wtf/Threading.h"
 
@@ -67,6 +68,7 @@ public:
     void setWaveTable(WaveTable*);
 
 private:
+
     OscillatorNode(AudioContext*, float sampleRate);
 
     // Returns true if there are sample-accurate timeline parameter changes.

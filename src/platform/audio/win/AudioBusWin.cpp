@@ -32,7 +32,6 @@
 #include "AudioFileReader.h"
 #include "AutodrainedPool.h"
 
-#include "ExceptionCode.h"
 #include "SoundBuffer.h"
 #include <direct.h>
 #include <iostream>
@@ -60,7 +59,6 @@ namespace WebCore {
             fread(data, 1, l, f);
             fclose(f);
             
-            ExceptionCode ec;
             bool mixToMono = false;
 
             PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);

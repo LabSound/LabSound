@@ -160,11 +160,11 @@ namespace LabSound {
                     peakEnv += source[j][i];
                 }
                 //release recursive
-                releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * MAX(peakEnv, releaseRecursive[1]));
+                releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, releaseRecursive[1]));
                 //attack recursive
                 attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
                 //knee smoothening and gain reduction
-                kneeRecursive[0] = (kneeCoeffsMinus * MAX(MIN(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.f), 0.f)) + (kneeCoeffs * kneeRecursive[1]);
+                kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.f), 0.f)) + (kneeCoeffs * kneeRecursive[1]);
 
                 for (int j = 0; j < numChannels; ++j) {
                     dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;

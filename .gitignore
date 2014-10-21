@@ -94,11 +94,11 @@ $RECYCLE.BIN/
 
 # Mac Personal Files 
 xcuserdata
-
 *.pbxuser
 *.mode1v3
 *.mode2v3
 *.perspectivev3
+.DS_Store
 
 # NB: also, whitelist the default ones, some projects need to use these
 !default.pbxuser
@@ -108,5 +108,7 @@ xcuserdata
 
 # Windows Specific Libraries that should be pulled in separately
 libsndfile/
-rtaudio/
 libs/*
+examples/*.dll
+examples/*.def
+

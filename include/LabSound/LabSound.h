@@ -52,6 +52,7 @@ namespace LabSound {
         NodeTypeSpatialization,
         NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
+		NodeTypeSTK, 
 
     };
     

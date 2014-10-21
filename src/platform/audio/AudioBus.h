@@ -152,6 +152,7 @@ protected:
     OwnPtr<AudioFloatArray> m_dezipperGainValues;
     bool m_isFirstTime;
     float m_sampleRate; // 0.0 if unknown or N/A
+
 };
 
 } // WebCore

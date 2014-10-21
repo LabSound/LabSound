@@ -37,17 +37,12 @@
 #include "AudioIOCallback.h"
 #include "FloatConversion.h"
 #include "VectorMath.h"
+#include "AudioNode.h"
 
 namespace WebCore {
 
 // DirectSound needs a larger buffer than 128. This number also needs 
 // to be changed in AudioNode.h where ProcessingSizeInFrames = 1024;
-
-#if OS(WINDOWS) {
-	const int kBufferSize = 1024;
-#elif
-	const int kBufferSize = 128;
-#endif
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
@@ -66,11 +61,11 @@ float AudioDestination::hardwareSampleRate() {
 
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback& callback, float sampleRate) :
 	m_callback(callback), 
-	m_renderBus(2, kBufferSize, false), 
+	m_renderBus(2, AudioNode::ProcessingSizeInFrames, false), 
 	m_sampleRate(sampleRate), 
 	m_isPlaying(false) {
 
-	printf("%f", sampleRate);
+	printf("\nInitializing RtAudio Subsystem @ %f \n", sampleRate);
 
 	m_renderBus.setSampleRate(hardwareSampleRate());
 
@@ -96,17 +91,18 @@ void AudioDestinationWin::configure() {
 	parameters.deviceId = dac.getDefaultOutputDevice();
 	parameters.nChannels = 2;
 	parameters.firstChannel = 0;
-	unsigned int sampleRate = hardwareSampleRate();
+	unsigned int sampleRate = unsigned int ( hardwareSampleRate() );
 
-	unsigned int bufferFrames = kBufferSize;
+	unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
 	RtAudio::StreamOptions options;
 	options.flags |= RTAUDIO_NONINTERLEAVED;
+	//options.numberOfBuffers = 2; 
 
 	try {
 		dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
-		printf("RTAudio Stream Opened!\n"); 
-	} catch (RtError& e) {
+		printf("\nRTAudio Stream Opened!\n"); 
+	} catch (RtAudioError & e) {
 		e.printMessage();
 	}
 
@@ -118,7 +114,7 @@ void AudioDestinationWin::start() {
 	try {
 		dac.startStream();
 		m_isPlaying = true;
-	} catch (RtError& e) {
+	} catch (RtAudioError & e) {
 		m_isPlaying = false; 
 		e.printMessage();
 	}
@@ -131,10 +127,11 @@ void AudioDestinationWin::stop() {
 		dac.stopStream();
 		m_isPlaying = false;
 	}
-	catch (RtError& e) {
+	catch (RtAudioError & e) {
 		m_isPlaying = true; 
 		e.printMessage();
 	}
+
 }
 
 // Pulls on our provider to get rendered audio stream.
@@ -159,6 +156,8 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
 
 // RTAudio callback ticks and asks for some output... 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ) {
+
+	// printf("%u \n", status); 
 	
 	float *fBufOut = (float*) outputBuffer;
 

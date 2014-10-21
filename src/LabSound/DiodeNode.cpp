@@ -8,8 +8,6 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-// PdNode wraps an instance of pure-data as a signal processing node
-
 #include "DiodeNode.h"
 #include <mutex>
 
