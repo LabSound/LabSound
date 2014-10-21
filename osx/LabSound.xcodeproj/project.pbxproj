@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		E23015D2185EC9EB00FEC991 /* PeakCompNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E23015D0185EC9EB00FEC991 /* PeakCompNode.cpp */; };
 		E251D92718486BB600F7B7BC /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */; };
-		E251D99B18497FFA00F7B7BC /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D99A18497FFA00F7B7BC /* libpd-osx.a */; };
 		E252457C18722DC100983485 /* SpectralMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E252457A18722DC100983485 /* SpectralMonitorNode.cpp */; };
 		E252458218724D0F00983485 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E252458018724D0F00983485 /* fftsg.cpp */; };
 		E252458818724DB000983485 /* Logging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E252458618724DB000983485 /* Logging.cpp */; };
@@ -50,6 +49,7 @@
 		E25245FE18724EC300983485 /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F118724EC300983485 /* SincResampler.cpp */; };
 		E25245FF18724EC300983485 /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F318724EC300983485 /* VectorMath.cpp */; };
 		E252460018724EC300983485 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F518724EC300983485 /* ZeroPole.cpp */; };
+		E281965D198E0C3C0042A91E /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E281965C198E0C3C0042A91E /* libpd-osx.a */; };
 		E2FB84B1183D1E8F00A5A764 /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */; };
 		E2FB84B2183D1E8F00A5A764 /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */; };
 		E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */; };
@@ -110,7 +110,6 @@
 		E2FB86F6183D202700A5A764 /* MainThreadMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85F5183D202600A5A764 /* MainThreadMac.mm */; };
 		E2FB86F7183D202700A5A764 /* MainThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85F6183D202600A5A764 /* MainThread.cpp */; };
 		E2FB86F9183D202700A5A764 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85FC183D202600A5A764 /* MediaTime.cpp */; };
-		E2FB86FB183D202700A5A764 /* NullPtr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8606183D202600A5A764 /* NullPtr.cpp */; };
 		E2FB8717183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */; };
 		E2FB8718183D202700A5A764 /* Threading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866D183D202700A5A764 /* Threading.cpp */; };
 		E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866F183D202700A5A764 /* ThreadingNone.cpp */; };
@@ -126,7 +125,6 @@
 		E23015EB186021C100FEC991 /* PeakCompNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PeakCompNode.h; sourceTree = "<group>"; };
 		E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
 		E251D92618486BB600F7B7BC /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
-		E251D99A18497FFA00F7B7BC /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
 		E251D9C0184CE6C900F7B7BC /* LabSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSound.h; sourceTree = "<group>"; };
 		E251D9C1184CE6C900F7B7BC /* LabSoundConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundConfig.h; sourceTree = "<group>"; };
 		E251D9C2184CE6C900F7B7BC /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundIncludes.h; sourceTree = "<group>"; };
@@ -264,6 +262,7 @@
 		E25245F418724EC300983485 /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorMath.h; sourceTree = "<group>"; };
 		E25245F518724EC300983485 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
 		E25245F618724EC300983485 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZeroPole.h; sourceTree = "<group>"; };
+		E281965C198E0C3C0042A91E /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../../../../../../build/LabApp-dnaflibcrmviorevhkyywntsabny/Build/Products/Debug/libpd-osx.a"; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2FB849B183D1E8F00A5A764 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
 		E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClipNode.cpp; sourceTree = "<group>"; };
@@ -401,8 +400,6 @@
 		E2FB85FE183D202600A5A764 /* MemoryObjectInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryObjectInfo.h; sourceTree = "<group>"; };
 		E2FB85FF183D202600A5A764 /* MessageQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageQueue.h; sourceTree = "<group>"; };
 		E2FB8603183D202600A5A764 /* Noncopyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Noncopyable.h; sourceTree = "<group>"; };
-		E2FB8606183D202600A5A764 /* NullPtr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NullPtr.cpp; sourceTree = "<group>"; };
-		E2FB8607183D202600A5A764 /* NullPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullPtr.h; sourceTree = "<group>"; };
 		E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjcRuntimeExtras.h; sourceTree = "<group>"; };
 		E2FB8612183D202600A5A764 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2FB8620183D202600A5A764 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassOwnPtr.h; sourceTree = "<group>"; };
@@ -436,7 +433,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E251D99B18497FFA00F7B7BC /* libpd-osx.a in Frameworks */,
+				E281965D198E0C3C0042A91E /* libpd-osx.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,7 +451,7 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
-				E251D99A18497FFA00F7B7BC /* libpd-osx.a */,
+				E281965C198E0C3C0042A91E /* libpd-osx.a */,
 				E251D9BE184CE6C900F7B7BC /* include */,
 				E252457F18724D0F00983485 /* ooura */,
 				E2FB873F183D20E100A5A764 /* platform */,
@@ -706,8 +703,6 @@
 				E2FB85FE183D202600A5A764 /* MemoryObjectInfo.h */,
 				E2FB85FF183D202600A5A764 /* MessageQueue.h */,
 				E2FB8603183D202600A5A764 /* Noncopyable.h */,
-				E2FB8606183D202600A5A764 /* NullPtr.cpp */,
-				E2FB8607183D202600A5A764 /* NullPtr.h */,
 				E2FB860A183D202600A5A764 /* ObjcRuntimeExtras.h */,
 				E2FB8612183D202600A5A764 /* OwnPtrCommon.h */,
 				E2FB8620183D202600A5A764 /* PassOwnPtr.h */,
@@ -888,7 +883,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0600;
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "LabSound" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1009,7 +1004,6 @@
 				E25245AB18724E3200983485 /* AudioUtilities.cpp in Sources */,
 				E25245D818724E8800983485 /* HRTFPanner.cpp in Sources */,
 				E2FB8534183D1F1F00A5A764 /* AudioBasicInspectorNode.cpp in Sources */,
-				E2FB86FB183D202700A5A764 /* NullPtr.cpp in Sources */,
 				E25245D718724E8800983485 /* HRTFKernel.cpp in Sources */,
 				E2FB8548183D1F1F00A5A764 /* AudioParamTimeline.cpp in Sources */,
 				E25245A818724E3200983485 /* AudioPullFIFO.cpp in Sources */,
@@ -1039,7 +1033,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CONFIGURATION_BUILD_DIR = build/Release;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
@@ -1060,110 +1056,24 @@
 					"$(PROJECT_DIR)/../src/libpd/pure-data/src",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
-					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OBJROOT = "$(SYMROOT)";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
-				VALID_ARCHS = "x86_64 i386";
+				SDKROOT = macosx;
+				SYMROOT = build;
+				VALID_ARCHS = x86_64;
 			};
 			name = "Release Native 64-bit";
-		};
-		09F14F6A3FF52EE35FC66AB0 /* Release Native 32-bit */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
-				CONFIGURATION_TEMP_DIR = "$(OBJROOT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_WEB_AUDIO=1",
-					NDEBUG,
-					PD,
-					__MACOSX_CORE__,
-					HAVE_NO_OFLOG,
-					HAVE_BOOST_THREAD,
-					HAVE_LIBDL,
-					OSX,
-					HAVE_ALLOCA,
-					HAVE_UNISTD_H,
-					USEAPI_DUMMY,
-					"BUILDING_WTF=1",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					platform,
-					platform/animation,
-					platform/audio,
-					platform/graphics,
-					platform/graphics/transforms,
-					platform/text,
-					Modules/webaudio,
-					shim,
-					WTF,
-					WTF/icu,
-					WTF/wtf,
-					libpd/cpp,
-					libpd/libpd_wrapper,
-					"libpd/pure-data/src",
-				);
-				OBJROOT = obj/x32/Release;
-				ONLY_ACTIVE_ARCH = NO;
-				OTHER_CFLAGS = (
-					"-std=c++11",
-					"-stdlib=libc++",
-				);
-				SYMROOT = build/Release;
-			};
-			name = "Release Native 32-bit";
-		};
-		124C60C95F6C3A5E25B935F1 /* Release Native 32-bit */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CONFIGURATION_BUILD_DIR = build/Release;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../src/platform",
-					"$(PROJECT_DIR)/../src/platform/animation",
-					"$(PROJECT_DIR)/../src/platform/audio",
-					"$(PROJECT_DIR)/../src/platform/graphics",
-					"$(PROJECT_DIR)/../src/platform/graphics/transforms",
-					"$(PROJECT_DIR)/../src/platform/text",
-					"$(PROJECT_DIR)/../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../src/shim",
-					"$(PROJECT_DIR)/../src/WTF",
-					"$(PROJECT_DIR)/../src/WTF/icu",
-					"$(PROJECT_DIR)/../src/WTF/wtf",
-					"$(PROJECT_DIR)/../src/libpd/cpp",
-					"$(PROJECT_DIR)/../src/libpd/libpd_wrapper",
-					"$(PROJECT_DIR)/../src/libpd/pure-data/src",
-				);
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
-					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
-				);
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = LabSound;
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = "Release Native 32-bit";
 		};
 		1C0D2D9E74052F052778707B /* Debug Native 64-bit */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CONFIGURATION_BUILD_DIR = build/Debug;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = (
@@ -1183,15 +1093,13 @@
 					"$(PROJECT_DIR)/../src/libpd/pure-data/src",
 				);
 				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
-					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OBJROOT = "$(SYMROOT)";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = LabSound;
-				VALID_ARCHS = "x86_64 i386";
+				SDKROOT = macosx;
+				SYMROOT = build;
+				VALID_ARCHS = x86_64;
 			};
 			name = "Debug Native 64-bit";
 		};
@@ -1245,94 +1153,6 @@
 				SYMROOT = build/Debug;
 			};
 			name = "Debug Native 64-bit";
-		};
-		5A3962EA180D01C417103003 /* Debug Native 32-bit */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
-				CONFIGURATION_TEMP_DIR = "$(OBJROOT)";
-				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					platform,
-					platform/animation,
-					platform/audio,
-					platform/graphics,
-					platform/graphics/transforms,
-					platform/text,
-					Modules/webaudio,
-					shim,
-					WTF,
-					WTF/icu,
-					WTF/wtf,
-					libpd/cpp,
-					libpd/libpd_wrapper,
-					"libpd/pure-data/src",
-				);
-				OBJROOT = obj/x32/Debug;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"-std=c++11",
-					"-stdlib=libc++",
-				);
-				SYMROOT = build/Debug;
-			};
-			name = "Debug Native 32-bit";
-		};
-		5F8860B741BD76CA48BE62AF /* Debug Native 32-bit */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CONFIGURATION_BUILD_DIR = build/Debug;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_WEB_AUDIO=1",
-					STATICALLY_LINKED_WITH_WTF,
-					DEBUG,
-					PD,
-					__MACOSX_CORE__,
-					HAVE_NO_OFLOG,
-					HAVE_BOOST_THREAD,
-					HAVE_LIBDL,
-					OSX,
-					HAVE_ALLOCA,
-					HAVE_UNISTD_H,
-					USEAPI_DUMMY,
-					WTF_IS_LINKED_IN_SAME_BINARY,
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../src/platform",
-					"$(PROJECT_DIR)/../src/platform/animation",
-					"$(PROJECT_DIR)/../src/platform/audio",
-					"$(PROJECT_DIR)/../src/platform/graphics",
-					"$(PROJECT_DIR)/../src/platform/graphics/transforms",
-					"$(PROJECT_DIR)/../src/platform/text",
-					"$(PROJECT_DIR)/../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../src/shim",
-					"$(PROJECT_DIR)/../src/WTF",
-					"$(PROJECT_DIR)/../src/WTF/icu",
-					"$(PROJECT_DIR)/../src/WTF/wtf",
-					"$(PROJECT_DIR)/../src/libpd/cpp",
-					"$(PROJECT_DIR)/../src/libpd/libpd_wrapper",
-					"$(PROJECT_DIR)/../src/libpd/pure-data/src",
-				);
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/src/build/Debug,
-					/Users/dp/Code/LabSound/src/libpd/build/Debug,
-					"/Users/dp/Code/LabSound/src/libpd/build/Debug-iphonesimulator",
-				);
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = LabSound;
-				VALID_ARCHS = "x86_64 i386";
-			};
-			name = "Debug Native 32-bit";
 		};
 		7BB013C71308184445C54388 /* Release Native 64-bit */ = {
 			isa = XCBuildConfiguration;
@@ -1390,24 +1210,20 @@
 		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "LabSound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5A3962EA180D01C417103003 /* Debug Native 32-bit */,
 				448B3AB821DF6926574B7ECC /* Debug Native 64-bit */,
-				09F14F6A3FF52EE35FC66AB0 /* Release Native 32-bit */,
 				7BB013C71308184445C54388 /* Release Native 64-bit */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Debug Native 32-bit";
+			defaultConfigurationName = "Debug Native 64-bit";
 		};
 		386F3A56180371D9616B5F6E /* Build configuration list for PBXNativeTarget "LabSound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5F8860B741BD76CA48BE62AF /* Debug Native 32-bit */,
 				1C0D2D9E74052F052778707B /* Debug Native 64-bit */,
-				124C60C95F6C3A5E25B935F1 /* Release Native 32-bit */,
 				068F18FF3E791FD308513337 /* Release Native 64-bit */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Debug Native 32-bit";
+			defaultConfigurationName = "Debug Native 64-bit";
 		};
 /* End XCConfigurationList section */
 	};
