@@ -30,7 +30,7 @@ class ADSR : public Generator
     ATTACK,   /*!< Attack */
     DECAY,    /*!< Decay */
     SUSTAIN,  /*!< Sustain */
-    RELEASE,  /*!< Release */
+    RELEASE = 3,  /*!< Release */
     IDLE      /*!< Before attack / after release */
   };
 

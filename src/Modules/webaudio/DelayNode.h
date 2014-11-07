@@ -32,8 +32,18 @@ namespace WebCore {
 
 class AudioParam;
 
+enum DelayValues {
+	D_32 = 0,
+	D_16T = 1,
+	D_32D = 2,
+	D_16 = 3,
+	D_8T = 4
+};
+
 class DelayNode : public AudioBasicProcessorNode {
+
 public:
+
     static PassRefPtr<DelayNode> create(AudioContext* context, float sampleRate, double maxDelayTime, ExceptionCode& ec)
     {
         return adoptRef(new DelayNode(context, sampleRate, maxDelayTime, ec));      
@@ -42,9 +52,11 @@ public:
     AudioParam* delayTime();
 
 private:
+
     DelayNode(AudioContext*, float sampleRate, double maxDelayTime, ExceptionCode&);
 
     DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
+
 };
 
 } // namespace WebCore

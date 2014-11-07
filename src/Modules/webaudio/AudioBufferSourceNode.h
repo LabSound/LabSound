@@ -148,7 +148,7 @@ private:
     PannerNode* m_pannerNode;
 
     // This synchronizes process() with setBuffer() which can cause dynamic channel count changes.
-    mutable Mutex m_processLock;
+    mutable WTF::Mutex m_processLock;
 };
 
 } // namespace WebCore

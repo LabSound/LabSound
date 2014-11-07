@@ -310,7 +310,7 @@ private:
     unsigned m_connectionCount;
 
     // Graph locking.
-    Mutex m_contextGraphMutex;
+    WTF::Mutex m_contextGraphMutex;
     volatile ThreadIdentifier m_audioThread;
     volatile ThreadIdentifier m_graphOwnerThread; // if the lock is held then this is the thread which owns it, otherwise == UndefinedThreadIdentifier
     

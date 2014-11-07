@@ -125,7 +125,7 @@ private:
 
     std::vector<ParamEvent> m_events;
 
-    Mutex m_eventsLock;
+    WTF::Mutex m_eventsLock;
 };
 
 } // namespace WebCore

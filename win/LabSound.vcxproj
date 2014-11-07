@@ -91,8 +91,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\kissfft;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;ASSERT_DISABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;..\src\LabSound;..\include\LabSound;..\src\WTF\wtf\win;..\src\kissfft;..\src\STK\include;..\src\json11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -132,6 +132,7 @@
     <ClInclude Include="..\src\kissfft\kiss_fftr.hpp" />
     <ClInclude Include="..\src\kissfft\_kiss_fft_guts.hpp" />
     <ClInclude Include="..\src\LabSound\ADSRNode.h" />
+    <ClInclude Include="..\src\LabSound\BpmDelay.h" />
     <ClInclude Include="..\src\LabSound\ClipNode.h" />
     <ClInclude Include="..\src\LabSound\DiodeNode.h" />
     <ClInclude Include="..\src\LabSound\EasyVerbNode.h" />
@@ -345,6 +346,7 @@
     <ClCompile Include="..\src\kissfft\kiss_fftr.cpp" />
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\LabSound\BpmDelay.cpp" />
     <ClCompile Include="..\src\LabSound\ClipNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\DiodeNode.cpp">
