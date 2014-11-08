@@ -1,10 +1,13 @@
-#include "../Modules/webaudio/AudioContext.h"
-#include "../Modules/webaudio/AudioNode.h"
-#include "../Modules/webaudio/AudioParam.h"
-#include "../Modules/webaudio/AudioBufferSourceNode.h"
-#include "../WTF/wtf/RefPtr.h"
-#include "../LabSound/ADSRNode.h"
+#pragma once
+
+#include "AudioContext.h"
+#include "AudioNode.h"
+#include "AudioParam.h"
+#include "AudioBufferSourceNode.h"
+#include "ADSRNode.h"
 #include "SoundBuffer.h"
+#include "wtf\RefPtr.h"
+
 #include <iostream> 
 #include <array>
 #include <string>

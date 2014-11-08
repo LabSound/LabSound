@@ -29,9 +29,9 @@
 #ifndef AudioListener_h
 #define AudioListener_h
 
-#include "../../platform/graphics/FloatPoint3D.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/ThreadSafeRefCounted.h"
+#include "util\graphics\FloatPoint3D.h"
+#include "WTF\RefPtr.h"
+#include "WTF\ThreadSafeRefCounted.h"
 
 namespace WebCore {
 

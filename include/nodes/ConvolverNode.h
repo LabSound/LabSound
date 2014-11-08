@@ -26,8 +26,8 @@
 #define ConvolverNode_h
 
 #include "AudioNode.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/Threading.h"
+#include "WTF\RefPtr.h"
+#include "WTF\Threading.h"
 
 namespace WebCore {
 

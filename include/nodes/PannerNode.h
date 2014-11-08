@@ -28,12 +28,12 @@
 #include "AudioGain.h"
 #include "AudioListener.h"
 #include "AudioNode.h"
-#include "../../platform/audio/AudioBus.h"
-#include "../../platform/audio/Cone.h"
-#include "../../platform/audio/Distance.h"
-#include "../../platform/graphics/FloatPoint3D.h"
-#include "../../platform/audio/Panner.h"
-#include "../../WTF/wtf/RefPtr.h"
+#include "AudioBus.h"
+#include "Cone.h"
+#include "Distance.h"
+#include "util\graphics\FloatPoint3D.h"
+#include "Panner.h"
+#include "WTF\RefPtr.h"
 
 namespace WebCore {
 

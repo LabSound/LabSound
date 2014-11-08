@@ -25,8 +25,8 @@
 #ifndef DelayNode_h
 #define DelayNode_h
 
-#include "../../modules/webaudio/AudioBasicProcessorNode.h"
-#include "../../modules/webaudio/DelayProcessor.h"
+#include "AudioBasicProcessorNode.h"
+#include "DelayProcessor.h"
 
 namespace WebCore {
 

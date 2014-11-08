@@ -30,9 +30,9 @@
 #define HRTFDatabaseLoader_h
 
 #include "HRTFDatabase.h"
-#include "../../WTF/wtf/ThreadSafeRefCounted.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/Threading.h"
+#include "WTF\ThreadSafeRefCounted.h"
+#include "WTF\RefPtr.h"
+#include "WTF\Threading.h"
 
 namespace WebCore {
 

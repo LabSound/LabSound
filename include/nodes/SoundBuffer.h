@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "../Modules/webaudio/AudioBuffer.h"
-#include "../Modules/webaudio/AudioBufferSourceNode.h"
-#include "../Modules/webaudio/AudioContext.h"
-#include "../WTF/wtf/RefPtr.h"
+#include "AudioBuffer.h"
+#include "AudioBufferSourceNode.h"
+#include "AudioContext.h"
+#include "RefPtr.h"
 
 namespace LabSound {
 

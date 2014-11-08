@@ -30,9 +30,9 @@
 #define AudioBus_h
 
 #include "AudioChannel.h"
-#include "../../WTF/wtf/Noncopyable.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/PassOwnPtr.h"
+#include "WTF\Noncopyable.h"
+#include "WTF\RefPtr.h"
+#include "WTF\PassOwnPtr.h"
 #include <vector>
 
 namespace WebCore {

@@ -24,7 +24,7 @@
  */
 
 #include "config.h"
-#include "sndfile.h"
+#include "libsndfile\sndfile.h"
 
 #if ENABLE(WEB_AUDIO)
 

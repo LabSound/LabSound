@@ -27,13 +27,13 @@
 #endif
 #endif
 
-#include <wtf/Platform.h>
+#include "WTF\Platform.h"
 
 #if OS(WINDOWS) && !OS(WINCE) && !PLATFORM(QT) && !PLATFORM(CHROMIUM) && !PLATFORM(GTK) && !PLATFORM(WX)
-#include <WebCore/WebCoreHeaderDetection.h>
+//#include <WebCore/WebCoreHeaderDetection.h>
 #endif
 
-#include <wtf/ExportMacros.h>
+#include "WTF\ExportMacros.h"
 #include "PlatformExportMacros.h"
 
 #ifdef HAVE_JS
@@ -78,7 +78,7 @@
 // Helps us catch if anyone uses new or delete by accident in code and doesn't include "config.h".
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
+// #include <WTF\FastMalloc.h>
 
 #include <ciso646>
 
@@ -90,7 +90,7 @@
 #include <wx/defs.h>
 #endif
 
-#include <wtf/DisallowCType.h>
+//#include <wtf/DisallowCType.h>
 
 #if COMPILER(MSVC)
 #define SKIP_STATIC_CONSTRUCTORS_ON_MSVC 1

@@ -3,11 +3,11 @@
 
 #pragma once
 #include "LabSoundConfig.h"
-#include "../../src/WTF/wtf/RefPtr.h"
-#include "../../src/Modules/webaudio/AudioContext.h"
-#include "../../src/LabSound/SpatializationNode.h"
-#include "../../src/Modules/webaudio/AudioNode.h"
-#include "../../src/Modules/webaudio/AudioBufferSourceNode.h"
+#include "wtf\RefPtr.h"
+#include "AudioContext.h"
+#include "SpatializationNode.h"
+#include "AudioNode.h"
+#include "AudioBufferSourceNode.h"
 
 namespace LabSound {
 

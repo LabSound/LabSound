@@ -25,9 +25,9 @@
 #ifndef AudioNodeInput_h
 #define AudioNodeInput_h
 
-#include "../../platform/audio/AudioBus.h"
-#include "../../Modules/webaudio/AudioNode.h"
-#include "../../Modules/webaudio/AudioSummingJunction.h"
+#include "AudioBus.h"
+#include "AudioNode.h"
+#include "AudioSummingJunction.h"
 
 #include <set>
 

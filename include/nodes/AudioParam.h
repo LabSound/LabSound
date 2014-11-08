@@ -33,8 +33,8 @@
 #include "AudioParamTimeline.h"
 #include "AudioSummingJunction.h"
 #include <sys/types.h>
-#include "../../WTF/wtf/Float32Array.h"
-#include "../../WTF/wtf/ThreadSafeRefCounted.h"
+#include "WTF\Float32Array.h"
+#include "WTF\ThreadSafeRefCounted.h"
 #include <string.h>
 
 namespace WebCore {

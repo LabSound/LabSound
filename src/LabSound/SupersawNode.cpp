@@ -8,7 +8,7 @@
 
 #include "SupersawNode.h"
 
-#include "../Modules/webaudio/OscillatorNode.h"
+#include "OscillatorNode.h"
 
 #include "LabSound.h"
 #include "ADSRNode.h"

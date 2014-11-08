@@ -30,7 +30,7 @@
 #define AudioChannel_h
 
 #include "AudioArray.h"
-#include "../../WTF/wtf/Noncopyable.h"
+#include "WTF\Noncopyable.h"
 #include <memory>
 
 namespace WebCore {

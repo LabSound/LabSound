@@ -4,7 +4,7 @@
 #ifndef LabSound_src_RecorderNode_h
 #define LabSound_src_RecorderNode_h
 
-#include "../Modules/webaudio/AudioBasicInspectorNode.h"
+#include "AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
 

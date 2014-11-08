@@ -8,8 +8,8 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
-#include <audio/VectorMath.h>
-#include "../Modules/webaudio/DelayNode.h"
+#include "VectorMath.h"
+#include "DelayNode.h"
 
 #include <iostream>
 #include <vector>

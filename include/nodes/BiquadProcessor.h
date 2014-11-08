@@ -27,10 +27,10 @@
 
 #include "AudioNode.h"
 #include "AudioParam.h"
-#include "../../platform/audio/Biquad.h"
-#include "../../platform/audio/AudioDSPKernel.h"
-#include "../../platform/audio/AudioDSPKernelProcessor.h"
-#include "../../WTF/wtf/RefPtr.h"
+#include "Biquad.h"
+#include "AudioDSPKernel.h"
+#include "AudioDSPKernelProcessor.h"
+#include "WTF\RefPtr.h"
 
 namespace WebCore {
 

@@ -28,9 +28,9 @@
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
 
-#include "../../platform/audio/AudioBus.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/Threading.h"
+#include "AudioBus.h"
+#include "WTF\RefPtr.h"
+#include "WTF\Threading.h"
 
 namespace WebCore {
 

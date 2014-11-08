@@ -35,8 +35,8 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/Threading.h"
+#include "WTF\RefPtr.h"
+#include "WTF\Threading.h"
 #include <vector>
 
 namespace WebCore {

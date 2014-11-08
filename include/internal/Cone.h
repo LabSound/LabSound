@@ -29,7 +29,7 @@
 #ifndef Cone_h
 #define Cone_h
 
-#include "../graphics/FloatPoint3D.h"
+#include "util\graphics\FloatPoint3D.h"
 
 namespace WebCore {
 

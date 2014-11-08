@@ -27,9 +27,9 @@
 
 #include "AudioBuffer.h"
 #include "AudioNode.h"
-#include "../../platform/audio/AudioBus.h"
-#include "../../platform/audio/AudioIOCallback.h"
-#include "../../platform/audio/AudioSourceProvider.h"
+#include "AudioBus.h"
+#include "AudioIOCallback.h"
+#include "AudioSourceProvider.h"
 
 namespace WebCore {
 

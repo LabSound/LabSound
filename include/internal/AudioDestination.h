@@ -29,8 +29,8 @@
 #ifndef AudioDestination_h
 #define AudioDestination_h
 
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/PassOwnPtr.h"
+#include "WTF\RefPtr.h"
+#include "WTF\PassOwnPtr.h"
 
 namespace WebCore {
 

@@ -25,11 +25,11 @@
 #ifndef AudioNodeOutput_h
 #define AudioNodeOutput_h
 
-#include "../../platform/audio/AudioBus.h"
+#include "AudioBus.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
 #include <set>
-#include "../../WTF/wtf/RefPtr.h"
+#include "WTF\RefPtr.h"
 
 namespace WebCore {
 

@@ -4,14 +4,16 @@
 #ifndef LabSound_ADSRNode_h_impl
 #define LabSound_ADSRNode_h_impl
 
-#include "../Modules/webaudio/AudioContext.h"
-#include "../platform/audio/AudioBus.h"
-#include "../Modules/webaudio/AudioParam.h"
-#include "../Modules/webaudio/AudioScheduledSourceNode.h"
-#include "../Modules/webaudio/AudioBasicProcessorNode.h"
-#include "../Modules/webaudio/AudioBasicInspectorNode.h"
-#include "../WTF/wtf/RefPtr.h"
-#include "../Modules/webaudio/GainNode.h"
+#include "AudioContext.h"
+#include "AudioBus.h"
+#include "AudioParam.h"
+
+#include "AudioScheduledSourceNode.h"
+#include "AudioBasicProcessorNode.h"
+#include "AudioBasicInspectorNode.h"
+#include "GainNode.h"
+
+#include "wtf\RefPtr.h"
 
 namespace LabSound {
     using namespace WebCore;

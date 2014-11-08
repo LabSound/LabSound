@@ -8,7 +8,7 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
-#include <audio/VectorMath.h>
+#include "VectorMath.h"
 
 #include <iostream>
 #include <vector>

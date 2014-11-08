@@ -38,14 +38,14 @@
  https://ccrma.stanford.edu/~jos/filters/Nonlinear_Filter_Example_Dynamic.htm
  */
 
-#include "../Modules/webaudio/AudioContext.h"
+#include "AudioContext.h"
 #include "../platform/audio/AudioBus.h"
-#include "../Modules/webaudio/AudioParam.h"
-#include "../Modules/webaudio/AudioScheduledSourceNode.h"
-#include "../Modules/webaudio/AudioBasicProcessorNode.h"
-#include "../Modules/webaudio/AudioBasicInspectorNode.h"
-#include "../WTF/wtf/RefPtr.h"
-#include "../Modules/webaudio/GainNode.h"
+#include "AudioParam.h"
+#include "AudioScheduledSourceNode.h"
+#include "AudioBasicProcessorNode.h"
+#include "AudioBasicInspectorNode.h"
+#include "WTF\RefPtr.h"
+#include "GainNode.h"
 
 namespace LabSound {
     using namespace WebCore;

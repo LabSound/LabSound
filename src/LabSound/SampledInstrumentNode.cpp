@@ -1,6 +1,6 @@
 #include "SampledInstrumentNode.h"
 #include "LabSound.h"
-#include "json11.hpp"
+#include "json11\json11.hpp"
 #include <string>
 #include <fstream>
 #include <streambuf>

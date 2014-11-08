@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../Modules/webaudio/PannerNode.h"
+#include "PannerNode.h"
 #include <map>
 
 namespace LabSound {

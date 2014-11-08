@@ -38,7 +38,7 @@
 #include "FloatConversion.h"
 #include <string>
 #include <iostream>
-#include "sndfile.h"
+#include "libsndfile\sndfile.h"
 
 namespace WebCore {
 

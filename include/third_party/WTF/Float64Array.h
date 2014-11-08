@@ -27,8 +27,8 @@
 #ifndef Float64Array_h
 #define Float64Array_h
 
-#include "../../WTF/wtf/TypedArrayBase.h"
-#include "../../WTF/wtf/MathExtras.h"
+#include "WTF\TypedArrayBase.h"
+#include "WTF\MathExtras.h"
 
 namespace WTF {
 

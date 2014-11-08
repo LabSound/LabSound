@@ -29,9 +29,9 @@
 #ifndef AudioDestinationWin_h
 #define AudioDestinationWin_h
 
-#include "../AudioBus.h"
-#include "../AudioDestination.h"
-#include "RtAudio.h"
+#include "AudioBus.h"
+#include "AudioDestination.h"
+#include "rtaudio\RtAudio.h"
 #include <iostream>
 #include <cstdlib>
 

@@ -3,7 +3,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 #pragma once
 
-#include "../Modules/webaudio/AudioBasicInspectorNode.h"
+#include "AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
 

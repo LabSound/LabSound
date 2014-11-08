@@ -31,8 +31,8 @@
 #include "AudioSourceProviderClient.h"
 #include "HTMLMediaElement.h"
 #include "MultiChannelResampler.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/Threading.h"
+#include "WTF\RefPtr.h"
+#include "WTF\Threading.h"
 
 namespace WebCore {
 

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "../Modules/webaudio/AudioBasicProcessorNode.h"
-#include "../Modules/webaudio/AudioParam.h"
+#include "AudioBasicProcessorNode.h"
+#include "AudioParam.h"
 #include "STKNode.h"
 
 namespace LabSound {

@@ -29,12 +29,12 @@
 
 #include "AsyncAudioDecoder.h"
 #include "AudioDestinationNode.h"
-#include "../../platform/audio/AudioBus.h"
-#include "../../platform/audio/HRTFDatabaseLoader.h"
-#include "../../WTF/wtf/MainThread.h"
-#include "../../WTF/wtf/RefPtr.h"
-#include "../../WTF/wtf/ThreadSafeRefCounted.h"
-#include "../../WTF/wtf/Threading.h"
+#include "AudioBus.h"
+#include "HRTFDatabaseLoader.h"
+#include "WTF\MainThread.h"
+#include "WTF\RefPtr.h"
+#include "WTF\ThreadSafeRefCounted.h"
+#include "WTF\Threading.h"
 #include <vector>
 #include <set>
 
