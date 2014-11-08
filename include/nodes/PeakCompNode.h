@@ -39,7 +39,7 @@
  */
 
 #include "AudioContext.h"
-#include "../platform/audio/AudioBus.h"
+#include "AudioBus.h"
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
 #include "AudioBasicProcessorNode.h"
