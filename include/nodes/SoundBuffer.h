@@ -6,7 +6,7 @@
 #include "AudioBuffer.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioContext.h"
-#include "RefPtr.h"
+#include <WTF/RefPtr.h>
 
 namespace LabSound {
 

@@ -1,8 +1,8 @@
 
-#include "LabSound/LabSound.h"
-#include "LabSound/ConvolverNode.h"
-#include "LabSound/GainNode.h"
-#include "LabSound/SoundBuffer.h"
+#include "LabSound.h"
+#include "ConvolverNode.h"
+#include "GainNode.h"
+#include "SoundBuffer.h"
 
 #include <iostream>
 #include <thread>

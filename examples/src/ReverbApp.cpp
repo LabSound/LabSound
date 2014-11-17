@@ -1,5 +1,5 @@
 
-#include "LabSound/LabSound.h"
+#include "LabSound.h"
 
 // Examples
 #include "ReverbSample.h"
