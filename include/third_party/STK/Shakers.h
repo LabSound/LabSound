@@ -294,10 +294,8 @@ inline StkFloat Shakers :: tick( unsigned int )
   // Do final FIR filtering (lowpass or highpass)
   lastFrame_[0] = tickEqualize( lastFrame_[0] );
 
-  //if ( std::abs(lastFrame_[0]) > 1.0 )
-  //  std::cout << "lastOutput = " << lastFrame_[0] << std::endl;
-
   return lastFrame_[0];
+
 }
 
 inline StkFrames& Shakers :: tick( StkFrames& frames, unsigned int channel )

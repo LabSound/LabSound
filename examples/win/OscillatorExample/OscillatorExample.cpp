@@ -1,8 +1,5 @@
 #include "OscillatorExample.h"
 
-#include "LabSound/LabSound.h"
-#include "LabSound/LabSoundIncludes.h"
-
 using namespace LabSound;
 
 int main(int argc, char *argv[], char *envp[]) {
