@@ -8,8 +8,8 @@
 #include "FFTFrame.h"
 
 #include "VectorMath.h"
-#include <kissfft\kiss_fftr.hpp>
-#include <WTF\MathExtras.h>
+#include <kissfft/kiss_fftr.hpp>
+#include <WTF/MathExtras.h>
 #include <iostream>
 
 // To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines

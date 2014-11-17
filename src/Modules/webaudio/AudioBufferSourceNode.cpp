@@ -361,8 +361,8 @@ bool AudioBufferSourceNode::setBuffer(AudioBuffer* buffer)
 
         output(0)->setNumberOfChannels(numberOfChannels);
 
-        m_sourceChannels = std::make_unique<const float*[]>(numberOfChannels);
-        m_destinationChannels = std::make_unique<float*[]>(numberOfChannels);
+        m_sourceChannels = std::unique_ptr<const float*[]>(new const float*[numberOfChannels]);
+        m_destinationChannels = std::unique_ptr<float*[]>(new float*[numberOfChannels]);
 
         for (unsigned i = 0; i < numberOfChannels; ++i) 
             m_sourceChannels[i] = buffer->getChannelData(i)->data();

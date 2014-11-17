@@ -27,7 +27,7 @@
  */
 
 #import "config.h"
-#import "AutodrainedPool.h"
+#import <WTF/AutodrainedPool.h>
 
 #import <Foundation/Foundation.h>
 

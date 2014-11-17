@@ -23,7 +23,7 @@
  */
 
 #include "config.h"
-#include "Assertions.h"
+#include <WTF/Assertions.h>
 
 #if ENABLE(WEB_AUDIO)
 

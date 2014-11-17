@@ -24,9 +24,9 @@
  */
 
 #include "config.h"
-#include "ArrayBufferView.h"
+#include <WTF/ArrayBufferView.h>
 
-#include "ArrayBuffer.h"
+#include <WTF/ArrayBuffer.h>
 
 namespace WTF {
 

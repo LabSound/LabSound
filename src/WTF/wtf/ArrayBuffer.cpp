@@ -24,11 +24,10 @@
  */
 
 #include "config.h"
-#include "ArrayBuffer.h"
+#include <WTF/ArrayBuffer.h>
 
-#include "ArrayBufferView.h"
-
-#include <wtf/RefPtr.h>
+#include <WTF/ArrayBufferView.h>
+#include <WTF/RefPtr.h>
 #include <vector>
 
 namespace WTF {

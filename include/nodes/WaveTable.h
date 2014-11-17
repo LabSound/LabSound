@@ -30,9 +30,9 @@
 #define WaveTable_h
 
 #include "AudioArray.h"
-#include "WTF\Float32Array.h"
-#include "WTF\ThreadSafeRefCounted.h"
-#include "WTF\RefPtr.h"
+#include "WTF/Float32Array.h"
+#include "WTF/ThreadSafeRefCounted.h"
+#include "WTF/RefPtr.h"
 #include <vector>
 
 namespace WebCore {

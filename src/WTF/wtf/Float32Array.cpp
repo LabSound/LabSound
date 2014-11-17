@@ -6,7 +6,7 @@
 //
 //
 
-#include "WTF\Float32Array.h"
+#include "WTF/Float32Array.h"
 
 namespace WTF {
 

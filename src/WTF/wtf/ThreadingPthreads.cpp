@@ -33,14 +33,14 @@
 
 #if USE(PTHREADS)
 
-#include "CurrentTime.h"
-#include "StdLibExtras.h"
-#include "ThreadFunctionInvocation.h"
-#include "ThreadIdentifierDataPthreads.h"
-#include "ThreadSpecific.h"
-#include "UnusedParam.h"
-#include <wtf/RefPtr.h>
-#include <wtf/PassOwnPtr.h>
+#include <WTF/CurrentTime.h>
+#include <WTF/StdLibExtras.h>
+#include <WTF/ThreadFunctionInvocation.h>
+#include <WTF/ThreadIdentifierDataPthreads.h>
+#include <WTF/ThreadSpecific.h>
+#include <WTF/UnusedParam.h>
+#include <WTF/RefPtr.h>
+#include <WTF/PassOwnPtr.h>
 #include <errno.h>
 #include <map>
 

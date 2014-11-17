@@ -13,7 +13,7 @@
 #include "AudioNodeOutput.h"
 
 #include "ADSRNode.h"
-#include "STK\STKIncludes.h"
+#include "STK/STKIncludes.h"
 
 #if OS(WINDOWS)
 #include <direct.h>

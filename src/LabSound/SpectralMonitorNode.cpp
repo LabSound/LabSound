@@ -11,7 +11,7 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "WindowFunctions.h"
-#include "../ooura/fftsg.h"
+#include "ooura/fftsg.h"
 
 namespace LabSound {
 

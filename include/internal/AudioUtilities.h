@@ -25,6 +25,8 @@
 #ifndef AudioUtilities_h
 #define AudioUtilities_h
 
+#include <sys/types.h>
+
 namespace WebCore {
 
 namespace AudioUtilities {

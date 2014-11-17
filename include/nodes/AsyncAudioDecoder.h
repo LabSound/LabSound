@@ -25,9 +25,9 @@
 #ifndef AsyncAudioDecoder_h
 #define AsyncAudioDecoder_h
 
-#include "wtf\MessageQueue.h"
-#include "wtf\RefPtr.h"
-#include "wtf\Threading.h"
+#include "WTF/MessageQueue.h"
+#include "WTF/RefPtr.h"
+#include "WTF/Threading.h"
 
 namespace WTF {
     class ArrayBuffer;

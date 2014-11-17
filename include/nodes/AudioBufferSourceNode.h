@@ -30,8 +30,8 @@
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
 #include "PannerNode.h"
-#include "RefPtr.h"
-#include "Threading.h"
+#include <WTF/RefPtr.h>
+#include <WTF/Threading.h>
 #include <memory>
 
 namespace WebCore {

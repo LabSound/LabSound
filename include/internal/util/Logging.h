@@ -26,7 +26,7 @@
 #ifndef Logging_h
 #define Logging_h
 
-#include "WTF\Assertions.h"
+#include "WTF/Assertions.h"
 #include <string>
 
 #if !LOG_DISABLED

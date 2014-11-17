@@ -47,13 +47,13 @@
 #endif // USE(WEBAUDIO_IPP)
 
 #if USE(WEBAUDIO_KISSFFT)
-#include <kissfft\kiss_fft.hpp>
-#include <kissfft\kiss_fftr.hpp>
+#include <kissfft/kiss_fft.hpp>
+#include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-#include "WTF\PassOwnPtr.h"
-#include "WTF\Platform.h"
-#include "WTF\Threading.h"
+#include "WTF/PassOwnPtr.h"
+#include "WTF/Platform.h"
+#include "WTF/Threading.h"
 
 namespace WebCore {
 

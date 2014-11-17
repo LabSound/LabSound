@@ -32,7 +32,7 @@
 #include "AudioArray.h"
 #include "DynamicsCompressorKernel.h"
 #include "ZeroPole.h"
-#include "WTF\RefPtr.h"
+#include "WTF/RefPtr.h"
 
 #include <vector>
 

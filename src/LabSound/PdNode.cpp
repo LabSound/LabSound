@@ -2,7 +2,7 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifdef PD
+#ifdef PDx
 
 #include "LabSound.h"
 #include "PdNode.h"
