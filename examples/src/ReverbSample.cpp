@@ -5,6 +5,7 @@
 #include "LabSound/SoundBuffer.h"
 
 #include <iostream>
+#include <thread>
 
 using namespace LabSound;
 
@@ -34,7 +35,6 @@ void reverbSample(RefPtr<AudioContext> context, float seconds)
     sample.play(dryGain.get(), 0);
     
     std::cout << "Starting convolved echo" << std::endl;
-    const float seconds = 10.0f;
     for (float i = 0; i < seconds; i += 0.01f) {
 		std::this_thread::sleep_for(std::chrono::microseconds(10000));
     }

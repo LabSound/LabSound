@@ -37,15 +37,13 @@
 
 /// @LabSound renamed to LabJSWTFMainThreadCaller because it also exists in the JavaScriptCore framework.
 
-@interface LabJSWTFMainThreadCaller : NSObject {
-}
+@interface LabJSWTFMainThreadCaller : NSObject
 - (void)call;
 @end
 
 @implementation LabJSWTFMainThreadCaller
 
-- (void)call
-{
+- (void)call {
     WTF::dispatchFunctionsFromMainThread();
 }
 

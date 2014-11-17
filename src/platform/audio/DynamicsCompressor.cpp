@@ -275,8 +275,8 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
         m_postFilterPacks.push_back(adoptPtr(new ZeroPoleFilterPack4()));
     }
 
-    m_sourceChannels = std::make_unique<const float*[]>(numberOfChannels);
-    m_destinationChannels = std::make_unique<float*[]>(numberOfChannels);
+    m_sourceChannels = std::unique_ptr<const float*[]>(new const float*[numberOfChannels]);
+    m_destinationChannels = std::unique_ptr<float*[]>(new float*[numberOfChannels]);
 
     m_compressor.setNumberOfChannels(numberOfChannels);
     m_numberOfChannels = numberOfChannels;

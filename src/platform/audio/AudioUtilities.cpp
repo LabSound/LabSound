@@ -28,6 +28,8 @@
 
 #include "AudioUtilities.h"
 #include <wtf/MathExtras.h>
+#include <wtf/Assertions.h>
+
 
 namespace WebCore {
 

@@ -168,7 +168,7 @@ extern "C" {
 
 		size_t prefixLength = strlen(prefix);
 		size_t formatLength = strlen(format);
-		auto formatWithPrefix = std::make_unique<char[]>(prefixLength + formatLength + 1);
+		auto formatWithPrefix = std::unique_ptr<char[]>(new char[prefixLength + formatLength + 1]);
 		memcpy(formatWithPrefix.get(), prefix, prefixLength);
 		memcpy(formatWithPrefix.get() + prefixLength, format, formatLength);
 		formatWithPrefix[prefixLength + formatLength] = 0;
@@ -186,7 +186,7 @@ extern "C" {
 			return;
 		}
 
-		auto formatWithNewline = std::make_unique<char[]>(formatLength + 2);
+		auto formatWithNewline = std::unique_ptr<char[]>(new char[formatLength + 2]);
 		memcpy(formatWithNewline.get(), format, formatLength);
 		formatWithNewline[formatLength] = '\n';
 		formatWithNewline[formatLength + 1] = 0;

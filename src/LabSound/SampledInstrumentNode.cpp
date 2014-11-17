@@ -8,6 +8,11 @@
 
 #if OS(WINDOWS)
 #include <direct.h>
+#define getcwd _getcwd
+#endif
+#if OS(DARWIN)
+#include <limits.h>
+#define MAX_PATH PATH_MAX
 #endif
 
 //
@@ -42,7 +47,7 @@ namespace LabSound {
 	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {
 
 		char cwd[MAX_PATH];
-		_getcwd(cwd, MAX_PATH);
+		getcwd(cwd, MAX_PATH);
 
 		std::string swdString(cwd);
 
