@@ -72,7 +72,7 @@ namespace LabSound {
             if (cachedDetune != detune->value()) {
                 cachedDetune = detune->value();
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
-                for (int i = 0; i < saws.size(); ++i) {
+                for (size_t i = 0; i < saws.size(); ++i) {
                     saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
                 }
             }

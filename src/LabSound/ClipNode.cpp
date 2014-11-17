@@ -61,7 +61,7 @@ namespace LabSound {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();
-                    for (int i = 0; i < framesToProcess; ++i) {
+                    for (size_t i = 0; i < framesToProcess; ++i) {
                         *destination++ = outputGain * tanhf(inputGain * source[i]);
                     }
                 }
@@ -73,7 +73,7 @@ namespace LabSound {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();
-                    for (int i = 0; i < framesToProcess; ++i) {
+                    for (size_t i = 0; i < framesToProcess; ++i) {
                         float d = source[i];
                         if (d < minf) d = minf;
                         else if (d > maxf) d = maxf;

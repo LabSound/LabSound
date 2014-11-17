@@ -45,7 +45,7 @@ namespace LabSound {
 			float* dLeft = destinationBus->channel(0)->mutableData();
 			float* dRight = destinationBus->channel(1)->mutableData();
 
-			for (int i = 0; i < framesToProcess; ++i) {
+			for (size_t i = 0; i < framesToProcess; ++i) {
 				float dL = perryVerb.tick((double)source[i], 0);
 				float dR = perryVerb.tick((double)source[i], 1);
 				*dLeft++ = dL;

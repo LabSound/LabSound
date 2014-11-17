@@ -53,7 +53,7 @@ namespace LabSound {
 
             float s = m_sustainLevel->value();
 
-            for (int i = 0; i < framesToProcess; ++i) {
+            for (size_t i = 0; i < framesToProcess; ++i) {
                 if (m_zeroSteps > 0) {
                     --m_zeroSteps;
                     m_currentGain += m_zeroStepSize;
@@ -80,7 +80,7 @@ namespace LabSound {
                 }
             }
 
-            for (unsigned channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+            for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source = sourceBus->channel(channelIndex)->data();
                 float* destination = destinationBus->channel(channelIndex)->mutableData();

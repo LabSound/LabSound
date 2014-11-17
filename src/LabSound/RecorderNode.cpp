@@ -62,7 +62,7 @@ namespace LabSound {
         if (m_recording) {
             std::vector<const float*> channels;
             unsigned numberOfChannels = bus->numberOfChannels();
-            for (int c = 0; c < numberOfChannels; ++ c)
+			for (unsigned int c = 0; c < numberOfChannels; ++c)
                 channels.push_back(bus->channel(c)->data());
 
             // mix down the output, or interleave the output
@@ -71,20 +71,20 @@ namespace LabSound {
             m_data.reserve(framesToProcess * (m_mixToMono ? 1 : 2));
             if (m_mixToMono) {
                 if (numberOfChannels == 1)
-                    for (int i = 0; i < framesToProcess; ++i)
+                    for (size_t i = 0; i < framesToProcess; ++i)
                         m_data.push_back(channels[0][i]);
                 else
-                    for (int i = 0; i < framesToProcess; ++i) {
+                    for (size_t i = 0; i < framesToProcess; ++i) {
                         float val = 0;
-                        for (int c = 0; c < numberOfChannels; ++ c)
+                        for (unsigned int c = 0; c < numberOfChannels; ++ c)
                             val += channels[c][i];
                         val *= 1.0f / float(numberOfChannels);
                         m_data.push_back(val);
                     }
             }
             else
-                for (int i = 0; i < framesToProcess; ++i)
-                    for (int c = 0; c < numberOfChannels; ++ c)
+                for (size_t i = 0; i < framesToProcess; ++i)
+                    for (unsigned int c = 0; c < numberOfChannels; ++ c)
                         m_data.push_back(channels[c][i]);
         }
         // to here

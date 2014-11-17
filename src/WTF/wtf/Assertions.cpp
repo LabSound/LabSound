@@ -29,7 +29,9 @@
 // Feel free to remove this pragma if this file builds on Mac.
 // According to http://gcc.gnu.org/onlinedocs/gcc-4.2.1/gcc/Diagnostic-Pragmas.html#Diagnostic-Pragmas
 // we need to place this directive before any data or functions are defined.
+#if !defined(_MSC_VER)
 #pragma GCC diagnostic ignored "-Wmissing-format-attribute"
+#endif
 
 #include "config.h"
 #include <WTF/Assertions.h>

@@ -154,7 +154,7 @@ float DynamicsCompressorKernel::kAtSlope(float desiredSlope)
     float x = decibelsToLinear(xDb);
 
     // Approximate k given initial values.
-    float minK = 0.1;
+    float minK = 0.1f;
     float maxK = 10000;
     float k = 5;
 
