@@ -4,5 +4,5 @@
 #include <chrono>
 #include <thread>
 
-#include "LabSound/LabSound.h"
-#include "LabSound/LabSoundIncludes.h"
+#include "LabSound.h"
+#include "LabSoundIncludes.h"

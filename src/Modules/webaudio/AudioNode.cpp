@@ -32,8 +32,8 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioParam.h"
-#include "../../WTF/wtf/Atomics.h"
-#include "../../WTF/wtf/MainThread.h"
+#include "WTF\Atomics.h"
+#include "WTF\MainThread.h"
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>

@@ -3,8 +3,7 @@
 #include "AudioNodeOutput.h"
 #include "LabSound.h"
 #include "AudioProcessor.h"
-#include <vector>
-#include <audio/VectorMath.h>
+#include "VectorMath.h""
 
 using namespace WebCore;
 using namespace WebCore::VectorMath;

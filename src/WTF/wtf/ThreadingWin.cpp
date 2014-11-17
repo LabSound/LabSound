@@ -93,8 +93,8 @@
 #include <wtf/MathExtras.h>
 #include <map>
 
-#include "../../WTF/wtf/PassOwnPtr.h"
-#include "../../WTF/wtf/RefPtr.h"
+#include "WTF\PassOwnPtr.h"
+#include "WTF\RefPtr.h"
 
 #if !USE(PTHREADS) && OS(WINDOWS)
 #include "ThreadSpecific.h"
