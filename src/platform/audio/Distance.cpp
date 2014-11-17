@@ -30,7 +30,7 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#include "Assertions.h"
+#include <WTF/Assertions.h>
 #include "Distance.h"
 
 #include <algorithm>

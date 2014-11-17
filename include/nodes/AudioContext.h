@@ -31,10 +31,10 @@
 #include "AudioDestinationNode.h"
 #include "AudioBus.h"
 #include "HRTFDatabaseLoader.h"
-#include "WTF\MainThread.h"
-#include "WTF\RefPtr.h"
-#include "WTF\ThreadSafeRefCounted.h"
-#include "WTF\Threading.h"
+#include "WTF/MainThread.h"
+#include "WTF/RefPtr.h"
+#include "WTF/ThreadSafeRefCounted.h"
+#include "WTF/Threading.h"
 #include <vector>
 #include <set>
 

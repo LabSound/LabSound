@@ -1,10 +1,10 @@
 #include "SampledInstrumentNode.h"
 #include "LabSound.h"
-#include "json11\json11.hpp"
+#include "json11/json11.hpp"
 #include <string>
 #include <fstream>
 #include <streambuf>
-#include "Assertions.h"
+#include <WTF/Assertions.h>
 
 #if OS(WINDOWS)
 #include <direct.h>

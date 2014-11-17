@@ -32,11 +32,11 @@
 #pragma GCC diagnostic ignored "-Wmissing-format-attribute"
 
 #include "config.h"
-#include "Assertions.h"
+#include <WTF/Assertions.h>
 
-#include "Compiler.h"
-#include <wtf/StdLibExtras.h>
-#include <wtf/StringExtras.h>
+#include <WTF/Compiler.h>
+#include <WTF/StdLibExtras.h>
+#include <WTF/StringExtras.h>
 #include <vector>
 #include <string>
 

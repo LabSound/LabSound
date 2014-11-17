@@ -29,9 +29,9 @@
 #import "AudioBus.h"
 
 #import "AudioFileReader.h"
-#import "AutodrainedPool.h"
-#import <wtf/RefPtr.h>
-#import <wtf/PassOwnPtr.h>
+#import <WTF/AutodrainedPool.h>
+#import <WTF/RefPtr.h>
+#import <WTF/PassOwnPtr.h>
 #import <Foundation/Foundation.h>
 
 @interface WebCoreAudioBundleClass : NSObject

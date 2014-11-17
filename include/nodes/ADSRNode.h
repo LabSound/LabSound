@@ -13,7 +13,7 @@
 #include "AudioBasicInspectorNode.h"
 #include "GainNode.h"
 
-#include "wtf\RefPtr.h"
+#include "WTF/RefPtr.h"
 
 namespace LabSound {
     using namespace WebCore;

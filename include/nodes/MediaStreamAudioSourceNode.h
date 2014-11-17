@@ -31,7 +31,7 @@
 #include "AudioSourceProvider.h"
 #include "AudioSourceProviderClient.h"
 #include "MediaStream.h"
-#include "WTF\Threading.h"
+#include "WTF/Threading.h"
 
 namespace WebCore {
 

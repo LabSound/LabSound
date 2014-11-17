@@ -4,7 +4,7 @@
 #include "config.h"
 
 #include "LabSound.h"
-#include <AudioNodeOutput.h>
+#include "AudioNodeOutput.h"
 #include "NoiseNode.h"
 #include "ThreadingPrimitives.h"
 

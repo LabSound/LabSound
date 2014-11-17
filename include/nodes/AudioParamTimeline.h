@@ -30,8 +30,8 @@
 #define AudioParamTimeline_h
 
 #include "AudioContext.h"
-#include "WTF\Float32Array.h"
-#include "WTF\Threading.h"
+#include "WTF/Float32Array.h"
+#include "WTF/Threading.h"
 #include <vector>
 
 namespace WebCore {

@@ -29,12 +29,12 @@
 #include "config.h"
 #include "MainThread.h"
 
-#include "CurrentTime.h"
-#include "Functional.h"
-#include "StdLibExtras.h"
-#include "Threading.h"
+#include <WTF/CurrentTime.h>
+#include <WTF/Functional.h>
+#include <WTF/StdLibExtras.h>
+#include <WTF/Threading.h>
 #include <deque>
-#include <wtf/ThreadSpecific.h>
+#include <WTF/ThreadSpecific.h>
 
 #if PLATFORM(CHROMIUM)
 #error Chromium uses a different main thread implementation

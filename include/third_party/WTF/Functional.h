@@ -26,13 +26,13 @@
 #ifndef WTF_Functional_h
 #define WTF_Functional_h
 
-#include "WTF\Assertions.h"
-#include "WTF\RefPtr.h"
-#include "WTF\ThreadSafeRefCounted.h"
+#include "WTF/Assertions.h"
+#include "WTF/RefPtr.h"
+#include "WTF/ThreadSafeRefCounted.h"
 
 #if PLATFORM(MAC) && COMPILER_SUPPORTS(BLOCKS)
 #include <Block.h>
-#include "WTF\ObjcRuntimeExtras.h"
+#include "WTF/ObjcRuntimeExtras.h"
 #endif
 
 namespace WTF {

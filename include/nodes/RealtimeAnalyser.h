@@ -26,8 +26,8 @@
 #define RealtimeAnalyser_h
 
 #include "AudioArray.h"
-#include "WTF\Noncopyable.h"
-#include "WTF\RefPtr.h"
+#include "WTF/Noncopyable.h"
+#include "WTF/RefPtr.h"
 
 namespace WTF {
     class Uint8Array;

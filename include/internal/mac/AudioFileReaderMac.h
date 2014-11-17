@@ -31,7 +31,7 @@
 
 #include <AudioToolbox/AudioFile.h>
 #include <AudioToolbox/ExtendedAudioFile.h>
-#include "../../WTF/wtf/PassOwnPtr.h"
+#include <WTF/PassOwnPtr.h>
 
 namespace WebCore {
 

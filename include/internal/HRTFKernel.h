@@ -30,9 +30,9 @@
 #define HRTFKernel_h
 
 #include "FFTFrame.h"
-#include "WTF\RefPtr.h"
-#include "WTF\PassOwnPtr.h"
-#include "WTF\ThreadSafeRefCounted.h"
+#include "WTF/RefPtr.h"
+#include "WTF/PassOwnPtr.h"
+#include "WTF/ThreadSafeRefCounted.h"
 #include <vector>
 
 namespace WebCore {

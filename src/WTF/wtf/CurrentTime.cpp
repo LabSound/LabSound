@@ -31,8 +31,8 @@
  */
 
 #include "config.h"
-#include "Assertions.h"
-#include "CurrentTime.h"
+#include <WTF/Assertions.h>
+#include <WTF/CurrentTime.h>
 
 #if PLATFORM(MAC)
 #include <mach/mach_time.h>
