@@ -121,11 +121,6 @@ public:
     PassRefPtr<ConvolverNode> createConvolver();
     PassRefPtr<DynamicsCompressorNode> createDynamicsCompressor();    
     PassRefPtr<AnalyserNode> createAnalyser();
-    /* LabSound
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, ExceptionCode&);
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, ExceptionCode&);
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, size_t numberOfOutputChannels, ExceptionCode&);
-     */
     PassRefPtr<ChannelSplitterNode> createChannelSplitter(ExceptionCode&);
     PassRefPtr<ChannelSplitterNode> createChannelSplitter(size_t numberOfOutputs, ExceptionCode&);
     PassRefPtr<ChannelMergerNode> createChannelMerger(ExceptionCode&);
