@@ -24,8 +24,6 @@
 
 #import "config.h"
 
-#if ENABLE(WEB_AUDIO)
-
 #import "AudioBus.h"
 
 #import "AudioFileReader.h"
@@ -34,12 +32,6 @@
 #import <WTF/PassOwnPtr.h>
 #import <Foundation/Foundation.h>
 
-@interface WebCoreAudioBundleClass : NSObject
-@end
-
-@implementation WebCoreAudioBundleClass
-@end
-
 namespace WebCore {
 
 PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float sampleRate)
@@ -47,18 +39,11 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
     // This method can be called from other than the main thread, so we need an auto-release pool.
     AutodrainedPool pool;
     
-    NSBundle *bundle = [NSBundle bundleForClass:[WebCoreAudioBundleClass class]];
+    NSBundle *bundle = [NSBundle mainBundle];
     /// @LabSound changed audio to HRTF
     NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"HRTF"];
-#if !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED == 1060
-    NSDataReadingOptions options = NSDataReadingMapped;
-#else
-    NSDataReadingOptions options = NSDataReadingMappedIfSafe;
-#endif
-    NSData *audioData = 0;
 
-    /// @LabSound added read from current working directory if bundle asset not available
-    /// Reading from HRTF instead of audio because every application might potentially have an audio folder.
+    /// @LabSound added read from $(CWD)/HRTF directory if bundle asset not available
     if (!audioFileURL) {
         NSString *path = [NSString stringWithFormat:@"HRTF/%s.wav", name];
         audioFileURL = [NSURL fileURLWithPath:path];
@@ -68,6 +53,9 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
         return nullptr;
     }
     
+    NSDataReadingOptions options = NSDataReadingMappedIfSafe;
+    NSData *audioData = 0;
+
     @try {  // @LabSound added try/catch
         audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
     }
@@ -80,10 +68,7 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
         return bus.release();
     }
 
-    /// @LabSound removed ASSERT_NOT_REACHED();
     return nullptr;
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -22,7 +22,10 @@ public:
     SoundBuffer(RefPtr<WebCore::AudioContext> context, const char* path);
     ~SoundBuffer();
     
+    // play a sound on the context directly, starting after a certain delay
 	PassRefPtr<WebCore::AudioBufferSourceNode> play(float when = 0.0f);
+
+    // play a sound on a particular node, starting after a certain delay
     PassRefPtr<WebCore::AudioBufferSourceNode> play(WebCore::AudioNode* outputNode, float when = 0.0f);
 
     // This variant starts a sound at a given offset relative to the beginning of the

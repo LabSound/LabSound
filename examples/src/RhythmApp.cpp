@@ -1,5 +1,8 @@
 
-#include "LabSound/LabSound.h"
+#include "LabSound.h"
+#include "Rhythm.h"
+
+using namespace LabSound;
 
 int main(int, char**)
 {

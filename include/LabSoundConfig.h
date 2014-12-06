@@ -10,15 +10,27 @@
 #define LabSound_LabSoundConfig_h
 
 // Configure Webaudio features
-#ifndef ENABLE_MEDIA_STREAM
-# define ENABLE_WEB_AUDIO 1
+
+#if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
+# ifndef HAVE_LIBDL
+#  define HAVE_LIBDL 1
+# endif
+# ifndef HAVE_ALLOCA
+#  define HAVE_ALLOCA 1
+# endif
+# ifndef HAVE_UNISTED_H
+#  define HAVE_UNISTD_H 1
+# endif
+# ifndef USEAPI_DUMMY
+#  define USEAPI_DUMMY 1
+# endif
+# ifndef ENABLE_MEDIA_STREAM
+#  define ENABLE_MEDIA_STREAM 1
+# endif
 #endif
 
-#if !defined(HAVE_LIBDL) && (defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC))
-# define HAVE_LIBDL 1
-# define HAVE_ALLOCA 1
-# define HAVE_UNISTD_H 1
-# define USEAPI_DUMMY 1
+#ifndef ENABLE_WEB_AUDIO
+# define ENABLE_WEB_AUDIO 1
 #endif
 
 #endif

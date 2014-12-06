@@ -29,51 +29,6 @@
 #include "IntPoint.h"
 #include <wtf/Vector.h>
 
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-typedef struct CGRect CGRect;
-#endif
-
-#if PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN)) || (PLATFORM(QT) && USE(QTKIT))
-#ifdef NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES
-typedef struct CGRect NSRect;
-#else
-typedef struct _NSRect NSRect;
-#endif
-#endif
-
-#if PLATFORM(WIN)
-typedef struct tagRECT RECT;
-#elif PLATFORM(QT)
-QT_BEGIN_NAMESPACE
-class QRect;
-QT_END_NAMESPACE
-#elif PLATFORM(GTK)
-#ifdef GTK_API_VERSION_2
-typedef struct _GdkRectangle GdkRectangle;
-#endif
-#elif PLATFORM(EFL)
-typedef struct _Eina_Rectangle Eina_Rectangle;
-#elif PLATFORM(BLACKBERRY)
-namespace BlackBerry {
-namespace Platform {
-class IntRect;
-}
-}
-#endif
-
-#if USE(CAIRO)
-typedef struct _cairo_rectangle_int cairo_rectangle_int_t;
-#endif
-
-#if PLATFORM(WX)
-class wxRect;
-#endif
-
-#if USE(SKIA)
-struct SkRect;
-struct SkIRect;
-#endif
-
 namespace WebCore {
 
 class FloatRect;
@@ -194,53 +149,6 @@ public:
 
     IntRect transposedRect() const { return IntRect(m_location.transposedPoint(), m_size.transposedSize()); }
 
-#if PLATFORM(WX)
-    IntRect(const wxRect&);
-    operator wxRect() const;
-#endif
-
-#if PLATFORM(WIN)
-    IntRect(const RECT&);
-    operator RECT() const;
-#elif PLATFORM(QT)
-    IntRect(const QRect&);
-    operator QRect() const;
-#elif PLATFORM(GTK)
-#ifdef GTK_API_VERSION_2
-    IntRect(const GdkRectangle&);
-    operator GdkRectangle() const;
-#endif
-#elif PLATFORM(EFL)
-    explicit IntRect(const Eina_Rectangle&);
-    operator Eina_Rectangle() const;
-#endif
-
-#if USE(CAIRO)
-    IntRect(const cairo_rectangle_int_t&);
-    operator cairo_rectangle_int_t() const;
-#endif
-
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-    operator CGRect() const;
-#endif
-
-#if USE(SKIA)
-    IntRect(const SkIRect&);
-    operator SkRect() const;
-    operator SkIRect() const;
-#endif
-
-#if (PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN))) \
-        && !defined(NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES) \
-        || (PLATFORM(QT) && USE(QTKIT))
-    operator NSRect() const;
-#endif
-
-#if PLATFORM(BLACKBERRY)
-    IntRect(const BlackBerry::Platform::IntRect&);
-    operator BlackBerry::Platform::IntRect() const;
-#endif
-
 private:
     IntPoint m_location;
     IntSize m_size;
@@ -278,15 +186,6 @@ inline IntRect enclosingIntRect(const IntRect& rect)
 {
     return rect;
 }
-
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-IntRect enclosingIntRect(const CGRect&);
-#endif
-
-#if (PLATFORM(MAC) && !defined(NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES)) \
-        || (PLATFORM(CHROMIUM) && OS(DARWIN)) || (PLATFORM(QT) && USE(QTKIT))
-IntRect enclosingIntRect(const NSRect&);
-#endif
 
 } // namespace WebCore
 

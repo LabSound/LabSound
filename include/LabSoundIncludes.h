@@ -1,6 +1,8 @@
 #ifndef LabSoundIncludes_h
 #define LabSoundIncludes_h
 
+#include "LabSound.h"
+
 // Additional LabSound Nodes
 #include "ADSRNode.h"
 #include "ClipNode.h"
@@ -38,6 +40,7 @@
 #include "ChannelMergerNode.h"
 #include "BiquadFilterNode.h"
 #include "AudioScheduledSourceNode.h"
+#include "RecorderNode.h"
 
 // WebAudio Core 
 #include "AudioProcessor.h"

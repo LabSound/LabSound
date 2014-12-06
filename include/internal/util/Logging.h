@@ -50,7 +50,6 @@ M(FileAPI) \
 M(Frames) \
 M(Gamepad) \
 M(History) \
-M(IconDatabase) \
 M(LiveConnect) \
 M(Loading) \
 M(Media) \

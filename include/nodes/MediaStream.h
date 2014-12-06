@@ -22,52 +22,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MediaStreamAudioSourceNode_h
-#define MediaStreamAudioSourceNode_h
+#ifndef MediaStream_h
+#define MediaStream_h
+
+#include "WTF/ThreadSafeRefCounted.h"
 
 #if ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)
 
-#include "AudioSourceNode.h"
-#include "AudioSourceProvider.h"
-#include "AudioSourceProviderClient.h"
-#include "MediaStream.h"
-#include "WTF/Threading.h"
 
 namespace WebCore {
-
-class AudioContext;
     
-
-class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient {
-public:
-    static PassRefPtr<MediaStreamAudioSourceNode> create(AudioContext*, MediaStream*, AudioSourceProvider*);
-
-    virtual ~MediaStreamAudioSourceNode();
-
-    MediaStream* mediaStream() { return m_mediaStream.get(); }
-
-    // AudioNode
-    virtual void process(size_t framesToProcess);
-    virtual void reset();
-
-    // AudioSourceProviderClient
-    virtual void setFormat(size_t numberOfChannels, float sampleRate);
-
-    AudioSourceProvider* audioSourceProvider() const { return m_audioSourceProvider; }
-
-private:
-    MediaStreamAudioSourceNode(AudioContext*, MediaStream*, AudioSourceProvider*);
-
-    // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence() const OVERRIDE { return false; }
-
-    RefPtr<MediaStream> m_mediaStream;
-    AudioSourceProvider* m_audioSourceProvider;
-
-    Mutex m_processLock;
-
-    unsigned m_sourceNumberOfChannels;
-};
+    class MediaStream : public WTF::ThreadSafeRefCounted<MediaStream>
+    {
+    public:
+        class Tracks {
+        public:
+            int length() const { return 2; }
+        };
+        
+        MediaStream() {
+            //relaxAdoptionRequirement();
+        }
+        
+        bool isLocal() const { return true; }
+        Tracks* audioTracks() { return &_tracks; }
+        
+    private:
+        Tracks _tracks;
+    };
+    
+    class MediaStreamSource : public ThreadSafeRefCounted<MediaStreamSource>
+    {
+    public:
+    };
 
 } // namespace WebCore
 

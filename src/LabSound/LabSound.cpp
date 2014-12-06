@@ -4,11 +4,6 @@
 #include "LabSound.h"
 #include "AudioContext.h"
 
-namespace WebCore
-{
-    class Document { public: };
-}
-
 namespace LabSound {
 
     PassRefPtr<WebCore::AudioContext> init() {
@@ -17,9 +12,8 @@ namespace LabSound {
         WTF::initializeMainThread();
         
         // Create an audio context object
-        WebCore::Document d;
         WebCore::ExceptionCode ec;
-        PassRefPtr<WebCore::AudioContext> ret = WebCore::AudioContext::create(&d, ec);
+        PassRefPtr<WebCore::AudioContext> ret = WebCore::AudioContext::create(ec);
         ret->lazyInitialize();
         return ret;
     }
