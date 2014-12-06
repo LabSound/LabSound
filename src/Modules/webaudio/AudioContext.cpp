@@ -118,7 +118,7 @@ PassRefPtr<AudioContext> AudioContext::createOfflineContext(unsigned numberOfCha
         return 0;
     }
 
-    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(document, numberOfChannels, numberOfFrames, sampleRate)));
+    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(numberOfChannels, numberOfFrames, sampleRate)));
     return audioContext.release();
 }
 
