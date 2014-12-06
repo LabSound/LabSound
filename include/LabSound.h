@@ -2,6 +2,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
+
 #include "LabSoundConfig.h"
 #include "WTF/RefPtr.h"
 #include "AudioContext.h"

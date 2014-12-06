@@ -139,7 +139,6 @@
 		E2FB84B3183D1E8F00A5A764 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */; };
 		E2FB84B4183D1E8F00A5A764 /* LabSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84A0183D1E8F00A5A764 /* LabSound.cpp */; };
 		E2FB84B5183D1E8F00A5A764 /* NoiseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84A3183D1E8F00A5A764 /* NoiseNode.cpp */; };
-		E2FB84B6183D1E8F00A5A764 /* PdNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84A5183D1E8F00A5A764 /* PdNode.cpp */; };
 		E2FB84B7183D1E8F00A5A764 /* RecorderNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84A7183D1E8F00A5A764 /* RecorderNode.cpp */; };
 		E2FB84B8183D1E8F00A5A764 /* SfxrNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84A9183D1E8F00A5A764 /* SfxrNode.cpp */; };
 		E2FB84B9183D1E8F00A5A764 /* SoundBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB84AB183D1E8F00A5A764 /* SoundBuffer.cpp */; };
@@ -549,7 +548,6 @@
 		E2D5CEFD1A19B43900B031C8 /* OfflineAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfflineAudioDestinationNode.h; path = nodes/OfflineAudioDestinationNode.h; sourceTree = "<group>"; };
 		E2D5CEFE1A19B43900B031C8 /* OscillatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscillatorNode.h; path = nodes/OscillatorNode.h; sourceTree = "<group>"; };
 		E2D5CEFF1A19B43900B031C8 /* PannerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PannerNode.h; path = nodes/PannerNode.h; sourceTree = "<group>"; };
-		E2D5CF001A19B43900B031C8 /* PdNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PdNode.h; path = nodes/PdNode.h; sourceTree = "<group>"; };
 		E2D5CF011A19B43900B031C8 /* PeakCompNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeakCompNode.h; path = nodes/PeakCompNode.h; sourceTree = "<group>"; };
 		E2D5CF021A19B43900B031C8 /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PowerMonitorNode.h; path = nodes/PowerMonitorNode.h; sourceTree = "<group>"; };
 		E2D5CF031A19B43900B031C8 /* PWMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PWMNode.h; path = nodes/PWMNode.h; sourceTree = "<group>"; };
@@ -606,12 +604,12 @@
 		E2D5CF371A19B66900B031C8 /* UnusedParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnusedParam.h; path = ../include/third_party/WTF/UnusedParam.h; sourceTree = "<group>"; };
 		E2D5CF381A19B66900B031C8 /* ValueCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueCheck.h; path = ../include/third_party/WTF/ValueCheck.h; sourceTree = "<group>"; };
 		E2D5CF391A19B66900B031C8 /* WTFExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WTFExport.h; path = ../include/third_party/WTF/WTFExport.h; sourceTree = "<group>"; };
+		E2F817171A2E19DF00E31150 /* MediaStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStream.h; path = nodes/MediaStream.h; sourceTree = "<group>"; };
 		E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
 		E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClipNode.cpp; sourceTree = "<group>"; };
 		E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiodeNode.cpp; sourceTree = "<group>"; };
 		E2FB84A0183D1E8F00A5A764 /* LabSound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LabSound.cpp; sourceTree = "<group>"; };
 		E2FB84A3183D1E8F00A5A764 /* NoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseNode.cpp; sourceTree = "<group>"; };
-		E2FB84A5183D1E8F00A5A764 /* PdNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PdNode.cpp; sourceTree = "<group>"; };
 		E2FB84A7183D1E8F00A5A764 /* RecorderNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecorderNode.cpp; sourceTree = "<group>"; };
 		E2FB84A9183D1E8F00A5A764 /* SfxrNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SfxrNode.cpp; sourceTree = "<group>"; };
 		E2FB84AB183D1E8F00A5A764 /* SoundBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SoundBuffer.cpp; sourceTree = "<group>"; };
@@ -1113,6 +1111,7 @@
 				E2D5CEF51A19B43900B031C8 /* DynamicsCompressorNode.h */,
 				E2D5CEF61A19B43900B031C8 /* EasyVerbNode.h */,
 				E2D5CEF71A19B43900B031C8 /* GainNode.h */,
+				E2F817171A2E19DF00E31150 /* MediaStream.h */,
 				E2D5CEF81A19B43900B031C8 /* MediaElementAudioSourceNode.h */,
 				E2D5CEF91A19B43900B031C8 /* MediaStreamAudioDestinationNode.h */,
 				E2D5CEFA1A19B43900B031C8 /* MediaStreamAudioSourceNode.h */,
@@ -1121,7 +1120,6 @@
 				E2D5CEFD1A19B43900B031C8 /* OfflineAudioDestinationNode.h */,
 				E2D5CEFE1A19B43900B031C8 /* OscillatorNode.h */,
 				E2D5CEFF1A19B43900B031C8 /* PannerNode.h */,
-				E2D5CF001A19B43900B031C8 /* PdNode.h */,
 				E2D5CF011A19B43900B031C8 /* PeakCompNode.h */,
 				E2D5CF021A19B43900B031C8 /* PowerMonitorNode.h */,
 				E2D5CF031A19B43900B031C8 /* PWMNode.h */,
@@ -1198,7 +1196,6 @@
 				E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */,
 				E2FB84A0183D1E8F00A5A764 /* LabSound.cpp */,
 				E2FB84A3183D1E8F00A5A764 /* NoiseNode.cpp */,
-				E2FB84A5183D1E8F00A5A764 /* PdNode.cpp */,
 				E23015D0185EC9EB00FEC991 /* PeakCompNode.cpp */,
 				E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */,
 				E2FB8A23183DA85700A5A764 /* PWMNode.cpp */,
@@ -1579,7 +1576,6 @@
 				E2FB8548183D1F1F00A5A764 /* AudioParamTimeline.cpp in Sources */,
 				E25245A818724E3200983485 /* AudioPullFIFO.cpp in Sources */,
 				E2D5CE651A19B2D600B031C8 /* TapDelay.cpp in Sources */,
-				E2FB84B6183D1E8F00A5A764 /* PdNode.cpp in Sources */,
 				E2D5CE4C1A19B2D600B031C8 /* Modulate.cpp in Sources */,
 				E2FB8573183D1F1F00A5A764 /* WaveShaperNode.cpp in Sources */,
 				E2D5CE701A19B2E700B031C8 /* VoicForm.cpp in Sources */,
@@ -1610,7 +1606,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		068F18FF3E791FD308513337 /* Release Native 64-bit */ = {
+		068F18FF3E791FD308513337 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1633,9 +1629,9 @@
 				SYMROOT = build;
 				VALID_ARCHS = x86_64;
 			};
-			name = "Release Native 64-bit";
+			name = Release;
 		};
-		1C0D2D9E74052F052778707B /* Debug Native 64-bit */ = {
+		1C0D2D9E74052F052778707B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1658,9 +1654,9 @@
 				SYMROOT = build;
 				VALID_ARCHS = x86_64;
 			};
-			name = "Debug Native 64-bit";
+			name = Debug;
 		};
-		448B3AB821DF6926574B7ECC /* Debug Native 64-bit */ = {
+		448B3AB821DF6926574B7ECC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
@@ -1669,7 +1665,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_WEB_AUDIO=1",
 					DEBUG,
 					PD,
 					__MACOSX_CORE__,
@@ -1707,11 +1702,11 @@
 					"-std=c++11",
 					"-stdlib=libc++",
 				);
-				SYMROOT = build/Debug;
+				SYMROOT = "$(BUILD_DIR)";
 			};
-			name = "Debug Native 64-bit";
+			name = Debug;
 		};
-		7BB013C71308184445C54388 /* Release Native 64-bit */ = {
+		7BB013C71308184445C54388 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
@@ -1719,7 +1714,6 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"ENABLE_WEB_AUDIO=1",
 					"BUILDING_WTF=1",
 					NDEBUG,
 					PD,
@@ -1757,9 +1751,9 @@
 					"-std=c++11",
 					"-stdlib=libc++",
 				);
-				SYMROOT = build/Release;
+				SYMROOT = "$(BUILD_DIR)";
 			};
-			name = "Release Native 64-bit";
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1767,20 +1761,20 @@
 		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "LabSound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				448B3AB821DF6926574B7ECC /* Debug Native 64-bit */,
-				7BB013C71308184445C54388 /* Release Native 64-bit */,
+				448B3AB821DF6926574B7ECC /* Debug */,
+				7BB013C71308184445C54388 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Debug Native 64-bit";
+			defaultConfigurationName = Debug;
 		};
 		386F3A56180371D9616B5F6E /* Build configuration list for PBXNativeTarget "LabSound" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1C0D2D9E74052F052778707B /* Debug Native 64-bit */,
-				068F18FF3E791FD308513337 /* Release Native 64-bit */,
+				1C0D2D9E74052F052778707B /* Debug */,
+				068F18FF3E791FD308513337 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = "Debug Native 64-bit";
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

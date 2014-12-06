@@ -8,17 +8,15 @@
 
 #include "PeakCompApp.h"
 
-#include "LabSound/LabSound.h"
-#include "LabSound/SoundBuffer.h"
-#include "LabSound/BiquadFilterNode.h"
-#include "LabSound/PeakCompNode.h"
+#include "LabSound.h"
+#include "LabSoundIncludes.h"
+
 #include <chrono>
 #include <thread>
 
 using namespace LabSound;
 
-int main(int, char**)
-{
+int main(int, char**) {
     RefPtr<AudioContext> context = LabSound::init();
 
     //--------------------------------------------------------------

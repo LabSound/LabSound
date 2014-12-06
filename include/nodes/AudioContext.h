@@ -44,6 +44,7 @@ class AudioBuffer;
 class AudioBufferCallback;
 class AudioBufferSourceNode;
 class MediaElementAudioSourceNode;
+class MediaStream;
 class MediaStreamAudioDestinationNode;
 class MediaStreamAudioSourceNode;
 class HTMLMediaElement;
@@ -55,7 +56,6 @@ class AudioListener;
 class AudioSummingJunction;
 class BiquadFilterNode;
 class DelayNode;
-class Document;
 class ConvolverNode;
 class DynamicsCompressorNode;
 class AnalyserNode;
@@ -70,10 +70,10 @@ class WaveTable;
 class AudioContext : public ThreadSafeRefCounted<AudioContext> {
 public:
     // Create an AudioContext for rendering to the audio hardware.
-    static PassRefPtr<AudioContext> create(Document*, ExceptionCode&);
+    static PassRefPtr<AudioContext> create(ExceptionCode&);
 
     // Create an AudioContext for offline (non-realtime) rendering.
-    static PassRefPtr<AudioContext> createOfflineContext(Document*, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode&);
+    static PassRefPtr<AudioContext> createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode&);
 
     virtual ~AudioContext();
 
@@ -84,11 +84,7 @@ public:
     // Returns true when initialize() was called AND all asynchronous initialization has completed.
     bool isRunnable() const;
 
-    // Document notification
     virtual void stop();
-
-    Document* document() const; // ASSERTs if document no longer exists.
-    bool hasDocument();
 
     AudioDestinationNode* destination() { return m_destinationNode.get(); }
     size_t currentSampleFrame() const { return m_destinationNode->currentSampleFrame(); }
@@ -113,7 +109,7 @@ public:
     PassRefPtr<MediaElementAudioSourceNode> createMediaElementSource(HTMLMediaElement*, ExceptionCode&);
 #endif
 #if ENABLE(MEDIA_STREAM)
-    PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(MediaStream*, ExceptionCode&);
+    PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(ExceptionCode&);
     PassRefPtr<MediaStreamAudioDestinationNode> createMediaStreamDestination();
 #endif
     PassRefPtr<GainNode> createGain();
@@ -125,11 +121,6 @@ public:
     PassRefPtr<ConvolverNode> createConvolver();
     PassRefPtr<DynamicsCompressorNode> createDynamicsCompressor();    
     PassRefPtr<AnalyserNode> createAnalyser();
-    /* LabSound
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, ExceptionCode&);
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, ExceptionCode&);
-    PassRefPtr<ScriptProcessorNode> createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, size_t numberOfOutputChannels, ExceptionCode&);
-     */
     PassRefPtr<ChannelSplitterNode> createChannelSplitter(ExceptionCode&);
     PassRefPtr<ChannelSplitterNode> createChannelSplitter(size_t numberOfOutputs, ExceptionCode&);
     PassRefPtr<ChannelMergerNode> createChannelMerger(ExceptionCode&);
@@ -243,8 +234,8 @@ public:
     void lazyInitialize();
 
 private:
-    explicit AudioContext(Document*);
-    AudioContext(Document*, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
+    explicit AudioContext();
+    AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
     void constructCommon();
 
     void uninitialize();

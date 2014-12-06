@@ -29,12 +29,10 @@
 
 #include "WTF/Platform.h"
 
-#if OS(WINDOWS) && !OS(WINCE) && !PLATFORM(QT) && !PLATFORM(CHROMIUM) && !PLATFORM(GTK) && !PLATFORM(WX)
-//#include <WebCore/WebCoreHeaderDetection.h>
-#endif
-
 #include "WTF/ExportMacros.h"
 #include "PlatformExportMacros.h"
+
+#include "LabSoundConfig.h"
 
 #ifdef HAVE_JS
 #include <runtime/JSExportMacros.h>
@@ -61,13 +59,6 @@
 #endif
 #ifndef min
 #define min min
-#endif
-
-// CURL needs winsock, so don't prevent inclusion of it
-#if !USE(CURL)
-#ifndef _WINSOCKAPI_
-#define _WINSOCKAPI_ // Prevent inclusion of winsock.h in windows.h
-#endif
 #endif
 
 #endif /* OS(WINDOWS) */
@@ -98,56 +89,6 @@
 #define SKIP_STATIC_CONSTRUCTORS_ON_GCC 1
 #endif
 
-#if PLATFORM(WIN)
-#if PLATFORM(WIN_CAIRO)
-#undef WTF_USE_CG
-#define WTF_USE_CAIRO 1
-#define WTF_USE_CURL 1
-#ifndef _WINSOCKAPI_
-#define _WINSOCKAPI_ // Prevent inclusion of winsock.h in windows.h
-#endif
-#elif !OS(WINCE)
-#define WTF_USE_CG 1
-#undef WTF_USE_CAIRO
-#undef WTF_USE_CURL
-#endif
-#endif
-
-#if PLATFORM(MAC)
-// New theme
-#define WTF_USE_NEW_THEME 1
-#endif // PLATFORM(MAC)
-
-#if PLATFORM(CHROMIUM)
-
-// Chromium uses this file instead of JavaScriptCore/config.h to compile
-// JavaScriptCore/wtf (chromium doesn't compile the rest of JSC). Therefore,
-// this define is required.
-#define WTF_CHANGES 1
-
-#define WTF_USE_GOOGLEURL 1
-
-#endif /* PLATFORM(CHROMIUM) */
-
-#if USE(CG)
-#ifndef CGFLOAT_DEFINED
-#ifdef __LP64__
-typedef double CGFloat;
-#else
-typedef float CGFloat;
-#endif
-#define CGFLOAT_DEFINED 1
-#endif
-#endif /* USE(CG) */
-
-#if PLATFORM(WIN) && USE(CG)
-#define WTF_USE_SAFARI_THEME 1
-#endif
-
-// CoreAnimation is available to IOS, Mac and Windows if using CG
-#if PLATFORM(MAC) || PLATFORM(IOS) || (PLATFORM(WIN) && USE(CG))
-#define WTF_USE_CA 1
-#endif
 
 // FIXME: Move this to JavaScriptCore/wtf/Platform.h, which is where we define WTF_USE_AVFOUNDATION on the Mac.
 // https://bugs.webkit.org/show_bug.cgi?id=67334

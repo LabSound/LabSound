@@ -30,49 +30,7 @@
 #include "FloatPoint.h"
 #include <wtf/Vector.h>
 
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-typedef struct CGRect CGRect;
-#endif
-
-#if PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN))
-#ifdef NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES
-typedef struct CGRect NSRect;
-#else
-typedef struct _NSRect NSRect;
-#endif
-#endif
-
-#if PLATFORM(QT)
-QT_BEGIN_NAMESPACE
-class QRectF;
-QT_END_NAMESPACE
-#endif
-
-#if PLATFORM(WX) && USE(WXGC)
-class wxRect2DDouble;
-#endif
-
-#if PLATFORM(BLACKBERRY)
-namespace BlackBerry {
-namespace Platform {
-class FloatRect;
-}
-}
-#endif
-
-#if USE(SKIA)
-struct SkRect;
-#endif
-
-#if USE(CAIRO)
-typedef struct _cairo_rectangle cairo_rectangle_t;
-#endif
-
 namespace WebCore {
-
-#if PLATFORM(OPENVG)
-class VGRect;
-#endif
 
 class LayoutRect;
 class IntRect;
@@ -189,47 +147,6 @@ public:
     void fitToPoints(const FloatPoint& p0, const FloatPoint& p1);
     void fitToPoints(const FloatPoint& p0, const FloatPoint& p1, const FloatPoint& p2);
     void fitToPoints(const FloatPoint& p0, const FloatPoint& p1, const FloatPoint& p2, const FloatPoint& p3);
-
-#if PLATFORM(BLACKBERRY)
-    FloatRect(const BlackBerry::Platform::FloatRect&);
-    operator BlackBerry::Platform::FloatRect() const;
-#endif
-
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-    FloatRect(const CGRect&);
-    operator CGRect() const;
-#endif
-
-#if (PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN))) \
-        && !defined(NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES)
-    FloatRect(const NSRect&);
-    operator NSRect() const;
-#endif
-
-#if PLATFORM(QT)
-    FloatRect(const QRectF&);
-    operator QRectF() const;
-    FloatRect normalized() const;
-#endif
-
-#if PLATFORM(WX) && USE(WXGC)
-    FloatRect(const wxRect2DDouble&);
-    operator wxRect2DDouble() const;
-#endif
-
-#if USE(SKIA)
-    FloatRect(const SkRect&);
-    operator SkRect() const;
-#endif
-
-#if PLATFORM(OPENVG)
-    operator VGRect() const;
-#endif
-
-#if USE(CAIRO)
-    FloatRect(const cairo_rectangle_t&);
-    operator cairo_rectangle_t() const;
-#endif
 
 private:
     FloatPoint m_location;

@@ -32,35 +32,6 @@
 #include <string.h> //for memcpy
 #include <wtf/FastAllocBase.h>
 
-#if USE(CA)
-typedef struct CATransform3D CATransform3D;
-#endif
-#if USE(CLUTTER)
-typedef struct _CoglMatrix CoglMatrix;
-#endif
-#if USE(CG)
-typedef struct CGAffineTransform CGAffineTransform;
-#elif USE(CAIRO)
-#include <cairo.h>
-#elif PLATFORM(OPENVG)
-#include "VGUtils.h"
-#elif PLATFORM(QT)
-#include <QMatrix4x4>
-#include <QTransform>
-#elif USE(SKIA)
-#include <SkMatrix.h>
-#elif PLATFORM(WX) && USE(WXGC)
-#include <wx/graphics.h>
-#endif
-
-#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS)) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS))
-#if COMPILER(MINGW) && !COMPILER(MINGW64)
-typedef struct _XFORM XFORM;
-#else
-typedef struct tagXFORM XFORM;
-#endif
-#endif
-
 namespace WebCore {
 
 class AffineTransform;
@@ -326,33 +297,6 @@ public:
         result.multiply(t);
         return result;
     }
-
-#if USE(CA)
-    TransformationMatrix(const CATransform3D&);
-    operator CATransform3D() const;
-#endif
-#if USE(CLUTTER)
-    operator CoglMatrix() const;
-#endif
-#if USE(CG)
-    TransformationMatrix(const CGAffineTransform&);
-    operator CGAffineTransform() const;
-#elif USE(CAIRO)
-    operator cairo_matrix_t() const;
-#elif PLATFORM(OPENVG)
-    operator VGMatrix() const;
-#elif PLATFORM(QT)
-    operator QTransform() const;
-    operator QMatrix4x4() const;
-#elif USE(SKIA)
-    operator SkMatrix() const;
-#elif PLATFORM(WX) && USE(WXGC)
-    operator wxGraphicsMatrix() const;
-#endif
-
-#if PLATFORM(WIN) || (PLATFORM(GTK) && OS(WINDOWS)) || (PLATFORM(QT) && OS(WINDOWS)) || (PLATFORM(WX) && OS(WINDOWS))
-    operator XFORM() const;
-#endif
 
     bool isIdentityOrTranslation() const
     {

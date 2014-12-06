@@ -77,9 +77,7 @@
 #include <wtf/MainThread.h>
 
 // FIXME: check the proper way to reference an undefined thread ID
-const int UndefinedThreadIdentifier = 0xffffffff;
-
-const unsigned MaxNodesToDeletePerQuantum = 10;
+const int UndefinedThreadIdentifier = ~0;
 
 namespace WebCore {
     
@@ -98,23 +96,20 @@ bool isSampleRateRangeGood(float sampleRate)
 const unsigned MaxHardwareContexts = 4;
 unsigned AudioContext::s_hardwareContextCount = 0;
     
-PassRefPtr<AudioContext> AudioContext::create(Document* document, ExceptionCode& ec)
+PassRefPtr<AudioContext> AudioContext::create(ExceptionCode& ec)
 {
     UNUSED_PARAM(ec);
 
-    ASSERT(document);
     ASSERT(isMainThread());
     if (s_hardwareContextCount >= MaxHardwareContexts)
         return 0;
 
-    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(document)));
+    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext()));
     return audioContext.release();
 }
 
-PassRefPtr<AudioContext> AudioContext::createOfflineContext(Document* document, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
+PassRefPtr<AudioContext> AudioContext::createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
 {
-    ASSERT(document);
-
     // FIXME: offline contexts have limitations on supported sample-rates.
     // Currently all AudioContexts must have the same sample-rate.
     HRTFDatabaseLoader* loader = HRTFDatabaseLoader::loader();
@@ -128,7 +123,7 @@ PassRefPtr<AudioContext> AudioContext::createOfflineContext(Document* document, 
 }
 
 // Constructor for rendering to the audio hardware.
-AudioContext::AudioContext(Document* document)
+AudioContext::AudioContext()
     : m_isStopScheduled(false)
     , m_isInitialized(false)
     , m_isAudioThreadFinished(false)
@@ -153,7 +148,7 @@ AudioContext::AudioContext(Document* document)
 }
 
 // Constructor for offline (non-realtime) rendering.
-AudioContext::AudioContext(Document* document, unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
+AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
     : m_isStopScheduled(false)
     , m_isInitialized(false)
     , m_isAudioThreadFinished(false)
@@ -379,14 +374,13 @@ PassRefPtr<MediaElementAudioSourceNode> AudioContext::createMediaElementSource(H
 }
 #endif
 
+    
+    
 #if ENABLE(MEDIA_STREAM)
-PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(MediaStream* mediaStream, ExceptionCode& ec)
+    
+PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(ExceptionCode& ec)
 {
-    ASSERT(mediaStream);
-    if (!mediaStream) {
-        ec = INVALID_STATE_ERR;
-        return 0;
-    }
+    MediaStream* mediaStream = new MediaStream();
 
     ASSERT(isMainThread());
     lazyInitialize();
@@ -417,34 +411,7 @@ PassRefPtr<MediaStreamAudioDestinationNode> AudioContext::createMediaStreamDesti
 }
 
 #endif
-/* LabSound
-PassRefPtr<ScriptProcessorNode> AudioContext::createScriptProcessor(size_t bufferSize, ExceptionCode& ec)
-{
-    // Set number of input/output channels to stereo by default.
-    return createScriptProcessor(bufferSize, 2, 2, ec);
-}
 
-PassRefPtr<ScriptProcessorNode> AudioContext::createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, ExceptionCode& ec)
-{
-    // Set number of output channels to stereo by default.
-    return createScriptProcessor(bufferSize, numberOfInputChannels, 2, ec);
-}
-
-PassRefPtr<ScriptProcessorNode> AudioContext::createScriptProcessor(size_t bufferSize, size_t numberOfInputChannels, size_t numberOfOutputChannels, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    RefPtr<ScriptProcessorNode> node = ScriptProcessorNode::create(this, m_destinationNode->sampleRate(), bufferSize, numberOfInputChannels, numberOfOutputChannels);
-
-    if (!node.get()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    refNode(node.get()); // context keeps reference until we stop making javascript rendering callbacks
-    return node;
-}
-*/
 PassRefPtr<BiquadFilterNode> AudioContext::createBiquadFilter()
 {
     ASSERT(isMainThread());

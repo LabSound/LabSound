@@ -31,20 +31,6 @@
 
 #include <string.h> // for memcpy
 #include <wtf/FastAllocBase.h>
-// LabSound suppress CoreGraphics until I can figure out how to include it
-#if USE(CGx)
-#include <CoreGraphics/CGAffineTransform.h>
-#elif USE(CAIRO)
-#include <cairo.h>
-#elif PLATFORM(OPENVG)
-#include "VGUtils.h"
-#elif PLATFORM(QT)
-#include <QTransform>
-#elif USE(SKIA)
-#include <SkMatrix.h>
-#elif PLATFORM(WX) && USE(WXGC)
-#include <wx/graphics.h>
-#endif
 
 namespace WebCore {
 
@@ -62,10 +48,6 @@ public:
 
     AffineTransform();
     AffineTransform(double a, double b, double c, double d, double e, double f);
-
-#if USE(CG)
-    AffineTransform(const CGAffineTransform&);
-#endif
 
     void setMatrix(double a, double b, double c, double d, double e, double f);
 
@@ -169,20 +151,6 @@ public:
         result *= t;
         return result;
     }
-
-#if USE(CG)
-    operator CGAffineTransform() const;
-#elif USE(CAIRO)
-    operator cairo_matrix_t() const;
-#elif PLATFORM(OPENVG)
-    operator VGMatrix() const;
-#elif PLATFORM(QT)
-    operator QTransform() const;
-#elif USE(SKIA)
-    operator SkMatrix() const;
-#elif PLATFORM(WX) && USE(WXGC)
-    operator wxGraphicsMatrix() const;
-#endif
 
     static AffineTransform translation(double x, double y)
     {

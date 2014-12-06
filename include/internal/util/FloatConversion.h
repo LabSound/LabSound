@@ -29,10 +29,6 @@
 #ifndef FloatConversion_h
 #define FloatConversion_h
 
-//LabSound #if USE(CG)
-//LabSound #include <CoreGraphics/CGBase.h>
-//LabSound #endif
-
 namespace WebCore {
 
     template<typename T>
@@ -43,17 +39,6 @@ namespace WebCore {
     {
         return static_cast<float>(number);
     }
-
-#if 0 //USE(CG)
-    template<typename T>
-    CGFloat narrowPrecisionToCGFloat(T);
-
-    template<>
-    inline CGFloat narrowPrecisionToCGFloat(double number)
-    {
-        return static_cast<CGFloat>(number);
-    }
-#endif
 
 } // namespace WebCore
 

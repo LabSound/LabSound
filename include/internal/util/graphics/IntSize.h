@@ -26,18 +26,6 @@
 #ifndef IntSize_h
 #define IntSize_h
 
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-typedef struct CGSize CGSize;
-#endif
-
-#if PLATFORM(MAC) || (PLATFORM(QT) && USE(QTKIT))
-#ifdef NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES
-typedef struct CGSize NSSize;
-#else
-typedef struct _NSSize NSSize;
-#endif
-#endif
-
 #if PLATFORM(WIN)
 typedef struct tagSIZE SIZE;
 #elif PLATFORM(QT)
@@ -131,36 +119,6 @@ public:
     {
         return IntSize(m_height, m_width);
     }
-
-#if USE(CG) || USE(SKIA_ON_MAC_CHROMIUM)
-    explicit IntSize(const CGSize&); // don't do this implicitly since it's lossy
-    operator CGSize() const;
-#endif
-
-#if (PLATFORM(MAC) || (PLATFORM(QT) && USE(QTKIT))) && !defined(NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES)
-    explicit IntSize(const NSSize &); // don't do this implicitly since it's lossy
-    operator NSSize() const;
-#endif
-
-#if PLATFORM(WIN)
-    IntSize(const SIZE&);
-    operator SIZE() const;
-#endif
-
-#if PLATFORM(QT)
-    IntSize(const QSize&);
-    operator QSize() const;
-#endif
-
-#if PLATFORM(WX)
-    IntSize(const wxSize&);
-    operator wxSize() const;
-#endif
-
-#if PLATFORM(BLACKBERRY)
-    IntSize(const BlackBerry::Platform::IntSize&);
-    operator BlackBerry::Platform::IntSize() const;
-#endif
 
 private:
     int m_width, m_height;

@@ -45,18 +45,6 @@ class FloatSize;
 }
 #endif
 
-#if USE(CG) || (PLATFORM(WX) && OS(DARWIN)) || USE(SKIA_ON_MAC_CHROMIUM)
-typedef struct CGSize CGSize;
-#endif
-
-#if PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN)) || (PLATFORM(QT) && USE(QTKIT))
-#ifdef NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES
-typedef struct CGSize NSSize;
-#else
-typedef struct _NSSize NSSize;
-#endif
-#endif
-
 namespace WebCore {
 
 class IntSize;
@@ -119,28 +107,6 @@ public:
     {
         return FloatSize(m_height, m_width);
     }
-
-#if PLATFORM(QT)
-    explicit FloatSize(const QSizeF&);
-    operator QSizeF() const;
-#endif
-
-#if PLATFORM(BLACKBERRY)
-    FloatSize(const BlackBerry::Platform::FloatSize&);
-    operator BlackBerry::Platform::FloatSize() const;
-#endif
-
-#if USE(CG) || (PLATFORM(WX) && OS(DARWIN)) || USE(SKIA_ON_MAC_CHROMIUM)
-    explicit FloatSize(const CGSize&); // don't do this implicitly since it's lossy
-    operator CGSize() const;
-#endif
-
-#if (PLATFORM(MAC) || (PLATFORM(CHROMIUM) && OS(DARWIN))) \
-        && !defined(NSGEOMETRY_TYPES_SAME_AS_CGGEOMETRY_TYPES) \
-        || (PLATFORM(QT) && USE(QTKIT))
-    explicit FloatSize(const NSSize &); // don't do this implicitly since it's lossy
-    operator NSSize() const;
-#endif
 
 private:
     float m_width, m_height;
