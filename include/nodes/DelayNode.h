@@ -56,6 +56,8 @@ private:
     DelayNode(AudioContext*, float sampleRate, double maxDelayTime, ExceptionCode&);
 
     DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
+    
+    AudioParam* delayTime() const { return delayProcessor()->delayTime(); }
 
 };
 
