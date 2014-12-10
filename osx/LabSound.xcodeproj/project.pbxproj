@@ -500,8 +500,6 @@
 		E2D5CECB1A19B40100B031C8 /* TextDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDirection.h; sourceTree = "<group>"; };
 		E2D5CECC1A19B40100B031C8 /* WritingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WritingMode.h; sourceTree = "<group>"; };
 		E2D5CECD1A19B40100B031C8 /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VectorMath.h; path = internal/VectorMath.h; sourceTree = "<group>"; };
-		E2D5CECF1A19B40100B031C8 /* AudioDestinationWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestinationWin.h; sourceTree = "<group>"; };
-		E2D5CED01A19B40100B031C8 /* AudioFileReaderWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioFileReaderWin.h; sourceTree = "<group>"; };
 		E2D5CED11A19B40100B031C8 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZeroPole.h; path = internal/ZeroPole.h; sourceTree = "<group>"; };
 		E2D5CED31A19B43900B031C8 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSRNode.h; path = nodes/ADSRNode.h; sourceTree = "<group>"; };
 		E2D5CED41A19B43900B031C8 /* AnalyserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnalyserNode.h; path = nodes/AnalyserNode.h; sourceTree = "<group>"; };
@@ -657,7 +655,7 @@
 		E2FB857C183D202600A5A764 /* ArrayBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayBuffer.cpp; sourceTree = "<group>"; };
 		E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayBufferView.cpp; sourceTree = "<group>"; };
 		E2FB8581183D202600A5A764 /* Assertions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Assertions.cpp; sourceTree = "<group>"; };
-		E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AutodrainedPoolMac.mm; sourceTree = "<group>"; };
+		E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AutodrainedPoolMac.mm; path = ../AutodrainedPoolMac.mm; sourceTree = "<group>"; };
 		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
 		E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicAnnotations.cpp; sourceTree = "<group>"; };
 		E2FB85D1183D202600A5A764 /* Float32Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Float32Array.cpp; sourceTree = "<group>"; };
@@ -950,6 +948,8 @@
 		E2D5CE821A19B3D200B031C8 /* internal */ = {
 			isa = PBXGroup;
 			children = (
+				E2D5CEAE1A19B40100B031C8 /* util */,
+				E2D5CEA31A19B40100B031C8 /* mac */,
 				E2D5CE831A19B3E700B031C8 /* AudioArray.h */,
 				E2D5CE841A19B3E700B031C8 /* AudioBus.h */,
 				E2D5CE851A19B3E700B031C8 /* AudioChannel.h */,
@@ -982,7 +982,6 @@
 				E2D5CEA01A19B40100B031C8 /* HRTFElevation.h */,
 				E2D5CEA11A19B40100B031C8 /* HRTFKernel.h */,
 				E2D5CEA21A19B40100B031C8 /* HRTFPanner.h */,
-				E2D5CEA31A19B40100B031C8 /* mac */,
 				E2D5CEA61A19B40100B031C8 /* MultiChannelResampler.h */,
 				E2D5CEA71A19B40100B031C8 /* Panner.h */,
 				E2D5CEA81A19B40100B031C8 /* Reverb.h */,
@@ -991,9 +990,7 @@
 				E2D5CEAB1A19B40100B031C8 /* ReverbConvolverStage.h */,
 				E2D5CEAC1A19B40100B031C8 /* ReverbInputBuffer.h */,
 				E2D5CEAD1A19B40100B031C8 /* SincResampler.h */,
-				E2D5CEAE1A19B40100B031C8 /* util */,
 				E2D5CECD1A19B40100B031C8 /* VectorMath.h */,
-				E2D5CECE1A19B40100B031C8 /* win */,
 				E2D5CED11A19B40100B031C8 /* ZeroPole.h */,
 			);
 			name = internal;
@@ -1059,16 +1056,6 @@
 				E2D5CEC91A19B40100B031C8 /* TranslateTransformOperation.h */,
 			);
 			path = transforms;
-			sourceTree = "<group>";
-		};
-		E2D5CECE1A19B40100B031C8 /* win */ = {
-			isa = PBXGroup;
-			children = (
-				E2D5CECF1A19B40100B031C8 /* AudioDestinationWin.h */,
-				E2D5CED01A19B40100B031C8 /* AudioFileReaderWin.h */,
-			);
-			name = win;
-			path = internal/win;
 			sourceTree = "<group>";
 		};
 		E2D5CED21A19B42400B031C8 /* nodes */ = {
@@ -1260,14 +1247,13 @@
 		E2FB8579183D202600A5A764 /* wtf */ = {
 			isa = PBXGroup;
 			children = (
+				E2FB85F4183D202600A5A764 /* mac */,
 				E2FB857C183D202600A5A764 /* ArrayBuffer.cpp */,
 				E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */,
 				E2FB8581183D202600A5A764 /* Assertions.cpp */,
-				E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */,
 				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
 				E2FB85D1183D202600A5A764 /* Float32Array.cpp */,
-				E2FB85F4183D202600A5A764 /* mac */,
 				E2FB85F6183D202600A5A764 /* MainThread.cpp */,
 				E2FB85FC183D202600A5A764 /* MediaTime.cpp */,
 				E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */,
@@ -1282,6 +1268,7 @@
 		E2FB85F4183D202600A5A764 /* mac */ = {
 			isa = PBXGroup;
 			children = (
+				E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */,
 				E2FB85F5183D202600A5A764 /* MainThreadMac.mm */,
 			);
 			path = mac;

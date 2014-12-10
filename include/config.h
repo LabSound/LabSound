@@ -19,24 +19,12 @@
  *
  */ 
 
-#if defined(HAVE_CONFIG_H) && HAVE_CONFIG_H
-#ifdef BUILDING_WITH_CMAKE
-#include "cmakeconfig.h"
-#else
-#include "autotoolsconfig.h"
-#endif
-#endif
 
 #include "WTF/Platform.h"
-
 #include "WTF/ExportMacros.h"
+
 #include "PlatformExportMacros.h"
-
 #include "LabSoundConfig.h"
-
-#ifdef HAVE_JS
-#include <runtime/JSExportMacros.h>
-#endif
 
 #ifdef __APPLE__
 #define HAVE_FUNC_USLEEP 1
@@ -69,26 +57,16 @@
 // Helps us catch if anyone uses new or delete by accident in code and doesn't include "config.h".
 #undef new
 #undef delete
-// #include <WTF/FastMalloc.h>
 
 #include <ciso646>
 
 #endif
-
-// On MSW, wx headers need to be included before windows.h is.
-// The only way we can always ensure this is if we include wx here.
-#if PLATFORM(WX)
-#include <wx/defs.h>
-#endif
-
-//#include <wtf/DisallowCType.h>
 
 #if COMPILER(MSVC)
 #define SKIP_STATIC_CONSTRUCTORS_ON_MSVC 1
 #else
 #define SKIP_STATIC_CONSTRUCTORS_ON_GCC 1
 #endif
-
 
 // FIXME: Move this to JavaScriptCore/wtf/Platform.h, which is where we define WTF_USE_AVFOUNDATION on the Mac.
 // https://bugs.webkit.org/show_bug.cgi?id=67334

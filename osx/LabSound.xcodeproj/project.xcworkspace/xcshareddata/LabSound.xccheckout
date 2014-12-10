@@ -10,29 +10,29 @@
 	<string>LabSound</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>600CC5AF-B3F9-4216-869D-6291234EB0A7</key>
+		<key>20B0349316C71D8A97AE25B116B2A8A89074BDC1</key>
 		<string>https://github.com/ddiakopoulos/LabSound.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>osx/LabSound.xcodeproj/project.xcworkspace</string>
+	<string>osx/LabSound.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>600CC5AF-B3F9-4216-869D-6291234EB0A7</key>
+		<key>20B0349316C71D8A97AE25B116B2A8A89074BDC1</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/ddiakopoulos/LabSound.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>600CC5AF-B3F9-4216-869D-6291234EB0A7</string>
+	<string>20B0349316C71D8A97AE25B116B2A8A89074BDC1</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>600CC5AF-B3F9-4216-869D-6291234EB0A7</string>
+			<string>20B0349316C71D8A97AE25B116B2A8A89074BDC1</string>
 			<key>IDESourceControlWCCName</key>
 			<string>LabSoundDimitri</string>
 		</dict>
