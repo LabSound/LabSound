@@ -45,10 +45,9 @@ const unsigned HRTFDatabase::NumberOfRawElevations = 10; // -45 -> +90 (each 15 
 const unsigned HRTFDatabase::InterpolationFactor = 1;
 const unsigned HRTFDatabase::NumberOfTotalElevations = NumberOfRawElevations * InterpolationFactor;
 
-PassOwnPtr<HRTFDatabase> HRTFDatabase::create(float sampleRate)
+std::unique_ptr<HRTFDatabase> HRTFDatabase::create(float sampleRate)
 {
-    OwnPtr<HRTFDatabase> hrtfDatabase = adoptPtr(new HRTFDatabase(sampleRate));
-    return hrtfDatabase.release();
+    return std::unique_ptr<HRTFDatabase>(new HRTFDatabase(sampleRate));
 }
 
 HRTFDatabase::HRTFDatabase(float sampleRate)

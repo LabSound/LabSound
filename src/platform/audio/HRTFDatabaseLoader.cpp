@@ -73,7 +73,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
     ASSERT(isMainThread());
 
     waitForLoaderThreadCompletion();
-    m_hrtfDatabase.clear();
+    m_hrtfDatabase.reset();
     
     // Clear out singleton.
     ASSERT(this == s_loader);

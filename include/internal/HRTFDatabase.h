@@ -41,7 +41,7 @@ class HRTFKernel;
 class HRTFDatabase {
     WTF_MAKE_NONCOPYABLE(HRTFDatabase);
 public:
-    static PassOwnPtr<HRTFDatabase> create(float sampleRate);
+    static std::unique_ptr<HRTFDatabase> create(float sampleRate);
 
     // getKernelsFromAzimuthElevation() returns a left and right ear kernel, and an interpolated left and right frame delay for the given azimuth and elevation.
     // azimuthBlend must be in the range 0 -> 1.

@@ -94,7 +94,7 @@ HRTFKernel::HRTFKernel(AudioChannel* channel, size_t fftSize, float sampleRate)
         }
     }
 
-    m_fftFrame = adoptPtr(new FFTFrame(fftSize));
+    m_fftFrame = std::unique_ptr<FFTFrame>(new FFTFrame(fftSize));
     m_fftFrame->doPaddedFFT(impulseResponse, truncatedResponseLength);
 }
 
@@ -111,7 +111,7 @@ PassOwnPtr<AudioChannel> HRTFKernel::createImpulseResponse()
 }
 
 // Interpolates two kernels with x: 0 -> 1 and returns the result.
-PassRefPtr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* kernel1, HRTFKernel* kernel2, float x)
+std::unique_ptr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* kernel1, HRTFKernel* kernel2, float x)
 {
     ASSERT(kernel1 && kernel2);
     if (!kernel1 || !kernel2)
@@ -128,8 +128,8 @@ PassRefPtr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* kernel1,
     
     float frameDelay = (1 - x) * kernel1->frameDelay() + x * kernel2->frameDelay();
     
-    OwnPtr<FFTFrame> interpolatedFrame = FFTFrame::createInterpolatedFrame(*kernel1->fftFrame(), *kernel2->fftFrame(), x);
-    return HRTFKernel::create(interpolatedFrame.release(), frameDelay, sampleRate1);
+    std::unique_ptr<FFTFrame> interpolatedFrame = FFTFrame::createInterpolatedFrame(*kernel1->fftFrame(), *kernel2->fftFrame(), x);
+    return HRTFKernel::create(std::move(interpolatedFrame), frameDelay, sampleRate1);
 }
 
 } // namespace WebCore

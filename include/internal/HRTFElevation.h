@@ -82,25 +82,25 @@ public:
     // Valid values for elevation are -45 -> +90 in 15 degree increments.
     // Returns true on success.
     static bool calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
-                                                    RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR);
+                                                    std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR);
 
     // Given a specific azimuth and elevation angle, returns the left and right HRTFKernel in kernelL and kernelR.
     // This method averages the measured response using symmetry of azimuth (for example by averaging the -30.0 and +30.0 azimuth responses).
     // Returns true on success.
     static bool calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
-                                                             RefPtr<HRTFKernel>& kernelL, RefPtr<HRTFKernel>& kernelR);
+                                                             std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR);
 
 private:
-    HRTFElevation(PassOwnPtr<HRTFKernelList> kernelListL, PassOwnPtr<HRTFKernelList> kernelListR, int elevation, float sampleRate)
-        : m_kernelListL(kernelListL)
-        , m_kernelListR(kernelListR)
-        , m_elevationAngle(elevation)
-        , m_sampleRate(sampleRate)
+    HRTFElevation(std::unique_ptr<HRTFKernelList> kernelListL, std::unique_ptr<HRTFKernelList> kernelListR, int elevation, float sampleRate)
+    : m_kernelListL(std::move(kernelListL))
+    , m_kernelListR(std::move(kernelListR))
+    , m_elevationAngle(elevation)
+    , m_sampleRate(sampleRate)
     {
     }
 
-    OwnPtr<HRTFKernelList> m_kernelListL;
-    OwnPtr<HRTFKernelList> m_kernelListR;
+    std::unique_ptr<HRTFKernelList> m_kernelListL;
+    std::unique_ptr<HRTFKernelList> m_kernelListR;
     double m_elevationAngle;
     float m_sampleRate;
 };

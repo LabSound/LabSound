@@ -78,7 +78,7 @@ private:
     void loadAsynchronously();
 
     static HRTFDatabaseLoader* s_loader; // singleton
-    OwnPtr<HRTFDatabase> m_hrtfDatabase;
+    std::unique_ptr<HRTFDatabase> m_hrtfDatabase;
 
     // Holding a m_threadLock is required when accessing m_databaseLoaderThread.
     WTF::Mutex m_threadLock;
