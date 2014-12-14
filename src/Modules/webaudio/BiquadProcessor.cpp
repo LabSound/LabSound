@@ -60,9 +60,9 @@ BiquadProcessor::~BiquadProcessor()
         uninitialize();
 }
 
-PassOwnPtr<AudioDSPKernel> BiquadProcessor::createKernel()
+AudioDSPKernel* BiquadProcessor::createKernel()
 {
-    return adoptPtr(new BiquadDSPKernel(this));
+    return new BiquadDSPKernel(this);
 }
 
 void BiquadProcessor::checkForDirtyCoefficients()
@@ -128,7 +128,7 @@ void BiquadProcessor::getFrequencyResponse(int nFrequencies,
     // to avoid interfering with the processing running in the audio
     // thread on the main kernels.
     
-    OwnPtr<BiquadDSPKernel> responseKernel = adoptPtr(new BiquadDSPKernel(this));
+    std::unique_ptr<BiquadDSPKernel> responseKernel(new BiquadDSPKernel(this));
 
     responseKernel->getFrequencyResponse(nFrequencies, frequencyHz, magResponse, phaseResponse);
 }

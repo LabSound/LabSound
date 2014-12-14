@@ -41,17 +41,17 @@ const double AudioResampler::MaxRate = 8.0;
 AudioResampler::AudioResampler()
     : m_rate(1.0)
 {
-    m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
-    m_sourceBus = adoptPtr(new AudioBus(1, 0, false));
+    m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
+    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(1, 0, false));
 }
 
 AudioResampler::AudioResampler(unsigned numberOfChannels)
     : m_rate(1.0)
 {
     for (unsigned i = 0; i < numberOfChannels; ++i)
-        m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
+        m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
 
-    m_sourceBus = adoptPtr(new AudioBus(numberOfChannels, 0, false));
+    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
 }
 
 void AudioResampler::configureChannels(unsigned numberOfChannels)
@@ -63,12 +63,12 @@ void AudioResampler::configureChannels(unsigned numberOfChannels)
     // First deal with adding or removing kernels.
     if (numberOfChannels > currentSize) {
         for (unsigned i = currentSize; i < numberOfChannels; ++i)
-            m_kernels.push_back(adoptPtr(new AudioResamplerKernel(this)));
+            m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
     } else
         m_kernels.resize(numberOfChannels);
 
     // Reconfigure our source bus to the new channel size.
-    m_sourceBus = adoptPtr(new AudioBus(numberOfChannels, 0, false));
+    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
 }
 
 void AudioResampler::process(AudioSourceProvider* provider, AudioBus* destinationBus, size_t framesToProcess)

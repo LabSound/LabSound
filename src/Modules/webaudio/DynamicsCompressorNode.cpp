@@ -24,8 +24,6 @@
 
 #include "config.h"
 
-#if ENABLE(WEB_AUDIO)
-
 #include "DynamicsCompressorNode.h"
 
 #include "AudioContext.h"
@@ -95,7 +93,7 @@ void DynamicsCompressorNode::initialize()
         return;
 
     AudioNode::initialize();    
-    m_dynamicsCompressor = adoptPtr(new DynamicsCompressor(sampleRate(), defaultNumberOfOutputChannels));
+    m_dynamicsCompressor = std::unique_ptr<DynamicsCompressor>(new DynamicsCompressor(sampleRate(), defaultNumberOfOutputChannels));
 }
 
 void DynamicsCompressorNode::uninitialize()
@@ -103,7 +101,7 @@ void DynamicsCompressorNode::uninitialize()
     if (!isInitialized())
         return;
 
-    m_dynamicsCompressor.clear();
+    m_dynamicsCompressor.reset();
     AudioNode::uninitialize();
 }
 
@@ -118,5 +116,3 @@ double DynamicsCompressorNode::latencyTime() const
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

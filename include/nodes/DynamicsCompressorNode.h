@@ -64,7 +64,7 @@ private:
 
     DynamicsCompressorNode(AudioContext*, float sampleRate);
 
-    OwnPtr<DynamicsCompressor> m_dynamicsCompressor;
+    std::unique_ptr<DynamicsCompressor> m_dynamicsCompressor;
     RefPtr<AudioParam> m_threshold;
     RefPtr<AudioParam> m_knee;
     RefPtr<AudioParam> m_ratio;

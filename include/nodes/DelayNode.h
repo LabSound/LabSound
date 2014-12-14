@@ -57,7 +57,6 @@ private:
 
     DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
     
-    AudioParam* delayTime() const { return delayProcessor()->delayTime(); }
 
 };
 

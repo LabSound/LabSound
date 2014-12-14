@@ -74,7 +74,7 @@ private:
     // Returns the index for the correct HRTFElevation given the elevation angle.
     static unsigned indexFromElevationAngle(double);
 
-    std::vector<OwnPtr<HRTFElevation> > m_elevations;
+    std::vector<std::unique_ptr<HRTFElevation> > m_elevations;
     float m_sampleRate;
 };
 

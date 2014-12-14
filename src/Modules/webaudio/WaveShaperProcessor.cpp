@@ -43,9 +43,9 @@ WaveShaperProcessor::~WaveShaperProcessor()
         uninitialize();
 }
 
-PassOwnPtr<AudioDSPKernel> WaveShaperProcessor::createKernel()
+AudioDSPKernel* WaveShaperProcessor::createKernel()
 {
-    return adoptPtr(new WaveShaperDSPKernel(this));
+    return new WaveShaperDSPKernel(this);
 }
 
 void WaveShaperProcessor::setCurve(Float32Array* curve)

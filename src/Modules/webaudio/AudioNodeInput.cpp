@@ -42,7 +42,7 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
     , m_node(node)
 {
     // Set to mono by default.
-    m_internalSummingBus = adoptPtr(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
 void AudioNodeInput::connect(AudioNodeOutput* output)
@@ -148,7 +148,7 @@ void AudioNodeInput::updateInternalBus()
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
 
-    m_internalSummingBus = adoptPtr(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
 unsigned AudioNodeInput::numberOfChannels() const

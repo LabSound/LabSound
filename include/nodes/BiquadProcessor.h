@@ -53,7 +53,7 @@ public:
 
     virtual ~BiquadProcessor();
     
-    virtual PassOwnPtr<AudioDSPKernel> createKernel();
+    virtual AudioDSPKernel* createKernel();
         
     virtual void process(const AudioBus* source, AudioBus* destination, size_t framesToProcess);
 

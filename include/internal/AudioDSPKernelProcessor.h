@@ -54,7 +54,7 @@ public:
 
     // Subclasses create the appropriate type of processing kernel here.
     // We'll call this to create a kernel for each channel.
-    virtual PassOwnPtr<AudioDSPKernel> createKernel() = 0;
+    virtual AudioDSPKernel* createKernel() = 0;
 
     // AudioProcessor methods
     virtual void initialize();
@@ -70,7 +70,7 @@ public:
 
 protected:
     unsigned m_numberOfChannels;
-    std::vector<OwnPtr<AudioDSPKernel> > m_kernels;
+    std::vector<std::unique_ptr<AudioDSPKernel> > m_kernels;
     bool m_hasJustReset;
 };
 

@@ -60,8 +60,9 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate)
     m_channels.reserve(numberOfChannels);
 
     for (unsigned i = 0; i < numberOfChannels; ++i) {
-        PassOwnPtr<AudioChannel> channel = allocate ? adoptPtr(new AudioChannel(length)) : adoptPtr(new AudioChannel(0, length));
-        m_channels.push_back(channel);
+        m_channels.push_back(std::unique_ptr<AudioChannel>(allocate?
+                                                           new AudioChannel(length) :
+                                                           new AudioChannel(0, length) ));
     }
 
     m_layout = LayoutCanonical; // for now this is the only layout we define
@@ -377,7 +378,7 @@ void AudioBus::copyWithGainFrom(const AudioBus &sourceBus, float* lastMixGain, f
 
     if (framesToDezipper) {
         if (!m_dezipperGainValues.get() || m_dezipperGainValues->size() < framesToDezipper)
-            m_dezipperGainValues = adoptPtr(new AudioFloatArray(framesToDezipper));
+            m_dezipperGainValues = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(framesToDezipper));
 
         float* gainValues = m_dezipperGainValues->data();
         for (unsigned i = 0; i < framesToDezipper; ++i) {

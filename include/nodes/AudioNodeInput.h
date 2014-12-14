@@ -94,7 +94,7 @@ private:
     AudioBus* internalSummingBus();
     void sumAllConnections(AudioBus* summingBus, size_t framesToProcess);
 
-    OwnPtr<AudioBus> m_internalSummingBus;
+    std::unique_ptr<AudioBus> m_internalSummingBus;
 };
 
 } // namespace WebCore

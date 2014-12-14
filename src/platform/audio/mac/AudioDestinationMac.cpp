@@ -186,9 +186,9 @@ public:
 //LabSound end
 
 // Factory method: Mac-implementation
-PassOwnPtr<AudioDestination> AudioDestination::create(AudioIOCallback& callback, float sampleRate)
+AudioDestination* AudioDestination::create(AudioIOCallback& callback, float sampleRate)
 {
-    return adoptPtr(new AudioDestinationMac(callback, sampleRate));
+    return new AudioDestinationMac(callback, sampleRate);
 }
 
 float AudioDestination::hardwareSampleRate()

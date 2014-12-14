@@ -42,7 +42,7 @@ class AudioIOCallback;
 
 class AudioDestination {
 public:
-    static PassOwnPtr<AudioDestination> create(AudioIOCallback&, float sampleRate);
+    static AudioDestination* create(AudioIOCallback&, float sampleRate);
 
     virtual ~AudioDestination() { }
 

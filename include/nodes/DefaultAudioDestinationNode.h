@@ -50,7 +50,7 @@ public:
 private:
     explicit DefaultAudioDestinationNode(AudioContext*);
 
-    OwnPtr<AudioDestination> m_destination;
+    std::unique_ptr<AudioDestination> m_destination;
 };
 
 } // namespace WebCore

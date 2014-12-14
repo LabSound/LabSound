@@ -50,7 +50,7 @@ void DefaultAudioDestinationNode::initialize()
     float hardwareSampleRate = AudioDestination::hardwareSampleRate();
     LOG(WebAudio, ">>>> hardwareSampleRate = %f\n", hardwareSampleRate);
     
-    m_destination = AudioDestination::create(*this, hardwareSampleRate);
+    m_destination = std::move(std::unique_ptr<AudioDestination>(AudioDestination::create(*this, hardwareSampleRate)));
     
     AudioNode::initialize();
 }

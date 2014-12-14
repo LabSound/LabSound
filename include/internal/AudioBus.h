@@ -146,10 +146,10 @@ protected:
     AudioBus() { };
 
     size_t m_length;
-    std::vector<OwnPtr<AudioChannel> > m_channels;
+    std::vector<std::unique_ptr<AudioChannel> > m_channels;
     int m_layout;
     float m_busGain;
-    OwnPtr<AudioFloatArray> m_dezipperGainValues;
+    std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
     bool m_isFirstTime;
     float m_sampleRate; // 0.0 if unknown or N/A
 

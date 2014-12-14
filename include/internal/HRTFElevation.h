@@ -48,10 +48,10 @@ public:
     // Normally, there will only be a single HRTF database set, but this API supports the possibility of multiple ones with different names.
     // Interpolated azimuths will be generated based on InterpolationFactor.
     // Valid values for elevation are -45 -> +90 in 15 degree increments.
-    static PassOwnPtr<HRTFElevation> createForSubject(const std::string& subjectName, int elevation, float sampleRate);
+    static std::unique_ptr<HRTFElevation> createForSubject(const std::string& subjectName, int elevation, float sampleRate);
 
     // Given two HRTFElevations, and an interpolation factor x: 0 -> 1, returns an interpolated HRTFElevation.
-    static PassOwnPtr<HRTFElevation> createByInterpolatingSlices(HRTFElevation* hrtfElevation1, HRTFElevation* hrtfElevation2, float x, float sampleRate);
+    static std::unique_ptr<HRTFElevation> createByInterpolatingSlices(HRTFElevation* hrtfElevation1, HRTFElevation* hrtfElevation2, float x, float sampleRate);
 
     // Returns the list of left or right ear HRTFKernels for all the azimuths going from 0 to 360 degrees.
     HRTFKernelList* kernelListL() { return m_kernelListL.get(); }

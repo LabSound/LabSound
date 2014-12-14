@@ -47,7 +47,7 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels());
 
-    m_internalBus = adoptPtr(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
+    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
     m_actualDestinationBus = m_internalBus.get();
 }
 
@@ -72,7 +72,7 @@ void AudioNodeOutput::updateInternalBus()
     if (numberOfChannels() == m_internalBus->numberOfChannels())
         return;
 
-    m_internalBus = adoptPtr(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
+    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
 
     // This may later be changed in pull() to point to an in-place bus with the same number of channels.
     m_actualDestinationBus = m_internalBus.get();

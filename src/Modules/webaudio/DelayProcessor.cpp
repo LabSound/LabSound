@@ -45,9 +45,9 @@ DelayProcessor::~DelayProcessor()
         uninitialize();
 }
 
-PassOwnPtr<AudioDSPKernel> DelayProcessor::createKernel()
+AudioDSPKernel* DelayProcessor::createKernel()
 {
-    return adoptPtr(new DelayDSPKernel(this));
+    return new DelayDSPKernel(this);
 }
 
 } // namespace WebCore
