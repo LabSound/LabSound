@@ -30,9 +30,6 @@
 #define HRTFKernel_h
 
 #include "FFTFrame.h"
-#include "WTF/RefPtr.h"
-#include "WTF/PassOwnPtr.h"
-#include "WTF/ThreadSafeRefCounted.h"
 #include <vector>
 
 namespace WebCore {
@@ -49,14 +46,13 @@ class HRTFKernel {
 public:
     // Note: this is destructive on the passed in AudioChannel.
     // The length of channel must be a power of two.
-    static std::unique_ptr<HRTFKernel> create(AudioChannel* channel, size_t fftSize, float sampleRate)
+    HRTFKernel(AudioChannel*, size_t fftSize, float sampleRate);
+    
+    HRTFKernel(std::unique_ptr<FFTFrame> fftFrame, float frameDelay, float sampleRate)
+    : m_fftFrame(std::move(fftFrame))
+    , m_frameDelay(frameDelay)
+    , m_sampleRate(sampleRate)
     {
-        return std::unique_ptr<HRTFKernel>(new HRTFKernel(channel, fftSize, sampleRate));
-    }
-
-    static std::unique_ptr<HRTFKernel> create(std::unique_ptr<FFTFrame> fftFrame, float frameDelay, float sampleRate)
-    {
-        return std::unique_ptr<HRTFKernel>(new HRTFKernel(std::move(fftFrame), frameDelay, sampleRate));
     }
 
     // Given two HRTFKernels, and an interpolation factor x: 0 -> 1, returns an interpolated HRTFKernel.
@@ -71,18 +67,10 @@ public:
     double nyquist() const { return 0.5 * sampleRate(); }
 
     // Converts back into impulse-response form.
-    PassOwnPtr<AudioChannel> createImpulseResponse();
+    std::unique_ptr<AudioChannel> createImpulseResponse();
 
 private:
     // Note: this is destructive on the passed in AudioChannel.
-    HRTFKernel(AudioChannel*, size_t fftSize, float sampleRate);
-    
-    HRTFKernel(std::unique_ptr<FFTFrame> fftFrame, float frameDelay, float sampleRate)
-    : m_fftFrame(std::move(fftFrame))
-    , m_frameDelay(frameDelay)
-    , m_sampleRate(sampleRate)
-    {
-    }
     
     std::unique_ptr<FFTFrame> m_fftFrame;
     float m_frameDelay;

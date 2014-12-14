@@ -28,8 +28,6 @@
 
 #include "config.h"
 
-#if ENABLE(WEB_AUDIO)
-
 #include "Panner.h"
 
 #include "EqualPowerPanner.h"
@@ -38,18 +36,14 @@
 
 namespace WebCore {
 
-PassOwnPtr<Panner> Panner::create(PanningModel model, float sampleRate)
+std::unique_ptr<Panner> Panner::create(PanningModel model, float sampleRate)
 {
-    OwnPtr<Panner> panner;
-
     switch (model) {
     case PanningModelEqualPower:
-        panner = adoptPtr(new EqualPowerPanner(sampleRate));
-        break;
+        return std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate));
 
     case PanningModelHRTF:
-        panner = adoptPtr(new HRTFPanner(sampleRate));
-        break;
+        return std::unique_ptr<Panner>(new HRTFPanner(sampleRate));
 
     // FIXME: sound field panning is not yet implemented...
     case PanningModelSoundField:
@@ -57,10 +51,7 @@ PassOwnPtr<Panner> Panner::create(PanningModel model, float sampleRate)
         ASSERT_NOT_REACHED();
         return nullptr;
     }
-
-    return panner.release();
 }
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

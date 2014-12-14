@@ -141,7 +141,7 @@ void PannerNode::uninitialize()
     if (!isInitialized())
         return;
         
-    m_panner.clear();
+    m_panner.reset();
     AudioNode::uninitialize();
 }
 
@@ -156,8 +156,7 @@ void PannerNode::setPanningModel(unsigned short model, ExceptionCode& ec)
     case EQUALPOWER:
     case HRTF:
         if (!m_panner.get() || model != m_panningModel) {
-            OwnPtr<Panner> newPanner = Panner::create(model, sampleRate());
-            m_panner = newPanner.release();
+            m_panner = Panner::create(model, sampleRate());
             m_panningModel = model;
         }
         break;

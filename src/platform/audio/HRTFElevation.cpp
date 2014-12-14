@@ -129,8 +129,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
 
     // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
     const size_t fftSize = HRTFPanner::fftSizeForSampleRate(sampleRate);
-    kernelL = HRTFKernel::create(leftEarImpulseResponse, fftSize, sampleRate);
-    kernelR = HRTFKernel::create(rightEarImpulseResponse, fftSize, sampleRate);
+    kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, sampleRate);
+    kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, sampleRate);
     
     return true;
 }

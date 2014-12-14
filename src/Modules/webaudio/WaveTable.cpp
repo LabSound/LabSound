@@ -215,8 +215,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
         realP[0] = 0;
 
         // Create the band-limited table.
-        OwnPtr<AudioFloatArray> table = adoptPtr(new AudioFloatArray(m_waveTableSize));
-        m_bandLimitedTables.push_back(table.release());
+        m_bandLimitedTables.push_back(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(m_waveTableSize)));
 
         // Apply an inverse FFT to generate the time-domain table data.
         float* data = m_bandLimitedTables[rangeIndex]->data();
