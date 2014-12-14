@@ -86,7 +86,7 @@ private:
     unsigned m_writeIndex;
     
     size_t m_fftSize;
-    OwnPtr<FFTFrame> m_analysisFrame;
+    std::unique_ptr<FFTFrame> m_analysisFrame;
     void doFFTAnalysis();
     
     // doFFTAnalysis() stores the floating-point magnitude analysis data here.

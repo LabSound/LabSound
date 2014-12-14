@@ -63,8 +63,8 @@ RealtimeAnalyser::RealtimeAnalyser()
     , m_smoothingTimeConstant(DefaultSmoothingTimeConstant)
     , m_minDecibels(DefaultMinDecibels)
     , m_maxDecibels(DefaultMaxDecibels)
+    , m_analysisFrame(new FFTFrame(DefaultFFTSize))
 {
-    m_analysisFrame = adoptPtr(new FFTFrame(DefaultFFTSize));
 }
 
 RealtimeAnalyser::~RealtimeAnalyser()
@@ -90,7 +90,7 @@ bool RealtimeAnalyser::setFftSize(size_t size)
         return false;
 
     if (m_fftSize != size) {
-        m_analysisFrame = adoptPtr(new FFTFrame(size));
+        m_analysisFrame = std::unique_ptr<FFTFrame>(new FFTFrame(size));
         // m_magnitudeBuffer has size = fftSize / 2 because it contains floats reduced from complex values in m_analysisFrame.
         m_magnitudeBuffer.allocate(size / 2);
         m_fftSize = size;
