@@ -172,7 +172,6 @@
 		E2FB855C183D1F1F00A5A764 /* DelayProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8505183D1F1F00A5A764 /* DelayProcessor.cpp */; };
 		E2FB855E183D1F1F00A5A764 /* DynamicsCompressorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8508183D1F1F00A5A764 /* DynamicsCompressorNode.cpp */; };
 		E2FB8560183D1F1F00A5A764 /* GainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB850B183D1F1F00A5A764 /* GainNode.cpp */; };
-		E2FB8562183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB850E183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp */; };
 		E2FB8564183D1F1F00A5A764 /* MediaStreamAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8511183D1F1F00A5A764 /* MediaStreamAudioDestinationNode.cpp */; };
 		E2FB8566183D1F1F00A5A764 /* MediaStreamAudioSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8514183D1F1F00A5A764 /* MediaStreamAudioSourceNode.cpp */; };
 		E2FB856A183D1F1F00A5A764 /* OfflineAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB851A183D1F1F00A5A764 /* OfflineAudioDestinationNode.cpp */; };
@@ -538,7 +537,6 @@
 		E2D5CEF51A19B43900B031C8 /* DynamicsCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DynamicsCompressorNode.h; path = nodes/DynamicsCompressorNode.h; sourceTree = "<group>"; };
 		E2D5CEF61A19B43900B031C8 /* EasyVerbNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EasyVerbNode.h; path = nodes/EasyVerbNode.h; sourceTree = "<group>"; };
 		E2D5CEF71A19B43900B031C8 /* GainNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GainNode.h; path = nodes/GainNode.h; sourceTree = "<group>"; };
-		E2D5CEF81A19B43900B031C8 /* MediaElementAudioSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaElementAudioSourceNode.h; path = nodes/MediaElementAudioSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEF91A19B43900B031C8 /* MediaStreamAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioDestinationNode.h; path = nodes/MediaStreamAudioDestinationNode.h; sourceTree = "<group>"; };
 		E2D5CEFA1A19B43900B031C8 /* MediaStreamAudioSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioSourceNode.h; path = nodes/MediaStreamAudioSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEFB1A19B43900B031C8 /* NoiseNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NoiseNode.h; path = nodes/NoiseNode.h; sourceTree = "<group>"; };
@@ -641,7 +639,6 @@
 		E2FB8505183D1F1F00A5A764 /* DelayProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayProcessor.cpp; sourceTree = "<group>"; };
 		E2FB8508183D1F1F00A5A764 /* DynamicsCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicsCompressorNode.cpp; sourceTree = "<group>"; };
 		E2FB850B183D1F1F00A5A764 /* GainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GainNode.cpp; sourceTree = "<group>"; };
-		E2FB850E183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaElementAudioSourceNode.cpp; sourceTree = "<group>"; };
 		E2FB8511183D1F1F00A5A764 /* MediaStreamAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaStreamAudioDestinationNode.cpp; sourceTree = "<group>"; };
 		E2FB8514183D1F1F00A5A764 /* MediaStreamAudioSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaStreamAudioSourceNode.cpp; sourceTree = "<group>"; };
 		E2FB851A183D1F1F00A5A764 /* OfflineAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OfflineAudioDestinationNode.cpp; sourceTree = "<group>"; };
@@ -1099,7 +1096,6 @@
 				E2D5CEF61A19B43900B031C8 /* EasyVerbNode.h */,
 				E2D5CEF71A19B43900B031C8 /* GainNode.h */,
 				E2F817171A2E19DF00E31150 /* MediaStream.h */,
-				E2D5CEF81A19B43900B031C8 /* MediaElementAudioSourceNode.h */,
 				E2D5CEF91A19B43900B031C8 /* MediaStreamAudioDestinationNode.h */,
 				E2D5CEFA1A19B43900B031C8 /* MediaStreamAudioSourceNode.h */,
 				E2D5CEFB1A19B43900B031C8 /* NoiseNode.h */,
@@ -1228,7 +1224,6 @@
 				E2FB8505183D1F1F00A5A764 /* DelayProcessor.cpp */,
 				E2FB8508183D1F1F00A5A764 /* DynamicsCompressorNode.cpp */,
 				E2FB850B183D1F1F00A5A764 /* GainNode.cpp */,
-				E2FB850E183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp */,
 				E2FB8511183D1F1F00A5A764 /* MediaStreamAudioDestinationNode.cpp */,
 				E2FB8514183D1F1F00A5A764 /* MediaStreamAudioSourceNode.cpp */,
 				E2FB851A183D1F1F00A5A764 /* OfflineAudioDestinationNode.cpp */,
@@ -1463,7 +1458,6 @@
 				E2D5CDF51A19B2B100B031C8 /* Asymp.cpp in Sources */,
 				E25245C718724E7500983485 /* FFTConvolver.cpp in Sources */,
 				E2D5CDF61A19B2B100B031C8 /* BandedWG.cpp in Sources */,
-				E2FB8562183D1F1F00A5A764 /* MediaElementAudioSourceNode.cpp in Sources */,
 				E25245E018724E9F00983485 /* AudioDestinationMac.cpp in Sources */,
 				E2D5CDFC1A19B2B100B031C8 /* BlowBotl.cpp in Sources */,
 				E2FB855C183D1F1F00A5A764 /* DelayProcessor.cpp in Sources */,

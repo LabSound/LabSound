@@ -50,7 +50,7 @@ private:
     // https://bugs.webkit.org/show_bug.cgi?id=75118
     
     // Each channel will be resampled using a high-quality SincResampler.
-    std::vector<OwnPtr<SincResampler> > m_kernels;
+    std::vector<std::unique_ptr<SincResampler> > m_kernels;
     
     unsigned m_numberOfChannels;
 };

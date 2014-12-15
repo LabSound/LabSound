@@ -31,7 +31,6 @@
 #include "OfflineAudioDestinationNode.h"
 #include "MediaStreamAudioSourceNode.h"
 #include "MediaStreamAudioDestinationNode.h"
-#include "MediaElementAudioSourceNode.h"
 #include "GainNode.h"
 #include "DynamicsCompressorNode.h"
 #include "DelayNode.h"
