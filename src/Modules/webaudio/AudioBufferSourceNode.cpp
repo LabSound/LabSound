@@ -26,21 +26,12 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#define NO_JS_INTEGRATION 1
-
 #include "AudioBufferSourceNode.h"
 
 #include "AudioContext.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
-
-#ifndef NO_JS_INTEGRATION
-#include "ScriptCallStack.h"
-#include "ScriptController.h"
-#include "ScriptExecutionContext.h"
-#endif
-
 
 #include <algorithm>
 #include <wtf/MainThread.h>
@@ -388,10 +379,6 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, Exceptio
 void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration, ExceptionCode& ec)
 {
     ASSERT(isMainThread());
-#ifndef NO_JS_INTEGRATION
-    if (ScriptController::processingUserGesture())
-        context()->removeBehaviorRestriction(AudioContext::RequireUserGestureForAudioStartRestriction);
-#endif
     if (m_playbackState != UNSCHEDULED_STATE) {
         ec = INVALID_STATE_ERR;
         return;
@@ -467,27 +454,11 @@ double AudioBufferSourceNode::totalPitchRate()
 
 bool AudioBufferSourceNode::looping()
 {
-#ifndef NO_JS_INTEGRATION
-    static bool firstTime = true;
-    if (firstTime && context() && context()->scriptExecutionContext()) {
-        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
-        firstTime = false;
-    }
-#endif
-
     return m_isLooping;
 }
 
 void AudioBufferSourceNode::setLooping(bool looping)
 {
-#ifndef NO_JS_INTEGRATION
-    static bool firstTime = true;
-    if (firstTime && context() && context()->scriptExecutionContext()) {
-        context()->scriptExecutionContext()->addConsoleMessage(JSMessageSource, WarningMessageLevel, "AudioBufferSourceNode 'looping' attribute is deprecated.  Use 'loop' instead.");
-        firstTime = false;
-    }
-#endif
-    
     m_isLooping = looping;
 }
 
