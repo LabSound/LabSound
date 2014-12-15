@@ -48,11 +48,11 @@ PassRefPtr<AudioBuffer> AudioBuffer::create(unsigned numberOfChannels, size_t nu
 
 PassRefPtr<AudioBuffer> AudioBuffer::createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
-    OwnPtr<AudioBus> bus = createBusFromInMemoryAudioFile(data, dataSize, mixToMono, sampleRate);
+    std::unique_ptr<AudioBus> bus = createBusFromInMemoryAudioFile(data, dataSize, mixToMono, sampleRate);
     if (bus.get())
         return adoptRef(new AudioBuffer(bus.get()));
 
-    return 0;
+    return nullptr;
 }
 
 AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)

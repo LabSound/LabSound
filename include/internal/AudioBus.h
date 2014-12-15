@@ -140,7 +140,7 @@ public:
     // Makes maximum absolute value == 1.0 (if possible).
     void normalize();
 
-    static PassOwnPtr<AudioBus> loadPlatformResource(const char* name, float sampleRate);
+    static std::unique_ptr<AudioBus> loadPlatformResource(const char* name, float sampleRate);
 
 protected:
     AudioBus() { };

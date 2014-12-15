@@ -34,7 +34,7 @@
 
 namespace WebCore {
 
-PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float sampleRate)
+std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char* name, float sampleRate)
 {
     // This method can be called from other than the main thread, so we need an auto-release pool.
     AutodrainedPool pool;
@@ -64,8 +64,7 @@ PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char* name, float samp
     }
 
     if (audioData) {
-        OwnPtr<AudioBus> bus(createBusFromInMemoryAudioFile([audioData bytes], [audioData length], false, sampleRate));
-        return bus.release();
+        return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile([audioData bytes], [audioData length], false, sampleRate));
     }
 
     return nullptr;

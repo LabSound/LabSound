@@ -38,7 +38,7 @@
 
 namespace WebCore {
 
-	PassOwnPtr<AudioBus> AudioBus::loadPlatformResource(const char *name, float sampleRate) {
+	std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char *name, float sampleRate) {
 
 		char cwd[MAX_PATH];
 
@@ -64,9 +64,7 @@ namespace WebCore {
             PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);
             delete [] data;
 
-			OwnPtr<AudioBus> bus(createBusFromInMemoryAudioFile(fileDataBuffer->data(), fileDataBuffer->byteLength(), false, 44100));
-            return bus.release();
-
+			return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile(fileDataBuffer->data(), fileDataBuffer->byteLength(), false, 44100));
         }
 
 		ASSERT_NOT_REACHED();

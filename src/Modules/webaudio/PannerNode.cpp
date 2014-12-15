@@ -322,7 +322,8 @@ void PannerNode::notifyAudioSourcesConnectedToNode(AudioNode* node)
     if (node->nodeType() == NodeTypeAudioBufferSource) {
         AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
         bufferSourceNode->setPannerNode(this);
-    } else {    
+    }
+    else {
         // Go through all inputs to this node.
         for (unsigned i = 0; i < node->numberOfInputs(); ++i) {
             AudioNodeInput* input = node->input(i);

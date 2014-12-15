@@ -133,7 +133,7 @@ SInt64 AudioFileReader::getSizeProc(void* clientData)
     return audioFileReader->dataSize();
 }
 
-PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono)
+std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono)
 {
     if (!m_extAudioFileRef)
         return nullptr;
@@ -184,7 +184,7 @@ PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono
     size_t busChannelCount = mixToMono ? 1 : numberOfChannels;
 
     // Create AudioBus where we'll put the PCM audio data
-    OwnPtr<AudioBus> audioBus = adoptPtr(new AudioBus(busChannelCount, numberOfFrames));
+    std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
     audioBus->setSampleRate(narrowPrecisionToFloat(m_clientDataFormat.mSampleRate)); // save for later
 
     // Only allocated in the mixToMono case
@@ -238,16 +238,16 @@ PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono
     // Cleanup
     destroyAudioBufferList(bufferList);
 
-    return audioBus.release();
+    return audioBus;
 }
 
-PassOwnPtr<AudioBus> createBusFromAudioFile(const char* filePath, bool mixToMono, float sampleRate)
+std::unique_ptr<AudioBus> createBusFromAudioFile(const char* filePath, bool mixToMono, float sampleRate)
 {
     AudioFileReader reader(filePath);
     return reader.createBus(sampleRate, mixToMono);
 }
 
-PassOwnPtr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
+std::unique_ptr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
     AudioFileReader reader(data, dataSize);
     return reader.createBus(sampleRate, mixToMono);

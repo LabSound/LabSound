@@ -106,7 +106,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     char tempStr[16];
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = "IRC_" + subjectName + "_C_R0195_T" + tempStr;
-    OwnPtr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.c_str(), sampleRate));
+    std::unique_ptr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.c_str(), sampleRate));
 
     // @Lab removed ASSERT(impulseResponse.get());
     if (!impulseResponse.get()) {

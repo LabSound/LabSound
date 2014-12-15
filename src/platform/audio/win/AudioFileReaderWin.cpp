@@ -58,7 +58,7 @@ AudioFileReader::~AudioFileReader() {
 
 }
 
-PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono) {
+std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono) {
 
 	SNDFILE*    myFile;   ///< File descriptor
     MemoryInfos myMemory; ///< Memory read / write data
@@ -120,7 +120,7 @@ PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono
 	}
 
 	// Assume stereo...
-	OwnPtr<AudioBus> audioBus = adoptPtr(new AudioBus(2, samplesPerChannel));
+	std::unique_ptr<AudioBus> audioBus = adoptPtr(new AudioBus(2, samplesPerChannel));
     audioBus->setSampleRate(sampleRate); // save for later
 
 	memcpy(audioBus->channel(0)->mutableData(), (float*) dataLeft, sizeof(float) * samplesPerChannel);
@@ -133,7 +133,7 @@ PassOwnPtr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono
 	delete[] frameData;
 
 	// Cleanup
-    return audioBus.release();
+    return audioBus;
 
 }
 
