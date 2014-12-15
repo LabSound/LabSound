@@ -128,18 +128,6 @@ int waitForThreadCompletion(ThreadIdentifier threadID, void**)
     return waitForThreadCompletion(threadID);
 }
 
-// This function is deprecated but needs to be kept around for backward
-// compatibility. Use the 3-argument version of createThread above.
-
-WTF_EXPORT_PRIVATE ThreadIdentifier createThread(ThreadFunctionWithReturnValue entryPoint, void* data);
-
-ThreadIdentifier createThread(ThreadFunctionWithReturnValue entryPoint, void* data)
-{
-    OwnPtr<ThreadFunctionWithReturnValueInvocation> invocation = adoptPtr(new ThreadFunctionWithReturnValueInvocation(entryPoint, data));
-
-    // Balanced by adoptPtr() in compatEntryPoint.
-    return createThread(compatEntryPoint, invocation.leakPtr(), 0);
-}
 #endif
 
 } // namespace WTF
