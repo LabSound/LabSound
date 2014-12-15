@@ -58,7 +58,7 @@ private:
     RefPtr<AudioBuffer> m_renderTarget;
     
     // Temporary AudioBus for each render quantum.
-    OwnPtr<AudioBus> m_renderBus;
+    std::unique_ptr<AudioBus> m_renderBus;
     
     // Rendering thread.
     volatile ThreadIdentifier m_renderThread;
