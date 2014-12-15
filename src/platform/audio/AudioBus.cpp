@@ -164,7 +164,7 @@ bool AudioBus::topologyMatches(const AudioBus& bus) const
     return true;
 }
 
-PassOwnPtr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame)
+std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame)
 {
     size_t numberOfSourceFrames = sourceBuffer->length();
     unsigned numberOfChannels = sourceBuffer->numberOfChannels();
@@ -177,13 +177,13 @@ PassOwnPtr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* sourceBuffe
 
     size_t rangeLength = endFrame - startFrame;
 
-    OwnPtr<AudioBus> audioBus = adoptPtr(new AudioBus(numberOfChannels, rangeLength));
+    std::unique_ptr<AudioBus> audioBus(new AudioBus(numberOfChannels, rangeLength));
     audioBus->setSampleRate(sourceBuffer->sampleRate());
 
     for (unsigned i = 0; i < numberOfChannels; ++i)
         audioBus->channel(i)->copyFromRange(sourceBuffer->channel(i), startFrame, endFrame);
 
-    return audioBus.release();
+    return audioBus;
 }
 
 float AudioBus::maxAbsValue() const
@@ -437,7 +437,7 @@ void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, f
     }
 }
 
-PassOwnPtr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, double newSampleRate)
+std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, double newSampleRate)
 {
     // sourceBus's sample-rate must be known.
     ASSERT(sourceBus && sourceBus->sampleRate());
@@ -462,14 +462,14 @@ PassOwnPtr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sour
     }
 
     if (sourceBus->isSilent()) {
-        OwnPtr<AudioBus> silentBus = adoptPtr(new AudioBus(numberOfSourceChannels, sourceBus->length() / sampleRateRatio));
+        std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, sourceBus->length() / sampleRateRatio));
         silentBus->setSampleRate(newSampleRate);
-        return silentBus.release();
+        return silentBus;
     }
 
     // First, mix to mono (if necessary) then sample-rate convert.
     const AudioBus* resamplerSourceBus;
-    OwnPtr<AudioBus> mixedMonoBus;
+    std::unique_ptr<AudioBus> mixedMonoBus;
     if (mixToMono) {
         mixedMonoBus = AudioBus::createByMixingToMono(sourceBus);
         resamplerSourceBus = mixedMonoBus.get();
@@ -484,7 +484,7 @@ PassOwnPtr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sour
 
     // Create destination bus with same number of channels.
     unsigned numberOfDestinationChannels = resamplerSourceBus->numberOfChannels();
-    OwnPtr<AudioBus> destinationBus(adoptPtr(new AudioBus(numberOfDestinationChannels, destinationLength)));
+    std::unique_ptr<AudioBus> destinationBus(new AudioBus(numberOfDestinationChannels, destinationLength));
 
     // Sample-rate convert each channel.
     for (unsigned i = 0; i < numberOfDestinationChannels; ++i) {
@@ -497,13 +497,13 @@ PassOwnPtr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sour
 
     destinationBus->clearSilentFlag();
     destinationBus->setSampleRate(newSampleRate);    
-    return destinationBus.release();
+    return destinationBus;
 }
 
-PassOwnPtr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceBus)
+std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceBus)
 {
     if (sourceBus->isSilent())
-        return adoptPtr(new AudioBus(1, sourceBus->length()));
+        return std::unique_ptr<AudioBus>(new AudioBus(1, sourceBus->length()));
 
     switch (sourceBus->numberOfChannels()) {
     case 1:
@@ -512,7 +512,7 @@ PassOwnPtr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceBus)
     case 2:
         {
             unsigned n = sourceBus->length();
-            OwnPtr<AudioBus> destinationBus(adoptPtr(new AudioBus(1, n)));
+            std::unique_ptr<AudioBus> destinationBus(new AudioBus(1, n));
 
             const float* sourceL = sourceBus->channel(0)->data();
             const float* sourceR = sourceBus->channel(1)->data();
@@ -524,7 +524,7 @@ PassOwnPtr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceBus)
 
             destinationBus->clearSilentFlag();
             destinationBus->setSampleRate(sourceBus->sampleRate());    
-            return destinationBus.release();
+            return destinationBus;
         }
     }
 
