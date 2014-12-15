@@ -52,13 +52,13 @@ ReverbConvolverStage::ReverbConvolverStage(const float* impulseResponse, size_t,
     ASSERT(accumulationBuffer);
 
     if (!m_directMode) {
-        m_fftKernel = adoptPtr(new FFTFrame(fftSize));
+        m_fftKernel = std::unique_ptr<FFTFrame>(new FFTFrame(fftSize));
         m_fftKernel->doPaddedFFT(impulseResponse + stageOffset, stageLength);
-        m_fftConvolver = adoptPtr(new FFTConvolver(fftSize));
+        m_fftConvolver = std::unique_ptr<FFTConvolver>(new FFTConvolver(fftSize));
     } else {
-        m_directKernel = adoptPtr(new AudioFloatArray(fftSize / 2));
+        m_directKernel = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(fftSize / 2));
         m_directKernel->copyToRange(impulseResponse + stageOffset, 0, fftSize / 2);
-        m_directConvolver = adoptPtr(new DirectConvolver(renderSliceSize));
+        m_directConvolver = std::unique_ptr<DirectConvolver>(new DirectConvolver(renderSliceSize));
     }
     m_temporaryBuffer.allocate(renderSliceSize);
 

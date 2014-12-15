@@ -102,15 +102,19 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
 
         bool useDirectConvolver = !stageOffset;
 
-        OwnPtr<ReverbConvolverStage> stage = adoptPtr(new ReverbConvolverStage(response, totalResponseLength, reverbTotalLatency, stageOffset, stageSize, fftSize, renderPhase, renderSliceSize, &m_accumulationBuffer, useDirectConvolver));
+        std::unique_ptr<ReverbConvolverStage> stage(
+                new ReverbConvolverStage(response, totalResponseLength, reverbTotalLatency,
+                                         stageOffset, stageSize, fftSize, renderPhase, renderSliceSize,
+                                         &m_accumulationBuffer, useDirectConvolver));
 
         bool isBackgroundStage = false;
 
         if (this->useBackgroundThreads() && stageOffset > RealtimeFrameLimit) {
-            m_backgroundStages.push_back(stage.release());
+            m_backgroundStages.push_back(std::move(stage));
             isBackgroundStage = true;
-        } else
-            m_stages.push_back(stage.release());
+        }
+        else
+            m_stages.push_back(std::move(stage));
 
         stageOffset += stageSize;
         ++i;

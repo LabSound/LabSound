@@ -30,6 +30,7 @@
 #define Reverb_h
 
 #include "ReverbConvolver.h"
+#include <WTF/RefPtr.h>
 #include <vector>
 
 namespace WebCore {
@@ -56,10 +57,10 @@ private:
 
     size_t m_impulseResponseLength;
 
-    std::vector<OwnPtr<ReverbConvolver> > m_convolvers;
+    std::vector<std::unique_ptr<ReverbConvolver> > m_convolvers;
 
     // For "True" stereo processing
-    OwnPtr<AudioBus> m_tempBuffer;
+    std::unique_ptr<AudioBus> m_tempBuffer;
 };
 
 } // namespace WebCore

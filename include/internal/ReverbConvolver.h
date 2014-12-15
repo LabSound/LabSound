@@ -35,7 +35,6 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
-#include "WTF/RefPtr.h"
 #include "WTF/Threading.h"
 #include <vector>
 
@@ -64,8 +63,8 @@ public:
 
     size_t latencyFrames() const;
 private:
-    std::vector<OwnPtr<ReverbConvolverStage> > m_stages;
-    std::vector<OwnPtr<ReverbConvolverStage> > m_backgroundStages;
+    std::vector<std::unique_ptr<ReverbConvolverStage> > m_stages;
+    std::vector<std::unique_ptr<ReverbConvolverStage> > m_backgroundStages;
     size_t m_impulseResponseLength;
 
     ReverbAccumulationBuffer m_accumulationBuffer;

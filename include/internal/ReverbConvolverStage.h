@@ -31,7 +31,6 @@
 
 #include "AudioArray.h"
 #include "FFTFrame.h"
-#include "WTF/RefPtr.h"
 
 namespace WebCore {
 
@@ -59,8 +58,8 @@ public:
     int inputReadIndex() const { return m_inputReadIndex; }
 
 private:
-    OwnPtr<FFTFrame> m_fftKernel;
-    OwnPtr<FFTConvolver> m_fftConvolver;
+    std::unique_ptr<FFTFrame> m_fftKernel;
+    std::unique_ptr<FFTConvolver> m_fftConvolver;
 
     AudioFloatArray m_preDelayBuffer;
 
@@ -76,8 +75,8 @@ private:
     AudioFloatArray m_temporaryBuffer;
 
     bool m_directMode;
-    OwnPtr<AudioFloatArray> m_directKernel;
-    OwnPtr<DirectConvolver> m_directConvolver;
+    std::unique_ptr<AudioFloatArray> m_directKernel;
+    std::unique_ptr<DirectConvolver> m_directConvolver;
 };
 
 } // namespace WebCore
