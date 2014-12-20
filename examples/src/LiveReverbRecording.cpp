@@ -1,32 +1,8 @@
 
+#include "LabSoundIncludes.h"
+#include "LiveReverbRecording.h"
 
-// webaudio specific headers
-#include "LabSoundConfig.h"
-#include "AudioBufferSourceNode.h"
-#include "AudioContext.h"
-#include "BiquadFilterNode.h"
-#include "ConvolverNode.h"
-#include "ExceptionCode.h"
-#include "GainNode.h"
-#include "MediaStream.h"
-#include "MediaStreamAudioSourceNode.h"
-#include "OscillatorNode.h"
-#include "PannerNode.h"
-
-// LabSound
-#include "RecorderNode.h"
-#include "SoundBuffer.h"
-
-#include "LiveEcho.h"
-
-#include <unistd.h>
-#include <stdio.h>
-#include <iostream>
-
-using namespace WebCore;
-using LabSound::RecorderNode;
-using LabSound::SoundBuffer;
-
+using namespace LabSound;
 void liveReverbRecording(RefPtr<AudioContext> context, float seconds, char const*const path)
 {
     ExceptionCode ec;
@@ -36,7 +12,7 @@ void liveReverbRecording(RefPtr<AudioContext> context, float seconds, char const
     SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
     
-    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
+    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(ec);
     RefPtr<ConvolverNode> convolve = context->createConvolver();
     convolve->setBuffer(ir.audioBuffer.get());
     RefPtr<GainNode> wetGain = context->createGain();

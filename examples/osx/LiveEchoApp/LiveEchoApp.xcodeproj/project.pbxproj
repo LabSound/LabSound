@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2E0DBAA183C4A4C007AFB48 /* LiveEchoApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DBA9183C4A4C007AFB48 /* LiveEchoApp.1 */; };
+		E241A7B11A454BBE00FE269D /* LiveEcho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */; };
+		E241A7B21A454BBE00FE269D /* LiveEchoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */; };
 		E2E0DBBD183C4A90007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBB1183C4A90007AFB48 /* libLabSound.a */; };
 		E2E0DBBE183C4A90007AFB48 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBB2183C4A90007AFB48 /* Accounts.framework */; };
 		E2E0DBBF183C4A90007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBB3183C4A90007AFB48 /* ApplicationServices.framework */; };
@@ -20,8 +21,6 @@
 		E2E0DBC6183C4A90007AFB48 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBBA183C4A90007AFB48 /* CoreMedia.framework */; };
 		E2E0DBC7183C4A90007AFB48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBBB183C4A90007AFB48 /* CoreVideo.framework */; };
 		E2E0DBC8183C4A90007AFB48 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBBC183C4A90007AFB48 /* libicucore.dylib */; };
-		E2E0DBCC183C4AA4007AFB48 /* LiveEcho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DBC9183C4AA4007AFB48 /* LiveEcho.cpp */; };
-		E2E0DBCD183C4AA4007AFB48 /* LiveEchoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DBCB183C4AA4007AFB48 /* LiveEchoApp.cpp */; };
 		E2E0DBCF183C4ADB007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBCE183C4ADB007AFB48 /* Accelerate.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,15 +31,16 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0DBAA183C4A4C007AFB48 /* LiveEchoApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEcho.cpp; path = ../../src/LiveEcho.cpp; sourceTree = "<group>"; };
+		E241A7AF1A454BBE00FE269D /* LiveEcho.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEcho.h; path = ../../src/LiveEcho.h; sourceTree = "<group>"; };
+		E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEchoApp.cpp; path = ../../src/LiveEchoApp.cpp; sourceTree = "<group>"; };
 		E2E0DBA4183C4A4C007AFB48 /* LiveEchoApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LiveEchoApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0DBA9183C4A4C007AFB48 /* LiveEchoApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = LiveEchoApp.1; sourceTree = "<group>"; };
 		E2E0DBB1183C4A90007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DBB2183C4A90007AFB48 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		E2E0DBB3183C4A90007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -53,9 +53,6 @@
 		E2E0DBBA183C4A90007AFB48 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		E2E0DBBB183C4A90007AFB48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E2E0DBBC183C4A90007AFB48 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E2E0DBC9183C4AA4007AFB48 /* LiveEcho.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEcho.cpp; path = ../../../src/LiveEcho.cpp; sourceTree = "<group>"; };
-		E2E0DBCA183C4AA4007AFB48 /* LiveEcho.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEcho.h; path = ../../../src/LiveEcho.h; sourceTree = "<group>"; };
-		E2E0DBCB183C4AA4007AFB48 /* LiveEchoApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEchoApp.cpp; path = ../../../src/LiveEchoApp.cpp; sourceTree = "<group>"; };
 		E2E0DBCE183C4ADB007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -86,8 +83,10 @@
 		E2E0DB9B183C4A4B007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */,
+				E241A7AF1A454BBE00FE269D /* LiveEcho.h */,
+				E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */,
 				E2E0DBB0183C4A64007AFB48 /* Frameworks */,
-				E2E0DBA6183C4A4C007AFB48 /* LiveEchoApp */,
 				E2E0DBA5183C4A4C007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,17 +97,6 @@
 				E2E0DBA4183C4A4C007AFB48 /* LiveEchoApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0DBA6183C4A4C007AFB48 /* LiveEchoApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0DBC9183C4AA4007AFB48 /* LiveEcho.cpp */,
-				E2E0DBCA183C4AA4007AFB48 /* LiveEcho.h */,
-				E2E0DBCB183C4AA4007AFB48 /* LiveEchoApp.cpp */,
-				E2E0DBA9183C4A4C007AFB48 /* LiveEchoApp.1 */,
-			);
-			path = LiveEchoApp;
 			sourceTree = "<group>";
 		};
 		E2E0DBB0183C4A64007AFB48 /* Frameworks */ = {
@@ -182,8 +170,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0DBCD183C4AA4007AFB48 /* LiveEchoApp.cpp in Sources */,
-				E2E0DBCC183C4AA4007AFB48 /* LiveEcho.cpp in Sources */,
+				E241A7B21A454BBE00FE269D /* LiveEchoApp.cpp in Sources */,
+				E241A7B11A454BBE00FE269D /* LiveEcho.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,15 +251,11 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -287,15 +271,11 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

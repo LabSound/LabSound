@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "AudioContext.h"
+#include "LabSound.h"
 
 void toneAndSampleRecorded(WTF::RefPtr<WebCore::AudioContext> context, float seconds, char const*const path);
 

@@ -1,32 +1,9 @@
 
-
-// webaudio specific headers
-#include "AudioBufferSourceNode.h"
-#include "AudioContext.h"
-#include "BiquadFilterNode.h"
-#include "ConvolverNode.h"
-#include "ExceptionCode.h"
-#include "GainNode.h"
-#include "MediaStream.h"
-#include "MediaStreamAudioSourceNode.h"
-#include "OscillatorNode.h"
-#include "PannerNode.h"
-
-// LabSound
-#include "RecorderNode.h"
-#include "SoundBuffer.h"
-
+#include "LabSoundIncludes.h"
 #include "RhythmFiltered.h"
+using namespace LabSound;
 
-#include <unistd.h>
-#include <iostream>
-
-using namespace WebCore;
-using LabSound::RecorderNode;
-using LabSound::SoundBuffer;
-
-void rhythmFiltered(RefPtr<AudioContext> context, float seconds)
-{
+void rhythmFiltered(RefPtr<AudioContext> context, float seconds) {
     ExceptionCode ec;
     
     //--------------------------------------------------------------

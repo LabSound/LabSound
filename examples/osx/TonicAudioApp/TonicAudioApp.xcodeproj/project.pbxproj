@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E251D9B6184CE3DE00F7B7BC /* TonicAudioApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E251D9B5184CE3DE00F7B7BC /* TonicAudioApp.1 */; };
-		E251D9BD184CE44D00F7B7BC /* TonicAudioApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E251D9BC184CE44D00F7B7BC /* TonicAudioApp.cpp */; };
+		E241A7D71A456A5C00FE269D /* TonicAudioApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7D61A456A5C00FE269D /* TonicAudioApp.cpp */; };
 		E251D9EF184D751400F7B7BC /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9EE184D751400F7B7BC /* Accelerate.framework */; };
 		E251D9F1184D752400F7B7BC /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9F0184D752400F7B7BC /* AudioUnit.framework */; };
 		E251D9F3184D753800F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9F2184D753800F7B7BC /* libLabSound.a */; };
@@ -24,16 +23,14 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E251D9B6184CE3DE00F7B7BC /* TonicAudioApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E241A7D61A456A5C00FE269D /* TonicAudioApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TonicAudioApp.cpp; path = ../../src/TonicAudioApp.cpp; sourceTree = "<group>"; };
 		E251D9B0184CE3DE00F7B7BC /* TonicAudioApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TonicAudioApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E251D9B5184CE3DE00F7B7BC /* TonicAudioApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = TonicAudioApp.1; sourceTree = "<group>"; };
-		E251D9BC184CE44D00F7B7BC /* TonicAudioApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TonicAudioApp.cpp; path = ../../../src/TonicAudioApp.cpp; sourceTree = "<group>"; };
 		E251D9EE184D751400F7B7BC /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E251D9F0184D752400F7B7BC /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		E251D9F2184D753800F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
@@ -75,7 +72,7 @@
 		E251D9A7184CE3DE00F7B7BC = {
 			isa = PBXGroup;
 			children = (
-				E251D9B2184CE3DE00F7B7BC /* TonicAudioApp */,
+				E241A7D61A456A5C00FE269D /* TonicAudioApp.cpp */,
 				E2301558184F0A2500FEC991 /* Frameworks */,
 				E251D9B1184CE3DE00F7B7BC /* Products */,
 			);
@@ -87,15 +84,6 @@
 				E251D9B0184CE3DE00F7B7BC /* TonicAudioApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E251D9B2184CE3DE00F7B7BC /* TonicAudioApp */ = {
-			isa = PBXGroup;
-			children = (
-				E251D9B5184CE3DE00F7B7BC /* TonicAudioApp.1 */,
-				E251D9BC184CE44D00F7B7BC /* TonicAudioApp.cpp */,
-			);
-			path = TonicAudioApp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,7 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E251D9BD184CE44D00F7B7BC /* TonicAudioApp.cpp in Sources */,
+				E241A7D71A456A5C00FE269D /* TonicAudioApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

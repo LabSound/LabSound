@@ -27,9 +27,6 @@
 
 #include "WTF/ThreadSafeRefCounted.h"
 
-#if ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)
-
-
 namespace WebCore {
     
     class MediaStream : public WTF::ThreadSafeRefCounted<MediaStream>
@@ -57,7 +54,5 @@ namespace WebCore {
     };
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)
 
 #endif // MediaStreamAudioSourceNode_h

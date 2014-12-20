@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		08D67A051972E67D0061116A /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08D67A041972E67D0061116A /* libLabSound.a */; };
-		E2E0DD1F183C4EFE007AFB48 /* ToneAndSampleApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DD1E183C4EFE007AFB48 /* ToneAndSampleApp.1 */; };
+		E241A7CF1A454E9000FE269D /* ToneAndSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */; };
+		E241A7D01A454E9000FE269D /* ToneAndSampleApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */; };
 		E2E0DD32183C4F2D007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */; };
 		E2E0DD33183C4F2D007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */; };
 		E2E0DD34183C4F2D007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD28183C4F2D007AFB48 /* AudioToolbox.framework */; };
@@ -20,8 +21,6 @@
 		E2E0DD3A183C4F2D007AFB48 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD2E183C4F2D007AFB48 /* CoreMIDI.framework */; };
 		E2E0DD3B183C4F2D007AFB48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD2F183C4F2D007AFB48 /* CoreVideo.framework */; };
 		E2E0DD3C183C4F2D007AFB48 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD30183C4F2D007AFB48 /* libicucore.dylib */; };
-		E2E0DD41183C4F49007AFB48 /* ToneAndSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DD3E183C4F49007AFB48 /* ToneAndSample.cpp */; };
-		E2E0DD42183C4F49007AFB48 /* ToneAndSampleApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DD40183C4F49007AFB48 /* ToneAndSampleApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,7 +30,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0DD1F183C4EFE007AFB48 /* ToneAndSampleApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -39,8 +37,10 @@
 
 /* Begin PBXFileReference section */
 		08D67A041972E67D0061116A /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
+		E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSample.cpp; path = ../../src/ToneAndSample.cpp; sourceTree = "<group>"; };
+		E241A7CD1A454E9000FE269D /* ToneAndSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneAndSample.h; path = ../../src/ToneAndSample.h; sourceTree = "<group>"; };
+		E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSampleApp.cpp; path = ../../src/ToneAndSampleApp.cpp; sourceTree = "<group>"; };
 		E2E0DD19183C4EFE007AFB48 /* ToneAndSampleApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToneAndSampleApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0DD1E183C4EFE007AFB48 /* ToneAndSampleApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ToneAndSampleApp.1; sourceTree = "<group>"; };
 		E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		E2E0DD28183C4F2D007AFB48 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -52,9 +52,6 @@
 		E2E0DD2E183C4F2D007AFB48 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		E2E0DD2F183C4F2D007AFB48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E2E0DD30183C4F2D007AFB48 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E2E0DD3E183C4F49007AFB48 /* ToneAndSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSample.cpp; path = ../../../src/ToneAndSample.cpp; sourceTree = "<group>"; };
-		E2E0DD3F183C4F49007AFB48 /* ToneAndSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneAndSample.h; path = ../../../src/ToneAndSample.h; sourceTree = "<group>"; };
-		E2E0DD40183C4F49007AFB48 /* ToneAndSampleApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSampleApp.cpp; path = ../../../src/ToneAndSampleApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +80,10 @@
 		E2E0DD10183C4EFE007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */,
+				E241A7CD1A454E9000FE269D /* ToneAndSample.h */,
+				E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */,
 				E2E0DD3D183C4F32007AFB48 /* Frameworks */,
-				E2E0DD1B183C4EFE007AFB48 /* ToneAndSampleApp */,
 				E2E0DD1A183C4EFE007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,17 +94,6 @@
 				E2E0DD19183C4EFE007AFB48 /* ToneAndSampleApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0DD1B183C4EFE007AFB48 /* ToneAndSampleApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0DD3E183C4F49007AFB48 /* ToneAndSample.cpp */,
-				E2E0DD3F183C4F49007AFB48 /* ToneAndSample.h */,
-				E2E0DD40183C4F49007AFB48 /* ToneAndSampleApp.cpp */,
-				E2E0DD1E183C4EFE007AFB48 /* ToneAndSampleApp.1 */,
-			);
-			path = ToneAndSampleApp;
 			sourceTree = "<group>";
 		};
 		E2E0DD3D183C4F32007AFB48 /* Frameworks */ = {
@@ -178,8 +166,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0DD41183C4F49007AFB48 /* ToneAndSample.cpp in Sources */,
-				E2E0DD42183C4F49007AFB48 /* ToneAndSampleApp.cpp in Sources */,
+				E241A7CF1A454E9000FE269D /* ToneAndSample.cpp in Sources */,
+				E241A7D01A454E9000FE269D /* ToneAndSampleApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +246,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				HEADER_SEARCH_PATHS = /Users/ddiakopoulos/Desktop/LabSound/include;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../../osx/build/Debug",
@@ -274,7 +269,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				HEADER_SEARCH_PATHS = /Users/ddiakopoulos/Desktop/LabSound/include;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/../../osx/build/Debug",

@@ -1,23 +1,9 @@
 
-#include "LabSound/LabSound.h"
+#include "LabSoundIncludes.h"
+#include "LiveReverbRecording.h"
 
-int main(int, char**)
-{
-    RefPtr<AudioContext> context = LabSound::init();
-
-
-int main(int, char**)
-{
-    // Initialize threads for the WTF library
-    WTF::initializeThreading();
-    WTF::initializeMainThread();
-    
-    // Create an audio context object
-    Document d;
-    ExceptionCode ec;
-    RefPtr<AudioContext> context = AudioContext::create(&d, ec);
-
+int main(int, char**) {
+    auto context = LabSound::init();
     liveReverbRecording(context, 10.0f, "liveReverb.raw");
-    
     return 0;
 }

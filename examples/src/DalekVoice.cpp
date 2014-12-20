@@ -78,7 +78,7 @@ void dalekVoice(RefPtr<AudioContext> context, float seconds)
     
     // First the Vc side
 #ifdef USE_LIVE
-    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(new MediaStream(), ec);
+    RefPtr<MediaStreamAudioSourceNode> input = context->createMediaStreamSource(ec);
     input->connect(vcInverter1.get(), 0, 0, ec);
     input->connect(vcDiode4->node().get(), 0, 0, ec);
 #else

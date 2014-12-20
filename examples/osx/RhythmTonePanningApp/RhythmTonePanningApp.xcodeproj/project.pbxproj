@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E241A7C51A454E3E00FE269D /* RhythmTonePanning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */; };
+		E241A7C61A454E3E00FE269D /* RhythmTonePanningApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */; };
 		E251D9A5184ACB7200F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9A4184ACB7200F7B7BC /* libLabSound.a */; };
-		E2E0DCB9183C4DDF007AFB48 /* RhythmTonePanningApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DCB8183C4DDF007AFB48 /* RhythmTonePanningApp.1 */; };
 		E2E0DCCC183C4DFA007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC0183C4DFA007AFB48 /* Accelerate.framework */; };
 		E2E0DCCD183C4DFA007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC1183C4DFA007AFB48 /* ApplicationServices.framework */; };
 		E2E0DCCE183C4DFA007AFB48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC2183C4DFA007AFB48 /* AudioToolbox.framework */; };
@@ -20,8 +21,6 @@
 		E2E0DCD4183C4DFA007AFB48 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC8183C4DFA007AFB48 /* CoreMIDI.framework */; };
 		E2E0DCD5183C4DFA007AFB48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC9183C4DFA007AFB48 /* CoreVideo.framework */; };
 		E2E0DCD6183C4DFA007AFB48 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCCA183C4DFA007AFB48 /* libicucore.dylib */; };
-		E2E0DCDB183C4E29007AFB48 /* RhythmTonePanning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DCD8183C4E29007AFB48 /* RhythmTonePanning.cpp */; };
-		E2E0DCDC183C4E29007AFB48 /* RhythmTonePanningApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DCDA183C4E29007AFB48 /* RhythmTonePanningApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,16 +30,17 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0DCB9183C4DDF007AFB48 /* RhythmTonePanningApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanning.cpp; path = ../../src/RhythmTonePanning.cpp; sourceTree = "<group>"; };
+		E241A7C31A454E3E00FE269D /* RhythmTonePanning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhythmTonePanning.h; path = ../../src/RhythmTonePanning.h; sourceTree = "<group>"; };
+		E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanningApp.cpp; path = ../../src/RhythmTonePanningApp.cpp; sourceTree = "<group>"; };
 		E251D9A4184ACB7200F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DCB3183C4DDF007AFB48 /* RhythmTonePanningApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RhythmTonePanningApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0DCB8183C4DDF007AFB48 /* RhythmTonePanningApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RhythmTonePanningApp.1; sourceTree = "<group>"; };
 		E2E0DCBF183C4DFA007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DCC0183C4DFA007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0DCC1183C4DFA007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -53,9 +53,6 @@
 		E2E0DCC8183C4DFA007AFB48 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		E2E0DCC9183C4DFA007AFB48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E2E0DCCA183C4DFA007AFB48 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E2E0DCD8183C4E29007AFB48 /* RhythmTonePanning.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanning.cpp; path = ../../../src/RhythmTonePanning.cpp; sourceTree = "<group>"; };
-		E2E0DCD9183C4E29007AFB48 /* RhythmTonePanning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhythmTonePanning.h; path = ../../../src/RhythmTonePanning.h; sourceTree = "<group>"; };
-		E2E0DCDA183C4E29007AFB48 /* RhythmTonePanningApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanningApp.cpp; path = ../../../src/RhythmTonePanningApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,8 +81,10 @@
 		E2E0DCAA183C4DDF007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */,
+				E241A7C31A454E3E00FE269D /* RhythmTonePanning.h */,
+				E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */,
 				E2E0DCD7183C4E0E007AFB48 /* Frameworks */,
-				E2E0DCB5183C4DDF007AFB48 /* RhythmTonePanningApp */,
 				E2E0DCB4183C4DDF007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,17 +95,6 @@
 				E2E0DCB3183C4DDF007AFB48 /* RhythmTonePanningApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0DCB5183C4DDF007AFB48 /* RhythmTonePanningApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0DCD8183C4E29007AFB48 /* RhythmTonePanning.cpp */,
-				E2E0DCD9183C4E29007AFB48 /* RhythmTonePanning.h */,
-				E2E0DCDA183C4E29007AFB48 /* RhythmTonePanningApp.cpp */,
-				E2E0DCB8183C4DDF007AFB48 /* RhythmTonePanningApp.1 */,
-			);
-			path = RhythmTonePanningApp;
 			sourceTree = "<group>";
 		};
 		E2E0DCD7183C4E0E007AFB48 /* Frameworks */ = {
@@ -180,8 +168,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0DCDB183C4E29007AFB48 /* RhythmTonePanning.cpp in Sources */,
-				E2E0DCDC183C4E29007AFB48 /* RhythmTonePanningApp.cpp in Sources */,
+				E241A7C51A454E3E00FE269D /* RhythmTonePanning.cpp in Sources */,
+				E241A7C61A454E3E00FE269D /* RhythmTonePanningApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,9 +250,11 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -283,9 +273,11 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

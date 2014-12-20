@@ -62,7 +62,7 @@ namespace LabSound {
 	}
 
 	// Output to a specific note 
-    PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(AudioNode* outputNode, float when)
+    PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(RefPtr<AudioNode> outputNode, float when)
     {
         if (audioBuffer) {
             RefPtr<AudioBufferSourceNode> sourceBuffer;
@@ -73,7 +73,7 @@ namespace LabSound {
             
             // bus the sound to the mixer.
             WebCore::ExceptionCode ec;
-            sourceBuffer->connect(outputNode, 0, 0, ec);
+            sourceBuffer->connect(outputNode.get(), 0, 0, ec);
             sourceBuffer->start(when);
             return sourceBuffer;
         }

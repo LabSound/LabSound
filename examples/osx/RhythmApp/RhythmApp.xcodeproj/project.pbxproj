@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2E0C8B8183BC952007AFB48 /* RhythmApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0C8B7183BC952007AFB48 /* RhythmApp.1 */; };
-		E2E0C8BF183BC986007AFB48 /* RhythmApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C8BE183BC986007AFB48 /* RhythmApp.cpp */; };
+		E241A7C01A454D8E00FE269D /* Rhythm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7BD1A454D8E00FE269D /* Rhythm.cpp */; };
+		E241A7C11A454D8E00FE269D /* RhythmApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7BF1A454D8E00FE269D /* RhythmApp.cpp */; };
 		E2E0C8C1183BC997007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8C0183BC997007AFB48 /* libLabSound.a */; };
 		E2E0C8DB183BCB06007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8DA183BCB06007AFB48 /* Accelerate.framework */; };
 		E2E0C8DD183BCB07007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8DC183BCB06007AFB48 /* ApplicationServices.framework */; };
@@ -21,7 +21,6 @@
 		E2E0C8EC183BCB30007AFB48 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8E4183BCB30007AFB48 /* CoreMIDI.framework */; };
 		E2E0C8ED183BCB30007AFB48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8E5183BCB30007AFB48 /* CoreVideo.framework */; };
 		E2E0C8F0183BCBA7007AFB48 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C8EF183BCBA7007AFB48 /* libicucore.dylib */; };
-		E2E0C8F3183BCBCF007AFB48 /* Rhythm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C8F1183BCBCF007AFB48 /* Rhythm.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,16 +30,16 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0C8B8183BC952007AFB48 /* RhythmApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E241A7BD1A454D8E00FE269D /* Rhythm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rhythm.cpp; path = ../../src/Rhythm.cpp; sourceTree = "<group>"; };
+		E241A7BE1A454D8E00FE269D /* Rhythm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rhythm.h; path = ../../src/Rhythm.h; sourceTree = "<group>"; };
+		E241A7BF1A454D8E00FE269D /* RhythmApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmApp.cpp; path = ../../src/RhythmApp.cpp; sourceTree = "<group>"; };
 		E2E0C8B2183BC952007AFB48 /* RhythmApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RhythmApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0C8B7183BC952007AFB48 /* RhythmApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RhythmApp.1; sourceTree = "<group>"; };
-		E2E0C8BE183BC986007AFB48 /* RhythmApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmApp.cpp; path = ../../../src/RhythmApp.cpp; sourceTree = "<group>"; };
 		E2E0C8C0183BC997007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0C8DA183BCB06007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0C8DC183BCB06007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -53,8 +52,6 @@
 		E2E0C8E4183BCB30007AFB48 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		E2E0C8E5183BCB30007AFB48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E2E0C8EF183BCBA7007AFB48 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E2E0C8F1183BCBCF007AFB48 /* Rhythm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Rhythm.cpp; path = ../../../src/Rhythm.cpp; sourceTree = "<group>"; };
-		E2E0C8F2183BCBCF007AFB48 /* Rhythm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Rhythm.h; path = ../../../src/Rhythm.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +80,10 @@
 		E2E0C8A9183BC952007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				E241A7BD1A454D8E00FE269D /* Rhythm.cpp */,
+				E241A7BE1A454D8E00FE269D /* Rhythm.h */,
+				E241A7BF1A454D8E00FE269D /* RhythmApp.cpp */,
 				E2E0C8EE183BCB3F007AFB48 /* Frameworks */,
-				E2E0C8B4183BC952007AFB48 /* RhythmApp */,
 				E2E0C8B3183BC952007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,17 +94,6 @@
 				E2E0C8B2183BC952007AFB48 /* RhythmApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0C8B4183BC952007AFB48 /* RhythmApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0C8BE183BC986007AFB48 /* RhythmApp.cpp */,
-				E2E0C8F1183BCBCF007AFB48 /* Rhythm.cpp */,
-				E2E0C8F2183BCBCF007AFB48 /* Rhythm.h */,
-				E2E0C8B7183BC952007AFB48 /* RhythmApp.1 */,
-			);
-			path = RhythmApp;
 			sourceTree = "<group>";
 		};
 		E2E0C8EE183BCB3F007AFB48 /* Frameworks */ = {
@@ -178,8 +166,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2E0C8BF183BC986007AFB48 /* RhythmApp.cpp in Sources */,
-				E2E0C8F3183BCBCF007AFB48 /* Rhythm.cpp in Sources */,
+				E241A7C01A454D8E00FE269D /* Rhythm.cpp in Sources */,
+				E241A7C11A454D8E00FE269D /* RhythmApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

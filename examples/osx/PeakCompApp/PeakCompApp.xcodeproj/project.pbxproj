@@ -7,14 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E23015E2185F611A00FEC991 /* PeakCompApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E23015E1185F611A00FEC991 /* PeakCompApp.1 */; };
-		E23015EA18601F1900FEC991 /* PeakCompApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E23015E818601F1900FEC991 /* PeakCompApp.cpp */; };
 		E23015F21860235E00FEC991 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015EC1860235E00FEC991 /* libLabSound.a */; };
 		E23015F31860235E00FEC991 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015ED1860235E00FEC991 /* Accelerate.framework */; };
 		E23015F41860235E00FEC991 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015EE1860235E00FEC991 /* AudioToolbox.framework */; };
 		E23015F51860235E00FEC991 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015EF1860235E00FEC991 /* AudioUnit.framework */; };
 		E23015F61860235E00FEC991 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015F01860235E00FEC991 /* Cocoa.framework */; };
 		E23015F71860235E00FEC991 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015F11860235E00FEC991 /* CoreAudio.framework */; };
+		E241A7A81A45496700FE269D /* PeakCompApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7A61A45496700FE269D /* PeakCompApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +23,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E23015E2185F611A00FEC991 /* PeakCompApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -32,15 +30,14 @@
 
 /* Begin PBXFileReference section */
 		E23015DC185F611A00FEC991 /* PeakCompApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PeakCompApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E23015E1185F611A00FEC991 /* PeakCompApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = PeakCompApp.1; sourceTree = "<group>"; };
-		E23015E818601F1900FEC991 /* PeakCompApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakCompApp.cpp; path = ../../../src/PeakCompApp.cpp; sourceTree = "<group>"; };
-		E23015E918601F1900FEC991 /* PeakCompApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeakCompApp.h; path = ../../../src/PeakCompApp.h; sourceTree = "<group>"; };
 		E23015EC1860235E00FEC991 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E23015ED1860235E00FEC991 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E23015EE1860235E00FEC991 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E23015EF1860235E00FEC991 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		E23015F01860235E00FEC991 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E23015F11860235E00FEC991 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		E241A7A61A45496700FE269D /* PeakCompApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakCompApp.cpp; path = ../../src/PeakCompApp.cpp; sourceTree = "<group>"; };
+		E241A7A71A45496700FE269D /* PeakCompApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeakCompApp.h; path = ../../src/PeakCompApp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,13 +60,14 @@
 		E23015D3185F611A00FEC991 = {
 			isa = PBXGroup;
 			children = (
+				E241A7A61A45496700FE269D /* PeakCompApp.cpp */,
+				E241A7A71A45496700FE269D /* PeakCompApp.h */,
 				E23015EC1860235E00FEC991 /* libLabSound.a */,
 				E23015ED1860235E00FEC991 /* Accelerate.framework */,
 				E23015EE1860235E00FEC991 /* AudioToolbox.framework */,
 				E23015EF1860235E00FEC991 /* AudioUnit.framework */,
 				E23015F01860235E00FEC991 /* Cocoa.framework */,
 				E23015F11860235E00FEC991 /* CoreAudio.framework */,
-				E23015DE185F611A00FEC991 /* PeakCompApp */,
 				E23015DD185F611A00FEC991 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,16 +78,6 @@
 				E23015DC185F611A00FEC991 /* PeakCompApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E23015DE185F611A00FEC991 /* PeakCompApp */ = {
-			isa = PBXGroup;
-			children = (
-				E23015E1185F611A00FEC991 /* PeakCompApp.1 */,
-				E23015E818601F1900FEC991 /* PeakCompApp.cpp */,
-				E23015E918601F1900FEC991 /* PeakCompApp.h */,
-			);
-			path = PeakCompApp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,7 +131,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E23015EA18601F1900FEC991 /* PeakCompApp.cpp in Sources */,
+				E241A7A81A45496700FE269D /* PeakCompApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

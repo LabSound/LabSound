@@ -1,8 +1,5 @@
 
-#include "LabSound/LabSound.h"
-#include "LabSound/AudioContext.h"
-#include "LabSound/SoundBuffer.h"
-#include "LabSound/PannerNode.h"
+#include "LabSoundIncludes.h"
 #include <iostream>
 
 using namespace LabSound;

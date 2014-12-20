@@ -1,13 +1,7 @@
-// webaudio specific headers
-#include "LabSound/LabSoundIncludes.h"
 
+#include "LabSoundIncludes.h"
 #include "ToneAndSample.h"
-
-#include <unistd.h>
-#include <iostream>
-
-using namespace WebCore;
-using LabSound::SoundBuffer;
+using namespace LabSound;
 
 void toneAndSample(RefPtr<AudioContext> context, float seconds) {
     //--------------------------------------------------------------

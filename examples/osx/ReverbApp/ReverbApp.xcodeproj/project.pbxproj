@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2D5CD6E1A19951900B031C8 /* ReverbApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C909183C431C007AFB48 /* ReverbApp.cpp */; };
-		E2D5CD6F1A19951C00B031C8 /* ReverbSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0C90B183C43AD007AFB48 /* ReverbSample.cpp */; };
+		E241A7B91A454D4A00FE269D /* ReverbApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7B81A454D4A00FE269D /* ReverbApp.cpp */; };
+		E241A7BC1A454D6400FE269D /* ReverbSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7BA1A454D6400FE269D /* ReverbSample.cpp */; };
 		E2D5CD711A19983300B031C8 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2D5CD701A19983300B031C8 /* libLabSound.a */; };
 		E2D5CD721A199A0500B031C8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C916183C43E5007AFB48 /* CoreFoundation.framework */; };
 		E2D5CD731A199A1500B031C8 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C90F183C43E5007AFB48 /* Accelerate.framework */; };
@@ -31,13 +31,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E241A7B81A454D4A00FE269D /* ReverbApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbApp.cpp; path = ../../src/ReverbApp.cpp; sourceTree = "<group>"; };
+		E241A7BA1A454D6400FE269D /* ReverbSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbSample.cpp; path = ../../src/ReverbSample.cpp; sourceTree = "<group>"; };
+		E241A7BB1A454D6400FE269D /* ReverbSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReverbSample.h; path = ../../src/ReverbSample.h; sourceTree = "<group>"; };
 		E251D9A11849D26000F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2D5CD611A1991A800B031C8 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = "../../../osx/build/Debug Native 64-bit/libLabSound.a"; sourceTree = "<group>"; };
 		E2D5CD671A1994EC00B031C8 /* ReverbApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ReverbApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2D5CD701A19983300B031C8 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = "../../../osx/build/Debug Native 64-bit/libLabSound.a"; sourceTree = "<group>"; };
-		E2E0C902183C42F9007AFB48 /* ReverbApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ReverbApp.1; sourceTree = "<group>"; };
-		E2E0C909183C431C007AFB48 /* ReverbApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbApp.cpp; path = ../../../src/ReverbApp.cpp; sourceTree = "<group>"; };
-		E2E0C90B183C43AD007AFB48 /* ReverbSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbSample.cpp; path = ../../../src/ReverbSample.cpp; sourceTree = "<group>"; };
 		E2E0C90D183C43BE007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0C90F183C43E5007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0C910183C43E5007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -73,8 +73,10 @@
 		E2E0C8F4183C42F9007AFB48 = {
 			isa = PBXGroup;
 			children = (
+				E241A7B81A454D4A00FE269D /* ReverbApp.cpp */,
+				E241A7BA1A454D6400FE269D /* ReverbSample.cpp */,
+				E241A7BB1A454D6400FE269D /* ReverbSample.h */,
 				E2E0C925183C43EB007AFB48 /* Frameworks */,
-				E2E0C8FF183C42F9007AFB48 /* ReverbApp */,
 				E2E0C8FE183C42F9007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,16 +87,6 @@
 				E2D5CD671A1994EC00B031C8 /* ReverbApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0C8FF183C42F9007AFB48 /* ReverbApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0C902183C42F9007AFB48 /* ReverbApp.1 */,
-				E2E0C909183C431C007AFB48 /* ReverbApp.cpp */,
-				E2E0C90B183C43AD007AFB48 /* ReverbSample.cpp */,
-			);
-			path = ReverbApp;
 			sourceTree = "<group>";
 		};
 		E2E0C925183C43EB007AFB48 /* Frameworks */ = {
@@ -175,8 +167,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2D5CD6E1A19951900B031C8 /* ReverbApp.cpp in Sources */,
-				E2D5CD6F1A19951C00B031C8 /* ReverbSample.cpp in Sources */,
+				E241A7B91A454D4A00FE269D /* ReverbApp.cpp in Sources */,
+				E241A7BC1A454D6400FE269D /* ReverbSample.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 
-#include "LabSound.h"
+#include "LabSoundIncludes.h"
 
 // Examples
 #include "ReverbSample.h"
@@ -17,7 +17,7 @@ int main(int, char**) {
         fclose(test);
     }
     
-    RefPtr<AudioContext> context = LabSound::init();
+    auto context = LabSound::init();
     reverbSample(context, 10.0f);
     return 0;
 }

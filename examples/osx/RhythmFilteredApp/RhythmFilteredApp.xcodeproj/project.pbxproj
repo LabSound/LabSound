@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2E0DC59183C4C99007AFB48 /* RhythmFilteredApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DC58183C4C99007AFB48 /* RhythmFilteredApp.1 */; };
 		E2E0DC6B183C4CD2007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC5F183C4CD2007AFB48 /* libLabSound.a */; };
 		E2E0DC6C183C4CD2007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC60183C4CD2007AFB48 /* Accelerate.framework */; };
 		E2E0DC6D183C4CD2007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC61183C4CD2007AFB48 /* ApplicationServices.framework */; };
@@ -31,7 +30,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0DC59183C4C99007AFB48 /* RhythmFilteredApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -39,7 +37,6 @@
 
 /* Begin PBXFileReference section */
 		E2E0DC53183C4C99007AFB48 /* RhythmFilteredApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RhythmFilteredApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0DC58183C4C99007AFB48 /* RhythmFilteredApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = RhythmFilteredApp.1; sourceTree = "<group>"; };
 		E2E0DC5F183C4CD2007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DC60183C4CD2007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E2E0DC61183C4CD2007AFB48 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
@@ -87,7 +84,6 @@
 				E2E0DC77183C4CE4007AFB48 /* RhythmFiltered.cpp */,
 				E2E0DC78183C4CE4007AFB48 /* RhythmFiltered.h */,
 				E2E0DC79183C4CE4007AFB48 /* RhythmFilteredApp.cpp */,
-				E2E0DC55183C4C99007AFB48 /* RhythmFilteredApp */,
 				E2E0DC54183C4C99007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,14 +94,6 @@
 				E2E0DC53183C4C99007AFB48 /* RhythmFilteredApp */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E2E0DC55183C4C99007AFB48 /* RhythmFilteredApp */ = {
-			isa = PBXGroup;
-			children = (
-				E2E0DC58183C4C99007AFB48 /* RhythmFilteredApp.1 */,
-			);
-			path = RhythmFilteredApp;
 			sourceTree = "<group>";
 		};
 		E2E0DC7C183C4CE8007AFB48 /* Frameworks */ = {
@@ -259,15 +247,11 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -283,15 +267,11 @@
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/../../../src/WTF",
-					"$(PROJECT_DIR)/../../../src/WTF/icu",
-					"$(PROJECT_DIR)/../../../src/platform/audio",
-					"$(PROJECT_DIR)/../../../src/platform/graphics",
-					"$(PROJECT_DIR)/../../../src/Modules/webaudio",
-					"$(PROJECT_DIR)/../../../src/shim",
-					"$(PROJECT_DIR)/../../../src/LabSound",
-					"$(PROJECT_DIR)/../../../src/Samples",
+					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
+					"$(PROJECT_DIR)/../../../include",
+					"$(PROJECT_DIR)/../../../include/third_party",
+					"$(PROJECT_DIR)/../../../include/internal",
+					"$(PROJECT_DIR)/../../../include/nodes",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

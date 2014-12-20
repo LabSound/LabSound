@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E2E0DC12183C4B9D007AFB48 /* PureDataApp.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E2E0DC11183C4B9D007AFB48 /* PureDataApp.1 */; };
 		E2E0DC19183C4BB0007AFB48 /* PureDataApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DC18183C4BB0007AFB48 /* PureDataApp.cpp */; };
 		E2E0DC27183C4BDA007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC1A183C4BDA007AFB48 /* libLabSound.a */; };
 		E2E0DC28183C4BDA007AFB48 /* libpd-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC1B183C4BDA007AFB48 /* libpd-osx.a */; };
@@ -31,7 +30,6 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
-				E2E0DC12183C4B9D007AFB48 /* PureDataApp.1 in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -39,7 +37,6 @@
 
 /* Begin PBXFileReference section */
 		E2E0DC0C183C4B9D007AFB48 /* PureDataApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PureDataApp; sourceTree = BUILT_PRODUCTS_DIR; };
-		E2E0DC11183C4B9D007AFB48 /* PureDataApp.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = PureDataApp.1; sourceTree = "<group>"; };
 		E2E0DC18183C4BB0007AFB48 /* PureDataApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PureDataApp.cpp; path = ../../../src/PureDataApp.cpp; sourceTree = "<group>"; };
 		E2E0DC1A183C4BDA007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DC1B183C4BDA007AFB48 /* libpd-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libpd-osx.a"; path = "../../../src/libpd/build/Debug/libpd-osx.a"; sourceTree = "<group>"; };
@@ -100,7 +97,6 @@
 		E2E0DC0E183C4B9D007AFB48 /* PureDataApp */ = {
 			isa = PBXGroup;
 			children = (
-				E2E0DC11183C4B9D007AFB48 /* PureDataApp.1 */,
 				E2E0DC18183C4BB0007AFB48 /* PureDataApp.cpp */,
 			);
 			path = PureDataApp;

@@ -1,9 +1,6 @@
 
-#include "LabSound/LabSound.h"
-#include "LabSound/AudioContext.h"
-#include "LabSound/GainNode.h"
-#include "LabSound/OscillatorNode.h"
-#include "LabSound/SoundBuffer.h"
+#include "LabSoundIncludes.h"
+
 #include <chrono>
 #include <thread>
 
