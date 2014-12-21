@@ -37,7 +37,7 @@ class AudioProcessor;
 // AudioBasicProcessorNode is an AudioNode with one input and one output where the input and output have the same number of channels.
 class AudioBasicProcessorNode : public AudioNode {
 public:
-    AudioBasicProcessorNode(AudioContext*, float sampleRate);
+    AudioBasicProcessorNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     // AudioNode
     virtual void process(size_t framesToProcess);

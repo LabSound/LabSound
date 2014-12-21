@@ -37,7 +37,7 @@ class AudioContext;
 
 class MediaStreamAudioDestinationNode : public AudioBasicInspectorNode {
 public:
-    static PassRefPtr<MediaStreamAudioDestinationNode> create(AudioContext*, size_t numberOfChannels);
+    static PassRefPtr<MediaStreamAudioDestinationNode> create(std::shared_ptr<AudioContext>, size_t numberOfChannels);
 
     virtual ~MediaStreamAudioDestinationNode();
 
@@ -50,7 +50,7 @@ public:
     MediaStreamSource* mediaStreamSource();
 
 private:
-    MediaStreamAudioDestinationNode(AudioContext*, size_t numberOfChannels);
+    MediaStreamAudioDestinationNode(std::shared_ptr<AudioContext>, size_t numberOfChannels);
 
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }

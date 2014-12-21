@@ -47,12 +47,12 @@ WaveTable* OscillatorNode::s_waveTableSquare = 0;
 WaveTable* OscillatorNode::s_waveTableSawtooth = 0;
 WaveTable* OscillatorNode::s_waveTableTriangle = 0;
 
-PassRefPtr<OscillatorNode> OscillatorNode::create(AudioContext* context, float sampleRate)
+PassRefPtr<OscillatorNode> OscillatorNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
 {
     return adoptRef(new OscillatorNode(context, sampleRate));
 }
 
-OscillatorNode::OscillatorNode(AudioContext* context, float sampleRate)
+OscillatorNode::OscillatorNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioScheduledSourceNode(context, sampleRate)
     , m_type(SINE)
     , m_firstRender(true)

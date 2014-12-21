@@ -21,10 +21,10 @@ namespace LabSound {
 
 	using namespace json11;
 
-	SampledInstrumentNode::SampledInstrumentNode(AudioContext* context, float sampleRate) : localContext(context) {
+    SampledInstrumentNode::SampledInstrumentNode(std::shared_ptr<AudioContext> context, float sampleRate) : localContext(context) {
 
 		// All samples bus their output to this node... 
-		gainNode = context->createGain(); 
+        gainNode = GainNode::create(context, context->sampleRate());
 		gainNode->gain()->setValue(4.0); 
 
 
@@ -70,11 +70,12 @@ namespace LabSound {
 
 		if (err.empty()) {
 
+            auto lc = localContext.lock();
 			for (auto &samp : jsonConfig["samples"].array_items()) {
 				// std::cout << "Loading Sample: " << samp.dump() << "\n";
 				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
 				samples.push_back(new SamplerSound(
-					localContext, gainNode.get(),
+					lc, gainNode.get(),
 					samp["sample"].string_value(),
 					samp["baseNote"].string_value(),
 					samp["lowNote"].string_value(),

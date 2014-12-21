@@ -15,12 +15,12 @@ namespace LabSound {
 
     using namespace WTF;
 
-    DiodeNode::DiodeNode(WebCore::AudioContext* context)
+    DiodeNode::DiodeNode(std::shared_ptr<WebCore::AudioContext> context)
     : vb(0.2f)
     , vl(0.4f)
     , h(1.0)
     {
-        waveShaper = context->createWaveShaper();
+        waveShaper = WebCore::WaveShaperNode::create(context);
         setCurve();
     }
 

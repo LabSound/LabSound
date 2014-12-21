@@ -17,9 +17,9 @@ class SoundBuffer {
 public:
 
     RefPtr<WebCore::AudioBuffer> audioBuffer;
-    RefPtr<WebCore::AudioContext> context;
+    std::weak_ptr<WebCore::AudioContext> context;
     
-    SoundBuffer(RefPtr<WebCore::AudioContext> context, const char* path);
+    SoundBuffer(std::shared_ptr<WebCore::AudioContext>, const char* path);
     ~SoundBuffer();
     
     // play a sound on the context directly, starting after a certain delay

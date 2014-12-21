@@ -53,7 +53,7 @@ namespace LabSound {
 
     class SpatializationNode : public WebCore::PannerNode {
     public:
-        static WTF::PassRefPtr<SpatializationNode> create(WebCore::AudioContext* context, float sampleRate)
+        static WTF::PassRefPtr<SpatializationNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
         {
             return WTF::adoptRef(new SpatializationNode(context, sampleRate));
         }
@@ -61,7 +61,7 @@ namespace LabSound {
         void setOccluders(OccludersPtr);
         
     private:
-        SpatializationNode(WebCore::AudioContext* context, float sampleRate);
+        SpatializationNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate);
         virtual ~SpatializationNode();
 
         virtual float distanceConeGain();

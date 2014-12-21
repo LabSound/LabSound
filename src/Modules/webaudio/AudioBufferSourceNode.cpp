@@ -47,12 +47,12 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-PassRefPtr<AudioBufferSourceNode> AudioBufferSourceNode::create(AudioContext* context, float sampleRate)
+PassRefPtr<AudioBufferSourceNode> AudioBufferSourceNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
 {
     return adoptRef(new AudioBufferSourceNode(context, sampleRate));
 }
 
-AudioBufferSourceNode::AudioBufferSourceNode(AudioContext* context, float sampleRate)
+AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioScheduledSourceNode(context, sampleRate)
     , m_buffer(0)
     , m_isLooping(false)
@@ -160,7 +160,11 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus*, unsign
 
 bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
-    ASSERT(context()->isAudioThread());
+    if (context().expired())
+        return false;
+    
+    std::shared_ptr<AudioContext> ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     // Basic sanity checking
     ASSERT(bus);
@@ -335,10 +339,11 @@ void AudioBufferSourceNode::reset()
 
 bool AudioBufferSourceNode::setBuffer(AudioBuffer* buffer)
 {
+    ASSERT(!context().expired());
     ASSERT(isMainThread());
     
     // The context must be locked since changing the buffer can re-configure the number of channels that are output.
-    AudioContext::AutoLocker contextLocker(context());
+    std::shared_ptr<AudioContext> ac = context().lock();
     
     // This synchronizes with process().
     MutexLocker processLocker(m_processLock);

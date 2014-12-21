@@ -28,6 +28,7 @@
 #define AudioContext_h
 
 #include "AsyncAudioDecoder.h"
+#include "AudioDestination.h"
 #include "AudioDestinationNode.h"
 #include "AudioBus.h"
 #include "HRTFDatabaseLoader.h"
@@ -66,17 +67,33 @@ class WaveTable;
 
 // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
 // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
+    
+// The AudioNode create methods should be called on the main audio thread
 
-class AudioContext : public ThreadSafeRefCounted<AudioContext> {
+    
+class AudioContext {
 public:
     // Create an AudioContext for rendering to the audio hardware.
-    static PassRefPtr<AudioContext> create(ExceptionCode&);
+    // A default audio destination node MUST be create and assigned as a next step.
+    // Things won't work if the context is not created in this way.
+    // ie:
+    //     context->setDestinationNode(DefaultAudioDestinationNode::create(context));
+    // then call initHRTFDatabase()
+    static std::unique_ptr<AudioContext> create(ExceptionCode&);
 
     // Create an AudioContext for offline (non-realtime) rendering.
-    static PassRefPtr<AudioContext> createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode&);
+    // a destination node MUST be created and assigned as a next step.
+    // Things won't work if the context is not created in this way.
+    // ie:
+    //     context->setDestinationNode(OfflineAudioDestinationNode::create(this, m_renderTarget.get()));
+    // then call initHRTFDatabase()
+    static std::unique_ptr<AudioContext> createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode&);
 
     virtual ~AudioContext();
 
+    void initHRTFDatabase();
+
+    
     bool isInitialized() const;
     
     bool isOfflineContext() { return m_isOfflineContext; }
@@ -86,10 +103,12 @@ public:
 
     virtual void stop();
 
-    AudioDestinationNode* destination() { return m_destinationNode.get(); }
+    void setDestinationNode(RefPtr<AudioDestinationNode> node) { m_destinationNode = node; }
+    RefPtr<AudioDestinationNode> destination() { return m_destinationNode; }
+    
     size_t currentSampleFrame() const { return m_destinationNode->currentSampleFrame(); }
     double currentTime() const { return m_destinationNode->currentTime(); }
-    float sampleRate() const { return m_destinationNode->sampleRate(); }
+    float sampleRate() const { return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); }
     unsigned long activeSourceCount() const { return static_cast<unsigned long>(m_activeSourceCount); }
 
     void incrementActiveSourceCount();
@@ -103,27 +122,10 @@ public:
 
     AudioListener* listener() { return m_listener.get(); }
 
-    // The AudioNode create methods are called on the main thread (from JavaScript).
-    PassRefPtr<AudioBufferSourceNode> createBufferSource();
 #if ENABLE(VIDEO)
     PassRefPtr<MediaElementAudioSourceNode> createMediaElementSource(HTMLMediaElement*, ExceptionCode&);
 #endif
-    PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(ExceptionCode&);
-    PassRefPtr<MediaStreamAudioDestinationNode> createMediaStreamDestination();
-    PassRefPtr<GainNode> createGain();
-    PassRefPtr<BiquadFilterNode> createBiquadFilter();
-    PassRefPtr<WaveShaperNode> createWaveShaper();
-    PassRefPtr<DelayNode> createDelay(ExceptionCode&);
-    PassRefPtr<DelayNode> createDelay(double maxDelayTime, ExceptionCode&);
-    PassRefPtr<PannerNode> createPanner();
-    PassRefPtr<ConvolverNode> createConvolver();
-    PassRefPtr<DynamicsCompressorNode> createDynamicsCompressor();    
-    PassRefPtr<AnalyserNode> createAnalyser();
-    PassRefPtr<ChannelSplitterNode> createChannelSplitter(ExceptionCode&);
-    PassRefPtr<ChannelSplitterNode> createChannelSplitter(size_t numberOfOutputs, ExceptionCode&);
-    PassRefPtr<ChannelMergerNode> createChannelMerger(ExceptionCode&);
-    PassRefPtr<ChannelMergerNode> createChannelMerger(size_t numberOfInputs, ExceptionCode&);
-    PassRefPtr<OscillatorNode> createOscillator();
+    static PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
     PassRefPtr<WaveTable> createWaveTable(Float32Array* real, Float32Array* imag, ExceptionCode&);
 
     // When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
@@ -184,25 +186,6 @@ public:
 
     // Returns the maximum numuber of channels we can support.
     static unsigned maxNumberOfChannels() { return MaxNumberOfChannels;}
-
-    class AutoLocker {
-    public:
-        AutoLocker(AudioContext* context)
-            : m_context(context)
-        {
-            ASSERT(context);
-            context->lock(m_mustReleaseLock);
-        }
-        
-        ~AutoLocker()
-        {
-            if (m_mustReleaseLock)
-                m_context->unlock();
-        }
-    private:
-        AudioContext* m_context;
-        bool m_mustReleaseLock;
-    };
     
     // In AudioNode::deref() a tryLock() is used for calling finishDeref(), but if it fails keep track here.
     void addDeferredFinishDeref(AudioNode*);
@@ -216,10 +199,6 @@ public:
 
     // Must be called on main thread.
     void removeMarkedSummingJunction(AudioSummingJunction*);
-
-    // Reconcile ref/deref which are defined both in ThreadSafeRefCounted and EventTarget.
-    using ThreadSafeRefCounted<AudioContext>::ref;
-    using ThreadSafeRefCounted<AudioContext>::deref;
 
     void startRendering();
     void fireCompletionEvent();

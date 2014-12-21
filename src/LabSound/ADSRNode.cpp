@@ -16,7 +16,7 @@ namespace LabSound {
     class ADSRNode::AdsrNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        AdsrNodeInternal(WebCore::AudioContext* context, float sampleRate)
+        AdsrNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         , m_noteOffTime(0)
@@ -167,22 +167,28 @@ namespace LabSound {
     }
 
     void ADSRNode::noteOn() {
-        data->noteOn(context()->currentTime());
+        ASSERT(!context().expired());
+        auto ac = context().lock();
+        data->noteOn(ac->currentTime());
     }
 
     void ADSRNode::noteOff() {
-        data->noteOff(context()->currentTime());
+        ASSERT(!context().expired());
+        auto ac = context().lock();
+        data->noteOff(ac->currentTime());
     }
     
     bool ADSRNode::finished() {
-        double now = context()->currentTime();
+        ASSERT(!context().expired());
+        auto ac = context().lock();
+        double now = ac->currentTime();
         if (now > data->m_noteOffTime) {
             data->m_noteOffTime = 0;
         }
         return now > data->m_noteOffTime;
     }
 
-    ADSRNode::ADSRNode(WebCore::AudioContext* context, float sampleRate)
+    ADSRNode::ADSRNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new AdsrNodeInternal(context, sampleRate))
     {

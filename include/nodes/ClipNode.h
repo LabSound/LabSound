@@ -16,7 +16,7 @@ namespace LabSound {
     public:
         enum Mode { CLIP, TANH };
 
-        static WTF::PassRefPtr<ClipNode> create(WebCore::AudioContext* context, float sampleRate)
+        static WTF::PassRefPtr<ClipNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
         {
             return adoptRef(new ClipNode(context, sampleRate));
         }
@@ -30,7 +30,7 @@ namespace LabSound {
 		WebCore::AudioParam* bVal();
 
     private:
-        ClipNode(WebCore::AudioContext*, float sampleRate);
+        ClipNode(std::shared_ptr<AudioContext>, float sampleRate);
         virtual ~ClipNode();
         
         class ClipNodeInternal;

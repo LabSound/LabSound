@@ -40,7 +40,7 @@ namespace WebCore {
     
 const size_t renderQuantumSize = 128;    
 
-OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext* context, AudioBuffer* renderTarget)
+OfflineAudioDestinationNode::OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget)
     : AudioDestinationNode(context, renderTarget->sampleRate())
     , m_renderTarget(renderTarget)
     , m_renderThread(0)
@@ -162,7 +162,8 @@ void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)
 
 void OfflineAudioDestinationNode::notifyComplete()
 {
-    context()->fireCompletionEvent();
+    std::shared_ptr<AudioContext> ac = context().lock();
+    ac->fireCompletionEvent();
 }
 
 } // namespace WebCore

@@ -38,7 +38,7 @@
 
 namespace WebCore {
 
-PassRefPtr<ChannelMergerNode> ChannelMergerNode::create(AudioContext* context, float sampleRate, unsigned numberOfInputs)
+PassRefPtr<ChannelMergerNode> ChannelMergerNode::create(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
 {
     if (!numberOfInputs || numberOfInputs > AudioContext::maxNumberOfChannels())
         return 0;
@@ -46,7 +46,7 @@ PassRefPtr<ChannelMergerNode> ChannelMergerNode::create(AudioContext* context, f
     return adoptRef(new ChannelMergerNode(context, sampleRate, numberOfInputs));      
 }
 
-ChannelMergerNode::ChannelMergerNode(AudioContext* context, float sampleRate, unsigned numberOfInputs)
+ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
     : AudioNode(context, sampleRate)
 {
     // Create the requested number of inputs.
@@ -95,7 +95,8 @@ void ChannelMergerNode::reset()
 // number of channels of our output.
 void ChannelMergerNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 {
-    ASSERT(context()->isAudioThread() && context()->isGraphOwner());
+    std::shared_ptr<AudioContext> ac = context().lock();
+    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
 
     // Count how many channels we have all together from all of the inputs.
     unsigned numberOfOutputChannels = 0;

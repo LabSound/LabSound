@@ -43,7 +43,7 @@ class AudioContext;
 
 class AudioBufferSourceNode : public AudioScheduledSourceNode {
 public:
-    static PassRefPtr<AudioBufferSourceNode> create(AudioContext*, float sampleRate);
+    static PassRefPtr<AudioBufferSourceNode> create(std::shared_ptr<AudioContext>, float sampleRate);
 
     virtual ~AudioBufferSourceNode();
 
@@ -98,7 +98,7 @@ public:
     virtual void finish() OVERRIDE;
 
 private:
-    AudioBufferSourceNode(AudioContext*, float sampleRate);
+    AudioBufferSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }

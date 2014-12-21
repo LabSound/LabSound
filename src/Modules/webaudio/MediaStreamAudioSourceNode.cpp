@@ -35,12 +35,12 @@
 
 namespace WebCore {
 
-PassRefPtr<MediaStreamAudioSourceNode> MediaStreamAudioSourceNode::create(AudioContext* context, MediaStream* mediaStream, AudioSourceProvider* audioSourceProvider)
+PassRefPtr<MediaStreamAudioSourceNode> MediaStreamAudioSourceNode::create(std::shared_ptr<AudioContext> context, MediaStream* mediaStream, AudioSourceProvider* audioSourceProvider)
 {
     return adoptRef(new MediaStreamAudioSourceNode(context, mediaStream, audioSourceProvider));
 }
 
-MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(AudioContext* context, MediaStream* mediaStream, AudioSourceProvider* audioSourceProvider)
+    MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(std::shared_ptr<AudioContext> context, MediaStream* mediaStream, AudioSourceProvider* audioSourceProvider)
     : AudioSourceNode(context, context->sampleRate())
     , m_mediaStream(mediaStream)
     , m_audioSourceProvider(audioSourceProvider)
@@ -77,7 +77,7 @@ void MediaStreamAudioSourceNode::setFormat(size_t numberOfChannels, float source
 
         {
             // The context must be locked when changing the number of output channels.
-            AudioContext::AutoLocker contextLocker(context());
+            std::shared_ptr<AudioContext> ac = context().lock();
 
             // Do any necesssary re-configuration to the output's number of channels.
             output(0)->setNumberOfChannels(numberOfChannels);

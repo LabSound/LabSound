@@ -28,7 +28,7 @@ namespace LabSound {
 
 	public:
 
-		static PassRefPtr<STKNode> create(AudioContext* context, float sampleRate) {
+		static PassRefPtr<STKNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
 
 			// Oops, Windows platform for now...
 			// char cwd[MAX_PATH];
@@ -47,7 +47,7 @@ namespace LabSound {
 
 		}
 
-		STKNode(AudioContext* context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
+		STKNode(std::shared_ptr<AudioContext>context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
 
 			addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
 			setNodeType((AudioNode::NodeType) LabSound::NodeTypeSTK);

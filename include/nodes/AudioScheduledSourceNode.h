@@ -54,7 +54,7 @@ public:
         FINISHED_STATE = 3
     };
     
-    AudioScheduledSourceNode(AudioContext*, float sampleRate);
+    AudioScheduledSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     // Scheduling.
     void start(double when);

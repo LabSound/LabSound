@@ -46,7 +46,7 @@ public:
         ALLPASS = 7
     };
 
-    static PassRefPtr<BiquadFilterNode> create(AudioContext* context, float sampleRate)
+    static PassRefPtr<BiquadFilterNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
     {
         return adoptRef(new BiquadFilterNode(context, sampleRate));      
     }
@@ -66,7 +66,7 @@ public:
                               Float32Array* phaseResponse);
 
 private:
-    BiquadFilterNode(AudioContext*, float sampleRate);
+    BiquadFilterNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     BiquadProcessor* biquadProcessor() { return static_cast<BiquadProcessor*>(processor()); }
 };

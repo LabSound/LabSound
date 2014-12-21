@@ -55,7 +55,7 @@ namespace LabSound {
     class PeakCompNode::PeakCompNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        PeakCompNodeInternal(WebCore::AudioContext* context, float sampleRate)
+        PeakCompNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         {
@@ -235,7 +235,7 @@ namespace LabSound {
     AudioParam* PeakCompNode::makeup() const { return data->m_makeup.get(); }
     AudioParam* PeakCompNode::knee() const { return data->m_knee.get(); }
 
-    PeakCompNode::PeakCompNode(WebCore::AudioContext* context, float sampleRate)
+    PeakCompNode::PeakCompNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new PeakCompNodeInternal(context, sampleRate))
     {

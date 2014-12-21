@@ -23,7 +23,7 @@ namespace LabSound {
     class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        ClipNodeInternal(WebCore::AudioContext* context, float sampleRate)
+        ClipNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         , mode(ClipNode::CLIP)
@@ -100,7 +100,7 @@ namespace LabSound {
         vector<float> gainValues;
     };
 
-    ClipNode::ClipNode(WebCore::AudioContext* context, float sampleRate)
+    ClipNode::ClipNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new ClipNodeInternal(context, sampleRate))
     {

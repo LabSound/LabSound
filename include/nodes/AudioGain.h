@@ -35,13 +35,13 @@ namespace WebCore {
 
 class AudioGain : public AudioParam {
 public:   
-    static PassRefPtr<AudioGain> create(AudioContext* context, const char* name, double defaultValue, double minValue, double maxValue)
+    static PassRefPtr<AudioGain> create(std::shared_ptr<AudioContext> context, const char* name, double defaultValue, double minValue, double maxValue)
     {
         return adoptRef(new AudioGain(context, name, defaultValue, minValue, maxValue));
     }
 
 private:
-    AudioGain(AudioContext* context, const char* name, double defaultValue, double minValue, double maxValue)
+    AudioGain(std::shared_ptr<AudioContext> context, const char* name, double defaultValue, double minValue, double maxValue)
         : AudioParam(context, name, defaultValue, minValue, maxValue)
     {
     }

@@ -46,7 +46,7 @@ static void fixNANs(double &x)
         x = 0.0;
 }
 
-PannerNode::PannerNode(AudioContext* context, float sampleRate)
+PannerNode::PannerNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioNode(context, sampleRate)
     , m_panningModel(Panner::PanningModelHRTF)
     , m_lastGain(-1.0)
@@ -76,8 +76,12 @@ void PannerNode::pullInputs(size_t framesToProcess)
 {
     // We override pullInputs(), so we can detect new AudioSourceNodes which have connected to us when new connections are made.
     // These AudioSourceNodes need to be made aware of our existence in order to handle doppler shift pitch changes.
-    if (m_connectionCount != context()->connectionCount()) {
-        m_connectionCount = context()->connectionCount();
+
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    
+    if (m_connectionCount != ac->connectionCount()) {
+        m_connectionCount = ac->connectionCount();
 
         // Recursively go through all nodes connected to us.
         notifyAudioSourcesConnectedToNode(this);
@@ -147,7 +151,8 @@ void PannerNode::uninitialize()
 
 AudioListener* PannerNode::listener()
 {
-    return context()->listener();
+    ASSERT(!context().expired());
+    return context().lock()->listener();
 }
 
 void PannerNode::setPanningModel(unsigned short model, ExceptionCode& ec)

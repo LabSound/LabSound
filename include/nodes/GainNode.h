@@ -38,7 +38,7 @@ class AudioContext;
 
 class GainNode : public AudioNode {
 public:
-    static PassRefPtr<GainNode> create(AudioContext* context, float sampleRate)
+    static PassRefPtr<GainNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
     {
         return adoptRef(new GainNode(context, sampleRate));      
     }
@@ -57,7 +57,7 @@ protected:  /// @LabSound - was private
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
-    GainNode(AudioContext*, float sampleRate);
+    GainNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     float m_lastGain; // for de-zippering
     RefPtr<AudioGain> m_gain;

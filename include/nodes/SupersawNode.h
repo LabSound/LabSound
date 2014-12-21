@@ -16,7 +16,7 @@ namespace LabSound {
 
     class SupersawNode : public AudioNode {
     public:
-		static PassRefPtr<SupersawNode> create(AudioContext* context, float sampleRate)
+		static PassRefPtr<SupersawNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
 		{
 			return adoptRef(new SupersawNode(context, sampleRate));
 		}
@@ -36,7 +36,7 @@ namespace LabSound {
         void update(); // call if sawCount is changed. CBB: update automatically
 
     private:
-		SupersawNode(WebCore::AudioContext*, float sampleRate);
+		SupersawNode(std::shared_ptr<AudioContext>, float sampleRate);
 
         // Satisfy the AudioNode interface
         virtual void process(size_t);

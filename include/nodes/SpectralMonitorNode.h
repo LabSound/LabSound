@@ -4,6 +4,7 @@
 #pragma once
 
 #include "AudioBasicInspectorNode.h"
+#include "AudioContext.h"
 #include <vector>
 #include <mutex>
 
@@ -11,7 +12,7 @@ namespace LabSound {
 
     class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode {
     public:
-        static WTF::PassRefPtr<SpectralMonitorNode> create(WebCore::AudioContext* context, float sampleRate)
+        static WTF::PassRefPtr<SpectralMonitorNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
         {
             return adoptRef(new SpectralMonitorNode(context, sampleRate));
         }
@@ -28,7 +29,7 @@ namespace LabSound {
         size_t windowSize() const;
 
     private:
-        SpectralMonitorNode(WebCore::AudioContext*, float sampleRate);
+        SpectralMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
         class Detail;
         Detail* detail;
 

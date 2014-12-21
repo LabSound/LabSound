@@ -30,7 +30,7 @@
 
 namespace WebCore {
 
-BiquadFilterNode::BiquadFilterNode(AudioContext* context, float sampleRate)
+BiquadFilterNode::BiquadFilterNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioBasicProcessorNode(context, sampleRate)
 {
     // Initially setup as lowpass filter.

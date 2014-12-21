@@ -46,7 +46,10 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    static PassRefPtr<AudioParam> create(AudioContext* context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+    static PassRefPtr<AudioParam> create(std::shared_ptr<AudioContext> context,
+                                         const std::string& name,
+                                         double defaultValue, double minValue, double maxValue,
+                                         unsigned units = 0)
     {
         return adoptRef(new AudioParam(context, name, defaultValue, minValue, maxValue, units));
     }
@@ -102,7 +105,7 @@ public:
     void disconnect(AudioNodeOutput*);
 
 protected:
-    AudioParam(AudioContext* context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+AudioParam(std::shared_ptr<AudioContext> context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
         : AudioSummingJunction(context)
         , m_name(name)
         , m_value(defaultValue)

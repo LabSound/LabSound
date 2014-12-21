@@ -20,8 +20,8 @@ namespace LabSound {
 	struct SamplerSound {
 
 		SamplerSound(
-			RefPtr<AudioContext> context, 
-			RefPtr<GainNode> destination, 
+            std::shared_ptr<AudioContext> context,
+			RefPtr<GainNode> destination,
 			std::string path, 
 			std::string baseMidiNote, 
 			std::string midiNoteLow, 
@@ -29,8 +29,7 @@ namespace LabSound {
 
 			audioBuffer = new SoundBuffer(context, path.c_str()); 
 
-			this->context = context;
-			this->baseMidiNote = getMIDIFromNoteString(baseMidiNote); 
+			this->baseMidiNote = getMIDIFromNoteString(baseMidiNote);
 			this->midiNoteLow = getMIDIFromNoteString(midiNoteLow);
 			this->midiNoteHigh = getMIDIFromNoteString(midiNoteHigh);
 
@@ -125,8 +124,7 @@ namespace LabSound {
 
 		void stopNote(); 
 
-		RefPtr<AudioContext> context;
-		RefPtr<GainNode> destinationNode; 
+		RefPtr<GainNode> destinationNode;
 
 		SoundBuffer *audioBuffer;
 
@@ -140,7 +138,7 @@ namespace LabSound {
 
 	public:
 
-		static PassRefPtr<SampledInstrumentNode> create(AudioContext* context, float sampleRate) {
+        static PassRefPtr<SampledInstrumentNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
 			return adoptRef(new SampledInstrumentNode(context, sampleRate));
 		}
 
@@ -165,9 +163,9 @@ namespace LabSound {
 
 		// Blech
 		std::vector<SamplerSound*> samples;
-		RefPtr<WebCore::AudioContext> localContext;
+        std::weak_ptr<WebCore::AudioContext> localContext;
 
-		SampledInstrumentNode(AudioContext*, float sampleRate);
+        SampledInstrumentNode(std::shared_ptr<AudioContext>, float sampleRate);
 
 		// Satisfy the AudioNode interface
 		//virtual void process(size_t) {}

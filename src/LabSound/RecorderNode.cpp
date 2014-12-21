@@ -15,7 +15,7 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    RecorderNode::RecorderNode(AudioContext* context, float sampleRate)
+    RecorderNode::RecorderNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioBasicInspectorNode(context, sampleRate)
     , m_recording(false), m_mixToMono(false)
     {

@@ -35,7 +35,7 @@ namespace WebCore {
 
 class AudioSourceNode : public AudioNode {
 public:
-    AudioSourceNode(AudioContext* context, float sampleRate)
+    AudioSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
         : AudioNode(context, sampleRate)
     {
     }

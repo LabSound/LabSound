@@ -34,7 +34,7 @@
 
 namespace WebCore {
     
-PassRefPtr<ChannelSplitterNode> ChannelSplitterNode::create(AudioContext* context, float sampleRate, unsigned numberOfOutputs)
+PassRefPtr<ChannelSplitterNode> ChannelSplitterNode::create(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfOutputs)
 {
     if (!numberOfOutputs || numberOfOutputs > AudioContext::maxNumberOfChannels())
         return 0;
@@ -42,7 +42,7 @@ PassRefPtr<ChannelSplitterNode> ChannelSplitterNode::create(AudioContext* contex
     return adoptRef(new ChannelSplitterNode(context, sampleRate, numberOfOutputs));      
 }
 
-ChannelSplitterNode::ChannelSplitterNode(AudioContext* context, float sampleRate, unsigned numberOfOutputs)
+ChannelSplitterNode::ChannelSplitterNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfOutputs)
     : AudioNode(context, sampleRate)
 {
     addInput(adoptPtr(new AudioNodeInput(this)));

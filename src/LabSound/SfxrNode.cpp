@@ -584,12 +584,12 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
 
 namespace LabSound {
 
-    PassRefPtr<SfxrNode> SfxrNode::create(AudioContext* context, float sampleRate)
+    PassRefPtr<SfxrNode> SfxrNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
     {
         return adoptRef(new SfxrNode(context, sampleRate));
     }
 
-    SfxrNode::SfxrNode(AudioContext* context, float sampleRate)
+    SfxrNode::SfxrNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioScheduledSourceNode(context, sampleRate)
     , sfxr(new SfxrNode::Sfxr())
     {

@@ -13,7 +13,7 @@ namespace LabSound {
 
 	public:
 
-		static WTF::PassRefPtr<EasyVerbNode> create(WebCore::AudioContext* context, float sampleRate) {
+		static WTF::PassRefPtr<EasyVerbNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
 			return adoptRef(new EasyVerbNode(context, sampleRate));
 		}
 
@@ -24,7 +24,7 @@ namespace LabSound {
 
 	private:
 
-		EasyVerbNode(WebCore::AudioContext*, float sampleRate);
+		EasyVerbNode(std::shared_ptr<AudioContext>, float sampleRate);
 
 		class NodeInternal;
 		NodeInternal* data;

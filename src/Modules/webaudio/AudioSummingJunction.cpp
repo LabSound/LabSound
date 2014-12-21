@@ -36,7 +36,7 @@ using namespace std;
 
 namespace WebCore {
 
-AudioSummingJunction::AudioSummingJunction(AudioContext* context)
+AudioSummingJunction::AudioSummingJunction(std::shared_ptr<AudioContext> context)
     : m_context(context)
     , m_renderingStateNeedUpdating(false)
 {
@@ -44,22 +44,30 @@ AudioSummingJunction::AudioSummingJunction(AudioContext* context)
 
 AudioSummingJunction::~AudioSummingJunction()
 {
-    if (m_renderingStateNeedUpdating && m_context.get())
-        m_context->removeMarkedSummingJunction(this);
+    if (m_renderingStateNeedUpdating && !m_context.expired()) {
+        shared_ptr<AudioContext> ac = m_context.lock();
+        if (ac) {
+            ac->removeMarkedSummingJunction(this);
+        }
+    }
 }
 
 void AudioSummingJunction::changedOutputs()
 {
-    ASSERT(context()->isGraphOwner());
+    ASSERT(!m_context.expired());
+    shared_ptr<AudioContext> ac = m_context.lock();
+    ASSERT(ac->isGraphOwner());
     if (!m_renderingStateNeedUpdating && canUpdateState()) {
-        context()->markSummingJunctionDirty(this);
+        ac->markSummingJunctionDirty(this);
         m_renderingStateNeedUpdating = true;
     }
 }
 
 void AudioSummingJunction::updateRenderingState()
 {
-    ASSERT(context()->isAudioThread() && context()->isGraphOwner());
+    ASSERT(!m_context.expired());
+    shared_ptr<AudioContext> ac = m_context.lock();
+    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
 
     if (m_renderingStateNeedUpdating && canUpdateState()) {
         // Copy from m_outputs to m_renderingOutputs.

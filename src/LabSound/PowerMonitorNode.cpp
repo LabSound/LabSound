@@ -15,7 +15,7 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    PowerMonitorNode::PowerMonitorNode(AudioContext* context, float sampleRate)
+    PowerMonitorNode::PowerMonitorNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
     : AudioBasicInspectorNode(context, sampleRate)
     , _db(0)
     , _windowSize(128)

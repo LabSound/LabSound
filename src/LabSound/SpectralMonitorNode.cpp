@@ -97,7 +97,7 @@ namespace LabSound {
         FFT* fft;
     };
 
-    SpectralMonitorNode::SpectralMonitorNode(AudioContext* context, float sampleRate)
+    SpectralMonitorNode::SpectralMonitorNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioBasicInspectorNode(context, sampleRate)
     , detail(new Detail())
     {

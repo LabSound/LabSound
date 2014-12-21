@@ -19,7 +19,7 @@ namespace LabSound {
     class PWMNode::PWMNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        PWMNodeInternal(WebCore::AudioContext* context, float sampleRate)
+        PWMNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
         : AudioProcessor(sampleRate)
         , channels(1)
         {
@@ -69,7 +69,7 @@ namespace LabSound {
         int channels;
     };
 
-    PWMNode::PWMNode(WebCore::AudioContext* context, float sampleRate)
+    PWMNode::PWMNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)
     , data(new PWMNodeInternal(context, sampleRate))
     {

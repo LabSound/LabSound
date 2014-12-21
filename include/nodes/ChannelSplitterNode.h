@@ -33,7 +33,7 @@ class AudioContext;
     
 class ChannelSplitterNode : public AudioNode {
 public:
-    static PassRefPtr<ChannelSplitterNode> create(AudioContext*, float sampleRate, unsigned numberOfOutputs);
+    static PassRefPtr<ChannelSplitterNode> create(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfOutputs);
 
     // AudioNode
     virtual void process(size_t framesToProcess);
@@ -43,7 +43,7 @@ private:
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
-    ChannelSplitterNode(AudioContext*, float sampleRate, unsigned numberOfOutputs);
+    ChannelSplitterNode(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfOutputs);
 };
 
 } // namespace WebCore

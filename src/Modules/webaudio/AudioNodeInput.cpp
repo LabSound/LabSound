@@ -38,8 +38,8 @@ using namespace std;
 namespace WebCore {
 
 AudioNodeInput::AudioNodeInput(AudioNode* node)
-    : AudioSummingJunction(node->context())
-    , m_node(node)
+: AudioSummingJunction(node->context().lock())
+, m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
@@ -47,7 +47,9 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
 
 void AudioNodeInput::connect(AudioNodeOutput* output)
 {
-    ASSERT(context()->isGraphOwner());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isGraphOwner());
     
     ASSERT(output && node());
     if (!output || !node())
@@ -67,7 +69,9 @@ void AudioNodeInput::connect(AudioNodeOutput* output)
 
 void AudioNodeInput::disconnect(AudioNodeOutput* output)
 {
-    ASSERT(context()->isGraphOwner());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isGraphOwner());
 
     ASSERT(output && node());
     if (!output || !node())
@@ -97,7 +101,9 @@ void AudioNodeInput::disconnect(AudioNodeOutput* output)
 
 void AudioNodeInput::disable(AudioNodeOutput* output)
 {
-    ASSERT(context()->isGraphOwner());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isGraphOwner());
 
     ASSERT(output && node());
     if (!output || !node())
@@ -116,7 +122,9 @@ void AudioNodeInput::disable(AudioNodeOutput* output)
 
 void AudioNodeInput::enable(AudioNodeOutput* output)
 {
-    ASSERT(context()->isGraphOwner());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isGraphOwner());
 
     ASSERT(output && node());
     if (!output || !node())
@@ -141,7 +149,9 @@ void AudioNodeInput::didUpdate()
 
 void AudioNodeInput::updateInternalBus()
 {
-    ASSERT(context()->isAudioThread() && context()->isGraphOwner());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
 
     unsigned numberOfInputChannels = numberOfChannels();
 
@@ -166,7 +176,9 @@ unsigned AudioNodeInput::numberOfChannels() const
 
 unsigned AudioNodeInput::numberOfRenderingChannels()
 {
-    ASSERT(context()->isAudioThread());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     // Find the number of channels of the rendering connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
@@ -179,7 +191,9 @@ unsigned AudioNodeInput::numberOfRenderingChannels()
 
 AudioBus* AudioNodeInput::bus()
 {
-    ASSERT(context()->isAudioThread());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     // Handle single connection specially to allow for in-place processing.
     if (numberOfRenderingConnections() == 1)
@@ -191,7 +205,9 @@ AudioBus* AudioNodeInput::bus()
 
 AudioBus* AudioNodeInput::internalSummingBus()
 {
-    ASSERT(context()->isAudioThread());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     ASSERT(numberOfRenderingChannels() == m_internalSummingBus->numberOfChannels());
 
@@ -200,7 +216,9 @@ AudioBus* AudioNodeInput::internalSummingBus()
 
 void AudioNodeInput::sumAllConnections(AudioBus* summingBus, size_t framesToProcess)
 {
-    ASSERT(context()->isAudioThread());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
     ASSERT(numberOfRenderingConnections() > 1);
@@ -225,7 +243,9 @@ void AudioNodeInput::sumAllConnections(AudioBus* summingBus, size_t framesToProc
 
 AudioBus* AudioNodeInput::pull(AudioBus* inPlaceBus, size_t framesToProcess)
 {
-    ASSERT(context()->isAudioThread());
+    ASSERT(!context().expired());
+    auto ac = context().lock();
+    ASSERT(ac->isAudioThread());
 
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {

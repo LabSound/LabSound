@@ -60,7 +60,7 @@ namespace LabSound {
         return occlusionAttenuation;
     }
     
-    SpatializationNode::SpatializationNode(WebCore::AudioContext* context, float sampleRate)
+    SpatializationNode::SpatializationNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
     : WebCore::PannerNode(context, sampleRate) {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSpatialization);
     }

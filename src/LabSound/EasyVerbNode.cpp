@@ -22,10 +22,8 @@ namespace LabSound {
 	class EasyVerbNode::NodeInternal : public WebCore::AudioProcessor{
 	public:
 
-		NodeInternal(WebCore::AudioContext* context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
-
+        NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
 			m_delayTime = AudioParam::create(context, "delayTime", 1, 0.1, 24);
-
 		}
 
 		virtual ~NodeInternal() {
@@ -73,7 +71,7 @@ namespace LabSound {
 
 	};
 
-	EasyVerbNode::EasyVerbNode(WebCore::AudioContext* context, float sampleRate)
+    EasyVerbNode::EasyVerbNode(std::shared_ptr<AudioContext> context, float sampleRate)
 		: WebCore::AudioBasicProcessorNode(context, sampleRate),
 		  data(new NodeInternal(context, sampleRate)) {
 		

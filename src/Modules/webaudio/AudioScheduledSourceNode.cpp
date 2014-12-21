@@ -39,7 +39,7 @@ namespace WebCore {
 
 const double AudioScheduledSourceNode::UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode(AudioContext* context, float sampleRate)
+AudioScheduledSourceNode::AudioScheduledSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioSourceNode(context, sampleRate)
     , m_playbackState(UNSCHEDULED_STATE)
     , m_startTime(0)
@@ -62,11 +62,13 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
 
     double sampleRate = this->sampleRate();
 
+    std::shared_ptr<AudioContext> ac = context().lock();
+    
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
     // endFrame              : End frame for this source.
-    size_t quantumStartFrame = context()->currentSampleFrame();
+    size_t quantumStartFrame = ac->currentSampleFrame();
     size_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
     size_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
     size_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
@@ -86,7 +88,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
     if (m_playbackState == SCHEDULED_STATE) {
         // Increment the active source count only if we're transitioning from SCHEDULED_STATE to PLAYING_STATE.
         m_playbackState = PLAYING_STATE;
-        context()->incrementActiveSourceCount();
+        ac->incrementActiveSourceCount();
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
@@ -162,11 +164,12 @@ void AudioScheduledSourceNode::noteOff(double when)
 
 void AudioScheduledSourceNode::finish()
 {
+    std::shared_ptr<AudioContext> ac = context().lock();
     if (m_playbackState != FINISHED_STATE) {
         // Let the context dereference this AudioNode.
-        context()->notifyNodeFinishedProcessing(this);
+        ac->notifyNodeFinishedProcessing(this);
         m_playbackState = FINISHED_STATE;
-        context()->decrementActiveSourceCount();
+        ac->decrementActiveSourceCount();
     }
 }
 

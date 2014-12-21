@@ -51,7 +51,7 @@ public:
         CUSTOM = 4
     };
 
-    static PassRefPtr<OscillatorNode> create(AudioContext*, float sampleRate);
+    static PassRefPtr<OscillatorNode> create(std::shared_ptr<AudioContext>, float sampleRate);
 
     virtual ~OscillatorNode();
     
@@ -69,7 +69,7 @@ public:
 
 private:
 
-    OscillatorNode(AudioContext*, float sampleRate);
+    OscillatorNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(size_t framesToProcess);

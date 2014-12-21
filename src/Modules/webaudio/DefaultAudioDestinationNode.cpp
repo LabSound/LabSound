@@ -32,7 +32,7 @@
 
 namespace WebCore {
     
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context)
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(std::shared_ptr<AudioContext> context)
     : AudioDestinationNode(context, AudioDestination::hardwareSampleRate())
 {
 }

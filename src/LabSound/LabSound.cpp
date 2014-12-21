@@ -3,19 +3,22 @@
 
 #include "LabSound.h"
 #include "AudioContext.h"
+#include "DefaultAudioDestinationNode.h"
 
 namespace LabSound {
 
-    PassRefPtr<WebCore::AudioContext> init() {
+    std::shared_ptr<LabSound::AudioContext> init() {
         // Initialize threads for the WTF library
         WTF::initializeThreading();
         WTF::initializeMainThread();
         
         // Create an audio context object
         WebCore::ExceptionCode ec;
-        PassRefPtr<WebCore::AudioContext> ret = WebCore::AudioContext::create(ec);
-        ret->lazyInitialize();
-        return ret;
+        std::shared_ptr<LabSound::AudioContext> context = LabSound::AudioContext::create(ec);
+        context->setDestinationNode(DefaultAudioDestinationNode::create(context));
+        context->initHRTFDatabase();
+        context->lazyInitialize();
+        return context;
     }
 
     bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {

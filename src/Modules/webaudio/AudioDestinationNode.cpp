@@ -36,7 +36,7 @@
 
 namespace WebCore {
     
-AudioDestinationNode::AudioDestinationNode(AudioContext* context, float sampleRate)
+AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioNode(context, sampleRate)
     , m_currentSampleFrame(0)
 {
@@ -52,20 +52,26 @@ AudioDestinationNode::~AudioDestinationNode()
 
 void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames)
 {
+    // The audio system might still be invoking callbacks during shutdown, so bail out if so.
+    if (context().expired())
+        return;
+    
     // We don't want denormals slowing down any of the audio processing
     // since they can very seriously hurt performance.
     // This will take care of all AudioNodes because they all process within this scope.
     DenormalDisabler denormalDisabler;
     
-    context()->setAudioThread(currentThread());
+    std::shared_ptr<AudioContext> ac = context().lock();
+
+    ac->setAudioThread(currentThread());
     
-    if (!context()->isRunnable()) {
+    if (!ac->isRunnable()) {
         destinationBus->zero();
         return;
     }
 
     // Let the context take care of any business at the start of each render quantum.
-    context()->handlePreRenderTasks();
+    ac->handlePreRenderTasks();
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
@@ -83,10 +89,10 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     }
 
     // Process nodes which need a little extra help because they are not connected to anything, but still need to process.
-    context()->processAutomaticPullNodes(numberOfFrames);
+    ac->processAutomaticPullNodes(numberOfFrames);
 
     // Let the context take care of any business at the end of each render quantum.
-    context()->handlePostRenderTasks();
+    ac->handlePostRenderTasks();
     
     // Advance current sample-frame.
     m_currentSampleFrame += numberOfFrames;

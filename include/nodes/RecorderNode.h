@@ -5,6 +5,7 @@
 #define LabSound_src_RecorderNode_h
 
 #include "AudioBasicInspectorNode.h"
+#include "AudioContext.h"
 #include <vector>
 #include <mutex>
 
@@ -12,7 +13,7 @@ namespace LabSound {
     
     class RecorderNode : public WebCore::AudioBasicInspectorNode {
     public:
-        static WTF::PassRefPtr<RecorderNode> create(WebCore::AudioContext* context, float sampleRate)
+        static WTF::PassRefPtr<RecorderNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
         {
             return WTF::adoptRef(new RecorderNode(context, sampleRate));
         }
@@ -36,7 +37,7 @@ namespace LabSound {
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }
         
-        RecorderNode(WebCore::AudioContext*, float sampleRate);
+        RecorderNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
 
         bool m_mixToMono;
         bool m_recording;

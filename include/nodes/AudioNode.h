@@ -68,11 +68,11 @@ public:
 		
 	};
 
-    AudioNode(AudioContext*, float sampleRate);
+    AudioNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~AudioNode();
 
-    AudioContext* context() { return m_context.get(); }
-    const AudioContext* context() const { return m_context.get(); }
+    std::weak_ptr<AudioContext> context() { return m_context; }
+    const std::weak_ptr<AudioContext> context() const { return m_context; }
 
     enum NodeType {
         NodeTypeUnknown,
@@ -188,7 +188,7 @@ protected:
 private:
     volatile bool m_isInitialized;
     NodeType m_nodeType;
-    RefPtr<AudioContext> m_context;
+    std::weak_ptr<AudioContext> m_context;
     float m_sampleRate;
     std::vector<OwnPtr<AudioNodeInput> > m_inputs;
     std::vector<OwnPtr<AudioNodeOutput> > m_outputs;

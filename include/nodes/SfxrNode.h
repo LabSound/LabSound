@@ -13,7 +13,7 @@ namespace LabSound {
     class SfxrNode : public WebCore::AudioScheduledSourceNode {
     public:
 
-        static WTF::PassRefPtr<SfxrNode> create(WebCore::AudioContext*, float sampleRate);
+        static WTF::PassRefPtr<SfxrNode> create(std::shared_ptr<AudioContext>, float sampleRate);
 
         virtual ~SfxrNode();
 
@@ -85,7 +85,7 @@ namespace LabSound {
         void randomize();
 
     private:
-        SfxrNode(WebCore::AudioContext*, float sampleRate);
+        SfxrNode(std::shared_ptr<AudioContext>, float sampleRate);
         virtual bool propagatesSilence() const OVERRIDE;
 
         RefPtr<AudioParam> _waveType;

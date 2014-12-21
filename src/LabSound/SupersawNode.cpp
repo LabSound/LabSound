@@ -23,7 +23,7 @@ namespace LabSound {
     public:
         RefPtr<ADSRNode> gainNode;
 
-        Data(SupersawNode* self, AudioContext* context, float sampleRate)
+        Data(SupersawNode* self, std::shared_ptr<AudioContext> context, float sampleRate)
         : gainNode(ADSRNode::create(context, sampleRate))
         , sawCount(AudioParam::create(context, "detune", 1.0, 100.0f, 3.0f))
         , detune(AudioParam::create(context, "detune", 1.0, 0, 120))
@@ -47,8 +47,10 @@ namespace LabSound {
                 }
                 sawStorage.clear();
                 saws.clear();
+                ASSERT(!context.expired());
+                auto ac = context.lock();
                 for (int i = 0; i < n; ++i)
-                    sawStorage.push_back(OscillatorNode::create(context, sampleRate));
+                    sawStorage.push_back(OscillatorNode::create(ac, sampleRate));
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
@@ -79,7 +81,7 @@ namespace LabSound {
         }
 
         SupersawNode* self;
-        AudioContext* context;
+        std::weak_ptr<AudioContext> context;
         RefPtr<AudioParam> detune;
         RefPtr<AudioParam> frequency;
         RefPtr<AudioParam> sawCount;
@@ -91,7 +93,7 @@ namespace LabSound {
         float cachedFrequency;
     };
 
-    SupersawNode::SupersawNode(AudioContext* context, float sampleRate)
+    SupersawNode::SupersawNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioNode(context, sampleRate)
     , _data(new Data(this, context, sampleRate))
     {

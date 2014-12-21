@@ -37,7 +37,7 @@ class AudioContext;
     
 class OfflineAudioDestinationNode : public AudioDestinationNode {
 public:
-    static PassRefPtr<OfflineAudioDestinationNode> create(AudioContext* context, AudioBuffer* renderTarget)
+    static PassRefPtr<OfflineAudioDestinationNode> create(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget)
     {
         return adoptRef(new OfflineAudioDestinationNode(context, renderTarget));     
     }
@@ -52,7 +52,7 @@ public:
     void startRendering();
     
 private:
-    OfflineAudioDestinationNode(AudioContext*, AudioBuffer* renderTarget);
+    OfflineAudioDestinationNode(std::shared_ptr<AudioContext>, AudioBuffer* renderTarget);
 
     // This AudioNode renders into this AudioBuffer.
     RefPtr<AudioBuffer> m_renderTarget;

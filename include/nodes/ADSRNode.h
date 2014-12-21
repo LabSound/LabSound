@@ -21,7 +21,7 @@ namespace LabSound {
     class ADSRNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        static WTF::PassRefPtr<ADSRNode> create(WebCore::AudioContext* context, float sampleRate)
+        static WTF::PassRefPtr<ADSRNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
         {
             return adoptRef(new ADSRNode(context, sampleRate));
         }
@@ -42,7 +42,7 @@ namespace LabSound {
 		AudioParam* releaseTime() const;
 
     private:
-        ADSRNode(WebCore::AudioContext*, float sampleRate);
+        ADSRNode(std::shared_ptr<AudioContext>, float sampleRate);
         virtual ~ADSRNode();
 
         class AdsrNodeInternal;

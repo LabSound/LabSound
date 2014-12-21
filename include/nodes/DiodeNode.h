@@ -14,7 +14,7 @@ namespace LabSound {
     class DiodeNode
     {
     public:
-        DiodeNode(WebCore::AudioContext*);
+        DiodeNode(std::shared_ptr<WebCore::AudioContext>);
         //static WTF::PassRefPtr<DiodeNode> create(WebCore::AudioContext* context, float sampleRate)
         //{
         //    return adoptRef(new DiodeNode(context));

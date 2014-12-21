@@ -57,12 +57,10 @@ namespace LabSound {
 
     };
     
-    typedef RefPtr<AudioContext> AudioContextPtr;
     typedef RefPtr<SpatializationNode> SpatializationNodePtr;
     
-    // init() will return an audio context object, which must be assigned to
-    // a LabSound::AudioContextPtr.
-    PassRefPtr<AudioContext> init();
+    // init() will return an audio context object
+    std::shared_ptr<AudioContext> init();
     
     // Connect/Disconnect return true on success
     bool connect(AudioNode* thisOutput, AudioNode* toThisInput);

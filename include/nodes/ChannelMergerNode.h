@@ -37,7 +37,7 @@ class AudioContext;
     
 class ChannelMergerNode : public AudioNode {
 public:
-    static PassRefPtr<ChannelMergerNode> create(AudioContext*, float sampleRate, unsigned numberOfInputs);
+    static PassRefPtr<ChannelMergerNode> create(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfInputs);
 
     // AudioNode
     virtual void process(size_t framesToProcess);
@@ -50,7 +50,7 @@ private:
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
-    ChannelMergerNode(AudioContext*, float sampleRate, unsigned numberOfInputs);
+    ChannelMergerNode(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfInputs);
 };
 
 } // namespace WebCore

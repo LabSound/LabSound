@@ -20,7 +20,7 @@ namespace LabSound {
             BROWN = 2
         };
 
-        static WTF::PassRefPtr<NoiseNode> create(WebCore::AudioContext*, float sampleRate);
+        static WTF::PassRefPtr<NoiseNode> create(std::shared_ptr<AudioContext>, float sampleRate);
 
         virtual ~NoiseNode();
 
@@ -32,7 +32,7 @@ namespace LabSound {
         void setType(unsigned short, WebCore::ExceptionCode&);
 
     private:
-        NoiseNode(WebCore::AudioContext*, float sampleRate);
+        NoiseNode(std::shared_ptr<AudioContext>, float sampleRate);
 
         virtual bool propagatesSilence() const OVERRIDE;
 

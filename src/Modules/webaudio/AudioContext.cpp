@@ -96,7 +96,7 @@ bool isSampleRateRangeGood(float sampleRate)
 const unsigned MaxHardwareContexts = 4;
 unsigned AudioContext::s_hardwareContextCount = 0;
     
-PassRefPtr<AudioContext> AudioContext::create(ExceptionCode& ec)
+std::unique_ptr<AudioContext> AudioContext::create(ExceptionCode& ec)
 {
     UNUSED_PARAM(ec);
 
@@ -104,11 +104,10 @@ PassRefPtr<AudioContext> AudioContext::create(ExceptionCode& ec)
     if (s_hardwareContextCount >= MaxHardwareContexts)
         return 0;
 
-    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext()));
-    return audioContext.release();
+    return std::unique_ptr<AudioContext>(new AudioContext());
 }
 
-PassRefPtr<AudioContext> AudioContext::createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
+std::unique_ptr<AudioContext> AudioContext::createOfflineContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
 {
     // FIXME: offline contexts have limitations on supported sample-rates.
     // Currently all AudioContexts must have the same sample-rate.
@@ -118,8 +117,7 @@ PassRefPtr<AudioContext> AudioContext::createOfflineContext(unsigned numberOfCha
         return 0;
     }
 
-    RefPtr<AudioContext> audioContext(adoptRef(new AudioContext(numberOfChannels, numberOfFrames, sampleRate)));
-    return audioContext.release();
+    return std::unique_ptr<AudioContext>(new AudioContext(numberOfChannels, numberOfFrames, sampleRate));
 }
 
 // Constructor for rendering to the audio hardware.
@@ -137,14 +135,6 @@ AudioContext::AudioContext()
     , m_activeSourceCount(0)
 {
     constructCommon();
-
-    m_destinationNode = DefaultAudioDestinationNode::create(this);
-
-    // This sets in motion an asynchronous loading mechanism on another thread.
-    // We can check m_hrtfDatabaseLoader->isLoaded() to find out whether or not it has been fully loaded.
-    // It's not that useful to have a callback function for this since the audio thread automatically starts rendering on the graph
-    // when this has finished (see AudioDestinationNode).
-    m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate());
 }
 
 // Constructor for offline (non-realtime) rendering.
@@ -167,7 +157,16 @@ AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, flo
 
     // Create a new destination for offline rendering.
     m_renderTarget = AudioBuffer::create(numberOfChannels, numberOfFrames, sampleRate);
-    m_destinationNode = OfflineAudioDestinationNode::create(this, m_renderTarget.get());
+    // a destination node must be created before this context can be used
+}
+
+void AudioContext::initHRTFDatabase() {
+    
+    // This sets in motion an asynchronous loading mechanism on another thread.
+    // We can check m_hrtfDatabaseLoader->isLoaded() to find out whether or not it has been fully loaded.
+    // It's not that useful to have a callback function for this since the audio thread automatically starts rendering on the graph
+    // when this has finished (see AudioDestinationNode).
+    m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate());
 }
 
 void AudioContext::constructCommon()
@@ -334,18 +333,6 @@ void AudioContext::decodeAudioData(ArrayBuffer* audioData, PassRefPtr<AudioBuffe
     m_audioDecoder.decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
 }
 
-PassRefPtr<AudioBufferSourceNode> AudioContext::createBufferSource()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    RefPtr<AudioBufferSourceNode> node = AudioBufferSourceNode::create(this, m_destinationNode->sampleRate());
-
-    // Because this is an AudioScheduledSourceNode, the context keeps a reference until it has finished playing.
-    // When this happens, AudioScheduledSourceNode::finish() calls AudioContext::notifyNodeFinishedProcessing().
-    refNode(node.get());
-
-    return node;
-}
 
 #if ENABLE(VIDEO)
 PassRefPtr<MediaElementAudioSourceNode> AudioContext::createMediaElementSource(HTMLMediaElement* mediaElement, ExceptionCode& ec)
@@ -378,160 +365,32 @@ PassRefPtr<MediaElementAudioSourceNode> AudioContext::createMediaElementSource(H
     
 #if ENABLE(MEDIA_STREAM)
     
-PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(ExceptionCode& ec)
+PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
 {
     MediaStream* mediaStream = new MediaStream();
 
-    ASSERT(isMainThread());
-    lazyInitialize();
+    ASSERT(ac->isAudioThread());
+    ac->lazyInitialize();
 
     AudioSourceProvider* provider = 0;
 
     if (mediaStream->isLocal() && mediaStream->audioTracks()->length())
-        provider = destination()->localAudioInputProvider();
+        provider = ac->destination()->localAudioInputProvider();
     else {
         // FIXME: get a provider for non-local MediaStreams (like from a remote peer).
         provider = 0;
     }
 
-    RefPtr<MediaStreamAudioSourceNode> node = MediaStreamAudioSourceNode::create(this, mediaStream, provider);
+    RefPtr<MediaStreamAudioSourceNode> node = MediaStreamAudioSourceNode::create(ac, mediaStream, provider);
 
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-    node->setFormat(2, sampleRate());
+    node->setFormat(2, ac->sampleRate());
 
-    refNode(node.get()); // context keeps reference until node is disconnected
+    ac->refNode(node.get()); // context keeps reference until node is disconnected
     return node;
-}
-
-PassRefPtr<MediaStreamAudioDestinationNode> AudioContext::createMediaStreamDestination()
-{
-    // FIXME: Add support for an optional argument which specifies the number of channels.
-    // FIXME: The default should probably be stereo instead of mono.
-    return MediaStreamAudioDestinationNode::create(this, 1);
 }
 
 #endif
-
-PassRefPtr<BiquadFilterNode> AudioContext::createBiquadFilter()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return BiquadFilterNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<WaveShaperNode> AudioContext::createWaveShaper()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return WaveShaperNode::create(this);
-}
-
-PassRefPtr<PannerNode> AudioContext::createPanner()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return PannerNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<ConvolverNode> AudioContext::createConvolver()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return ConvolverNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<DynamicsCompressorNode> AudioContext::createDynamicsCompressor()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return DynamicsCompressorNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<AnalyserNode> AudioContext::createAnalyser()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return AnalyserNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<GainNode> AudioContext::createGain()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    return GainNode::create(this, m_destinationNode->sampleRate());
-}
-
-PassRefPtr<DelayNode> AudioContext::createDelay(ExceptionCode& ec)
-{
-    const double defaultMaxDelayTime = 1;
-    return createDelay(defaultMaxDelayTime, ec);
-}
-
-PassRefPtr<DelayNode> AudioContext::createDelay(double maxDelayTime, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-    RefPtr<DelayNode> node = DelayNode::create(this, m_destinationNode->sampleRate(), maxDelayTime, ec);
-    if (ec)
-        return 0;
-    return node;
-}
-
-PassRefPtr<ChannelSplitterNode> AudioContext::createChannelSplitter(ExceptionCode& ec)
-{
-    const unsigned ChannelSplitterDefaultNumberOfOutputs = 6;
-    return createChannelSplitter(ChannelSplitterDefaultNumberOfOutputs, ec);
-}
-
-PassRefPtr<ChannelSplitterNode> AudioContext::createChannelSplitter(size_t numberOfOutputs, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-
-    RefPtr<ChannelSplitterNode> node = ChannelSplitterNode::create(this, m_destinationNode->sampleRate(), numberOfOutputs);
-
-    if (!node.get()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    return node;
-}
-
-PassRefPtr<ChannelMergerNode> AudioContext::createChannelMerger(ExceptionCode& ec)
-{
-    const unsigned ChannelMergerDefaultNumberOfInputs = 6;
-    return createChannelMerger(ChannelMergerDefaultNumberOfInputs, ec);
-}
-
-PassRefPtr<ChannelMergerNode> AudioContext::createChannelMerger(size_t numberOfInputs, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-
-    RefPtr<ChannelMergerNode> node = ChannelMergerNode::create(this, m_destinationNode->sampleRate(), numberOfInputs);
-
-    if (!node.get()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    return node;
-}
-
-PassRefPtr<OscillatorNode> AudioContext::createOscillator()
-{
-    ASSERT(isMainThread());
-    lazyInitialize();
-
-    RefPtr<OscillatorNode> node = OscillatorNode::create(this, m_destinationNode->sampleRate());
-
-    // Because this is an AudioScheduledSourceNode, the context keeps a reference until it has finished playing.
-    // When this happens, AudioScheduledSourceNode::finish() calls AudioContext::notifyNodeFinishedProcessing().
-    refNode(node.get());
-
-    return node;
-}
 
 PassRefPtr<WaveTable> AudioContext::createWaveTable(Float32Array* real, Float32Array* imag, ExceptionCode& ec)
 {
@@ -565,8 +424,6 @@ void AudioContext::derefFinishedSourceNodes()
 void AudioContext::refNode(AudioNode* node)
 {
     ASSERT(isMainThread());
-    AutoLocker locker(this);
-    
     node->ref(AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
@@ -761,7 +618,6 @@ void AudioContext::scheduleNodeDeletion()
 
         // Don't let ourself get deleted before the callback.
         // See matching deref() in deleteMarkedNodesDispatch().
-        ref();
         callOnMainThread(deleteMarkedNodesDispatch, this);
     }
 }
@@ -774,41 +630,34 @@ void AudioContext::deleteMarkedNodesDispatch(void* userData)
         return;
 
     context->deleteMarkedNodes();
-    context->deref();
 }
 
 void AudioContext::deleteMarkedNodes()
 {
     ASSERT(isMainThread());
 
-    // Protect this object from being deleted before we release the mutex locked by AutoLocker.
-    RefPtr<AudioContext> protect(this);
-    {
-        AutoLocker locker(this);
+    while (size_t n = m_nodesToDelete.size()) {
+        AudioNode* node = m_nodesToDelete[n - 1];
+        m_nodesToDelete.pop_back();
 
-        while (size_t n = m_nodesToDelete.size()) {
-            AudioNode* node = m_nodesToDelete[n - 1];
-            m_nodesToDelete.pop_back();
-
-            // Before deleting the node, clear out any AudioNodeInputs from m_dirtySummingJunctions.
-            unsigned numberOfInputs = node->numberOfInputs();
-            for (unsigned i = 0; i < numberOfInputs; ++i) {
-                auto it = m_dirtySummingJunctions.find(node->input(i));
-                m_dirtySummingJunctions.erase(it);
-            }
-
-            // Before deleting the node, clear out any AudioNodeOutputs from m_dirtyAudioNodeOutputs.
-            unsigned numberOfOutputs = node->numberOfOutputs();
-            for (unsigned i = 0; i < numberOfOutputs; ++i) {
-                auto it = m_dirtyAudioNodeOutputs.find(node->output(i));
-                m_dirtyAudioNodeOutputs.erase(it);
-            }
-
-            // Finally, delete it.
-            delete node;
+        // Before deleting the node, clear out any AudioNodeInputs from m_dirtySummingJunctions.
+        unsigned numberOfInputs = node->numberOfInputs();
+        for (unsigned i = 0; i < numberOfInputs; ++i) {
+            auto it = m_dirtySummingJunctions.find(node->input(i));
+            m_dirtySummingJunctions.erase(it);
         }
-        m_isDeletionScheduled = false;
+
+        // Before deleting the node, clear out any AudioNodeOutputs from m_dirtyAudioNodeOutputs.
+        unsigned numberOfOutputs = node->numberOfOutputs();
+        for (unsigned i = 0; i < numberOfOutputs; ++i) {
+            auto it = m_dirtyAudioNodeOutputs.find(node->output(i));
+            m_dirtyAudioNodeOutputs.erase(it);
+        }
+
+        // Finally, delete it.
+        delete node;
     }
+    m_isDeletionScheduled = false;
 }
 
 void AudioContext::markSummingJunctionDirty(AudioSummingJunction* summingJunction)
@@ -820,7 +669,6 @@ void AudioContext::markSummingJunctionDirty(AudioSummingJunction* summingJunctio
 void AudioContext::removeMarkedSummingJunction(AudioSummingJunction* summingJunction)
 {
     ASSERT(isMainThread());
-    AutoLocker locker(this);
     auto it = m_dirtySummingJunctions.find(summingJunction);
     m_dirtySummingJunctions.erase(it);
 }
