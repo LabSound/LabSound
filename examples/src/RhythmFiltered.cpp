@@ -3,7 +3,7 @@
 #include "RhythmFiltered.h"
 using namespace LabSound;
 
-void rhythmFiltered(RefPtr<AudioContext> context, float seconds) {
+void rhythmFiltered(std::shared_ptr<AudioContext> context, float seconds) {
     ExceptionCode ec;
     
     //--------------------------------------------------------------
@@ -13,10 +13,10 @@ void rhythmFiltered(RefPtr<AudioContext> context, float seconds) {
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");
     
-    RefPtr<BiquadFilterNode> filter = context->createBiquadFilter();
+    RefPtr<BiquadFilterNode> filter = BiquadFilterNode::create(context, context->sampleRate());
     filter->setType(BiquadFilterNode::LOWPASS, ec);
     filter->frequency()->setValue(500.0f);
-    filter->connect(context->destination(), 0, 0, ec);
+    filter->connect(context->destination().get(), 0, 0, ec);
     
     float startTime = 0;
     float eighthNoteTime = 1.0f/4.0f;

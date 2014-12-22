@@ -10,5 +10,5 @@
 
 #include "AudioContext.h"
 
-void rhythmFiltered(WTF::RefPtr<WebCore::AudioContext> context, float seconds);
+void rhythmFiltered(std::shared_ptr<WebCore::AudioContext> context, float seconds);
 
