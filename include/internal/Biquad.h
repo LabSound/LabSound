@@ -31,7 +31,7 @@
 
 #include "AudioArray.h"
 #include <sys/types.h>
-#include "WTF/Complex.h"
+#include <complex>
 #include "WTF/Platform.h"
  
 #if USE(WEBAUDIO_IPP)
@@ -65,11 +65,11 @@ public:
 
     // Set the biquad coefficients given a single zero (other zero will be conjugate)
     // and a single pole (other pole will be conjugate)
-    void setZeroPolePairs(const Complex& zero, const Complex& pole);
+    void setZeroPolePairs(const std::complex<double>& zero, const std::complex<double>& pole);
 
     // Set the biquad coefficients given a single pole (other pole will be conjugate)
     // (The zeroes will be the inverse of the poles)
-    void setAllpassPole(const Complex& pole);
+    void setAllpassPole(const std::complex<double>& pole);
 
     // Resets filter state
     void reset();

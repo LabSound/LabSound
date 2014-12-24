@@ -41,6 +41,8 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
+using namespace std;
+
 namespace WebCore {
 
 const int kBufferSize = 1024;
@@ -522,7 +524,7 @@ void Biquad::setBandpassParams(double frequency, double Q)
     }
 }
 
-void Biquad::setZeroPolePairs(const Complex &zero, const Complex &pole)
+void Biquad::setZeroPolePairs(const complex<double> &zero, const complex<double> &pole)
 {
     double b0 = 1;
     double b1 = -2 * zero.real();
@@ -537,9 +539,9 @@ void Biquad::setZeroPolePairs(const Complex &zero, const Complex &pole)
     setNormalizedCoefficients(b0, b1, b2, 1, a1, a2);
 }
 
-void Biquad::setAllpassPole(const Complex &pole)
+void Biquad::setAllpassPole(const complex<double> &pole)
 {
-    Complex zero = Complex(1, 0) / pole;
+    complex<double> zero = complex<double>(1, 0) / pole;
     setZeroPolePairs(zero, pole);
 }
 
@@ -573,10 +575,10 @@ void Biquad::getFrequencyResponse(int nFrequencies,
     
     for (int k = 0; k < nFrequencies; ++k) {
         double omega = -piDouble * frequency[k];
-        Complex z = Complex(cos(omega), sin(omega));
-        Complex numerator = b0 + (b1 + b2 * z) * z;
-        Complex denominator = Complex(1, 0) + (a1 + a2 * z) * z;
-        Complex response = numerator / denominator;
+        complex<double> z = complex<double>(cos(omega), sin(omega));
+        complex<double> numerator = b0 + (b1 + b2 * z) * z;
+        complex<double> denominator = complex<double>(1, 0) + (a1 + a2 * z) * z;
+        complex<double> response = numerator / denominator;
         magResponse[k] = static_cast<float>(abs(response));
         phaseResponse[k] = static_cast<float>(atan2(imag(response), real(response)));
     }

@@ -37,12 +37,19 @@
 #endif
 
 #include "Logging.h"
-#include <wtf/Complex.h>
+#include <complex>
 #include <wtf/MathExtras.h>
 #include <wtf/MemoryObjectInfo.h>
 #include <wtf/RefPtr.h>
 
 namespace WebCore {
+    
+typedef std::complex<double> Complex;
+
+inline Complex complexFromMagnitudePhase(double magnitude, double phase)
+{
+    return Complex(magnitude * cos(phase), magnitude * sin(phase));
+}
 
 void FFTFrame::doPaddedFFT(const float* data, size_t dataSize)
 {
