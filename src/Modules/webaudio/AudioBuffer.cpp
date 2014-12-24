@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioBuffer.h"
 
 #include "AudioBus.h"
@@ -115,5 +112,3 @@ void AudioBuffer::zero()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -96,7 +96,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -109,7 +109,7 @@
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Lib>
@@ -131,7 +131,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -143,7 +143,7 @@
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Lib>
@@ -166,7 +166,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -179,7 +179,7 @@
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Lib>
@@ -204,7 +204,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -217,7 +217,7 @@
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;ENABLE_WEB_AUDIO=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\src\platform;..\src\platform\animation;..\src\platform\audio;..\src\platform\graphics;..\src\platform\graphics\transforms;..\src\platform\text;..\src\platform\audio\win;..\src\Modules\webaudio;..\src\shim;..\src\WTF;..\src\WTF\icu;..\src\WTF\wtf;..\src\rtaudio;..\src\libsndfile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Lib>
@@ -293,18 +293,6 @@
     <ClInclude Include="..\include\internal\util\graphics\LayoutRect.h" />
     <ClInclude Include="..\include\internal\util\graphics\LayoutSize.h" />
     <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\IdentityTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\Matrix3DTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\MatrixTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\PerspectiveTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\RotateTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\ScaleTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\SkewTransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformationMatrix.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformOperation.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformOperations.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformState.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TranslateTransformOperation.h" />
     <ClInclude Include="..\include\internal\util\Logging.h" />
     <ClInclude Include="..\include\internal\util\TextDirection.h" />
     <ClInclude Include="..\include\internal\util\WritingMode.h" />
@@ -476,7 +464,6 @@
     <ClInclude Include="..\include\third_party\WTF\Assertions.h" />
     <ClInclude Include="..\include\third_party\WTF\Atomics.h" />
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h" />
-    <ClInclude Include="..\include\third_party\WTF\BinarySemaphore.h" />
     <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h" />
     <ClInclude Include="..\include\third_party\WTF\Compiler.h" />
     <ClInclude Include="..\include\third_party\WTF\Complex.h" />

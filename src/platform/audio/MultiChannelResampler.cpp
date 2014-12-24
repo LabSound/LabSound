@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "MultiChannelResampler.h"
 
 #include "AudioBus.h"
@@ -119,5 +116,3 @@ void MultiChannelResampler::process(AudioSourceProvider* provider, AudioBus* des
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

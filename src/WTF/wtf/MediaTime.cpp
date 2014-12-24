@@ -26,7 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include "MediaTime.h"
 
 #include <algorithm>

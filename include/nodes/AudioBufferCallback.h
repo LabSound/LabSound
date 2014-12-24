@@ -25,8 +25,6 @@
 #ifndef AudioBufferCallback_h
 #define AudioBufferCallback_h
 
-#if ENABLE(WEB_AUDIO)
-
 #include "WTF/ThreadSafeRefCounted.h"
 
 namespace WebCore {
@@ -40,7 +38,5 @@ public:
 };
 
 } // namespace
-
-#endif // ENABLE(WEB_AUDIO)
 
 #endif // AudioBufferCallback_h

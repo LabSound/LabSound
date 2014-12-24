@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "HRTFDatabase.h"
 
 #include "HRTFElevation.h"
@@ -119,5 +116,3 @@ unsigned HRTFDatabase::indexFromElevationAngle(double elevationAngle)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

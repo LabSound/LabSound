@@ -22,9 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AnalyserNode.h"
 
@@ -81,5 +79,3 @@ void AnalyserNode::setFftSize(unsigned size, ExceptionCode& ec)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

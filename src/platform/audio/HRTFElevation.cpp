@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "HRTFElevation.h"
 
 #include "AudioBus.h"
@@ -269,5 +266,3 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "SincResampler.h"
 
 #include "AudioBus.h"
@@ -470,5 +467,3 @@ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destinat
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

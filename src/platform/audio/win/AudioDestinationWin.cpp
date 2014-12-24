@@ -28,9 +28,7 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioDestinationWin.h"
 
@@ -174,5 +172,3 @@ int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFr
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

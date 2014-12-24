@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "GainNode.h"
 
 #include "AudioBus.h"
@@ -116,5 +113,3 @@ void GainNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

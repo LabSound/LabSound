@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "ConvolverNode.h"
 
 #include "AudioBuffer.h"
@@ -162,5 +159,3 @@ double ConvolverNode::latencyTime() const
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

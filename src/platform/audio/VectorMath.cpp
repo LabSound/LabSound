@@ -22,10 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include <WTF/Assertions.h>
-
-#if ENABLE(WEB_AUDIO)
 
 #include "VectorMath.h"
 
@@ -743,5 +741,3 @@ void vdeintlve(const float* sourceP, float* realDestP, float* imagDestP, size_t 
 } // namespace VectorMath
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

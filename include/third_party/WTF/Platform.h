@@ -626,14 +626,7 @@
 
 #else
 
-/* FIXME: is this actually used or do other platforms generate their own config.h? */
-
-#define HAVE_ERRNO_H 1
-#define HAVE_LANGINFO_H 1
-#define HAVE_MMAP 1
-#define HAVE_STRINGS_H 1
-#define HAVE_SYS_PARAM_H 1
-#define HAVE_SYS_TIME_H 1
+#error Undefined platform
 
 #endif
 
@@ -732,10 +725,6 @@
 
 #if !defined(ENABLE_GC_VALIDATION) && !defined(NDEBUG)
 #define ENABLE_GC_VALIDATION 1
-#endif
-
-#if PLATFORM(MAC) && !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
-#define WTF_USE_AVFOUNDATION 1
 #endif
 
 #if PLATFORM(MAC) && !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1080

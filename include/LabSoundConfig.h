@@ -9,6 +9,10 @@
 #ifndef LabSound_LabSoundConfig_h
 #define LabSound_LabSoundConfig_h
 
+#include "WTF/Platform.h"
+#include "WTF/ExportMacros.h"
+#include "PlatformExportMacros.h"
+
 // Configure Webaudio features
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
@@ -29,8 +33,19 @@
 # endif
 #endif
 
-#ifndef ENABLE_WEB_AUDIO
-# define ENABLE_WEB_AUDIO 1
+#if OS(WINDOWS)
+#  ifndef _WIN32_WINNT
+#    define _WIN32_WINNT 0x0500
+#  endif
+#  ifndef WINVER
+#    define WINVER 0x0500
+#  endif
+#  ifndef max
+#    define max max
+#  endif
+#  ifndef min
+#    define min min
+#  endif
 #endif
 
 #endif

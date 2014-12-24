@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)
-
+#include "LabSoundConfig.h"
 #include "MediaStreamAudioSourceNode.h"
 
 #include "AudioContext.h"
@@ -118,5 +115,3 @@ void MediaStreamAudioSourceNode::reset()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO) && ENABLE(MEDIA_STREAM)

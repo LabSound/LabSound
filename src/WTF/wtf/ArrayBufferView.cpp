@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include <WTF/ArrayBufferView.h>
 
 #include <WTF/ArrayBuffer.h>

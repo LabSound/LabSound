@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "WaveShaperNode.h"
 #include <wtf/MainThread.h>
 
@@ -50,5 +47,3 @@ Float32Array* WaveShaperNode::curve()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

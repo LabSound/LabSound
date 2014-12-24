@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "HRTFDatabaseLoader.h"
 
 #include "HRTFDatabase.h"
@@ -137,5 +134,3 @@ HRTFDatabase* HRTFDatabaseLoader::defaultHRTFDatabase()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

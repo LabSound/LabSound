@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioBus.h"
 
 #include "DenormalDisabler.h"
@@ -548,5 +545,3 @@ void AudioBus::clearSilentFlag()
 }
 
 } // WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioScheduledSourceNode.h"
 
 #include "AudioContext.h"
@@ -150,18 +147,6 @@ void AudioScheduledSourceNode::stop(double when)
     m_endTime = when;
 }
 
-#if ENABLE(LEGACY_WEB_AUDIO)
-void AudioScheduledSourceNode::noteOn(double when)
-{
-    start(when);
-}
-
-void AudioScheduledSourceNode::noteOff(double when)
-{
-    stop(when);
-}
-#endif
-
 void AudioScheduledSourceNode::finish()
 {
     std::shared_ptr<AudioContext> ac = context().lock();
@@ -174,5 +159,3 @@ void AudioScheduledSourceNode::finish()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

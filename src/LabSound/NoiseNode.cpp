@@ -1,8 +1,7 @@
 
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 
-#include "config.h"
-
+#include "LabSoundConfig.h"
 #include "LabSound.h"
 #include "AudioNodeOutput.h"
 #include "NoiseNode.h"

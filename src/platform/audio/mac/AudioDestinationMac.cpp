@@ -26,9 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioDestinationMac.h"
 
@@ -332,5 +330,3 @@ OSStatus AudioDestinationMac::inputProc(void* userData, AudioUnitRenderActionFla
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioPullFIFO.h"
 
 namespace WebCore {
@@ -71,5 +68,3 @@ void AudioPullFIFO::fillBuffer(size_t numberOfFrames)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

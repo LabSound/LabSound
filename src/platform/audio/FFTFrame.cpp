@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "FFTFrame.h"
 
 #ifndef NDEBUG
@@ -278,5 +275,3 @@ void FFTFrame::print()
 #endif // NDEBUG
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

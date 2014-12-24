@@ -1,5 +1,5 @@
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include "ThreadSpecific.h"
 #include "StdLibExtras.h"
 #include "ThreadingPrimitives.h"

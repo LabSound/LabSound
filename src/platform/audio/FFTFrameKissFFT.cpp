@@ -1,7 +1,5 @@
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #if USE(WEBAUDIO_KISSFFT)
 
@@ -207,6 +205,4 @@ namespace WebCore {
     
 } // namespace WebCore
 
-#endif
-
-#endif // ENABLE(WEB_AUDIO) && USE(WEBAUDIO_KISSFFT)
+#endif // USE KISS FFT

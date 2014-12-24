@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "EqualPowerPanner.h"
 
 #include "AudioBus.h"
@@ -155,5 +152,3 @@ void EqualPowerPanner::pan(double azimuth, double /*elevation*/, const AudioBus*
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

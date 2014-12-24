@@ -483,18 +483,7 @@
 		E2D5CEBA1A19B40100B031C8 /* LayoutRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutRect.h; sourceTree = "<group>"; };
 		E2D5CEBB1A19B40100B031C8 /* LayoutSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutSize.h; sourceTree = "<group>"; };
 		E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AffineTransform.h; sourceTree = "<group>"; };
-		E2D5CEBE1A19B40100B031C8 /* IdentityTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IdentityTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEBF1A19B40100B031C8 /* Matrix3DTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix3DTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC01A19B40100B031C8 /* MatrixTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC11A19B40100B031C8 /* PerspectiveTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerspectiveTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC21A19B40100B031C8 /* RotateTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RotateTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC31A19B40100B031C8 /* ScaleTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScaleTransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC41A19B40100B031C8 /* SkewTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkewTransformOperation.h; sourceTree = "<group>"; };
 		E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformationMatrix.h; sourceTree = "<group>"; };
-		E2D5CEC61A19B40100B031C8 /* TransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformOperation.h; sourceTree = "<group>"; };
-		E2D5CEC71A19B40100B031C8 /* TransformOperations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformOperations.h; sourceTree = "<group>"; };
-		E2D5CEC81A19B40100B031C8 /* TransformState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformState.h; sourceTree = "<group>"; };
-		E2D5CEC91A19B40100B031C8 /* TranslateTransformOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TranslateTransformOperation.h; sourceTree = "<group>"; };
 		E2D5CECA1A19B40100B031C8 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		E2D5CECB1A19B40100B031C8 /* TextDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDirection.h; sourceTree = "<group>"; };
 		E2D5CECC1A19B40100B031C8 /* WritingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WritingMode.h; sourceTree = "<group>"; };
@@ -517,7 +506,6 @@
 		E2D5CEE11A19B43900B031C8 /* AudioNodeOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNodeOutput.h; path = nodes/AudioNodeOutput.h; sourceTree = "<group>"; };
 		E2D5CEE21A19B43900B031C8 /* AudioParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioParam.h; path = nodes/AudioParam.h; sourceTree = "<group>"; };
 		E2D5CEE31A19B43900B031C8 /* AudioParamTimeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioParamTimeline.h; path = nodes/AudioParamTimeline.h; sourceTree = "<group>"; };
-		E2D5CEE41A19B43900B031C8 /* AudioProcessingEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioProcessingEvent.h; path = nodes/AudioProcessingEvent.h; sourceTree = "<group>"; };
 		E2D5CEE51A19B43900B031C8 /* AudioScheduledSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioScheduledSourceNode.h; path = nodes/AudioScheduledSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEE61A19B43900B031C8 /* AudioSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioSourceNode.h; path = nodes/AudioSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEE71A19B43900B031C8 /* AudioSummingJunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioSummingJunction.h; path = nodes/AudioSummingJunction.h; sourceTree = "<group>"; };
@@ -540,7 +528,6 @@
 		E2D5CEF91A19B43900B031C8 /* MediaStreamAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioDestinationNode.h; path = nodes/MediaStreamAudioDestinationNode.h; sourceTree = "<group>"; };
 		E2D5CEFA1A19B43900B031C8 /* MediaStreamAudioSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioSourceNode.h; path = nodes/MediaStreamAudioSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEFB1A19B43900B031C8 /* NoiseNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NoiseNode.h; path = nodes/NoiseNode.h; sourceTree = "<group>"; };
-		E2D5CEFC1A19B43900B031C8 /* OfflineAudioCompletionEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfflineAudioCompletionEvent.h; path = nodes/OfflineAudioCompletionEvent.h; sourceTree = "<group>"; };
 		E2D5CEFD1A19B43900B031C8 /* OfflineAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfflineAudioDestinationNode.h; path = nodes/OfflineAudioDestinationNode.h; sourceTree = "<group>"; };
 		E2D5CEFE1A19B43900B031C8 /* OscillatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OscillatorNode.h; path = nodes/OscillatorNode.h; sourceTree = "<group>"; };
 		E2D5CEFF1A19B43900B031C8 /* PannerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PannerNode.h; path = nodes/PannerNode.h; sourceTree = "<group>"; };
@@ -550,7 +537,6 @@
 		E2D5CF041A19B43900B031C8 /* RealtimeAnalyser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RealtimeAnalyser.h; path = nodes/RealtimeAnalyser.h; sourceTree = "<group>"; };
 		E2D5CF051A19B43900B031C8 /* RecorderNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecorderNode.h; path = nodes/RecorderNode.h; sourceTree = "<group>"; };
 		E2D5CF061A19B43900B031C8 /* SampledInstrumentNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampledInstrumentNode.h; path = nodes/SampledInstrumentNode.h; sourceTree = "<group>"; };
-		E2D5CF071A19B43900B031C8 /* ScriptProcessorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScriptProcessorNode.h; path = nodes/ScriptProcessorNode.h; sourceTree = "<group>"; };
 		E2D5CF081A19B43900B031C8 /* SfxrNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SfxrNode.h; path = nodes/SfxrNode.h; sourceTree = "<group>"; };
 		E2D5CF091A19B43900B031C8 /* SoundBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SoundBuffer.h; path = nodes/SoundBuffer.h; sourceTree = "<group>"; };
 		E2D5CF0A1A19B43900B031C8 /* SpatializationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpatializationNode.h; path = nodes/SpatializationNode.h; sourceTree = "<group>"; };
@@ -1039,18 +1025,7 @@
 			isa = PBXGroup;
 			children = (
 				E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */,
-				E2D5CEBE1A19B40100B031C8 /* IdentityTransformOperation.h */,
-				E2D5CEBF1A19B40100B031C8 /* Matrix3DTransformOperation.h */,
-				E2D5CEC01A19B40100B031C8 /* MatrixTransformOperation.h */,
-				E2D5CEC11A19B40100B031C8 /* PerspectiveTransformOperation.h */,
-				E2D5CEC21A19B40100B031C8 /* RotateTransformOperation.h */,
-				E2D5CEC31A19B40100B031C8 /* ScaleTransformOperation.h */,
-				E2D5CEC41A19B40100B031C8 /* SkewTransformOperation.h */,
 				E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */,
-				E2D5CEC61A19B40100B031C8 /* TransformOperation.h */,
-				E2D5CEC71A19B40100B031C8 /* TransformOperations.h */,
-				E2D5CEC81A19B40100B031C8 /* TransformState.h */,
-				E2D5CEC91A19B40100B031C8 /* TranslateTransformOperation.h */,
 			);
 			path = transforms;
 			sourceTree = "<group>";
@@ -1075,7 +1050,6 @@
 				E2D5CEE11A19B43900B031C8 /* AudioNodeOutput.h */,
 				E2D5CEE21A19B43900B031C8 /* AudioParam.h */,
 				E2D5CEE31A19B43900B031C8 /* AudioParamTimeline.h */,
-				E2D5CEE41A19B43900B031C8 /* AudioProcessingEvent.h */,
 				E2D5CEE51A19B43900B031C8 /* AudioScheduledSourceNode.h */,
 				E2D5CEE61A19B43900B031C8 /* AudioSourceNode.h */,
 				E2D5CEE71A19B43900B031C8 /* AudioSummingJunction.h */,
@@ -1099,7 +1073,6 @@
 				E2D5CEF91A19B43900B031C8 /* MediaStreamAudioDestinationNode.h */,
 				E2D5CEFA1A19B43900B031C8 /* MediaStreamAudioSourceNode.h */,
 				E2D5CEFB1A19B43900B031C8 /* NoiseNode.h */,
-				E2D5CEFC1A19B43900B031C8 /* OfflineAudioCompletionEvent.h */,
 				E2D5CEFD1A19B43900B031C8 /* OfflineAudioDestinationNode.h */,
 				E2D5CEFE1A19B43900B031C8 /* OscillatorNode.h */,
 				E2D5CEFF1A19B43900B031C8 /* PannerNode.h */,
@@ -1109,7 +1082,6 @@
 				E2D5CF041A19B43900B031C8 /* RealtimeAnalyser.h */,
 				E2D5CF051A19B43900B031C8 /* RecorderNode.h */,
 				E2D5CF061A19B43900B031C8 /* SampledInstrumentNode.h */,
-				E2D5CF071A19B43900B031C8 /* ScriptProcessorNode.h */,
 				E2D5CF081A19B43900B031C8 /* SfxrNode.h */,
 				E2D5CF091A19B43900B031C8 /* SoundBuffer.h */,
 				E2D5CF0A1A19B43900B031C8 /* SpatializationNode.h */,
@@ -1669,7 +1641,6 @@
 					platform/graphics/transforms,
 					platform/text,
 					Modules/webaudio,
-					shim,
 					WTF,
 					WTF/icu,
 					WTF/wtf,
@@ -1718,7 +1689,6 @@
 					platform/graphics/transforms,
 					platform/text,
 					Modules/webaudio,
-					shim,
 					WTF,
 					WTF/icu,
 					WTF/wtf,

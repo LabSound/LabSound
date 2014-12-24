@@ -28,9 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioDSPKernelProcessor.h"
 
@@ -128,5 +126,3 @@ double AudioDSPKernelProcessor::latencyTime() const
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

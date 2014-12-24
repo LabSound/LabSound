@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "WaveShaperProcessor.h"
 
 #include "WaveShaperDSPKernel.h"
@@ -76,5 +73,3 @@ void WaveShaperProcessor::process(const AudioBus* source, AudioBus* destination,
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

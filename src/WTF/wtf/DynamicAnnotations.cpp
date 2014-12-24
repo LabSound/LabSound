@@ -24,8 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
+#include "LabSoundConfig.h"
 #include "DynamicAnnotations.h"
 
 #if USE(DYNAMIC_ANNOTATIONS) && !USE(DYNAMIC_ANNOTATIONS_NOIMPL)

@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "DelayProcessor.h"
  
 #include "DelayDSPKernel.h"
@@ -51,5 +48,3 @@ AudioDSPKernel* DelayProcessor::createKernel()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

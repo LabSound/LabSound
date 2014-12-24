@@ -23,10 +23,8 @@
 
  */
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include "libsndfile\sndfile.h"
-
-#if ENABLE(WEB_AUDIO)
 
 #include "AudioBus.h"
 #include "AudioFileReader.h"
@@ -76,4 +74,3 @@ namespace WebCore {
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

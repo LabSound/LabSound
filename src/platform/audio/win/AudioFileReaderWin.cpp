@@ -27,9 +27,7 @@
 
 */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioFileReaderWin.h"
 
@@ -219,6 +217,4 @@ sf_count_t AudioFileReader::MemoryWrite(const void*, sf_count_t, void*) {
 }
 
 } // WebCore
-
-#endif // ENABLE(WEB_AUDIO)
 

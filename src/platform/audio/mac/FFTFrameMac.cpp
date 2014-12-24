@@ -28,10 +28,7 @@
 
 // Mac OS X - specific FFTFrame implementation
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
 
 #include "FFTFrame.h"
@@ -188,5 +185,3 @@ float* FFTFrame::imagData() const
 } // namespace WebCore
 
 #endif // #if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG)
-
-#endif // ENABLE(WEB_AUDIO)

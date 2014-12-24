@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioDestinationNode.h"
 
 #include "AudioContext.h"
@@ -100,4 +97,3 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

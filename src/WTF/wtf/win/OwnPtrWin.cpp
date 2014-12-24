@@ -26,7 +26,7 @@
 
 #include "WTF\PassOwnPtr.h"
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include <windows.h>
 
 namespace WTF {

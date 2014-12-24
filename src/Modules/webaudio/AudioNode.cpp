@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioNode.h"
 
 #include "AudioContext.h"
@@ -454,5 +451,3 @@ void AudioNode::printNodeCounts()
 #endif // DEBUG_AUDIONODE_REFERENCES
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioUtilities.h"
 #include <wtf/MathExtras.h>
 #include <wtf/Assertions.h>
@@ -64,4 +61,3 @@ size_t timeToSampleFrame(double time, double sampleRate)
 
 } // WebCore
 
-#endif // ENABLE(WEB_AUDIO)

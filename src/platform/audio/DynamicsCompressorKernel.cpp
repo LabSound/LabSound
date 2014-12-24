@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "DynamicsCompressorKernel.h"
 
 #include "AudioUtilities.h"
@@ -475,5 +472,3 @@ void DynamicsCompressorKernel::reset()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

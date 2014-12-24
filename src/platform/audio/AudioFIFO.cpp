@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioFIFO.h"
 
 namespace WebCore {
@@ -140,5 +137,3 @@ void AudioFIFO::findWrapLengths(size_t index, size_t size, size_t& part1Length, 
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

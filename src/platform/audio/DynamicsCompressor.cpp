@@ -26,10 +26,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
 #include "DynamicsCompressor.h"
 
 #include "AudioBus.h"
@@ -283,5 +279,3 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

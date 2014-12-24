@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "AudioFileReaderMac.h"
 
 #include "AudioBus.h"
@@ -254,5 +251,3 @@ std::unique_ptr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_
 }
 
 } // WebCore
-
-#endif // ENABLE(WEB_AUDIO)

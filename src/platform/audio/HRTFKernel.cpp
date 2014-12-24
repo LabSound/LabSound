@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "HRTFKernel.h"
 
 #include "AudioChannel.h"
@@ -133,5 +130,3 @@ std::unique_ptr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* ker
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

@@ -22,9 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioBufferSourceNode.h"
 
@@ -421,13 +419,6 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     m_playbackState = SCHEDULED_STATE;
 }
 
-#if ENABLE(LEGACY_WEB_AUDIO)
-void AudioBufferSourceNode::noteGrainOn(double when, double grainOffset, double grainDuration, ExceptionCode& ec)
-{
-    startGrain(when, grainOffset, grainDuration, ec);
-}
-#endif
-
 double AudioBufferSourceNode::totalPitchRate()
 {
     double dopplerRate = 1.0;
@@ -501,5 +492,3 @@ void AudioBufferSourceNode::finish()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

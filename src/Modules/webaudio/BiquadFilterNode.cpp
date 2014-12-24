@@ -22,10 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "BiquadFilterNode.h"
 
 namespace WebCore {
@@ -68,5 +65,3 @@ void BiquadFilterNode::getFrequencyResponse(const Float32Array* frequencyHz,
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

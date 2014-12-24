@@ -23,7 +23,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include "OSAllocator.h"
 
 #include "windows.h"

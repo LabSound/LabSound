@@ -284,40 +284,7 @@
     <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h">
       <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\IdentityTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\Matrix3DTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\MatrixTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\PerspectiveTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\RotateTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\ScaleTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\SkewTransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\internal\util\graphics\transforms\TransformationMatrix.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformOperation.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformOperations.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformState.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TranslateTransformOperation.h">
       <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
     </ClInclude>
     <ClInclude Include="..\include\internal\util\FloatConversion.h">
@@ -638,7 +605,6 @@
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\BinarySemaphore.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h">

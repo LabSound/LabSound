@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "Cone.h"
 #include <wtf/MathExtras.h>
 
@@ -81,5 +78,3 @@ double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientat
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

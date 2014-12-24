@@ -1,10 +1,7 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "RecorderNode.h"
 #include "LabSound.h"
 #include "AudioBus.h"
@@ -109,4 +106,3 @@ namespace LabSound {
                                            
 } // namespace LabSound
 
-#endif // ENABLE(WEB_AUDIO)

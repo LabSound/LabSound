@@ -60,11 +60,6 @@ public:
     void start(double when);
     void stop(double when);
 
-#if ENABLE(LEGACY_WEB_AUDIO)
-    void noteOn(double when);
-    void noteOff(double when);
-#endif
-
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }

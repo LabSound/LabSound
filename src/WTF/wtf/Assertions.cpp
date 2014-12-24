@@ -33,12 +33,11 @@
 #pragma GCC diagnostic ignored "-Wmissing-format-attribute"
 #endif
 
-#include "config.h"
+#include "LabSoundConfig.h"
 #include <WTF/Assertions.h>
 
 #include <WTF/Compiler.h>
 #include <WTF/StdLibExtras.h>
-#include <WTF/StringExtras.h>
 #include <vector>
 #include <string>
 

@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include "FFTConvolver.h"
 
 #include "VectorMath.h"
@@ -116,5 +113,3 @@ void FFTConvolver::reset()
 }
 
 } // namespace WebCore
-
-#endif // ENABLE(WEB_AUDIO)

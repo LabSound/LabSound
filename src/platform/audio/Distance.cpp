@@ -26,10 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
-
+#include "LabSoundConfig.h"
 #include <WTF/Assertions.h>
 #include "Distance.h"
 
@@ -89,4 +86,3 @@ double DistanceEffect::exponentialGain(double distance)
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

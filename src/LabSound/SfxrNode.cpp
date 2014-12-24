@@ -172,7 +172,6 @@
 */
 
 #include "LabSound.h"
-#include "config.h"
 
 #include "AudioNodeOutput.h"
 #include "SfxrNode.h"

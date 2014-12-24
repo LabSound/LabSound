@@ -22,9 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "AudioBasicInspectorNode.h"
 
@@ -125,4 +123,3 @@ void AudioBasicInspectorNode::updatePullStatus()
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

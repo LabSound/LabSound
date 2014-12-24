@@ -22,9 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-
-#if ENABLE(WEB_AUDIO)
+#include "LabSoundConfig.h"
 
 #include "RealtimeAnalyser.h"
 
@@ -336,4 +334,3 @@ void RealtimeAnalyser::getByteTimeDomainData(Uint8Array* destinationArray)
 
 } // namespace WebCore
 
-#endif // ENABLE(WEB_AUDIO)

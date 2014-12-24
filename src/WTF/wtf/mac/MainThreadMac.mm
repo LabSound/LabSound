@@ -26,7 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-#import "config.h"
+#include "LabSoundConfig.h"
 #import "MainThread.h"
 
 #import <CoreFoundation/CoreFoundation.h>
