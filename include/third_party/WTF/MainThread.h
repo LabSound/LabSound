@@ -44,9 +44,6 @@ WTF_EXPORT_PRIVATE void callOnMainThread(MainThreadFunction*, void* context);
 WTF_EXPORT_PRIVATE void callOnMainThreadAndWait(MainThreadFunction*, void* context);
 WTF_EXPORT_PRIVATE void cancelCallOnMainThread(MainThreadFunction*, void* context);
 
-template<typename> class Function;
-WTF_EXPORT_PRIVATE void callOnMainThread(const Function<void ()>&);
-    
 WTF_EXPORT_PRIVATE void setMainThreadCallbacksPaused(bool paused);
 
 WTF_EXPORT_PRIVATE bool isMainThread();

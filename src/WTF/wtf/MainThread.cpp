@@ -30,7 +30,6 @@
 #include "MainThread.h"
 
 #include <WTF/CurrentTime.h>
-#include <WTF/Functional.h>
 #include <WTF/StdLibExtras.h>
 #include <WTF/Threading.h>
 #include <deque>
@@ -222,18 +221,6 @@ void cancelCallOnMainThread(MainThreadFunction* function, void* context)
         functionQueue().remove(i);
     }
 #endif
-}
-
-static void callFunctionObject(void* context)
-{
-    Function<void ()>* function = static_cast<Function<void ()>*>(context);
-    (*function)();
-    delete function;
-}
-
-void callOnMainThread(const Function<void ()>& function)
-{
-    callOnMainThread(callFunctionObject, new Function<void ()>(function));
 }
 
 void setMainThreadCallbacksPaused(bool paused)
