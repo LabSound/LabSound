@@ -366,7 +366,7 @@ PassRefPtr<MediaElementAudioSourceNode> AudioContext::createMediaElementSource(H
     
 PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
 {
-    MediaStream* mediaStream = new MediaStream();
+    std::shared_ptr<MediaStream> mediaStream = std::make_shared<MediaStream>();
 
     ASSERT(ac->isAudioThread());
     ac->lazyInitialize();

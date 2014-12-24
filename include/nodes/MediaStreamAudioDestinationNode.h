@@ -58,8 +58,8 @@ private:
     // As an audio source, we will never propagate silence.
     virtual bool propagatesSilence() const OVERRIDE { return false; }
 
-    RefPtr<MediaStream> m_stream;
-    RefPtr<MediaStreamSource> m_source;
+    std::shared_ptr<MediaStream> m_stream;
+    std::shared_ptr<MediaStreamSource> m_source;
     AudioBus m_mixBus;
 };
 

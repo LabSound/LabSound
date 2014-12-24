@@ -25,11 +25,9 @@
 #ifndef MediaStream_h
 #define MediaStream_h
 
-#include "WTF/ThreadSafeRefCounted.h"
-
 namespace WebCore {
     
-    class MediaStream : public WTF::ThreadSafeRefCounted<MediaStream>
+    class MediaStream
     {
     public:
         class Tracks {
@@ -48,7 +46,7 @@ namespace WebCore {
         Tracks _tracks;
     };
     
-    class MediaStreamSource : public ThreadSafeRefCounted<MediaStreamSource>
+    class MediaStreamSource
     {
     public:
     };
