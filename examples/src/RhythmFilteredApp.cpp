@@ -16,5 +16,6 @@ int main(int, char**) {
     
     auto context = LabSound::init();
     rhythmFiltered(context, 3.0f);
+    LabSound::finish(context);
     return 0;
 }

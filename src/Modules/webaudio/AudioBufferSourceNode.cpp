@@ -344,6 +344,7 @@ bool AudioBufferSourceNode::setBuffer(AudioBuffer* buffer)
     
     // The context must be locked since changing the buffer can re-configure the number of channels that are output.
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
     
     // This synchronizes with process().
     MutexLocker processLocker(m_processLock);

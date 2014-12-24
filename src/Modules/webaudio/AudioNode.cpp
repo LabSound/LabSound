@@ -122,6 +122,7 @@ void AudioNode::connect(AudioNode* destination, unsigned outputIndex, unsigned i
 {
     ASSERT(!context().expired() && isMainThread());
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
 
     if (!destination) {
         ec = SYNTAX_ERR;
@@ -156,6 +157,7 @@ void AudioNode::connect(AudioParam* param, unsigned outputIndex, ExceptionCode& 
 {
     ASSERT(!context().expired() && isMainThread());
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
 
     if (!param) {
         ec = SYNTAX_ERR;
@@ -180,6 +182,7 @@ void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
 {
     ASSERT(!context().expired() && isMainThread());
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
 
     // Sanity check input and output indices.
     if (outputIndex >= numberOfOutputs()) {
@@ -282,6 +285,8 @@ void AudioNode::enableOutputsIfNecessary()
 {
     if (m_isDisabled && m_connectionRefCount > 0) {
         ASSERT(isMainThread());
+        auto ac = context().lock();
+        AudioContext::AutoLocker locker(ac.get());
 
         m_isDisabled = false;
         for (unsigned i = 0; i < m_outputs.size(); ++i)

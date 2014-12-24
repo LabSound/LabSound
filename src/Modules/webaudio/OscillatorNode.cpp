@@ -42,10 +42,10 @@ namespace WebCore {
 
 using namespace VectorMath;
 
-WaveTable* OscillatorNode::s_waveTableSine = 0;
-WaveTable* OscillatorNode::s_waveTableSquare = 0;
-WaveTable* OscillatorNode::s_waveTableSawtooth = 0;
-WaveTable* OscillatorNode::s_waveTableTriangle = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSine = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSquare = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSawtooth = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
 PassRefPtr<OscillatorNode> OscillatorNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
 {
@@ -84,28 +84,28 @@ OscillatorNode::~OscillatorNode()
 
 void OscillatorNode::setType(unsigned short type, ExceptionCode& ec)
 {
-    WaveTable* waveTable = 0;
+    std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
 
     switch (type) {
     case SINE:
         if (!s_waveTableSine)
-            s_waveTableSine = WaveTable::createSine(sampleRate).leakRef();
+            s_waveTableSine = WaveTable::createSine(sampleRate);
         waveTable = s_waveTableSine;
         break;
     case SQUARE:
         if (!s_waveTableSquare)
-            s_waveTableSquare = WaveTable::createSquare(sampleRate).leakRef();
+            s_waveTableSquare = WaveTable::createSquare(sampleRate);
         waveTable = s_waveTableSquare;
         break;
     case SAWTOOTH:
         if (!s_waveTableSawtooth)
-            s_waveTableSawtooth = WaveTable::createSawtooth(sampleRate).leakRef();
+            s_waveTableSawtooth = WaveTable::createSawtooth(sampleRate);
         waveTable = s_waveTableSawtooth;
         break;
     case TRIANGLE:
         if (!s_waveTableTriangle)
-            s_waveTableTriangle = WaveTable::createTriangle(sampleRate).leakRef();
+            s_waveTableTriangle = WaveTable::createTriangle(sampleRate);
         waveTable = s_waveTableTriangle;
         break;
     case CUSTOM:
@@ -304,7 +304,7 @@ void OscillatorNode::reset()
     m_virtualReadIndex = 0;
 }
 
-void OscillatorNode::setWaveTable(WaveTable* waveTable)
+void OscillatorNode::setWaveTable(std::shared_ptr<WaveTable> waveTable)
 {
     ASSERT(isMainThread());
 

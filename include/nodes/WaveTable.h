@@ -31,23 +31,21 @@
 
 #include "AudioArray.h"
 #include "WTF/Float32Array.h"
-#include "WTF/ThreadSafeRefCounted.h"
-#include "WTF/RefPtr.h"
 #include <vector>
 
 namespace WebCore {
 
 using namespace WTF;
 
-class WaveTable : public ThreadSafeRefCounted<WaveTable> {
+class WaveTable {
 public:
-    static PassRefPtr<WaveTable> createSine(float sampleRate);
-    static PassRefPtr<WaveTable> createSquare(float sampleRate);
-    static PassRefPtr<WaveTable> createSawtooth(float sampleRate);
-    static PassRefPtr<WaveTable> createTriangle(float sampleRate);
+    static std::unique_ptr<WaveTable> createSine(float sampleRate);
+    static std::unique_ptr<WaveTable> createSquare(float sampleRate);
+    static std::unique_ptr<WaveTable> createSawtooth(float sampleRate);
+    static std::unique_ptr<WaveTable> createTriangle(float sampleRate);
 
     // Creates an arbitrary wavetable given the frequency components (Fourier coefficients).
-    static PassRefPtr<WaveTable> create(float sampleRate, Float32Array* real, Float32Array* imag);
+    static std::unique_ptr<WaveTable> create(float sampleRate, Float32Array* real, Float32Array* imag);
 
     // Returns pointers to the lower and higher wavetable data for the pitch range containing
     // the given fundamental frequency. These two tables are in adjacent "pitch" ranges

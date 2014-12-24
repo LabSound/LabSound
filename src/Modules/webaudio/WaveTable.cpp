@@ -47,13 +47,13 @@ namespace WebCore {
     
 using namespace VectorMath;
 
-PassRefPtr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Float32Array* imag)
+std::unique_ptr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Float32Array* imag)
 {
 
     bool isGood = real && imag && real->length() == imag->length();
     ASSERT(isGood);
     if (isGood) {
-        RefPtr<WaveTable> waveTable = adoptRef(new WaveTable(sampleRate));
+        std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
         size_t numberOfComponents = real->length();
         waveTable->createBandLimitedTables(real->data(), imag->data(), numberOfComponents);
         return waveTable;
@@ -61,30 +61,30 @@ PassRefPtr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Fl
     return 0;
 }
 
-PassRefPtr<WaveTable> WaveTable::createSine(float sampleRate)
+std::unique_ptr<WaveTable> WaveTable::createSine(float sampleRate)
 {
-    RefPtr<WaveTable> waveTable = adoptRef(new WaveTable(sampleRate));
+    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
     waveTable->generateBasicWaveform(OscillatorNode::SINE);
     return waveTable;
 }
 
-PassRefPtr<WaveTable> WaveTable::createSquare(float sampleRate)
+std::unique_ptr<WaveTable> WaveTable::createSquare(float sampleRate)
 {
-    RefPtr<WaveTable> waveTable = adoptRef(new WaveTable(sampleRate));
+    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
     waveTable->generateBasicWaveform(OscillatorNode::SQUARE);
     return waveTable;
 }
 
-PassRefPtr<WaveTable> WaveTable::createSawtooth(float sampleRate)
+std::unique_ptr<WaveTable> WaveTable::createSawtooth(float sampleRate)
 {
-    RefPtr<WaveTable> waveTable = adoptRef(new WaveTable(sampleRate));
+    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
     waveTable->generateBasicWaveform(OscillatorNode::SAWTOOTH);
     return waveTable;
 }
 
-PassRefPtr<WaveTable> WaveTable::createTriangle(float sampleRate)
+std::unique_ptr<WaveTable> WaveTable::createTriangle(float sampleRate)
 {
-    RefPtr<WaveTable> waveTable = adoptRef(new WaveTable(sampleRate));
+    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
     waveTable->generateBasicWaveform(OscillatorNode::TRIANGLE);
     return waveTable;
 }

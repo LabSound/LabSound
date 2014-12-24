@@ -185,7 +185,7 @@ AudioContext::~AudioContext()
 #if DEBUG_AUDIONODE_REFERENCES
     fprintf(stderr, "%p: AudioContext::~AudioContext()\n", this);
 #endif
-    // AudioNodes keep a reference to their context, so there should be no way to be in the destructor if there are still AudioNodes around.
+    
     ASSERT(!m_isInitialized);
     ASSERT(m_isStopScheduled);
     ASSERT(!m_nodesToDelete.size());
@@ -284,16 +284,15 @@ void AudioContext::stopDispatch(void* userData)
 
 void AudioContext::stop()
 {
-    // Usually ScriptExecutionContext calls stop twice.
     if (m_isStopScheduled)
         return;
+    
+    ASSERT(isMainThread());
+    
     m_isStopScheduled = true;
-
-    // Don't call uninitialize() immediately here because the ScriptExecutionContext is in the middle
-    // of dealing with all of its ActiveDOMObjects at this point. uninitialize() can de-reference other
-    // ActiveDOMObjects so let's schedule uninitialize() to be called later.
-    // FIXME: see if there's a more direct way to handle this issue.
-    callOnMainThread(stopDispatch, this);
+    
+    uninitialize();
+    clear();
 }
 
 PassRefPtr<AudioBuffer> AudioContext::createBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
@@ -391,19 +390,6 @@ PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std
 }
 
 #endif
-
-PassRefPtr<WaveTable> AudioContext::createWaveTable(Float32Array* real, Float32Array* imag, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    
-    if (!real || !imag || (real->length() != imag->length())) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-    
-    lazyInitialize();
-    return WaveTable::create(sampleRate(), real, imag);
-}
 
 void AudioContext::notifyNodeFinishedProcessing(AudioNode* node)
 {

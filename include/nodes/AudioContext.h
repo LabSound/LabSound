@@ -34,7 +34,6 @@
 #include "HRTFDatabaseLoader.h"
 #include "WTF/MainThread.h"
 #include "WTF/RefPtr.h"
-#include "WTF/ThreadSafeRefCounted.h"
 #include "WTF/Threading.h"
 #include <vector>
 #include <set>
@@ -126,7 +125,6 @@ public:
     PassRefPtr<MediaElementAudioSourceNode> createMediaElementSource(HTMLMediaElement*, ExceptionCode&);
 #endif
     static PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
-    PassRefPtr<WaveTable> createWaveTable(Float32Array* real, Float32Array* imag, ExceptionCode&);
 
     // When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
     void notifyNodeFinishedProcessing(AudioNode*);
@@ -186,6 +184,26 @@ public:
 
     // Returns the maximum numuber of channels we can support.
     static unsigned maxNumberOfChannels() { return MaxNumberOfChannels;}
+    
+    // acquire the context for the current thread.
+    class AutoLocker {
+    public:
+        AutoLocker(AudioContext* context)
+        : m_context(context)
+        {
+            ASSERT(context);
+            context->lock(m_mustReleaseLock);
+        }
+        
+        ~AutoLocker()
+        {
+            if (m_mustReleaseLock)
+                m_context->unlock();
+        }
+    private:
+        AudioContext* m_context;
+        bool m_mustReleaseLock;
+    };
     
     // In AudioNode::deref() a tryLock() is used for calling finishDeref(), but if it fails keep track here.
     void addDeferredFinishDeref(AudioNode*);

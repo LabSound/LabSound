@@ -72,6 +72,7 @@ namespace LabSound {
             ASSERT(!context.expired());
             std::shared_ptr<AudioContext> ac = context.lock();
             RefPtr<AudioBufferSourceNode> sourceBuffer;
+            
             sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
             
             // Connect the source node to the parsed audio data for playback

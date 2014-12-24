@@ -57,6 +57,7 @@ void AudioBasicInspectorNode::connect(AudioNode* destination, unsigned outputInd
     ASSERT(!context().expired());
 
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
     AudioNode::connect(destination, outputIndex, inputIndex, ec);
     updatePullStatus();
 }
@@ -67,6 +68,7 @@ void AudioBasicInspectorNode::disconnect(unsigned outputIndex, ExceptionCode& ec
     ASSERT(!context().expired());
 
     std::shared_ptr<AudioContext> ac = context().lock();
+    AudioContext::AutoLocker locker(ac.get());
     AudioNode::disconnect(outputIndex, ec);
     updatePullStatus();
 }

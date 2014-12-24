@@ -65,7 +65,7 @@ public:
     AudioParam* frequency() { return m_frequency.get(); }
     AudioParam* detune() { return m_detune.get(); }
 
-    void setWaveTable(WaveTable*);
+    void setWaveTable(std::shared_ptr<WaveTable>);
 
 private:
 
@@ -98,13 +98,13 @@ private:
     AudioFloatArray m_phaseIncrements;
     AudioFloatArray m_detuneValues;
     
-    RefPtr<WaveTable> m_waveTable;
+    std::shared_ptr<WaveTable> m_waveTable;
 
     // Cache the wave tables for different waveform types, except CUSTOM.
-    static WaveTable* s_waveTableSine;
-    static WaveTable* s_waveTableSquare;
-    static WaveTable* s_waveTableSawtooth;
-    static WaveTable* s_waveTableTriangle;
+    static std::shared_ptr<WaveTable> s_waveTableSine;
+    static std::shared_ptr<WaveTable> s_waveTableSquare;
+    static std::shared_ptr<WaveTable> s_waveTableSawtooth;
+    static std::shared_ptr<WaveTable> s_waveTableTriangle;
 };
 
 } // namespace WebCore

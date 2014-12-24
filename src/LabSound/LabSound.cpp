@@ -20,6 +20,10 @@ namespace LabSound {
         context->lazyInitialize();
         return context;
     }
+    
+    void finish(std::shared_ptr<LabSound::AudioContext> context) {
+        context->stop();
+    }
 
     bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
         WebCore::ExceptionCode ec = -1;
