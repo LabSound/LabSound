@@ -24,7 +24,6 @@ void rhythmFiltered(std::shared_ptr<AudioContext> context, float seconds) {
         float time = startTime + bar * 8 * eighthNoteTime;
         // Play the bass (kick) drum on beats 1, 5
         kick.play(filter.get(), time);
-        break;
         kick.play(filter.get(), time + 4 * eighthNoteTime);
         
         // Play the snare drum on beats 3, 7
