@@ -33,6 +33,8 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 
+using namespace std;
+
 namespace WebCore {
 
 PassRefPtr<ChannelMergerNode> ChannelMergerNode::create(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
@@ -48,9 +50,9 @@ ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, floa
 {
     // Create the requested number of inputs.
     for (unsigned i = 0; i < numberOfInputs; ++i)
-        addInput(adoptPtr(new AudioNodeInput(this)));
+        addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
-    addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     
     setNodeType(NodeTypeChannelMerger);
     

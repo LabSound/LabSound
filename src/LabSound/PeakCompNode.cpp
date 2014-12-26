@@ -243,8 +243,8 @@ namespace LabSound {
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePeakComp);
 
-        addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
-        addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
         
         initialize();
     }

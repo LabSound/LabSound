@@ -49,8 +49,8 @@ PannerNode::PannerNode(std::shared_ptr<AudioContext> context, float sampleRate)
     , m_lastGain(-1.0)
     , m_connectionCount(0)
 {
-    addInput(adoptPtr(new AudioNodeInput(this)));
-    addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
+    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
     m_distanceGain = AudioGain::create(context, "distanceGain", 1.0, 0.0, 1.0);
     m_coneGain = AudioGain::create(context, "coneGain", 1.0, 0.0, 1.0);

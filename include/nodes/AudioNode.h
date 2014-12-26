@@ -177,8 +177,8 @@ public:
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
-    void addInput(PassOwnPtr<AudioNodeInput>);
-    void addOutput(PassOwnPtr<AudioNodeOutput>);
+    void addInput(std::unique_ptr<AudioNodeInput>);
+    void addOutput(std::unique_ptr<AudioNodeOutput>);
     
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
@@ -190,8 +190,8 @@ private:
     NodeType m_nodeType;
     std::weak_ptr<AudioContext> m_context;
     float m_sampleRate;
-    std::vector<OwnPtr<AudioNodeInput> > m_inputs;
-    std::vector<OwnPtr<AudioNodeOutput> > m_outputs;
+    std::vector<std::unique_ptr<AudioNodeInput> > m_inputs;
+    std::vector<std::unique_ptr<AudioNodeOutput> > m_outputs;
 
     double m_lastProcessingTime;
     double m_lastNonSilentTime;

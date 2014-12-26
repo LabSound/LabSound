@@ -101,7 +101,7 @@ namespace LabSound {
     : AudioBasicInspectorNode(context, sampleRate)
     , detail(new Detail())
     {
-        addInput(adoptPtr(new AudioNodeInput(this)));
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType((AudioNode::NodeType) NodeTypeSpectralMonitor);
         initialize();
     }

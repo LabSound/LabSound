@@ -28,7 +28,7 @@ namespace LabSound {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeNoise);
 
         // Noise is always mono.
-        addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
         initialize();
     }

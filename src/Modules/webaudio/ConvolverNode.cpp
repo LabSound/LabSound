@@ -32,6 +32,8 @@
 #include "Reverb.h"
 #include <wtf/MainThread.h>
 
+using namespace std;
+
 // Note about empirical tuning:
 // The maximum FFT size affects reverb performance and accuracy.
 // If the reverb is single-threaded and processes entirely in the real-time audio thread,
@@ -46,8 +48,8 @@ ConvolverNode::ConvolverNode(std::shared_ptr<AudioContext> context, float sample
     : AudioNode(context, sampleRate)
     , m_normalize(true)
 {
-    addInput(adoptPtr(new AudioNodeInput(this)));
-    addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
+    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
     setNodeType(NodeTypeConvolver);
     

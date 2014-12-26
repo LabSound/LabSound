@@ -20,7 +20,7 @@ namespace LabSound {
     , _db(0)
     , _windowSize(128)
     {
-        addInput(adoptPtr(new AudioNodeInput(this)));
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType((AudioNode::NodeType) NodeTypePowerMonitor);
         initialize();
     }

@@ -37,8 +37,8 @@ namespace WebCore {
 AudioBasicProcessorNode::AudioBasicProcessorNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioNode(context, sampleRate)
 {
-    addInput(adoptPtr(new AudioNodeInput(this)));
-    addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     // The subclass must create m_processor.
 }

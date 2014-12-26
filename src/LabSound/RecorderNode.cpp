@@ -16,8 +16,8 @@ namespace LabSound {
     : AudioBasicInspectorNode(context, sampleRate)
     , m_recording(false), m_mixToMono(false)
     {
-        addInput(adoptPtr(new AudioNodeInput(this)));
-        addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
         
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeRecorder);
         

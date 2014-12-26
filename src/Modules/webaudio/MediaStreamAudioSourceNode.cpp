@@ -46,7 +46,7 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(std::shared_ptr<AudioCont
     , m_sourceNumberOfChannels(0)
 {
     // Default to stereo. This could change depending on the format of the MediaStream's audio track.
-    addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
     setNodeType(NodeTypeMediaStreamAudioSource);
 

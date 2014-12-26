@@ -91,14 +91,14 @@ void AudioNode::lazyInitialize()
         initialize();
 }
 
-void AudioNode::addInput(PassOwnPtr<AudioNodeInput> input)
+void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
-    m_inputs.push_back(input);
+    m_inputs.emplace_back(std::move(input));
 }
 
-void AudioNode::addOutput(PassOwnPtr<AudioNodeOutput> output)
+void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
-    m_outputs.push_back(output);
+    m_outputs.emplace_back(std::move(output));
 }
 
 AudioNodeInput* AudioNode::input(unsigned i)
@@ -231,11 +231,12 @@ void AudioNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
     ASSERT(!context().expired());
     std::shared_ptr<AudioContext> ac = context().lock();
     ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
-    if (std::find(m_inputs.begin(), m_inputs.end(), input) == m_inputs.end())
-        return;
-
-    input->updateInternalBus();
+    for (auto &i : m_inputs) {
+        if (i.get() == input) {
+            input->updateInternalBus();
+            break;
+        }
+    }
 }
 
 bool AudioNode::propagatesSilence() const

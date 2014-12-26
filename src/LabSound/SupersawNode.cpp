@@ -97,8 +97,8 @@ namespace LabSound {
     : AudioNode(context, sampleRate)
     , _data(new Data(this, context, sampleRate))
     {
-        addInput(adoptPtr(new AudioNodeInput(this)));
-        addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
 

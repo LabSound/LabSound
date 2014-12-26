@@ -69,7 +69,7 @@ AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> conte
     m_playbackRate = AudioParam::create(context, "playbackRate", 1.0, 0.0, MaxRate);
 
     // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
-    addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     initialize();
 }

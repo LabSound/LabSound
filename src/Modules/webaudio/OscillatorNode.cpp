@@ -69,7 +69,7 @@ OscillatorNode::OscillatorNode(std::shared_ptr<AudioContext> context, float samp
     setType(m_type, ec);
 
     // An oscillator is always mono.
-    addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     initialize();
 }

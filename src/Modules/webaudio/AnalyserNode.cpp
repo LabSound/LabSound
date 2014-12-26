@@ -34,8 +34,8 @@ namespace WebCore {
 AnalyserNode::AnalyserNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioBasicInspectorNode(context, sampleRate)
 {
-    addInput(adoptPtr(new AudioNodeInput(this)));
-    addOutput(adoptPtr(new AudioNodeOutput(this, 2)));
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
     setNodeType(NodeTypeAnalyser);
     
