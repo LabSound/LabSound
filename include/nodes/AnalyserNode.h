@@ -58,10 +58,10 @@ public:
     void setSmoothingTimeConstant(float k) { m_analyser.setSmoothingTimeConstant(k); }
     float smoothingTimeConstant() const { return m_analyser.smoothingTimeConstant(); }
 
-    void getFloatFrequencyData(Float32Array* array) { m_analyser.getFloatFrequencyData(array); }
-    void getByteFrequencyData(Uint8Array* array) { m_analyser.getByteFrequencyData(array); }
-    void getFloatTimeDomainData(Float32Array* array) { m_analyser.getFloatTimeDomainData(array); } // LabSound
-    void getByteTimeDomainData(Uint8Array* array) { m_analyser.getByteTimeDomainData(array); }
+    void getFloatFrequencyData(std::vector<float>& array) { m_analyser.getFloatFrequencyData(array); }
+    void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser.getByteFrequencyData(array); }
+    void getFloatTimeDomainData(std::vector<float>& array) { m_analyser.getFloatTimeDomainData(array); } // LabSound
+    void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser.getByteTimeDomainData(array); }
 
 private:
     virtual double tailTime() const OVERRIDE { return 0; }

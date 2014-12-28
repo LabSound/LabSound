@@ -27,7 +27,7 @@
 
 #include "AudioArray.h"
 #include "WTF/Noncopyable.h"
-#include "WTF/RefPtr.h"
+#include <vector>
 
 namespace WTF {
     class Uint8Array;
@@ -63,10 +63,10 @@ public:
     void setSmoothingTimeConstant(float k) { m_smoothingTimeConstant = k; }
     float smoothingTimeConstant() const { return static_cast<float>(m_smoothingTimeConstant); }
 
-    void getFloatFrequencyData(Float32Array*);
-    void getByteFrequencyData(Uint8Array*);
-    void getFloatTimeDomainData(Float32Array*); // LabSound
-    void getByteTimeDomainData(Uint8Array*);
+    void getFloatFrequencyData(std::vector<float>&);
+    void getByteFrequencyData(std::vector<uint8_t>&);
+    void getFloatTimeDomainData(std::vector<float>&); // LabSound
+    void getByteTimeDomainData(std::vector<uint8_t>&);
 
     // The audio thread writes input data here.
     void writeInput(AudioBus*, size_t framesToProcess);

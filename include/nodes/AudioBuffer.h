@@ -29,7 +29,6 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
-#include "WTF/Float32Array.h"
 #include "WTF/ThreadSafeRefCounted.h"
 #include "WTF/RefPtr.h"
 #include <vector>
