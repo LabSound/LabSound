@@ -1,21 +1,45 @@
-
 #include "LabSound.h"
-#include "SampleSpatialization.h"
-#include <iostream>
+#include "LabSoundIncludes.h"
+#include <chrono>
+#include <thread>
 
+using namespace LabSound;
+
+// Demonstrate 3d spatialization and doppler shift
 int main(int, char**)
 {
-    {
-        FILE* test = fopen("trainrolling.wav", "rb");
-        if (!test) {
-            std::cerr << "Run demo in the examples data folder" << std::endl;
-            return 1;
-        }
-        fclose(test);
-    }
+    ExceptionCode ec;
     
     auto context = LabSound::init();
-    sampleSpatialization(context, 10.0f);
+
+    SoundBuffer train(context, "trainrolling.wav");
+    auto panner = PannerNode::create(context, context->sampleRate());
+    panner->connect(context->destination().get(), 0, 0, ec);
+    
+    auto trainNode = train.play(panner.get(), 0.0f);
+    
+    if (trainNode)
+    {
+        trainNode->setLooping(true);
+        context->listener()->setPosition(0, 0, 0);
+        panner->setVelocity(15, 0, 0);
+        
+        const int seconds = 10;
+        float halfTime = seconds * 0.5f;
+        for (float i = 0; i < seconds; i += 0.01f)
+        {
+            float x = (i - halfTime) / halfTime;
+            // Put position a +up && +front, because if it goes right through the listener at (0, 0, 0) it abruptly switches from left to right.
+            panner->setPosition(x, 0.1f, 0.1f);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    else
+    {
+        std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
+    }
+    
     LabSound::finish(context);
+    
     return 0;
 }
