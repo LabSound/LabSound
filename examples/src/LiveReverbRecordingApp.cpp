@@ -17,7 +17,7 @@ int main(int, char**)
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
     
     auto input = context->createMediaStreamSource(context, ec);
-    auto convolve = context->createConvolver();
+    auto convolve = ConvolverNode::create(context, context->sampleRate());
     convolve->setBuffer(ir.audioBuffer.get());
     
     auto wetGain = GainNode::create(context, context->sampleRate());
@@ -30,7 +30,7 @@ int main(int, char**)
     wetGain->connect(context->destination().get(), 0, 0, ec);
     dryGain->connect(context->destination().get(), 0, 0, ec);
     
-    auto recorder = RecorderNode::create(context.get(), context->sampleRate());
+    auto recorder = RecorderNode::create(context, context->sampleRate());
     recorder->startRecording();
     dryGain->connect(recorder.get(), 0, 0, ec);
     wetGain->connect(recorder.get(), 0, 0, ec);
@@ -47,7 +47,7 @@ int main(int, char**)
     
     std::vector<float> data;
     recorder->getData(data);
-    FILE* f = fopen(path, "wb");
+    FILE* f = fopen("labsound_example_livereverbapp.raw", "wb");
     if (f) {
         fwrite(&data[0], 1, data.size(), f);
         fclose(f);
