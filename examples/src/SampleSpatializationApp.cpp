@@ -16,5 +16,6 @@ int main(int, char**)
     
     auto context = LabSound::init();
     sampleSpatialization(context, 10.0f);
+    LabSound::finish(context);
     return 0;
 }
