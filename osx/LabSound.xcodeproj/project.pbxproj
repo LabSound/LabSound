@@ -426,7 +426,6 @@
 		E2D5CE7E1A19B39900B031C8 /* LabSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSound.h; sourceTree = "<group>"; };
 		E2D5CE7F1A19B39900B031C8 /* LabSoundConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundConfig.h; sourceTree = "<group>"; };
 		E2D5CE801A19B39900B031C8 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundIncludes.h; sourceTree = "<group>"; };
-		E2D5CE811A19B3C000B031C8 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		E2D5CE831A19B3E700B031C8 /* AudioArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioArray.h; path = internal/AudioArray.h; sourceTree = "<group>"; };
 		E2D5CE841A19B3E700B031C8 /* AudioBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBus.h; path = internal/AudioBus.h; sourceTree = "<group>"; };
 		E2D5CE851A19B3E700B031C8 /* AudioChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioChannel.h; path = internal/AudioChannel.h; sourceTree = "<group>"; };
@@ -906,7 +905,6 @@
 			children = (
 				E2D5CED21A19B42400B031C8 /* nodes */,
 				E2D5CE821A19B3D200B031C8 /* internal */,
-				E2D5CE811A19B3C000B031C8 /* config.h */,
 				E2D5CE7E1A19B39900B031C8 /* LabSound.h */,
 				E2D5CE7F1A19B39900B031C8 /* LabSoundConfig.h */,
 				E2D5CE801A19B39900B031C8 /* LabSoundIncludes.h */,
