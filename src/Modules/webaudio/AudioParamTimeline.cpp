@@ -55,7 +55,7 @@ void AudioParamTimeline::setTargetAtTime(float target, float time, float timeCon
     insertEvent(ParamEvent(ParamEvent::SetTarget, target, time, timeConstant, 0, 0));
 }
 
-void AudioParamTimeline::setValueCurveAtTime(Float32Array* curve, float time, float duration)
+void AudioParamTimeline::setValueCurveAtTime(std::shared_ptr<std::vector<float>> curve, float time, float duration)
 {
     insertEvent(ParamEvent(ParamEvent::SetValueCurve, 0, time, 0, duration, curve));
 }
@@ -292,9 +292,9 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
             case ParamEvent::SetValueCurve:
                 {
-                    Float32Array* curve = event.curve();
-                    float* curveData = curve ? curve->data() : 0;
-                    unsigned numberOfCurvePoints = curve ? curve->length() : 0;
+                    std::shared_ptr<std::vector<float>> curve = event.curve();
+                    float* curveData = curve ? &(*curve)[0] : 0;
+                    size_t numberOfCurvePoints = curve ? curve->size() : 0;
 
                     // Curve events have duration, so don't just use next event time.
                     float duration = event.duration();

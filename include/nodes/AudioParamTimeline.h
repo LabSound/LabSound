@@ -30,7 +30,6 @@
 #define AudioParamTimeline_h
 
 #include "AudioContext.h"
-#include "WTF/Float32Array.h"
 #include "WTF/Threading.h"
 #include <vector>
 
@@ -46,7 +45,7 @@ public:
     void linearRampToValueAtTime(float value, float time);
     void exponentialRampToValueAtTime(float value, float time);
     void setTargetAtTime(float target, float time, float timeConstant);
-    void setValueCurveAtTime(Float32Array* curve, float time, float duration);
+    void setValueCurveAtTime(std::shared_ptr<std::vector<float>> curve, float time, float duration);
     void cancelScheduledValues(float startTime);
 
     // hasValue is set to true if a valid timeline value is returned.
@@ -74,7 +73,7 @@ private:
             LastType
         };
 
-        ParamEvent(Type type, float value, float time, float timeConstant, float duration, PassRefPtr<Float32Array> curve)
+        ParamEvent(Type type, float value, float time, float timeConstant, float duration, std::shared_ptr<std::vector<float>> curve)
             : m_type(type)
             , m_value(value)
             , m_time(time)
@@ -109,7 +108,7 @@ private:
         float time() const { return m_time; }
         float timeConstant() const { return m_timeConstant; }
         float duration() const { return m_duration; }
-        Float32Array* curve() { return m_curve.get(); }
+        std::shared_ptr<std::vector<float>> curve() { return m_curve; }
 
     private:
         unsigned m_type;
@@ -117,7 +116,7 @@ private:
         float m_time;
         float m_timeConstant;
         float m_duration;
-        RefPtr<Float32Array> m_curve;
+        std::shared_ptr<std::vector<float>> m_curve;
     };
 
     void insertEvent(const ParamEvent&);

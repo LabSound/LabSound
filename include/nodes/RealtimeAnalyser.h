@@ -29,11 +29,6 @@
 #include "WTF/Noncopyable.h"
 #include <vector>
 
-namespace WTF {
-    class Uint8Array;
-    class Float32Array;
-}
-
 namespace WebCore {
 
     using namespace WTF;

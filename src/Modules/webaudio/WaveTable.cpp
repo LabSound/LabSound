@@ -243,6 +243,8 @@ void WaveTable::generateBasicWaveform(int shape)
     // Clear DC and Nyquist.
     realP[0] = 0;
     imagP[0] = 0;
+    
+    const float piFloat = M_PI;
 
     for (unsigned n = 1; n < halfSize; ++n) {
         float omega = 2 * piFloat * n;

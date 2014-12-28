@@ -46,21 +46,18 @@ void BiquadFilterNode::setType(unsigned short type, ExceptionCode& ec)
 }
 
 
-void BiquadFilterNode::getFrequencyResponse(const Float32Array* frequencyHz,
-                                            Float32Array* magResponse,
-                                            Float32Array* phaseResponse)
+void BiquadFilterNode::getFrequencyResponse(const std::vector<float>& frequencyHz,
+                                            std::vector<float>& magResponse,
+                                            std::vector<float>& phaseResponse)
 {
-    if (!frequencyHz || !magResponse || !phaseResponse)
+    if (!frequencyHz.size() || !magResponse.size() || !phaseResponse.size())
         return;
     
-    int n = std::min(frequencyHz->length(),
-                     std::min(magResponse->length(), phaseResponse->length()));
+    int n = std::min(frequencyHz.size(),
+                     std::min(magResponse.size(), phaseResponse.size()));
 
     if (n) {
-        biquadProcessor()->getFrequencyResponse(n,
-                                                frequencyHz->data(),
-                                                magResponse->data(),
-                                                phaseResponse->data());
+        biquadProcessor()->getFrequencyResponse(n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
 }
 

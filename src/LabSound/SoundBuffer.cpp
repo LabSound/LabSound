@@ -2,6 +2,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "SoundBuffer.h"
+#include "WTF/ArrayBuffer.h"
 
 #include <stdio.h>
 #include <iostream>
