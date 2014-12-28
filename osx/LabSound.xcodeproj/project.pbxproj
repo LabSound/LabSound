@@ -480,11 +480,7 @@
 		E2D5CEB91A19B40100B031C8 /* LayoutPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutPoint.h; sourceTree = "<group>"; };
 		E2D5CEBA1A19B40100B031C8 /* LayoutRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutRect.h; sourceTree = "<group>"; };
 		E2D5CEBB1A19B40100B031C8 /* LayoutSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutSize.h; sourceTree = "<group>"; };
-		E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AffineTransform.h; sourceTree = "<group>"; };
-		E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformationMatrix.h; sourceTree = "<group>"; };
 		E2D5CECA1A19B40100B031C8 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
-		E2D5CECB1A19B40100B031C8 /* TextDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDirection.h; sourceTree = "<group>"; };
-		E2D5CECC1A19B40100B031C8 /* WritingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WritingMode.h; sourceTree = "<group>"; };
 		E2D5CECD1A19B40100B031C8 /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VectorMath.h; path = internal/VectorMath.h; sourceTree = "<group>"; };
 		E2D5CED11A19B40100B031C8 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZeroPole.h; path = internal/ZeroPole.h; sourceTree = "<group>"; };
 		E2D5CED31A19B43900B031C8 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSRNode.h; path = nodes/ADSRNode.h; sourceTree = "<group>"; };
@@ -991,8 +987,6 @@
 				E2D5CEAF1A19B40100B031C8 /* FloatConversion.h */,
 				E2D5CEB01A19B40100B031C8 /* graphics */,
 				E2D5CECA1A19B40100B031C8 /* Logging.h */,
-				E2D5CECB1A19B40100B031C8 /* TextDirection.h */,
-				E2D5CECC1A19B40100B031C8 /* WritingMode.h */,
 			);
 			name = util;
 			path = internal/util;
@@ -1012,18 +1006,8 @@
 				E2D5CEB91A19B40100B031C8 /* LayoutPoint.h */,
 				E2D5CEBA1A19B40100B031C8 /* LayoutRect.h */,
 				E2D5CEBB1A19B40100B031C8 /* LayoutSize.h */,
-				E2D5CEBC1A19B40100B031C8 /* transforms */,
 			);
 			path = graphics;
-			sourceTree = "<group>";
-		};
-		E2D5CEBC1A19B40100B031C8 /* transforms */ = {
-			isa = PBXGroup;
-			children = (
-				E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */,
-				E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */,
-			);
-			path = transforms;
 			sourceTree = "<group>";
 		};
 		E2D5CED21A19B42400B031C8 /* nodes */ = {
