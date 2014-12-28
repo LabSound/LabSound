@@ -47,26 +47,9 @@
 #include <math.h>
 #include <stdint.h>
 #include <time.h>
-
-#elif PLATFORM(WX)
-#include <wx/datetime.h>
-#elif PLATFORM(EFL)
-#include <Ecore.h>
-#else
-#include <sys/time.h>
-#endif
-
-#if PLATFORM(GTK)
-#include <glib.h>
-#endif
-
-#if PLATFORM(QT)
-#include <QElapsedTimer>
 #endif
 
 namespace WTF {
-
-#if !PLATFORM(CHROMIUM)
 
 #if OS(WINDOWS)
 
@@ -78,11 +61,7 @@ static double lowResUTCTime()
 {
     FILETIME fileTime;
 
-#if OS(WINCE)
-    GetCurrentFT(&fileTime);
-#else
     GetSystemTimeAsFileTime(&fileTime);
-#endif
 
     // As per Windows documentation for FILETIME, copy the resulting FILETIME structure to a
     // ULARGE_INTEGER structure using memcpy (using memcpy instead of direct assignment can
@@ -225,46 +204,6 @@ double currentTime()
 
 #endif // USE(QUERY_PERFORMANCE_COUNTER)
 
-#elif PLATFORM(GTK)
-
-// Note: GTK on Windows will pick up the PLATFORM(WIN) implementation above which provides
-// better accuracy compared with Windows implementation of g_get_current_time:
-// (http://www.google.com/codesearch/p?hl=en#HHnNRjks1t0/glib-2.5.2/glib/gmain.c&q=g_get_current_time).
-// Non-Windows GTK builds could use gettimeofday() directly but for the sake of consistency lets use GTK function.
-double currentTime()
-{
-    GTimeVal now;
-    g_get_current_time(&now);
-    return static_cast<double>(now.tv_sec) + static_cast<double>(now.tv_usec / 1000000.0);
-}
-
-#elif PLATFORM(WX)
-
-double currentTime()
-{
-    wxDateTime now = wxDateTime::UNow();
-    return (double)now.GetTicks() + (double)(now.GetMillisecond() / 1000.0);
-}
-
-#elif PLATFORM(EFL)
-
-double currentTime()
-{
-    return ecore_time_unix_get();
-}
-
-#elif OS(QNX)
-
-double currentTime()
-{
-    struct timespec time;
-    if (clock_gettime(CLOCK_REALTIME, &time))
-        CRASH();
-    return time.tv_sec + time.tv_nsec / 1.0e9;
-}
-
-#else
-
 double currentTime()
 {
     struct timeval now;
@@ -287,39 +226,6 @@ double monotonicallyIncreasingTime()
     return (mach_absolute_time() * timebaseInfo.numer) / (1.0e9 * timebaseInfo.denom);
 }
 
-#elif PLATFORM(EFL)
-
-double monotonicallyIncreasingTime()
-{
-    return ecore_time_get();
-}
-
-#elif PLATFORM(GTK)
-
-double monotonicallyIncreasingTime()
-{
-    return static_cast<double>(g_get_monotonic_time() / 1000000.0);
-}
-
-#elif PLATFORM(QT)
-
-double monotonicallyIncreasingTime()
-{
-    ASSERT(QElapsedTimer::isMonotonic());
-    static QElapsedTimer timer;
-    return timer.nsecsElapsed() / 1.0e9;
-}
-
-#elif OS(QNX)
-
-double monotonicallyIncreasingTime()
-{
-    struct timespec time;
-    if (clock_gettime(CLOCK_MONOTONIC, &time))
-        CRASH();
-    return time.tv_sec + time.tv_nsec / 1.0e9;
-}
-
 #else
 
 double monotonicallyIncreasingTime()
@@ -333,7 +239,5 @@ double monotonicallyIncreasingTime()
 }
 
 #endif
-
-#endif // !PLATFORM(CHROMIUM)
 
 } // namespace WTF
