@@ -95,16 +95,13 @@ static double highResUpTime()
     DWORD tickCount = GetTickCount();
 
     if (inited) {
+        
         __int64 qpcElapsed = ((qpc.QuadPart - qpcLast.QuadPart) * 1000) / qpcFrequency.QuadPart;
         __int64 tickCountElapsed;
         if (tickCount >= tickCountLast)
             tickCountElapsed = (tickCount - tickCountLast);
         else {
-#if COMPILER(MINGW)
-            __int64 tickCountLarge = tickCount + 0x100000000ULL;
-#else
             __int64 tickCountLarge = tickCount + 0x100000000I64;
-#endif
             tickCountElapsed = tickCountLarge - tickCountLast;
         }
 
