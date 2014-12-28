@@ -56,8 +56,8 @@ public:
 
     // Channel data access
     unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
-    Float32Array* getChannelData(unsigned channelIndex, ExceptionCode&);
-    Float32Array* getChannelData(unsigned channelIndex);
+    std::shared_ptr<std::vector<float>> getChannelData(unsigned channelIndex, ExceptionCode&);
+    std::shared_ptr<std::vector<float>> getChannelData(unsigned channelIndex);
     void zero();
 
     // Scalar gain
@@ -77,7 +77,7 @@ protected:
     float m_sampleRate;
     size_t m_length;
 
-    std::vector<RefPtr<Float32Array> > m_channels;
+    std::vector<std::shared_ptr<std::vector<float>>> m_channels;
 };
 
 } // namespace WebCore

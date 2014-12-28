@@ -60,7 +60,8 @@ AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float
     m_channels.reserve(numberOfChannels);
 
     for (unsigned i = 0; i < numberOfChannels; ++i) {
-        RefPtr<Float32Array> channelDataArray = Float32Array::create(m_length);
+        std::shared_ptr<std::vector<float>> channelDataArray(new std::vector<float>());
+        channelDataArray->resize(m_length);
         m_channels.push_back(channelDataArray);
     }
 }
@@ -74,8 +75,12 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
     unsigned numberOfChannels = bus->numberOfChannels();
     m_channels.reserve(numberOfChannels);
     for (unsigned i = 0; i < numberOfChannels; ++i) {
-        RefPtr<Float32Array> channelDataArray = Float32Array::create(m_length);
-        channelDataArray->setRange(bus->channel(i)->data(), m_length, 0);
+        std::shared_ptr<std::vector<float>> channelDataArray(new std::vector<float>());
+        channelDataArray->resize(m_length);
+        const float *busData = bus->channel(i)->data();
+        std::vector<float>& vec = *(channelDataArray.get());
+        for (size_t j = 0; j < m_length; ++j)
+            vec[j] = busData[j];
         m_channels.push_back(channelDataArray);
     }
 }
@@ -85,29 +90,33 @@ void AudioBuffer::releaseMemory()
     m_channels.clear();
 }
 
-Float32Array* AudioBuffer::getChannelData(unsigned channelIndex, ExceptionCode& ec)
+std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex, ExceptionCode& ec)
 {
     if (channelIndex >= m_channels.size()) {
         ec = SYNTAX_ERR;
         return 0;
     }
 
-    return m_channels[channelIndex].get();
+    return m_channels[channelIndex];
 }
 
-Float32Array* AudioBuffer::getChannelData(unsigned channelIndex)
+std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex)
 {
     if (channelIndex >= m_channels.size())
         return 0;
 
-    return m_channels[channelIndex].get();
+    return m_channels[channelIndex];
 }
 
 void AudioBuffer::zero()
 {
     for (unsigned i = 0; i < m_channels.size(); ++i) {
-        if (getChannelData(i))
-            getChannelData(i)->zeroRange(0, length());
+        if (getChannelData(i)) {
+            std::vector<float>& vec = *(getChannelData(i).get());
+            size_t l = length();
+            for (size_t j = 0; j < l; ++j)
+                vec[j] = 0.f;
+        }
     }
 }
 
