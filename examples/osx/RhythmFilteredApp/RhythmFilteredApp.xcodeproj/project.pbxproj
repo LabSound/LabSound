@@ -80,10 +80,10 @@
 		E2E0DC4A183C4C99007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E2E0DC7C183C4CE8007AFB48 /* Frameworks */,
 				E2E0DC77183C4CE4007AFB48 /* RhythmFiltered.cpp */,
 				E2E0DC78183C4CE4007AFB48 /* RhythmFiltered.h */,
 				E2E0DC79183C4CE4007AFB48 /* RhythmFilteredApp.cpp */,
+				E2E0DC7C183C4CE8007AFB48 /* Frameworks */,
 				E2E0DC54183C4C99007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";

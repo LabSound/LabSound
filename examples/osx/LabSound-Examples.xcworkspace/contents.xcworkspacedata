@@ -2,16 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:PeakCompApp/PeakCompApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:MidiSampleApp/MidiSampleApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:../LabMidi/src/LabMidi.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:../../osx/LabSound.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:PeakCompApp/PeakCompApp.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:DalekVoiceApp/DalekVoiceApp.xcodeproj">
@@ -21,9 +15,6 @@
    </FileRef>
    <FileRef
       location = "group:LiveReverbRecordingApp/LiveReverbRecordingApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:PureDataApp/PureDataApp.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:ReverbApp/ReverbApp.xcodeproj">
@@ -45,14 +36,5 @@
    </FileRef>
    <FileRef
       location = "group:ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:TonicAudioApp/TonicAudioApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:../../src/libpd/libpd.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:../TonicAudio/lib/TonicLib.xcodeproj">
    </FileRef>
 </Workspace>

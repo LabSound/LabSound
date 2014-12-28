@@ -37,7 +37,6 @@
 		E23015F01860235E00FEC991 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E23015F11860235E00FEC991 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		E241A7A61A45496700FE269D /* PeakCompApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakCompApp.cpp; path = ../../src/PeakCompApp.cpp; sourceTree = "<group>"; };
-		E241A7A71A45496700FE269D /* PeakCompApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeakCompApp.h; path = ../../src/PeakCompApp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,18 +56,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E23015D3185F611A00FEC991 = {
+		08791A011A50AC610059774F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E241A7A61A45496700FE269D /* PeakCompApp.cpp */,
-				E241A7A71A45496700FE269D /* PeakCompApp.h */,
-				E23015EC1860235E00FEC991 /* libLabSound.a */,
 				E23015ED1860235E00FEC991 /* Accelerate.framework */,
 				E23015EE1860235E00FEC991 /* AudioToolbox.framework */,
 				E23015EF1860235E00FEC991 /* AudioUnit.framework */,
 				E23015F01860235E00FEC991 /* Cocoa.framework */,
 				E23015F11860235E00FEC991 /* CoreAudio.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E23015D3185F611A00FEC991 = {
+			isa = PBXGroup;
+			children = (
+				E241A7A61A45496700FE269D /* PeakCompApp.cpp */,
+				08791A011A50AC610059774F /* Frameworks */,
 				E23015DD185F611A00FEC991 /* Products */,
+				E23015EC1860235E00FEC991 /* libLabSound.a */,
 			);
 			sourceTree = "<group>";
 		};
