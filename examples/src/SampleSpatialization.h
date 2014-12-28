@@ -10,5 +10,5 @@
 
 #include "LabSound.h"
 
-void sampleSpatialization(WTF::RefPtr<WebCore::AudioContext> context, float seconds);
+void sampleSpatialization(std::shared_ptr<LabSound::AudioContext> context, float seconds);
 

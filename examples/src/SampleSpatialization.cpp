@@ -4,7 +4,7 @@
 
 using namespace LabSound;
 
-void sampleSpatialization(RefPtr<AudioContext> context, float seconds)
+void sampleSpatialization(std::shared_ptr<LabSound::AudioContext> context, float seconds)
 {
     ExceptionCode ec;
     
@@ -12,8 +12,8 @@ void sampleSpatialization(RefPtr<AudioContext> context, float seconds)
     // Demonstrate 3d spatialization and doppler shift
     //
     SoundBuffer train(context, "trainrolling.wav");
-    RefPtr<PannerNode> panner = context->createPanner();
-    panner->connect(context->destination(), 0, 0, ec);
+    auto panner = PannerNode::create(context, context->sampleRate());
+    panner->connect(context->destination().get(), 0, 0, ec);
     PassRefPtr<AudioBufferSourceNode> trainNode = train.play(panner.get(), 0.0f);
     if (!trainNode) {
         std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
