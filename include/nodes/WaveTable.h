@@ -30,7 +30,6 @@
 #define WaveTable_h
 
 #include "AudioArray.h"
-#include "WTF/Float32Array.h"
 #include <vector>
 
 namespace WebCore {
@@ -45,7 +44,7 @@ public:
     static std::unique_ptr<WaveTable> createTriangle(float sampleRate);
 
     // Creates an arbitrary wavetable given the frequency components (Fourier coefficients).
-    static std::unique_ptr<WaveTable> create(float sampleRate, Float32Array* real, Float32Array* imag);
+    static std::unique_ptr<WaveTable> create(float sampleRate, std::vector<float>& real, std::vector<float>& imag);
 
     // Returns pointers to the lower and higher wavetable data for the pitch range containing
     // the given fundamental frequency. These two tables are in adjacent "pitch" ranges

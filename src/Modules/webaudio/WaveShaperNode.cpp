@@ -35,13 +35,13 @@ WaveShaperNode::WaveShaperNode(std::shared_ptr<AudioContext> context)
     setNodeType(NodeTypeWaveShaper);
 }
 
-void WaveShaperNode::setCurve(Float32Array* curve)
+void WaveShaperNode::setCurve(std::shared_ptr<std::vector<float>> curve)
 {
     ASSERT(isMainThread()); 
     waveShaperProcessor()->setCurve(curve);
 }
 
-Float32Array* WaveShaperNode::curve()
+std::shared_ptr<std::vector<float>> WaveShaperNode::curve()
 {
     return waveShaperProcessor()->curve();
 }

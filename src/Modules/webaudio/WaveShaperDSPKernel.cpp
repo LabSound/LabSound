@@ -36,15 +36,15 @@ void WaveShaperDSPKernel::process(const float* source, float* destination, size_
 {
     ASSERT(source && destination && waveShaperProcessor());
 
-    Float32Array* curve = waveShaperProcessor()->curve();
+    std::shared_ptr<std::vector<float>> curve = waveShaperProcessor()->curve();
     if (!curve) {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * framesToProcess);
         return;
     }
 
-    float* curveData = curve->data();
-    int curveLength = curve->length();
+    float* curveData = &(*curve)[0];
+    int curveLength = (*curve).size();
 
     ASSERT(curveData);
 

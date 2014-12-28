@@ -29,8 +29,6 @@
 #include "AudioDSPKernelProcessor.h"
 #include "AudioNode.h"
 
-#include "WTF/Float32Array.h"
-#include "WTF/RefPtr.h"
 #include "WTF/Threading.h"
 
 namespace WebCore {
@@ -47,12 +45,12 @@ public:
 
     virtual void process(const AudioBus* source, AudioBus* destination, size_t framesToProcess);
 
-    void setCurve(Float32Array*);
-    Float32Array* curve() { return m_curve.get(); }
+    void setCurve(std::shared_ptr<std::vector<float>>);
+    std::shared_ptr<std::vector<float>> curve() { return m_curve; }
 
 private:
     // m_curve represents the non-linear shaping curve.
-    RefPtr<Float32Array> m_curve;
+    std::shared_ptr<std::vector<float>> m_curve;
 
     // This synchronizes process() with setCurve().
     mutable WTF::Mutex m_processLock;

@@ -45,7 +45,7 @@ AudioDSPKernel* WaveShaperProcessor::createKernel()
     return new WaveShaperDSPKernel(this);
 }
 
-void WaveShaperProcessor::setCurve(Float32Array* curve)
+void WaveShaperProcessor::setCurve(std::shared_ptr<std::vector<float>> curve)
 {
     // This synchronizes with process().
     MutexLocker processLocker(m_processLock);

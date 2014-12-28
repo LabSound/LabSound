@@ -39,8 +39,8 @@ public:
     }
 
     // setCurve() is called on the main thread.
-    void setCurve(Float32Array*);
-    Float32Array* curve();
+    void setCurve(std::shared_ptr<std::vector<float>>);
+    std::shared_ptr<std::vector<float>> curve();
 
 private:    
     explicit WaveShaperNode(std::shared_ptr<AudioContext>);

@@ -37,9 +37,10 @@ namespace LabSound {
         // We calculate a 1024-point curve following equation (2) from Parker's paper.
 
         int samples = 1024;
-        RefPtr<Float32Array> wsCurve = Float32Array::create(samples);
+        std::shared_ptr<std::vector<float>> wsCurvePtr(new std::vector<float>());
+        std::vector<float>& wsCurve = *wsCurvePtr;
+        wsCurve.resize(samples);
 
-        float* data = wsCurve->data();
         float s = float(samples);
         for (int i = 0; i < samples; ++i) {
             // convert the index to a voltage of range -1 to 1
@@ -50,10 +51,10 @@ namespace LabSound {
                 v = h * powf(v - vb, 2.0f) / (2 * vl - 2.0f * vb);
             else
                 v = h * v - h * vl + (h * ((powf(vl - vb, 2.0f)) / (2.0f * vl - 2.0f * vb)));
-            data[i] = v;
+            wsCurve[i] = v;
         }
 
-        waveShaper->setCurve(wsCurve.get()); // The Float32Array becomes owned by the waveShaper
+        waveShaper->setCurve(wsCurvePtr);
     }
 
 

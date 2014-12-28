@@ -44,15 +44,13 @@ namespace WebCore {
     
 using namespace VectorMath;
 
-std::unique_ptr<WaveTable> WaveTable::create(float sampleRate, Float32Array* real, Float32Array* imag)
+std::unique_ptr<WaveTable> WaveTable::create(float sampleRate, std::vector<float>& real, std::vector<float>& imag)
 {
-
-    bool isGood = real && imag && real->length() == imag->length();
+    bool isGood = real.size() == imag.size() && real.size() > 0;
     ASSERT(isGood);
     if (isGood) {
         std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-        size_t numberOfComponents = real->length();
-        waveTable->createBandLimitedTables(real->data(), imag->data(), numberOfComponents);
+        waveTable->createBandLimitedTables(&real[0], &imag[0], real.size());
         return waveTable;
     }
     return 0;
