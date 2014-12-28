@@ -26,7 +26,7 @@
 // FFTFrame stub implementation to avoid link errors during bringup
 
 #include "LabSoundConfig.h"
-#if !OS(DARWIN) && !USE(WEBAUDIO_MKL) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_GSTREAMER) && !USE(WEBAUDIO_IPP) && !USE(WEBAUDIO_KISSFFT)
+#if !OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 
 #include "FFTFrame.h"
 
@@ -99,4 +99,4 @@ float* FFTFrame::imagData() const
 
 } // namespace WebCore
 
-#endif // !OS(DARWIN) && !USE(WEBAUDIO_MKL) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_GSTREAMER) && !USE(WEBAUDIO_IPP)
+#endif // !OS(DARWIN)

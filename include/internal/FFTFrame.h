@@ -32,7 +32,7 @@
 #include "AudioArray.h"
 #include <vector>
 
-#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
+#if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 #define USE_ACCELERATE_FFT 1
 #else
 #define USE_ACCELERATE_FFT 0
