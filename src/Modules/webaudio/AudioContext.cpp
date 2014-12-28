@@ -66,10 +66,6 @@
 #include <stdio.h>
 #endif
 
-#if USE(GSTREAMER)
-#include "GStreamerUtilities.h"
-#endif
-
 #include <wtf/ArrayBuffer.h>
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
@@ -169,10 +165,6 @@ void AudioContext::initHRTFDatabase() {
 
 void AudioContext::constructCommon()
 {
-#if USE(GSTREAMER)
-    initializeGStreamer();
-#endif
-
     FFTFrame::initialize();
     
     m_listener = AudioListener::create();
