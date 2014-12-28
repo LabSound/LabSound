@@ -57,11 +57,6 @@
 #include "MediaStreamAudioSourceNode.h"
 #endif
 
-#if ENABLE(VIDEO)
-#include "HTMLMediaElement.h"
-#include "MediaElementAudioSourceNode.h"
-#endif
-
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
 #endif
@@ -322,36 +317,6 @@ void AudioContext::decodeAudioData(ArrayBuffer* audioData, PassRefPtr<AudioBuffe
     m_audioDecoder.decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
 }
 
-
-#if ENABLE(VIDEO)
-PassRefPtr<MediaElementAudioSourceNode> AudioContext::createMediaElementSource(HTMLMediaElement* mediaElement, ExceptionCode& ec)
-{
-    ASSERT(mediaElement);
-    if (!mediaElement) {
-        ec = INVALID_STATE_ERR;
-        return 0;
-    }
-        
-    ASSERT(isMainThread());
-    lazyInitialize();
-    
-    // First check if this media element already has a source node.
-    if (mediaElement->audioSourceNode()) {
-        ec = INVALID_STATE_ERR;
-        return 0;
-    }
-        
-    RefPtr<MediaElementAudioSourceNode> node = MediaElementAudioSourceNode::create(this, mediaElement);
-
-    mediaElement->setAudioSourceNode(node.get());
-
-    refNode(node.get()); // context keeps reference until node is disconnected
-    return node;
-}
-#endif
-
-    
-    
 #if ENABLE(MEDIA_STREAM)
     
 PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
