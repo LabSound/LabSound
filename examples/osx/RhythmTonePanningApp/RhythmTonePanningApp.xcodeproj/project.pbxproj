@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E241A7C51A454E3E00FE269D /* RhythmTonePanning.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */; };
 		E241A7C61A454E3E00FE269D /* RhythmTonePanningApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */; };
 		E251D9A5184ACB7200F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D9A4184ACB7200F7B7BC /* libLabSound.a */; };
 		E2E0DCCC183C4DFA007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCC0183C4DFA007AFB48 /* Accelerate.framework */; };
@@ -36,8 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanning.cpp; path = ../../src/RhythmTonePanning.cpp; sourceTree = "<group>"; };
-		E241A7C31A454E3E00FE269D /* RhythmTonePanning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhythmTonePanning.h; path = ../../src/RhythmTonePanning.h; sourceTree = "<group>"; };
 		E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmTonePanningApp.cpp; path = ../../src/RhythmTonePanningApp.cpp; sourceTree = "<group>"; };
 		E251D9A4184ACB7200F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DCB3183C4DDF007AFB48 /* RhythmTonePanningApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RhythmTonePanningApp; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,8 +78,6 @@
 		E2E0DCAA183C4DDF007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7C21A454E3E00FE269D /* RhythmTonePanning.cpp */,
-				E241A7C31A454E3E00FE269D /* RhythmTonePanning.h */,
 				E241A7C41A454E3E00FE269D /* RhythmTonePanningApp.cpp */,
 				E2E0DCD7183C4E0E007AFB48 /* Frameworks */,
 				E2E0DCB4183C4DDF007AFB48 /* Products */,
@@ -168,7 +163,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E241A7C51A454E3E00FE269D /* RhythmTonePanning.cpp in Sources */,
 				E241A7C61A454E3E00FE269D /* RhythmTonePanningApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

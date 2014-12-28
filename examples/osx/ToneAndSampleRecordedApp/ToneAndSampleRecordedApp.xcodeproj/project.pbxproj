@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E241A7D41A456A0800FE269D /* ToneAndSampleRecorded.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7D11A456A0800FE269D /* ToneAndSampleRecorded.cpp */; };
 		E241A7D51A456A0800FE269D /* ToneAndSampleRecordedApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7D31A456A0800FE269D /* ToneAndSampleRecordedApp.cpp */; };
 		E2E0DD64183C4F99007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD58183C4F99007AFB48 /* libLabSound.a */; };
 		E2E0DD65183C4F99007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD59183C4F99007AFB48 /* Accelerate.framework */; };
@@ -36,8 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E241A7D11A456A0800FE269D /* ToneAndSampleRecorded.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSampleRecorded.cpp; path = ../../src/ToneAndSampleRecorded.cpp; sourceTree = "<group>"; };
-		E241A7D21A456A0800FE269D /* ToneAndSampleRecorded.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneAndSampleRecorded.h; path = ../../src/ToneAndSampleRecorded.h; sourceTree = "<group>"; };
 		E241A7D31A456A0800FE269D /* ToneAndSampleRecordedApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSampleRecordedApp.cpp; path = ../../src/ToneAndSampleRecordedApp.cpp; sourceTree = "<group>"; };
 		E2E0DD4C183C4F70007AFB48 /* ToneAndSampleRecordedApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToneAndSampleRecordedApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0DD58183C4F99007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
@@ -80,8 +77,6 @@
 		E2E0DD43183C4F70007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7D11A456A0800FE269D /* ToneAndSampleRecorded.cpp */,
-				E241A7D21A456A0800FE269D /* ToneAndSampleRecorded.h */,
 				E241A7D31A456A0800FE269D /* ToneAndSampleRecordedApp.cpp */,
 				E2E0DD70183C4F9D007AFB48 /* Frameworks */,
 				E2E0DD4D183C4F70007AFB48 /* Products */,
@@ -167,7 +162,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E241A7D51A456A0800FE269D /* ToneAndSampleRecordedApp.cpp in Sources */,
-				E241A7D41A456A0800FE269D /* ToneAndSampleRecorded.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

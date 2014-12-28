@@ -59,6 +59,7 @@
 		08791A011A50AC610059774F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E23015EC1860235E00FEC991 /* libLabSound.a */,
 				E23015ED1860235E00FEC991 /* Accelerate.framework */,
 				E23015EE1860235E00FEC991 /* AudioToolbox.framework */,
 				E23015EF1860235E00FEC991 /* AudioUnit.framework */,
@@ -74,7 +75,6 @@
 				E241A7A61A45496700FE269D /* PeakCompApp.cpp */,
 				08791A011A50AC610059774F /* Frameworks */,
 				E23015DD185F611A00FEC991 /* Products */,
-				E23015EC1860235E00FEC991 /* libLabSound.a */,
 			);
 			sourceTree = "<group>";
 		};

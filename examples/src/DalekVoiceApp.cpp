@@ -82,7 +82,6 @@ int main(int, char**)
     vInInverter2->connect(vInDiode1->node().get(), 0, 0, ec);
     
     // Finally connect the four diodes to the destination via the output-stage compressor and master gain node
-    
     vInDiode1->node().get()->connect(vInInverter3.get(), 0, 0, ec);
     vInDiode2->node().get()->connect(vInInverter3.get(), 0, 0, ec);
     

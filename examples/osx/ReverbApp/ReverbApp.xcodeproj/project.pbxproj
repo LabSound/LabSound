@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E241A7B91A454D4A00FE269D /* ReverbApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7B81A454D4A00FE269D /* ReverbApp.cpp */; };
-		E241A7BC1A454D6400FE269D /* ReverbSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7BA1A454D6400FE269D /* ReverbSample.cpp */; };
 		E2D5CD711A19983300B031C8 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2D5CD701A19983300B031C8 /* libLabSound.a */; };
 		E2D5CD721A199A0500B031C8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C916183C43E5007AFB48 /* CoreFoundation.framework */; };
 		E2D5CD731A199A1500B031C8 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C90F183C43E5007AFB48 /* Accelerate.framework */; };
@@ -32,8 +31,6 @@
 
 /* Begin PBXFileReference section */
 		E241A7B81A454D4A00FE269D /* ReverbApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbApp.cpp; path = ../../src/ReverbApp.cpp; sourceTree = "<group>"; };
-		E241A7BA1A454D6400FE269D /* ReverbSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbSample.cpp; path = ../../src/ReverbSample.cpp; sourceTree = "<group>"; };
-		E241A7BB1A454D6400FE269D /* ReverbSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReverbSample.h; path = ../../src/ReverbSample.h; sourceTree = "<group>"; };
 		E251D9A11849D26000F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2D5CD611A1991A800B031C8 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = "../../../osx/build/Debug Native 64-bit/libLabSound.a"; sourceTree = "<group>"; };
 		E2D5CD671A1994EC00B031C8 /* ReverbApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ReverbApp; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,8 +71,6 @@
 			isa = PBXGroup;
 			children = (
 				E241A7B81A454D4A00FE269D /* ReverbApp.cpp */,
-				E241A7BA1A454D6400FE269D /* ReverbSample.cpp */,
-				E241A7BB1A454D6400FE269D /* ReverbSample.h */,
 				E2E0C925183C43EB007AFB48 /* Frameworks */,
 				E2E0C8FE183C42F9007AFB48 /* Products */,
 			);
@@ -168,7 +163,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E241A7B91A454D4A00FE269D /* ReverbApp.cpp in Sources */,
-				E241A7BC1A454D6400FE269D /* ReverbSample.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

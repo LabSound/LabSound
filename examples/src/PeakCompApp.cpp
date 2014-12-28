@@ -1,6 +1,5 @@
 #include "LabSound.h"
 #include "LabSoundIncludes.h"
-
 #include <chrono>
 #include <thread>
 
