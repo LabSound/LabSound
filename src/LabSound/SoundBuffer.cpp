@@ -30,7 +30,7 @@ namespace LabSound {
             
             // create an audio buffer from the file data. The file data will be
             // parsed, and does not need to be retained.
-            audioBuffer = context->createBuffer(fileDataBuffer.get(), mixToMono, ec);
+            audioBuffer = AudioBuffer::createFromAudioFileData(fileDataBuffer->data(), fileDataBuffer->byteLength(), mixToMono, context->sampleRate());
         }
         else
             std::cerr << "File not found " << path << std::endl;

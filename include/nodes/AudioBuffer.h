@@ -43,10 +43,13 @@ typedef int ExceptionCode;
 
 class AudioBuffer : public ThreadSafeRefCounted<AudioBuffer> {
 public:   
-    static PassRefPtr<AudioBuffer> create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
+    AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
+    explicit AudioBuffer(AudioBus*);
+
+    static std::shared_ptr<AudioBuffer> create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
 
     // Returns 0 if data is not a valid audio file.
-    static PassRefPtr<AudioBuffer> createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate);
+    static std::shared_ptr<AudioBuffer> createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate);
 
     // Format
     size_t length() const { return m_length; }
@@ -69,8 +72,6 @@ public:
     void releaseMemory();
     
 protected:
-    AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
-    explicit AudioBuffer(AudioBus*);
 
     double m_gain; // scalar gain
     float m_sampleRate;

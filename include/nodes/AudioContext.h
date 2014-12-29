@@ -112,8 +112,6 @@ public:
 
     void incrementActiveSourceCount();
     void decrementActiveSourceCount();
-    
-    PassRefPtr<AudioBuffer> createBuffer(ArrayBuffer*, bool mixToMono, ExceptionCode&);
 
     // Asynchronous audio file data decoding.
     void decodeAudioData(ArrayBuffer*, PassRefPtr<AudioBufferCallback>, PassRefPtr<AudioBufferCallback>, ExceptionCode& ec);
@@ -302,7 +300,7 @@ private:
     // HRTF Database loader
     RefPtr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
 
-    RefPtr<AudioBuffer> m_renderTarget;
+    std::shared_ptr<AudioBuffer> m_renderTarget;
     
     bool m_isOfflineContext;
 

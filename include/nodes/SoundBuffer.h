@@ -16,7 +16,7 @@ class SoundBuffer {
 
 public:
 
-    RefPtr<WebCore::AudioBuffer> audioBuffer;
+    std::shared_ptr<WebCore::AudioBuffer> audioBuffer;
     std::weak_ptr<WebCore::AudioContext> context;
     
     SoundBuffer(std::shared_ptr<WebCore::AudioContext>, const char* path);

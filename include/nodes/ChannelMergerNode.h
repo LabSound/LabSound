@@ -30,6 +30,7 @@
 #define ChannelMergerNode_h
 
 #include "AudioNode.h"
+#include "WTF/RefPtr.h"
 
 namespace WebCore {
 

@@ -23,7 +23,7 @@ namespace LabSound {
 	class BpmDelay::NodeInternal : public WebCore::AudioProcessor{
 	public:
 
-		NodeInternal(WebCore::AudioContext* context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
+        NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
 
 			WebCore::ExceptionCode ec;
 
@@ -79,7 +79,7 @@ namespace LabSound {
 
 	};
 
-	BpmDelay::BpmDelay(WebCore::AudioContext* context, float sampleRate)
+    BpmDelay::BpmDelay(std::shared_ptr<AudioContext> context, float sampleRate)
 		: WebCore::AudioBasicProcessorNode(context, sampleRate),
 		  data(new NodeInternal(context, sampleRate)) {
 		
@@ -87,12 +87,10 @@ namespace LabSound {
 
 		setNodeType((AudioNode::NodeType) LabSound::NodeTypeUnknown);
 
-		addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
-		addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 1))); // 2 stereo
-
+        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
+		addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 1))); // 2 stereo
 
 		initialize(); 
-
 	}
 
 	AudioParam* BpmDelay::delayTime() const {

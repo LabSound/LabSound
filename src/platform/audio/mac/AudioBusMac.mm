@@ -28,8 +28,6 @@
 
 #import "AudioFileReader.h"
 #import <WTF/AutodrainedPool.h>
-#import <WTF/RefPtr.h>
-#import <WTF/PassOwnPtr.h>
 #import <Foundation/Foundation.h>
 
 namespace WebCore {

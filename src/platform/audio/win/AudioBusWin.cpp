@@ -59,7 +59,7 @@ namespace WebCore {
             
             bool mixToMono = false;
 
-            PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);
+            auto fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);
             delete [] data;
 
 			return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile(fileDataBuffer->data(), fileDataBuffer->byteLength(), false, 44100));

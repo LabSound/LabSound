@@ -13,18 +13,14 @@ namespace LabSound {
 
 	public:
 
-		static WTF::PassRefPtr<BpmDelay> create(WebCore::AudioContext* context, float sampleRate) {
-			return adoptRef(new BpmDelay(context, sampleRate));
-		}
-
-		~BpmDelay(); 
+        BpmDelay(std::shared_ptr<AudioContext>, float sampleRate);
+		~BpmDelay();
 
 		// In Seconds 
 		AudioParam* delayTime() const; 
 
 	private:
 
-		BpmDelay(WebCore::AudioContext*, float sampleRate);
 
 		class NodeInternal;
 		NodeInternal* data;

@@ -280,23 +280,6 @@ void AudioContext::stop()
     clear();
 }
 
-PassRefPtr<AudioBuffer> AudioContext::createBuffer(ArrayBuffer* arrayBuffer, bool mixToMono, ExceptionCode& ec)
-{
-    ASSERT(arrayBuffer);
-    if (!arrayBuffer) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    RefPtr<AudioBuffer> audioBuffer = AudioBuffer::createFromAudioFileData(arrayBuffer->data(), arrayBuffer->byteLength(), mixToMono, sampleRate());
-    if (!audioBuffer.get()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    return audioBuffer;
-}
-
 void AudioContext::decodeAudioData(ArrayBuffer* audioData, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback, ExceptionCode& ec)
 {
     if (!audioData) {

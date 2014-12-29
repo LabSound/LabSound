@@ -55,6 +55,7 @@
 		E25245FE18724EC300983485 /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F118724EC300983485 /* SincResampler.cpp */; };
 		E25245FF18724EC300983485 /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F318724EC300983485 /* VectorMath.cpp */; };
 		E252460018724EC300983485 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E25245F518724EC300983485 /* ZeroPole.cpp */; };
+		E253C5471A514877006EA796 /* BpmDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E253C5461A514877006EA796 /* BpmDelay.cpp */; };
 		E2D5CDCA1A19B26D00B031C8 /* SKINI.msg in Resources */ = {isa = PBXBuildFile; fileRef = E2D5CDC51A19B26D00B031C8 /* SKINI.msg */; };
 		E2D5CDCB1A19B26D00B031C8 /* SKINI.tbl in Resources */ = {isa = PBXBuildFile; fileRef = E2D5CDC61A19B26D00B031C8 /* SKINI.tbl */; };
 		E2D5CDF41A19B2B100B031C8 /* ADSR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D5CDD91A19B2B100B031C8 /* ADSR.cpp */; };
@@ -248,6 +249,7 @@
 		E25245F118724EC300983485 /* SincResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SincResampler.cpp; sourceTree = "<group>"; };
 		E25245F318724EC300983485 /* VectorMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorMath.cpp; sourceTree = "<group>"; };
 		E25245F518724EC300983485 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
+		E253C5461A514877006EA796 /* BpmDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BpmDelay.cpp; sourceTree = "<group>"; };
 		E2D5CD7A1A19B20C00B031C8 /* json11.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = json11.hpp; path = ../include/third_party/json11/json11.hpp; sourceTree = "<group>"; };
 		E2D5CD7B1A19B23400B031C8 /* ADSR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSR.h; path = ../include/third_party/STK/ADSR.h; sourceTree = "<group>"; };
 		E2D5CD7C1A19B23400B031C8 /* Asymp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asymp.h; path = ../include/third_party/STK/Asymp.h; sourceTree = "<group>"; };
@@ -1096,17 +1098,18 @@
 		E2FB8499183D1E8F00A5A764 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
-				082FE02819C64F1300046275 /* EasyVerbNode.cpp */,
-				082FE02A19C64F1300046275 /* SampledInstrumentNode.cpp */,
 				E2FB849A183D1E8F00A5A764 /* ADSRNode.cpp */,
+				E253C5461A514877006EA796 /* BpmDelay.cpp */,
 				E2FB849C183D1E8F00A5A764 /* ClipNode.cpp */,
 				E2FB849E183D1E8F00A5A764 /* DiodeNode.cpp */,
+				082FE02819C64F1300046275 /* EasyVerbNode.cpp */,
 				E2FB84A0183D1E8F00A5A764 /* LabSound.cpp */,
 				E2FB84A3183D1E8F00A5A764 /* NoiseNode.cpp */,
 				E23015D0185EC9EB00FEC991 /* PeakCompNode.cpp */,
 				E251D92518486BB600F7B7BC /* PowerMonitorNode.cpp */,
 				E2FB8A23183DA85700A5A764 /* PWMNode.cpp */,
 				E2FB84A7183D1E8F00A5A764 /* RecorderNode.cpp */,
+				082FE02A19C64F1300046275 /* SampledInstrumentNode.cpp */,
 				E2FB84A9183D1E8F00A5A764 /* SfxrNode.cpp */,
 				E2FB84AB183D1E8F00A5A764 /* SoundBuffer.cpp */,
 				E2FB84AD183D1E8F00A5A764 /* SpatializationNode.cpp */,
@@ -1475,6 +1478,7 @@
 				E2FB8534183D1F1F00A5A764 /* AudioBasicInspectorNode.cpp in Sources */,
 				E2D5CE091A19B2B100B031C8 /* FileRead.cpp in Sources */,
 				E2D5CE5C1A19B2D600B031C8 /* Shakers.cpp in Sources */,
+				E253C5471A514877006EA796 /* BpmDelay.cpp in Sources */,
 				E25245D718724E8800983485 /* HRTFKernel.cpp in Sources */,
 				E2FB8548183D1F1F00A5A764 /* AudioParamTimeline.cpp in Sources */,
 				E25245A818724E3200983485 /* AudioPullFIFO.cpp in Sources */,

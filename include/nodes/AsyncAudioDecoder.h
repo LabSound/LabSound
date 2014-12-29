@@ -66,16 +66,16 @@ private:
         float sampleRate() const { return m_sampleRate; }
         AudioBufferCallback* successCallback() { return m_successCallback.get(); }
         AudioBufferCallback* errorCallback() { return m_errorCallback.get(); }
-        AudioBuffer* audioBuffer() { return m_audioBuffer.get(); }
+        std::shared_ptr<AudioBuffer> audioBuffer() { return m_audioBuffer; }
 
         static void notifyCompleteDispatch(void* userData);
         void notifyComplete();
 
-        RefPtr<ArrayBuffer> m_audioData;
+        std::shared_ptr<ArrayBuffer> m_audioData;
         float m_sampleRate;
         RefPtr<AudioBufferCallback> m_successCallback;
         RefPtr<AudioBufferCallback> m_errorCallback;
-        RefPtr<AudioBuffer> m_audioBuffer;
+        std::shared_ptr<AudioBuffer> m_audioBuffer;
     };
     
     static void threadEntry(void* threadData);

@@ -25,7 +25,7 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include "WTF/PassOwnPtr.h"
+#include "WTF/Platform.h"
 #include "WTF/RefPtr.h"
 #include <vector>
 
@@ -37,8 +37,6 @@ class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
-
-using namespace WTF;
 
 typedef int ExceptionCode;
 

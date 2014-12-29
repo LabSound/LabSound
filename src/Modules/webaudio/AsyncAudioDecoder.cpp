@@ -124,12 +124,13 @@ void AsyncAudioDecoder::DecodingTask::notifyCompleteDispatch(void* userData)
 void AsyncAudioDecoder::DecodingTask::notifyComplete()
 {
     if (audioBuffer() && successCallback())
-        successCallback()->handleEvent(audioBuffer());
+        successCallback()->handleEvent(audioBuffer().get());
     else if (errorCallback())
-        errorCallback()->handleEvent(audioBuffer());
+        errorCallback()->handleEvent(audioBuffer().get());
 
     // Our ownership was given up in AsyncAudioDecoder::runLoop()
     // Make sure to clean up here.
+    /// @TODO replace with a deletion queue.
     delete this;
 }
 

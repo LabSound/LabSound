@@ -47,7 +47,6 @@
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-#include "WTF/PassOwnPtr.h"
 #include "WTF/Platform.h"
 #include "WTF/Threading.h"
 

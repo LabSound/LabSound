@@ -35,19 +35,19 @@
 
 namespace WebCore {
 
-PassRefPtr<AudioBuffer> AudioBuffer::create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
+std::shared_ptr<AudioBuffer> AudioBuffer::create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
 {
     if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels() || !numberOfFrames)
         return 0;
     
-    return adoptRef(new AudioBuffer(numberOfChannels, numberOfFrames, sampleRate));
+    return std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
 }
 
-PassRefPtr<AudioBuffer> AudioBuffer::createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
+std::shared_ptr<AudioBuffer> AudioBuffer::createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
     std::unique_ptr<AudioBus> bus = createBusFromInMemoryAudioFile(data, dataSize, mixToMono, sampleRate);
     if (bus.get())
-        return adoptRef(new AudioBuffer(bus.get()));
+        return std::make_shared<AudioBuffer>(bus.get());
 
     return nullptr;
 }
