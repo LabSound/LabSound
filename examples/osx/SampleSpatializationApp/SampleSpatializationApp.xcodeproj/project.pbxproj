@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E241A7CA1A454E6900FE269D /* SampleSpatialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C71A454E6900FE269D /* SampleSpatialization.cpp */; };
 		E241A7CB1A454E6900FE269D /* SampleSpatializationApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7C91A454E6900FE269D /* SampleSpatializationApp.cpp */; };
 		E251D9A01849CACC00F7B7BC /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E251D99F1849CACC00F7B7BC /* libLabSound.a */; };
 		E2E0DCFF183C4E9B007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DCF3183C4E9B007AFB48 /* Accelerate.framework */; };
@@ -36,8 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E241A7C71A454E6900FE269D /* SampleSpatialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampleSpatialization.cpp; path = ../../src/SampleSpatialization.cpp; sourceTree = "<group>"; };
-		E241A7C81A454E6900FE269D /* SampleSpatialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampleSpatialization.h; path = ../../src/SampleSpatialization.h; sourceTree = "<group>"; };
 		E241A7C91A454E6900FE269D /* SampleSpatializationApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampleSpatializationApp.cpp; path = ../../src/SampleSpatializationApp.cpp; sourceTree = "<group>"; };
 		E251D99F1849CACC00F7B7BC /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E2E0DCE6183C4E72007AFB48 /* SampleSpatializationApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SampleSpatializationApp; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,8 +78,6 @@
 		E2E0DCDD183C4E72007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7C71A454E6900FE269D /* SampleSpatialization.cpp */,
-				E241A7C81A454E6900FE269D /* SampleSpatialization.h */,
 				E241A7C91A454E6900FE269D /* SampleSpatializationApp.cpp */,
 				E2E0DD0A183C4EA0007AFB48 /* Frameworks */,
 				E2E0DCE7183C4E72007AFB48 /* Products */,
@@ -168,7 +163,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E241A7CA1A454E6900FE269D /* SampleSpatialization.cpp in Sources */,
 				E241A7CB1A454E6900FE269D /* SampleSpatializationApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

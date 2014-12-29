@@ -32,7 +32,7 @@
 #include "AudioArray.h"
 #include <vector>
 
-#if OS(DARWIN) && !USE(WEBAUDIO_FFMPEG) && !USE(WEBAUDIO_KISSFFT)
+#if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 #define USE_ACCELERATE_FFT 1
 #else
 #define USE_ACCELERATE_FFT 0
@@ -41,10 +41,6 @@
 #if USE_ACCELERATE_FFT
 #include <Accelerate/Accelerate.h>
 #endif // !USE_ACCELERATE_FFT
-
-#if USE(WEBAUDIO_IPP)
-#include <ipps.h>
-#endif // USE(WEBAUDIO_IPP)
 
 #if USE(WEBAUDIO_KISSFFT)
 #include <kissfft/kiss_fft.hpp>
@@ -113,16 +109,6 @@ private:
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;
 #else // !USE_ACCELERATE_FFT
-
-#if USE(WEBAUDIO_IPP)
-    Ipp8u* m_buffer;
-    IppsDFTSpec_R_32f* m_DFTSpec;
-
-    float* getUpToDateComplexData();
-    AudioFloatArray m_complexData;
-    AudioFloatArray m_realData;
-    AudioFloatArray m_imagData;
-#endif // USE(WEBAUDIO_IPP)
     
 #if USE(WEBAUDIO_KISSFFT)
     

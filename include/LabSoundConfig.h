@@ -6,14 +6,12 @@
 //
 //
 
-#ifndef LabSound_LabSoundConfig_h
-#define LabSound_LabSoundConfig_h
+#ifndef LABSOUND_CONFIG_H
+#define LABSOUND_CONFIG_H
 
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
 #include "PlatformExportMacros.h"
-
-// Configure Webaudio features
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL
@@ -48,4 +46,4 @@
 #  endif
 #endif
 
-#endif
+#endif // LABSOUND_CONFIG_H

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E241A7B11A454BBE00FE269D /* LiveEcho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */; };
 		E241A7B21A454BBE00FE269D /* LiveEchoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */; };
 		E2E0DBBD183C4A90007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBB1183C4A90007AFB48 /* libLabSound.a */; };
 		E2E0DBBE183C4A90007AFB48 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DBB2183C4A90007AFB48 /* Accounts.framework */; };
@@ -37,8 +36,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEcho.cpp; path = ../../src/LiveEcho.cpp; sourceTree = "<group>"; };
-		E241A7AF1A454BBE00FE269D /* LiveEcho.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LiveEcho.h; path = ../../src/LiveEcho.h; sourceTree = "<group>"; };
 		E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LiveEchoApp.cpp; path = ../../src/LiveEchoApp.cpp; sourceTree = "<group>"; };
 		E2E0DBA4183C4A4C007AFB48 /* LiveEchoApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LiveEchoApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0DBB1183C4A90007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
@@ -83,8 +80,6 @@
 		E2E0DB9B183C4A4B007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7AE1A454BBE00FE269D /* LiveEcho.cpp */,
-				E241A7AF1A454BBE00FE269D /* LiveEcho.h */,
 				E241A7B01A454BBE00FE269D /* LiveEchoApp.cpp */,
 				E2E0DBB0183C4A64007AFB48 /* Frameworks */,
 				E2E0DBA5183C4A4C007AFB48 /* Products */,
@@ -171,7 +166,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E241A7B21A454BBE00FE269D /* LiveEchoApp.cpp in Sources */,
-				E241A7B11A454BBE00FE269D /* LiveEcho.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

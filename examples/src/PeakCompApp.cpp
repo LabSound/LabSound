@@ -1,43 +1,33 @@
-//
-//  PeakCompApp.cpp
-//  PeakCompApp
-//
-//  Created by Nick Porcino on 2013 12/16.
-//  Copyright (c) 2013 LabSound. All rights reserved.
-//
-
-#include "PeakCompApp.h"
-
 #include "LabSound.h"
 #include "LabSoundIncludes.h"
-
 #include <chrono>
 #include <thread>
 
 using namespace LabSound;
 
-int main(int, char**) {
-    RefPtr<AudioContext> context = LabSound::init();
+int main(int, char**)
+{
+    ExceptionCode ec;
+    
+    auto context = LabSound::init();
 
-    //--------------------------------------------------------------
-    // Play a rhythm
-    //
     SoundBuffer kick(context, "kick.wav");
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");
 
-    ExceptionCode ec;
-    RefPtr<BiquadFilterNode> filter = context->createBiquadFilter();
+    auto filter = BiquadFilterNode::create(context, context->sampleRate());
     filter->setType(BiquadFilterNode::LOWPASS, ec);
     filter->frequency()->setValue(4000.0f);
 
-    RefPtr<PeakCompNode> peakComp = PeakCompNode::create(context.get(), 44100);
+    auto peakComp = PeakCompNode::create(context, context->sampleRate());
     connect(filter.get(), peakComp.get());
-    connect(peakComp.get(), context->destination());
+    connect(peakComp.get(), context->destination().get());
 
     float startTime = 0;
     float eighthNoteTime = 1.0f/4.0f;
-    for (int bar = 0; bar < 2; bar++) {
+    
+    for (int bar = 0; bar < 2; bar++)
+    {
         float time = startTime + bar * 8 * eighthNoteTime;
         // Play the bass (kick) drum on beats 1, 5
         kick.play(filter.get(), time);
@@ -48,15 +38,19 @@ int main(int, char**) {
         snare.play(filter.get(), time + 6 * eighthNoteTime);
 
         // Play the hi-hat every eighth note.
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 8; ++i)
+        {
             hihat.play(filter.get(), time + i * eighthNoteTime);
         }
     }
-    const float seconds = 10.0f;
-    for (float i = 0; i < seconds; i += 0.01f) {
-		std::this_thread::sleep_for(std::chrono::microseconds(10000));
+    
+    const int seconds = 10;
+    for (int t = 0; t < seconds; ++t)
+    {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+    
+    LabSound::finish(context);
     
     return 0;
 }
-

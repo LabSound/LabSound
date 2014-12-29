@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		08D67A051972E67D0061116A /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08D67A041972E67D0061116A /* libLabSound.a */; };
-		E241A7CF1A454E9000FE269D /* ToneAndSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */; };
 		E241A7D01A454E9000FE269D /* ToneAndSampleApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */; };
 		E2E0DD32183C4F2D007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */; };
 		E2E0DD33183C4F2D007AFB48 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DD27183C4F2D007AFB48 /* ApplicationServices.framework */; };
@@ -37,8 +36,6 @@
 
 /* Begin PBXFileReference section */
 		08D67A041972E67D0061116A /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
-		E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSample.cpp; path = ../../src/ToneAndSample.cpp; sourceTree = "<group>"; };
-		E241A7CD1A454E9000FE269D /* ToneAndSample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToneAndSample.h; path = ../../src/ToneAndSample.h; sourceTree = "<group>"; };
 		E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToneAndSampleApp.cpp; path = ../../src/ToneAndSampleApp.cpp; sourceTree = "<group>"; };
 		E2E0DD19183C4EFE007AFB48 /* ToneAndSampleApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ToneAndSampleApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0DD26183C4F2D007AFB48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -80,8 +77,6 @@
 		E2E0DD10183C4EFE007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7CC1A454E9000FE269D /* ToneAndSample.cpp */,
-				E241A7CD1A454E9000FE269D /* ToneAndSample.h */,
 				E241A7CE1A454E9000FE269D /* ToneAndSampleApp.cpp */,
 				E2E0DD3D183C4F32007AFB48 /* Frameworks */,
 				E2E0DD1A183C4EFE007AFB48 /* Products */,
@@ -166,7 +161,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E241A7CF1A454E9000FE269D /* ToneAndSample.cpp in Sources */,
 				E241A7D01A454E9000FE269D /* ToneAndSampleApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -31,9 +31,6 @@
 
 #include "AudioArray.h"
 
-#if USE(WEBAUDIO_IPP)
-#include <ipps.h>
-#endif // USE(WEBAUDIO_IPP)
 
 namespace WebCore {
 
@@ -47,10 +44,6 @@ public:
 
 private:
     size_t m_inputBlockSize;
-
-#if USE(WEBAUDIO_IPP)
-    AudioFloatArray m_overlayBuffer;
-#endif // USE(WEBAUDIO_IPP)
     AudioFloatArray m_buffer;
 };
 

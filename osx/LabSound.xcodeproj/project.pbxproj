@@ -426,7 +426,6 @@
 		E2D5CE7E1A19B39900B031C8 /* LabSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSound.h; sourceTree = "<group>"; };
 		E2D5CE7F1A19B39900B031C8 /* LabSoundConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundConfig.h; sourceTree = "<group>"; };
 		E2D5CE801A19B39900B031C8 /* LabSoundIncludes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSoundIncludes.h; sourceTree = "<group>"; };
-		E2D5CE811A19B3C000B031C8 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		E2D5CE831A19B3E700B031C8 /* AudioArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioArray.h; path = internal/AudioArray.h; sourceTree = "<group>"; };
 		E2D5CE841A19B3E700B031C8 /* AudioBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBus.h; path = internal/AudioBus.h; sourceTree = "<group>"; };
 		E2D5CE851A19B3E700B031C8 /* AudioChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioChannel.h; path = internal/AudioChannel.h; sourceTree = "<group>"; };
@@ -470,22 +469,8 @@
 		E2D5CEAC1A19B40100B031C8 /* ReverbInputBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReverbInputBuffer.h; path = internal/ReverbInputBuffer.h; sourceTree = "<group>"; };
 		E2D5CEAD1A19B40100B031C8 /* SincResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SincResampler.h; path = internal/SincResampler.h; sourceTree = "<group>"; };
 		E2D5CEAF1A19B40100B031C8 /* FloatConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatConversion.h; sourceTree = "<group>"; };
-		E2D5CEB11A19B40100B031C8 /* FloatPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint.h; sourceTree = "<group>"; };
-		E2D5CEB21A19B40100B031C8 /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
-		E2D5CEB31A19B40100B031C8 /* FloatQuad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatQuad.h; sourceTree = "<group>"; };
-		E2D5CEB41A19B40100B031C8 /* FloatRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatRect.h; sourceTree = "<group>"; };
-		E2D5CEB51A19B40100B031C8 /* FloatSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatSize.h; sourceTree = "<group>"; };
-		E2D5CEB61A19B40100B031C8 /* IntPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntPoint.h; sourceTree = "<group>"; };
-		E2D5CEB71A19B40100B031C8 /* IntRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntRect.h; sourceTree = "<group>"; };
-		E2D5CEB81A19B40100B031C8 /* IntSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntSize.h; sourceTree = "<group>"; };
-		E2D5CEB91A19B40100B031C8 /* LayoutPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutPoint.h; sourceTree = "<group>"; };
-		E2D5CEBA1A19B40100B031C8 /* LayoutRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutRect.h; sourceTree = "<group>"; };
-		E2D5CEBB1A19B40100B031C8 /* LayoutSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutSize.h; sourceTree = "<group>"; };
-		E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AffineTransform.h; sourceTree = "<group>"; };
-		E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransformationMatrix.h; sourceTree = "<group>"; };
+		E2D5CEB21A19B40100B031C8 /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FloatPoint3D.h; path = graphics/FloatPoint3D.h; sourceTree = "<group>"; };
 		E2D5CECA1A19B40100B031C8 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
-		E2D5CECB1A19B40100B031C8 /* TextDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextDirection.h; sourceTree = "<group>"; };
-		E2D5CECC1A19B40100B031C8 /* WritingMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WritingMode.h; sourceTree = "<group>"; };
 		E2D5CECD1A19B40100B031C8 /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VectorMath.h; path = internal/VectorMath.h; sourceTree = "<group>"; };
 		E2D5CED11A19B40100B031C8 /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZeroPole.h; path = internal/ZeroPole.h; sourceTree = "<group>"; };
 		E2D5CED31A19B43900B031C8 /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSRNode.h; path = nodes/ADSRNode.h; sourceTree = "<group>"; };
@@ -906,7 +891,6 @@
 			children = (
 				E2D5CED21A19B42400B031C8 /* nodes */,
 				E2D5CE821A19B3D200B031C8 /* internal */,
-				E2D5CE811A19B3C000B031C8 /* config.h */,
 				E2D5CE7E1A19B39900B031C8 /* LabSound.h */,
 				E2D5CE7F1A19B39900B031C8 /* LabSoundConfig.h */,
 				E2D5CE801A19B39900B031C8 /* LabSoundIncludes.h */,
@@ -990,42 +974,12 @@
 		E2D5CEAE1A19B40100B031C8 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				E2D5CEB21A19B40100B031C8 /* FloatPoint3D.h */,
 				E2D5CEAF1A19B40100B031C8 /* FloatConversion.h */,
-				E2D5CEB01A19B40100B031C8 /* graphics */,
 				E2D5CECA1A19B40100B031C8 /* Logging.h */,
-				E2D5CECB1A19B40100B031C8 /* TextDirection.h */,
-				E2D5CECC1A19B40100B031C8 /* WritingMode.h */,
 			);
 			name = util;
 			path = internal/util;
-			sourceTree = "<group>";
-		};
-		E2D5CEB01A19B40100B031C8 /* graphics */ = {
-			isa = PBXGroup;
-			children = (
-				E2D5CEB11A19B40100B031C8 /* FloatPoint.h */,
-				E2D5CEB21A19B40100B031C8 /* FloatPoint3D.h */,
-				E2D5CEB31A19B40100B031C8 /* FloatQuad.h */,
-				E2D5CEB41A19B40100B031C8 /* FloatRect.h */,
-				E2D5CEB51A19B40100B031C8 /* FloatSize.h */,
-				E2D5CEB61A19B40100B031C8 /* IntPoint.h */,
-				E2D5CEB71A19B40100B031C8 /* IntRect.h */,
-				E2D5CEB81A19B40100B031C8 /* IntSize.h */,
-				E2D5CEB91A19B40100B031C8 /* LayoutPoint.h */,
-				E2D5CEBA1A19B40100B031C8 /* LayoutRect.h */,
-				E2D5CEBB1A19B40100B031C8 /* LayoutSize.h */,
-				E2D5CEBC1A19B40100B031C8 /* transforms */,
-			);
-			path = graphics;
-			sourceTree = "<group>";
-		};
-		E2D5CEBC1A19B40100B031C8 /* transforms */ = {
-			isa = PBXGroup;
-			children = (
-				E2D5CEBD1A19B40100B031C8 /* AffineTransform.h */,
-				E2D5CEC51A19B40100B031C8 /* TransformationMatrix.h */,
-			);
-			path = transforms;
 			sourceTree = "<group>";
 		};
 		E2D5CED21A19B42400B031C8 /* nodes */ = {

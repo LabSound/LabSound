@@ -19,7 +19,6 @@
 		E2E0DC74183C4CD2007AFB48 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC68183C4CD2007AFB48 /* CoreMIDI.framework */; };
 		E2E0DC75183C4CD2007AFB48 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC69183C4CD2007AFB48 /* CoreVideo.framework */; };
 		E2E0DC76183C4CD2007AFB48 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0DC6A183C4CD2007AFB48 /* libicucore.dylib */; };
-		E2E0DC7A183C4CE4007AFB48 /* RhythmFiltered.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DC77183C4CE4007AFB48 /* RhythmFiltered.cpp */; };
 		E2E0DC7B183C4CE4007AFB48 /* RhythmFilteredApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2E0DC79183C4CE4007AFB48 /* RhythmFilteredApp.cpp */; };
 /* End PBXBuildFile section */
 
@@ -49,8 +48,6 @@
 		E2E0DC68183C4CD2007AFB48 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		E2E0DC69183C4CD2007AFB48 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E2E0DC6A183C4CD2007AFB48 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		E2E0DC77183C4CE4007AFB48 /* RhythmFiltered.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmFiltered.cpp; path = ../../src/RhythmFiltered.cpp; sourceTree = "<group>"; };
-		E2E0DC78183C4CE4007AFB48 /* RhythmFiltered.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhythmFiltered.h; path = ../../src/RhythmFiltered.h; sourceTree = "<group>"; };
 		E2E0DC79183C4CE4007AFB48 /* RhythmFilteredApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhythmFilteredApp.cpp; path = ../../src/RhythmFilteredApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,10 +77,8 @@
 		E2E0DC4A183C4C99007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E2E0DC7C183C4CE8007AFB48 /* Frameworks */,
-				E2E0DC77183C4CE4007AFB48 /* RhythmFiltered.cpp */,
-				E2E0DC78183C4CE4007AFB48 /* RhythmFiltered.h */,
 				E2E0DC79183C4CE4007AFB48 /* RhythmFilteredApp.cpp */,
+				E2E0DC7C183C4CE8007AFB48 /* Frameworks */,
 				E2E0DC54183C4C99007AFB48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -167,7 +162,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2E0DC7B183C4CE4007AFB48 /* RhythmFilteredApp.cpp in Sources */,
-				E2E0DC7A183C4CE4007AFB48 /* RhythmFiltered.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

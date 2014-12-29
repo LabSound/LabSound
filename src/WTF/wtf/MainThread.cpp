@@ -35,10 +35,6 @@
 #include <deque>
 #include <WTF/ThreadSpecific.h>
 
-#if PLATFORM(CHROMIUM)
-#error Chromium uses a different main thread implementation
-#endif
-
 namespace WTF {
 
 struct FunctionWithContext {

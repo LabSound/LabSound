@@ -46,14 +46,7 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(std::shared_ptr
     , m_mixBus(numberOfChannels, ProcessingSizeInFrames)
 {
     setNodeType(NodeTypeMediaStreamAudioDestination);
-/* LabSound commented
-    m_source = MediaStreamSource::create(ASCIILiteral("WebAudio-") + createCanonicalUUIDString(), MediaStreamSource::TypeAudio, "MediaStreamAudioDestinationNode", MediaStreamSource::ReadyStateLive, true);
-    MediaStreamSourceVector audioSources;
-    audioSources.append(m_source);
-    MediaStreamSourceVector videoSources;
-    m_stream = LocalMediaStream::create(context->scriptExecutionContext(), audioSources, videoSources);
-    MediaStreamCenter::instance().didCreateMediaStream(m_stream->descriptor());
-*/
+
     initialize();
 }
 

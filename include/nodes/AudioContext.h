@@ -120,9 +120,6 @@ public:
 
     AudioListener* listener() { return m_listener.get(); }
 
-#if ENABLE(VIDEO)
-    PassRefPtr<MediaElementAudioSourceNode> createMediaElementSource(HTMLMediaElement*, ExceptionCode&);
-#endif
     static PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
 
     // When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.

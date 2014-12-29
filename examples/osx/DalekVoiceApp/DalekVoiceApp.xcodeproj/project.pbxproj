@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E241A7AC1A45499B00FE269D /* DalekVoice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7A91A45499B00FE269D /* DalekVoice.cpp */; };
 		E241A7AD1A45499B00FE269D /* DalekVoiceApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E241A7AB1A45499B00FE269D /* DalekVoiceApp.cpp */; };
 		E2E0C94C183C449A007AFB48 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C940183C4499007AFB48 /* libLabSound.a */; };
 		E2E0C94D183C449A007AFB48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2E0C941183C4499007AFB48 /* Accelerate.framework */; };
@@ -36,8 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E241A7A91A45499B00FE269D /* DalekVoice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DalekVoice.cpp; path = ../../src/DalekVoice.cpp; sourceTree = "<group>"; };
-		E241A7AA1A45499B00FE269D /* DalekVoice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DalekVoice.h; path = ../../src/DalekVoice.h; sourceTree = "<group>"; };
 		E241A7AB1A45499B00FE269D /* DalekVoiceApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DalekVoiceApp.cpp; path = ../../src/DalekVoiceApp.cpp; sourceTree = "<group>"; };
 		E2E0C92F183C4434007AFB48 /* DalekVoiceApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = DalekVoiceApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2E0C940183C4499007AFB48 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../src/build/Debug/libLabSound.a; sourceTree = "<group>"; };
@@ -80,8 +77,6 @@
 		E2E0C926183C4434007AFB48 = {
 			isa = PBXGroup;
 			children = (
-				E241A7A91A45499B00FE269D /* DalekVoice.cpp */,
-				E241A7AA1A45499B00FE269D /* DalekVoice.h */,
 				E241A7AB1A45499B00FE269D /* DalekVoiceApp.cpp */,
 				E2E0C958183C449F007AFB48 /* Frameworks */,
 				E2E0C930183C4434007AFB48 /* Products */,
@@ -166,7 +161,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E241A7AC1A45499B00FE269D /* DalekVoice.cpp in Sources */,
 				E241A7AD1A45499B00FE269D /* DalekVoiceApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
