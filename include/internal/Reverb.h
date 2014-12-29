@@ -30,7 +30,6 @@
 #define Reverb_h
 
 #include "ReverbConvolver.h"
-#include <WTF/RefPtr.h>
 #include <vector>
 
 namespace WebCore {

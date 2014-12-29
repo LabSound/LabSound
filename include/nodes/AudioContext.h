@@ -113,7 +113,6 @@ public:
     void incrementActiveSourceCount();
     void decrementActiveSourceCount();
     
-    PassRefPtr<AudioBuffer> createBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode&);
     PassRefPtr<AudioBuffer> createBuffer(ArrayBuffer*, bool mixToMono, ExceptionCode&);
 
     // Asynchronous audio file data decoding.

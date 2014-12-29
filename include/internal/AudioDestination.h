@@ -29,9 +29,6 @@
 #ifndef AudioDestination_h
 #define AudioDestination_h
 
-#include "WTF/RefPtr.h"
-#include "WTF/PassOwnPtr.h"
-
 namespace WebCore {
 
 class AudioIOCallback;

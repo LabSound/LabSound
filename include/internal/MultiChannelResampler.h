@@ -30,7 +30,6 @@
 #define MultiChannelResampler_h
 
 #include "SincResampler.h"
-#include "WTF/RefPtr.h"
 #include <vector>
 
 namespace WebCore {

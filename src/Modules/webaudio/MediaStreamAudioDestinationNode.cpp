@@ -70,6 +70,10 @@ MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
 void MediaStreamAudioDestinationNode::process(size_t numberOfFrames)
 {
     m_mixBus.copyFrom(*input(0)->bus());
+    
+    // m_source is supposed to be derived from AudioDestinationConsumer.h
+    // --- it should be very easy to pipe the audio from LabSound to something else via that API
+    
 /* LabSound commented - will need to revisit later
     m_source->consumeAudio(&m_mixBus, numberOfFrames);
  */

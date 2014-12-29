@@ -293,17 +293,6 @@ void AudioContext::stop()
     clear();
 }
 
-PassRefPtr<AudioBuffer> AudioContext::createBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate, ExceptionCode& ec)
-{
-    RefPtr<AudioBuffer> audioBuffer = AudioBuffer::create(numberOfChannels, numberOfFrames, sampleRate);
-    if (!audioBuffer.get()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    return audioBuffer;
-}
-
 PassRefPtr<AudioBuffer> AudioContext::createBuffer(ArrayBuffer* arrayBuffer, bool mixToMono, ExceptionCode& ec)
 {
     ASSERT(arrayBuffer);
