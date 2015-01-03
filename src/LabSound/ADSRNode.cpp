@@ -22,11 +22,11 @@ namespace LabSound {
         , m_noteOffTime(0)
         , m_currentGain(0)
         {
-            m_attackTime = AudioParam::create(context, "attackTime",  0.05, 0, 120);   // duration
-            m_attackLevel = AudioParam::create(context, "attackLevel",  1.0, 0, 10);   // duration
-            m_decayTime = AudioParam::create(context, "decayTime",   0.05,  0, 120);   // duration
-            m_sustainLevel = AudioParam::create(context, "sustain", 0.75, 0, 10);   // level
-            m_releaseTime = AudioParam::create(context, "release", 0.0625, 0, 120);   // duration
+            m_attackTime = std::make_shared<AudioParam>(context, "attackTime",  0.05, 0, 120);   // duration
+            m_attackLevel = std::make_shared<AudioParam>(context, "attackLevel",  1.0, 0, 10);   // duration
+            m_decayTime = std::make_shared<AudioParam>(context, "decayTime",   0.05,  0, 120);   // duration
+            m_sustainLevel = std::make_shared<AudioParam>(context, "sustain", 0.75, 0, 10);   // level
+            m_releaseTime = std::make_shared<AudioParam>(context, "release", 0.0625, 0, 120);   // duration
         }
 
         virtual ~AdsrNodeInternal() {
@@ -144,18 +144,18 @@ namespace LabSound {
         double m_attackTimeTarget, m_decayTimeTarget, m_noteOffTime;
         float m_currentGain;
         std::vector<float> gainValues;
-		RefPtr<AudioParam> m_attackTime;
-		RefPtr<AudioParam> m_attackLevel;
-		RefPtr<AudioParam> m_decayTime;
-		RefPtr<AudioParam> m_sustainLevel;
-		RefPtr<AudioParam> m_releaseTime;
+		std::shared_ptr<AudioParam> m_attackTime;
+		std::shared_ptr<AudioParam> m_attackLevel;
+		std::shared_ptr<AudioParam> m_decayTime;
+		std::shared_ptr<AudioParam> m_sustainLevel;
+		std::shared_ptr<AudioParam> m_releaseTime;
     };
     
-    AudioParam* ADSRNode::attackTime() const { return data->m_attackTime.get(); }
-    AudioParam* ADSRNode::attackLevel() const { return data->m_attackLevel.get(); }
-    AudioParam* ADSRNode::decayTime() const { return data->m_decayTime.get(); }
-    AudioParam* ADSRNode::sustainLevel() const { return data->m_sustainLevel.get(); }
-    AudioParam* ADSRNode::releaseTime() const { return data->m_releaseTime.get(); }
+    std::shared_ptr<AudioParam> ADSRNode::attackTime() const { return data->m_attackTime; }
+    std::shared_ptr<AudioParam> ADSRNode::attackLevel() const { return data->m_attackLevel; }
+    std::shared_ptr<AudioParam> ADSRNode::decayTime() const { return data->m_decayTime; }
+    std::shared_ptr<AudioParam> ADSRNode::sustainLevel() const { return data->m_sustainLevel; }
+    std::shared_ptr<AudioParam> ADSRNode::releaseTime() const { return data->m_releaseTime; }
 
 
     void ADSRNode::set(float aT, float aL, float d, float s, float r) {

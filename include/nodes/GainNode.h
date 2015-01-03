@@ -25,7 +25,7 @@
 #ifndef GainNode_h
 #define GainNode_h
 
-#include "AudioGain.h"
+#include "AudioParam.h"
 #include "AudioNode.h"
 #include "WTF/Threading.h"
 
@@ -50,8 +50,7 @@ public:
     // Called in the main thread when the number of channels for the input may have changed.
     virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
 
-    // JavaScript interface
-    AudioGain* gain() const { return m_gain.get(); }
+    std::shared_ptr<AudioParam> gain() const { return m_gain; }
     
 protected:  /// @LabSound - was private
     virtual double tailTime() const OVERRIDE { return 0; }
@@ -60,7 +59,7 @@ protected:  /// @LabSound - was private
     GainNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     float m_lastGain; // for de-zippering
-    RefPtr<AudioGain> m_gain;
+    std::shared_ptr<AudioParam> m_gain;
 
     AudioFloatArray m_sampleAccurateGainValues;
 };

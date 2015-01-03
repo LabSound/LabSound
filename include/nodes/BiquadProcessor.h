@@ -69,10 +69,10 @@ public:
     bool filterCoefficientsDirty() const { return m_filterCoefficientsDirty; }
     bool hasSampleAccurateValues() const { return m_hasSampleAccurateValues; }
 
-    AudioParam* parameter1() { return m_parameter1.get(); }
-    AudioParam* parameter2() { return m_parameter2.get(); }
-    AudioParam* parameter3() { return m_parameter3.get(); }
-    AudioParam* parameter4() { return m_parameter4.get(); }
+    std::shared_ptr<AudioParam> parameter1() { return m_parameter1; }
+    std::shared_ptr<AudioParam> parameter2() { return m_parameter2; }
+    std::shared_ptr<AudioParam> parameter3() { return m_parameter3; }
+    std::shared_ptr<AudioParam> parameter4() { return m_parameter4; }
 
     FilterType type() const { return m_type; }
     void setType(FilterType);
@@ -80,10 +80,10 @@ public:
 private:
     FilterType m_type;
 
-    RefPtr<AudioParam> m_parameter1;
-    RefPtr<AudioParam> m_parameter2;
-    RefPtr<AudioParam> m_parameter3;
-    RefPtr<AudioParam> m_parameter4;
+    std::shared_ptr<AudioParam> m_parameter1;
+    std::shared_ptr<AudioParam> m_parameter2;
+    std::shared_ptr<AudioParam> m_parameter3;
+    std::shared_ptr<AudioParam> m_parameter4;
 
     // so DSP kernels know when to re-compute coefficients
     bool m_filterCoefficientsDirty;

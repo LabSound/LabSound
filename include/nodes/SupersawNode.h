@@ -21,14 +21,14 @@ namespace LabSound {
 			return adoptRef(new SupersawNode(context, sampleRate));
 		}
 
-		AudioParam* attack()  const;
-		AudioParam* decay()   const;
-		AudioParam* sustain() const;
-		AudioParam* release() const;
+		std::shared_ptr<AudioParam> attack()  const;
+		std::shared_ptr<AudioParam> decay()   const;
+		std::shared_ptr<AudioParam> sustain() const;
+		std::shared_ptr<AudioParam> release() const;
 
-        AudioParam* sawCount()  const;
-        AudioParam* frequency() const;
-        AudioParam* detune()    const;
+        std::shared_ptr<AudioParam> sawCount()  const;
+        std::shared_ptr<AudioParam> frequency() const;
+        std::shared_ptr<AudioParam> detune()    const;
 
 		void noteOn();
 		void noteOff();

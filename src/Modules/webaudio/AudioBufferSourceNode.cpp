@@ -36,6 +36,8 @@
 #include <wtf/MathExtras.h>
 #include <wtf/StdLibExtras.h>
 
+using namespace std;
+
 namespace WebCore {
 
 const double DefaultGrainDuration = 0.020; // 20ms
@@ -65,8 +67,8 @@ AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> conte
 {
     setNodeType(NodeTypeAudioBufferSource);
 
-    m_gain = AudioParam::create(context, "gain", 1.0, 0.0, 1.0);
-    m_playbackRate = AudioParam::create(context, "playbackRate", 1.0, 0.0, MaxRate);
+    m_gain = make_shared<AudioParam>(context, "gain", 1.0, 0.0, 1.0);
+    m_playbackRate = make_shared<AudioParam>(context, "playbackRate", 1.0, 0.0, MaxRate);
 
     // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

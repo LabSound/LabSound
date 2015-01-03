@@ -25,10 +25,10 @@
 #ifndef PannerNode_h
 #define PannerNode_h
 
-#include "AudioGain.h"
+#include "AudioBus.h"
 #include "AudioListener.h"
 #include "AudioNode.h"
-#include "AudioBus.h"
+#include "AudioParam.h"
 #include "Cone.h"
 #include "Distance.h"
 #include "util/graphics/FloatPoint3D.h"
@@ -121,8 +121,8 @@ public:
     float dopplerRate();
 
     // Accessors for dynamically calculated gain values.
-    AudioGain* distanceGain() { return m_distanceGain.get(); }                                        
-    AudioGain* coneGain() { return m_coneGain.get(); }                                        
+    std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
+    std::shared_ptr<AudioParam> coneGain() { return m_coneGain; }
 
     virtual double tailTime() const OVERRIDE { return m_panner ? m_panner->tailTime() : 0; }
     virtual double latencyTime() const OVERRIDE { return m_panner ? m_panner->latencyTime() : 0; }
@@ -145,8 +145,8 @@ protected: /// @LabSound was private
     FloatPoint3D m_velocity;
 
     // Gain
-    RefPtr<AudioGain> m_distanceGain;
-    RefPtr<AudioGain> m_coneGain;
+    std::shared_ptr<AudioParam> m_distanceGain;
+    std::shared_ptr<AudioParam> m_coneGain;
     DistanceEffect m_distanceEffect;
     ConeEffect m_coneEffect;
     float m_lastGain;

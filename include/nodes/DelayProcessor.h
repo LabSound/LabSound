@@ -42,12 +42,12 @@ public:
     
     virtual AudioDSPKernel* createKernel();
         
-    AudioParam* delayTime() const { return m_delayTime.get(); }
+    std::shared_ptr<AudioParam> delayTime() const { return m_delayTime; }
 
     double maxDelayTime() { return m_maxDelayTime; }
-private:
 
-    RefPtr<AudioParam> m_delayTime;
+private:
+    std::shared_ptr<AudioParam> m_delayTime;
     double m_maxDelayTime;
 };
 

@@ -62,8 +62,8 @@ public:
     unsigned short type() const { return m_type; }
     void setType(unsigned short, ExceptionCode&);
 
-    AudioParam* frequency() { return m_frequency.get(); }
-    AudioParam* detune() { return m_detune.get(); }
+    std::shared_ptr<AudioParam> frequency() { return m_frequency; }
+    std::shared_ptr<AudioParam> detune() { return m_detune; }
 
     void setWaveTable(std::shared_ptr<WaveTable>);
 
@@ -80,10 +80,10 @@ private:
     unsigned short m_type;
     
     // Frequency value in Hertz.
-    RefPtr<AudioParam> m_frequency;
+    std::shared_ptr<AudioParam> m_frequency;
 
     // Detune value (deviating from the frequency) in Cents.
-    RefPtr<AudioParam> m_detune;
+    std::shared_ptr<AudioParam> m_detune;
 
     bool m_firstRender;
 

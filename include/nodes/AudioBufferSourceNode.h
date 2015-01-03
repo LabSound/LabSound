@@ -80,8 +80,8 @@ public:
     bool looping();
     void setLooping(bool);
 
-    AudioParam* gain() { return m_gain.get(); }
-    AudioParam* playbackRate() { return m_playbackRate.get(); }
+    std::shared_ptr<AudioParam> gain() { return m_gain; }
+    std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
     void setPannerNode(PannerNode*);
@@ -113,8 +113,8 @@ private:
     std::unique_ptr<float*[]> m_destinationChannels;
 
     // Used for the "gain" and "playbackRate" attributes.
-    RefPtr<AudioParam> m_gain;
-    RefPtr<AudioParam> m_playbackRate;
+    std::shared_ptr<AudioParam> m_gain;
+    std::shared_ptr<AudioParam> m_playbackRate;
 
     // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
     // If true, it will wrap around to the start of the buffer each time it reaches the end.

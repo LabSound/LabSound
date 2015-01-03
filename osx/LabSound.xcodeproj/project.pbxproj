@@ -485,7 +485,6 @@
 		E2D5CEDA1A19B43900B031C8 /* AudioBufferSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBufferSourceNode.h; path = nodes/AudioBufferSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEDB1A19B43900B031C8 /* AudioContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioContext.h; path = nodes/AudioContext.h; sourceTree = "<group>"; };
 		E2D5CEDC1A19B43900B031C8 /* AudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDestinationNode.h; path = nodes/AudioDestinationNode.h; sourceTree = "<group>"; };
-		E2D5CEDD1A19B43900B031C8 /* AudioGain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioGain.h; path = nodes/AudioGain.h; sourceTree = "<group>"; };
 		E2D5CEDE1A19B43900B031C8 /* AudioListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioListener.h; path = nodes/AudioListener.h; sourceTree = "<group>"; };
 		E2D5CEDF1A19B43900B031C8 /* AudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNode.h; path = nodes/AudioNode.h; sourceTree = "<group>"; };
 		E2D5CEE01A19B43900B031C8 /* AudioNodeInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioNodeInput.h; path = nodes/AudioNodeInput.h; sourceTree = "<group>"; };
@@ -997,7 +996,6 @@
 				E2D5CEDA1A19B43900B031C8 /* AudioBufferSourceNode.h */,
 				E2D5CEDB1A19B43900B031C8 /* AudioContext.h */,
 				E2D5CEDC1A19B43900B031C8 /* AudioDestinationNode.h */,
-				E2D5CEDD1A19B43900B031C8 /* AudioGain.h */,
 				E2D5CEDE1A19B43900B031C8 /* AudioListener.h */,
 				E2D5CEDF1A19B43900B031C8 /* AudioNode.h */,
 				E2D5CEE01A19B43900B031C8 /* AudioNodeInput.h */,

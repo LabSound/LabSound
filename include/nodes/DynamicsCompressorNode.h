@@ -49,14 +49,14 @@ public:
     virtual void uninitialize();
 
     // Static compression curve parameters.
-    AudioParam* threshold() { return m_threshold.get(); }
-    AudioParam* knee() { return m_knee.get(); }
-    AudioParam* ratio() { return m_ratio.get(); }
-    AudioParam* attack() { return m_attack.get(); }
-    AudioParam* release() { return m_release.get(); }
+    std::shared_ptr<AudioParam> threshold() { return m_threshold; }
+    std::shared_ptr<AudioParam> knee() { return m_knee; }
+    std::shared_ptr<AudioParam> ratio() { return m_ratio; }
+    std::shared_ptr<AudioParam> attack() { return m_attack; }
+    std::shared_ptr<AudioParam> release() { return m_release; }
 
     // Amount by which the compressor is currently compressing the signal in decibels.
-    AudioParam* reduction() { return m_reduction.get(); }
+    std::shared_ptr<AudioParam> reduction() { return m_reduction; }
 
 private:
     virtual double tailTime() const OVERRIDE;
@@ -65,12 +65,12 @@ private:
     DynamicsCompressorNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     std::unique_ptr<DynamicsCompressor> m_dynamicsCompressor;
-    RefPtr<AudioParam> m_threshold;
-    RefPtr<AudioParam> m_knee;
-    RefPtr<AudioParam> m_ratio;
-    RefPtr<AudioParam> m_reduction;
-    RefPtr<AudioParam> m_attack;
-    RefPtr<AudioParam> m_release;
+    std::shared_ptr<AudioParam> m_threshold;
+    std::shared_ptr<AudioParam> m_knee;
+    std::shared_ptr<AudioParam> m_ratio;
+    std::shared_ptr<AudioParam> m_reduction;
+    std::shared_ptr<AudioParam> m_attack;
+    std::shared_ptr<AudioParam> m_release;
 };
 
 } // namespace WebCore

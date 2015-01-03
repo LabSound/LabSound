@@ -33,26 +33,30 @@
 #include "AudioParamTimeline.h"
 #include "AudioSummingJunction.h"
 #include <sys/types.h>
-#include "WTF/ThreadSafeRefCounted.h"
 #include <string.h>
 
 namespace WebCore {
 
 class AudioNodeOutput;
 
-class AudioParam : public AudioSummingJunction, public ThreadSafeRefCounted<AudioParam> {
+class AudioParam : public AudioSummingJunction {//, public ThreadSafeRefCounted<AudioParam> {
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    static PassRefPtr<AudioParam> create(std::shared_ptr<AudioContext> context,
-                                         const std::string& name,
-                                         double defaultValue, double minValue, double maxValue,
-                                         unsigned units = 0)
+    AudioParam(std::shared_ptr<AudioContext> context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+    : AudioSummingJunction(context)
+    , m_name(name)
+    , m_value(defaultValue)
+    , m_defaultValue(defaultValue)
+    , m_minValue(minValue)
+    , m_maxValue(maxValue)
+    , m_units(units)
+    , m_smoothedValue(defaultValue)
+    , m_smoothingConstant(DefaultSmoothingConstant)
     {
-        return adoptRef(new AudioParam(context, name, defaultValue, minValue, maxValue, units));
     }
-
+    
     // AudioSummingJunction
     virtual bool canUpdateState() OVERRIDE { return true; }
     virtual void didUpdate() OVERRIDE { }
@@ -102,20 +106,6 @@ public:
     // Connect an audio-rate signal to control this parameter.
     void connect(AudioNodeOutput*);
     void disconnect(AudioNodeOutput*);
-
-protected:
-AudioParam(std::shared_ptr<AudioContext> context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
-        : AudioSummingJunction(context)
-        , m_name(name)
-        , m_value(defaultValue)
-        , m_defaultValue(defaultValue)
-        , m_minValue(minValue)
-        , m_maxValue(maxValue)
-        , m_units(units)
-        , m_smoothedValue(defaultValue)
-        , m_smoothingConstant(DefaultSmoothingConstant)
-    {
-    }
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.

@@ -35,11 +35,11 @@ namespace LabSound {
 
 		void set(float aT, float aL, float d, float s, float r);
 
-        AudioParam* attackTime() const;
-		AudioParam* attackLevel() const;
-		AudioParam* decayTime() const;
-		AudioParam* sustainLevel() const;
-		AudioParam* releaseTime() const;
+        std::shared_ptr<AudioParam> attackTime() const;
+		std::shared_ptr<AudioParam> attackLevel() const;
+		std::shared_ptr<AudioParam> decayTime() const;
+		std::shared_ptr<AudioParam> sustainLevel() const;
+		std::shared_ptr<AudioParam> releaseTime() const;
 
     private:
         ADSRNode(std::shared_ptr<AudioContext>, float sampleRate);

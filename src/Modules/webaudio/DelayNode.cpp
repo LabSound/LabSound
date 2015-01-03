@@ -40,7 +40,7 @@ DelayNode::DelayNode(std::shared_ptr<AudioContext> context, float sampleRate, do
     setNodeType(NodeTypeDelay);
 }
 
-AudioParam* DelayNode::delayTime()
+std::shared_ptr<AudioParam> DelayNode::delayTime()
 {
     return delayProcessor()->delayTime();
 }

@@ -23,7 +23,7 @@ namespace LabSound {
 	public:
 
         NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
-			m_delayTime = AudioParam::create(context, "delayTime", 1, 0.1, 24);
+            m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 1, 0.1, 24);
 		}
 
 		virtual ~NodeInternal() {
@@ -65,7 +65,7 @@ namespace LabSound {
 
 		int channels;
 
-		RefPtr<AudioParam> m_delayTime;
+        std::shared_ptr<AudioParam> m_delayTime;
 
 		stk::NRev perryVerb;
 
@@ -87,8 +87,8 @@ namespace LabSound {
 
 	}
 
-	AudioParam* EasyVerbNode::delayTime() const {
-		return data->m_delayTime.get();
+	std::shared_ptr<AudioParam> EasyVerbNode::delayTime() const {
+		return data->m_delayTime;
 	}
 
 	EasyVerbNode::~EasyVerbNode() {

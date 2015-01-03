@@ -17,7 +17,7 @@ namespace LabSound {
 		~BpmDelay();
 
 		// In Seconds 
-		AudioParam* delayTime() const; 
+		std::shared_ptr<AudioParam> delayTime() const; 
 
 	private:
 

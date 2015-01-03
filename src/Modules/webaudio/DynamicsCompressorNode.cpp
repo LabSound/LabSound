@@ -33,6 +33,8 @@
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;
 
+using namespace std;
+
 namespace WebCore {
 
 DynamicsCompressorNode::DynamicsCompressorNode(std::shared_ptr<AudioContext> context, float sampleRate)
@@ -43,12 +45,12 @@ DynamicsCompressorNode::DynamicsCompressorNode(std::shared_ptr<AudioContext> con
 
     setNodeType(NodeTypeDynamicsCompressor);
 
-    m_threshold = AudioParam::create(context, "threshold", -24, -100, 0);
-    m_knee = AudioParam::create(context, "knee", 30, 0, 40);
-    m_ratio = AudioParam::create(context, "ratio", 12, 1, 20);
-    m_reduction = AudioParam::create(context, "reduction", 0, -20, 0);
-    m_attack = AudioParam::create(context, "attack", 0.003, 0, 1);
-    m_release = AudioParam::create(context, "release", 0.250, 0, 1);
+    m_threshold = make_shared<AudioParam>(context, "threshold", -24, -100, 0);
+    m_knee = make_shared<AudioParam>(context, "knee", 30, 0, 40);
+    m_ratio = make_shared<AudioParam>(context, "ratio", 12, 1, 20);
+    m_reduction = make_shared<AudioParam>(context, "reduction", 0, -20, 0);
+    m_attack = make_shared<AudioParam>(context, "attack", 0.003, 0, 1);
+    m_release = make_shared<AudioParam>(context, "release", 0.250, 0, 1);
 
     initialize();
 }

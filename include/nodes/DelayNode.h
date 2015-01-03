@@ -49,15 +49,13 @@ public:
         return adoptRef(new DelayNode(context, sampleRate, maxDelayTime, ec));      
     }
 
-    AudioParam* delayTime();
+    std::shared_ptr<AudioParam> delayTime();
 
 private:
 
     DelayNode(std::shared_ptr<AudioContext>, float sampleRate, double maxDelayTime, ExceptionCode&);
 
     DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
-    
-
 };
 
 } // namespace WebCore

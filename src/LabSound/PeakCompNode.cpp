@@ -59,12 +59,12 @@ namespace LabSound {
         : AudioProcessor(sampleRate)
         , numChannels(1)
         {
-            m_threshold = AudioParam::create(context, "threshold",  0, 0, -1e6f);   // db
-            m_ratio = AudioParam::create(context, "ratio",  1, 0, 10);   // default 1:1
-            m_attack = AudioParam::create(context, "attack",   0.001f,  0, 1000);   // attack in ms
-            m_release = AudioParam::create(context, "release", 0.001f, 0, 1000);   // release in ms
-            m_makeup = AudioParam::create(context, "makeup", 0, 0, 60);   // makeup gain, in db
-            m_knee = AudioParam::create(context, "knee", 0, 0, 1);   // knee smoothing, 0 = hard, 1 = smooth. Default is 0
+            m_threshold = std::make_shared<AudioParam>(context, "threshold",  0, 0, -1e6f);   // db
+            m_ratio = std::make_shared<AudioParam>(context, "ratio",  1, 0, 10);   // default 1:1
+            m_attack = std::make_shared<AudioParam>(context, "attack",   0.001f,  0, 1000);   // attack in ms
+            m_release = std::make_shared<AudioParam>(context, "release", 0.001f, 0, 1000);   // release in ms
+            m_makeup = std::make_shared<AudioParam>(context, "makeup", 0, 0, 60);   // makeup gain, in db
+            m_knee = std::make_shared<AudioParam>(context, "knee", 0, 0, 1);   // knee smoothing, 0 = hard, 1 = smooth. Default is 0
 
             // Initialise parameters
 
@@ -200,11 +200,6 @@ namespace LabSound {
         float 		onebyfFS;           // one over sample rate
         float 		makeupGain;
 
-
-
-
-
-
         // Resets filter state
         virtual void reset() { }
 
@@ -220,20 +215,20 @@ namespace LabSound {
         
         int numChannels;
 
-		RefPtr<AudioParam> m_threshold;
-		RefPtr<AudioParam> m_ratio;
-		RefPtr<AudioParam> m_attack;
-		RefPtr<AudioParam> m_release;
-		RefPtr<AudioParam> m_makeup;
-		RefPtr<AudioParam> m_knee;
+		std::shared_ptr<AudioParam> m_threshold;
+		std::shared_ptr<AudioParam> m_ratio;
+		std::shared_ptr<AudioParam> m_attack;
+		std::shared_ptr<AudioParam> m_release;
+		std::shared_ptr<AudioParam> m_makeup;
+		std::shared_ptr<AudioParam> m_knee;
     };
 
-    AudioParam* PeakCompNode::threshold() const { return data->m_threshold.get(); }
-    AudioParam* PeakCompNode::ratio() const { return data->m_ratio.get(); }
-    AudioParam* PeakCompNode::attack() const { return data->m_attack.get(); }
-    AudioParam* PeakCompNode::release() const { return data->m_release.get(); }
-    AudioParam* PeakCompNode::makeup() const { return data->m_makeup.get(); }
-    AudioParam* PeakCompNode::knee() const { return data->m_knee.get(); }
+    std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return data->m_threshold; }
+    std::shared_ptr<AudioParam> PeakCompNode::ratio() const { return data->m_ratio; }
+    std::shared_ptr<AudioParam> PeakCompNode::attack() const { return data->m_attack; }
+    std::shared_ptr<AudioParam> PeakCompNode::release() const { return data->m_release; }
+    std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return data->m_makeup; }
+    std::shared_ptr<AudioParam> PeakCompNode::knee() const { return data->m_knee; }
 
     PeakCompNode::PeakCompNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : WebCore::AudioBasicProcessorNode(context, sampleRate)

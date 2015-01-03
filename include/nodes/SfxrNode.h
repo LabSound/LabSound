@@ -22,36 +22,36 @@ namespace LabSound {
         virtual void reset();
 
         // SfxrNode - values in sfxr units
-        AudioParam* waveType() { return _waveType.get(); }
+        std::shared_ptr<AudioParam> waveType() { return _waveType; }
 
-		AudioParam* attackTime() { return _attack.get(); }
-		AudioParam* sustainTime() { return _sustainTime.get(); }
-		AudioParam* sustainPunch() { return _sustainPunch.get(); }
-		AudioParam* decayTime() { return _decayTime.get(); }
+		std::shared_ptr<AudioParam> attackTime() { return _attack; }
+		std::shared_ptr<AudioParam> sustainTime() { return _sustainTime; }
+		std::shared_ptr<AudioParam> sustainPunch() { return _sustainPunch; }
+		std::shared_ptr<AudioParam> decayTime() { return _decayTime; }
 
-		AudioParam* startFrequency() { return _startFrequency.get(); }
-		AudioParam* minFrequency() { return _minFrequency.get(); }
-		AudioParam* slide() { return _slide.get(); }
-		AudioParam* deltaSlide() { return _deltaSlide.get(); }
+		std::shared_ptr<AudioParam> startFrequency() { return _startFrequency; }
+		std::shared_ptr<AudioParam> minFrequency() { return _minFrequency; }
+		std::shared_ptr<AudioParam> slide() { return _slide; }
+		std::shared_ptr<AudioParam> deltaSlide() { return _deltaSlide; }
 
-		AudioParam* vibratoDepth() { return _vibratoDepth.get(); }
-		AudioParam* vibratoSpeed() { return _vibratoSpeed.get(); }
+		std::shared_ptr<AudioParam> vibratoDepth() { return _vibratoDepth; }
+		std::shared_ptr<AudioParam> vibratoSpeed() { return _vibratoSpeed; }
 
-		AudioParam* changeAmount() { return _changeAmount.get(); }
-		AudioParam* changeSpeed() { return _changeSpeed.get(); }
+		std::shared_ptr<AudioParam> changeAmount() { return _changeAmount; }
+		std::shared_ptr<AudioParam> changeSpeed() { return _changeSpeed; }
 
-		AudioParam* squareDuty() { return _squareDuty.get(); }
-		AudioParam* dutySweep() { return _dutySweep.get(); }
+		std::shared_ptr<AudioParam> squareDuty() { return _squareDuty; }
+		std::shared_ptr<AudioParam> dutySweep() { return _dutySweep; }
 
-		AudioParam* repeatSpeed() { return _repeatSpeed.get(); }
-		AudioParam* phaserOffset() { return _phaserOffset.get(); }
-		AudioParam* phaserSweep() { return _phaserSweep.get(); }
+		std::shared_ptr<AudioParam> repeatSpeed() { return _repeatSpeed; }
+		std::shared_ptr<AudioParam> phaserOffset() { return _phaserOffset; }
+		std::shared_ptr<AudioParam> phaserSweep() { return _phaserSweep; }
 
-		AudioParam* lpFilterCutoff() { return _lpFilterCutoff.get(); }
-		AudioParam* lpFilterCutoffSweep() { return _lpFilterCutoffSweep.get(); }
-		AudioParam* lpFiterResonance() { return _lpFiterResonance.get(); }
-		AudioParam* hpFilterCutoff() { return _hpFilterCutoff.get(); }
-		AudioParam* hpFilterCutoffSweep() { return _hpFilterCutoffSweep.get(); }
+		std::shared_ptr<AudioParam> lpFilterCutoff() { return _lpFilterCutoff; }
+		std::shared_ptr<AudioParam> lpFilterCutoffSweep() { return _lpFilterCutoffSweep; }
+		std::shared_ptr<AudioParam> lpFiterResonance() { return _lpFiterResonance; }
+		std::shared_ptr<AudioParam> hpFilterCutoff() { return _hpFilterCutoff; }
+		std::shared_ptr<AudioParam> hpFilterCutoffSweep() { return _hpFilterCutoffSweep; }
 
         void setStartFrequencyInHz(float);
         void setVibratoSpeedInHz(float);
@@ -88,29 +88,29 @@ namespace LabSound {
         SfxrNode(std::shared_ptr<AudioContext>, float sampleRate);
         virtual bool propagatesSilence() const OVERRIDE;
 
-        RefPtr<AudioParam> _waveType;
-		RefPtr<AudioParam> _attack;
-		RefPtr<AudioParam> _sustainTime;
-		RefPtr<AudioParam> _sustainPunch;
-		RefPtr<AudioParam> _decayTime;
-		RefPtr<AudioParam> _startFrequency;
-		RefPtr<AudioParam> _minFrequency;
-		RefPtr<AudioParam> _slide;
-		RefPtr<AudioParam> _deltaSlide;
-		RefPtr<AudioParam> _vibratoDepth;
-		RefPtr<AudioParam> _vibratoSpeed;
-		RefPtr<AudioParam> _changeAmount;
-		RefPtr<AudioParam> _changeSpeed;
-		RefPtr<AudioParam> _squareDuty;
-		RefPtr<AudioParam> _dutySweep;
-		RefPtr<AudioParam> _repeatSpeed;
-		RefPtr<AudioParam> _phaserOffset;
-		RefPtr<AudioParam> _phaserSweep;
-		RefPtr<AudioParam> _lpFilterCutoff;
-		RefPtr<AudioParam> _lpFilterCutoffSweep;
-		RefPtr<AudioParam> _lpFiterResonance;
-		RefPtr<AudioParam> _hpFilterCutoff;
-		RefPtr<AudioParam> _hpFilterCutoffSweep;
+        std::shared_ptr<AudioParam> _waveType;
+		std::shared_ptr<AudioParam> _attack;
+		std::shared_ptr<AudioParam> _sustainTime;
+		std::shared_ptr<AudioParam> _sustainPunch;
+		std::shared_ptr<AudioParam> _decayTime;
+		std::shared_ptr<AudioParam> _startFrequency;
+		std::shared_ptr<AudioParam> _minFrequency;
+		std::shared_ptr<AudioParam> _slide;
+		std::shared_ptr<AudioParam> _deltaSlide;
+		std::shared_ptr<AudioParam> _vibratoDepth;
+		std::shared_ptr<AudioParam> _vibratoSpeed;
+		std::shared_ptr<AudioParam> _changeAmount;
+		std::shared_ptr<AudioParam> _changeSpeed;
+		std::shared_ptr<AudioParam> _squareDuty;
+		std::shared_ptr<AudioParam> _dutySweep;
+		std::shared_ptr<AudioParam> _repeatSpeed;
+		std::shared_ptr<AudioParam> _phaserOffset;
+		std::shared_ptr<AudioParam> _phaserSweep;
+		std::shared_ptr<AudioParam> _lpFilterCutoff;
+		std::shared_ptr<AudioParam> _lpFilterCutoffSweep;
+		std::shared_ptr<AudioParam> _lpFiterResonance;
+		std::shared_ptr<AudioParam> _hpFilterCutoff;
+		std::shared_ptr<AudioParam> _hpFilterCutoffSweep;
 
         class Sfxr;
         Sfxr *sfxr;

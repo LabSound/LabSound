@@ -24,13 +24,10 @@ namespace LabSound {
 	public:
 
         NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
+			m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 1, 0.1, 24);
 
-			WebCore::ExceptionCode ec;
-
-			m_delayTime = AudioParam::create(context, "delayTime", 1, 0.1, 24);
-
-			m_delayNode = DelayNode::create(context, 44100, 24.0, ec); 
-
+            WebCore::ExceptionCode ec;
+			m_delayNode = DelayNode::create(context, 44100, 24.0, ec);
 		}
 
 		virtual ~NodeInternal() {
@@ -71,7 +68,7 @@ namespace LabSound {
 
 		int channels;
 
-		RefPtr<AudioParam> m_delayTime;
+		std::shared_ptr<AudioParam> m_delayTime;
 
 		RefPtr<DelayNode> m_delayNode; 
 
@@ -93,8 +90,8 @@ namespace LabSound {
 		initialize(); 
 	}
 
-	AudioParam* BpmDelay::delayTime() const {
-		return data->m_delayTime.get();
+	std::shared_ptr<AudioParam> BpmDelay::delayTime() const {
+		return data->m_delayTime;
 	}
 
 	BpmDelay::~BpmDelay() {

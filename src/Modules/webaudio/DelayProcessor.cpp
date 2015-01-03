@@ -27,13 +27,15 @@
  
 #include "DelayDSPKernel.h"
 
+using namespace std;
+
 namespace WebCore {
 
 DelayProcessor::DelayProcessor(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfChannels, double maxDelayTime)
     : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
     , m_maxDelayTime(maxDelayTime)
 {
-    m_delayTime = AudioParam::create(context, "delayTime", 0.0, 0.0, maxDelayTime);
+    m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 0.0, 0.0, maxDelayTime);
 }
 
 DelayProcessor::~DelayProcessor()

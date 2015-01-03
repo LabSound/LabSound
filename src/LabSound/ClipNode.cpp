@@ -28,8 +28,8 @@ namespace LabSound {
         , numChannels(1)
         , mode(ClipNode::CLIP)
         {
-            aVal = AudioParam::create(context, "a", -1.0, -FLT_MAX, FLT_MAX);
-            bVal = AudioParam::create(context, "b",  1.0, -FLT_MAX, FLT_MAX);
+            aVal = make_shared<AudioParam>(context, "a", -1.0, -FLT_MAX, FLT_MAX);
+            bVal = make_shared<AudioParam>(context, "b",  1.0, -FLT_MAX, FLT_MAX);
         }
 
         virtual ~ClipNodeInternal() {
@@ -95,8 +95,8 @@ namespace LabSound {
 
         int numChannels;
         ClipNode::Mode mode;
-		RefPtr<AudioParam> aVal;
-		RefPtr<AudioParam> bVal;
+		std::shared_ptr<AudioParam> aVal;
+		std::shared_ptr<AudioParam> bVal;
         vector<float> gainValues;
     };
 
@@ -125,8 +125,8 @@ namespace LabSound {
         data->mode = m;
     }
 
-    AudioParam* ClipNode::aVal() { return data->aVal.get(); }
-    AudioParam* ClipNode::bVal() { return data->bVal.get(); }
+    std::shared_ptr<AudioParam> ClipNode::aVal() { return data->aVal; }
+    std::shared_ptr<AudioParam> ClipNode::bVal() { return data->bVal; }
 
 
 
