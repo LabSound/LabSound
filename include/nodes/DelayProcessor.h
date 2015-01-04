@@ -28,9 +28,6 @@
 #include "AudioDSPKernelProcessor.h"
 #include "AudioParam.h"
 
-#include "WTF/PassOwnPtr.h"
-#include "WTF/RefPtr.h"
-
 namespace WebCore {
 
 class AudioDSPKernel;

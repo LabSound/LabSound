@@ -31,7 +31,6 @@
 #include "HRTFDatabaseLoader.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
-#include <wtf/RefPtr.h>
 
 using namespace std;
 

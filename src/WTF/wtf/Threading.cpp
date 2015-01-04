@@ -25,8 +25,8 @@
 
 #include "LabSoundConfig.h"
 #include "Threading.h"
-#include <wtf/RefPtr.h>
 #include <wtf/PassOwnPtr.h>
+#include <wtf/RefPtr.h>
 
 #include <string.h>
 

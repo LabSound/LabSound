@@ -35,7 +35,6 @@
 #include "VectorMath.h"
 #include <math.h>
 #include <wtf/MathExtras.h>
-#include <wtf/RefPtr.h>
 
 #if OS(DARWIN)
 using namespace std;

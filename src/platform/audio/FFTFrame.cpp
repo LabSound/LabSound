@@ -37,7 +37,6 @@
 #include <complex>
 #include <wtf/MathExtras.h>
 #include <wtf/MemoryObjectInfo.h>
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
     

@@ -36,7 +36,6 @@
 #include <algorithm>
 #include <assert.h>
 #include <math.h>
-#include <wtf/RefPtr.h>
 
 namespace WebCore {
 

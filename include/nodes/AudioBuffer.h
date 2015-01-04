@@ -29,12 +29,9 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
-#include "WTF/RefPtr.h"
 #include <vector>
 
 namespace WebCore {
-
-using namespace WTF;
 
 class AudioBus;
 

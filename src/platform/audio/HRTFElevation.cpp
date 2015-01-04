@@ -36,7 +36,6 @@
 #include "HRTFPanner.h"
 #include <algorithm>
 #include <math.h>
-#include <wtf/RefPtr.h>
 
 #include <iostream>
 #include <map>

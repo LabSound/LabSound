@@ -33,7 +33,6 @@
 #include "OscillatorNode.h"
 #include "VectorMath.h"
 #include <algorithm>
-#include <wtf/RefPtr.h>
 #include <iostream>
 
 const unsigned WaveTableSize = 4096; // This must be a power of two.
