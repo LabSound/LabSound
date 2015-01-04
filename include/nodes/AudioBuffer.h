@@ -29,7 +29,6 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
-#include "WTF/ThreadSafeRefCounted.h"
 #include "WTF/RefPtr.h"
 #include <vector>
 
@@ -41,7 +40,7 @@ class AudioBus;
 
 typedef int ExceptionCode;
 
-class AudioBuffer : public ThreadSafeRefCounted<AudioBuffer> {
+class AudioBuffer {
 public:   
     AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
     explicit AudioBuffer(AudioBus*);

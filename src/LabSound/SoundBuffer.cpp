@@ -46,7 +46,7 @@ namespace LabSound {
             sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
             
             // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer.get());
+            sourceBuffer->setBuffer(audioBuffer);
             return sourceBuffer;
         }
         return 0;
@@ -74,7 +74,7 @@ namespace LabSound {
             sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
             
             // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer.get());
+            sourceBuffer->setBuffer(audioBuffer);
             
             // bus the sound to the mixer.
             WebCore::ExceptionCode ec;
@@ -101,7 +101,7 @@ namespace LabSound {
             sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
             
             // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer.get());
+            sourceBuffer->setBuffer(audioBuffer);
             
             // bus the sound to the mixer.
             WebCore::ExceptionCode ec;

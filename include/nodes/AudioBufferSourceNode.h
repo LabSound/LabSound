@@ -53,8 +53,8 @@ public:
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
-    bool setBuffer(AudioBuffer*);
-    AudioBuffer* buffer() { return m_buffer.get(); }
+    bool setBuffer(std::shared_ptr<AudioBuffer>);
+    std::shared_ptr<AudioBuffer> buffer() { return m_buffer; }
 
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
@@ -106,7 +106,7 @@ private:
     inline bool renderSilenceAndFinishIfNotLooping(AudioBus*, unsigned index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
-    RefPtr<AudioBuffer> m_buffer;
+    std::shared_ptr<AudioBuffer> m_buffer;
 
     // Pointers for the buffer and destination.
     std::unique_ptr<const float*[]> m_sourceChannels;

@@ -50,8 +50,8 @@ public:
     virtual void uninitialize();
 
     // Impulse responses
-    void setBuffer(AudioBuffer*);
-    AudioBuffer* buffer();
+    void setBuffer(std::shared_ptr<AudioBuffer>);
+    std::shared_ptr<AudioBuffer> buffer();
 
     bool normalize() const { return m_normalize; }
     void setNormalize(bool normalize) { m_normalize = normalize; }
@@ -63,7 +63,7 @@ private:
     virtual double latencyTime() const OVERRIDE;
 
     std::unique_ptr<Reverb> m_reverb;
-    RefPtr<AudioBuffer> m_buffer;
+    std::shared_ptr<AudioBuffer> m_buffer;
 
     // This synchronizes dynamic changes to the convolution impulse response with process().
     mutable WTF::Mutex m_processLock;

@@ -337,7 +337,7 @@ void AudioBufferSourceNode::reset()
     m_lastGain = gain()->value();
 }
 
-bool AudioBufferSourceNode::setBuffer(AudioBuffer* buffer)
+bool AudioBufferSourceNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
 {
     ASSERT(!context().expired());
     ASSERT(isMainThread());

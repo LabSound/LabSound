@@ -108,7 +108,7 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(AudioBuffer* buffer)
+void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
 {
     ASSERT(isMainThread());
     
@@ -144,10 +144,10 @@ void ConvolverNode::setBuffer(AudioBuffer* buffer)
     }
 }
 
-AudioBuffer* ConvolverNode::buffer()
+std::shared_ptr<AudioBuffer> ConvolverNode::buffer()
 {
     ASSERT(isMainThread());
-    return m_buffer.get();
+    return m_buffer;
 }
 
 double ConvolverNode::tailTime() const

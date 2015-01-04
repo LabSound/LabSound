@@ -66,7 +66,7 @@ namespace LabSound {
 			theSample->gain()->setValue(amplitude); 
 
 			// Connect the source node to the parsed audio data for playback
-			theSample->setBuffer(audioBuffer->audioBuffer.get());
+			theSample->setBuffer(audioBuffer->audioBuffer);
 
 			// Bus the sound to the output destination .
 			WebCore::ExceptionCode ec;

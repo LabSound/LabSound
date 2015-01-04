@@ -55,7 +55,7 @@ private:
     OfflineAudioDestinationNode(std::shared_ptr<AudioContext>, AudioBuffer* renderTarget);
 
     // This AudioNode renders into this AudioBuffer.
-    RefPtr<AudioBuffer> m_renderTarget;
+    std::shared_ptr<AudioBuffer> m_renderTarget;
     
     // Temporary AudioBus for each render quantum.
     std::unique_ptr<AudioBus> m_renderBus;
