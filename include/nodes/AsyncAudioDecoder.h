@@ -28,10 +28,7 @@
 #include "WTF/MessageQueue.h"
 #include "WTF/RefPtr.h"
 #include "WTF/Threading.h"
-
-namespace WTF {
-    class ArrayBuffer;
-}
+#include <vector>
 
 namespace WebCore {
 
@@ -40,7 +37,7 @@ class AudioBufferCallback;
 
 using namespace WTF;
 
-// AsyncAudioDecoder asynchronously decodes audio file data from an ArrayBuffer in a worker thread.
+// AsyncAudioDecoder asynchronously decodes audio file data from an vector<uint_8> in a worker thread.
 // Upon successful decoding, a completion callback will be invoked with the decoded PCM data in an AudioBuffer.
 
 class AsyncAudioDecoder {
@@ -50,19 +47,22 @@ public:
     ~AsyncAudioDecoder();
 
     // Must be called on the main thread.
-    void decodeAsync(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
+    void decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
 
 private:
     class DecodingTask {
         WTF_MAKE_NONCOPYABLE(DecodingTask);
     public:
-        static std::unique_ptr<AsyncAudioDecoder::DecodingTask> create(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
+        static std::unique_ptr<AsyncAudioDecoder::DecodingTask> create(std::shared_ptr<std::vector<uint8_t>> audioData,
+                                                                       float sampleRate,
+                                                                       PassRefPtr<AudioBufferCallback> successCallback,
+                                                                       PassRefPtr<AudioBufferCallback> errorCallback);
         void decode();
         
     private:
-        DecodingTask(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
+        DecodingTask(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
 
-        ArrayBuffer* audioData() { return m_audioData.get(); }
+        std::shared_ptr<std::vector<uint8_t>> audioData() { return m_audioData; }
         float sampleRate() const { return m_sampleRate; }
         AudioBufferCallback* successCallback() { return m_successCallback.get(); }
         AudioBufferCallback* errorCallback() { return m_errorCallback.get(); }
@@ -71,7 +71,7 @@ private:
         static void notifyCompleteDispatch(void* userData);
         void notifyComplete();
 
-        std::shared_ptr<ArrayBuffer> m_audioData;
+        std::shared_ptr<std::vector<uint8_t>> m_audioData;
         float m_sampleRate;
         RefPtr<AudioBufferCallback> m_successCallback;
         RefPtr<AudioBufferCallback> m_errorCallback;

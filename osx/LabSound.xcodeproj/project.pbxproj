@@ -183,8 +183,6 @@
 		E2FB8573183D1F1F00A5A764 /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8529183D1F1F00A5A764 /* WaveShaperNode.cpp */; };
 		E2FB8575183D1F1F00A5A764 /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB852C183D1F1F00A5A764 /* WaveShaperProcessor.cpp */; };
 		E2FB8576183D1F1F00A5A764 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB852E183D1F1F00A5A764 /* WaveTable.cpp */; };
-		E2FB86CF183D202700A5A764 /* ArrayBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB857C183D202600A5A764 /* ArrayBuffer.cpp */; };
-		E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */; };
 		E2FB86D1183D202700A5A764 /* Assertions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8581183D202600A5A764 /* Assertions.cpp */; };
 		E2FB86D2183D202700A5A764 /* AutodrainedPoolMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */; };
 		E2FB86D9183D202700A5A764 /* CurrentTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859D183D202600A5A764 /* CurrentTime.cpp */; };
@@ -620,8 +618,6 @@
 		E2FB8529183D1F1F00A5A764 /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperNode.cpp; sourceTree = "<group>"; };
 		E2FB852C183D1F1F00A5A764 /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperProcessor.cpp; sourceTree = "<group>"; };
 		E2FB852E183D1F1F00A5A764 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
-		E2FB857C183D202600A5A764 /* ArrayBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayBuffer.cpp; sourceTree = "<group>"; };
-		E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArrayBufferView.cpp; sourceTree = "<group>"; };
 		E2FB8581183D202600A5A764 /* Assertions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Assertions.cpp; sourceTree = "<group>"; };
 		E2FB8585183D202600A5A764 /* AutodrainedPoolMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AutodrainedPoolMac.mm; path = ../AutodrainedPoolMac.mm; sourceTree = "<group>"; };
 		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
@@ -1168,8 +1164,6 @@
 			isa = PBXGroup;
 			children = (
 				E2FB85F4183D202600A5A764 /* mac */,
-				E2FB857C183D202600A5A764 /* ArrayBuffer.cpp */,
-				E2FB857E183D202600A5A764 /* ArrayBufferView.cpp */,
 				E2FB8581183D202600A5A764 /* Assertions.cpp */,
 				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
 				E2FB85C1183D202600A5A764 /* DynamicAnnotations.cpp */,
@@ -1402,7 +1396,6 @@
 				E25245A718724E3200983485 /* AudioFIFO.cpp in Sources */,
 				E2D5CE6E1A19B2E700B031C8 /* TwoZero.cpp in Sources */,
 				E2FB8544183D1F1F00A5A764 /* AudioNodeInput.cpp in Sources */,
-				E2FB86CF183D202700A5A764 /* ArrayBuffer.cpp in Sources */,
 				E2D5CE641A19B2D600B031C8 /* Stk.cpp in Sources */,
 				E2D5CDF41A19B2B100B031C8 /* ADSR.cpp in Sources */,
 				E2D5CE051A19B2B100B031C8 /* Drummer.cpp in Sources */,
@@ -1414,7 +1407,6 @@
 				E2D5CE411A19B2D600B031C8 /* Guitar.cpp in Sources */,
 				E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */,
 				E2FB8531183D1F1F00A5A764 /* AnalyserNode.cpp in Sources */,
-				E2FB86D0183D202700A5A764 /* ArrayBufferView.cpp in Sources */,
 				E2FB8718183D202700A5A764 /* Threading.cpp in Sources */,
 				E2D5CE071A19B2B100B031C8 /* Envelope.cpp in Sources */,
 				E2FB84BB183D1E8F00A5A764 /* SupersawNode.cpp in Sources */,

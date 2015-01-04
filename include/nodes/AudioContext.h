@@ -114,7 +114,7 @@ public:
     void decrementActiveSourceCount();
 
     // Asynchronous audio file data decoding.
-    void decodeAudioData(ArrayBuffer*, PassRefPtr<AudioBufferCallback>, PassRefPtr<AudioBufferCallback>, ExceptionCode& ec);
+    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, PassRefPtr<AudioBufferCallback>, PassRefPtr<AudioBufferCallback>, ExceptionCode& ec);
 
     AudioListener* listener() { return m_listener.get(); }
 

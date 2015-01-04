@@ -61,7 +61,6 @@
 #include <stdio.h>
 #endif
 
-#include <wtf/ArrayBuffer.h>
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 
@@ -280,7 +279,8 @@ void AudioContext::stop()
     clear();
 }
 
-void AudioContext::decodeAudioData(ArrayBuffer* audioData, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback, ExceptionCode& ec)
+void AudioContext::decodeAudioData(std::shared_ptr<std::vector<uint8_t>> audioData,
+                                   PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback, ExceptionCode& ec)
 {
     if (!audioData) {
         ec = SYNTAX_ERR;

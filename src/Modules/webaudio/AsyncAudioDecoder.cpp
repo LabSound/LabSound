@@ -28,7 +28,6 @@
 
 #include "AudioBuffer.h"
 #include "AudioBufferCallback.h"
-#include <wtf/ArrayBuffer.h>
 #include <wtf/MainThread.h>
 
 namespace WebCore {
@@ -49,7 +48,7 @@ AsyncAudioDecoder::~AsyncAudioDecoder()
     m_threadID = 0;
 }
 
-void AsyncAudioDecoder::decodeAsync(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
+void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
 {
     ASSERT(isMainThread());
     ASSERT(audioData);
@@ -85,12 +84,18 @@ void AsyncAudioDecoder::runLoop()
     }
 }
 
-std::unique_ptr<AsyncAudioDecoder::DecodingTask> AsyncAudioDecoder::DecodingTask::create(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
+std::unique_ptr<AsyncAudioDecoder::DecodingTask> AsyncAudioDecoder::DecodingTask::create(std::shared_ptr<std::vector<uint8_t>> audioData,
+                                                                                         float sampleRate,
+                                                                                         PassRefPtr<AudioBufferCallback> successCallback,
+                                                                                         PassRefPtr<AudioBufferCallback> errorCallback)
 {
     return std::unique_ptr<DecodingTask>(new DecodingTask(audioData, sampleRate, successCallback, errorCallback));
 }
 
-AsyncAudioDecoder::DecodingTask::DecodingTask(ArrayBuffer* audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
+AsyncAudioDecoder::DecodingTask::DecodingTask(std::shared_ptr<std::vector<uint8_t>> audioData,
+                                              float sampleRate,
+                                              PassRefPtr<AudioBufferCallback> successCallback,
+                                              PassRefPtr<AudioBufferCallback> errorCallback)
     : m_audioData(audioData)
     , m_sampleRate(sampleRate)
     , m_successCallback(successCallback)
@@ -105,7 +110,7 @@ void AsyncAudioDecoder::DecodingTask::decode()
         return;
 
     // Do the actual decoding and invoke the callback.
-    m_audioBuffer = AudioBuffer::createFromAudioFileData(m_audioData->data(), m_audioData->byteLength(), false, sampleRate());
+    m_audioBuffer = AudioBuffer::createFromAudioFileData(m_audioData->data(), m_audioData->size(), false, sampleRate());
     
     // Decoding is finished, but we need to do the callbacks on the main thread.
     callOnMainThread(notifyCompleteDispatch, this);

@@ -2,7 +2,6 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "SoundBuffer.h"
-#include "WTF/ArrayBuffer.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -23,14 +22,12 @@ namespace LabSound {
             fread(data, 1, l, f);
             fclose(f);
             
-            WebCore::ExceptionCode ec;
             bool mixToMono = true;
-            PassRefPtr<ArrayBuffer> fileDataBuffer = ArrayBuffer::create(data, l);
-            delete [] data;
             
             // create an audio buffer from the file data. The file data will be
             // parsed, and does not need to be retained.
-            audioBuffer = AudioBuffer::createFromAudioFileData(fileDataBuffer->data(), fileDataBuffer->byteLength(), mixToMono, context->sampleRate());
+            audioBuffer = AudioBuffer::createFromAudioFileData(data, l, mixToMono, context->sampleRate());
+            delete [] data;
         }
         else
             std::cerr << "File not found " << path << std::endl;
