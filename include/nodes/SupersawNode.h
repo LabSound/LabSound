@@ -16,11 +16,9 @@ namespace LabSound {
 
     class SupersawNode : public AudioNode {
     public:
-		static PassRefPtr<SupersawNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-		{
-			return adoptRef(new SupersawNode(context, sampleRate));
-		}
-
+        SupersawNode(std::shared_ptr<AudioContext>, float sampleRate);
+        virtual ~SupersawNode() {}
+        
 		std::shared_ptr<AudioParam> attack()  const;
 		std::shared_ptr<AudioParam> decay()   const;
 		std::shared_ptr<AudioParam> sustain() const;
@@ -36,10 +34,9 @@ namespace LabSound {
         void update(); // call if sawCount is changed. CBB: update automatically
 
     private:
-		SupersawNode(std::shared_ptr<AudioContext>, float sampleRate);
 
         // Satisfy the AudioNode interface
-        virtual void process(size_t);
+        virtual void process(size_t) override;
         virtual void reset() { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }

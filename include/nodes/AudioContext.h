@@ -102,8 +102,8 @@ public:
 
     virtual void stop();
 
-    void setDestinationNode(RefPtr<AudioDestinationNode> node) { m_destinationNode = node; }
-    RefPtr<AudioDestinationNode> destination() { return m_destinationNode; }
+    void setDestinationNode(std::shared_ptr<AudioDestinationNode> node) { m_destinationNode = node; }
+    std::shared_ptr<AudioDestinationNode> destination() { return m_destinationNode; }
     
     size_t currentSampleFrame() const { return m_destinationNode->currentSampleFrame(); }
     double currentTime() const { return m_destinationNode->currentTime(); }
@@ -118,7 +118,7 @@ public:
 
     AudioListener* listener() { return m_listener.get(); }
 
-    static PassRefPtr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
+    static std::shared_ptr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
 
     // When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
     void notifyNodeFinishedProcessing(AudioNode*);
@@ -157,7 +157,7 @@ public:
     // Thread Safety and Graph Locking:
     //
     
-    void setAudioThread(ThreadIdentifier thread) { m_audioThread = thread; } // FIXME: check either not initialized or the same
+    void setAudioThread(ThreadIdentifier thread);
     ThreadIdentifier audioThread() const { return m_audioThread; }
     bool isAudioThread() const;
 
@@ -206,8 +206,7 @@ public:
     void handleDeferredFinishDerefs();
 
     // Only accessed when the graph lock is held.
-    void markSummingJunctionDirty(AudioSummingJunction*);
-    void markAudioNodeOutputDirty(AudioNodeOutput*);
+    void markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction>);
 
     // Must be called on main thread.
     void removeMarkedSummingJunction(AudioSummingJunction*);
@@ -245,39 +244,37 @@ private:
     // In turn, these nodes reference all nodes they're connected to.  All nodes are ultimately connected to the AudioDestinationNode.
     // When the context dereferences a source node, it will be deactivated from the rendering graph along with all other nodes it is
     // uniquely connected to.  See the AudioNode::ref() and AudioNode::deref() methods for more details.
-    void refNode(AudioNode*);
-    void derefNode(AudioNode*);
+    void refNode(std::shared_ptr<AudioNode>);
+    void derefNode(std::shared_ptr<AudioNode>);
 
     // When the context goes away, there might still be some sources which haven't finished playing.
     // Make sure to dereference them here.
     void derefUnfinishedSourceNodes();
 
-    RefPtr<AudioDestinationNode> m_destinationNode;
-    RefPtr<AudioListener> m_listener;
+    std::shared_ptr<AudioDestinationNode> m_destinationNode;
+    std::shared_ptr<AudioListener> m_listener;
 
     // Only accessed in the audio thread.
-    std::vector<AudioNode*> m_finishedNodes;
+    std::vector<std::shared_ptr<AudioNode>> m_finishedNodes;
 
     // We don't use RefPtr<AudioNode> here because AudioNode has a more complex ref() / deref() implementation
     // with an optional argument for refType.  We need to use the special refType: RefTypeConnection
     // Either accessed when the graph lock is held, or on the main thread when the audio thread has finished.
-    std::vector<AudioNode*> m_referencedNodes;
+    std::vector<std::shared_ptr<AudioNode>> m_referencedNodes;
 
     // Accumulate nodes which need to be deleted here.
     // This is copied to m_nodesToDelete at the end of a render cycle in handlePostRenderTasks(), where we're assured of a stable graph
     // state which will have no references to any of the nodes in m_nodesToDelete once the context lock is released
     // (when handlePostRenderTasks() has completed).
-    std::vector<AudioNode*> m_nodesMarkedForDeletion;
+    std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
     // They will be scheduled for deletion (on the main thread) at the end of a render cycle (in realtime thread).
-    std::vector<AudioNode*> m_nodesToDelete;
+    std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
     bool m_isDeletionScheduled;
 
     // Only accessed when the graph lock is held.
-    std::set<AudioSummingJunction*> m_dirtySummingJunctions;
-    std::set<AudioNodeOutput*> m_dirtyAudioNodeOutputs;
+    std::set<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
     void handleDirtyAudioSummingJunctions();
-    void handleDirtyAudioNodeOutputs();
 
     // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
     // It will be copied from m_automaticPullNodes by updateAutomaticPullNodes() at the very start or end of the rendering quantum.

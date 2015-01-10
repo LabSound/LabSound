@@ -45,7 +45,7 @@ public:
     std::weak_ptr<AudioContext> context() { return m_context; }
 
     // This must be called whenever we modify m_outputs.
-    void changedOutputs();
+    static void changedOutputs(std::shared_ptr<AudioSummingJunction> self);
 
     // This copies m_outputs to m_renderingOutputs. Please see comments for these lists below.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
@@ -65,7 +65,7 @@ protected:
 
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
-    std::set<AudioNodeOutput*> m_outputs;
+    std::set<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
     // numberOfConnections() should never be called from the audio rendering thread.
     // Instead numberOfRenderingConnections() and renderingOutput() should be used.

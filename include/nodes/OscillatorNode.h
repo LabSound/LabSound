@@ -29,7 +29,6 @@
 #include "AudioScheduledSourceNode.h"
 
 #include "AudioBus.h"
-#include "WTF/RefPtr.h"
 #include "WTF/Threading.h"
 
 namespace WebCore {
@@ -51,12 +50,11 @@ public:
         CUSTOM = 4
     };
 
-    static PassRefPtr<OscillatorNode> create(std::shared_ptr<AudioContext>, float sampleRate);
-
+    OscillatorNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~OscillatorNode();
     
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void reset();
 
     unsigned short type() const { return m_type; }
@@ -68,8 +66,6 @@ public:
     void setWaveTable(std::shared_ptr<WaveTable>);
 
 private:
-
-    OscillatorNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(size_t framesToProcess);

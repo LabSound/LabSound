@@ -52,14 +52,14 @@ public:
     AudioNode* node() const { return m_node; }
 
     // Must be called with the context's graph lock.
-    void connect(AudioNodeOutput*);
-    void disconnect(AudioNodeOutput*);
+    static void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.
     // Must be called with the context's graph lock.
-    void enable(AudioNodeOutput*);
-    void disable(AudioNodeOutput*);
+    static void enable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
+    static void disable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
 
     // pull() processes all of the AudioNodes connected to us.
     // In the case of multiple connections it sums the result into an internal summing bus.
@@ -88,7 +88,7 @@ private:
     // m_disabledOutputs contains the AudioNodeOutputs which are disabled (will not be processed) by the audio graph rendering.
     // But, from JavaScript's perspective, these outputs are still connected to us.
     // Generally, these represent disabled connections from "notes" which have finished playing but are not yet garbage collected.
-    std::set<AudioNodeOutput*> m_disabledOutputs;
+    std::set<std::shared_ptr<AudioNodeOutput>> m_disabledOutputs;
 
     // Called from context's audio thread.
     AudioBus* internalSummingBus();

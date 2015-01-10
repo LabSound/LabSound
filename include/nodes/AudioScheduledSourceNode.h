@@ -78,7 +78,7 @@ protected:
                               size_t& nonSilentFramesToProcess);
 
     // Called when we have no more sound to play or the noteOff() time has been reached.
-    virtual void finish();
+    void finish();
 
     PlaybackState m_playbackState;
 
@@ -90,6 +90,8 @@ protected:
     // has been reached.
     double m_endTime; // in seconds
 
+    virtual void clearPannerNode() {}
+    
     static const double UnknownTime;
 };
 

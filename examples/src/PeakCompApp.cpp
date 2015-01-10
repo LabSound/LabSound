@@ -4,6 +4,7 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
 int main(int, char**)
 {
@@ -15,11 +16,11 @@ int main(int, char**)
     SoundBuffer hihat(context, "hihat.wav");
     SoundBuffer snare(context, "snare.wav");
 
-    auto filter = BiquadFilterNode::create(context, context->sampleRate());
+    auto filter = make_shared<BiquadFilterNode>(context, context->sampleRate());
     filter->setType(BiquadFilterNode::LOWPASS, ec);
     filter->frequency()->setValue(4000.0f);
 
-    auto peakComp = PeakCompNode::create(context, context->sampleRate());
+    auto peakComp = make_shared<PeakCompNode>(context, context->sampleRate());
     connect(filter.get(), peakComp.get());
     connect(peakComp.get(), context->destination().get());
 
@@ -30,17 +31,17 @@ int main(int, char**)
     {
         float time = startTime + bar * 8 * eighthNoteTime;
         // Play the bass (kick) drum on beats 1, 5
-        kick.play(filter.get(), time);
-        kick.play(filter.get(), time + 4 * eighthNoteTime);
+        kick.play(filter, time);
+        kick.play(filter, time + 4 * eighthNoteTime);
 
         // Play the snare drum on beats 3, 7
-        snare.play(filter.get(), time + 2 * eighthNoteTime);
-        snare.play(filter.get(), time + 6 * eighthNoteTime);
+        snare.play(filter, time + 2 * eighthNoteTime);
+        snare.play(filter, time + 6 * eighthNoteTime);
 
         // Play the hi-hat every eighth note.
         for (int i = 0; i < 8; ++i)
         {
-            hihat.play(filter.get(), time + i * eighthNoteTime);
+            hihat.play(filter, time + i * eighthNoteTime);
         }
     }
     

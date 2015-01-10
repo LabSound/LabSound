@@ -27,7 +27,7 @@ namespace LabSound {
 			m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 1, 0.1, 24);
 
             WebCore::ExceptionCode ec;
-			m_delayNode = DelayNode::create(context, 44100, 24.0, ec);
+            m_delayNode = std::make_shared<DelayNode>(context, 44100, 24.0, ec);
 		}
 
 		virtual ~NodeInternal() {
@@ -70,7 +70,7 @@ namespace LabSound {
 
 		std::shared_ptr<AudioParam> m_delayTime;
 
-		RefPtr<DelayNode> m_delayNode; 
+		std::shared_ptr<DelayNode> m_delayNode; 
 
 		stk::NRev perryVerb;
 

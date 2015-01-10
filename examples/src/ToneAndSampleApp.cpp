@@ -4,6 +4,7 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
  // Play a tone and a sample at the same time
 int main(int, char**)
@@ -12,7 +13,7 @@ int main(int, char**)
     
     auto context = LabSound::init();
 
-    auto oscillator = OscillatorNode::create(context, context->sampleRate());
+    auto oscillator = make_shared<OscillatorNode>(context, context->sampleRate());
     oscillator->connect(context->destination().get(), 0, 0, ec);
     oscillator->start(0);   // play now
     oscillator->frequency()->setValue(440.f);

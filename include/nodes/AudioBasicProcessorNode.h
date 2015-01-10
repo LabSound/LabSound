@@ -40,7 +40,7 @@ public:
     AudioBasicProcessorNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void pullInputs(size_t framesToProcess);
     virtual void reset();
     virtual void initialize();

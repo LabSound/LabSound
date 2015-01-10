@@ -12,19 +12,13 @@ namespace LabSound {
 	class EasyVerbNode : public WebCore::AudioBasicProcessorNode {
 
 	public:
-
-		static WTF::PassRefPtr<EasyVerbNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
-			return adoptRef(new EasyVerbNode(context, sampleRate));
-		}
-
-		~EasyVerbNode(); 
+        EasyVerbNode(std::shared_ptr<AudioContext>, float sampleRate);
+		~EasyVerbNode();
 
 		// In Seconds 
         std::shared_ptr<AudioParam> delayTime() const;
 
 	private:
-
-		EasyVerbNode(std::shared_ptr<AudioContext>, float sampleRate);
 
 		class NodeInternal;
 		NodeInternal* data;

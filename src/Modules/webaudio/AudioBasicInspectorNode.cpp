@@ -49,37 +49,14 @@ void AudioBasicInspectorNode::pullInputs(size_t framesToProcess)
     input(0)->pull(output(0)->bus(), framesToProcess);
 }
 
-void AudioBasicInspectorNode::connect(AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    ASSERT(!context().expired());
-
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
-    AudioNode::connect(destination, outputIndex, inputIndex, ec);
-    updatePullStatus();
-}
-
-void AudioBasicInspectorNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
-{
-    ASSERT(isMainThread());
-    ASSERT(!context().expired());
-
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
-    AudioNode::disconnect(outputIndex, ec);
-    updatePullStatus();
-}
-
 void AudioBasicInspectorNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 {
+    if (input != this->input(0).get())
+        return;
+    
     ASSERT(!context().expired());
     std::shared_ptr<AudioContext> ac = context().lock();
     ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
-    ASSERT(input == this->input(0));
-    if (input != this->input(0))
-        return;
 
     unsigned numberOfChannels = input->numberOfChannels();
 

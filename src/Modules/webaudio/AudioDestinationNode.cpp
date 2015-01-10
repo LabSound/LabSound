@@ -38,7 +38,6 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> context
     , m_currentSampleFrame(0)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    
     setNodeType(NodeTypeDestination);
 }
 

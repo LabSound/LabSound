@@ -81,7 +81,6 @@ void OfflineAudioDestinationNode::startRendering()
     
     if (!m_startedRendering) {
         m_startedRendering = true;
-        ref(); // See corresponding deref() call in notifyCompleteDispatch().
         m_renderThread = createThread(OfflineAudioDestinationNode::offlineRenderEntry, this, "offline renderer");
     }
 }
@@ -154,7 +153,6 @@ void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)
         return;
 
     destinationNode->notifyComplete();
-    destinationNode->deref();
 }
 
 void OfflineAudioDestinationNode::notifyComplete()

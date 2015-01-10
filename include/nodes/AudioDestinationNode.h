@@ -42,7 +42,7 @@ public:
     virtual ~AudioDestinationNode();
     
     // AudioNode   
-    virtual void process(size_t) { }; // we're pulled by hardware so this is never called
+    virtual void process(size_t) override { } // we're pulled by hardware so this is never called
     virtual void reset() { m_currentSampleFrame = 0; };
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.

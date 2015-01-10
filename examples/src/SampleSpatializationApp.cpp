@@ -13,10 +13,10 @@ int main(int, char**)
     auto context = LabSound::init();
 
     SoundBuffer train(context, "trainrolling.wav");
-    auto panner = PannerNode::create(context, context->sampleRate());
+    auto panner = std::make_shared<PannerNode>(context, context->sampleRate());
     panner->connect(context->destination().get(), 0, 0, ec);
     
-    auto trainNode = train.play(panner.get(), 0.0f);
+    auto trainNode = train.play(panner, 0.0f);
     
     if (trainNode)
     {

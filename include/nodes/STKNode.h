@@ -28,36 +28,32 @@ namespace LabSound {
 
 	public:
 
-		static PassRefPtr<STKNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
-
-			// Oops, Windows platform for now...
-			// char cwd[MAX_PATH];
-			// _getcwd(cwd, MAX_PATH);
-
-			std::string resourcePath = std::string("stkresources\\");
-			stk::Stk::setRawwavePath(resourcePath);
-
-			std::cout << "\nSTK Resource Path: " << resourcePath << std::endl;
-
-			stk::Stk::showWarnings(true);
-			stk::Stk::printErrors(true);
-			stk::Stk::setSampleRate(sampleRate);
-
-			return adoptRef(new STKNode(context, sampleRate));
-
-		}
-
 		STKNode(std::shared_ptr<AudioContext>context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
 
+            static std::once_flag init;
+            std::call_once(init, [sampleRate](){
+                // Oops, Windows platform for now...
+                // char cwd[MAX_PATH];
+                // _getcwd(cwd, MAX_PATH);
+                
+                std::string resourcePath = std::string("stkresources\\");
+                stk::Stk::setRawwavePath(resourcePath);
+                
+                std::cout << "\nSTK Resource Path: " << resourcePath << std::endl;
+                
+                stk::Stk::showWarnings(true);
+                stk::Stk::printErrors(true);
+                stk::Stk::setSampleRate(sampleRate);
+            });
+            
 			addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
 			setNodeType((AudioNode::NodeType) LabSound::NodeTypeSTK);
 			initialize();
-
 		}
 
 		~STKNode() { }
 
-		void process(size_t framesToProcess) {
+		void process(size_t framesToProcess) override {
 
 			// First output bus 
 			AudioBus* outputBus = output(0)->bus();

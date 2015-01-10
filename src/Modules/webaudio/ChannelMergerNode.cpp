@@ -37,17 +37,12 @@ using namespace std;
 
 namespace WebCore {
 
-PassRefPtr<ChannelMergerNode> ChannelMergerNode::create(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
-{
-    if (!numberOfInputs || numberOfInputs > AudioContext::maxNumberOfChannels())
-        return 0;
-    
-    return adoptRef(new ChannelMergerNode(context, sampleRate, numberOfInputs));      
-}
-
 ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
     : AudioNode(context, sampleRate)
 {
+    if (numberOfInputs > AudioContext::maxNumberOfChannels())
+        numberOfInputs = AudioContext::maxNumberOfChannels();
+    
     // Create the requested number of inputs.
     for (unsigned i = 0; i < numberOfInputs; ++i)
         addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -61,14 +56,14 @@ ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, floa
 
 void ChannelMergerNode::process(size_t framesToProcess)
 {
-    AudioNodeOutput* output = this->output(0);
+    auto output = this->output(0);
     ASSERT(output);
     ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus()->length());    
     
     // Merge all the channels from all the inputs into one output.
     unsigned outputChannelIndex = 0;
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
-        AudioNodeInput* input = this->input(i);
+        auto input = this->input(i);
         if (input->isConnected()) {
             unsigned numberOfInputChannels = input->bus()->numberOfChannels();
             
@@ -100,13 +95,13 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
     // Count how many channels we have all together from all of the inputs.
     unsigned numberOfOutputChannels = 0;
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
-        AudioNodeInput* input = this->input(i);
+        auto input = this->input(i);
         if (input->isConnected())
             numberOfOutputChannels += input->bus()->numberOfChannels();
     }
 
     // Set the correct number of channels on the output
-    AudioNodeOutput* output = this->output(0);
+    auto output = this->output(0);
     ASSERT(output);
     output->setNumberOfChannels(numberOfOutputChannels);
 

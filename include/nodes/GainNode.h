@@ -38,13 +38,11 @@ class AudioContext;
 
 class GainNode : public AudioNode {
 public:
-    static PassRefPtr<GainNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-    {
-        return adoptRef(new GainNode(context, sampleRate));      
-    }
+    GainNode(std::shared_ptr<AudioContext>, float sampleRate);
+    virtual ~GainNode() {}
     
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void reset();
 
     // Called in the main thread when the number of channels for the input may have changed.
@@ -56,7 +54,6 @@ protected:  /// @LabSound - was private
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
-    GainNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     float m_lastGain; // for de-zippering
     std::shared_ptr<AudioParam> m_gain;

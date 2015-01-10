@@ -91,27 +91,27 @@ void AudioNode::lazyInitialize()
         initialize();
 }
 
-void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
+void AudioNode::addInput(std::shared_ptr<AudioNodeInput> input)
 {
-    m_inputs.emplace_back(std::move(input));
+    m_inputs.emplace_back(input);
 }
 
-void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
+void AudioNode::addOutput(std::shared_ptr<AudioNodeOutput> output)
 {
-    m_outputs.emplace_back(std::move(output));
+    m_outputs.emplace_back(output);
 }
 
-AudioNodeInput* AudioNode::input(unsigned i)
+std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
 {
     if (i < m_inputs.size())
-        return m_inputs[i].get();
+        return m_inputs[i];
     return 0;
 }
 
-AudioNodeOutput* AudioNode::output(unsigned i)
+std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
     if (i < m_outputs.size())
-        return m_outputs[i].get();
+        return m_outputs[i];
     return 0;
 }
 
@@ -142,15 +142,17 @@ void AudioNode::connect(AudioNode* destination, unsigned outputIndex, unsigned i
         return;
     }
 
-    AudioNodeInput* input = destination->input(inputIndex);
-    AudioNodeOutput* output = this->output(outputIndex);
-    input->connect(output);
+    auto input = destination->input(inputIndex);
+    auto output = this->output(outputIndex);
+    AudioNodeInput::connect(input, output);
 
     // Let context know that a connection has been made.
     ac->incrementConnectionCount();
+    
+    updatePullStatus();
 }
 
-void AudioNode::connect(AudioParam* param, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
 {
     ASSERT(!context().expired() && isMainThread());
     std::shared_ptr<AudioContext> ac = context().lock();
@@ -171,8 +173,7 @@ void AudioNode::connect(AudioParam* param, unsigned outputIndex, ExceptionCode& 
         return;
     }
 
-    AudioNodeOutput* output = this->output(outputIndex);
-    param->connect(output);
+    AudioParam::connect(param, this->output(outputIndex));
 }
 
 void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
@@ -187,8 +188,8 @@ void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
         return;
     }
 
-    AudioNodeOutput* output = this->output(outputIndex);
-    output->disconnectAll();
+    AudioNodeOutput::disconnectAll(this->output(outputIndex));
+    updatePullStatus();
 }
 
 void AudioNode::processIfNecessary(size_t framesToProcess)
@@ -198,6 +199,10 @@ void AudioNode::processIfNecessary(size_t framesToProcess)
     
     std::shared_ptr<AudioContext> ac = context().lock();
     ASSERT(ac->isAudioThread());
+    
+    if (!ac->isAudioThread()) {
+        printf("***** %d", currentThread());
+    }
     
     if (!isInitialized())
         return;
@@ -287,8 +292,8 @@ void AudioNode::enableOutputsIfNecessary()
         AudioContext::AutoLocker locker(ac.get());
 
         m_isDisabled = false;
-        for (unsigned i = 0; i < m_outputs.size(); ++i)
-            output(i)->enable();
+        for (auto i : m_outputs)
+            AudioNodeOutput::enable(i);
     }
 }
 
@@ -312,8 +317,8 @@ void AudioNode::disableOutputsIfNecessary()
         // longer any active connections.
         if (nodeType() != NodeTypeConvolver && nodeType() != NodeTypeDelay) {
             m_isDisabled = true;
-            for (unsigned i = 0; i < m_outputs.size(); ++i)
-                output(i)->disable();
+            for (auto i : m_outputs)
+                AudioNodeOutput::disable(i);
         }
     }
 }
@@ -417,7 +422,7 @@ void AudioNode::finishDeref(RefType refType)
             if (!m_isMarkedForDeletion) {
                 // All references are gone - we need to go away.
                 for (unsigned i = 0; i < m_outputs.size(); ++i)
-                    output(i)->disconnectAll(); // This will deref() nodes we're connected to.
+                    AudioNodeOutput::disconnectAll(output(i)); // This will deref() nodes we're connected to.
 
                 // Mark for deletion at end of each render quantum or when context shuts down.
                 if (!shuttingDown)
@@ -426,7 +431,8 @@ void AudioNode::finishDeref(RefType refType)
                 m_isMarkedForDeletion = true;
 
             }
-        } else if (refType == RefTypeConnection)
+        }
+        else if (refType == RefTypeConnection)
             disableOutputsIfNecessary();
     }
 }

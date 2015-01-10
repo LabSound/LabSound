@@ -104,8 +104,8 @@ public:
     void calculateSampleAccurateValues(float* values, unsigned numberOfValues);
 
     // Connect an audio-rate signal to control this parameter.
-    void connect(AudioNodeOutput*);
-    void disconnect(AudioNodeOutput*);
+    static void connect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void disconnect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.

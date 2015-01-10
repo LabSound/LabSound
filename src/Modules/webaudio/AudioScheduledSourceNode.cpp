@@ -149,6 +149,7 @@ void AudioScheduledSourceNode::stop(double when)
 
 void AudioScheduledSourceNode::finish()
 {
+    clearPannerNode();
     std::shared_ptr<AudioContext> ac = context().lock();
     if (m_playbackState != FINISHED_STATE) {
         // Let the context dereference this AudioNode.

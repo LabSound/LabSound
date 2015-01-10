@@ -4,6 +4,7 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
   // Play a sound file through a reverb convolution
 int main(int, char**)
@@ -17,11 +18,11 @@ int main(int, char**)
     
     SoundBuffer sample(context, "human-voice.mp4");
     
-    auto convolve = ConvolverNode::create(context, context->sampleRate());
-    convolve->setBuffer(ir.audioBuffer.get());
-    auto wetGain = GainNode::create(context, context->sampleRate());
+    auto convolve = make_shared<ConvolverNode>(context, context->sampleRate());
+    convolve->setBuffer(ir.audioBuffer);
+    auto wetGain = make_shared<GainNode>(context, context->sampleRate());
     wetGain->gain()->setValue(2.f);
-    auto dryGain = GainNode::create(context, context->sampleRate());
+    auto dryGain = make_shared<GainNode>(context, context->sampleRate());
     dryGain->gain()->setValue(1.f);
     
     convolve->connect(wetGain.get(), 0, 0, ec);
@@ -29,7 +30,7 @@ int main(int, char**)
     dryGain->connect(context->destination().get(), 0, 0, ec);
     dryGain->connect(convolve.get(), 0, 0, ec);
     
-    sample.play(dryGain.get(), 0);
+    sample.play(dryGain, 0);
     
     const int seconds = 10;
     for (int t = 0; t < seconds; ++t)

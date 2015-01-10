@@ -30,19 +30,14 @@
 #define AudioListener_h
 
 #include "util/graphics/FloatPoint3D.h"
-#include "WTF/RefPtr.h"
-#include "WTF/ThreadSafeRefCounted.h"
 
 namespace WebCore {
 
 // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
 
-class AudioListener : public ThreadSafeRefCounted<AudioListener> {
+class AudioListener {
 public:
-    static PassRefPtr<AudioListener> create()
-    {
-        return adoptRef(new AudioListener());
-    }
+    AudioListener();
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
@@ -76,8 +71,6 @@ public:
     double speedOfSound() const { return m_speedOfSound; }
 
 private:
-    AudioListener();
-
     // Position / Orientation
     FloatPoint3D m_position;
     FloatPoint3D m_orientation;

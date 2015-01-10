@@ -18,15 +18,10 @@ namespace LabSound {
     class PWMNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        static WTF::PassRefPtr<PWMNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new PWMNode(context, sampleRate));
-        }
-
-    private:
         PWMNode(std::shared_ptr<AudioContext>, float sampleRate);
         virtual ~PWMNode();
 
+    private:
         class PWMNodeInternal;
         PWMNodeInternal* data;
     };

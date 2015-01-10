@@ -21,7 +21,7 @@ namespace LabSound {
 
 		SamplerSound(
             std::shared_ptr<AudioContext> context,
-			RefPtr<GainNode> destination,
+            std::shared_ptr<GainNode> destination,
 			std::string path, 
 			std::string baseMidiNote, 
 			std::string midiNoteLow, 
@@ -55,12 +55,12 @@ namespace LabSound {
 
 		}
 
-		PassRefPtr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber, float amplitude = 1.0) {
+		std::shared_ptr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber, float amplitude = 1.0) {
 
 			// var semitoneRatio = Math.pow(2, 1/12);
 			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
 
-			RefPtr<AudioBufferSourceNode> theSample = audioBuffer->create();
+			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create());
 
 			theSample->playbackRate()->setValue(pitchRatio); 
 			theSample->gain()->setValue(amplitude); 
@@ -124,7 +124,7 @@ namespace LabSound {
 
 		void stopNote(); 
 
-		RefPtr<GainNode> destinationNode;
+        std::shared_ptr<GainNode> destinationNode;
 
 		SoundBuffer *audioBuffer;
 
@@ -137,11 +137,9 @@ namespace LabSound {
 	class SampledInstrumentNode {
 
 	public:
-
-        static PassRefPtr<SampledInstrumentNode> create(std::shared_ptr<AudioContext> context, float sampleRate) {
-			return adoptRef(new SampledInstrumentNode(context, sampleRate));
-		}
-
+        SampledInstrumentNode(std::shared_ptr<AudioContext>, float sampleRate);
+        virtual ~SampledInstrumentNode() {}
+        
 		void loadInstrumentConfiguration(std::string path);
 
 		void noteOn(float frequency, float amplitude);
@@ -149,7 +147,7 @@ namespace LabSound {
 
 		void stopAll(); 
 
-		RefPtr<GainNode> gainNode;
+        std::shared_ptr<GainNode> gainNode;
 
 	private:
 
@@ -162,13 +160,11 @@ namespace LabSound {
 		// Filter? 
 
 		// Blech
-		std::vector<SamplerSound*> samples;
+        std::vector<std::shared_ptr<SamplerSound>> samples;
         std::weak_ptr<WebCore::AudioContext> localContext;
 
-        SampledInstrumentNode(std::shared_ptr<AudioContext>, float sampleRate);
-
 		// Satisfy the AudioNode interface
-		//virtual void process(size_t) {}
+		//virtual void process(size_t) override {}
 		//virtual void reset() {}
 		//virtual double tailTime() const OVERRIDE { return 0; }
 		//virtual double latencyTime() const OVERRIDE { return 0; }

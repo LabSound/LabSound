@@ -30,20 +30,15 @@
 #include "AudioNodeOutput.h"
 
 namespace WebCore {
-    
-PassRefPtr<ChannelSplitterNode> ChannelSplitterNode::create(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfOutputs)
-{
-    if (!numberOfOutputs || numberOfOutputs > AudioContext::maxNumberOfChannels())
-        return 0;
-
-    return adoptRef(new ChannelSplitterNode(context, sampleRate, numberOfOutputs));      
-}
 
 ChannelSplitterNode::ChannelSplitterNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfOutputs)
     : AudioNode(context, sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
+    if (numberOfOutputs > AudioContext::maxNumberOfChannels())
+        numberOfOutputs = AudioContext::maxNumberOfChannels();
+    
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
     for (unsigned i = 0; i < numberOfOutputs; ++i)
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

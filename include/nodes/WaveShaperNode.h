@@ -33,17 +33,13 @@ namespace WebCore {
     
 class WaveShaperNode : public AudioBasicProcessorNode {
 public:
-    static PassRefPtr<WaveShaperNode> create(std::shared_ptr<AudioContext> context)
-    {
-        return adoptRef(new WaveShaperNode(context));
-    }
+    explicit WaveShaperNode(std::shared_ptr<AudioContext>);
 
     // setCurve() is called on the main thread.
     void setCurve(std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve();
 
 private:    
-    explicit WaveShaperNode(std::shared_ptr<AudioContext>);
 
     WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
 };

@@ -38,12 +38,10 @@ public:
 
     // AudioNode
     virtual void pullInputs(size_t framesToProcess);
-    virtual void connect(AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
-    virtual void disconnect(unsigned outputIndex, ExceptionCode&);
     virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
 
 private:
-    void updatePullStatus();
+    virtual void updatePullStatus() override;
     bool m_needAutomaticPull; // When setting to true, AudioBasicInspectorNode will be pulled automaticlly by AudioContext before the end of each render quantum.
 };
 

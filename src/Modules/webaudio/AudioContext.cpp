@@ -161,7 +161,7 @@ void AudioContext::constructCommon()
 {
     FFTFrame::initialize();
     
-    m_listener = AudioListener::create();
+    m_listener = std::make_shared<AudioListener>();
 }
 
 AudioContext::~AudioContext()
@@ -205,10 +205,6 @@ void AudioContext::lazyInitialize()
 
 void AudioContext::clear()
 {
-    // We have to release our reference to the destination node before the context will ever be deleted since the destination node holds a reference to the context.
-    if (m_destinationNode)
-        m_destinationNode.clear();
-
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
     do {
         deleteMarkedNodes();
@@ -289,9 +285,7 @@ void AudioContext::decodeAudioData(std::shared_ptr<std::vector<uint8_t>> audioDa
     m_audioDecoder.decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
 }
 
-#if ENABLE(MEDIA_STREAM)
-    
-PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
+std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
 {
     std::shared_ptr<MediaStream> mediaStream = std::make_shared<MediaStream>();
 
@@ -307,21 +301,25 @@ PassRefPtr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std
         provider = 0;
     }
 
-    RefPtr<MediaStreamAudioSourceNode> node = MediaStreamAudioSourceNode::create(ac, mediaStream, provider);
+    std::shared_ptr<MediaStreamAudioSourceNode> node(new MediaStreamAudioSourceNode(ac, mediaStream, provider));
 
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
     node->setFormat(2, ac->sampleRate());
 
-    ac->refNode(node.get()); // context keeps reference until node is disconnected
+    ac->refNode(node); // context keeps reference until node is disconnected
     return node;
 }
-
-#endif
 
 void AudioContext::notifyNodeFinishedProcessing(AudioNode* node)
 {
     ASSERT(isAudioThread());
-    m_finishedNodes.push_back(node);
+    for (auto i : m_referencedNodes) {
+        if (i.get() == node) {
+            m_finishedNodes.push_back(i);
+            return;
+        }
+    }
+    ASSERT(0 == "node to finish not referenced");
 }
 
 void AudioContext::derefFinishedSourceNodes()
@@ -334,20 +332,20 @@ void AudioContext::derefFinishedSourceNodes()
     m_finishedNodes.clear();
 }
 
-void AudioContext::refNode(AudioNode* node)
+void AudioContext::refNode(std::shared_ptr<AudioNode> node)
 {
     ASSERT(isMainThread());
     node->ref(AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::derefNode(AudioNode* node)
+void AudioContext::derefNode(std::shared_ptr<AudioNode> node)
 {
     ASSERT(isGraphOwner());
     
     node->deref(AudioNode::RefTypeConnection);
 
-    for (std::vector<AudioNode*>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
+    for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
         if (node == *i) {
             m_referencedNodes.erase(i);
             break;
@@ -423,6 +421,11 @@ void AudioContext::unlock()
     m_contextGraphMutex.unlock();
 }
 
+void AudioContext::setAudioThread(ThreadIdentifier thread) {
+    printf("&&& %d\n", thread);
+    m_audioThread = thread; // FIXME: check either not initialized or the same
+}
+
 bool AudioContext::isAudioThread() const
 {
     return currentThread() == m_audioThread;
@@ -449,7 +452,6 @@ void AudioContext::handlePreRenderTasks()
     if (tryLock(mustReleaseLock)) {
         // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
         handleDirtyAudioSummingJunctions();
-        handleDirtyAudioNodeOutputs();
 
         updateAutomaticPullNodes();
 
@@ -473,13 +475,11 @@ void AudioContext::handlePostRenderTasks()
         // Dynamically clean up nodes which are no longer needed.
         derefFinishedSourceNodes();
 
-        // Don't delete in the real-time thread. Let the main thread do it.
-        // Ref-counted objects held by certain AudioNodes may not be thread-safe.
+        // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
         scheduleNodeDeletion();
 
         // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
         handleDirtyAudioSummingJunctions();
-        handleDirtyAudioNodeOutputs();
 
         updateAutomaticPullNodes();
 
@@ -503,16 +503,23 @@ void AudioContext::markForDeletion(AudioNode* node)
 {
     ASSERT(isGraphOwner());
 
-    if (isAudioThreadFinished())
-        m_nodesToDelete.push_back(node);
-    else
-        m_nodesMarkedForDeletion.push_back(node);
-
-    // This is probably the best time for us to remove the node from automatic pull list,
-    // since all connections are gone and we hold the graph lock. Then when handlePostRenderTasks()
-    // gets a chance to schedule the deletion work, updateAutomaticPullNodes() also gets a chance to
-    // modify m_renderingAutomaticPullNodes.
-    removeAutomaticPullNode(node);
+    for (auto i : m_referencedNodes) {
+        if (i.get() == node) {
+            if (isAudioThreadFinished())
+                m_nodesToDelete.push_back(i);
+            else
+                m_nodesMarkedForDeletion.push_back(i);
+            
+            // This is probably the best time for us to remove the node from automatic pull list,
+            // since all connections are gone and we hold the graph lock. Then when handlePostRenderTasks()
+            // gets a chance to schedule the deletion work, updateAutomaticPullNodes() also gets a chance to
+            // modify m_renderingAutomaticPullNodes.
+            removeAutomaticPullNode(node);
+            return;
+        }
+    }
+    
+    ASSERT(0 == "Attempting to delete unreferenced node");
 }
 
 void AudioContext::scheduleNodeDeletion()
@@ -548,32 +555,11 @@ void AudioContext::deleteMarkedNodesDispatch(void* userData)
 void AudioContext::deleteMarkedNodes()
 {
     ASSERT(isMainThread());
-
-    while (size_t n = m_nodesToDelete.size()) {
-        AudioNode* node = m_nodesToDelete[n - 1];
-        m_nodesToDelete.pop_back();
-
-        // Before deleting the node, clear out any AudioNodeInputs from m_dirtySummingJunctions.
-        unsigned numberOfInputs = node->numberOfInputs();
-        for (unsigned i = 0; i < numberOfInputs; ++i) {
-            auto it = m_dirtySummingJunctions.find(node->input(i));
-            m_dirtySummingJunctions.erase(it);
-        }
-
-        // Before deleting the node, clear out any AudioNodeOutputs from m_dirtyAudioNodeOutputs.
-        unsigned numberOfOutputs = node->numberOfOutputs();
-        for (unsigned i = 0; i < numberOfOutputs; ++i) {
-            auto it = m_dirtyAudioNodeOutputs.find(node->output(i));
-            m_dirtyAudioNodeOutputs.erase(it);
-        }
-
-        // Finally, delete it.
-        delete node;
-    }
+    m_nodesToDelete.clear();
     m_isDeletionScheduled = false;
 }
 
-void AudioContext::markSummingJunctionDirty(AudioSummingJunction* summingJunction)
+void AudioContext::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
 {
     ASSERT(isGraphOwner());    
     m_dirtySummingJunctions.insert(summingJunction);
@@ -582,35 +568,25 @@ void AudioContext::markSummingJunctionDirty(AudioSummingJunction* summingJunctio
 void AudioContext::removeMarkedSummingJunction(AudioSummingJunction* summingJunction)
 {
     ASSERT(isMainThread());
-    auto it = m_dirtySummingJunctions.find(summingJunction);
-    m_dirtySummingJunctions.erase(it);
-}
-
-void AudioContext::markAudioNodeOutputDirty(AudioNodeOutput* output)
-{
-    ASSERT(isGraphOwner());    
-    m_dirtyAudioNodeOutputs.insert(output);
+    for (std::set<std::shared_ptr<AudioSummingJunction>>::iterator
+         i = m_dirtySummingJunctions.begin(); i != m_dirtySummingJunctions.end(); ++i) {
+        if ((*i).get() == summingJunction) {
+            m_dirtySummingJunctions.erase(i);
+            return;
+        }
+    }
 }
 
 void AudioContext::handleDirtyAudioSummingJunctions()
 {
     ASSERT(isGraphOwner());    
 
-    for (auto i = m_dirtySummingJunctions.begin(); i != m_dirtySummingJunctions.end(); ++i)
-        (*i)->updateRenderingState();
+    for (auto i : m_dirtySummingJunctions)
+        i->updateRenderingState();
 
     m_dirtySummingJunctions.clear();
 }
 
-void AudioContext::handleDirtyAudioNodeOutputs()
-{
-    ASSERT(isGraphOwner());    
-
-    for (auto i = m_dirtyAudioNodeOutputs.begin(); i != m_dirtyAudioNodeOutputs.end(); ++i)
-        (*i)->updateRenderingState();
-
-    m_dirtyAudioNodeOutputs.clear();
-}
 
 void AudioContext::addAutomaticPullNode(AudioNode* node)
 {

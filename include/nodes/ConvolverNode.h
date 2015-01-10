@@ -36,15 +36,11 @@ class Reverb;
     
 class ConvolverNode : public AudioNode {
 public:
-    static PassRefPtr<ConvolverNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-    {
-        return adoptRef(new ConvolverNode(context, sampleRate));      
-    }
-    
+    ConvolverNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~ConvolverNode();
     
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void reset();
     virtual void initialize();
     virtual void uninitialize();
@@ -57,8 +53,6 @@ public:
     void setNormalize(bool normalize) { m_normalize = normalize; }
 
 private:
-    ConvolverNode(std::shared_ptr<AudioContext>, float sampleRate);
-
     virtual double tailTime() const OVERRIDE;
     virtual double latencyTime() const OVERRIDE;
 

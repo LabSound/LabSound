@@ -37,13 +37,12 @@ namespace LabSound {
     {
     }
   
-    PassRefPtr<AudioBufferSourceNode> SoundBuffer::create()
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create()
     {
         if (audioBuffer) {
             ASSERT(!context.expired());
             std::shared_ptr<AudioContext> ac = context.lock();
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
-            sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
+            std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(ac, ac->destination()->sampleRate()));
             
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(audioBuffer);
@@ -53,7 +52,7 @@ namespace LabSound {
     }
     
 	// Output to the default context output 
-	PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(float when)
+	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(float when)
 	{
 		if (audioBuffer) {
             ASSERT(!context.expired());
@@ -64,23 +63,22 @@ namespace LabSound {
 	}
 
 	// Output to a specific note 
-    PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(RefPtr<AudioNode> outputNode, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(std::shared_ptr<AudioNode> outputNode, float when)
     {
         if (audioBuffer) {
             ASSERT(!context.expired());
             std::shared_ptr<AudioContext> ac = context.lock();
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
+            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac, ac->destination()->sampleRate()));
+            sourceBufferNode->setBuffer(audioBuffer);
             
-            sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
-            
-            // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(audioBuffer);
-            
-            // bus the sound to the mixer.
+            // bus the sound to the output node
             WebCore::ExceptionCode ec;
-            sourceBuffer->connect(outputNode.get(), 0, 0, ec);
-            sourceBuffer->start(when);
-            return sourceBuffer;
+            sourceBufferNode->connect(outputNode.get(), 0, 0, ec);
+            if (ec != NO_ERR) {
+                // @dp add this - audio context should be responsible for clean up, not the sound buffer itself ac->manageLifespan(sourceBufferNode);
+                sourceBufferNode->start(when);
+                return sourceBufferNode;
+            }
         }
         return 0;
     }
@@ -88,7 +86,7 @@ namespace LabSound {
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offfset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
-    PassRefPtr<AudioBufferSourceNode> SoundBuffer::play(float start, float end, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(float start, float end, float when)
     {
         if (audioBuffer) {
 
@@ -97,8 +95,7 @@ namespace LabSound {
             
             ASSERT(!context.expired());
             std::shared_ptr<AudioContext> ac = context.lock();
-            RefPtr<AudioBufferSourceNode> sourceBuffer;
-            sourceBuffer = AudioBufferSourceNode::create(ac, ac->destination()->sampleRate());
+            std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(ac, ac->destination()->sampleRate()));
             
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(audioBuffer);

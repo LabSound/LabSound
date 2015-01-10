@@ -16,12 +16,12 @@ namespace LabSound {
     public:
         DiodeNode(std::shared_ptr<WebCore::AudioContext>);
         void setDistortion(float distortion);
-        WTF::PassRefPtr<WebCore::WaveShaperNode> node() const { return waveShaper; }
+        std::shared_ptr<WebCore::WaveShaperNode> node() const { return waveShaper; }
 
     private:
         void setCurve();
 
-        WTF::RefPtr<WebCore::WaveShaperNode> waveShaper;
+        std::shared_ptr<WebCore::WaveShaperNode> waveShaper;
         
         // parameters controlling the shape of the curve
         float vb;

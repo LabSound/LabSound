@@ -32,12 +32,6 @@
 
 namespace WebCore {
 
-PassRefPtr<MediaStreamAudioSourceNode> MediaStreamAudioSourceNode::create(std::shared_ptr<AudioContext> context,
-                                                                         std::shared_ptr<MediaStream> mediaStream, AudioSourceProvider* audioSourceProvider)
-{
-    return adoptRef(new MediaStreamAudioSourceNode(context, mediaStream, audioSourceProvider));
-}
-
 MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(std::shared_ptr<AudioContext> context,
                                                        std::shared_ptr<MediaStream> mediaStream, AudioSourceProvider* audioSourceProvider)
     : AudioSourceNode(context, context->sampleRate())

@@ -16,10 +16,8 @@ namespace LabSound {
     public:
         enum Mode { CLIP, TANH };
 
-        static WTF::PassRefPtr<ClipNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new ClipNode(context, sampleRate));
-        }
+        ClipNode(std::shared_ptr<AudioContext>, float sampleRate);
+        virtual ~ClipNode();
 
         void setMode(Mode);
 
@@ -30,9 +28,6 @@ namespace LabSound {
 		std::shared_ptr<AudioParam> bVal();
 
     private:
-        ClipNode(std::shared_ptr<AudioContext>, float sampleRate);
-        virtual ~ClipNode();
-        
         class ClipNodeInternal;
         ClipNodeInternal* data;
     };

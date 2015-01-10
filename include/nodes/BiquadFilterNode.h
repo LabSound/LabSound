@@ -45,11 +45,8 @@ public:
         NOTCH = 6,
         ALLPASS = 7
     };
-
-    static PassRefPtr<BiquadFilterNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-    {
-        return adoptRef(new BiquadFilterNode(context, sampleRate));      
-    }
+    
+    BiquadFilterNode(std::shared_ptr<AudioContext>, float sampleRate);
     
     unsigned short type() { return biquadProcessor()->type(); }
     void setType(unsigned short type, ExceptionCode&);
@@ -66,7 +63,6 @@ public:
                               std::vector<float>& phaseResponse);
 
 private:
-    BiquadFilterNode(std::shared_ptr<AudioContext>, float sampleRate);
 
     BiquadProcessor* biquadProcessor() { return static_cast<BiquadProcessor*>(processor()); }
 };

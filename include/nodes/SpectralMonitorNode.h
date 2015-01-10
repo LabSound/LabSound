@@ -12,15 +12,11 @@ namespace LabSound {
 
     class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode {
     public:
-        static WTF::PassRefPtr<SpectralMonitorNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new SpectralMonitorNode(context, sampleRate));
-        }
-
+        SpectralMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
         virtual ~SpectralMonitorNode();
 
         // AudioNode
-        virtual void process(size_t framesToProcess);
+        virtual void process(size_t framesToProcess) override;
         virtual void reset();
         // ..AudioNode
 
@@ -29,7 +25,6 @@ namespace LabSound {
         size_t windowSize() const;
 
     private:
-        SpectralMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
         class Detail;
         Detail* detail;
 

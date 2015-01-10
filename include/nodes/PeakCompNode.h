@@ -53,10 +53,8 @@ namespace LabSound {
     class PeakCompNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        static WTF::PassRefPtr<PeakCompNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new PeakCompNode(context, sampleRate));
-        }
+        PeakCompNode(std::shared_ptr<AudioContext>, float sampleRate);
+        virtual ~PeakCompNode();
 
 		void set(float aT, float aL, float d, float s, float r);
 
@@ -68,9 +66,6 @@ namespace LabSound {
         std::shared_ptr<AudioParam> knee() const;
         
     private:
-        PeakCompNode(std::shared_ptr<AudioContext>, float sampleRate);
-        virtual ~PeakCompNode();
-
         class PeakCompNodeInternal;
         PeakCompNodeInternal* data;
     };

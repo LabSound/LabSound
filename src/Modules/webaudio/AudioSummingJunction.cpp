@@ -49,14 +49,14 @@ AudioSummingJunction::~AudioSummingJunction()
     }
 }
 
-void AudioSummingJunction::changedOutputs()
+void AudioSummingJunction::changedOutputs(std::shared_ptr<AudioSummingJunction> self)
 {
-    ASSERT(!m_context.expired());
-    shared_ptr<AudioContext> ac = m_context.lock();
+    ASSERT(!self->m_context.expired());
+    shared_ptr<AudioContext> ac = self->m_context.lock();
     ASSERT(ac->isGraphOwner());
-    if (!m_renderingStateNeedUpdating && canUpdateState()) {
-        ac->markSummingJunctionDirty(this);
-        m_renderingStateNeedUpdating = true;
+    if (!self->m_renderingStateNeedUpdating && self->canUpdateState()) {
+        ac->markSummingJunctionDirty(self);
+        self->m_renderingStateNeedUpdating = true;
     }
 }
 
@@ -71,7 +71,7 @@ void AudioSummingJunction::updateRenderingState()
         m_renderingOutputs.resize(m_outputs.size());
         unsigned j = 0;
         for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i, ++j) {
-            AudioNodeOutput* output = *i;
+            AudioNodeOutput* output = (*i).get(); // safe because m_renderingOutputs is only used during a single rendering quantum when the lock is held
             m_renderingOutputs[j] = output;
             output->updateRenderingState();
         }

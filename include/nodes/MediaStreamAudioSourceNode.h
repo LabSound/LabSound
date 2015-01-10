@@ -39,14 +39,13 @@ class AudioContext;
 
 class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient {
 public:
-    static PassRefPtr<MediaStreamAudioSourceNode> create(std::shared_ptr<AudioContext>, std::shared_ptr<MediaStream>, AudioSourceProvider*);
-
+    MediaStreamAudioSourceNode(std::shared_ptr<AudioContext>, std::shared_ptr<MediaStream>, AudioSourceProvider*);
     virtual ~MediaStreamAudioSourceNode();
 
     MediaStream* mediaStream() { return m_mediaStream.get(); }
 
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void reset();
 
     // AudioSourceProviderClient
@@ -55,8 +54,6 @@ public:
     AudioSourceProvider* audioSourceProvider() const { return m_audioSourceProvider; }
 
 private:
-    MediaStreamAudioSourceNode(std::shared_ptr<AudioContext>, std::shared_ptr<MediaStream>, AudioSourceProvider*);
-
     // As an audio source, we will never propagate silence.
     virtual bool propagatesSilence() const OVERRIDE { return false; }
 

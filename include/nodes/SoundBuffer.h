@@ -12,6 +12,8 @@ namespace LabSound {
 
 using namespace WTF;
 
+/// @dp rewrite as a node, deprecate audio buffer source node
+    
 class SoundBuffer {
 
 public:
@@ -23,18 +25,18 @@ public:
     ~SoundBuffer();
     
     // play a sound on the context directly, starting after a certain delay
-	PassRefPtr<WebCore::AudioBufferSourceNode> play(float when = 0.0f);
+	std::shared_ptr<WebCore::AudioBufferSourceNode> play(float when = 0.0f);
 
     // play a sound on a particular node, starting after a certain delay
-    PassRefPtr<WebCore::AudioBufferSourceNode> play(RefPtr<WebCore::AudioNode> outputNode, float when = 0.0f);
+    std::shared_ptr<WebCore::AudioBufferSourceNode> play(std::shared_ptr<WebCore::AudioNode> outputNode, float when = 0.0f);
 
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
-    PassRefPtr<WebCore::AudioBufferSourceNode> play(float start, float end, float when = 0.0f);
+    std::shared_ptr<WebCore::AudioBufferSourceNode> play(float start, float end, float when = 0.0f);
 
-    // creates a source node but does not connect it to anything
-    PassRefPtr<WebCore::AudioBufferSourceNode> create();
+    // creates a source node sharing the audio buffer but does not connect it to anything
+    std::shared_ptr<WebCore::AudioBufferSourceNode> create();
 };
 
 

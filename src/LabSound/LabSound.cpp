@@ -15,7 +15,7 @@ namespace LabSound {
         // Create an audio context object
         WebCore::ExceptionCode ec;
         std::shared_ptr<LabSound::AudioContext> context = LabSound::AudioContext::create(ec);
-        context->setDestinationNode(DefaultAudioDestinationNode::create(context));
+        context->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(context));
         context->initHRTFDatabase();
         context->lazyInitialize();
         return context;

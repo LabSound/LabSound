@@ -12,15 +12,11 @@ namespace LabSound {
     
     class PowerMonitorNode : public WebCore::AudioBasicInspectorNode {
     public:
-        static WTF::PassRefPtr<PowerMonitorNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new PowerMonitorNode(context, sampleRate));
-        }
-        
+        PowerMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
         virtual ~PowerMonitorNode();
         
         // AudioNode
-        virtual void process(size_t framesToProcess);
+        virtual void process(size_t framesToProcess) override;
         virtual void reset();
         // ..AudioNode
 
@@ -47,7 +43,6 @@ namespace LabSound {
 
         float _db;
         size_t _windowSize;
-        PowerMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
     };
 
 } // LabSound

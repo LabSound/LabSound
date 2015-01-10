@@ -26,7 +26,6 @@
 #define AudioNode_h
 
 #include "WTF/Platform.h"
-#include "WTF/RefPtr.h"
 #include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 0
@@ -41,6 +40,7 @@ class AudioParam;
 typedef int ExceptionCode;
 
 enum ExceptionCodes {
+    NO_ERR = 0,
     INVALID_STATE_ERR = 1,
     SYNTAX_ERR = 2,
     NOT_SUPPORTED_ERR = 3,
@@ -103,8 +103,8 @@ public:
     enum RefType { RefTypeNormal, RefTypeConnection };
 
     // Can be called from main thread or context's audio thread.
-    void ref(RefType refType = RefTypeNormal);
-    void deref(RefType refType = RefTypeNormal);
+    void ref(RefType refType);
+    void deref(RefType refType);
 
     // Can be called from main thread or context's audio thread.  It must be called while the context's graph lock is held.
     void finishDeref(RefType refType);
@@ -129,12 +129,11 @@ public:
     unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
     unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
 
-    AudioNodeInput* input(unsigned);
-    AudioNodeOutput* output(unsigned);
+    std::shared_ptr<AudioNodeInput> input(unsigned);
+    std::shared_ptr<AudioNodeOutput> output(unsigned);
 
-    // Called from main thread by corresponding JavaScript methods.
     virtual void connect(AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
-    void connect(AudioParam*, unsigned outputIndex, ExceptionCode&);
+    void connect(std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
     virtual void disconnect(unsigned outputIndex, ExceptionCode&);
 
     virtual float sampleRate() const { return m_sampleRate; }
@@ -175,21 +174,25 @@ public:
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
-    void addInput(std::unique_ptr<AudioNodeInput>);
-    void addOutput(std::unique_ptr<AudioNodeOutput>);
+    void addInput(std::shared_ptr<AudioNodeInput>);
+    void addOutput(std::shared_ptr<AudioNodeOutput>);
     
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
     virtual void pullInputs(size_t framesToProcess);
 
+    // connect and disconnect will call this after the connection is made. Currently required by AudioBasicInspectorNode
+    virtual void updatePullStatus() {}
+
+
 private:
     volatile bool m_isInitialized;
     NodeType m_nodeType;
     std::weak_ptr<AudioContext> m_context;
     float m_sampleRate;
-    std::vector<std::unique_ptr<AudioNodeInput> > m_inputs;
-    std::vector<std::unique_ptr<AudioNodeOutput> > m_outputs;
+    std::vector<std::shared_ptr<AudioNodeInput> > m_inputs;
+    std::vector<std::shared_ptr<AudioNodeOutput> > m_outputs;
 
     double m_lastProcessingTime;
     double m_lastNonSilentTime;

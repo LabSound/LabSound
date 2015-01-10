@@ -24,10 +24,8 @@ namespace LabSound {
     SampledInstrumentNode::SampledInstrumentNode(std::shared_ptr<AudioContext> context, float sampleRate) : localContext(context) {
 
 		// All samples bus their output to this node... 
-        gainNode = GainNode::create(context, context->sampleRate());
-		gainNode->gain()->setValue(4.0); 
-
-
+        gainNode = std::make_shared<GainNode>(context, context->sampleRate());
+		gainNode->gain()->setValue(4.0);
 	}
 
 	// Definitely have ADSR... 
@@ -74,8 +72,8 @@ namespace LabSound {
 			for (auto &samp : jsonConfig["samples"].array_items()) {
 				// std::cout << "Loading Sample: " << samp.dump() << "\n";
 				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
-				samples.push_back(new SamplerSound(
-					lc, gainNode.get(),
+                samples.emplace_back(std::make_shared<SamplerSound>(
+					lc, gainNode,
 					samp["sample"].string_value(),
 					samp["baseNote"].string_value(),
 					samp["lowNote"].string_value(),

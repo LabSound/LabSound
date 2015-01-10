@@ -61,15 +61,11 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
     
-    static PassRefPtr<PannerNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-    {
-        return adoptRef(new PannerNode(context, sampleRate));
-    }
-
+    PannerNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~PannerNode();
 
     // AudioNode
-    virtual void process(size_t framesToProcess);
+    virtual void process(size_t framesToProcess) override;
     virtual void pullInputs(size_t framesToProcess);
     virtual void reset();
     virtual void initialize();
@@ -127,9 +123,7 @@ public:
     virtual double tailTime() const OVERRIDE { return m_panner ? m_panner->tailTime() : 0; }
     virtual double latencyTime() const OVERRIDE { return m_panner ? m_panner->latencyTime() : 0; }
 
-protected: /// @LabSound was private
-    PannerNode(std::shared_ptr<AudioContext>, float sampleRate);
-
+protected:
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain();   /// @LabSound virtual
 

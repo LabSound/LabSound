@@ -13,11 +13,6 @@ using namespace WebCore;
 
 namespace LabSound {
 
-    PassRefPtr<NoiseNode> NoiseNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
-    {
-        return adoptRef(new NoiseNode(context, sampleRate));
-    }
-
     NoiseNode::NoiseNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioScheduledSourceNode(context, sampleRate)
     , m_type(WHITE)

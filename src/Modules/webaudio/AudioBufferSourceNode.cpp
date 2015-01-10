@@ -47,11 +47,6 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-PassRefPtr<AudioBufferSourceNode> AudioBufferSourceNode::create(std::shared_ptr<AudioContext> context, float sampleRate)
-{
-    return adoptRef(new AudioBufferSourceNode(context, sampleRate));
-}
-
 AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
     : AudioScheduledSourceNode(context, sampleRate)
     , m_buffer(0)
@@ -133,7 +128,8 @@ void AudioBufferSourceNode::process(size_t framesToProcess)
         float totalGain = gain()->value() * m_buffer->gain();
         outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
         outputBus->clearSilentFlag();
-    } else {
+    }
+    else {
         // Too bad - the tryLock() failed.  We must be in the middle of changing buffers and were already outputting silence anyway.
         outputBus->zero();
     }
@@ -148,7 +144,7 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus*, unsign
         if (framesToProcess > 0) {
             // We're not looping and we've reached the end of the sample data, but we still need to provide more output,
             // so generate silence for the remaining.
-            for (unsigned i = 0; i < numberOfChannels(); ++i) 
+            for (unsigned i = 0; i < numberOfChannels(); ++i)
                 memset(m_destinationChannels[i] + index, 0, sizeof(float) * framesToProcess);
         }
 
@@ -486,11 +482,6 @@ void AudioBufferSourceNode::clearPannerNode()
     }
 }
 
-void AudioBufferSourceNode::finish()
-{
-    clearPannerNode();
-    ASSERT(!m_pannerNode);
-    AudioScheduledSourceNode::finish();
-}
-
 } // namespace WebCore
+
+

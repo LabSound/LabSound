@@ -30,7 +30,6 @@
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
 #include "PannerNode.h"
-#include <WTF/RefPtr.h>
 #include <WTF/Threading.h>
 #include <memory>
 
@@ -43,8 +42,7 @@ class AudioContext;
 
 class AudioBufferSourceNode : public AudioScheduledSourceNode {
 public:
-    static PassRefPtr<AudioBufferSourceNode> create(std::shared_ptr<AudioContext>, float sampleRate);
-
+    AudioBufferSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~AudioBufferSourceNode();
 
     // AudioNode
@@ -85,17 +83,12 @@ public:
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
     void setPannerNode(PannerNode*);
-    void clearPannerNode();
+    virtual void clearPannerNode() override;
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
     virtual bool propagatesSilence() const OVERRIDE;
 
-    // AudioScheduledSourceNode
-    virtual void finish() OVERRIDE;
-
 private:
-    AudioBufferSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
-
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
@@ -103,7 +96,7 @@ private:
     bool renderFromBuffer(AudioBus*, unsigned destinationFrameOffset, size_t numberOfFrames);
 
     // Render silence starting from "index" frame in AudioBus.
-    inline bool renderSilenceAndFinishIfNotLooping(AudioBus*, unsigned index, size_t framesToProcess);
+    bool renderSilenceAndFinishIfNotLooping(AudioBus*, unsigned index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
     std::shared_ptr<AudioBuffer> m_buffer;

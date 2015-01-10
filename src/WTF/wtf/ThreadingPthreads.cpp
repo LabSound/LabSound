@@ -312,6 +312,9 @@ ThreadIdentifier currentThread()
     // Not a WTF-created thread, ThreadIdentifier is not established yet.
     id = establishIdentifierForPthreadHandle(pthread_self());
     ThreadIdentifierData::initialize(id);
+    
+    printf("*** %d created thread \n", id);
+    
     return id;
 }
 

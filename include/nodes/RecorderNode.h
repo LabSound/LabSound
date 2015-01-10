@@ -13,15 +13,11 @@ namespace LabSound {
     
     class RecorderNode : public WebCore::AudioBasicInspectorNode {
     public:
-        static WTF::PassRefPtr<RecorderNode> create(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
-        {
-            return WTF::adoptRef(new RecorderNode(context, sampleRate));
-        }
-        
+        RecorderNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
         virtual ~RecorderNode();
         
         // AudioNode
-        virtual void process(size_t framesToProcess);
+        virtual void process(size_t framesToProcess) override;
         virtual void reset();
         
         void startRecording() { m_recording = true; }
@@ -36,8 +32,6 @@ namespace LabSound {
     private:
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }
-        
-        RecorderNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
 
         bool m_mixToMono;
         bool m_recording;

@@ -35,11 +35,7 @@ class AudioContext;
     
 class DefaultAudioDestinationNode : public AudioDestinationNode {
 public:
-    static PassRefPtr<DefaultAudioDestinationNode> create(std::shared_ptr<AudioContext> context)
-    {
-        return adoptRef(new DefaultAudioDestinationNode(context));     
-    }
-
+    explicit DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
     virtual ~DefaultAudioDestinationNode();
     
     // AudioNode   
@@ -48,8 +44,6 @@ public:
     virtual void startRendering();
     
 private:
-    explicit DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
-
     std::unique_ptr<AudioDestination> m_destination;
 };
 

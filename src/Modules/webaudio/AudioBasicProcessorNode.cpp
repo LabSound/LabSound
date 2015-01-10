@@ -100,12 +100,14 @@ void AudioBasicProcessorNode::reset()
 // uninitialize and then re-initialize with the new channel count.
 void AudioBasicProcessorNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 {
+    if (!input)
+        return;
+    
     ASSERT(!context().expired());
     auto ac = context().lock();
     ASSERT(ac->isAudioThread() && ac->isGraphOwner());
     
-    ASSERT(input == this->input(0));
-    if (input != this->input(0))
+    if (input != this->input(0).get())
         return;
 
     ASSERT(processor());

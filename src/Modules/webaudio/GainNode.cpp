@@ -88,12 +88,14 @@ void GainNode::reset()
 // uninitialize and then re-initialize with the new channel count.
 void GainNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 {
+    if (!input)
+        return;
+    
     ASSERT(!context().expired());
     std::shared_ptr<AudioContext> ac = context().lock();
     ASSERT(ac->isAudioThread() && ac->isGraphOwner());
 
-    ASSERT(input && input == this->input(0));
-    if (input != this->input(0))
+    if (input != this->input(0).get())
         return;
         
     unsigned numberOfChannels = input->numberOfChannels();    

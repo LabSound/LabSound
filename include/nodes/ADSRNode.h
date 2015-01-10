@@ -13,19 +13,15 @@
 #include "AudioBasicInspectorNode.h"
 #include "GainNode.h"
 
-#include "WTF/RefPtr.h"
-
 namespace LabSound {
     using namespace WebCore;
 
     class ADSRNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        static WTF::PassRefPtr<ADSRNode> create(std::shared_ptr<AudioContext> context, float sampleRate)
-        {
-            return adoptRef(new ADSRNode(context, sampleRate));
-        }
-
+        ADSRNode(std::shared_ptr<AudioContext>, float sampleRate);
+        virtual ~ADSRNode();
+        
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
         //
@@ -42,9 +38,6 @@ namespace LabSound {
 		std::shared_ptr<AudioParam> releaseTime() const;
 
     private:
-        ADSRNode(std::shared_ptr<AudioContext>, float sampleRate);
-        virtual ~ADSRNode();
-
         class AdsrNodeInternal;
         AdsrNodeInternal* data;
     };

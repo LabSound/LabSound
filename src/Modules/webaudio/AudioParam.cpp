@@ -173,39 +173,39 @@ void AudioParam::calculateTimelineValues(float* values, unsigned numberOfValues)
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, narrowPrecisionToFloat(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
-void AudioParam::connect(AudioNodeOutput* output)
+void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
+    ASSERT(!param->context().expired());
+    auto ac = param->context().lock();
     ASSERT(ac->isGraphOwner());
 
     ASSERT(output);
     if (!output)
         return;
 
-    if (m_outputs.find(output) != m_outputs.end())
+    if (param->m_outputs.find(output) != param->m_outputs.end())
         return;
 
-    output->addParam(this);
-    m_outputs.insert(output);
-    changedOutputs();
+    output->addParam(param);
+    param->m_outputs.insert(output);
+    AudioParam::changedOutputs(param);
 }
 
-void AudioParam::disconnect(AudioNodeOutput* output)
+void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
+    ASSERT(!param->context().expired());
+    auto ac = param->context().lock();
     ASSERT(ac->isGraphOwner());
 
     ASSERT(output);
     if (!output)
         return;
 
-    auto it = m_outputs.find(output);
-    if (it != m_outputs.end()) {
-        m_outputs.erase(it);
-        changedOutputs();
-        output->removeParam(this);
+    auto it = param->m_outputs.find(output);
+    if (it != param->m_outputs.end()) {
+        param->m_outputs.erase(it);
+        AudioParam::changedOutputs(param);
+        output->removeParam(param);
     }
 }
 

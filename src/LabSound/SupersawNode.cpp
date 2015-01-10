@@ -21,10 +21,10 @@ namespace LabSound {
 
     class SupersawNode::Data {
     public:
-        RefPtr<ADSRNode> gainNode;
+        std::shared_ptr<ADSRNode> gainNode;
 
         Data(SupersawNode* self, std::shared_ptr<AudioContext> context, float sampleRate)
-        : gainNode(ADSRNode::create(context, sampleRate))
+        : gainNode(std::make_shared<ADSRNode>(context, sampleRate))
         , sawCount(std::make_shared<AudioParam>(context, "detune", 1.0, 100.0f, 3.0f))
         , detune(std::make_shared<AudioParam>(context, "detune", 1.0, 0, 120))
         , frequency(std::make_shared<AudioParam>(context, "frequency", 440.0, 1.0f, sampleRate * 0.5f))
@@ -50,7 +50,7 @@ namespace LabSound {
                 ASSERT(!context.expired());
                 auto ac = context.lock();
                 for (int i = 0; i < n; ++i)
-                    sawStorage.push_back(OscillatorNode::create(ac, sampleRate));
+                    sawStorage.emplace_back(std::make_shared<OscillatorNode>(ac, sampleRate));
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
@@ -85,7 +85,7 @@ namespace LabSound {
         std::shared_ptr<AudioParam> detune;
         std::shared_ptr<AudioParam> frequency;
         std::shared_ptr<AudioParam> sawCount;
-        std::vector<RefPtr<OscillatorNode>> sawStorage;
+        std::vector<std::shared_ptr<OscillatorNode>> sawStorage;
         std::vector<OscillatorNode*> saws;
 
         float sampleRate;

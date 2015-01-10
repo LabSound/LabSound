@@ -42,7 +42,7 @@ class AudioNodeInput;
 class AudioNodeOutput {
 public:
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
-    AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
+    explicit AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
 
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
@@ -66,7 +66,7 @@ public:
     unsigned renderingParamFanOutCount() const;
 
     // Must be called with the context's graph lock.
-    void disconnectAll();
+    static void disconnectAll(std::shared_ptr<AudioNodeOutput>);
 
     void setNumberOfChannels(unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
@@ -77,11 +77,11 @@ public:
     // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
     // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
     // They must be called with the context's graph lock.
-    void disable();
-    void enable();
+    static void disable(std::shared_ptr<AudioNodeOutput> self);
+    static void enable(std::shared_ptr<AudioNodeOutput> self);
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
-    // It must be called with the context's graph lock.
+    // It must be called within the context's graph lock.
     void updateRenderingState();
     
 private:
@@ -92,10 +92,10 @@ private:
     
     // These are called from AudioNodeInput.
     // They must be called with the context's graph lock.
-    void addInput(AudioNodeInput*);
-    void removeInput(AudioNodeInput*);
-    void addParam(AudioParam*);
-    void removeParam(AudioParam*);
+    void addInput(std::shared_ptr<AudioNodeInput>);
+    void removeInput(std::shared_ptr<AudioNodeInput>);
+    void addParam(std::shared_ptr<AudioParam>);
+    void removeParam(std::shared_ptr<AudioParam>);
 
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
@@ -107,9 +107,9 @@ private:
     // It must be called with the context's graph lock.
     unsigned paramFanOutCount();
 
-    // Must be called with the context's graph lock.
-    void disconnectAllInputs();
-    void disconnectAllParams();
+    // Must be called within the context's graph lock.
+    static void disconnectAllInputs(std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
@@ -135,8 +135,7 @@ private:
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
 
-    std::set<AudioNodeInput*> m_inputs;
-    typedef std::set<AudioNodeInput*>::iterator InputsIterator;
+    std::set<std::shared_ptr<AudioNodeInput>> m_inputs;
     bool m_isEnabled;
 
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
@@ -144,7 +143,7 @@ private:
     unsigned m_renderingFanOutCount;
     unsigned m_renderingParamFanOutCount;
 
-    std::set<AudioParam*> m_params;
+    std::set<std::shared_ptr<AudioParam>> m_params;
     typedef std::set<AudioParam*>::iterator ParamsIterator;
 };
 

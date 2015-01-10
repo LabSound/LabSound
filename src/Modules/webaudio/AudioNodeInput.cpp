@@ -42,101 +42,98 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(AudioNodeOutput* output)
+void AudioNodeInput::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
+    ASSERT(!fromInput->context().expired());
+    auto ac = fromInput->context().lock();
     ASSERT(ac->isGraphOwner());
     
-    ASSERT(output && node());
-    if (!output || !node())
+    if (!fromInput || !toOutput || !fromInput->node())
         return;
 
-    // Check if we're already connected to this output.
-    if (m_outputs.find(output) != m_outputs.end())
+    // Check if input is already connected to this output.
+    if (fromInput->m_outputs.find(toOutput) != fromInput->m_outputs.end())
         return;
 
-    output->addInput(this);
-    m_outputs.insert(output);
-    changedOutputs();
+    toOutput->addInput(fromInput);
+    fromInput->m_outputs.insert(toOutput);          /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
+    AudioNodeInput::changedOutputs(fromInput);
 
     // Sombody has just connected to us, so count it as a reference.
-    node()->ref(AudioNode::RefTypeConnection);
+    fromInput->node()->ref(AudioNode::RefTypeConnection);
 }
 
-void AudioNodeInput::disconnect(AudioNodeOutput* output)
+void AudioNodeInput::disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
+    ASSERT(!fromInput->context().expired());
+    auto ac = fromInput->context().lock();
     ASSERT(ac->isGraphOwner());
-
-    ASSERT(output && node());
-    if (!output || !node())
+    
+    if (!fromInput || !toOutput || !fromInput->node())
         return;
-
+    
     // First try to disconnect from "active" connections.
-    auto it = m_outputs.find(output);
-    if (it != m_outputs.end()) {
-        m_outputs.erase(it);
-        changedOutputs();
-        output->removeInput(this);
-        node()->deref(AudioNode::RefTypeConnection); // Note: it's important to return immediately after all deref() calls since the node may be deleted.
+    auto it = fromInput->m_outputs.find(toOutput);
+    if (it != fromInput->m_outputs.end()) {
+        fromInput->m_outputs.erase(it);             /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
+        AudioNodeInput::changedOutputs(fromInput);
+        toOutput->removeInput(fromInput);
+        fromInput->node()->deref(AudioNode::RefTypeConnection);
         return;
     }
     
     // Otherwise, try to disconnect from disabled connections.
-    auto it2 = m_disabledOutputs.find(output);
-    if (it2 != m_disabledOutputs.end()) {
-        m_disabledOutputs.erase(it2);
-        output->removeInput(this);
-        node()->deref(AudioNode::RefTypeConnection); // Note: it's important to return immediately after all deref() calls since the node may be deleted.
+    auto it2 = fromInput->m_disabledOutputs.find(toOutput);
+    if (it2 != fromInput->m_disabledOutputs.end()) {
+        fromInput->m_disabledOutputs.erase(it2);
+        toOutput->removeInput(fromInput);
+        fromInput->node()->deref(AudioNode::RefTypeConnection);
         return;
     }
 
     ASSERT_NOT_REACHED();
 }
 
-void AudioNodeInput::disable(AudioNodeOutput* output)
+void AudioNodeInput::disable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
+    ASSERT(!self->context().expired());
+    auto ac = self->context().lock();
     ASSERT(ac->isGraphOwner());
 
-    ASSERT(output && node());
-    if (!output || !node())
+    ASSERT(output && self->node());
+    if (!output || !self->node())
         return;
 
-    auto it = m_outputs.find(output);
-    ASSERT(it != m_outputs.end());
+    auto it = self->m_outputs.find(output);
+    ASSERT(it != self->m_outputs.end());
     
-    m_disabledOutputs.insert(output);
-    m_outputs.erase(it);
-    changedOutputs();
+    self->m_disabledOutputs.insert(output);
+    self->m_outputs.erase(it);
+    changedOutputs(self);
 
     // Propagate disabled state to outputs.
-    node()->disableOutputsIfNecessary();
+    self->node()->disableOutputsIfNecessary();
 }
 
-void AudioNodeInput::enable(AudioNodeOutput* output)
+void AudioNodeInput::enable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
+    if (!output || !self->node())
+        return;
+    
+    ASSERT(!self->context().expired());
+    auto ac = self->context().lock();
     ASSERT(ac->isGraphOwner());
 
-    ASSERT(output && node());
-    if (!output || !node())
-        return;
-
-    auto it = m_disabledOutputs.find(output);
-    ASSERT(it != m_disabledOutputs.end());
+    auto it = self->m_disabledOutputs.find(output);
+    ASSERT(it != self->m_disabledOutputs.end());
 
     // Move output from disabled list to active list.
-    m_outputs.insert(output);
-    m_disabledOutputs.erase(it);
-    changedOutputs();
+    self->m_outputs.insert(output);
+    self->m_disabledOutputs.erase(it);
+    AudioNodeInput::changedOutputs(self);
 
     // Propagate enabled state to outputs.
-    node()->enableOutputsIfNecessary();
+    self->node()->enableOutputsIfNecessary();
 }
 
 void AudioNodeInput::didUpdate()
@@ -163,9 +160,8 @@ unsigned AudioNodeInput::numberOfChannels() const
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i) {
-        AudioNodeOutput* output = *i;
-        maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+    for (auto i : m_outputs) {
+        maxChannels = max(maxChannels, i->bus()->numberOfChannels());
     }
     
     return maxChannels;

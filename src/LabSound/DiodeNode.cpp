@@ -20,7 +20,7 @@ namespace LabSound {
     , vl(0.4f)
     , h(1.0)
     {
-        waveShaper = WebCore::WaveShaperNode::create(context);
+        waveShaper = std::make_shared<WebCore::WaveShaperNode>(context);
         setCurve();
     }
 

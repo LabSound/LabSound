@@ -36,11 +36,6 @@
 
 namespace WebCore {
 
-PassRefPtr<MediaStreamAudioDestinationNode> MediaStreamAudioDestinationNode::create(std::shared_ptr<AudioContext> context, size_t numberOfChannels)
-{
-    return adoptRef(new MediaStreamAudioDestinationNode(context, numberOfChannels));
-}
-
 MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(std::shared_ptr<AudioContext> context, size_t numberOfChannels)
     : AudioBasicInspectorNode(context, context->sampleRate())
     , m_mixBus(numberOfChannels, ProcessingSizeInFrames)
