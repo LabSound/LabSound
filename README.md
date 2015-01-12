@@ -3,7 +3,7 @@
 LabSound is the WebAudio implementation factored out of WebKit. All copyleft sources have been removed
 so that the entire library can be released under MIT/BSD style licenses.
 
-The motivation behind LabSound is that the [WebAudio specification](https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html) is a well-designed API for an audio engine. Coupled with a well executed implementation provided by WebKit contributors, LabSound is a powerful and extensible audio engine for C++. 
+The motivation behind LabSound is that the [WebAudio specification](https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html) is a well-designed API for an audio engine. Coupled with a almost adequate implementation provided by WebKit contributors, LabSound is a powerful and extensible audio engine for C++. 
 
 LabSound’s internals were disconnected from Javascript and the browser infrastructure. The cross-platform nature of WebKit means that LabSound enjoys wide platform support across OSX 10.6+, Windows 7+, and although presently untested, Linux and iOS. 
 
