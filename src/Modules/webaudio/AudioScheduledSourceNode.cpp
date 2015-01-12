@@ -25,7 +25,9 @@
 #include "LabSoundConfig.h"
 #include "AudioScheduledSourceNode.h"
 
+#include "AudioBus.h"
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioUtilities.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
@@ -36,15 +38,16 @@ namespace WebCore {
 
 const double AudioScheduledSourceNode::UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioSourceNode(context, sampleRate)
+AudioScheduledSourceNode::AudioScheduledSourceNode(float sampleRate)
+    : AudioSourceNode(sampleRate)
     , m_playbackState(UNSCHEDULED_STATE)
     , m_startTime(0)
     , m_endTime(UnknownTime)
 {
 }
 
-void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
+void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
+                                                    size_t quantumFrameSize,
                                                     AudioBus* outputBus,
                                                     size_t& quantumFrameOffset,
                                                     size_t& nonSilentFramesToProcess)
@@ -57,9 +60,10 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
     if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
         return;
 
+    AudioContext* ac = r.context();
+    ASSERT(ac);
+    
     double sampleRate = this->sampleRate();
-
-    std::shared_ptr<AudioContext> ac = context().lock();
     
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
@@ -72,7 +76,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
 
     // If we know the end time and it's already passed, then don't bother doing any more rendering this cycle.
     if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)
-        finish();
+        finish(r);
 
     if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) {
         // Output silence.
@@ -121,15 +125,14 @@ void AudioScheduledSourceNode::updateSchedulingInfo(size_t quantumFrameSize,
                 memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
         }
 
-        finish();
+        finish(r);
     }
 
     return;
 }
 
-void AudioScheduledSourceNode::start(double when)
+void AudioScheduledSourceNode::start(ContextRenderLock& r, double when)
 {
-    ASSERT(isMainThread());
     if (m_playbackState != UNSCHEDULED_STATE)
         return;
 
@@ -137,9 +140,8 @@ void AudioScheduledSourceNode::start(double when)
     m_playbackState = SCHEDULED_STATE;
 }
 
-void AudioScheduledSourceNode::stop(double when)
+void AudioScheduledSourceNode::stop(ContextRenderLock&, double when)
 {
-    ASSERT(isMainThread());
     if (!(m_playbackState == SCHEDULED_STATE || m_playbackState == PLAYING_STATE))
         return;
     
@@ -147,13 +149,15 @@ void AudioScheduledSourceNode::stop(double when)
     m_endTime = when;
 }
 
-void AudioScheduledSourceNode::finish()
+void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
-    clearPannerNode();
-    std::shared_ptr<AudioContext> ac = context().lock();
+    clearPannerNode(r);
+    auto ac = r.context();
+    ASSERT(ac);
+    
     if (m_playbackState != FINISHED_STATE) {
         // Let the context dereference this AudioNode.
-        ac->notifyNodeFinishedProcessing(this);
+        ac->notifyNodeFinishedProcessing(r, this);
         m_playbackState = FINISHED_STATE;
         ac->decrementActiveSourceCount();
     }

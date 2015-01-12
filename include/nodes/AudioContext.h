@@ -22,53 +22,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Visual Studio 2013 will not compile with ENABLE_MEDIA_STREAM=1
-
 #ifndef AudioContext_h
 #define AudioContext_h
 
-#include "AsyncAudioDecoder.h"
-#include "AudioDestination.h"
-#include "AudioDestinationNode.h"
-#include "AudioBus.h"
-#include "HRTFDatabaseLoader.h"
-#include "WTF/MainThread.h"
+#include "ExceptionCodes.h"
 #include "WTF/RefPtr.h"
-#include "WTF/Threading.h"
-#include <vector>
+#include <mutex>
 #include <set>
+#include <vector>
+
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
 
 namespace WebCore {
-
-class AudioBuffer;
-class AudioBufferCallback;
-class AudioBufferSourceNode;
-class MediaElementAudioSourceNode;
-class MediaStream;
-class MediaStreamAudioDestinationNode;
-class MediaStreamAudioSourceNode;
-class HTMLMediaElement;
-class ChannelMergerNode;
-class ChannelSplitterNode;
-class GainNode;
-class PannerNode;
-class AudioListener;
-class AudioSummingJunction;
-class BiquadFilterNode;
-class DelayNode;
-class ConvolverNode;
-class DynamicsCompressorNode;
-class AnalyserNode;
-class WaveShaperNode;
-class ScriptProcessorNode;
-class OscillatorNode;
-class WaveTable;
+    
+    using namespace LabSound;
 
 // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
 // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
-    
-// The AudioNode create methods should be called on the main audio thread
 
+    class AudioBuffer;
+    class AudioBufferCallback;
+    class AudioDestinationNode;
+    class AudioListener;
+    class AudioNode;
+    class AudioSummingJunction;
+    class HRTFDatabaseLoader;
+    class MediaStreamAudioSourceNode;
+    class AsyncAudioDecoder;
     
 class AudioContext {
 public:
@@ -100,14 +83,14 @@ public:
     // Returns true when initialize() was called AND all asynchronous initialization has completed.
     bool isRunnable() const;
 
-    virtual void stop();
+    virtual void stop(ContextGraphLock& g);
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node) { m_destinationNode = node; }
     std::shared_ptr<AudioDestinationNode> destination() { return m_destinationNode; }
     
-    size_t currentSampleFrame() const { return m_destinationNode->currentSampleFrame(); }
-    double currentTime() const { return m_destinationNode->currentTime(); }
-    float sampleRate() const { return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); }
+    size_t currentSampleFrame() const;
+    double currentTime() const;
+    float sampleRate() const;
     unsigned long activeSourceCount() const { return static_cast<unsigned long>(m_activeSourceCount); }
 
     void incrementActiveSourceCount();
@@ -118,95 +101,48 @@ public:
 
     AudioListener* listener() { return m_listener.get(); }
 
-    static std::shared_ptr<MediaStreamAudioSourceNode> createMediaStreamSource(std::shared_ptr<AudioContext>, ExceptionCode&);
+    std::shared_ptr<MediaStreamAudioSourceNode> createMediaStreamSource(ContextGraphLock& g, ContextRenderLock& r, ExceptionCode&);
 
     // When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
-    void notifyNodeFinishedProcessing(AudioNode*);
+    void notifyNodeFinishedProcessing(ContextRenderLock&, AudioNode*);
 
     // Called at the start of each render quantum.
-    void handlePreRenderTasks();
+    void handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock&);
 
     // Called at the end of each render quantum.
-    void handlePostRenderTasks();
+    void handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&);
 
     // Called periodically at the end of each render quantum to dereference finished source nodes.
-    void derefFinishedSourceNodes();
+    void derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r);
 
     // We schedule deletion of all marked nodes at the end of each realtime render quantum.
-    void markForDeletion(AudioNode*);
+    void markForDeletion(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
     void deleteMarkedNodes();
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
-    void addAutomaticPullNode(AudioNode*);
-    void removeAutomaticPullNode(AudioNode*);
+    void addAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
+    void removeAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-    void processAutomaticPullNodes(size_t framesToProcess);
+    void processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
 
     // Keeps track of the number of connections made.
-    void incrementConnectionCount()
-    {
-        ASSERT(isMainThread());
-        m_connectionCount++;
-    }
+    void incrementConnectionCount(ContextGraphLock&);
 
     unsigned connectionCount() const { return m_connectionCount; }
-
-    //
-    // Thread Safety and Graph Locking:
-    //
-    
-    void setAudioThread(ThreadIdentifier thread);
-    ThreadIdentifier audioThread() const { return m_audioThread; }
-    bool isAudioThread() const;
-
-    // Returns true only after the audio thread has been started and then shutdown.
-    bool isAudioThreadFinished() { return m_isAudioThreadFinished; }
-    
-    // mustReleaseLock is set to true if we acquired the lock in this method call and caller must unlock(), false if it was previously acquired.
-    void lock(bool& mustReleaseLock);
-
-    // Returns true if we own the lock.
-    // mustReleaseLock is set to true if we acquired the lock in this method call and caller must unlock(), false if it was previously acquired.
-    bool tryLock(bool& mustReleaseLock);
-
-    void unlock();
-
-    // Returns true if this thread owns the context's lock.
-    bool isGraphOwner() const;
 
     // Returns the maximum numuber of channels we can support.
     static unsigned maxNumberOfChannels() { return MaxNumberOfChannels;}
     
-    // acquire the context for the current thread.
-    class AutoLocker {
-    public:
-        AutoLocker(AudioContext* context)
-        : m_context(context)
-        {
-            ASSERT(context);
-            context->lock(m_mustReleaseLock);
-        }
-        
-        ~AutoLocker()
-        {
-            if (m_mustReleaseLock)
-                m_context->unlock();
-        }
-    private:
-        AudioContext* m_context;
-        bool m_mustReleaseLock;
-    };
-    
     // In AudioNode::deref() a tryLock() is used for calling finishDeref(), but if it fails keep track here.
-    void addDeferredFinishDeref(AudioNode*);
+    void addDeferredFinishDeref(ContextGraphLock& g, AudioNode*);
 
     // In the audio thread at the start of each render cycle, we'll call handleDeferredFinishDerefs().
-    void handleDeferredFinishDerefs();
+    void handleDeferredFinishDerefs(ContextGraphLock& g);
 
     // Only accessed when the graph lock is held.
-    void markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction>);
+    void markSummingJunctionDirty(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction>);
 
     // Must be called on main thread.
     void removeMarkedSummingJunction(AudioSummingJunction*);
@@ -226,15 +162,17 @@ private:
     AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
     void constructCommon();
 
-    void uninitialize();
+    void uninitialize(ContextGraphLock&);
 
-    // ScriptExecutionContext calls stop twice.
-    // We'd like to schedule only one stop action for them.
+    friend class LabSound::ContextGraphLock;
+    friend class LabSound::ContextRenderLock;
+    std::mutex m_graphLock;
+    std::mutex m_renderLock;
+    
     bool m_isStopScheduled;
-    static void stopDispatch(void* userData);
     void clear();
 
-    void scheduleNodeDeletion();
+    void scheduleNodeDeletion(ContextGraphLock& g);
     static void deleteMarkedNodesDispatch(void* userData);
     
     bool m_isInitialized;
@@ -244,12 +182,12 @@ private:
     // In turn, these nodes reference all nodes they're connected to.  All nodes are ultimately connected to the AudioDestinationNode.
     // When the context dereferences a source node, it will be deactivated from the rendering graph along with all other nodes it is
     // uniquely connected to.  See the AudioNode::ref() and AudioNode::deref() methods for more details.
-    void refNode(std::shared_ptr<AudioNode>);
-    void derefNode(std::shared_ptr<AudioNode>);
+    void refNode(ContextGraphLock& g, std::shared_ptr<AudioNode>);
+    void derefNode(ContextGraphLock& g, std::shared_ptr<AudioNode>);
 
     // When the context goes away, there might still be some sources which haven't finished playing.
     // Make sure to dereference them here.
-    void derefUnfinishedSourceNodes();
+    void derefUnfinishedSourceNodes(ContextGraphLock& g);
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
@@ -274,7 +212,7 @@ private:
 
     // Only accessed when the graph lock is held.
     std::set<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
-    void handleDirtyAudioSummingJunctions();
+    void handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r);
 
     // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
     // It will be copied from m_automaticPullNodes by updateAutomaticPullNodes() at the very start or end of the rendering quantum.
@@ -282,26 +220,23 @@ private:
     std::vector<AudioNode*> m_renderingAutomaticPullNodes;
     // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
     bool m_automaticPullNodesNeedUpdating;
-    void updateAutomaticPullNodes();
+    void updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r);
 
     unsigned m_connectionCount;
 
     // Graph locking.
-    WTF::Mutex m_contextGraphMutex;
-    volatile ThreadIdentifier m_audioThread;
-    volatile ThreadIdentifier m_graphOwnerThread; // if the lock is held then this is the thread which owns it, otherwise == UndefinedThreadIdentifier
     
     // Only accessed in the audio thread.
     std::vector<AudioNode*> m_deferredFinishDerefList;
     
     // HRTF Database loader
-    RefPtr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
+    std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
 
     std::shared_ptr<AudioBuffer> m_renderTarget;
     
     bool m_isOfflineContext;
 
-    AsyncAudioDecoder m_audioDecoder;
+    std::unique_ptr<AsyncAudioDecoder> m_audioDecoder;
 
     // This is considering 32 is large enough for multiple channels audio. 
     // It is somewhat arbitrary and could be increased if necessary.

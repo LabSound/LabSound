@@ -23,8 +23,8 @@
  */
 
 #include "LabSoundConfig.h"
+#include "AudioContextLock.h"
 #include "WaveShaperProcessor.h"
-
 #include "WaveShaperDSPKernel.h"
 
 namespace WebCore {
@@ -45,28 +45,24 @@ AudioDSPKernel* WaveShaperProcessor::createKernel()
     return new WaveShaperDSPKernel(this);
 }
 
-void WaveShaperProcessor::setCurve(std::shared_ptr<std::vector<float>> curve)
+void WaveShaperProcessor::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
 {
-    // This synchronizes with process().
-    MutexLocker processLocker(m_processLock);
-    
     m_curve = curve;
 }
 
-void WaveShaperProcessor::process(const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void WaveShaperProcessor::process(ContextGraphLock& g, ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
 {
     if (!isInitialized()) {
         destination->zero();
         return;
     }
 
-    // The audio thread can't block on this lock, so we call tryLock() instead.
-    MutexTryLocker tryLocker(m_processLock);
-    if (tryLocker.locked()) {        
+    if (r.context()) {
         // For each channel of our input, process using the corresponding WaveShaperDSPKernel into the output channel.
         for (unsigned i = 0; i < m_kernels.size(); ++i)
-            m_kernels[i]->process(source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
-    } else {
+            m_kernels[i]->process(g, r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+    }
+    else {
         // Too bad - the tryLock() failed. We must be in the middle of a setCurve() call.
         destination->zero();
     }

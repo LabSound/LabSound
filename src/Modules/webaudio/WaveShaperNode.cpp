@@ -28,17 +28,17 @@
 
 namespace WebCore {
 
-WaveShaperNode::WaveShaperNode(std::shared_ptr<AudioContext> context)
-    : AudioBasicProcessorNode(context, context->sampleRate())
+WaveShaperNode::WaveShaperNode(float sampleRate)
+    : AudioBasicProcessorNode(sampleRate)
 {
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new WaveShaperProcessor(context->sampleRate(), 1)));
+    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new WaveShaperProcessor(sampleRate, 1)));
     setNodeType(NodeTypeWaveShaper);
 }
 
-void WaveShaperNode::setCurve(std::shared_ptr<std::vector<float>> curve)
+void WaveShaperNode::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
 {
     ASSERT(isMainThread()); 
-    waveShaperProcessor()->setCurve(curve);
+    waveShaperProcessor()->setCurve(r, curve);
 }
 
 std::shared_ptr<std::vector<float>> WaveShaperNode::curve()

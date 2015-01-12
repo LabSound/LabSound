@@ -38,7 +38,7 @@ namespace WebCore {
 // settings of the Biquad.
 static const double MaxBiquadDelayTime = 0.2;
 
-void BiquadDSPKernel::updateCoefficientsIfNecessary(bool useSmoothing, bool forceUpdate)
+void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextGraphLock& g, ContextRenderLock& r, bool useSmoothing, bool forceUpdate)
 {
     if (forceUpdate || biquadProcessor()->filterCoefficientsDirty()) {
         double value1;
@@ -47,20 +47,20 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(bool useSmoothing, bool forc
         double detune; // in Cents
 
         if (biquadProcessor()->hasSampleAccurateValues()) {
-            value1 = biquadProcessor()->parameter1()->finalValue();
-            value2 = biquadProcessor()->parameter2()->finalValue();
-            gain = biquadProcessor()->parameter3()->finalValue();
-            detune = biquadProcessor()->parameter4()->finalValue();
+            value1 = biquadProcessor()->parameter1()->finalValue(g, r);
+            value2 = biquadProcessor()->parameter2()->finalValue(g, r);
+            gain = biquadProcessor()->parameter3()->finalValue(g, r);
+            detune = biquadProcessor()->parameter4()->finalValue(g, r);
         } else if (useSmoothing) {
             value1 = biquadProcessor()->parameter1()->smoothedValue();
             value2 = biquadProcessor()->parameter2()->smoothedValue();
             gain = biquadProcessor()->parameter3()->smoothedValue();
             detune = biquadProcessor()->parameter4()->smoothedValue();
         } else {
-            value1 = biquadProcessor()->parameter1()->value();
-            value2 = biquadProcessor()->parameter2()->value();
-            gain = biquadProcessor()->parameter3()->value();
-            detune = biquadProcessor()->parameter4()->value();
+            value1 = biquadProcessor()->parameter1()->value(r);
+            value2 = biquadProcessor()->parameter2()->value(r);
+            gain = biquadProcessor()->parameter3()->value(r);
+            detune = biquadProcessor()->parameter4()->value(r);
         }
 
         // Convert from Hertz to normalized frequency 0 -> 1.
@@ -108,7 +108,7 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(bool useSmoothing, bool forc
     }
 }
 
-void BiquadDSPKernel::process(const float* source, float* destination, size_t framesToProcess)
+void BiquadDSPKernel::process(ContextGraphLock& g, ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
 {
     ASSERT(source && destination && biquadProcessor());
     
@@ -116,12 +116,13 @@ void BiquadDSPKernel::process(const float* source, float* destination, size_t fr
     // FIXME: as an optimization, implement a way that a Biquad object can simply copy its internal filter coefficients from another Biquad object.
     // Then re-factor this code to only run for the first BiquadDSPKernel of each BiquadProcessor.
 
-    updateCoefficientsIfNecessary(true, false);
+    updateCoefficientsIfNecessary(g, r, true, false);
 
     m_biquad.process(source, destination, framesToProcess);
 }
 
-void BiquadDSPKernel::getFrequencyResponse(int nFrequencies,
+void BiquadDSPKernel::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+                                           int nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
                                            float* phaseResponse)
@@ -145,7 +146,7 @@ void BiquadDSPKernel::getFrequencyResponse(int nFrequencies,
     // set. Forcefully update the coefficients even if they are not
     // dirty.
 
-    updateCoefficientsIfNecessary(false, true);
+    updateCoefficientsIfNecessary(g, r, false, true);
 
     m_biquad.getFrequencyResponse(nFrequencies, &frequency[0], magResponse, phaseResponse);
 }

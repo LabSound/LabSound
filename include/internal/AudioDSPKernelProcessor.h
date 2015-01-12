@@ -32,13 +32,13 @@
 #define AudioDSPKernelProcessor_h
 
 #include "AudioBus.h"
+#include "AudioDSPKernel.h"
 #include "AudioProcessor.h"
 #include <vector>
 
 namespace WebCore {
 
 class AudioBus;
-class AudioDSPKernel;
 class AudioProcessor;
 
 // AudioDSPKernelProcessor processes one input -> one output (N channels each)
@@ -49,6 +49,7 @@ class AudioDSPKernelProcessor : public AudioProcessor {
 public:
     // numberOfChannels may be later changed if object is not yet in an "initialized" state
     AudioDSPKernelProcessor(float sampleRate, unsigned numberOfChannels);
+    virtual ~AudioDSPKernelProcessor() {}
 
     // Subclasses create the appropriate type of processing kernel here.
     // We'll call this to create a kernel for each channel.
@@ -57,8 +58,8 @@ public:
     // AudioProcessor methods
     virtual void initialize();
     virtual void uninitialize();
-    virtual void process(const AudioBus* source, AudioBus* destination, size_t framesToProcess);
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
+    virtual void reset() override;
     virtual void setNumberOfChannels(unsigned numberOfChannels);
 
     unsigned numberOfChannels() const { return m_numberOfChannels; }

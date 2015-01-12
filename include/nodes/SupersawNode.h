@@ -16,7 +16,7 @@ namespace LabSound {
 
     class SupersawNode : public AudioNode {
     public:
-        SupersawNode(std::shared_ptr<AudioContext>, float sampleRate);
+        SupersawNode(ContextGraphLock& g, ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode() {}
         
 		std::shared_ptr<AudioParam> attack()  const;
@@ -28,19 +28,19 @@ namespace LabSound {
         std::shared_ptr<AudioParam> frequency() const;
         std::shared_ptr<AudioParam> detune()    const;
 
-		void noteOn();
-		void noteOff();
+		void noteOn(ContextRenderLock&);
+		void noteOff(ContextRenderLock&);
 
-        void update(); // call if sawCount is changed. CBB: update automatically
+        void update(ContextGraphLock& g, ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
 
     private:
 
         // Satisfy the AudioNode interface
-        virtual void process(size_t) override;
-        virtual void reset() { /*m_currentSampleFrame = 0;*/ }
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override;
+        virtual void reset(ContextRenderLock& r) override { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }
-        virtual bool propagatesSilence() const OVERRIDE;
+        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
         // ^
 
         class Data;

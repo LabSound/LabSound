@@ -22,8 +22,8 @@ namespace LabSound {
 	class EasyVerbNode::NodeInternal : public WebCore::AudioProcessor{
 	public:
 
-        NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
-            m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 1, 0.1, 24);
+        NodeInternal(float sampleRate) : AudioProcessor(sampleRate), channels(2) {
+            m_delayTime = std::make_shared<AudioParam>("delayTime", 1, 0.1, 24);
 		}
 
 		virtual ~NodeInternal() {
@@ -34,9 +34,9 @@ namespace LabSound {
 		virtual void uninitialize() { }
 
 		// Processes the source to destination bus.  The number of channels must match in source and destination.
-		void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+		void process(ContextGraphLock& g, ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
 
-			perryVerb.setT60(m_delayTime->value());
+			perryVerb.setT60(m_delayTime->value(r));
 
 			const float *source = sourceBus->channel(0)->data();
 
@@ -71,9 +71,9 @@ namespace LabSound {
 
 	};
 
-    EasyVerbNode::EasyVerbNode(std::shared_ptr<AudioContext> context, float sampleRate)
-		: WebCore::AudioBasicProcessorNode(context, sampleRate),
-		  data(new NodeInternal(context, sampleRate)) {
+    EasyVerbNode::EasyVerbNode(float sampleRate)
+		: WebCore::AudioBasicProcessorNode(sampleRate),
+		  data(new NodeInternal(sampleRate)) {
 		
 		m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

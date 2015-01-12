@@ -25,27 +25,25 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include "WTF/Platform.h"
+#include "LabSoundConfig.h"
+#include "ExceptionCodes.h"
 #include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 0
 
-namespace WebCore {
 
-class AudioContext;
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
+namespace WebCore {
+    
+    using namespace LabSound;
+
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
-
-typedef int ExceptionCode;
-
-enum ExceptionCodes {
-    NO_ERR = 0,
-    INVALID_STATE_ERR = 1,
-    SYNTAX_ERR = 2,
-    NOT_SUPPORTED_ERR = 3,
-    INDEX_SIZE_ERR
-};
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
@@ -66,11 +64,8 @@ public:
 		
 	};
 
-    AudioNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AudioNode(float sampleRate);
     virtual ~AudioNode();
-
-    std::weak_ptr<AudioContext> context() { return m_context; }
-    const std::weak_ptr<AudioContext> context() const { return m_context; }
 
     enum NodeType {
         NodeTypeUnknown,
@@ -102,21 +97,18 @@ public:
     // JavaScript references to the object.
     enum RefType { RefTypeNormal, RefTypeConnection };
 
-    // Can be called from main thread or context's audio thread.
-    void ref(RefType refType);
-    void deref(RefType refType);
-
-    // Can be called from main thread or context's audio thread.  It must be called while the context's graph lock is held.
-    void finishDeref(RefType refType);
+    void ref(ContextGraphLock& g, RefType refType);
+    void deref(ContextGraphLock& g, RefType refType);
+    void finishDeref(ContextGraphLock& g, RefType refType);
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
-    virtual void process(size_t framesToProcess) = 0;
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) = 0;
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
-    virtual void reset() = 0;
+    virtual void reset(ContextRenderLock& r) = 0;
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
@@ -132,9 +124,11 @@ public:
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
 
-    virtual void connect(AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
-    void connect(std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
-    virtual void disconnect(unsigned outputIndex, ExceptionCode&);
+    void connect(ContextGraphLock& g, ContextRenderLock &r,
+                         AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
+    
+    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
+    void disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned outputIndex, ExceptionCode&);
 
     virtual float sampleRate() const { return m_sampleRate; }
 
@@ -142,12 +136,12 @@ public:
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
-    void processIfNecessary(size_t framesToProcess);
+    void processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess);
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
+    virtual void checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock&, AudioNodeInput*);
 
 #if DEBUG_AUDIONODE_REFERENCES
     static void printNodeCounts();
@@ -164,13 +158,13 @@ public:
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
-    virtual bool propagatesSilence() const;
+    virtual bool propagatesSilence(ContextRenderLock& r) const;
     bool inputsAreSilent();
     void silenceOutputs();
     void unsilenceOutputs();
 
-    void enableOutputsIfNecessary();
-    void disableOutputsIfNecessary();
+    void enableOutputsIfNecessary(ContextGraphLock& g);
+    void disableOutputsIfNecessary(ContextGraphLock& g);
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
@@ -180,16 +174,15 @@ protected:
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(size_t framesToProcess);
+    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess);
 
     // connect and disconnect will call this after the connection is made. Currently required by AudioBasicInspectorNode
-    virtual void updatePullStatus() {}
+    virtual void updatePullStatus(ContextGraphLock&, ContextRenderLock&) {}
 
 
 private:
     volatile bool m_isInitialized;
     NodeType m_nodeType;
-    std::weak_ptr<AudioContext> m_context;
     float m_sampleRate;
     std::vector<std::shared_ptr<AudioNodeInput> > m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput> > m_outputs;

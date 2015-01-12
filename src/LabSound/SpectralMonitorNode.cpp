@@ -97,8 +97,8 @@ namespace LabSound {
         FFT* fft;
     };
 
-    SpectralMonitorNode::SpectralMonitorNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioBasicInspectorNode(context, sampleRate)
+    SpectralMonitorNode::SpectralMonitorNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate)
     , detail(new Detail())
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -112,7 +112,7 @@ namespace LabSound {
         delete detail;
     }
 
-    void SpectralMonitorNode::process(size_t framesToProcess)
+    void SpectralMonitorNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.
@@ -178,7 +178,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
 
-    void SpectralMonitorNode::reset()
+    void SpectralMonitorNode::reset(ContextRenderLock& r)
     {
         detail->setWindowSize(detail->windowSize);
     }

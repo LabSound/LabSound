@@ -10,16 +10,16 @@ int main(int, char**)
     ExceptionCode ec;
     
     auto context = LabSound::init();
-    
-    auto input = context->createMediaStreamSource(context, ec);
-    input->connect(context->destination().get(), 0, 0, ec);
-    
-    const int seconds = 10;
-    for (int t = 0; t < seconds; ++t)
+    shared_ptr<MediaStreamAudioSourceNode> input;
+
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        input = context->createMediaStreamSource(ec);
+        input->connect(g, r, context->destination().get(), 0, 0, ec);
     }
     
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     LabSound::finish(context);
     
     return 0;

@@ -26,6 +26,7 @@
 #include "LabSoundConfig.h"
 #include "AudioParam.h"
 
+#include "AudioContextLock.h"
 #include "AudioNode.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
@@ -37,18 +38,15 @@ namespace WebCore {
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-float AudioParam::value()
+float AudioParam::value(ContextRenderLock& r)
 {
     // Update value for timeline.
-    if (!context().expired()) {
-        std::shared_ptr<AudioContext> ac = context().lock();
-        if (ac->isAudioThread()) {
-            bool hasValue;
-            float timelineValue = m_timeline.valueForContextTime(ac.get(), narrowPrecisionToFloat(m_value), hasValue);
-            
-            if (hasValue)
-                m_value = timelineValue;
-        }
+    if (r.context()) {
+        bool hasValue;
+        float timelineValue = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), hasValue);
+        
+        if (hasValue)
+            m_value = timelineValue;
     }
 
     return narrowPrecisionToFloat(m_value);
@@ -67,14 +65,13 @@ float AudioParam::smoothedValue()
     return narrowPrecisionToFloat(m_smoothedValue);
 }
 
-bool AudioParam::smooth()
+bool AudioParam::smooth(ContextRenderLock& r)
 {
     // If values have been explicitly scheduled on the timeline, then use the exact value.
     // Smoothing effectively is performed by the timeline.
     bool useTimelineValue = false;
-    if (!context().expired()) {
-        std::shared_ptr<AudioContext> ac = context().lock();
-        m_value = m_timeline.valueForContextTime(ac.get(), narrowPrecisionToFloat(m_value), useTimelineValue);
+    if (r.context()) {
+        m_value = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), useTimelineValue);
     }
     
     if (m_smoothedValue == m_value) {
@@ -96,43 +93,38 @@ bool AudioParam::smooth()
     return false;
 }
 
-float AudioParam::finalValue()
+float AudioParam::finalValue(ContextGraphLock& g, ContextRenderLock& r)
 {
     float value;
-    calculateFinalValues(&value, 1, false);
+    calculateFinalValues(g, r, &value, 1, false);
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(float* values, unsigned numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextGraphLock& g, ContextRenderLock& r, float* values, unsigned numberOfValues)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    bool isSafe = ac->isAudioThread() && values && numberOfValues;
-    ASSERT(isSafe);
+    bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
         return;
 
-    calculateFinalValues(values, numberOfValues, true);
+    calculateFinalValues(g, r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(float* values, unsigned numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextGraphLock& g, ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    bool isGood = ac->isAudioThread() && values && numberOfValues;
-    ASSERT(isGood);
-    if (!isGood)
+    bool isSafe = r.context() && values && numberOfValues;
+    if (!isSafe)
         return;
 
     // The calculated result will be the "intrinsic" value summed with all audio-rate connections.
 
     if (sampleAccurate) {
         // Calculate sample-accurate (a-rate) intrinsic values.
-        calculateTimelineValues(values, numberOfValues);
-    } else {
+        calculateTimelineValues(r, values, numberOfValues);
+    }
+    else {
         // Calculate control-rate (k-rate) intrinsic value.
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(ac.get(), narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), hasValue);
 
         if (hasValue)
             m_value = timelineValue;
@@ -150,22 +142,19 @@ void AudioParam::calculateFinalValues(float* values, unsigned numberOfValues, bo
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(0, AudioNode::ProcessingSizeInFrames);
+        AudioBus* connectionBus = output->pull(g, r, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
         summingBus.sumFrom(*connectionBus);
     }
 }
 
-void AudioParam::calculateTimelineValues(float* values, unsigned numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, unsigned numberOfValues)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    
     // Calculate values for this render quantum.
     // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).
-    double sampleRate = ac->sampleRate();
-    double startTime = ac->currentTime();
+    double sampleRate = r.context()->sampleRate();
+    double startTime = r.context()->currentTime();
     double endTime = startTime + numberOfValues / sampleRate;
 
     // Note we're running control rate at the sample-rate.
@@ -173,39 +162,29 @@ void AudioParam::calculateTimelineValues(float* values, unsigned numberOfValues)
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, narrowPrecisionToFloat(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
-void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!param->context().expired());
-    auto ac = param->context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(output);
     if (!output)
         return;
 
     if (param->m_outputs.find(output) != param->m_outputs.end())
         return;
 
-    output->addParam(param);
+    output->addParam(g, param);
     param->m_outputs.insert(output);
-    AudioParam::changedOutputs(param);
+    AudioParam::changedOutputs(g, param);
 }
 
-void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!param->context().expired());
-    auto ac = param->context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(output);
     if (!output)
         return;
 
     auto it = param->m_outputs.find(output);
     if (it != param->m_outputs.end()) {
         param->m_outputs.erase(it);
-        AudioParam::changedOutputs(param);
-        output->removeParam(param);
+        AudioParam::changedOutputs(g, param);
+        output->removeParam(g, param);
     }
 }
 

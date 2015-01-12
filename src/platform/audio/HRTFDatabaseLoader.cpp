@@ -37,25 +37,17 @@
 namespace WebCore {
 
 // Singleton
-HRTFDatabaseLoader* HRTFDatabaseLoader::s_loader = 0;
+std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
 
-PassRefPtr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(float sampleRate)
+std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(float sampleRate)
 {
     ASSERT(isMainThread());
 
-    RefPtr<HRTFDatabaseLoader> loader;
-    
     if (!s_loader) {
-        // Lazily create and load.
-        loader = adoptRef(new HRTFDatabaseLoader(sampleRate));
-        s_loader = loader.get();
-        loader->loadAsynchronously();
-    } else {
-        loader = s_loader;
-        ASSERT(sampleRate == loader->databaseSampleRate());
+        s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate);
+        s_loader->loadAsynchronously();
     }
-    
-    return loader;
+    return s_loader;
 }
 
 HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate)
@@ -73,7 +65,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
     m_hrtfDatabase.reset();
     
     // Clear out singleton.
-    ASSERT(this == s_loader);
+    ASSERT(this == s_loader.get());
     s_loader = 0;
 }
 

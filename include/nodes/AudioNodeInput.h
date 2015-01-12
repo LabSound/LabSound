@@ -43,30 +43,31 @@ class AudioNodeOutput;
 class AudioNodeInput : public AudioSummingJunction {
 public:
     explicit AudioNodeInput(AudioNode*);
+    virtual ~AudioNodeInput() {}
 
     // AudioSummingJunction
-    virtual bool canUpdateState() OVERRIDE { return !node()->isMarkedForDeletion(); }
-    virtual void didUpdate() OVERRIDE;
+    virtual bool canUpdateState() override { return !node()->isMarkedForDeletion(); }
+    virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) override;
 
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
 
     // Must be called with the context's graph lock.
-    static void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.
     // Must be called with the context's graph lock.
-    static void enable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
-    static void disable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
+    static void enable(ContextGraphLock& r, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
+    static void disable(ContextGraphLock& r, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
 
     // pull() processes all of the AudioNodes connected to us.
     // In the case of multiple connections it sums the result into an internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
     // Called from context's audio thread.
-    AudioBus* pull(AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
     // Called from context's audio thread.
@@ -74,7 +75,7 @@ public:
     
     // updateInternalBus() updates m_internalSummingBus appropriately for the number of channels.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
-    void updateInternalBus();
+    void updateInternalBus(ContextRenderLock& r);
 
     // The number of channels of the connection with the largest number of channels.
     unsigned numberOfChannels() const;        
@@ -92,7 +93,7 @@ private:
 
     // Called from context's audio thread.
     AudioBus* internalSummingBus();
-    void sumAllConnections(AudioBus* summingBus, size_t framesToProcess);
+    void sumAllConnections(ContextGraphLock& g, ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess);
 
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };

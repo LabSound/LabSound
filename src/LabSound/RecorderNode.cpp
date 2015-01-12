@@ -12,8 +12,8 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    RecorderNode::RecorderNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioBasicInspectorNode(context, sampleRate)
+    RecorderNode::RecorderNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate)
     , m_recording(false), m_mixToMono(false)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -38,7 +38,7 @@ namespace LabSound {
     }
 
     
-    void RecorderNode::process(size_t framesToProcess)
+    void RecorderNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
         
@@ -94,7 +94,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void RecorderNode::reset()
+    void RecorderNode::reset(ContextRenderLock& r)
     {
         std::vector<float> clear;
         {

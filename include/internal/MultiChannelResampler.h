@@ -32,8 +32,15 @@
 #include "SincResampler.h"
 #include <vector>
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
 namespace WebCore {
 
+    using namespace LabSound;
+    
 class AudioBus;
     
 class MultiChannelResampler {
@@ -41,7 +48,7 @@ public:
     MultiChannelResampler(double scaleFactor, unsigned numberOfChannels);
     
     // Process given AudioSourceProvider for streaming applications.
-    void process(AudioSourceProvider*, AudioBus* destination, size_t framesToProcess);
+    void process(ContextGraphLock& g, ContextRenderLock&, AudioSourceProvider*, AudioBus* destination, size_t framesToProcess);
 
 private:
     // FIXME: the mac port can have a more highly optimized implementation based on CoreAudio

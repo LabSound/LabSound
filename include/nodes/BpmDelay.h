@@ -13,8 +13,8 @@ namespace LabSound {
 
 	public:
 
-        BpmDelay(std::shared_ptr<AudioContext>, float sampleRate);
-		~BpmDelay();
+        BpmDelay(float sampleRate);
+		virtual ~BpmDelay();
 
 		// In Seconds 
 		std::shared_ptr<AudioParam> delayTime() const; 

@@ -31,30 +31,22 @@
 #ifndef AudioDSPKernel_h
 #define AudioDSPKernel_h
 
-#include "AudioDSPKernelProcessor.h"
+#include "AudioContextLock.h"
 
 namespace WebCore {
 
+    class AudioDSPKernelProcessor;
+    
 // AudioDSPKernel does the processing for one channel of an AudioDSPKernelProcessor.
 
 class AudioDSPKernel {
 public:
-    AudioDSPKernel(AudioDSPKernelProcessor* kernelProcessor)
-        : m_kernelProcessor(kernelProcessor)
-        , m_sampleRate(kernelProcessor->sampleRate())
-    {
-    }
-
-    AudioDSPKernel(float sampleRate)
-        : m_kernelProcessor(0)
-        , m_sampleRate(sampleRate)
-    {
-    }
-
-    virtual ~AudioDSPKernel() { };
+    AudioDSPKernel(AudioDSPKernelProcessor* kernelProcessor);
+    AudioDSPKernel(float sampleRate);
+    virtual ~AudioDSPKernel() {}
 
     // Subclasses must override process() to do the processing and reset() to reset DSP state.
-    virtual void process(const float* source, float* destination, size_t framesToProcess) = 0;
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) = 0;
     virtual void reset() = 0;
 
     float sampleRate() const { return m_sampleRate; }

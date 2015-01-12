@@ -4,6 +4,7 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
 // Demonstrate equal power panning between a rhythm and a tone
 int main(int, char**)
@@ -11,40 +12,49 @@ int main(int, char**)
     ExceptionCode ec;
     
     auto context = LabSound::init();
+    float sampleRate = context->sampleRate();
     
-    auto oscillator = OscillatorNode::create(context, context->sampleRate());
+    std::shared_ptr<OscillatorNode> oscillator;
+    std::shared_ptr<GainNode> oscGain;
+    std::shared_ptr<GainNode> drumGain;
     
-    SoundBuffer kick(context, "kick.wav");
-    SoundBuffer hihat(context, "hihat.wav");
-    SoundBuffer snare(context, "snare.wav");
-    
-    auto oscGain = GainNode::create(context, context->sampleRate());
-    oscillator->connect(oscGain.get(), 0, 0, ec);
-    oscGain->connect(context->destination().get(), 0, 0, ec);
-    oscGain->gain()->setValue(1.0f);
-    oscillator->start(0);
-    
-    auto drumGain = GainNode::create(context, context->sampleRate());
-    drumGain->connect(context->destination().get(), 0, 0, ec);
-    drumGain->gain()->setValue(1.0f);
-    
-    float startTime = 0;
-    float eighthNoteTime = 1.0f/4.0f;
-    for (int bar = 0; bar < 10; bar++)
+    SoundBuffer kick("kick.wav", sampleRate);
+    SoundBuffer hihat("hihat.wav", sampleRate);
+    SoundBuffer snare("snare.wav", sampleRate);
+
+    vector<shared_ptr<AudioNode>> notes;
     {
-        float time = startTime + bar * 8 * eighthNoteTime;
-        // Play the bass (kick) drum on beats 1, 5
-        kick.play(drumGain.get(), time);
-        kick.play(drumGain.get(), time + 4 * eighthNoteTime);
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        oscillator = make_shared<OscillatorNode>(r, sampleRate);
+        oscGain = make_shared<GainNode>(sampleRate);
+        oscillator->connect(g, r, oscGain.get(), 0, 0, ec);
+        oscGain->connect(g,r , context->destination().get(), 0, 0, ec);
+        oscGain->gain()->setValue(1.0f);
+        oscillator->start(r, 0);
         
-        // Play the snare drum on beats 3, 7
-        snare.play(drumGain.get(), time + 2 * eighthNoteTime);
-        snare.play(drumGain.get(), time + 6 * eighthNoteTime);
+        drumGain = make_shared<GainNode>(sampleRate);
+        drumGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        drumGain->gain()->setValue(1.0f);
         
-        // Play the hi-hat every eighth note.
-        for (int i = 0; i < 8; ++i)
+        float startTime = 0;
+        float eighthNoteTime = 1.0f/4.0f;
+        for (int bar = 0; bar < 10; bar++)
         {
-            hihat.play(drumGain.get(), time + i * eighthNoteTime);
+            float time = startTime + bar * 8 * eighthNoteTime;
+            // Play the bass (kick) drum on beats 1, 5
+            notes.emplace_back(kick.play(g, r, drumGain, time));
+            notes.emplace_back(kick.play(g, r, drumGain, time + 4 * eighthNoteTime));
+            
+            // Play the snare drum on beats 3, 7
+            notes.emplace_back(snare.play(g, r, drumGain, time + 2 * eighthNoteTime));
+            notes.emplace_back(snare.play(g, r, drumGain, time + 6 * eighthNoteTime));
+            
+            // Play the hi-hat every eighth note.
+            for (int i = 0; i < 8; ++i)
+            {
+                notes.emplace_back(hihat.play(g, r, drumGain, time + i * eighthNoteTime));
+            }
         }
     }
     

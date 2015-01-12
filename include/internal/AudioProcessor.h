@@ -31,8 +31,15 @@
 #ifndef AudioProcessor_h
 #define AudioProcessor_h
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
 namespace WebCore {
 
+    using namespace LabSound;
+    
 class AudioBus;
 
 // AudioProcessor is an abstract base class representing an audio signal processing object with a single input and a single output,
@@ -54,7 +61,7 @@ public:
     virtual void uninitialize() = 0;
 
     // Processes the source to destination bus.  The number of channels must match in source and destination.
-    virtual void process(const AudioBus* source, AudioBus* destination, size_t framesToProcess) = 0;
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) = 0;
 
     // Resets filter state
     virtual void reset() = 0;

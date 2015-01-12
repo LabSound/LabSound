@@ -37,8 +37,8 @@ using namespace std;
 
 namespace WebCore {
 
-ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfInputs)
-    : AudioNode(context, sampleRate)
+ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
+    : AudioNode(sampleRate)
 {
     if (numberOfInputs > AudioContext::maxNumberOfChannels())
         numberOfInputs = AudioContext::maxNumberOfChannels();
@@ -54,7 +54,7 @@ ChannelMergerNode::ChannelMergerNode(std::shared_ptr<AudioContext> context, floa
     initialize();
 }
 
-void ChannelMergerNode::process(size_t framesToProcess)
+void ChannelMergerNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
 {
     auto output = this->output(0);
     ASSERT(output);
@@ -81,17 +81,14 @@ void ChannelMergerNode::process(size_t framesToProcess)
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
-void ChannelMergerNode::reset()
+void ChannelMergerNode::reset(ContextRenderLock& r)
 {
 }
 
 // Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
 // number of channels of our output.
-void ChannelMergerNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
+void ChannelMergerNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
 {
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
     // Count how many channels we have all together from all of the inputs.
     unsigned numberOfOutputChannels = 0;
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
@@ -103,9 +100,9 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
     // Set the correct number of channels on the output
     auto output = this->output(0);
     ASSERT(output);
-    output->setNumberOfChannels(numberOfOutputChannels);
+    output->setNumberOfChannels(r, numberOfOutputChannels);
 
-    AudioNode::checkNumberOfChannelsForInput(input);
+    AudioNode::checkNumberOfChannelsForInput(g, r, input);
 }
 
 } // namespace WebCore

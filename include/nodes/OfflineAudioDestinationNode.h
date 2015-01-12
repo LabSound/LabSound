@@ -37,7 +37,7 @@ class AudioContext;
     
 class OfflineAudioDestinationNode : public AudioDestinationNode {
 public:
-    OfflineAudioDestinationNode(std::shared_ptr<AudioContext>, AudioBuffer* renderTarget);
+    OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget);
     virtual ~OfflineAudioDestinationNode();
     
     // AudioNode   

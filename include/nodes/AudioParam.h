@@ -33,7 +33,7 @@
 #include "AudioParamTimeline.h"
 #include "AudioSummingJunction.h"
 #include <sys/types.h>
-#include <string.h>
+#include <string>
 
 namespace WebCore {
 
@@ -44,8 +44,8 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(std::shared_ptr<AudioContext> context, const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
-    : AudioSummingJunction(context)
+    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
+    : AudioSummingJunction()
     , m_name(name)
     , m_value(defaultValue)
     , m_defaultValue(defaultValue)
@@ -54,20 +54,21 @@ public:
     , m_units(units)
     , m_smoothedValue(defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
-    {
-    }
+    {}
+    
+    virtual ~AudioParam() {}
     
     // AudioSummingJunction
-    virtual bool canUpdateState() OVERRIDE { return true; }
-    virtual void didUpdate() OVERRIDE { }
+    virtual bool canUpdateState() override { return true; }
+    virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) override { }
 
     // Intrinsic value.
-    float value();
+    float value(ContextRenderLock& r);
     void setValue(float);
 
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
     // Must be called in the audio thread.
-    float finalValue();
+    float finalValue(ContextGraphLock& g, ContextRenderLock&);
 
     std::string name() const { return m_name; }
 
@@ -84,7 +85,7 @@ public:
 
     // Smoothly exponentially approaches to (de-zippers) the desired value.
     // Returns true if smoothed value has already snapped exactly to value.
-    bool smooth();
+    bool smooth(ContextRenderLock&);
 
     void resetSmoothedValue() { m_smoothedValue = m_value; }
     void setSmoothingConstant(double k) { m_smoothingConstant = k; }
@@ -101,16 +102,16 @@ public:
     
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
-    void calculateSampleAccurateValues(float* values, unsigned numberOfValues);
+    void calculateSampleAccurateValues(ContextGraphLock& g, ContextRenderLock&, float* values, unsigned numberOfValues);
 
     // Connect an audio-rate signal to control this parameter.
-    static void connect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
-    static void disconnect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
-    void calculateFinalValues(float* values, unsigned numberOfValues, bool sampleAccurate);
-    void calculateTimelineValues(float* values, unsigned numberOfValues);
+    void calculateFinalValues(ContextGraphLock& g, ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate);
+    void calculateTimelineValues(ContextRenderLock& r, float* values, unsigned numberOfValues);
 
     std::string m_name;
     double m_value;

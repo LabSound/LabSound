@@ -28,7 +28,7 @@ namespace LabSound {
 
 	public:
 
-		STKNode(std::shared_ptr<AudioContext>context, float sampleRate) : AudioScheduledSourceNode(context, sampleRate)  {
+		STKNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)  {
 
             static std::once_flag init;
             std::call_once(init, [sampleRate](){
@@ -53,7 +53,7 @@ namespace LabSound {
 
 		~STKNode() { }
 
-		void process(size_t framesToProcess) override {
+		void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override {
 
 			// First output bus 
 			AudioBus* outputBus = output(0)->bus();
@@ -91,12 +91,12 @@ namespace LabSound {
 	private:
 
 		// Satisfy the AudioNode interface
-		virtual void reset() { /*m_currentSampleFrame = 0;*/ }
+		virtual void reset(ContextRenderLock& r) override { /*m_currentSampleFrame = 0;*/ }
 
 		// virtual double tailTime() const OVERRIDE { return 0; }
 		// virtual double latencyTime() const OVERRIDE { return 0; }
 
-		virtual bool propagatesSilence() const OVERRIDE{
+		virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE{
 			return false;
 		}
 

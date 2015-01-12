@@ -43,17 +43,14 @@ public:
 
     virtual AudioDSPKernel* createKernel();
 
-    virtual void process(const AudioBus* source, AudioBus* destination, size_t framesToProcess);
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
 
-    void setCurve(std::shared_ptr<std::vector<float>>);
+    void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve() { return m_curve; }
 
 private:
     // m_curve represents the non-linear shaping curve.
     std::shared_ptr<std::vector<float>> m_curve;
-
-    // This synchronizes process() with setCurve().
-    mutable WTF::Mutex m_processLock;
 };
 
 } // namespace WebCore

@@ -26,6 +26,7 @@
 #include "AudioSummingJunction.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
 #include <algorithm>
 
@@ -33,39 +34,27 @@ using namespace std;
 
 namespace WebCore {
 
-AudioSummingJunction::AudioSummingJunction(std::shared_ptr<AudioContext> context)
-    : m_context(context)
-    , m_renderingStateNeedUpdating(false)
+AudioSummingJunction::AudioSummingJunction()
+: m_renderingStateNeedUpdating(false)
 {
 }
 
 AudioSummingJunction::~AudioSummingJunction()
 {
-    if (m_renderingStateNeedUpdating && !m_context.expired()) {
-        shared_ptr<AudioContext> ac = m_context.lock();
-        if (ac) {
-            ac->removeMarkedSummingJunction(this);
-        }
-    }
 }
 
-void AudioSummingJunction::changedOutputs(std::shared_ptr<AudioSummingJunction> self)
+void AudioSummingJunction::changedOutputs(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> self)
 {
-    ASSERT(!self->m_context.expired());
-    shared_ptr<AudioContext> ac = self->m_context.lock();
-    ASSERT(ac->isGraphOwner());
+    ASSERT(g.context());
     if (!self->m_renderingStateNeedUpdating && self->canUpdateState()) {
-        ac->markSummingJunctionDirty(self);
+        g.context()->markSummingJunctionDirty(g, self);
         self->m_renderingStateNeedUpdating = true;
     }
 }
 
-void AudioSummingJunction::updateRenderingState()
+void AudioSummingJunction::updateRenderingState(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(!m_context.expired());
-    shared_ptr<AudioContext> ac = m_context.lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
+    ASSERT(r.context());
     if (m_renderingStateNeedUpdating && canUpdateState()) {
         // Copy from m_outputs to m_renderingOutputs.
         m_renderingOutputs.resize(m_outputs.size());
@@ -73,10 +62,10 @@ void AudioSummingJunction::updateRenderingState()
         for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i, ++j) {
             AudioNodeOutput* output = (*i).get(); // safe because m_renderingOutputs is only used during a single rendering quantum when the lock is held
             m_renderingOutputs[j] = output;
-            output->updateRenderingState();
+            output->updateRenderingState(g, r);
         }
 
-        didUpdate();
+        didUpdate(g, r);
 
         m_renderingStateNeedUpdating = false;
     }

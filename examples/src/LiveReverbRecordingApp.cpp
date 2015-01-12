@@ -5,6 +5,7 @@
 #include <iostream>
 
 using namespace LabSound;
+using namespace std;
 
  // Play live audio through a reverb convolution
 int main(int, char**)
@@ -13,33 +14,36 @@ int main(int, char**)
     
     auto context = LabSound::init();
     
-    SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
+    SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
+
+    shared_ptr<MediaStreamAudioSourceNode> input;
+    shared_ptr<ConvolverNode> convolve;
+    shared_ptr<GainNode> wetGain;
+    shared_ptr<GainNode> dryGain;
+    shared_ptr<RecorderNode> recorder;
     
-    auto input = context->createMediaStreamSource(context, ec);
-    auto convolve = ConvolverNode::create(context, context->sampleRate());
-    convolve->setBuffer(ir.audioBuffer.get());
-    
-    auto wetGain = GainNode::create(context, context->sampleRate());
-    wetGain->gain()->setValue(2.f);
-    auto dryGain = GainNode::create(context, context->sampleRate());
-    dryGain->gain()->setValue(1.f);
-    
-    input->connect(convolve.get(), 0, 0, ec);
-    convolve->connect(wetGain.get(), 0, 0, ec);
-    wetGain->connect(context->destination().get(), 0, 0, ec);
-    dryGain->connect(context->destination().get(), 0, 0, ec);
-    
-    auto recorder = RecorderNode::create(context, context->sampleRate());
-    recorder->startRecording();
-    dryGain->connect(recorder.get(), 0, 0, ec);
-    wetGain->connect(recorder.get(), 0, 0, ec);
-    
-    const int seconds = 10;
-    for (int t = 0; t < seconds; ++t)
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        input = context->createMediaStreamSource(g, r, ec);
+        convolve = make_shared<ConvolverNode>(context->sampleRate());
+        convolve->setBuffer(g, r, ir.audioBuffer);
+        wetGain = make_shared<GainNode>(context->sampleRate());
+        wetGain->gain()->setValue(2.f);
+        dryGain = make_shared<GainNode>(context->sampleRate());
+        dryGain->gain()->setValue(1.f);
+        input->connect(g, r, convolve.get(), 0, 0, ec);
+        convolve->connect(g, r, wetGain.get(), 0, 0, ec);
+        wetGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        dryGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        recorder = make_shared<RecorderNode>(context->sampleRate());
+        recorder->startRecording();
+        dryGain->connect(g, r, recorder.get(), 0, 0, ec);
+        wetGain->connect(g, r, recorder.get(), 0, 0, ec);
     }
+    
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     
     std::cout << "Done" << std::endl;
     

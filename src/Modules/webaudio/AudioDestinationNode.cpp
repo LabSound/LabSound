@@ -26,6 +26,7 @@
 #include "AudioDestinationNode.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
@@ -33,9 +34,10 @@
 
 namespace WebCore {
     
-AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate)
+    : AudioNode(sampleRate)
     , m_currentSampleFrame(0)
+    , m_context(c)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     setNodeType(NodeTypeDestination);
@@ -49,7 +51,7 @@ AudioDestinationNode::~AudioDestinationNode()
 void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
-    if (context().expired())
+    if (!m_context)
         return;
     
     // We don't want denormals slowing down any of the audio processing
@@ -57,25 +59,32 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     // This will take care of all AudioNodes because they all process within this scope.
     DenormalDisabler denormalDisabler;
     
-    std::shared_ptr<AudioContext> ac = context().lock();
-
-    ac->setAudioThread(currentThread());
+    ContextRenderLock renderLock(m_context);
+    if (!renderLock.context())
+        return;                     // return if couldn't acquire lock
     
-    if (!ac->isRunnable()) {
+    if (!m_context->isRunnable()) {
+        destinationBus->zero();
+        return;
+    }
+
+    ContextGraphLock graphLock(m_context);
+    
+    if (!graphLock.context()) {
         destinationBus->zero();
         return;
     }
 
     // Let the context take care of any business at the start of each render quantum.
-    ac->handlePreRenderTasks();
+    m_context->handlePreRenderTasks(graphLock, renderLock);
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
         m_localAudioInputProvider.set(sourceBus);
 
-    // This will cause the node(s) connected to us to process, which in turn will pull on their input(s),
+    // This will cause the node(s) connected to this destination node to process, which in turn will pull on their input(s),
     // all the way backwards through the rendering graph.
-    AudioBus* renderedBus = input(0)->pull(destinationBus, numberOfFrames);
+    AudioBus* renderedBus = input(0)->pull(graphLock, renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
         destinationBus->zero();
@@ -85,10 +94,10 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     }
 
     // Process nodes which need a little extra help because they are not connected to anything, but still need to process.
-    ac->processAutomaticPullNodes(numberOfFrames);
+    m_context->processAutomaticPullNodes(graphLock, renderLock, numberOfFrames);
 
     // Let the context take care of any business at the end of each render quantum.
-    ac->handlePostRenderTasks();
+    m_context->handlePostRenderTasks(graphLock, renderLock);
     
     // Advance current sample-frame.
     m_currentSampleFrame += numberOfFrames;

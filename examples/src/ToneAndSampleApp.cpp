@@ -10,17 +10,21 @@ using namespace std;
 int main(int, char**)
 {
     ExceptionCode ec;
-    
     auto context = LabSound::init();
-
-    auto oscillator = make_shared<OscillatorNode>(context, context->sampleRate());
-    oscillator->connect(context->destination().get(), 0, 0, ec);
-    oscillator->start(0);   // play now
-    oscillator->frequency()->setValue(440.f);
-    oscillator->setType(1, ec);
+    std::shared_ptr<OscillatorNode> oscillator;
+    SoundBuffer tonbi("tonbi.wav", context->sampleRate());
+    std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+    {
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        oscillator = make_shared<OscillatorNode>(r, context->sampleRate());
+        oscillator->connect(g, r, context->destination().get(), 0, 0, ec);
+        oscillator->start(r, 0);   // play now
+        oscillator->frequency()->setValue(440.f);
+        oscillator->setType(r, 1, ec);
+        tonbiSound = tonbi.play(g, r, 0.0f);
+    }
     
-    SoundBuffer tonbi(context, "tonbi.wav");
-    tonbi.play(0.0f);
 
     const int seconds = 10;
     for (int t = 0; t < seconds; ++t)
@@ -29,6 +33,5 @@ int main(int, char**)
     }
     
     LabSound::finish(context);
-    
     return 0;
 }

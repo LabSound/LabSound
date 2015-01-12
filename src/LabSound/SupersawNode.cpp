@@ -23,56 +23,53 @@ namespace LabSound {
     public:
         std::shared_ptr<ADSRNode> gainNode;
 
-        Data(SupersawNode* self, std::shared_ptr<AudioContext> context, float sampleRate)
-        : gainNode(std::make_shared<ADSRNode>(context, sampleRate))
-        , sawCount(std::make_shared<AudioParam>(context, "detune", 1.0, 100.0f, 3.0f))
-        , detune(std::make_shared<AudioParam>(context, "detune", 1.0, 0, 120))
-        , frequency(std::make_shared<AudioParam>(context, "frequency", 440.0, 1.0f, sampleRate * 0.5f))
+        Data(SupersawNode* self, float sampleRate)
+        : gainNode(std::make_shared<ADSRNode>(sampleRate))
+        , sawCount(std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f))
+        , detune(std::make_shared<AudioParam>("detune", 1.0, 0, 120))
+        , frequency(std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f))
         , self(self)
-        , context(context)
         , sampleRate(sampleRate)
         , cachedDetune(FLT_MAX)
         , cachedFrequency(FLT_MAX)
         {
         }
 
-        void update(bool okayToReallocate) {
+        void update(ContextGraphLock& g, ContextRenderLock& r, bool okayToReallocate) {
             int currentN = saws.size();
-            int n = int(sawCount->value() + 0.5f);
+            int n = int(sawCount->value(r) + 0.5f);
             if (okayToReallocate && (n != currentN)) {
-                WebCore::ExceptionCode ec;
+                ExceptionCode ec;
 
                 for (auto i : sawStorage) {
-                    LabSound::disconnect(i.get());
+                    LabSound::disconnect(g, r, i.get());
                 }
                 sawStorage.clear();
                 saws.clear();
-                ASSERT(!context.expired());
-                auto ac = context.lock();
                 for (int i = 0; i < n; ++i)
-                    sawStorage.emplace_back(std::make_shared<OscillatorNode>(ac, sampleRate));
+                    sawStorage.emplace_back(std::make_shared<OscillatorNode>(r, sampleRate));
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
                 for (auto i : saws) {
-                    i->setType(OscillatorNode::SAWTOOTH, ec);
-                    LabSound::connect(i, gainNode.get());
-                    i->start(0);
+                    i->setType(r, OscillatorNode::SAWTOOTH, ec);
+                    LabSound::connect(g, r, i, gainNode.get());
+                    i->start(r, 0);
                 }
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
             }
 
-            if (cachedFrequency != frequency->value()) {
-                cachedFrequency = frequency->value();
+            if (cachedFrequency != frequency->value(r)) {
+                cachedFrequency = frequency->value(r);
                 for (auto i : saws) {
                     i->frequency()->setValue(cachedFrequency);
                     i->frequency()->resetSmoothedValue();
                 }
             }
 
-            if (cachedDetune != detune->value()) {
-                cachedDetune = detune->value();
+            if (cachedDetune != detune->value(r)) {
+                cachedDetune = detune->value(r);
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
                 for (size_t i = 0; i < saws.size(); ++i) {
                     saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
@@ -81,7 +78,6 @@ namespace LabSound {
         }
 
         SupersawNode* self;
-        std::weak_ptr<AudioContext> context;
         std::shared_ptr<AudioParam> detune;
         std::shared_ptr<AudioParam> frequency;
         std::shared_ptr<AudioParam> sawCount;
@@ -93,9 +89,9 @@ namespace LabSound {
         float cachedFrequency;
     };
 
-    SupersawNode::SupersawNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
-    , _data(new Data(this, context, sampleRate))
+    SupersawNode::SupersawNode(ContextGraphLock& g, ContextRenderLock& r,float sampleRate)
+    : AudioNode(sampleRate)
+    , _data(new Data(this, sampleRate))
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -103,11 +99,11 @@ namespace LabSound {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
 
         initialize();
-        LabSound::connect(_data->gainNode.get(), this);
+        LabSound::connect(g, r, _data->gainNode.get(), this);
     }
 
-    void SupersawNode::process(size_t framesToProcess) {
-        _data->update(false);
+    void SupersawNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) {
+        _data->update(g, r, false);
         AudioBus* outputBus = output(0)->bus();
 
         if (!isInitialized() || !outputBus->numberOfChannels()) {
@@ -120,8 +116,8 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SupersawNode::update() {
-        _data->update(true);
+    void SupersawNode::update(ContextGraphLock& g, ContextRenderLock& r) {
+        _data->update(g, r, true);
     }
 
     std::shared_ptr<AudioParam> SupersawNode::attack()    const { return _data->gainNode->attackTime(); }
@@ -132,14 +128,16 @@ namespace LabSound {
     std::shared_ptr<AudioParam> SupersawNode::frequency() const { return _data->frequency; }
     std::shared_ptr<AudioParam> SupersawNode::sawCount()  const { return _data->sawCount; }
 
-    void SupersawNode::noteOn()  {
-        _data->gainNode->noteOn();
+    void SupersawNode::noteOn(ContextRenderLock& r)  {
+        _data->gainNode->noteOn(r);
     }
-    void SupersawNode::noteOff() { _data->gainNode->noteOff(); }
+    void SupersawNode::noteOff(ContextRenderLock& r) {
+        _data->gainNode->noteOff(r);
+    }
 
-    bool SupersawNode::propagatesSilence() const
+    bool SupersawNode::propagatesSilence(ContextRenderLock& r) const
     {
-        return _data->gainNode->propagatesSilence();
+        return _data->gainNode->propagatesSilence(r);
     }
 
 } // namespace LabSound

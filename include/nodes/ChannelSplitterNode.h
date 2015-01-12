@@ -33,11 +33,12 @@ class AudioContext;
     
 class ChannelSplitterNode : public AudioNode {
 public:
-    ChannelSplitterNode(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfOutputs);
+    ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs);
+    virtual ~ChannelSplitterNode() {}
     
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
 
 private:
     virtual double tailTime() const OVERRIDE { return 0; }

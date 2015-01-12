@@ -26,6 +26,7 @@
 #include "OscillatorNode.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
 #include "VectorMath.h"
@@ -44,8 +45,8 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSquare = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSawtooth = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
-OscillatorNode::OscillatorNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioScheduledSourceNode(context, sampleRate)
+OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
+    : AudioScheduledSourceNode(sampleRate)
     , m_type(SINE)
     , m_firstRender(true)
     , m_virtualReadIndex(0)
@@ -55,13 +56,13 @@ OscillatorNode::OscillatorNode(std::shared_ptr<AudioContext> context, float samp
     setNodeType(NodeTypeOscillator);
 
     // Use musical pitch standard A440 as a default.
-    m_frequency = std::make_shared<AudioParam>(context, "frequency", 440, 0, 100000);
+    m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
     // Default to no detuning.
-    m_detune = std::make_shared<AudioParam>(context, "detune", 0, -4800, 4800);
+    m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
 
     // Sets up default wavetable.
     ExceptionCode ec;
-    setType(m_type, ec);
+    setType(r, m_type, ec);
 
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -74,7 +75,7 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-void OscillatorNode::setType(unsigned short type, ExceptionCode& ec)
+void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, ExceptionCode& ec)
 {
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
@@ -108,11 +109,11 @@ void OscillatorNode::setType(unsigned short type, ExceptionCode& ec)
         return;
     }
 
-    setWaveTable(waveTable);
+    setWaveTable(r, waveTable);
     m_type = type;
 }
 
-bool OscillatorNode::calculateSampleAccuratePhaseIncrements(size_t framesToProcess)
+bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
     ASSERT(isGood);
@@ -137,10 +138,10 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(size_t framesToProce
 
         // Get the sample-accurate frequency values and convert to phase increments.
         // They will be converted to phase increments below.
-        m_frequency->calculateSampleAccurateValues(phaseIncrements, framesToProcess);
+        m_frequency->calculateSampleAccurateValues(g, r, phaseIncrements, framesToProcess);
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_frequency->smooth();
+        m_frequency->smooth(r);
         float frequency = m_frequency->smoothedValue();
         finalScale *= frequency;
     }
@@ -150,7 +151,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(size_t framesToProce
 
         // Get the sample-accurate detune values.
         float* detuneValues = hasFrequencyChanges ? m_detuneValues.data() : phaseIncrements;
-        m_detune->calculateSampleAccurateValues(detuneValues, framesToProcess);
+        m_detune->calculateSampleAccurateValues(g, r, detuneValues, framesToProcess);
 
         // Convert from cents to rate scalar.
         float k = 1.f / 1200.0;
@@ -164,7 +165,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(size_t framesToProce
         }
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_detune->smooth();
+        m_detune->smooth(r);
         float detune = m_detune->smoothedValue();
         float detuneScale = powf(2, detune / 1200);
         finalScale *= detuneScale;
@@ -178,7 +179,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(size_t framesToProce
     return hasSampleAccurateValues;
 }
 
-void OscillatorNode::process(size_t framesToProcess)
+void OscillatorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
 
@@ -192,8 +193,7 @@ void OscillatorNode::process(size_t framesToProcess)
         return;
 
     // The audio thread can't block on this lock, so we call tryLock() instead.
-    MutexTryLocker tryLocker(m_processLock);
-    if (!tryLocker.locked()) {
+    if (!r.context()) {
         // Too bad - the tryLock() failed. We must be in the middle of changing wave-tables.
         outputBus->zero();
         return;
@@ -208,7 +208,7 @@ void OscillatorNode::process(size_t framesToProcess)
     size_t quantumFrameOffset;
     size_t nonSilentFramesToProcess;
 
-    updateSchedulingInfo(framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess) {
         outputBus->zero();
@@ -227,7 +227,7 @@ void OscillatorNode::process(size_t framesToProcess)
 
     float rateScale = m_waveTable->rateScale();
     float invRateScale = 1 / rateScale;
-    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(framesToProcess);
+    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(g, r, framesToProcess);
 
     float frequency = 0;
     float* higherWaveData = 0;
@@ -291,23 +291,18 @@ void OscillatorNode::process(size_t framesToProcess)
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::reset()
+void OscillatorNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
 }
 
-void OscillatorNode::setWaveTable(std::shared_ptr<WaveTable> waveTable)
+void OscillatorNode::setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable> waveTable)
 {
-    ASSERT(isMainThread());
-
-    // This synchronizes with process().
-    MutexLocker processLocker(m_processLock);
     m_waveTable = waveTable;
     m_type = CUSTOM;
-
 }
 
-bool OscillatorNode::propagatesSilence() const
+bool OscillatorNode::propagatesSilence(ContextRenderLock& r) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_waveTable.get();
 }

@@ -7,6 +7,7 @@
 #include "AudioScheduledSourceNode.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
+#include "ExceptionCodes.h"
 
 namespace LabSound {
 
@@ -20,19 +21,19 @@ namespace LabSound {
             BROWN = 2
         };
 
-        NoiseNode(std::shared_ptr<AudioContext>, float sampleRate);
+        NoiseNode(float sampleRate);
         virtual ~NoiseNode();
 
         // AudioNode
-        virtual void process(size_t framesToProcess) override;
-        virtual void reset();
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock& r) override;
 
         unsigned short type() const { return m_type; }
-        void setType(unsigned short, WebCore::ExceptionCode&);
+        void setType(unsigned short, ExceptionCode&);
 
     private:
 
-        virtual bool propagatesSilence() const OVERRIDE;
+        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
 
         // One of the noise types defined in the enum.
         unsigned short m_type;

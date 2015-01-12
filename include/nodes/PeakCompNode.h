@@ -53,7 +53,7 @@ namespace LabSound {
     class PeakCompNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        PeakCompNode(std::shared_ptr<AudioContext>, float sampleRate);
+        PeakCompNode(float sampleRate);
         virtual ~PeakCompNode();
 
 		void set(float aT, float aL, float d, float s, float r);

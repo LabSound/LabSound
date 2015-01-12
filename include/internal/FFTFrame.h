@@ -29,6 +29,9 @@
 #ifndef FFTFrame_h
 #define FFTFrame_h
 
+#include "LabSoundConfig.h"
+
+
 #include "AudioArray.h"
 #include <vector>
 
@@ -47,7 +50,6 @@
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-#include "WTF/Platform.h"
 #include "WTF/Threading.h"
 
 namespace WebCore {

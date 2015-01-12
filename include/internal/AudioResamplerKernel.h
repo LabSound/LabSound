@@ -27,8 +27,15 @@
 
 #include "AudioArray.h"
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
 namespace WebCore {
 
+    using namespace LabSound;
+    
 class AudioResampler;
 
 // AudioResamplerKernel does resampling on a single mono channel.
@@ -47,7 +54,7 @@ public:
     // process() resamples framesToProcess frames from the source into destination.
     // Each call to process() must be preceded by a call to getSourcePointer() so that source input may be supplied.
     // framesToProcess must be less than or equal to MaxFramesToProcess.
-    void process(float* destination, size_t framesToProcess);
+    void process(ContextGraphLock& g, ContextRenderLock&, float* destination, size_t framesToProcess);
 
     // Resets the processing state.
     void reset();

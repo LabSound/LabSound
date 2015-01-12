@@ -27,13 +27,14 @@
 #include "AudioBasicInspectorNode.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 
 namespace WebCore {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate)
+    : AudioNode(sampleRate)
     , m_needAutomaticPull(false)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -43,44 +44,39 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(std::shared_ptr<AudioContext> c
 // We override pullInputs() as an optimization allowing this node to take advantage of in-place processing,
 // where the input is simply passed through unprocessed to the output.
 // Note: this only applies if the input and output channel counts match.
-void AudioBasicInspectorNode::pullInputs(size_t framesToProcess)
+void AudioBasicInspectorNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     // Render input stream - try to render directly into output bus for pass-through processing where process() doesn't need to do anything...
-    input(0)->pull(output(0)->bus(), framesToProcess);
+    input(0)->pull(g, r, output(0)->bus(), framesToProcess);
 }
 
-void AudioBasicInspectorNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
+void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
 {
     if (input != this->input(0).get())
         return;
     
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
     unsigned numberOfChannels = input->numberOfChannels();
 
     if (numberOfChannels != output(0)->numberOfChannels()) {
         // This will propagate the channel count to any nodes connected further downstream in the graph.
-        output(0)->setNumberOfChannels(numberOfChannels);
+        output(0)->setNumberOfChannels(r, numberOfChannels);
     }
 
-    AudioNode::checkNumberOfChannelsForInput(input);
+    AudioNode::checkNumberOfChannelsForInput(g, r, input);
 
-    updatePullStatus();
+    updatePullStatus(g, r);
 }
 
-void AudioBasicInspectorNode::updatePullStatus()
+void AudioBasicInspectorNode::updatePullStatus(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isGraphOwner());
+    ASSERT(r.context());
+    auto ac = r.context();
 
     if (output(0)->isConnected()) {
         // When an AudioBasicInspectorNode is connected to a downstream node, it will get pulled by the
         // downstream node, thus remove it from the context's automatic pull list.
         if (m_needAutomaticPull) {
-            ac->removeAutomaticPullNode(this);
+            ac->removeAutomaticPullNode(g, r, this);
             m_needAutomaticPull = false;
         }
     } else {
@@ -88,11 +84,11 @@ void AudioBasicInspectorNode::updatePullStatus()
         if (numberOfInputConnections && !m_needAutomaticPull) {
             // When an AudioBasicInspectorNode is not connected to any downstream node while still connected from
             // upstream node(s), add it to the context's automatic pull list.
-            ac->addAutomaticPullNode(this);
+            ac->addAutomaticPullNode(g, r, this);
             m_needAutomaticPull = true;
         } else if (!numberOfInputConnections && m_needAutomaticPull) {
             // The AudioBasicInspectorNode is connected to nothing, remove it from the context's automatic pull list.
-            ac->removeAutomaticPullNode(this);
+            ac->removeAutomaticPullNode(g, r, this);
             m_needAutomaticPull = false;
         }
     }

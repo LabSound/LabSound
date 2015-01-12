@@ -34,7 +34,7 @@ class AudioDSPKernel;
     
 class DelayProcessor : public AudioDSPKernelProcessor {
 public:
-    DelayProcessor(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfChannels, double maxDelayTime);
+    DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime);
     virtual ~DelayProcessor();
     
     virtual AudioDSPKernel* createKernel();

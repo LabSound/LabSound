@@ -4,6 +4,7 @@
 #include "LabSound.h"
 #include "PannerNode.h"
 #include "SpatializationNode.h"
+#include "AudioContextLock.h"
 #include <wtf/MathExtras.h>
 
 namespace LabSound {
@@ -60,8 +61,8 @@ namespace LabSound {
         return occlusionAttenuation;
     }
     
-    SpatializationNode::SpatializationNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
-    : WebCore::PannerNode(context, sampleRate) {
+    SpatializationNode::SpatializationNode(float sampleRate)
+    : WebCore::PannerNode(sampleRate) {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSpatialization);
     }
     
@@ -72,8 +73,11 @@ namespace LabSound {
         occluders = o;
     }
     
-    float SpatializationNode::distanceConeGain() {
-        float occlusionAttenuation = occluders ? occluders->occlusion(m_position, listener()->position()) : 1.0f;
-        return occlusionAttenuation * PannerNode::distanceConeGain();
+    float SpatializationNode::distanceConeGain(ContextRenderLock& r) {
+        if (!r.context())
+            return 1.f;
+        
+        float occlusionAttenuation = occluders ? occluders->occlusion(m_position, listener(r)->position()) : 1.0f;
+        return occlusionAttenuation * PannerNode::distanceConeGain(r);
     }
 }

@@ -35,12 +35,12 @@ class DynamicsCompressor;
 
 class DynamicsCompressorNode : public AudioNode {
 public:
-    DynamicsCompressorNode(std::shared_ptr<AudioContext>, float sampleRate);
+    DynamicsCompressorNode(float sampleRate);
     virtual ~DynamicsCompressorNode();
 
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
     virtual void initialize();
     virtual void uninitialize();
 

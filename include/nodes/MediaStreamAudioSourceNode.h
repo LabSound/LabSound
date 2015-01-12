@@ -39,28 +39,26 @@ class AudioContext;
 
 class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient {
 public:
-    MediaStreamAudioSourceNode(std::shared_ptr<AudioContext>, std::shared_ptr<MediaStream>, AudioSourceProvider*);
+    MediaStreamAudioSourceNode(std::shared_ptr<MediaStream>, AudioSourceProvider*, float sampleRate);
     virtual ~MediaStreamAudioSourceNode();
 
     MediaStream* mediaStream() { return m_mediaStream.get(); }
 
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
 
     // AudioSourceProviderClient
-    virtual void setFormat(size_t numberOfChannels, float sampleRate);
+    virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) override;
 
     AudioSourceProvider* audioSourceProvider() const { return m_audioSourceProvider; }
 
 private:
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence() const OVERRIDE { return false; }
+    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return false; }
 
     std::shared_ptr<MediaStream> m_mediaStream;
     AudioSourceProvider* m_audioSourceProvider;
-
-    Mutex m_processLock;
 
     unsigned m_sourceNumberOfChannels;
 };

@@ -33,8 +33,17 @@
 #include <vector>
 #include <memory>
 
+
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
+
 namespace WebCore {
 
+    using namespace LabSound;
+    
 class DynamicsCompressorKernel {
 public:
     DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels);
@@ -42,7 +51,8 @@ public:
     void setNumberOfChannels(unsigned);
 
     // Performs stereo-linked compression.
-    void process(float* sourceChannels[],
+    void process(ContextGraphLock& g, ContextRenderLock&,
+                 float* sourceChannels[],
                  float* destinationChannels[],
                  unsigned numberOfChannels,
                  unsigned framesToProcess,

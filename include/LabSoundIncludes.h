@@ -51,6 +51,7 @@
 #include "AudioListener.h"
 #include "AudioDestinationNode.h"
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioBufferCallback.h"
 #include "AudioBuffer.h"

@@ -26,17 +26,18 @@
 #include "GainNode.h"
 
 #include "AudioBus.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 
 namespace WebCore {
 
-GainNode::GainNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+GainNode::GainNode(float sampleRate)
+    : AudioNode(sampleRate)
     , m_lastGain(1.0)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
 {
-    m_gain = std::make_shared<AudioParam>(context, "gain", 1.0, 0.0, 1.0);
+    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -46,7 +47,7 @@ GainNode::GainNode(std::shared_ptr<AudioContext> context, float sampleRate)
     initialize();
 }
 
-void GainNode::process(size_t framesToProcess)
+void GainNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
@@ -65,20 +66,20 @@ void GainNode::process(size_t framesToProcess)
             ASSERT(framesToProcess <= m_sampleAccurateGainValues.size());
             if (framesToProcess <= m_sampleAccurateGainValues.size()) {
                 float* gainValues = m_sampleAccurateGainValues.data();
-                gain()->calculateSampleAccurateValues(gainValues, framesToProcess);
+                gain()->calculateSampleAccurateValues(g, r, gainValues, framesToProcess);
                 outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
             }
         } else {
             // Apply the gain with de-zippering into the output bus.
-            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value());
+            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r));
         }
     }
 }
 
-void GainNode::reset()
+void GainNode::reset(ContextRenderLock& r)
 {
     // Snap directly to desired gain.
-    m_lastGain = gain()->value();
+    m_lastGain = gain()->value(r);
 }
 
 // FIXME: this can go away when we do mixing with gain directly in summing junction of AudioNodeInput
@@ -86,14 +87,12 @@ void GainNode::reset()
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in which case we must safely
 // uninitialize and then re-initialize with the new channel count.
-void GainNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
+void GainNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
 {
     if (!input)
         return;
-    
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
+
+    ASSERT(r.context());
 
     if (input != this->input(0).get())
         return;
@@ -107,11 +106,11 @@ void GainNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
 
     if (!isInitialized()) {
         // This will propagate the channel count to any nodes connected further downstream in the graph.
-        output(0)->setNumberOfChannels(numberOfChannels);
+        output(0)->setNumberOfChannels(r, numberOfChannels);
         initialize();
     }
 
-    AudioNode::checkNumberOfChannelsForInput(input);
+    AudioNode::checkNumberOfChannelsForInput(g, r, input);
 }
 
 } // namespace WebCore

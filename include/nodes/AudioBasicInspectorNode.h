@@ -34,14 +34,15 @@ namespace WebCore {
 // AudioContext before the end of each render quantum so that it can inspect the audio stream.
 class AudioBasicInspectorNode : public AudioNode {
 public:
-    AudioBasicInspectorNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AudioBasicInspectorNode(float sampleRate);
+    virtual ~AudioBasicInspectorNode() {}
 
     // AudioNode
-    virtual void pullInputs(size_t framesToProcess);
-    virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
+    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void checkNumberOfChannelsForInput(ContextGraphLock&, ContextRenderLock&, AudioNodeInput*) override;
 
 private:
-    virtual void updatePullStatus() override;
+    virtual void updatePullStatus(ContextGraphLock& g, ContextRenderLock& r) override;
     bool m_needAutomaticPull; // When setting to true, AudioBasicInspectorNode will be pulled automaticlly by AudioContext before the end of each render quantum.
 };
 

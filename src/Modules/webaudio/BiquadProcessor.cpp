@@ -29,7 +29,7 @@
 
 namespace WebCore {
     
-BiquadProcessor::BiquadProcessor(std::shared_ptr<AudioContext> context, float sampleRate, size_t numberOfChannels, bool autoInitialize)
+BiquadProcessor::BiquadProcessor(float sampleRate, size_t numberOfChannels, bool autoInitialize)
     : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
     , m_type(LowPass)
     , m_filterCoefficientsDirty(true)
@@ -38,10 +38,10 @@ BiquadProcessor::BiquadProcessor(std::shared_ptr<AudioContext> context, float sa
     double nyquist = 0.5 * this->sampleRate();
 
     // Create parameters for BiquadFilterNode.
-    m_parameter1 = std::make_shared<AudioParam>(context, "frequency", 350.0, 10.0, nyquist);
-    m_parameter2 = std::make_shared<AudioParam>(context, "Q", 1, 0.0001, 1000.0);
-    m_parameter3 = std::make_shared<AudioParam>(context, "gain", 0.0, -40, 40);
-    m_parameter4 = std::make_shared<AudioParam>(context, "detune", 0.0, -4800, 4800);
+    m_parameter1 = std::make_shared<AudioParam>("frequency", 350.0, 10.0, nyquist);
+    m_parameter2 = std::make_shared<AudioParam>("Q", 1, 0.0001, 1000.0);
+    m_parameter3 = std::make_shared<AudioParam>("gain", 0.0, -40, 40);
+    m_parameter4 = std::make_shared<AudioParam>("detune", 0.0, -4800, 4800);
 
     if (autoInitialize)
         initialize();
@@ -58,7 +58,7 @@ AudioDSPKernel* BiquadProcessor::createKernel()
     return new BiquadDSPKernel(this);
 }
 
-void BiquadProcessor::checkForDirtyCoefficients()
+void BiquadProcessor::checkForDirtyCoefficients(ContextRenderLock& r)
 {
     // Deal with smoothing / de-zippering. Start out assuming filter parameters are not changing.
 
@@ -80,28 +80,28 @@ void BiquadProcessor::checkForDirtyCoefficients()
             m_hasJustReset = false;
         } else {
             // Smooth all of the filter parameters. If they haven't yet converged to their target value then mark coefficients as dirty.
-            bool isStable1 = m_parameter1->smooth();
-            bool isStable2 = m_parameter2->smooth();
-            bool isStable3 = m_parameter3->smooth();
-            bool isStable4 = m_parameter4->smooth();
+            bool isStable1 = m_parameter1->smooth(r);
+            bool isStable2 = m_parameter2->smooth(r);
+            bool isStable3 = m_parameter3->smooth(r);
+            bool isStable4 = m_parameter4->smooth(r);
             if (!(isStable1 && isStable2 && isStable3 && isStable4))
                 m_filterCoefficientsDirty = true;
         }
     }
 }
 
-void BiquadProcessor::process(const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void BiquadProcessor::process(ContextGraphLock& g, ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
 {
     if (!isInitialized()) {
         destination->zero();
         return;
     }
         
-    checkForDirtyCoefficients();
+    checkForDirtyCoefficients(r);
             
     // For each channel of our input, process using the corresponding BiquadDSPKernel into the output channel.
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+        m_kernels[i]->process(g, r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
 }
 
 void BiquadProcessor::setType(FilterType type)
@@ -112,7 +112,8 @@ void BiquadProcessor::setType(FilterType type)
     }
 }
 
-void BiquadProcessor::getFrequencyResponse(int nFrequencies,
+void BiquadProcessor::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+                                           int nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
                                            float* phaseResponse)
@@ -123,7 +124,7 @@ void BiquadProcessor::getFrequencyResponse(int nFrequencies,
     
     std::unique_ptr<BiquadDSPKernel> responseKernel(new BiquadDSPKernel(this));
 
-    responseKernel->getFrequencyResponse(nFrequencies, frequencyHz, magResponse, phaseResponse);
+    responseKernel->getFrequencyResponse(g, r, nFrequencies, frequencyHz, magResponse, phaseResponse);
 }
 
 } // namespace WebCore

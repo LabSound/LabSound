@@ -31,7 +31,14 @@
 
 #include <memory>
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
 namespace WebCore {
+    
+    using namespace LabSound;
 
 class AudioBus;
 
@@ -53,7 +60,7 @@ public:
 
     PanningModel panningModel() const { return m_panningModel; }
 
-    virtual void pan(double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) = 0;
+    virtual void pan(ContextGraphLock& g, ContextRenderLock& r, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) = 0;
 
     virtual void reset() = 0;
 

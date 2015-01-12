@@ -27,6 +27,7 @@
 
 #include "AudioBuffer.h"
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "Reverb.h"
@@ -44,8 +45,8 @@ const size_t MaxFFTSize = 32768;
 
 namespace WebCore {
 
-ConvolverNode::ConvolverNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+ConvolverNode::ConvolverNode(float sampleRate)
+    : AudioNode(sampleRate)
     , m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -61,32 +62,24 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-void ConvolverNode::process(size_t framesToProcess)
+void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
     ASSERT(outputBus);
-
-    // Synchronize with possible dynamic changes to the impulse response.
-    MutexTryLocker tryLocker(m_processLock);
-    if (tryLocker.locked()) {
-        if (!isInitialized() || !m_reverb.get())
-            outputBus->zero();
-        else {
-            // Process using the convolution engine.
-            // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
-            // FIXME:  If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
-            // we keep getting fed silence.
-            m_reverb->process(input(0)->bus(), outputBus, framesToProcess);
-        }
-    } else {
-        // Too bad - the tryLock() failed.  We must be in the middle of setting a new impulse response.
+    if (!isInitialized() || !m_reverb.get()) {
         outputBus->zero();
+        return;
     }
+
+    // Process using the convolution engine.
+    // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
+    // FIXME:  If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
+    // we keep getting fed silence.
+    m_reverb->process(g, r, input(0)->bus(), outputBus, framesToProcess);
 }
 
-void ConvolverNode::reset()
+void ConvolverNode::reset(ContextRenderLock& r)
 {
-    MutexLocker locker(m_processLock);
     if (m_reverb.get())
         m_reverb->reset();
 }
@@ -108,10 +101,9 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
 {
-    ASSERT(isMainThread());
-    
+    ASSERT(g.context() && (g.context() == r.context()));
     if (!buffer)
         return;
 
@@ -133,15 +125,9 @@ void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
     bufferBus.setSampleRate(buffer->sampleRate());
 
     // Create the reverb with the given impulse response.
-    std::shared_ptr<AudioContext> ac = context().lock();
-    bool useBackgroundThreads = !ac->isOfflineContext();
-    std::unique_ptr<Reverb> reverb(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, useBackgroundThreads, m_normalize));
-    {
-        // Synchronize with process().
-        MutexLocker locker(m_processLock);
-        m_reverb = std::move(reverb);
-        m_buffer = buffer;
-    }
+    m_reverb = std::unique_ptr<Reverb>(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2,
+                                                  g.context()->isOfflineContext(), m_normalize));
+    m_buffer = buffer;
 }
 
 std::shared_ptr<AudioBuffer> ConvolverNode::buffer()

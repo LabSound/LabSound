@@ -29,6 +29,7 @@
 #include "LabSoundConfig.h"
 #include "ReverbConvolverStage.h"
 
+#include "AudioContextLock.h"
 #include "VectorMath.h"
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolver.h"

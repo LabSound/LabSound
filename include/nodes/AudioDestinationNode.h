@@ -42,12 +42,12 @@ public:
     virtual ~AudioDestinationNode();
     
     // AudioNode   
-    virtual void process(size_t) override { } // we're pulled by hardware so this is never called
-    virtual void reset() { m_currentSampleFrame = 0; };
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override { } // we're pulled by hardware so this is never called
+    virtual void reset(ContextRenderLock& r) override { m_currentSampleFrame = 0; };
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).
-    virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames);
+    virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames) override;
 
     size_t currentSampleFrame() const { return m_currentSampleFrame; }
     double currentTime() const { return currentSampleFrame() / static_cast<double>(sampleRate()); }
@@ -67,6 +67,8 @@ protected:
             : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
         {
         }
+        
+        virtual ~LocalAudioInputProvider() {}
 
         void set(AudioBus* bus)
         {
@@ -93,6 +95,7 @@ protected:
     // Counts the number of sample-frames processed by the destination.
     size_t m_currentSampleFrame;
 
+    std::shared_ptr<AudioContext> m_context;
     LocalAudioInputProvider m_localAudioInputProvider;
 };
 

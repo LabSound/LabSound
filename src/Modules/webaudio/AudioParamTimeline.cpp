@@ -24,6 +24,7 @@
  */
 
 #include "LabSoundConfig.h"
+#include "AudioNode.h"
 #include "AudioParamTimeline.h"
 
 #include "AudioUtilities.h"

@@ -33,10 +33,9 @@ namespace WebCore {
     
 class WaveShaperNode : public AudioBasicProcessorNode {
 public:
-    explicit WaveShaperNode(std::shared_ptr<AudioContext>);
+    explicit WaveShaperNode(float sampleRate);
 
-    // setCurve() is called on the main thread.
-    void setCurve(std::shared_ptr<std::vector<float>>);
+    void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve();
 
 private:    

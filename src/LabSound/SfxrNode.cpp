@@ -583,8 +583,8 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
 
 namespace LabSound {
 
-    SfxrNode::SfxrNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioScheduledSourceNode(context, sampleRate)
+    SfxrNode::SfxrNode(float sampleRate)
+    : AudioScheduledSourceNode(sampleRate)
     , sfxr(new SfxrNode::Sfxr())
     {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSfxr);
@@ -594,29 +594,29 @@ namespace LabSound {
 
         initialize();
 
-        _waveType = make_shared<AudioParam>(context, "waveType", 0, 0, 3);
-		_attack = make_shared<AudioParam>(context, "attack", 0, 0, 1);
-		_sustainTime = make_shared<AudioParam>(context, "sustain", 0.3, 0, 1);
-		_sustainPunch = make_shared<AudioParam>(context, "sustainPunch", 0, 0, 1);
-		_startFrequency = make_shared<AudioParam>(context, "startFrequency", 0.3, 0, 1);
-		_minFrequency = make_shared<AudioParam>(context, "minFrequency", 0, 0, 1);
-        _decayTime = make_shared<AudioParam>(context, "decay", 0.4f, 0, 1);
-		_slide = make_shared<AudioParam>(context, "slide", 0, -1, 1);
-		_deltaSlide = make_shared<AudioParam>(context, "deltaSlide", 0, 0, 1);
-		_vibratoDepth = make_shared<AudioParam>(context, "vibratoDepth", 0, 0, 1);
-		_vibratoSpeed = make_shared<AudioParam>(context, "vibratoSpeed", 0, 0, 1);
-		_changeAmount = make_shared<AudioParam>(context, "changeAmount", 0, -1, 1);
-		_changeSpeed = make_shared<AudioParam>(context, "changeSpeed", 0, 0, 1);
-		_squareDuty = make_shared<AudioParam>(context, "squareDuty", 0, 0, 1);
-		_dutySweep = make_shared<AudioParam>(context, "dutySweep", 0, -1, 1);
-		_repeatSpeed = make_shared<AudioParam>(context, "repeatSpeed", 0, 0, 1);
-		_phaserOffset = make_shared<AudioParam>(context, "phaserOffset", 0, -1, 1);
-		_phaserSweep = make_shared<AudioParam>(context, "phaserSweep", 0, -1, 1);
-		_lpFilterCutoff = make_shared<AudioParam>(context, "lpFiterCutoff", 1.0f, 0, 1);
-		_lpFilterCutoffSweep = make_shared<AudioParam>(context, "lpFilterCutoffSweep", 0, -1, 1);
-		_lpFiterResonance = make_shared<AudioParam>(context, "lpFiterResonance", 0, 0, 1);
-		_hpFilterCutoff = make_shared<AudioParam>(context, "hpFiterCutoff", 0, 0, 1);
-		_hpFilterCutoffSweep = make_shared<AudioParam>(context, "hpFilterCutoffSweep", 0, -1, 1);
+        _waveType = make_shared<AudioParam>("waveType", 0, 0, 3);
+		_attack = make_shared<AudioParam>("attack", 0, 0, 1);
+		_sustainTime = make_shared<AudioParam>("sustain", 0.3, 0, 1);
+		_sustainPunch = make_shared<AudioParam>("sustainPunch", 0, 0, 1);
+		_startFrequency = make_shared<AudioParam>("startFrequency", 0.3, 0, 1);
+		_minFrequency = make_shared<AudioParam>("minFrequency", 0, 0, 1);
+        _decayTime = make_shared<AudioParam>("decay", 0.4f, 0, 1);
+		_slide = make_shared<AudioParam>("slide", 0, -1, 1);
+		_deltaSlide = make_shared<AudioParam>("deltaSlide", 0, 0, 1);
+		_vibratoDepth = make_shared<AudioParam>("vibratoDepth", 0, 0, 1);
+		_vibratoSpeed = make_shared<AudioParam>("vibratoSpeed", 0, 0, 1);
+		_changeAmount = make_shared<AudioParam>("changeAmount", 0, -1, 1);
+		_changeSpeed = make_shared<AudioParam>("changeSpeed", 0, 0, 1);
+		_squareDuty = make_shared<AudioParam>("squareDuty", 0, 0, 1);
+		_dutySweep = make_shared<AudioParam>("dutySweep", 0, -1, 1);
+		_repeatSpeed = make_shared<AudioParam>("repeatSpeed", 0, 0, 1);
+		_phaserOffset = make_shared<AudioParam>("phaserOffset", 0, -1, 1);
+		_phaserSweep = make_shared<AudioParam>("phaserSweep", 0, -1, 1);
+		_lpFilterCutoff = make_shared<AudioParam>("lpFiterCutoff", 1.0f, 0, 1);
+		_lpFilterCutoffSweep = make_shared<AudioParam>("lpFilterCutoffSweep", 0, -1, 1);
+		_lpFiterResonance = make_shared<AudioParam>("lpFiterResonance", 0, 0, 1);
+		_hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", 0, 0, 1);
+		_hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", 0, -1, 1);
 
         sfxr->ResetParams();
         sfxr->ResetSample(true);
@@ -628,14 +628,14 @@ namespace LabSound {
         uninitialize();
     }
 
-    void SfxrNode::noteOn() {
-        start(0);
+    void SfxrNode::noteOn(ContextRenderLock& r) {
+        start(r, 0);
         sfxr->ResetSample(true);
         sfxr->ResetSample(false);
         sfxr->PlaySample();
     }
 
-    void SfxrNode::process(size_t framesToProcess)
+    void SfxrNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
 
@@ -647,7 +647,7 @@ namespace LabSound {
         size_t quantumFrameOffset;
         size_t nonSilentFramesToProcess;
 
-        updateSchedulingInfo(framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
         if (!nonSilentFramesToProcess) {
             outputBus->zero();
@@ -661,7 +661,7 @@ namespace LabSound {
         int n = nonSilentFramesToProcess;
 
 #define UPDATE(typ, cur, val) \
-{ typ v = val->value(); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
+{ typ v = val->value(r); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
 
         bool needUpdate = false;
         UPDATE(int, wave_type, _waveType)
@@ -713,11 +713,11 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SfxrNode::reset()
+    void SfxrNode::reset(ContextRenderLock& r)
     {
     }
 
-    bool SfxrNode::propagatesSilence() const
+    bool SfxrNode::propagatesSilence(ContextRenderLock& r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }
@@ -729,7 +729,7 @@ namespace LabSound {
     // parameters for default sounds found here -
     // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
 
-    void SfxrNode::setDefaultBeep() {
+    void SfxrNode::setDefaultBeep(ContextRenderLock& r) {
         // Wave shape
         _waveType->setValue(SQUARE);
 
@@ -777,8 +777,8 @@ namespace LabSound {
         sfxr->wav_bits = 16;
     }
 
-    void SfxrNode::coin() {
-        setDefaultBeep();
+    void SfxrNode::coin(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _startFrequency->setValue(0.4f + frnd(0.5f));
         _attack->setValue(0);
         _sustainTime->setValue(0.1f);
@@ -790,10 +790,10 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::laser() {
-        setDefaultBeep();
+    void SfxrNode::laser(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _waveType->setValue(rnd(2));
-        if(_waveType->value() == SINE && rnd(1))
+        if(_waveType->value(r) == SINE && rnd(1))
             _waveType->setValue(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3 + frnd(0.6));
@@ -801,11 +801,11 @@ namespace LabSound {
             _slide->setValue(-0.35 - frnd(0.3));
         } else {
             _startFrequency->setValue(0.5 + frnd(0.5));
-            _minFrequency->setValue(_startFrequency->value() - 0.2 - frnd(0.6));
-            if (_minFrequency->value() < 0.2) _minFrequency->setValue(0.2);
+            _minFrequency->setValue(_startFrequency->value(r) - 0.2 - frnd(0.6));
+            if (_minFrequency->value(r) < 0.2) _minFrequency->setValue(0.2);
             _slide->setValue(-0.15 - frnd(0.2));
         }
-        if (_waveType->value() == SAWTOOTH)
+        if (_waveType->value(r) == SAWTOOTH)
             _squareDuty->setValue(1);
         if (rnd(1)) {
             _squareDuty->setValue(frnd(0.5));
@@ -826,8 +826,8 @@ namespace LabSound {
         _hpFilterCutoff->setValue(frnd(0.3));
     }
 
-    void SfxrNode::explosion() {
-        setDefaultBeep();
+    void SfxrNode::explosion(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _waveType->setValue(NOISE);
         if (rnd(1)) {
             _startFrequency->setValue(sqr(0.1 + frnd(0.4)));
@@ -858,8 +858,8 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::powerUp() {
-        setDefaultBeep();
+    void SfxrNode::powerUp(ContextRenderLock& r) {
+        setDefaultBeep(r);
         if (rnd(1)) {
             _waveType->setValue(SAWTOOTH);
             _squareDuty->setValue(1);
@@ -884,14 +884,14 @@ namespace LabSound {
         _decayTime->setValue(0.1 + frnd(0.4));
     }
 
-    void SfxrNode::hit() {
-        setDefaultBeep();
+    void SfxrNode::hit(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _waveType->setValue(rnd(2));
-        if (_waveType->value() == SINE)
+        if (_waveType->value(r) == SINE)
             _waveType->setValue(NOISE);
-        if (_waveType->value() == SQUARE)
+        if (_waveType->value(r) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
-        if (_waveType->value() == SAWTOOTH)
+        if (_waveType->value(r) == SAWTOOTH)
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2 + frnd(0.6));
         _slide->setValue(-0.3 - frnd(0.4));
@@ -902,8 +902,8 @@ namespace LabSound {
             _hpFilterCutoff->setValue(frnd(0.3));
     }
 
-    void SfxrNode::jump() {
-        setDefaultBeep();
+    void SfxrNode::jump(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _waveType->setValue(SQUARE);
         _squareDuty->setValue(frnd(0.6));
         _startFrequency->setValue(0.3 + frnd(0.3));
@@ -917,10 +917,10 @@ namespace LabSound {
             _lpFilterCutoff->setValue(1 - frnd(0.6));
     }
 
-    void SfxrNode::select() {
-        setDefaultBeep();
+    void SfxrNode::select(ContextRenderLock& r) {
+        setDefaultBeep(r);
         _waveType->setValue(rnd(1));
-        if (_waveType->value() == SQUARE)
+        if (_waveType->value(r) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
         else
             _squareDuty->setValue(1);
@@ -931,41 +931,41 @@ namespace LabSound {
         _hpFilterCutoff->setValue(0.1);
     }
 
-    void SfxrNode::mutate() {
-        if (rnd(1)) _startFrequency->setValue(_startFrequency->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _slide->setValue(_slide->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _squareDuty->setValue(_squareDuty->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _dutySweep->setValue(_dutySweep->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _attack->setValue(_attack->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainTime->setValue(_sustainTime->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _decayTime->setValue(_decayTime->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value() + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeAmount->setValue(_changeAmount->value() + frnd(0.1) - 0.05);
+    void SfxrNode::mutate(ContextRenderLock& r) {
+        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
     }
 
-    void SfxrNode::randomize() {
+    void SfxrNode::randomize(ContextRenderLock& r) {
         if (rnd(1))
             _startFrequency->setValue(cube(frnd(2) - 1) + 0.5);
         else
             _startFrequency->setValue(sqr(frnd(1)));
         _minFrequency->setValue(0);
         _slide->setValue(powf(frnd(2) - 1, 5));
-        if (_startFrequency->value() > 0.7 && _slide->value() > 0.2)
-            _slide->setValue(-_slide->value());
-        if (_startFrequency->value() < 0.2 && _slide->value() < -0.05)
-            _slide->setValue(-_slide->value());
+        if (_startFrequency->value(r) > 0.7 && _slide->value(r) > 0.2)
+            _slide->setValue(-_slide->value(r));
+        if (_startFrequency->value(r) < 0.2 && _slide->value(r) < -0.05)
+            _slide->setValue(-_slide->value(r));
         _deltaSlide->setValue(powf(frnd(2) - 1, 3));
         _squareDuty->setValue(frnd(2) - 1);
         _dutySweep->setValue(powf(frnd(2) - 1, 3));
@@ -975,15 +975,15 @@ namespace LabSound {
         _sustainTime->setValue(sqr(rndr(0, 1)));
         _decayTime->setValue(rndr(0, 1));
         _sustainPunch->setValue(powf(frnd(0.8), 2));
-        if (_attack->value() + _sustainTime->value() + _decayTime->value() < 0.2) {
-            _sustainTime->setValue(_sustainTime->value() + 0.2 + frnd(0.3));
-            _decayTime->setValue(_decayTime->value() + 0.2 + frnd(0.3));
+        if (_attack->value(r) + _sustainTime->value(r) + _decayTime->value(r) < 0.2) {
+            _sustainTime->setValue(_sustainTime->value(r) + 0.2 + frnd(0.3));
+            _decayTime->setValue(_decayTime->value(r) + 0.2 + frnd(0.3));
         }
         _lpFiterResonance->setValue(rndr(-1, 1));
         _lpFilterCutoff->setValue(1 - powf(frnd(1), 3));
         _lpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 3));
-        if (_lpFilterCutoff->value() < 0.1 && _lpFilterCutoffSweep->value() < -0.05)
-            _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value());
+        if (_lpFilterCutoff->value(r) < 0.1 && _lpFilterCutoffSweep->value(r) < -0.05)
+            _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value(r));
         _hpFilterCutoff->setValue(powf(frnd(1), 5));
         _hpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 5));
         _phaserOffset->setValue(powf(frnd(2) - 1, 3));

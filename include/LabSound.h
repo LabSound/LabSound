@@ -64,6 +64,6 @@ namespace LabSound {
     void finish(std::shared_ptr<LabSound::AudioContext> context);
     
     // Connect/Disconnect return true on success
-    bool connect(AudioNode* thisOutput, AudioNode* toThisInput);
-    bool disconnect(AudioNode* thisOutput);
+    bool connect(ContextGraphLock& g, ContextRenderLock& r, AudioNode* thisOutput, AudioNode* toThisInput);
+    bool disconnect(ContextGraphLock& g, ContextRenderLock& r, AudioNode* thisOutput);
 }

@@ -37,14 +37,15 @@ class AudioContext;
     
 class ChannelMergerNode : public AudioNode {
 public:
-    ChannelMergerNode(std::shared_ptr<AudioContext>, float sampleRate, unsigned numberOfInputs);
+    ChannelMergerNode(float sampleRate, unsigned numberOfInputs);
+    virtual ~ChannelMergerNode() {}
 
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
 
     // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.
-    virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
+    virtual void checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock&, AudioNodeInput*) override;
 
 private:
     virtual double tailTime() const OVERRIDE { return 0; }

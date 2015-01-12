@@ -8,6 +8,7 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
+#include "ExceptionCodes.h"
 #include "VectorMath.h"
 #include "DelayNode.h"
 
@@ -23,11 +24,11 @@ namespace LabSound {
 	class BpmDelay::NodeInternal : public WebCore::AudioProcessor{
 	public:
 
-        NodeInternal(std::shared_ptr<AudioContext> context, float sampleRate) : AudioProcessor(sampleRate), channels(2) {
-			m_delayTime = std::make_shared<AudioParam>(context, "delayTime", 1, 0.1, 24);
+        NodeInternal(float sampleRate) : AudioProcessor(sampleRate), channels(2) {
+			m_delayTime = std::make_shared<AudioParam>("delayTime", 1, 0.1, 24);
 
-            WebCore::ExceptionCode ec;
-            m_delayNode = std::make_shared<DelayNode>(context, 44100, 24.0, ec);
+            ExceptionCode ec;
+            m_delayNode = std::make_shared<DelayNode>(44100, 24.0, ec);
 		}
 
 		virtual ~NodeInternal() {
@@ -38,9 +39,9 @@ namespace LabSound {
 		virtual void uninitialize() { }
 
 		// Processes the source to destination bus.  The number of channels must match in source and destination.
-		void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+		void process(ContextGraphLock& g, ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
 
-			perryVerb.setT60(m_delayTime->value());
+			perryVerb.setT60(m_delayTime->value(r));
 
 			const float *source = sourceBus->channel(0)->data();
 
@@ -76,9 +77,9 @@ namespace LabSound {
 
 	};
 
-    BpmDelay::BpmDelay(std::shared_ptr<AudioContext> context, float sampleRate)
-		: WebCore::AudioBasicProcessorNode(context, sampleRate),
-		  data(new NodeInternal(context, sampleRate)) {
+    BpmDelay::BpmDelay(float sampleRate)
+		: WebCore::AudioBasicProcessorNode(sampleRate),
+		  data(new NodeInternal(sampleRate)) {
 		
 		m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

@@ -18,7 +18,7 @@ namespace LabSound {
     class PWMNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        PWMNode(std::shared_ptr<AudioContext>, float sampleRate);
+        PWMNode(float sampleRate);
         virtual ~PWMNode();
 
     private:

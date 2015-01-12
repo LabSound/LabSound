@@ -156,7 +156,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
 
-	std::cout << numberOfComponents << std::endl;
+	//std::cout << "Created wavetable of size " << numberOfComponents << std::endl;
 
     m_bandLimitedTables.reserve(m_numberOfRanges);
 

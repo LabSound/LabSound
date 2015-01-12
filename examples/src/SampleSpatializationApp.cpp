@@ -12,11 +12,15 @@ int main(int, char**)
     
     auto context = LabSound::init();
 
-    SoundBuffer train(context, "trainrolling.wav");
-    auto panner = std::make_shared<PannerNode>(context, context->sampleRate());
-    panner->connect(context->destination().get(), 0, 0, ec);
-    
-    auto trainNode = train.play(panner, 0.0f);
+    SoundBuffer train("trainrolling.wav", context->sampleRate());
+    auto panner = std::make_shared<PannerNode>(context->sampleRate());
+    std::shared_ptr<AudioBufferSourceNode> trainNode;
+    {
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        panner->connect(g, r, context->destination().get(), 0, 0, ec);
+        trainNode = train.play(g, r, panner, 0.0f);
+    }
     
     if (trainNode)
     {
@@ -40,6 +44,5 @@ int main(int, char**)
     }
     
     LabSound::finish(context);
-    
     return 0;
 }

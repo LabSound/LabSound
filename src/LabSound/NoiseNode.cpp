@@ -13,8 +13,8 @@ using namespace WebCore;
 
 namespace LabSound {
 
-    NoiseNode::NoiseNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioScheduledSourceNode(context, sampleRate)
+    NoiseNode::NoiseNode(float sampleRate)
+    : AudioScheduledSourceNode(sampleRate)
     , m_type(WHITE)
     , whiteSeed(1489853723)
     , lastBrown(0)
@@ -33,7 +33,7 @@ namespace LabSound {
         uninitialize();
     }
 
-    void NoiseNode::setType(unsigned short type, WebCore::ExceptionCode& ec)
+    void NoiseNode::setType(unsigned short type, ExceptionCode& ec)
     {
         switch (type) {
             case WHITE:
@@ -51,7 +51,7 @@ namespace LabSound {
     }
 
 
-    void NoiseNode::process(size_t framesToProcess)
+    void NoiseNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
 
@@ -63,7 +63,7 @@ namespace LabSound {
         size_t quantumFrameOffset;
         size_t nonSilentFramesToProcess;
 
-        updateSchedulingInfo(framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
         if (!nonSilentFramesToProcess) {
             outputBus->zero();
@@ -116,11 +116,11 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void NoiseNode::reset()
+    void NoiseNode::reset(ContextRenderLock& r)
     {
     }
     
-    bool NoiseNode::propagatesSilence() const
+    bool NoiseNode::propagatesSilence(ContextRenderLock& r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

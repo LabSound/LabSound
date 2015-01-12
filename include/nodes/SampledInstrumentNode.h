@@ -1,12 +1,13 @@
 #pragma once
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
 #include "AudioBufferSourceNode.h"
 #include "ADSRNode.h"
+#include "ExceptionCodes.h"
 #include "SoundBuffer.h"
-#include "WTF/RefPtr.h"
 
 #include <iostream> 
 #include <array>
@@ -20,14 +21,14 @@ namespace LabSound {
 	struct SamplerSound {
 
 		SamplerSound(
-            std::shared_ptr<AudioContext> context,
             std::shared_ptr<GainNode> destination,
 			std::string path, 
 			std::string baseMidiNote, 
 			std::string midiNoteLow, 
-			std::string midiNoteHigh) {
+			std::string midiNoteHigh,
+            float sampleRate) {
 
-			audioBuffer = new SoundBuffer(context, path.c_str()); 
+			audioBuffer = new SoundBuffer(path.c_str(), sampleRate);
 
 			this->baseMidiNote = getMIDIFromNoteString(baseMidiNote);
 			this->midiNoteLow = getMIDIFromNoteString(midiNoteLow);
@@ -55,23 +56,24 @@ namespace LabSound {
 
 		}
 
-		std::shared_ptr<AudioBufferSourceNode> startNote(uint8_t midiNoteNumber, float amplitude = 1.0) {
+		std::shared_ptr<AudioBufferSourceNode> startNote(ContextGraphLock& g, ContextRenderLock& r,
+                                                         uint8_t midiNoteNumber, float amplitude = 1.0) {
 
 			// var semitoneRatio = Math.pow(2, 1/12);
 			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
 
-			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create());
+			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create(g, r, g.context()->sampleRate()));
 
 			theSample->playbackRate()->setValue(pitchRatio); 
 			theSample->gain()->setValue(amplitude); 
 
 			// Connect the source node to the parsed audio data for playback
-			theSample->setBuffer(audioBuffer->audioBuffer);
+			theSample->setBuffer(g, r, audioBuffer->audioBuffer);
 
 			// Bus the sound to the output destination .
-			WebCore::ExceptionCode ec;
-			theSample->connect(destinationNode.get(), 0, 0, ec);
-			theSample->start(0.0);
+			ExceptionCode ec;
+			theSample->connect(g, r, destinationNode.get(), 0, 0, ec);
+			theSample->start(r, 0.0);
 
 			return theSample;
 
@@ -137,13 +139,13 @@ namespace LabSound {
 	class SampledInstrumentNode {
 
 	public:
-        SampledInstrumentNode(std::shared_ptr<AudioContext>, float sampleRate);
+        SampledInstrumentNode(float sampleRate);
         virtual ~SampledInstrumentNode() {}
         
 		void loadInstrumentConfiguration(std::string path);
 
-		void noteOn(float frequency, float amplitude);
-		float noteOff(float amplitude); 
+		void noteOn(ContextGraphLock& g, ContextRenderLock& r, float frequency, float amplitude);
+		float noteOff(ContextRenderLock& r, float amplitude);
 
 		void stopAll(); 
 
@@ -161,14 +163,13 @@ namespace LabSound {
 
 		// Blech
         std::vector<std::shared_ptr<SamplerSound>> samples;
-        std::weak_ptr<WebCore::AudioContext> localContext;
 
 		// Satisfy the AudioNode interface
-		//virtual void process(size_t) override {}
-		//virtual void reset() {}
+		//virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override {}
+		//virtual void reset() override {}
 		//virtual double tailTime() const OVERRIDE { return 0; }
 		//virtual double latencyTime() const OVERRIDE { return 0; }
-		//virtual bool propagatesSilence() const OVERRIDE { return 1; }
+		//virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return true; }
 
 	};
 

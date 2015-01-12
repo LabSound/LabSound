@@ -27,11 +27,11 @@
 
 namespace WebCore {
 
-BiquadFilterNode::BiquadFilterNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioBasicProcessorNode(context, sampleRate)
+BiquadFilterNode::BiquadFilterNode(float sampleRate)
+    : AudioBasicProcessorNode(sampleRate)
 {
     // Initially setup as lowpass filter.
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new BiquadProcessor(context, sampleRate, 1, false)));
+    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new BiquadProcessor(sampleRate, 1, false)));
     setNodeType(NodeTypeBiquadFilter);
 }
 
@@ -46,7 +46,8 @@ void BiquadFilterNode::setType(unsigned short type, ExceptionCode& ec)
 }
 
 
-void BiquadFilterNode::getFrequencyResponse(const std::vector<float>& frequencyHz,
+void BiquadFilterNode::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+                                            const std::vector<float>& frequencyHz,
                                             std::vector<float>& magResponse,
                                             std::vector<float>& phaseResponse)
 {
@@ -57,7 +58,7 @@ void BiquadFilterNode::getFrequencyResponse(const std::vector<float>& frequencyH
                      std::min(magResponse.size(), phaseResponse.size()));
 
     if (n) {
-        biquadProcessor()->getFrequencyResponse(n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
+        biquadProcessor()->getFrequencyResponse(g, r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
 }
 

@@ -3,7 +3,13 @@
 
 #include "LabSound.h"
 #include "AudioContext.h"
+#include "AudioContextLock.h"
+#include "ExceptionCodes.h"
 #include "DefaultAudioDestinationNode.h"
+#include "WTF/MainThread.h"
+#include <chrono>
+#include <thread>
+#include <iostream>
 
 namespace LabSound {
 
@@ -13,7 +19,7 @@ namespace LabSound {
         WTF::initializeMainThread();
         
         // Create an audio context object
-        WebCore::ExceptionCode ec;
+        ExceptionCode ec;
         std::shared_ptr<LabSound::AudioContext> context = LabSound::AudioContext::create(ec);
         context->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(context));
         context->initHRTFDatabase();
@@ -22,19 +28,29 @@ namespace LabSound {
     }
     
     void finish(std::shared_ptr<LabSound::AudioContext> context) {
-        context->stop();
+        for (int i = 0; i < 10; ++i) {
+            ContextGraphLock g(context);
+            if (!g.context()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            else {
+                context->stop(g);
+                return;
+            }
+        }
+        std::cerr << "LabSound could not acquire lock for shutdown" << std::endl;
     }
 
-    bool connect(WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
-        WebCore::ExceptionCode ec = -1;
-        thisOutput->connect(toThisInput, 0, 0, ec);
-        return ec == -1;
+    bool connect(ContextGraphLock& g, ContextRenderLock& r, WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
+        ExceptionCode ec = NO_ERR;
+        thisOutput->connect(g, r, toThisInput, 0, 0, ec);
+        return ec == NO_ERR;
     }
 
-    bool disconnect(WebCore::AudioNode* thisOutput) {
-        WebCore::ExceptionCode ec = -1;
-        thisOutput->disconnect(0, ec);
-        return ec == -1;
+    bool disconnect(ContextGraphLock& g, ContextRenderLock& r, WebCore::AudioNode* thisOutput) {
+        ExceptionCode ec = NO_ERR;
+        thisOutput->disconnect(g, r, 0, ec);
+        return ec == NO_ERR;
     }
 
 	static double MIDIToFrequency(int MIDINote) {

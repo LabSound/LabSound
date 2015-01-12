@@ -26,6 +26,7 @@
 #include "AudioNode.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioParam.h"
@@ -38,10 +39,9 @@
 
 namespace WebCore {
 
-AudioNode::AudioNode(std::shared_ptr<AudioContext> context, float sampleRate)
+AudioNode::AudioNode(float sampleRate)
     : m_isInitialized(false)
     , m_nodeType(NodeTypeUnknown)
-    , m_context(context)
     , m_sampleRate(sampleRate)
     , m_lastProcessingTime(-1)
     , m_lastNonSilentTime(-1)
@@ -115,11 +115,13 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
     return 0;
 }
 
-void AudioNode::connect(AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
+void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
+                        AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
 {
-    ASSERT(!context().expired() && isMainThread());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
+    if (!g.context()) {
+        ec = SYNTAX_ERR;
+        return;
+    }
 
     if (!destination) {
         ec = SYNTAX_ERR;
@@ -137,27 +139,19 @@ void AudioNode::connect(AudioNode* destination, unsigned outputIndex, unsigned i
         return;
     }
 
-    if (ac != destination->context().lock()) {
-        ec = SYNTAX_ERR;
-        return;
-    }
 
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
-    AudioNodeInput::connect(input, output);
+    AudioNodeInput::connect(g, input, output);
 
     // Let context know that a connection has been made.
-    ac->incrementConnectionCount();
+    g.context()->incrementConnectionCount(g);
     
-    updatePullStatus();
+    updatePullStatus(g, r);
 }
 
-void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
 {
-    ASSERT(!context().expired() && isMainThread());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
-
     if (!param) {
         ec = SYNTAX_ERR;
         return;
@@ -168,45 +162,31 @@ void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex,
         return;
     }
 
-    if (ac != param->context().lock()) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    AudioParam::connect(param, this->output(outputIndex));
+    AudioParam::connect(g, param, this->output(outputIndex));
 }
 
-void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned outputIndex, ExceptionCode& ec)
 {
-    ASSERT(!context().expired() && isMainThread());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
-
     // Sanity check input and output indices.
     if (outputIndex >= numberOfOutputs()) {
         ec = INDEX_SIZE_ERR;
         return;
     }
 
-    AudioNodeOutput::disconnectAll(this->output(outputIndex));
-    updatePullStatus();
+    AudioNodeOutput::disconnectAll(g, this->output(outputIndex));
+    updatePullStatus(g, r);
 }
 
-void AudioNode::processIfNecessary(size_t framesToProcess)
+void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
-    if (context().expired())
+    if (!r.context())
         return;
-    
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread());
-    
-    if (!ac->isAudioThread()) {
-        printf("***** %d", currentThread());
-    }
     
     if (!isInitialized())
         return;
 
+    auto ac = r.context();
+    
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
     // The first time we're called during this time slice we process, but after that we don't want to re-process,
@@ -215,51 +195,45 @@ void AudioNode::processIfNecessary(size_t framesToProcess)
     if (m_lastProcessingTime != currentTime) {
         m_lastProcessingTime = currentTime; // important to first update this time because of feedback loops in the rendering graph
 
-        pullInputs(framesToProcess);
+        pullInputs(g, r, framesToProcess);
 
         bool silentInputs = inputsAreSilent();
         if (!silentInputs)
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
 
-        bool ps = propagatesSilence();
+        bool ps = propagatesSilence(r);
         if (silentInputs && ps)
             silenceOutputs();
         else {
-            process(framesToProcess);
+            process(g, r, framesToProcess);
             unsilenceOutputs();
         }
     }
 }
 
-void AudioNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
+void AudioNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
     for (auto &i : m_inputs) {
         if (i.get() == input) {
-            input->updateInternalBus();
+            input->updateInternalBus(r);
             break;
         }
     }
 }
 
-bool AudioNode::propagatesSilence() const
+bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    return m_lastNonSilentTime + latencyTime() + tailTime() < ac->currentTime();
+    if (!r.context())
+        return true;
+    
+    return m_lastNonSilentTime + latencyTime() + tailTime() < r.context()->currentTime();
 }
 
-void AudioNode::pullInputs(size_t framesToProcess)
+void AudioNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread());
-    
     // Process all of the AudioNodes connected to our inputs.
     for (unsigned i = 0; i < m_inputs.size(); ++i)
-        input(i)->pull(0, framesToProcess);
+        input(i)->pull(g, r, 0, framesToProcess);
 }
 
 bool AudioNode::inputsAreSilent()
@@ -284,20 +258,16 @@ void AudioNode::unsilenceOutputs()
     }
 }
 
-void AudioNode::enableOutputsIfNecessary()
+void AudioNode::enableOutputsIfNecessary(ContextGraphLock& g)
 {
     if (m_isDisabled && m_connectionRefCount > 0) {
-        ASSERT(isMainThread());
-        auto ac = context().lock();
-        AudioContext::AutoLocker locker(ac.get());
-
         m_isDisabled = false;
         for (auto i : m_outputs)
-            AudioNodeOutput::enable(i);
+            AudioNodeOutput::enable(g, i);
     }
 }
 
-void AudioNode::disableOutputsIfNecessary()
+void AudioNode::disableOutputsIfNecessary(ContextGraphLock& g)
 {
     // Disable outputs if appropriate. We do this if the number of connections is 0 or 1. The case
     // of 0 is from finishDeref() where there are no connections left. The case of 1 is from
@@ -318,12 +288,12 @@ void AudioNode::disableOutputsIfNecessary()
         if (nodeType() != NodeTypeConvolver && nodeType() != NodeTypeDelay) {
             m_isDisabled = true;
             for (auto i : m_outputs)
-                AudioNodeOutput::disable(i);
+                AudioNodeOutput::disable(g, i);
         }
     }
 }
 
-void AudioNode::ref(RefType refType)
+void AudioNode::ref(ContextGraphLock& g, RefType refType)
 {
     switch (refType) {
     case RefTypeNormal:
@@ -344,62 +314,29 @@ void AudioNode::ref(RefType refType)
     // is being re-connected after being used at least once and disconnected.
     // In this case, we need to re-enable.
     if (refType == RefTypeConnection)
-        enableOutputsIfNecessary();
+        enableOutputsIfNecessary(g);
 }
 
-void AudioNode::deref(RefType refType)
+void AudioNode::deref(ContextGraphLock& g, RefType refType)
 {
-    if (context().expired()) {
+    if (!g.context()) {
         // If the context is gone already, there's not much to do.
-        finishDeref(refType);
+        finishDeref(g, refType);
         return;
     }
     
-    // The actual work for deref happens completely within the audio context's graph lock.
-    // In the case of the audio thread, we must use a tryLock to avoid glitches.
-    bool hasLock = false;
-    bool mustReleaseLock = false;
-    
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    
-    if (ac->isAudioThread()) {
-        // Real-time audio thread must not contend lock (to avoid glitches).
-        hasLock = ac->tryLock(mustReleaseLock);
-    } else {
-        ac->lock(mustReleaseLock);
-        hasLock = true;
-    }
-    
-    if (hasLock) {
-        // This is where the real deref work happens.
-        finishDeref(refType);
-
-        if (mustReleaseLock)
-            ac->unlock();
-    } else {
-        // We were unable to get the lock, so put this in a list to finish up later.
-        ASSERT(ac->isAudioThread());
-        ASSERT(refType == RefTypeConnection);
-        ac->addDeferredFinishDeref(this);
-    }
+    // This is where the real deref work happens.
+    finishDeref(g, refType);
 
     // Once AudioContext::uninitialize() is called there's no more chances for deleteMarkedNodes() to get called, so we call here.
     // We can't call in AudioContext::~AudioContext() since it will never be called as long as any AudioNode is alive
     // because AudioNodes keep a reference to the context.
-    if (ac->isAudioThreadFinished())
-        ac->deleteMarkedNodes();
+//    if (ac->isAudioThreadFinished())
+//        ac->deleteMarkedNodes();
 }
 
-void AudioNode::finishDeref(RefType refType)
+void AudioNode::finishDeref(ContextGraphLock& g, RefType refType)
 {
-    bool shuttingDown = context().expired();
-    auto ac = context().lock();
-    
-    if (!shuttingDown) {
-        ASSERT(ac->isGraphOwner());
-    }
-    
     switch (refType) {
     case RefTypeNormal:
         ASSERT(m_normalRefCount > 0);
@@ -422,18 +359,18 @@ void AudioNode::finishDeref(RefType refType)
             if (!m_isMarkedForDeletion) {
                 // All references are gone - we need to go away.
                 for (unsigned i = 0; i < m_outputs.size(); ++i)
-                    AudioNodeOutput::disconnectAll(output(i)); // This will deref() nodes we're connected to.
+                    AudioNodeOutput::disconnectAll(g, output(i)); // This will deref() nodes we're connected to.
 
                 // Mark for deletion at end of each render quantum or when context shuts down.
-                if (!shuttingDown)
-                    ac->markForDeletion(this);
+//                if (!shuttingDown)
+//                    ac->markForDeletion(this);
                 
                 m_isMarkedForDeletion = true;
 
             }
         }
         else if (refType == RefTypeConnection)
-            disableOutputsIfNecessary();
+            disableOutputsIfNecessary(g);
     }
 }
 

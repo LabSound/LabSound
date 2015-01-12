@@ -12,7 +12,7 @@ namespace LabSound {
 	class EasyVerbNode : public WebCore::AudioBasicProcessorNode {
 
 	public:
-        EasyVerbNode(std::shared_ptr<AudioContext>, float sampleRate);
+        EasyVerbNode(float sampleRate);
 		~EasyVerbNode();
 
 		// In Seconds 

@@ -112,7 +112,7 @@ void OfflineAudioDestinationNode::offlineRender()
         
     // Synchronize with HRTFDatabaseLoader.
     // The database must be loaded before we can proceed.
-    HRTFDatabaseLoader* loader = HRTFDatabaseLoader::loader();
+    auto loader = HRTFDatabaseLoader::loader();
     ASSERT(loader);
     if (!loader)
         return;
@@ -157,8 +157,7 @@ void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)
 
 void OfflineAudioDestinationNode::notifyComplete()
 {
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ac->fireCompletionEvent();
+    m_context->fireCompletionEvent();
 }
 
 } // namespace WebCore

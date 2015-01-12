@@ -26,6 +26,7 @@
 #include "AudioNodeInput.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNode.h"
 #include "AudioNodeOutput.h"
 #include <algorithm>
@@ -35,19 +36,15 @@ using namespace std;
 namespace WebCore {
 
 AudioNodeInput::AudioNodeInput(AudioNode* node)
-: AudioSummingJunction(node->context().lock())
+: AudioSummingJunction()
 , m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(!fromInput->context().expired());
-    auto ac = fromInput->context().lock();
-    ASSERT(ac->isGraphOwner());
-    
     if (!fromInput || !toOutput || !fromInput->node())
         return;
 
@@ -55,20 +52,17 @@ void AudioNodeInput::connect(std::shared_ptr<AudioNodeInput> fromInput, std::sha
     if (fromInput->m_outputs.find(toOutput) != fromInput->m_outputs.end())
         return;
 
-    toOutput->addInput(fromInput);
+    toOutput->addInput(g, fromInput);
     fromInput->m_outputs.insert(toOutput);          /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
-    AudioNodeInput::changedOutputs(fromInput);
+    AudioNodeInput::changedOutputs(g, fromInput);
 
     // Sombody has just connected to us, so count it as a reference.
-    fromInput->node()->ref(AudioNode::RefTypeConnection);
+    fromInput->node()->ref(g, AudioNode::RefTypeConnection);
 }
 
-void AudioNodeInput::disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(!fromInput->context().expired());
-    auto ac = fromInput->context().lock();
-    ASSERT(ac->isGraphOwner());
-    
+    ASSERT(g.context());
     if (!fromInput || !toOutput || !fromInput->node())
         return;
     
@@ -76,9 +70,9 @@ void AudioNodeInput::disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::
     auto it = fromInput->m_outputs.find(toOutput);
     if (it != fromInput->m_outputs.end()) {
         fromInput->m_outputs.erase(it);             /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
-        AudioNodeInput::changedOutputs(fromInput);
-        toOutput->removeInput(fromInput);
-        fromInput->node()->deref(AudioNode::RefTypeConnection);
+        AudioNodeInput::changedOutputs(g, fromInput);
+        toOutput->removeInput(g, fromInput);
+        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
         return;
     }
     
@@ -86,21 +80,16 @@ void AudioNodeInput::disconnect(std::shared_ptr<AudioNodeInput> fromInput, std::
     auto it2 = fromInput->m_disabledOutputs.find(toOutput);
     if (it2 != fromInput->m_disabledOutputs.end()) {
         fromInput->m_disabledOutputs.erase(it2);
-        toOutput->removeInput(fromInput);
-        fromInput->node()->deref(AudioNode::RefTypeConnection);
+        toOutput->removeInput(g, fromInput);
+        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
         return;
     }
 
     ASSERT_NOT_REACHED();
 }
 
-void AudioNodeInput::disable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
 {
-    ASSERT(!self->context().expired());
-    auto ac = self->context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(output && self->node());
     if (!output || !self->node())
         return;
 
@@ -109,20 +98,16 @@ void AudioNodeInput::disable(std::shared_ptr<AudioNodeInput> self, std::shared_p
     
     self->m_disabledOutputs.insert(output);
     self->m_outputs.erase(it);
-    changedOutputs(self);
+    changedOutputs(g, self);
 
     // Propagate disabled state to outputs.
-    self->node()->disableOutputsIfNecessary();
+    self->node()->disableOutputsIfNecessary(g);
 }
 
-void AudioNodeInput::enable(std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output || !self->node())
         return;
-    
-    ASSERT(!self->context().expired());
-    auto ac = self->context().lock();
-    ASSERT(ac->isGraphOwner());
 
     auto it = self->m_disabledOutputs.find(output);
     ASSERT(it != self->m_disabledOutputs.end());
@@ -130,23 +115,19 @@ void AudioNodeInput::enable(std::shared_ptr<AudioNodeInput> self, std::shared_pt
     // Move output from disabled list to active list.
     self->m_outputs.insert(output);
     self->m_disabledOutputs.erase(it);
-    AudioNodeInput::changedOutputs(self);
+    AudioNodeInput::changedOutputs(g, self);
 
     // Propagate enabled state to outputs.
-    self->node()->enableOutputsIfNecessary();
+    self->node()->enableOutputsIfNecessary(g);
 }
 
-void AudioNodeInput::didUpdate()
+void AudioNodeInput::didUpdate(ContextGraphLock& g, ContextRenderLock& r)
 {
-    node()->checkNumberOfChannelsForInput(this);
+    m_node->checkNumberOfChannelsForInput(g, r, this);
 }
 
-void AudioNodeInput::updateInternalBus()
+void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
-
     unsigned numberOfInputChannels = numberOfChannels();
 
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
@@ -169,10 +150,6 @@ unsigned AudioNodeInput::numberOfChannels() const
 
 unsigned AudioNodeInput::numberOfRenderingChannels()
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread());
-
     // Find the number of channels of the rendering connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
@@ -184,10 +161,6 @@ unsigned AudioNodeInput::numberOfRenderingChannels()
 
 AudioBus* AudioNodeInput::bus()
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread());
-
     // Handle single connection specially to allow for in-place processing.
     if (numberOfRenderingConnections() == 1)
         return renderingOutput(0)->bus();
@@ -198,21 +171,13 @@ AudioBus* AudioNodeInput::bus()
 
 AudioBus* AudioNodeInput::internalSummingBus()
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread());
-
     ASSERT(numberOfRenderingChannels() == m_internalSummingBus->numberOfChannels());
 
     return m_internalSummingBus.get();
 }
 
-void AudioNodeInput::sumAllConnections(AudioBus* summingBus, size_t framesToProcess)
+void AudioNodeInput::sumAllConnections(ContextGraphLock& g, ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread());
-
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
     ASSERT(numberOfRenderingConnections() > 1);
 
@@ -227,24 +192,20 @@ void AudioNodeInput::sumAllConnections(AudioBus* summingBus, size_t framesToProc
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(0, framesToProcess);
+        AudioBus* connectionBus = output->pull(g, r, 0, framesToProcess);
 
         // Sum, with unity-gain.
         summingBus->sumFrom(*connectionBus);
     }
 }
 
-AudioBus* AudioNodeInput::pull(AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus* AudioNodeInput::pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread());
-
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
         AudioNodeOutput* output = this->renderingOutput(0);
-        return output->pull(inPlaceBus, framesToProcess);
+        return output->pull(g, r, inPlaceBus, framesToProcess);
     }
 
     AudioBus* internalSummingBus = this->internalSummingBus();
@@ -257,7 +218,7 @@ AudioBus* AudioNodeInput::pull(AudioBus* inPlaceBus, size_t framesToProcess)
     }
 
     // Handle multiple connections case.
-    sumAllConnections(internalSummingBus, framesToProcess);
+    sumAllConnections(g, r, internalSummingBus, framesToProcess);
     
     return internalSummingBus;
 }

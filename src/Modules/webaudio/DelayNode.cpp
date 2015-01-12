@@ -23,20 +23,21 @@
  */
 
 #include "LabSoundConfig.h"
+#include "AudioDSPKernel.h"
 #include "DelayNode.h"
 
 namespace WebCore {
 
 const double maximumAllowedDelayTime = 180;
 
-DelayNode::DelayNode(std::shared_ptr<AudioContext> context, float sampleRate, double maxDelayTime, ExceptionCode& ec)
-    : AudioBasicProcessorNode(context, sampleRate)
+DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec)
+    : AudioBasicProcessorNode(sampleRate)
 {
     if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime) {
         ec = NOT_SUPPORTED_ERR;
         return;
     }
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new DelayProcessor(context, sampleRate, 1, maxDelayTime)));
+    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new DelayProcessor(sampleRate, 1, maxDelayTime)));
     setNodeType(NodeTypeDelay);
 }
 

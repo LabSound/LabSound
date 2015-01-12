@@ -24,7 +24,7 @@
 
 #include "LabSoundConfig.h"
 #include "PannerNode.h"
-
+#include "AudioContextLock.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioBus.h"
 #include "AudioContext.h"
@@ -43,8 +43,8 @@ static void fixNANs(double &x)
         x = 0.0;
 }
 
-PannerNode::PannerNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+PannerNode::PannerNode(float sampleRate)
+    : AudioNode(sampleRate)
     , m_panningModel(Panner::PanningModelHRTF)
     , m_lastGain(-1.0)
     , m_connectionCount(0)
@@ -52,8 +52,8 @@ PannerNode::PannerNode(std::shared_ptr<AudioContext> context, float sampleRate)
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
-    m_distanceGain = std::make_shared<AudioParam>(context, "distanceGain", 1.0, 0.0, 1.0);
-    m_coneGain = std::make_shared<AudioParam>(context, "coneGain", 1.0, 0.0, 1.0);
+    m_distanceGain = std::make_shared<AudioParam>("distanceGain", 1.0, 0.0, 1.0);
+    m_coneGain = std::make_shared<AudioParam>("coneGain", 1.0, 0.0, 1.0);
 
     m_position = FloatPoint3D(0, 0, 0);
     m_orientation = FloatPoint3D(1, 0, 0);
@@ -69,25 +69,26 @@ PannerNode::~PannerNode()
     uninitialize();
 }
 
-void PannerNode::pullInputs(size_t framesToProcess)
+void PannerNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     // We override pullInputs(), so we can detect new AudioSourceNodes which have connected to us when new connections are made.
     // These AudioSourceNodes need to be made aware of our existence in order to handle doppler shift pitch changes.
 
-    ASSERT(!context().expired());
-    auto ac = context().lock();
+    auto ac = g.context();
+    if (!ac)
+        return;
     
     if (m_connectionCount != ac->connectionCount()) {
         m_connectionCount = ac->connectionCount();
 
         // Recursively go through all nodes connected to us.
-        notifyAudioSourcesConnectedToNode(this);
+        notifyAudioSourcesConnectedToNode(g, r, this);
     }
     
-    AudioNode::pullInputs(framesToProcess);
+    AudioNode::pullInputs(g, r, framesToProcess);
 }
 
-void PannerNode::process(size_t framesToProcess)
+void PannerNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destination = output(0)->bus();
 
@@ -106,11 +107,11 @@ void PannerNode::process(size_t framesToProcess)
     // Apply the panning effect.
     double azimuth;
     double elevation;
-    getAzimuthElevation(&azimuth, &elevation);
-    m_panner->pan(azimuth, elevation, source, destination, framesToProcess);
+    getAzimuthElevation(r, &azimuth, &elevation);
+    m_panner->pan(g, r, azimuth, elevation, source, destination, framesToProcess);
 
     // Get the distance and cone gain.
-    double totalGain = distanceConeGain();
+    double totalGain = distanceConeGain(r);
 
     // Snap to desired gain at the beginning.
     if (m_lastGain == -1.0)
@@ -120,7 +121,7 @@ void PannerNode::process(size_t framesToProcess)
     destination->copyWithGainFrom(*destination, &m_lastGain, totalGain);
 }
 
-void PannerNode::reset()
+void PannerNode::reset(ContextRenderLock& r)
 {
     m_lastGain = -1.0; // force to snap to initial gain
     if (m_panner.get())
@@ -146,10 +147,12 @@ void PannerNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-AudioListener* PannerNode::listener()
+AudioListener* PannerNode::listener(ContextRenderLock& r)
 {
-    ASSERT(!context().expired());
-    return context().lock()->listener();
+    if (!r.context())
+        return nullptr;
+    
+    return r.context()->listener();
 }
 
 void PannerNode::setPanningModel(unsigned short model, ExceptionCode& ec)
@@ -185,14 +188,14 @@ void PannerNode::setDistanceModel(unsigned short model, ExceptionCode& ec)
     }
 }
 
-void PannerNode::getAzimuthElevation(double* outAzimuth, double* outElevation)
+void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation)
 {
     // FIXME: we should cache azimuth and elevation (if possible), so we only re-calculate if a change has been made.
 
     double azimuth = 0.0;
 
     // Calculate the source-listener vector
-    FloatPoint3D listenerPosition = listener()->position();
+    FloatPoint3D listenerPosition = listener(r)->position();
     FloatPoint3D sourceListener = m_position - listenerPosition;
 
     if (sourceListener.isZero()) {
@@ -205,8 +208,8 @@ void PannerNode::getAzimuthElevation(double* outAzimuth, double* outElevation)
     sourceListener.normalize();
 
     // Align axes
-    FloatPoint3D listenerFront = listener()->orientation();
-    FloatPoint3D listenerUp = listener()->upVector();
+    FloatPoint3D listenerFront = listener(r)->orientation();
+    FloatPoint3D listenerUp = listener(r)->upVector();
     FloatPoint3D listenerRight = listenerFront.cross(listenerUp);
     listenerRight.normalize();
 
@@ -249,18 +252,18 @@ void PannerNode::getAzimuthElevation(double* outAzimuth, double* outElevation)
         *outElevation = elevation;
 }
 
-float PannerNode::dopplerRate()
+float PannerNode::dopplerRate(ContextRenderLock& r)
 {
     double dopplerShift = 1.0;
 
     // FIXME: optimize for case when neither source nor listener has changed...
-    double dopplerFactor = listener()->dopplerFactor();
+    double dopplerFactor = listener(r)->dopplerFactor();
 
     if (dopplerFactor > 0.0) {
-        double speedOfSound = listener()->speedOfSound();
+        double speedOfSound = listener(r)->speedOfSound();
 
         const FloatPoint3D &sourceVelocity = m_velocity;
-        const FloatPoint3D &listenerVelocity = listener()->velocity();
+        const FloatPoint3D &listenerVelocity = listener(r)->velocity();
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !sourceVelocity.isZero();
@@ -268,7 +271,7 @@ float PannerNode::dopplerRate()
 
         if (sourceHasVelocity || listenerHasVelocity) {
             // Calculate the source to listener vector
-            FloatPoint3D listenerPosition = listener()->position();
+            FloatPoint3D listenerPosition = listener(r)->position();
             FloatPoint3D sourceToListener = m_position - listenerPosition;
 
             double sourceListenerMagnitude = sourceToListener.length();
@@ -297,9 +300,9 @@ float PannerNode::dopplerRate()
     return static_cast<float>(dopplerShift);
 }
 
-float PannerNode::distanceConeGain()
+float PannerNode::distanceConeGain(ContextRenderLock& r)
 {
-    FloatPoint3D listenerPosition = listener()->position();
+    FloatPoint3D listenerPosition = listener(r)->position();
 
     double listenerDistance = m_position.distanceTo(listenerPosition);
     double distanceGain = m_distanceEffect.gain(listenerDistance);
@@ -314,7 +317,7 @@ float PannerNode::distanceConeGain()
     return float(distanceGain * coneGain);
 }
 
-void PannerNode::notifyAudioSourcesConnectedToNode(AudioNode* node)
+void PannerNode::notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
 {
     ASSERT(node);
     if (!node)
@@ -323,7 +326,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(AudioNode* node)
     // First check if this node is an AudioBufferSourceNode. If so, let it know about us so that doppler shift pitch can be taken into account.
     if (node->nodeType() == NodeTypeAudioBufferSource) {
         AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
-        bufferSourceNode->setPannerNode(this);
+        bufferSourceNode->setPannerNode(g, r, this);
     }
     else {
         // Go through all inputs to this node.
@@ -334,7 +337,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(AudioNode* node)
             for (unsigned j = 0; j < input->numberOfRenderingConnections(); ++j) {
                 AudioNodeOutput* connectedOutput = input->renderingOutput(j);
                 AudioNode* connectedNode = connectedOutput->node();
-                notifyAudioSourcesConnectedToNode(connectedNode); // recurse
+                notifyAudioSourcesConnectedToNode(g, r, connectedNode); // recurse
             }
         }
     }

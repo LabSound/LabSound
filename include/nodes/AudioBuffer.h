@@ -29,13 +29,12 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
+#include "ExceptionCodes.h"
 #include <vector>
 
 namespace WebCore {
 
 class AudioBus;
-
-typedef int ExceptionCode;
 
 class AudioBuffer {
 public:   

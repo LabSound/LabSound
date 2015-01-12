@@ -53,14 +53,14 @@ namespace LabSound {
 
     class SpatializationNode : public WebCore::PannerNode {
     public:
-        SpatializationNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate);
+        SpatializationNode(float sampleRate);
         virtual ~SpatializationNode();
 
         void setOccluders(OccludersPtr);
         
     private:
 
-        virtual float distanceConeGain();
+        virtual float distanceConeGain(ContextRenderLock& r);
         
         std::shared_ptr<Occluders> occluders;
     };

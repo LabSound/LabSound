@@ -54,11 +54,12 @@ public:
         FINISHED_STATE = 3
     };
     
-    AudioScheduledSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AudioScheduledSourceNode(float sampleRate);
+    virtual ~AudioScheduledSourceNode() {}
 
     // Scheduling.
-    void start(double when);
-    void stop(double when);
+    void start(ContextRenderLock&, double when);
+    void stop(ContextRenderLock&, double when);
 
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
@@ -72,13 +73,14 @@ protected:
     // Each frame time is relative to the context's currentSampleFrame().
     // quantumFrameOffset    : Offset frame in this time quantum to start rendering.
     // nonSilentFramesToProcess : Number of frames rendering non-silence (will be <= quantumFrameSize).
-    void updateSchedulingInfo(size_t quantumFrameSize,
+    void updateSchedulingInfo(ContextRenderLock&,
+                              size_t quantumFrameSize,
                               AudioBus* outputBus,
                               size_t& quantumFrameOffset,
                               size_t& nonSilentFramesToProcess);
 
     // Called when we have no more sound to play or the noteOff() time has been reached.
-    void finish();
+    void finish(ContextRenderLock&);
 
     PlaybackState m_playbackState;
 
@@ -90,7 +92,8 @@ protected:
     // has been reached.
     double m_endTime; // in seconds
 
-    virtual void clearPannerNode() {}
+    // this is the base declaration
+    virtual void clearPannerNode(ContextRenderLock& r) {}
     
     static const double UnknownTime;
 };

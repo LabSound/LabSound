@@ -4,22 +4,28 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
 int main(int, char**)
 {
     ExceptionCode ec;
-    
     auto context = LabSound::init();
-    
-    auto oscillator = OscillatorNode::create(context, context->sampleRate());
-    oscillator->start(0);
-    
-    SoundBuffer tonbi(context, "tonbi.wav");
-    
-    auto recorder = RecorderNode::create(context, context->sampleRate());
+    std::shared_ptr<OscillatorNode> oscillator;
+    SoundBuffer tonbi("tonbi.wav", context->sampleRate());
+    std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+    auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
     recorder->startRecording();
-    oscillator->connect(recorder.get(), 0, 0, ec);
-    tonbi.play(recorder.get(), 0.0f);
+    {
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        oscillator = make_shared<OscillatorNode>(r, context->sampleRate());
+        oscillator->connect(g, r, context->destination().get(), 0, 0, ec);
+        oscillator->start(r, 0);   // play now
+        oscillator->frequency()->setValue(440.f);
+        oscillator->setType(r, 1, ec);
+        tonbiSound = tonbi.play(g, r, recorder, 0.0f);
+        oscillator->connect(g,r, recorder.get(), 0, 0, ec);
+    }
     
     const int seconds = 3;
     for (int t = 0; t < seconds; ++t)
@@ -38,6 +44,5 @@ int main(int, char**)
     }
     
     LabSound::finish(context);
-    
     return 0;
 }

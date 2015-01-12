@@ -36,17 +36,17 @@ class Reverb;
     
 class ConvolverNode : public AudioNode {
 public:
-    ConvolverNode(std::shared_ptr<AudioContext>, float sampleRate);
+    ConvolverNode(float sampleRate);
     virtual ~ConvolverNode();
     
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&);
     virtual void initialize();
     virtual void uninitialize();
 
     // Impulse responses
-    void setBuffer(std::shared_ptr<AudioBuffer>);
+    void setBuffer(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioBuffer>);
     std::shared_ptr<AudioBuffer> buffer();
 
     bool normalize() const { return m_normalize; }
@@ -58,9 +58,6 @@ private:
 
     std::unique_ptr<Reverb> m_reverb;
     std::shared_ptr<AudioBuffer> m_buffer;
-
-    // This synchronizes dynamic changes to the convolution impulse response with process().
-    mutable WTF::Mutex m_processLock;
 
     // Normalize the impulse response or not. Must default to true.
     bool m_normalize;

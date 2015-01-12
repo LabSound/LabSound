@@ -19,7 +19,7 @@ namespace LabSound {
     class PWMNode::PWMNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        PWMNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
+        PWMNodeInternal(float sampleRate)
         : AudioProcessor(sampleRate)
         , channels(1)
         {
@@ -35,7 +35,7 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
             if (!channels)
                 return;
             
@@ -69,9 +69,9 @@ namespace LabSound {
         int channels;
     };
 
-    PWMNode::PWMNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : WebCore::AudioBasicProcessorNode(context, sampleRate)
-    , data(new PWMNodeInternal(context, sampleRate))
+    PWMNode::PWMNode(float sampleRate)
+    : WebCore::AudioBasicProcessorNode(sampleRate)
+    , data(new PWMNodeInternal(sampleRate))
     {
         m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

@@ -198,7 +198,8 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
     return m_K;
 }
 
-void DynamicsCompressorKernel::process(float* sourceChannels[],
+void DynamicsCompressorKernel::process(ContextGraphLock& g, ContextRenderLock&,
+                                       float* sourceChannels[],
                                        float* destinationChannels[],
                                        unsigned numberOfChannels,
                                        unsigned framesToProcess,

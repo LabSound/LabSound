@@ -12,6 +12,7 @@
 #endif
 #if OS(DARWIN)
 #include <limits.h>
+#include <unistd.h>
 #define MAX_PATH PATH_MAX
 #endif
 
@@ -21,21 +22,21 @@ namespace LabSound {
 
 	using namespace json11;
 
-    SampledInstrumentNode::SampledInstrumentNode(std::shared_ptr<AudioContext> context, float sampleRate) : localContext(context) {
+    SampledInstrumentNode::SampledInstrumentNode(float sampleRate) {
 
 		// All samples bus their output to this node... 
-        gainNode = std::make_shared<GainNode>(context, context->sampleRate());
+        gainNode = std::make_shared<GainNode>(sampleRate);
 		gainNode->gain()->setValue(4.0);
 	}
 
 	// Definitely have ADSR... 
-	void SampledInstrumentNode::noteOn(float midiNoteNumber, float amplitude) {
+	void SampledInstrumentNode::noteOn(ContextGraphLock& g, ContextRenderLock& r, float midiNoteNumber, float amplitude) {
 	
 		for (auto &sample : samples) {
 
 			// Find note in sample map
 			if (sample->appliesToNote(midiNoteNumber)) {
-				sample->startNote(midiNoteNumber, amplitude);
+				sample->startNote(g, r, midiNoteNumber, amplitude);
 			}
 
 		}
@@ -68,16 +69,16 @@ namespace LabSound {
 
 		if (err.empty()) {
 
-            auto lc = localContext.lock();
 			for (auto &samp : jsonConfig["samples"].array_items()) {
 				// std::cout << "Loading Sample: " << samp.dump() << "\n";
 				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
                 samples.emplace_back(std::make_shared<SamplerSound>(
-					lc, gainNode,
+					gainNode,
 					samp["sample"].string_value(),
 					samp["baseNote"].string_value(),
 					samp["lowNote"].string_value(),
-					samp["highNote"].string_value()
+					samp["highNote"].string_value(),
+                    44100
 					));
 			}
 

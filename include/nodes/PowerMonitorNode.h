@@ -12,12 +12,12 @@ namespace LabSound {
     
     class PowerMonitorNode : public WebCore::AudioBasicInspectorNode {
     public:
-        PowerMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
+        PowerMonitorNode(float sampleRate);
         virtual ~PowerMonitorNode();
         
         // AudioNode
-        virtual void process(size_t framesToProcess) override;
-        virtual void reset();
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock& r) override;
         // ..AudioNode
 
         // instantaneous estimation of power

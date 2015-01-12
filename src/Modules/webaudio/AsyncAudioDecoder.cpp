@@ -48,7 +48,8 @@ AsyncAudioDecoder::~AsyncAudioDecoder()
     m_threadID = 0;
 }
 
-void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
+void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
+                                    PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
 {
     ASSERT(isMainThread());
     ASSERT(audioData);

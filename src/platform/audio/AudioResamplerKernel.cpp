@@ -70,7 +70,7 @@ float* AudioResamplerKernel::getSourcePointer(size_t framesToProcess, size_t* nu
     return m_sourceBuffer.data() + m_fillIndex;
 }
 
-void AudioResamplerKernel::process(float* destination, size_t framesToProcess)
+void AudioResamplerKernel::process(ContextGraphLock& g, ContextRenderLock&, float* destination, size_t framesToProcess)
 {
     ASSERT(framesToProcess <= MaxFramesToProcess);
 

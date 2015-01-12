@@ -27,6 +27,7 @@
 #include "AudioBufferSourceNode.h"
 
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
@@ -47,8 +48,8 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioScheduledSourceNode(context, sampleRate)
+AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
+    : AudioScheduledSourceNode(sampleRate)
     , m_buffer(0)
     , m_isLooping(false)
     , m_loopStart(0)
@@ -62,8 +63,8 @@ AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> conte
 {
     setNodeType(NodeTypeAudioBufferSource);
 
-    m_gain = make_shared<AudioParam>(context, "gain", 1.0, 0.0, 1.0);
-    m_playbackRate = make_shared<AudioParam>(context, "playbackRate", 1.0, 0.0, MaxRate);
+    m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
+    m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
 
     // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -73,70 +74,58 @@ AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<AudioContext> conte
 
 AudioBufferSourceNode::~AudioBufferSourceNode()
 {
-    clearPannerNode();
     uninitialize();
 }
 
-void AudioBufferSourceNode::process(size_t framesToProcess)
+void AudioBufferSourceNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
-
-    if (!isInitialized()) {
+    
+    ASSERT(r.context());
+    if (!buffer() || !isInitialized() || ! r.context()) {
         outputBus->zero();
         return;
     }
 
-    // The audio thread can't block on this lock, so we call tryLock() instead.
-    MutexTryLocker tryLocker(m_processLock);
-    if (tryLocker.locked()) {
-        if (!buffer()) {
-            outputBus->zero();
-            return;
-        }
-
-        // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
-        // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
-        // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
-        if (numberOfChannels() != buffer()->numberOfChannels()) {
-            outputBus->zero();
-            return;
-        }
-
-        size_t quantumFrameOffset;
-        size_t bufferFramesToProcess;
-
-        updateSchedulingInfo(framesToProcess,
-                             outputBus,
-                             quantumFrameOffset,
-                             bufferFramesToProcess);
-                             
-        if (!bufferFramesToProcess) {
-            outputBus->zero();
-            return;
-        }
-
-        for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
-            m_destinationChannels[i] = outputBus->channel(i)->mutableData();
-
-        // Render by reading directly from the buffer.
-        if (!renderFromBuffer(outputBus, quantumFrameOffset, bufferFramesToProcess)) {
-            outputBus->zero();
-            return;
-        }
-
-        // Apply the gain (in-place) to the output bus.
-        float totalGain = gain()->value() * m_buffer->gain();
-        outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
-        outputBus->clearSilentFlag();
-    }
-    else {
-        // Too bad - the tryLock() failed.  We must be in the middle of changing buffers and were already outputting silence anyway.
+    // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
+    // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
+    // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
+    if (numberOfChannels() != buffer()->numberOfChannels()) {
         outputBus->zero();
+        return;
     }
+
+    size_t quantumFrameOffset;
+    size_t bufferFramesToProcess;
+
+    updateSchedulingInfo(r,
+                         framesToProcess,
+                         outputBus,
+                         quantumFrameOffset,
+                         bufferFramesToProcess);
+                         
+    if (!bufferFramesToProcess) {
+        outputBus->zero();
+        return;
+    }
+
+    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
+        m_destinationChannels[i] = outputBus->channel(i)->mutableData();
+
+    // Render by reading directly from the buffer.
+    if (!renderFromBuffer(r, outputBus, quantumFrameOffset, bufferFramesToProcess)) {
+        outputBus->zero();
+        return;
+    }
+
+    // Apply the gain (in-place) to the output bus.
+    float totalGain = gain()->value(r) * m_buffer->gain();
+    outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
+    outputBus->clearSilentFlag();
 }
 
 // Returns true if we're finished.
-bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus*, unsigned index, size_t framesToProcess)
+bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus*, unsigned index, size_t framesToProcess)
 {
     if (!loop()) {
         // If we're not looping, then stop playing when we get to the end.
@@ -148,19 +137,16 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(AudioBus*, unsign
                 memset(m_destinationChannels[i] + index, 0, sizeof(float) * framesToProcess);
         }
 
-        finish();
+        finish(r);
         return true;
     }
     return false;
 }
 
-bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
+bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
-    if (context().expired())
+    if (!r.context())
         return false;
-    
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isAudioThread());
 
     // Basic sanity checking
     ASSERT(bus);
@@ -232,7 +218,7 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
     }
 
 
-    double pitchRate = totalPitchRate();
+    double pitchRate = totalPitchRate(r);
 
     // Sanity check that our playback rate isn't larger than the loop size.
     if (pitchRate >= virtualDeltaFrames)
@@ -270,7 +256,7 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
             // Wrap-around.
             if (readIndex >= endFrame) {
                 readIndex -= deltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(bus, writeIndex, framesToProcess))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
                     break;
             }
         }
@@ -313,7 +299,7 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
             // Wrap-around, retaining sub-sample position since virtualReadIndex is floating-point.
             if (virtualReadIndex >= virtualEndFrame) {
                 virtualReadIndex -= virtualDeltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(bus, writeIndex, framesToProcess))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
                     break;
             }
         }
@@ -327,23 +313,15 @@ bool AudioBufferSourceNode::renderFromBuffer(AudioBus* bus, unsigned destination
 }
 
 
-void AudioBufferSourceNode::reset()
+void AudioBufferSourceNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
-    m_lastGain = gain()->value();
+    m_lastGain = gain()->value(r);
 }
 
-bool AudioBufferSourceNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
+bool AudioBufferSourceNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
 {
-    ASSERT(!context().expired());
-    ASSERT(isMainThread());
-    
-    // The context must be locked since changing the buffer can re-configure the number of channels that are output.
-    std::shared_ptr<AudioContext> ac = context().lock();
-    AudioContext::AutoLocker locker(ac.get());
-    
-    // This synchronizes with process().
-    MutexLocker processLocker(m_processLock);
+    ASSERT(g.context() && r.context());
     
     if (buffer) {
         // Do any necesssary re-configuration to the buffer's number of channels.
@@ -352,7 +330,7 @@ bool AudioBufferSourceNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
         if (numberOfChannels > AudioContext::maxNumberOfChannels())
             return false;
 
-        output(0)->setNumberOfChannels(numberOfChannels);
+        output(0)->setNumberOfChannels(r, numberOfChannels);
 
         m_sourceChannels = std::unique_ptr<const float*[]>(new const float*[numberOfChannels]);
         m_destinationChannels = std::unique_ptr<float*[]>(new float*[numberOfChannels]);
@@ -363,7 +341,6 @@ bool AudioBufferSourceNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
 
     m_virtualReadIndex = 0;
     m_buffer = buffer;
-    
     return true;
 }
 
@@ -417,11 +394,11 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     m_playbackState = SCHEDULED_STATE;
 }
 
-double AudioBufferSourceNode::totalPitchRate()
+double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
 {
     double dopplerRate = 1.0;
     if (m_pannerNode)
-        dopplerRate = m_pannerNode->dopplerRate();
+        dopplerRate = m_pannerNode->dopplerRate(r);
     
     // Incorporate buffer's sample-rate versus AudioContext's sample-rate.
     // Normally it's not an issue because buffers are loaded at the AudioContext's sample-rate, but we can handle it in any case.
@@ -429,7 +406,7 @@ double AudioBufferSourceNode::totalPitchRate()
     if (buffer())
         sampleRateFactor = buffer()->sampleRate() / sampleRate();
     
-    double basePitchRate = playbackRate()->value();
+    double basePitchRate = playbackRate()->value(r);
 
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
 
@@ -457,29 +434,19 @@ void AudioBufferSourceNode::setLooping(bool looping)
     m_isLooping = looping;
 }
 
-bool AudioBufferSourceNode::propagatesSilence() const
+bool AudioBufferSourceNode::propagatesSilence(ContextRenderLock& r) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_buffer;
 }
 
-void AudioBufferSourceNode::setPannerNode(PannerNode* pannerNode)
+void AudioBufferSourceNode::setPannerNode(ContextGraphLock& g, ContextRenderLock& r, PannerNode* pannerNode)
 {
-    if (m_pannerNode != pannerNode && !hasFinished()) {
-        if (pannerNode)
-            pannerNode->ref(AudioNode::RefTypeConnection);
-        if (m_pannerNode)
-            m_pannerNode->deref(AudioNode::RefTypeConnection);
-
-        m_pannerNode = pannerNode;
-    }
+    m_pannerNode = pannerNode;
 }
 
-void AudioBufferSourceNode::clearPannerNode()
+void AudioBufferSourceNode::clearPannerNode(ContextRenderLock& r)
 {
-    if (m_pannerNode) {
-        m_pannerNode->deref(AudioNode::RefTypeConnection);
-        m_pannerNode = 0;
-    }
+    m_pannerNode = 0;
 }
 
 } // namespace WebCore

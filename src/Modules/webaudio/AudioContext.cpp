@@ -31,6 +31,7 @@
 #include "AudioBuffer.h"
 #include "AudioBufferCallback.h"
 #include "AudioBufferSourceNode.h"
+#include "AudioContextLock.h"
 #include "AudioListener.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
@@ -51,11 +52,9 @@
 #include "WaveShaperNode.h"
 #include "WaveTable.h"
 
-#if ENABLE(MEDIA_STREAM)
 #include "MediaStream.h"
 #include "MediaStreamAudioDestinationNode.h"
 #include "MediaStreamAudioSourceNode.h"
-#endif
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
@@ -63,9 +62,6 @@
 
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
-
-// FIXME: check the proper way to reference an undefined thread ID
-const int UndefinedThreadIdentifier = ~0;
 
 namespace WebCore {
     
@@ -99,7 +95,7 @@ std::unique_ptr<AudioContext> AudioContext::createOfflineContext(unsigned number
 {
     // FIXME: offline contexts have limitations on supported sample-rates.
     // Currently all AudioContexts must have the same sample-rate.
-    HRTFDatabaseLoader* loader = HRTFDatabaseLoader::loader();
+    auto loader = HRTFDatabaseLoader::loader();
     if (numberOfChannels > 10 || !isSampleRateRangeGood(sampleRate) || (loader && loader->databaseSampleRate() != sampleRate)) {
         ec = SYNTAX_ERR;
         return 0;
@@ -117,8 +113,6 @@ AudioContext::AudioContext()
     , m_isDeletionScheduled(false)
     , m_automaticPullNodesNeedUpdating(false)
     , m_connectionCount(0)
-    , m_audioThread(0)
-    , m_graphOwnerThread(UndefinedThreadIdentifier)
     , m_isOfflineContext(false)
     , m_activeSourceCount(0)
 {
@@ -133,8 +127,6 @@ AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, flo
     , m_destinationNode(0)
     , m_automaticPullNodesNeedUpdating(false)
     , m_connectionCount(0)
-    , m_audioThread(0)
-    , m_graphOwnerThread(UndefinedThreadIdentifier)
     , m_isOfflineContext(true)
     , m_activeSourceCount(0)
 {
@@ -213,7 +205,7 @@ void AudioContext::clear()
     } while (m_nodesToDelete.size());
 }
 
-void AudioContext::uninitialize()
+void AudioContext::uninitialize(ContextGraphLock& g)
 {
     ASSERT(isMainThread());
 
@@ -232,7 +224,7 @@ void AudioContext::uninitialize()
     }
 
     // Get rid of the sources which may still be playing.
-    derefUnfinishedSourceNodes();
+    derefUnfinishedSourceNodes(g);
 
     m_isInitialized = false;
 }
@@ -242,6 +234,16 @@ bool AudioContext::isInitialized() const
     return m_isInitialized;
 }
 
+    size_t AudioContext::currentSampleFrame() const { return m_destinationNode->currentSampleFrame(); }
+    double AudioContext::currentTime() const { return m_destinationNode->currentTime(); }
+    float AudioContext::sampleRate() const { return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); }
+    
+    void AudioContext::incrementConnectionCount(ContextGraphLock& g)
+    {
+        m_connectionCount++;
+    }
+
+    
 bool AudioContext::isRunnable() const
 {
     if (!isInitialized())
@@ -251,18 +253,7 @@ bool AudioContext::isRunnable() const
     return m_hrtfDatabaseLoader->isLoaded();
 }
 
-void AudioContext::stopDispatch(void* userData)
-{
-    AudioContext* context = reinterpret_cast<AudioContext*>(userData);
-    ASSERT(context);
-    if (!context)
-        return;
-
-    context->uninitialize();
-    context->clear();
-}
-
-void AudioContext::stop()
+void AudioContext::stop(ContextGraphLock& g)
 {
     if (m_isStopScheduled)
         return;
@@ -271,7 +262,7 @@ void AudioContext::stop()
     
     m_isStopScheduled = true;
     
-    uninitialize();
+    uninitialize(g);
     clear();
 }
 
@@ -282,37 +273,35 @@ void AudioContext::decodeAudioData(std::shared_ptr<std::vector<uint8_t>> audioDa
         ec = SYNTAX_ERR;
         return;
     }
-    m_audioDecoder.decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
+    m_audioDecoder->decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
 }
 
-std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(std::shared_ptr<AudioContext> ac, ExceptionCode& ec)
+std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(ContextGraphLock& g, ContextRenderLock& r, ExceptionCode& ec)
 {
     std::shared_ptr<MediaStream> mediaStream = std::make_shared<MediaStream>();
-
-    ASSERT(ac->isAudioThread());
-    ac->lazyInitialize();
 
     AudioSourceProvider* provider = 0;
 
     if (mediaStream->isLocal() && mediaStream->audioTracks()->length())
-        provider = ac->destination()->localAudioInputProvider();
+        provider = destination()->localAudioInputProvider();
     else {
         // FIXME: get a provider for non-local MediaStreams (like from a remote peer).
         provider = 0;
     }
 
-    std::shared_ptr<MediaStreamAudioSourceNode> node(new MediaStreamAudioSourceNode(ac, mediaStream, provider));
+    std::shared_ptr<MediaStreamAudioSourceNode> node(new MediaStreamAudioSourceNode(mediaStream, provider, sampleRate()));
 
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-    node->setFormat(2, ac->sampleRate());
+    node->setFormat(g, r, 2, sampleRate());
 
-    ac->refNode(node); // context keeps reference until node is disconnected
+    refNode(g, node); // context keeps reference until node is disconnected
     return node;
 }
 
-void AudioContext::notifyNodeFinishedProcessing(AudioNode* node)
+void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode* node)
 {
-    ASSERT(isAudioThread());
+    ASSERT(r.context());
+
     for (auto i : m_referencedNodes) {
         if (i.get() == node) {
             m_finishedNodes.push_back(i);
@@ -322,28 +311,27 @@ void AudioContext::notifyNodeFinishedProcessing(AudioNode* node)
     ASSERT(0 == "node to finish not referenced");
 }
 
-void AudioContext::derefFinishedSourceNodes()
+void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isGraphOwner());
-    ASSERT(isAudioThread() || isAudioThreadFinished());
+    ASSERT(g.context() && r.context());
     for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-        derefNode(m_finishedNodes[i]);
+        derefNode(g, m_finishedNodes[i]);
 
     m_finishedNodes.clear();
 }
 
-void AudioContext::refNode(std::shared_ptr<AudioNode> node)
+void AudioContext::refNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(isMainThread());
-    node->ref(AudioNode::RefTypeConnection);
+    ASSERT(g.context());
+    node->ref(g, AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::derefNode(std::shared_ptr<AudioNode> node)
+void AudioContext::derefNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(isGraphOwner());
+    ASSERT(g.context());
     
-    node->deref(AudioNode::RefTypeConnection);
+    node->deref(g, AudioNode::RefTypeConnection);
 
     for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
         if (node == *i) {
@@ -353,168 +341,73 @@ void AudioContext::derefNode(std::shared_ptr<AudioNode> node)
     }
 }
 
-void AudioContext::derefUnfinishedSourceNodes()
+void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g)
 {
-    ASSERT(isMainThread() && isAudioThreadFinished());
+    ASSERT(g.context());
     for (unsigned i = 0; i < m_referencedNodes.size(); ++i)
-        m_referencedNodes[i]->deref(AudioNode::RefTypeConnection);
+        m_referencedNodes[i]->deref(g, AudioNode::RefTypeConnection);
 
     m_referencedNodes.clear();
 }
 
-void AudioContext::lock(bool& mustReleaseLock)
+
+void AudioContext::addDeferredFinishDeref(ContextGraphLock& g, AudioNode* node)
 {
-    // Don't allow regular lock in real-time audio thread.
-    ASSERT(isMainThread());
-
-    ThreadIdentifier thisThread = currentThread();
-
-    if (thisThread == m_graphOwnerThread) {
-        // We already have the lock.
-        mustReleaseLock = false;
-    } else {
-        // Acquire the lock.
-        m_contextGraphMutex.lock();
-        m_graphOwnerThread = thisThread;
-        mustReleaseLock = true;
-    }
-}
-
-bool AudioContext::tryLock(bool& mustReleaseLock)
-{
-    ThreadIdentifier thisThread = currentThread();
-    bool isAudioThread = thisThread == audioThread();
-
-    // Try to catch cases of using try lock on main thread - it should use regular lock.
-    ASSERT(isAudioThread || isAudioThreadFinished());
-    
-    if (!isAudioThread) {
-        // In release build treat tryLock() as lock() (since above ASSERT(isAudioThread) never fires) - this is the best we can do.
-        lock(mustReleaseLock);
-        return true;
-    }
-    
-    bool hasLock;
-    
-    if (thisThread == m_graphOwnerThread) {
-        // Thread already has the lock.
-        hasLock = true;
-        mustReleaseLock = false;
-    } else {
-        // Don't already have the lock - try to acquire it.
-        hasLock = m_contextGraphMutex.tryLock();
-        
-        if (hasLock)
-            m_graphOwnerThread = thisThread;
-
-        mustReleaseLock = hasLock;
-    }
-    
-    return hasLock;
-}
-
-void AudioContext::unlock()
-{
-    ASSERT(currentThread() == m_graphOwnerThread);
-
-    m_graphOwnerThread = UndefinedThreadIdentifier;
-    m_contextGraphMutex.unlock();
-}
-
-void AudioContext::setAudioThread(ThreadIdentifier thread) {
-    printf("&&& %d\n", thread);
-    m_audioThread = thread; // FIXME: check either not initialized or the same
-}
-
-bool AudioContext::isAudioThread() const
-{
-    return currentThread() == m_audioThread;
-}
-
-bool AudioContext::isGraphOwner() const
-{
-    return currentThread() == m_graphOwnerThread;
-}
-
-void AudioContext::addDeferredFinishDeref(AudioNode* node)
-{
-    ASSERT(isAudioThread());
+    ASSERT(g.context());
     m_deferredFinishDerefList.push_back(node);
 }
 
-void AudioContext::handlePreRenderTasks()
+void AudioContext::handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isAudioThread());
+    ASSERT(r.context());
  
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
-    // It's OK if the tryLock() fails, we'll just take slightly longer to pick up the changes.
-    bool mustReleaseLock;
-    if (tryLock(mustReleaseLock)) {
-        // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
-        handleDirtyAudioSummingJunctions();
-
-        updateAutomaticPullNodes();
-
-        if (mustReleaseLock)
-            unlock();
-    }
+    handleDirtyAudioSummingJunctions(g, r);
+    updateAutomaticPullNodes(g, r);
 }
 
-void AudioContext::handlePostRenderTasks()
+void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isAudioThread());
+    ASSERT(r.context());
  
-    // Must use a tryLock() here too.  Don't worry, the lock will very rarely be contended and this method is called frequently.
-    // The worst that can happen is that there will be some nodes which will take slightly longer than usual to be deleted or removed
-    // from the render graph (in which case they'll render silence).
-    bool mustReleaseLock;
-    if (tryLock(mustReleaseLock)) {
-        // Take care of finishing any derefs where the tryLock() failed previously.
-        handleDeferredFinishDerefs();
+    // Take care of finishing any derefs where the tryLock() failed previously.
+    handleDeferredFinishDerefs(g);
 
-        // Dynamically clean up nodes which are no longer needed.
-        derefFinishedSourceNodes();
+    // Dynamically clean up nodes which are no longer needed.
+    derefFinishedSourceNodes(g, r);
 
-        // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
-        scheduleNodeDeletion();
+    // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
+    scheduleNodeDeletion(g);
 
-        // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
-        handleDirtyAudioSummingJunctions();
+    // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
+    handleDirtyAudioSummingJunctions(g, r);
 
-        updateAutomaticPullNodes();
-
-        if (mustReleaseLock)
-            unlock();
-    }
+    updateAutomaticPullNodes(g, r);
 }
 
-void AudioContext::handleDeferredFinishDerefs()
+void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g)
 {
-    ASSERT(isAudioThread() && isGraphOwner());
+    ASSERT(g.context());
     for (unsigned i = 0; i < m_deferredFinishDerefList.size(); ++i) {
         AudioNode* node = m_deferredFinishDerefList[i];
-        node->finishDeref(AudioNode::RefTypeConnection);
+        node->finishDeref(g, AudioNode::RefTypeConnection);
     }
     
     m_deferredFinishDerefList.clear();
 }
 
-void AudioContext::markForDeletion(AudioNode* node)
+void AudioContext::markForDeletion(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
 {
-    ASSERT(isGraphOwner());
-
+    ASSERT(g.context());
     for (auto i : m_referencedNodes) {
         if (i.get() == node) {
-            if (isAudioThreadFinished())
-                m_nodesToDelete.push_back(i);
-            else
-                m_nodesMarkedForDeletion.push_back(i);
+            m_nodesMarkedForDeletion.push_back(i);
             
             // This is probably the best time for us to remove the node from automatic pull list,
             // since all connections are gone and we hold the graph lock. Then when handlePostRenderTasks()
             // gets a chance to schedule the deletion work, updateAutomaticPullNodes() also gets a chance to
             // modify m_renderingAutomaticPullNodes.
-            removeAutomaticPullNode(node);
+            removeAutomaticPullNode(g, r, node);
             return;
         }
     }
@@ -522,9 +415,9 @@ void AudioContext::markForDeletion(AudioNode* node)
     ASSERT(0 == "Attempting to delete unreferenced node");
 }
 
-void AudioContext::scheduleNodeDeletion()
+void AudioContext::scheduleNodeDeletion(ContextGraphLock& g)
 {
-    bool isGood = m_isInitialized && isGraphOwner();
+    bool isGood = m_isInitialized && g.context();
     ASSERT(isGood);
     if (!isGood)
         return;
@@ -559,9 +452,10 @@ void AudioContext::deleteMarkedNodes()
     m_isDeletionScheduled = false;
 }
 
-void AudioContext::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
+void AudioContext::markSummingJunctionDirty(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> summingJunction)
 {
-    ASSERT(isGraphOwner());    
+    ASSERT(g.context());
+    ASSERT(summingJunction);
     m_dirtySummingJunctions.insert(summingJunction);
 }
 
@@ -577,20 +471,20 @@ void AudioContext::removeMarkedSummingJunction(AudioSummingJunction* summingJunc
     }
 }
 
-void AudioContext::handleDirtyAudioSummingJunctions()
+void AudioContext::handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isGraphOwner());    
+    ASSERT(r.context());
 
     for (auto i : m_dirtySummingJunctions)
-        i->updateRenderingState();
+        i->updateRenderingState(g, r);
 
     m_dirtySummingJunctions.clear();
 }
 
 
-void AudioContext::addAutomaticPullNode(AudioNode* node)
+void AudioContext::addAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
 {
-    ASSERT(isGraphOwner());
+    ASSERT(g.context() && r.context());
 
     if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end()) {
         m_automaticPullNodes.insert(node);
@@ -598,9 +492,9 @@ void AudioContext::addAutomaticPullNode(AudioNode* node)
     }
 }
 
-void AudioContext::removeAutomaticPullNode(AudioNode* node)
+void AudioContext::removeAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
 {
-    ASSERT(isGraphOwner());
+    ASSERT(g.context() && r.context());
 
     auto it = m_automaticPullNodes.find(node);
     if (it != m_automaticPullNodes.end()) {
@@ -609,9 +503,9 @@ void AudioContext::removeAutomaticPullNode(AudioNode* node)
     }
 }
 
-void AudioContext::updateAutomaticPullNodes()
+void AudioContext::updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isGraphOwner());
+    ASSERT(g.context() && r.context());
 
     if (m_automaticPullNodesNeedUpdating) {
         // Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
@@ -627,12 +521,12 @@ void AudioContext::updateAutomaticPullNodes()
     }
 }
 
-void AudioContext::processAutomaticPullNodes(size_t framesToProcess)
+void AudioContext::processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
-    ASSERT(isAudioThread());
+    ASSERT(r.context());
 
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(framesToProcess);
+        m_renderingAutomaticPullNodes[i]->processIfNecessary(g, r, framesToProcess);
 }
 
 void AudioContext::startRendering()

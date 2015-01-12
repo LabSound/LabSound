@@ -12,12 +12,12 @@ namespace LabSound {
 
     class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode {
     public:
-        SpectralMonitorNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
+        SpectralMonitorNode(float sampleRate);
         virtual ~SpectralMonitorNode();
 
         // AudioNode
-        virtual void process(size_t framesToProcess) override;
-        virtual void reset();
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock& r) override;
         // ..AudioNode
 
         void spectralMag(std::vector<float>& result);

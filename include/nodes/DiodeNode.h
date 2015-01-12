@@ -14,12 +14,12 @@ namespace LabSound {
     class DiodeNode
     {
     public:
-        DiodeNode(std::shared_ptr<WebCore::AudioContext>);
-        void setDistortion(float distortion);
+        DiodeNode(ContextRenderLock& r, float sampleRate);
+        void setDistortion(ContextRenderLock& r, float distortion);
         std::shared_ptr<WebCore::WaveShaperNode> node() const { return waveShaper; }
 
     private:
-        void setCurve();
+        void setCurve(ContextRenderLock&);
 
         std::shared_ptr<WebCore::WaveShaperNode> waveShaper;
         

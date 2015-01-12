@@ -29,27 +29,32 @@
 #include <set>
 #include <vector>
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
+
 namespace WebCore {
 
 class AudioContext;
 class AudioNodeOutput;
+    
+    using namespace LabSound;
 
 // An AudioSummingJunction represents a point where zero, one, or more AudioNodeOutputs connect.
 
 class AudioSummingJunction {
 public:
-    explicit AudioSummingJunction(std::shared_ptr<AudioContext>);
+    explicit AudioSummingJunction();
     virtual ~AudioSummingJunction();
 
-    // Can be called from any thread.
-    std::weak_ptr<AudioContext> context() { return m_context; }
-
     // This must be called whenever we modify m_outputs.
-    static void changedOutputs(std::shared_ptr<AudioSummingJunction> self);
+    static void changedOutputs(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> self);
 
     // This copies m_outputs to m_renderingOutputs. Please see comments for these lists below.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
-    void updateRenderingState();
+    void updateRenderingState(ContextGraphLock& g, ContextRenderLock& r);
 
     // Rendering code accesses its version of the current connections here.
     unsigned numberOfRenderingConnections() const { return (unsigned) m_renderingOutputs.size(); }
@@ -58,11 +63,9 @@ public:
     bool isConnected() const { return numberOfRenderingConnections() > 0; }
 
     virtual bool canUpdateState() = 0;
-    virtual void didUpdate() = 0;
+    virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) = 0;
 
 protected:
-    std::weak_ptr<AudioContext> m_context;
-
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
     std::set<std::shared_ptr<AudioNodeOutput>> m_outputs;

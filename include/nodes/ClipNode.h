@@ -16,7 +16,7 @@ namespace LabSound {
     public:
         enum Mode { CLIP, TANH };
 
-        ClipNode(std::shared_ptr<AudioContext>, float sampleRate);
+        ClipNode(float sampleRate);
         virtual ~ClipNode();
 
         void setMode(Mode);

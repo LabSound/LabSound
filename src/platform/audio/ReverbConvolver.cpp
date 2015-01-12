@@ -30,6 +30,7 @@
 #include "ReverbConvolver.h"
 
 #include "VectorMath.h"
+#include "AudioContextLock.h"
 #include "AudioBus.h"
 
 namespace WebCore {
@@ -179,7 +180,7 @@ void ReverbConvolver::backgroundThreadEntry()
     }
 }
 
-void ReverbConvolver::process(const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess)
+void ReverbConvolver::process(ContextGraphLock& g, ContextRenderLock&, const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess)
 {
     bool isSafe = sourceChannel && destinationChannel && sourceChannel->length() >= framesToProcess && destinationChannel->length() >= framesToProcess;
     ASSERT(isSafe);

@@ -27,17 +27,12 @@
 
 #include "AudioContext.h"
 #include "AudioNodeInput.h"
-//#include "LocalMediaStream.h" // LabSound commented
-#include "MediaStream.h" // LabSound added
-//#include "MediaStreamCenter.h" LabSound commented
-//#include "RTCPeerConnectionHandler.h" LabSound commented
-//#include "UUID.h" LabSound commented
-#include <wtf/Locker.h>
+#include "MediaStream.h"
 
 namespace WebCore {
 
-MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(std::shared_ptr<AudioContext> context, size_t numberOfChannels)
-    : AudioBasicInspectorNode(context, context->sampleRate())
+MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate)
+    : AudioBasicInspectorNode(sampleRate)
     , m_mixBus(numberOfChannels, ProcessingSizeInFrames)
 {
     setNodeType(NodeTypeMediaStreamAudioDestination);
@@ -55,7 +50,7 @@ MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
     uninitialize();
 }
 
-void MediaStreamAudioDestinationNode::process(size_t numberOfFrames)
+void MediaStreamAudioDestinationNode::process(ContextGraphLock& g, ContextRenderLock&, size_t numberOfFrames)
 {
     m_mixBus.copyFrom(*input(0)->bus());
     
@@ -67,7 +62,7 @@ void MediaStreamAudioDestinationNode::process(size_t numberOfFrames)
  */
 }
 
-void MediaStreamAudioDestinationNode::reset()
+void MediaStreamAudioDestinationNode::reset(ContextRenderLock& r)
 {
 }
 

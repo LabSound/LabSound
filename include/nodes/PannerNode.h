@@ -61,18 +61,18 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
     
-    PannerNode(std::shared_ptr<AudioContext>, float sampleRate);
+    PannerNode(float sampleRate);
     virtual ~PannerNode();
 
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void pullInputs(size_t framesToProcess);
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
     virtual void initialize();
     virtual void uninitialize();
 
     // Listener
-    AudioListener* listener();
+    AudioListener* listener(ContextRenderLock&);
 
     // Panning model
     unsigned short panningModel() const { return m_panningModel; }
@@ -113,8 +113,8 @@ public:
     float coneOuterGain() const { return static_cast<float>(m_coneEffect.outerGain()); }
     void setConeOuterGain(float angle) { m_coneEffect.setOuterGain(angle); }
 
-    void getAzimuthElevation(double* outAzimuth, double* outElevation);
-    float dopplerRate();
+    void getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation);
+    float dopplerRate(ContextRenderLock& r);
 
     // Accessors for dynamically calculated gain values.
     std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
@@ -125,11 +125,11 @@ public:
 
 protected:
     // Returns the combined distance and cone gain attenuation.
-    virtual float distanceConeGain();   /// @LabSound virtual
+    virtual float distanceConeGain(ContextRenderLock& r);   /// @LabSound virtual
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
-    void notifyAudioSourcesConnectedToNode(AudioNode*);
+    void notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
 
     std::unique_ptr<Panner> m_panner;
     unsigned m_panningModel;

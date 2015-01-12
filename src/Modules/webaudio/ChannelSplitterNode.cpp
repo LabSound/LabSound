@@ -31,8 +31,8 @@
 
 namespace WebCore {
 
-ChannelSplitterNode::ChannelSplitterNode(std::shared_ptr<AudioContext> context, float sampleRate, unsigned numberOfOutputs)
-    : AudioNode(context, sampleRate)
+ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs)
+    : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
@@ -48,7 +48,7 @@ ChannelSplitterNode::ChannelSplitterNode(std::shared_ptr<AudioContext> context, 
     initialize();
 }
 
-void ChannelSplitterNode::process(size_t framesToProcess)
+void ChannelSplitterNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
 {
     AudioBus* source = input(0)->bus();
     ASSERT(source);
@@ -71,7 +71,7 @@ void ChannelSplitterNode::process(size_t framesToProcess)
     }
 }
 
-void ChannelSplitterNode::reset()
+void ChannelSplitterNode::reset(ContextRenderLock& r)
 {
 }
 

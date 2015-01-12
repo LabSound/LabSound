@@ -32,12 +32,12 @@ namespace WebCore {
 
 class AnalyserNode : public AudioBasicInspectorNode {
 public:
-    AnalyserNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AnalyserNode(float sampleRate);
     virtual ~AnalyserNode();
     
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
 
     // Javascript bindings
     size_t fftSize() const { return m_analyser.fftSize(); }

@@ -36,14 +36,14 @@ class AudioContext;
 
 class MediaStreamAudioDestinationNode : public AudioBasicInspectorNode {
 public:
-    MediaStreamAudioDestinationNode(std::shared_ptr<AudioContext>, size_t numberOfChannels);
+    MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate);
     virtual ~MediaStreamAudioDestinationNode();
 
     MediaStream* stream() { return m_stream.get(); }
 
     // AudioNode.
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
     
     MediaStreamSource* mediaStreamSource();
 
@@ -52,7 +52,7 @@ private:
     virtual double latencyTime() const OVERRIDE { return 0; }
 
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence() const OVERRIDE { return false; }
+    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return false; }
 
     std::shared_ptr<MediaStream> m_stream;
     std::shared_ptr<MediaStreamSource> m_source;

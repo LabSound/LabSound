@@ -29,10 +29,10 @@
 #ifndef Biquad_h
 #define Biquad_h
 
+#include "LabSoundConfig.h"
 #include "AudioArray.h"
 #include <sys/types.h>
 #include <complex>
-#include "WTF/Platform.h"
 
 
 namespace WebCore {

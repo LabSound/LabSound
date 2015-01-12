@@ -19,15 +19,15 @@ namespace LabSound {
     class ADSRNode : public WebCore::AudioBasicProcessorNode
     {
     public:
-        ADSRNode(std::shared_ptr<AudioContext>, float sampleRate);
+        ADSRNode(float sampleRate);
         virtual ~ADSRNode();
         
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
         //
-		void noteOn();
-		void noteOff();
-        bool finished(); // if a noteOff has been issued, finished will be true after the release period
+		void noteOn(ContextRenderLock& r);
+		void noteOff(ContextRenderLock& r);
+        bool finished(ContextRenderLock&); // if a noteOff has been issued, finished will be true after the release period
 
 		void set(float aT, float aL, float d, float s, float r);
 

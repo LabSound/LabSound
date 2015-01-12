@@ -55,21 +55,20 @@ namespace LabSound {
     class PeakCompNode::PeakCompNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        PeakCompNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
+        PeakCompNodeInternal(float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         {
-            m_threshold = std::make_shared<AudioParam>(context, "threshold",  0, 0, -1e6f);   // db
-            m_ratio = std::make_shared<AudioParam>(context, "ratio",  1, 0, 10);   // default 1:1
-            m_attack = std::make_shared<AudioParam>(context, "attack",   0.001f,  0, 1000);   // attack in ms
-            m_release = std::make_shared<AudioParam>(context, "release", 0.001f, 0, 1000);   // release in ms
-            m_makeup = std::make_shared<AudioParam>(context, "makeup", 0, 0, 60);   // makeup gain, in db
-            m_knee = std::make_shared<AudioParam>(context, "knee", 0, 0, 1);   // knee smoothing, 0 = hard, 1 = smooth. Default is 0
+            m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);   // db
+            m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);   // default 1:1
+            m_attack = std::make_shared<AudioParam>("attack",   0.001f,  0, 1000);   // attack in ms
+            m_release = std::make_shared<AudioParam>("release", 0.001f, 0, 1000);   // release in ms
+            m_makeup = std::make_shared<AudioParam>("makeup", 0, 0, 60);   // makeup gain, in db
+            m_knee = std::make_shared<AudioParam>("knee", 0, 0, 1);   // knee smoothing, 0 = hard, 1 = smooth. Default is 0
 
             // Initialise parameters
 
-            for (int i = 0; i < 2; i++)
-            {
+            for (int i = 0; i < 2; i++) {
                 kneeRecursive[i] = 0.f;
                 attackRecursive[i] = 0.f;
                 releaseRecursive[i] = 0.f;
@@ -90,12 +89,12 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextGraphLock& g, ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
             if (!numChannels)
                 return;
 
             // copy attributes to run time variables
-            float v = m_threshold->value();
+            float v = m_threshold->value(r);
             if (v <= 0) {
                 // dB to linear (could use the function from m_pd.h)
                 threshold = powf(10, (v*0.05f));
@@ -103,32 +102,32 @@ namespace LabSound {
             else
                 threshold = 0;
 
-            v = m_ratio->value();
+            v = m_ratio->value(r);
             if (v >= 1) {
                 ratio = 1.f/v;
             }
             else
                 ratio = 1;
 
-            v = m_attack->value();
+            v = m_attack->value(r);
             if (v >= 0.001) {
                 attack = v * 0.001;
             }
             else
                 attack = 0.000001;
 
-            v = m_release->value();
+            v = m_release->value(r);
             if (v >= 0.001) {
                 release = v * 0.001;
             }
             else
                 release = 0.000001;
 
-            v = m_makeup->value();
+            v = m_makeup->value(r);
             // dB to linear (could use the function from m_pd.h)
             makeupGain = pow(10, (v * 0.05));
 
-            v = m_knee->value();
+            v = m_knee->value(r);
             if (v >= 0 && v <= 1)
             {
                 // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.
@@ -230,9 +229,9 @@ namespace LabSound {
     std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return data->m_makeup; }
     std::shared_ptr<AudioParam> PeakCompNode::knee() const { return data->m_knee; }
 
-    PeakCompNode::PeakCompNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : WebCore::AudioBasicProcessorNode(context, sampleRate)
-    , data(new PeakCompNodeInternal(context, sampleRate))
+    PeakCompNode::PeakCompNode(float sampleRate)
+    : WebCore::AudioBasicProcessorNode(sampleRate)
+    , data(new PeakCompNodeInternal(sampleRate))
     {
         m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

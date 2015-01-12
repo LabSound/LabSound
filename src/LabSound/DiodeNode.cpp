@@ -15,23 +15,23 @@ namespace LabSound {
 
     using namespace WTF;
 
-    DiodeNode::DiodeNode(std::shared_ptr<WebCore::AudioContext> context)
+    DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate)
     : vb(0.2f)
     , vl(0.4f)
     , h(1.0)
     {
-        waveShaper = std::make_shared<WebCore::WaveShaperNode>(context);
-        setCurve();
+        waveShaper = std::make_shared<WebCore::WaveShaperNode>(sampleRate);
+        setCurve(r);
     }
 
-    void DiodeNode::setDistortion(float distortion)
+    void DiodeNode::setDistortion(ContextRenderLock& r, float distortion)
     {
         // We increase the distortion by increasing the gradient of the linear portion of the waveshaper's curve.
         h = distortion;
-        setCurve();
+        setCurve(r);
     }
 
-    void DiodeNode::setCurve()
+    void DiodeNode::setCurve(ContextRenderLock& r)
     {
         // The non-linear waveshaper curve describes the transformation between an input signal and an output signal.
         // We calculate a 1024-point curve following equation (2) from Parker's paper.
@@ -54,7 +54,7 @@ namespace LabSound {
             wsCurve[i] = v;
         }
 
-        waveShaper->setCurve(wsCurvePtr);
+        waveShaper->setCurve(r, wsCurvePtr);
     }
 
 

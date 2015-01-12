@@ -68,7 +68,7 @@ class LentPitShift : public Effect
     The samples stored in the input frame vector are processed
     and the delayed result are stored in the output frame vector.
   */
-  void process( );
+  void process();
 
   // Frame storage vectors for process function
   StkFrames inputFrames;

@@ -31,8 +31,8 @@
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioBasicInspectorNode(context, sampleRate)
+AnalyserNode::AnalyserNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -47,7 +47,7 @@ AnalyserNode::~AnalyserNode()
     uninitialize();
 }
 
-void AnalyserNode::process(size_t framesToProcess)
+void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
 
@@ -67,7 +67,7 @@ void AnalyserNode::process(size_t framesToProcess)
         outputBus->copyFrom(*inputBus);
 }
 
-void AnalyserNode::reset()
+void AnalyserNode::reset(ContextRenderLock& r)
 {
     m_analyser.reset();
 }

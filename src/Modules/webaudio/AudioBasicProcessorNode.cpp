@@ -34,8 +34,8 @@
 
 namespace WebCore {
 
-AudioBasicProcessorNode::AudioBasicProcessorNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+AudioBasicProcessorNode::AudioBasicProcessorNode(float sampleRate)
+    : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -65,7 +65,7 @@ void AudioBasicProcessorNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void AudioBasicProcessorNode::process(size_t framesToProcess)
+void AudioBasicProcessorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destinationBus = output(0)->bus();
     
@@ -78,18 +78,18 @@ void AudioBasicProcessorNode::process(size_t framesToProcess)
         if (!input(0)->isConnected())
             sourceBus->zero();
 
-        processor()->process(sourceBus, destinationBus, framesToProcess);  
+        processor()->process(g, r, sourceBus, destinationBus, framesToProcess);
     }
 }
 
 // Nice optimization in the very common case allowing for "in-place" processing
-void AudioBasicProcessorNode::pullInputs(size_t framesToProcess)
+void AudioBasicProcessorNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(output(0)->bus(), framesToProcess);
+    input(0)->pull(g, r, output(0)->bus(), framesToProcess);
 }
 
-void AudioBasicProcessorNode::reset()
+void AudioBasicProcessorNode::reset(ContextRenderLock&)
 {
     if (processor())
         processor()->reset();
@@ -98,14 +98,10 @@ void AudioBasicProcessorNode::reset()
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in which case we must safely
 // uninitialize and then re-initialize with the new channel count.
-void AudioBasicProcessorNode::checkNumberOfChannelsForInput(AudioNodeInput* input)
+void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
 {
     if (!input)
         return;
-    
-    ASSERT(!context().expired());
-    auto ac = context().lock();
-    ASSERT(ac->isAudioThread() && ac->isGraphOwner());
     
     if (input != this->input(0).get())
         return;
@@ -123,14 +119,14 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(AudioNodeInput* inpu
     
     if (!isInitialized()) {
         // This will propagate the channel count to any nodes connected further down the chain...
-        output(0)->setNumberOfChannels(numberOfChannels);
+        output(0)->setNumberOfChannels(r, numberOfChannels);
 
         // Re-initialize the processor with the new channel count.
         processor()->setNumberOfChannels(numberOfChannels);
         initialize();
     }
 
-    AudioNode::checkNumberOfChannelsForInput(input);
+    AudioNode::checkNumberOfChannelsForInput(g, r, input);
 }
 
 unsigned AudioBasicProcessorNode::numberOfChannels()

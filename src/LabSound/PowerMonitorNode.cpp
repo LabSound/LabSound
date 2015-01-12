@@ -15,8 +15,8 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    PowerMonitorNode::PowerMonitorNode(std::shared_ptr<WebCore::AudioContext> context, float sampleRate)
-    : AudioBasicInspectorNode(context, sampleRate)
+    PowerMonitorNode::PowerMonitorNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate)
     , _db(0)
     , _windowSize(128)
     {
@@ -30,7 +30,7 @@ namespace LabSound {
         uninitialize();
     }
     
-    void PowerMonitorNode::process(size_t framesToProcess)
+    void PowerMonitorNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.
@@ -88,7 +88,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void PowerMonitorNode::reset()
+    void PowerMonitorNode::reset(ContextRenderLock& r)
     {
         _db = 0;
     }

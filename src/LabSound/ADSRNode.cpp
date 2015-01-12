@@ -1,4 +1,9 @@
+
+// LabSound
+// License is MIT: http://opensource.org/licenses/MIT
+
 #include "ADSRNode.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "LabSound.h"
@@ -16,17 +21,17 @@ namespace LabSound {
     class ADSRNode::AdsrNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        AdsrNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
+        AdsrNodeInternal(float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         , m_noteOffTime(0)
         , m_currentGain(0)
         {
-            m_attackTime = std::make_shared<AudioParam>(context, "attackTime",  0.05, 0, 120);   // duration
-            m_attackLevel = std::make_shared<AudioParam>(context, "attackLevel",  1.0, 0, 10);   // duration
-            m_decayTime = std::make_shared<AudioParam>(context, "decayTime",   0.05,  0, 120);   // duration
-            m_sustainLevel = std::make_shared<AudioParam>(context, "sustain", 0.75, 0, 10);   // level
-            m_releaseTime = std::make_shared<AudioParam>(context, "release", 0.0625, 0, 120);   // duration
+            m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);   // duration
+            m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);   // duration
+            m_decayTime = std::make_shared<AudioParam>("decayTime",   0.05,  0, 120);   // duration
+            m_sustainLevel = std::make_shared<AudioParam>("sustain", 0.75, 0, 10);   // level
+            m_releaseTime = std::make_shared<AudioParam>("release", 0.0625, 0, 120);   // duration
         }
 
         virtual ~AdsrNodeInternal() {
@@ -39,7 +44,9 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextGraphLock& g, ContextRenderLock& r,
+                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus,
+                             size_t framesToProcess) override {
             if (!numChannels)
                 return;
 
@@ -51,7 +58,7 @@ namespace LabSound {
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
-            float s = m_sustainLevel->value();
+            float s = m_sustainLevel->value(r);
 
             for (size_t i = 0; i < framesToProcess; ++i) {
                 if (m_zeroSteps > 0) {
@@ -89,16 +96,16 @@ namespace LabSound {
         }
 
         // Resets filter state
-        virtual void reset() { }
+        virtual void reset() override { }
 
-        virtual void setNumberOfChannels(unsigned i) {
+        virtual void setNumberOfChannels(unsigned i) override {
             numChannels = i;
         }
 
         virtual double tailTime() const { return 0; }
         virtual double latencyTime() const { return 0; }
 
-        void noteOn(double now) {
+        void noteOn(ContextRenderLock& r, double now) {
             if (m_currentGain > 0) {
                 m_zeroSteps = 16;
                 m_zeroStepSize = -m_currentGain / 16.0f;
@@ -106,28 +113,28 @@ namespace LabSound {
             else
                 m_zeroSteps = 0;
 
-            m_attackTimeTarget = now + m_attackTime->value();
+            m_attackTimeTarget = now + m_attackTime->value(r);
 
-            m_attackSteps = m_attackTime->value() * sampleRate();
-            m_attackStepSize = m_attackLevel->value() / m_attackSteps;
+            m_attackSteps = m_attackTime->value(r) * sampleRate();
+            m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
 
-            m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value();
+            m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
 
-            m_decaySteps = m_decayTime->value() * sampleRate();
-            m_decayStepSize = (m_sustainLevel->value() - m_attackLevel->value()) / m_decaySteps;
+            m_decaySteps = m_decayTime->value(r) * sampleRate();
+            m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
 
             m_releaseSteps = 0;
 
             m_noteOffTime = DBL_MAX;
         }
 
-        void noteOff(double now) {
+        void noteOff(ContextRenderLock& r, double now) {
             // note off at any time except while a note is on, has no effect
             if (m_noteOffTime == DBL_MAX) {
-                m_noteOffTime = now + m_releaseTime->value();
+                m_noteOffTime = now + m_releaseTime->value(r);
 
-                m_releaseSteps = m_releaseTime->value() * sampleRate();
-                m_releaseStepSize = -m_sustainLevel->value() / m_releaseSteps;
+                m_releaseSteps = m_releaseTime->value(r) * sampleRate();
+                m_releaseStepSize = -m_sustainLevel->value(r) / m_releaseSteps;
             }
         }
 
@@ -166,31 +173,34 @@ namespace LabSound {
         data->m_releaseTime->setValue(r);
     }
 
-    void ADSRNode::noteOn() {
-        ASSERT(!context().expired());
-        auto ac = context().lock();
-        data->noteOn(ac->currentTime());
+    void ADSRNode::noteOn(ContextRenderLock& r) {
+        if (!r.context())
+            return;
+        
+        data->noteOn(r, r.context()->currentTime());
     }
 
-    void ADSRNode::noteOff() {
-        ASSERT(!context().expired());
-        auto ac = context().lock();
-        data->noteOff(ac->currentTime());
+    void ADSRNode::noteOff(ContextRenderLock& r) {
+        if (!r.context())
+            return;
+        
+        data->noteOff(r, r.context()->currentTime());
     }
     
-    bool ADSRNode::finished() {
-        ASSERT(!context().expired());
-        auto ac = context().lock();
-        double now = ac->currentTime();
+    bool ADSRNode::finished(ContextRenderLock& r) {
+        if (!r.context())
+            return true;
+        
+        double now = r.context()->currentTime();
         if (now > data->m_noteOffTime) {
             data->m_noteOffTime = 0;
         }
         return now > data->m_noteOffTime;
     }
 
-    ADSRNode::ADSRNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : WebCore::AudioBasicProcessorNode(context, sampleRate)
-    , data(new AdsrNodeInternal(context, sampleRate))
+    ADSRNode::ADSRNode(float sampleRate)
+    : WebCore::AudioBasicProcessorNode(sampleRate)
+    , data(new AdsrNodeInternal(sampleRate))
     {
         m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

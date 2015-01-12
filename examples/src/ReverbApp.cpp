@@ -13,24 +13,32 @@ int main(int, char**)
     
     auto context = LabSound::init();
 
-    SoundBuffer ir(context, "impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav");
+    SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
     
-    SoundBuffer sample(context, "human-voice.mp4");
+    SoundBuffer sample("human-voice.mp4", context->sampleRate());
+    shared_ptr<ConvolverNode> convolve;
+    shared_ptr<GainNode> wetGain;
+    shared_ptr<GainNode> dryGain;
+    shared_ptr<AudioNode> voice;
     
-    auto convolve = make_shared<ConvolverNode>(context, context->sampleRate());
-    convolve->setBuffer(ir.audioBuffer);
-    auto wetGain = make_shared<GainNode>(context, context->sampleRate());
-    wetGain->gain()->setValue(2.f);
-    auto dryGain = make_shared<GainNode>(context, context->sampleRate());
-    dryGain->gain()->setValue(1.f);
-    
-    convolve->connect(wetGain.get(), 0, 0, ec);
-    wetGain->connect(context->destination().get(), 0, 0, ec);
-    dryGain->connect(context->destination().get(), 0, 0, ec);
-    dryGain->connect(convolve.get(), 0, 0, ec);
-    
-    sample.play(dryGain, 0);
+    {
+        ContextGraphLock g(context);
+        ContextRenderLock r(context);
+        convolve = make_shared<ConvolverNode>(context->sampleRate());
+        convolve->setBuffer(g, r, ir.audioBuffer);
+        wetGain = make_shared<GainNode>(context->sampleRate());
+        wetGain->gain()->setValue(2.f);
+        dryGain = make_shared<GainNode>(context->sampleRate());
+        dryGain->gain()->setValue(1.f);
+        
+        convolve->connect(g, r, wetGain.get(), 0, 0, ec);
+        wetGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        dryGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        dryGain->connect(g, r, convolve.get(), 0, 0, ec);
+        
+        voice = sample.play(g, r, dryGain, 0);
+    }
     
     const int seconds = 10;
     for (int t = 0; t < seconds; ++t)
@@ -39,6 +47,5 @@ int main(int, char**)
     }
     
     LabSound::finish(context);
-    
     return 0;
 }

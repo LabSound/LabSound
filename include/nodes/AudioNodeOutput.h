@@ -46,12 +46,11 @@ public:
 
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
-    std::weak_ptr<AudioContext> context() const { return m_node->context(); }
     
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus* pull(AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     // Called from context's audio thread.
@@ -65,10 +64,9 @@ public:
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
     unsigned renderingParamFanOutCount() const;
 
-    // Must be called with the context's graph lock.
-    static void disconnectAll(std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
 
-    void setNumberOfChannels(unsigned);
+    void setNumberOfChannels(ContextRenderLock&, unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
     bool isChannelCountKnown() const { return numberOfChannels() > 0; }
 
@@ -76,13 +74,12 @@ public:
 
     // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
     // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
-    // They must be called with the context's graph lock.
-    static void disable(std::shared_ptr<AudioNodeOutput> self);
-    static void enable(std::shared_ptr<AudioNodeOutput> self);
+    static void disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self);
+    static void enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self);
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     // It must be called within the context's graph lock.
-    void updateRenderingState();
+    void updateRenderingState(ContextGraphLock& g, ContextRenderLock&);
     
 private:
     AudioNode* m_node;
@@ -92,10 +89,10 @@ private:
     
     // These are called from AudioNodeInput.
     // They must be called with the context's graph lock.
-    void addInput(std::shared_ptr<AudioNodeInput>);
-    void removeInput(std::shared_ptr<AudioNodeInput>);
-    void addParam(std::shared_ptr<AudioParam>);
-    void removeParam(std::shared_ptr<AudioParam>);
+    void addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
+    void removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
+    void addParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
+    void removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
 
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
@@ -108,20 +105,19 @@ private:
     unsigned paramFanOutCount();
 
     // Must be called within the context's graph lock.
-    static void disconnectAllInputs(std::shared_ptr<AudioNodeOutput>);
-    static void disconnectAllParams(std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
     void updateInternalBus();
 
     // Announce to any nodes we're connected to that we changed our channel count for its input.
-    // It must be called in the audio thread with the context's graph lock.
-    void propagateChannelCount();
+    void propagateChannelCount(ContextGraphLock& g, ContextRenderLock&);
 
     // updateNumberOfChannels() is called in the audio thread at the start or end of the render quantum to pick up channel changes.
     // It must be called with the context's graph lock.
-    void updateNumberOfChannels();
+    void updateNumberOfChannels(ContextGraphLock& g, ContextRenderLock&);
 
     // m_numberOfChannels will only be changed in the audio thread.
     // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread in updateNumberOfChannels().

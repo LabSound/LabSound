@@ -13,12 +13,12 @@ namespace LabSound {
     class SfxrNode : public WebCore::AudioScheduledSourceNode {
     public:
 
-        SfxrNode(std::shared_ptr<AudioContext>, float sampleRate);
+        SfxrNode(float sampleRate);
         virtual ~SfxrNode();
 
         // AudioNode
-        virtual void process(size_t framesToProcess) override;
-        virtual void reset();
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock& r) override;
 
         // SfxrNode - values in sfxr units
         std::shared_ptr<AudioParam> waveType() { return _waveType; }
@@ -67,24 +67,24 @@ namespace LabSound {
 
         enum WaveType { SQUARE = 0, SAWTOOTH, SINE, NOISE };
 
-        void noteOn();
+        void noteOn(ContextRenderLock& r);
 
         // some presets
-        void setDefaultBeep();
-        void coin();
-        void laser();
-        void explosion();
-        void powerUp();
-        void hit();
-        void jump();
-        void select();
+        void setDefaultBeep(ContextRenderLock& r);
+        void coin(ContextRenderLock& r);
+        void laser(ContextRenderLock& r);
+        void explosion(ContextRenderLock& r);
+        void powerUp(ContextRenderLock& r);
+        void hit(ContextRenderLock& r);
+        void jump(ContextRenderLock& r);
+        void select(ContextRenderLock& r);
 
         // mutate the current sound
-        void mutate();
-        void randomize();
+        void mutate(ContextRenderLock& r);
+        void randomize(ContextRenderLock& r);
 
     private:
-        virtual bool propagatesSilence() const OVERRIDE;
+        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
 
         std::shared_ptr<AudioParam> _waveType;
 		std::shared_ptr<AudioParam> _attack;

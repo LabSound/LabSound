@@ -35,10 +35,9 @@ namespace WebCore {
 
 class AudioSourceNode : public AudioNode {
 public:
-    AudioSourceNode(std::shared_ptr<AudioContext> context, float sampleRate)
-        : AudioNode(context, sampleRate)
-    {
-    }
+    AudioSourceNode(float sampleRate) : AudioNode(sampleRate) {}
+    virtual ~AudioSourceNode() {}
+    
 protected:
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }

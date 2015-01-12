@@ -37,20 +37,20 @@ using namespace std;
 
 namespace WebCore {
 
-DynamicsCompressorNode::DynamicsCompressorNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : AudioNode(context, sampleRate)
+DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate)
+    : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, defaultNumberOfOutputChannels)));
 
     setNodeType(NodeTypeDynamicsCompressor);
 
-    m_threshold = make_shared<AudioParam>(context, "threshold", -24, -100, 0);
-    m_knee = make_shared<AudioParam>(context, "knee", 30, 0, 40);
-    m_ratio = make_shared<AudioParam>(context, "ratio", 12, 1, 20);
-    m_reduction = make_shared<AudioParam>(context, "reduction", 0, -20, 0);
-    m_attack = make_shared<AudioParam>(context, "attack", 0.003, 0, 1);
-    m_release = make_shared<AudioParam>(context, "release", 0.250, 0, 1);
+    m_threshold = make_shared<AudioParam>("threshold", -24, -100, 0);
+    m_knee = make_shared<AudioParam>("knee", 30, 0, 40);
+    m_ratio = make_shared<AudioParam>("ratio", 12, 1, 20);
+    m_reduction = make_shared<AudioParam>("reduction", 0, -20, 0);
+    m_attack = make_shared<AudioParam>("attack", 0.003, 0, 1);
+    m_release = make_shared<AudioParam>("release", 0.250, 0, 1);
 
     initialize();
 }
@@ -60,16 +60,16 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
     uninitialize();
 }
 
-void DynamicsCompressorNode::process(size_t framesToProcess)
+void DynamicsCompressorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
     ASSERT(outputBus);
 
-    float threshold = m_threshold->value();
-    float knee = m_knee->value();
-    float ratio = m_ratio->value();
-    float attack = m_attack->value();
-    float release = m_release->value();
+    float threshold = m_threshold->value(r);
+    float knee = m_knee->value(r);
+    float ratio = m_ratio->value(r);
+    float attack = m_attack->value(r);
+    float release = m_release->value(r);
 
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamThreshold, threshold);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamKnee, knee);
@@ -77,13 +77,13 @@ void DynamicsCompressorNode::process(size_t framesToProcess)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
-    m_dynamicsCompressor->process(input(0)->bus(), outputBus, framesToProcess);
+    m_dynamicsCompressor->process(g, r, input(0)->bus(), outputBus, framesToProcess);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);
 }
 
-void DynamicsCompressorNode::reset()
+void DynamicsCompressorNode::reset(ContextRenderLock& r)
 {
     m_dynamicsCompressor->reset();
 }

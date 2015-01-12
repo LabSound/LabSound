@@ -50,27 +50,27 @@ public:
         CUSTOM = 4
     };
 
-    OscillatorNode(std::shared_ptr<AudioContext>, float sampleRate);
+    OscillatorNode(ContextRenderLock& r, float sampleRate);
     virtual ~OscillatorNode();
     
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&) override;
 
     unsigned short type() const { return m_type; }
-    void setType(unsigned short, ExceptionCode&);
+    void setType(ContextRenderLock& r, unsigned short, ExceptionCode&);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
-    void setWaveTable(std::shared_ptr<WaveTable>);
+    void setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable>);
 
 private:
 
     // Returns true if there are sample-accurate timeline parameter changes.
-    bool calculateSampleAccuratePhaseIncrements(size_t framesToProcess);
+    bool calculateSampleAccuratePhaseIncrements(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
 
-    virtual bool propagatesSilence() const OVERRIDE;
+    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
 
     // One of the waveform types defined in the enum.
     unsigned short m_type;
@@ -86,9 +86,6 @@ private:
     // m_virtualReadIndex is a sample-frame index into our buffer representing the current playback position.
     // Since it's floating-point, it has sub-sample accuracy.
     double m_virtualReadIndex;
-
-    // This synchronizes process().
-    mutable WTF::Mutex m_processLock;
 
     // Stores sample-accurate values calculated according to frequency and detune.
     AudioFloatArray m_phaseIncrements;

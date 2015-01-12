@@ -43,7 +43,7 @@ enum DelayValues {
 class DelayNode : public AudioBasicProcessorNode {
 
 public:
-    DelayNode(std::shared_ptr<AudioContext>, float sampleRate, double maxDelayTime, ExceptionCode&);
+    DelayNode(float sampleRate, double maxDelayTime, ExceptionCode&);
     std::shared_ptr<AudioParam> delayTime();
 
 private:

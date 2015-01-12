@@ -23,17 +23,16 @@ namespace LabSound {
     class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        ClipNodeInternal(std::shared_ptr<AudioContext> context, float sampleRate)
+        ClipNodeInternal(float sampleRate)
         : AudioProcessor(sampleRate)
         , numChannels(1)
         , mode(ClipNode::CLIP)
         {
-            aVal = make_shared<AudioParam>(context, "a", -1.0, -FLT_MAX, FLT_MAX);
-            bVal = make_shared<AudioParam>(context, "b",  1.0, -FLT_MAX, FLT_MAX);
+            aVal = make_shared<AudioParam>("a", -1.0, -FLT_MAX, FLT_MAX);
+            bVal = make_shared<AudioParam>("b",  1.0, -FLT_MAX, FLT_MAX);
         }
 
-        virtual ~ClipNodeInternal() {
-        }
+        virtual ~ClipNodeInternal() {}
 
         // AudioProcessor interface
         virtual void initialize() {
@@ -42,7 +41,8 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextGraphLock& g, ContextRenderLock& r,
+                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
             if (!numChannels)
                 return;
 
@@ -55,8 +55,8 @@ namespace LabSound {
                 gainValues.resize(framesToProcess);
 
             if (mode == ClipNode::TANH) {
-                float outputGain = aVal->value();
-                float inputGain = bVal->value();
+                float outputGain = aVal->value(r);
+                float inputGain = bVal->value(r);
                 for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
@@ -67,8 +67,8 @@ namespace LabSound {
                 }
             }
             else {
-                float minf = aVal->value();
-                float maxf = bVal->value();
+                float minf = aVal->value(r);
+                float maxf = bVal->value(r);
                 for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
@@ -100,9 +100,9 @@ namespace LabSound {
         vector<float> gainValues;
     };
 
-    ClipNode::ClipNode(std::shared_ptr<AudioContext> context, float sampleRate)
-    : WebCore::AudioBasicProcessorNode(context, sampleRate)
-    , data(new ClipNodeInternal(context, sampleRate))
+    ClipNode::ClipNode(float sampleRate)
+    : WebCore::AudioBasicProcessorNode(sampleRate)
+    , data(new ClipNodeInternal(sampleRate))
     {
         m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
 

@@ -26,28 +26,29 @@
 #define AudioBasicProcessorNode_h
 
 #include "AudioNode.h"
+#include "AudioProcessor.h"
 #include <memory>
 
 namespace WebCore {
 
 class AudioBus;
 class AudioNodeInput;
-class AudioProcessor;
     
 // AudioBasicProcessorNode is an AudioNode with one input and one output where the input and output have the same number of channels.
 class AudioBasicProcessorNode : public AudioNode {
 public:
-    AudioBasicProcessorNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AudioBasicProcessorNode(float sampleRate);
+    virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
-    virtual void process(size_t framesToProcess) override;
-    virtual void pullInputs(size_t framesToProcess);
-    virtual void reset();
+    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&) override;
     virtual void initialize();
     virtual void uninitialize();
 
     // Called in the main thread when the number of channels for the input may have changed.
-    virtual void checkNumberOfChannelsForInput(AudioNodeInput*);
+    virtual void checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock&, AudioNodeInput*) override;
 
     // Returns the number of channels for both the input and the output.
     unsigned numberOfChannels();

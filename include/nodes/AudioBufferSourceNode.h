@@ -34,6 +34,8 @@
 #include <memory>
 
 namespace WebCore {
+    
+    using namespace LabSound;
 
 class AudioContext;
 
@@ -42,16 +44,16 @@ class AudioContext;
 
 class AudioBufferSourceNode : public AudioScheduledSourceNode {
 public:
-    AudioBufferSourceNode(std::shared_ptr<AudioContext>, float sampleRate);
+    AudioBufferSourceNode(float sampleRate);
     virtual ~AudioBufferSourceNode();
 
     // AudioNode
-    virtual void process(size_t framesToProcess) OVERRIDE;
-    virtual void reset() OVERRIDE;
+    virtual void process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock& r) override;
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
-    bool setBuffer(std::shared_ptr<AudioBuffer>);
+    bool setBuffer(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioBuffer>);
     std::shared_ptr<AudioBuffer> buffer() { return m_buffer; }
 
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.
@@ -82,21 +84,21 @@ public:
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
-    void setPannerNode(PannerNode*);
-    virtual void clearPannerNode() override;
+    void setPannerNode(ContextGraphLock& g, ContextRenderLock& r, PannerNode*);
+    virtual void clearPannerNode(ContextRenderLock& r) override;
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
-    virtual bool propagatesSilence() const OVERRIDE;
+    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
 
 private:
     virtual double tailTime() const OVERRIDE { return 0; }
     virtual double latencyTime() const OVERRIDE { return 0; }
 
     // Returns true on success.
-    bool renderFromBuffer(AudioBus*, unsigned destinationFrameOffset, size_t numberOfFrames);
+    bool renderFromBuffer(ContextRenderLock&, AudioBus*, unsigned destinationFrameOffset, size_t numberOfFrames);
 
     // Render silence starting from "index" frame in AudioBus.
-    bool renderSilenceAndFinishIfNotLooping(AudioBus*, unsigned index, size_t framesToProcess);
+    bool renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus*, unsigned index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
     std::shared_ptr<AudioBuffer> m_buffer;
@@ -127,7 +129,7 @@ private:
 
     // totalPitchRate() returns the instantaneous pitch rate (non-time preserving).
     // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, and any doppler shift from an associated panner node.
-    double totalPitchRate();
+    double totalPitchRate(ContextRenderLock&);
 
     // m_lastGain provides continuity when we dynamically adjust the gain.
     float m_lastGain;
@@ -135,9 +137,6 @@ private:
     // We optionally keep track of a panner node which has a doppler shift that is incorporated into
     // the pitch rate. We manually manage ref-counting because we want to use RefTypeConnection.
     PannerNode* m_pannerNode;
-
-    // This synchronizes process() with setBuffer() which can cause dynamic channel count changes.
-    mutable WTF::Mutex m_processLock;
 };
 
 } // namespace WebCore

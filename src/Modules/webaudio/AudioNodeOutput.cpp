@@ -27,6 +27,7 @@
 
 #include "AudioBus.h"
 #include "AudioContext.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioParam.h"
 #include <wtf/Threading.h>
@@ -48,14 +49,11 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     m_actualDestinationBus = m_internalBus.get();
 }
 
-void AudioNodeOutput::setNumberOfChannels(unsigned numberOfChannels)
+void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberOfChannels)
 {
     if (m_numberOfChannels != numberOfChannels) {
+        ASSERT(r.context());
         ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels());
-        ASSERT(!context().expired());
-        std::shared_ptr<AudioContext> ac = context().lock();
-        ASSERT(ac->isGraphOwner());
-
         m_desiredNumberOfChannels = numberOfChannels;
     }
 }
@@ -71,55 +69,44 @@ void AudioNodeOutput::updateInternalBus()
     m_actualDestinationBus = m_internalBus.get();
 }
 
-void AudioNodeOutput::updateRenderingState()
+void AudioNodeOutput::updateRenderingState(ContextGraphLock& g, ContextRenderLock& r)
 {
-    updateNumberOfChannels();
+    updateNumberOfChannels(g, r);
     m_renderingFanOutCount = fanOutCount();
     m_renderingParamFanOutCount = paramFanOutCount();
 }
 
-void AudioNodeOutput::updateNumberOfChannels()
+void AudioNodeOutput::updateNumberOfChannels(ContextGraphLock& g, ContextRenderLock& r)
 {
     if (m_numberOfChannels != m_desiredNumberOfChannels) {
-        ASSERT(!context().expired());
-        std::shared_ptr<AudioContext> ac = context().lock();
-        
-        ASSERT(ac->isAudioThread());
-        ASSERT(ac->isGraphOwner());
+        ASSERT(r.context());
 
         m_numberOfChannels = m_desiredNumberOfChannels;
         updateInternalBus();
-        propagateChannelCount();
+        propagateChannelCount(g, r);
     }
 }
 
-void AudioNodeOutput::propagateChannelCount()
+void AudioNodeOutput::propagateChannelCount(ContextGraphLock& g, ContextRenderLock& r)
 {
     if (isChannelCountKnown()) {
-        ASSERT(!context().expired());
-        std::shared_ptr<AudioContext> ac = context().lock();
-        ASSERT(ac->isAudioThread() && ac->isGraphOwner());
+        ASSERT(r.context());
         
         // Announce to any nodes we're connected to that we changed our channel count for its input.
         for (auto i = m_inputs.begin(); i != m_inputs.end(); ++i) {
             AudioNodeInput* input = (*i).get();
-            AudioNode* connectionNode = input->node();
-            connectionNode->checkNumberOfChannelsForInput(input);
+            auto connectionNode = input->node();
+            connectionNode->checkNumberOfChannelsForInput(g, r, input);
         }
     }
 }
 
-AudioBus* AudioNodeOutput::pull(AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus* AudioNodeOutput::pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    if (!ac->isAudioThread()) {
-        printf("foo %d\n", currentThread());
-    }
-    ASSERT(ac->isAudioThread());
+    ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
     
-    updateNumberOfChannels();
+    updateNumberOfChannels(g, r);
     
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // We try to do in-place processing (using inPlaceBus) if at all possible,
@@ -132,7 +119,7 @@ AudioBus* AudioNodeOutput::pull(AudioBus* inPlaceBus, size_t framesToProcess)
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_actualDestinationBus = isInPlace ? inPlaceBus : m_internalBus.get();
 
-    node()->processIfNecessary(framesToProcess);
+    node()->processIfNecessary(g, r, framesToProcess);
     return m_actualDestinationBus;
 }
 
@@ -162,26 +149,16 @@ unsigned AudioNodeOutput::renderingParamFanOutCount() const
     return m_renderingParamFanOutCount;
 }
 
-void AudioNodeOutput::addInput(std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(input);
     if (!input)
         return;
-
+    
     m_inputs.insert(input);
 }
 
-void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(input);
     if (!input)
         return;
 
@@ -190,39 +167,25 @@ void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
         m_inputs.erase(it);
 }
 
-void AudioNodeOutput::disconnectAllInputs(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    ASSERT(!self->context().expired());
-    std::shared_ptr<AudioContext> ac = self->context().lock();
-    ASSERT(ac->isGraphOwner());
-    
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
     while (self->m_inputs.size()) {
         auto input = self->m_inputs.begin();
-        (*input)->disconnect(*input, self);
+        (*input)->disconnect(g, *input, self);
     }
 }
 
-    void AudioNodeOutput::addParam(std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::addParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(param);
     if (!param)
         return;
 
     m_params.insert(param);
 }
 
-void AudioNodeOutput::removeParam(std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
 {
-    ASSERT(!context().expired());
-    std::shared_ptr<AudioContext> ac = context().lock();
-    ASSERT(ac->isGraphOwner());
-
-    ASSERT(param);
     if (!param)
         return;
 
@@ -231,48 +194,36 @@ void AudioNodeOutput::removeParam(std::shared_ptr<AudioParam> param)
         m_params.erase(it);
 }
 
-void AudioNodeOutput::disconnectAllParams(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    ASSERT(!self->context().expired());
-    std::shared_ptr<AudioContext> ac = self->context().lock();
-    ASSERT(ac->isGraphOwner());
-
     // AudioParam::disconnect() changes m_params by calling removeParam().
     while (self->m_params.size()) {
         auto param = self->m_params.begin();
-        (*param)->disconnect(*param, self);
+        (*param)->disconnect(g, *param, self);
     }
 }
 
-void AudioNodeOutput::disconnectAll(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    self->disconnectAllInputs(self);
-    self->disconnectAllParams(self);
+    self->disconnectAllInputs(g, self);
+    self->disconnectAllParams(g, self);
 }
 
-void AudioNodeOutput::disable(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    ASSERT(!self->context().expired());
-    std::shared_ptr<AudioContext> ac = self->context().lock();
-    ASSERT(ac->isGraphOwner());
-
     if (self->m_isEnabled) {
         for (auto i : self->m_inputs) {
-            AudioNodeInput::disable(i, self);
+            AudioNodeInput::disable(g, i, self);
         }
         self->m_isEnabled = false;
     }
 }
 
-void AudioNodeOutput::enable(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     if (!self->m_isEnabled) {
-        ASSERT(!self->context().expired());
-        std::shared_ptr<AudioContext> ac = self->context().lock();
-        ASSERT(ac->isGraphOwner());
-        
         for (auto i : self->m_inputs) {
-            AudioNodeInput::enable(i, self);
+            AudioNodeInput::enable(g, i, self);
         }
         self->m_isEnabled = true;
     }

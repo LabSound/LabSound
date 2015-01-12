@@ -38,8 +38,15 @@
 #include "WTF/Threading.h"
 #include <vector>
 
+namespace LabSound {
+    class ContextGraphLock;
+    class ContextRenderLock;
+}
+
 namespace WebCore {
 
+    using namespace LabSound;
+    
 class AudioChannel;
 
 class ReverbConvolver {
@@ -51,7 +58,7 @@ public:
     ReverbConvolver(AudioChannel* impulseResponse, size_t renderSliceSize, size_t maxFFTSize, size_t convolverRenderPhase, bool useBackgroundThreads);
     ~ReverbConvolver();
 
-    void process(const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess);
+    void process(ContextGraphLock& g, ContextRenderLock& r, const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess);
     void reset();
 
     size_t impulseResponseLength() const { return m_impulseResponseLength; }

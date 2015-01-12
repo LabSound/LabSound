@@ -13,12 +13,12 @@ namespace LabSound {
     
     class RecorderNode : public WebCore::AudioBasicInspectorNode {
     public:
-        RecorderNode(std::shared_ptr<WebCore::AudioContext>, float sampleRate);
+        RecorderNode(float sampleRate);
         virtual ~RecorderNode();
         
         // AudioNode
-        virtual void process(size_t framesToProcess) override;
-        virtual void reset();
+        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock& r) override;
         
         void startRecording() { m_recording = true; }
         void stopRecording() { m_recording = false; }
