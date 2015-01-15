@@ -32,7 +32,7 @@
 #include "HRTFDatabase.h"
 #include "WTF/ThreadSafeRefCounted.h"
 #include "WTF/RefPtr.h"
-#include "WTF/Threading.h"
+#include <mutex>
 
 namespace WebCore {
 
@@ -84,7 +84,7 @@ private:
     std::unique_ptr<HRTFDatabase> m_hrtfDatabase;
 
     // Holding a m_threadLock is required when accessing m_databaseLoaderThread.
-    WTF::Mutex m_threadLock;
+    std::mutex m_threadLock;
     ThreadIdentifier m_databaseLoaderThread;
 
     float m_databaseSampleRate;

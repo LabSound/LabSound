@@ -34,11 +34,9 @@
 #if USE(PTHREADS)
 
 #include <WTF/CurrentTime.h>
-#include <WTF/StdLibExtras.h>
 #include <WTF/ThreadFunctionInvocation.h>
 #include <WTF/ThreadIdentifierDataPthreads.h>
 #include <WTF/ThreadSpecific.h>
-#include <WTF/UnusedParam.h>
 #include <WTF/RefPtr.h>
 #include <WTF/PassOwnPtr.h>
 #include <errno.h>
@@ -97,6 +95,20 @@ static Mutex* atomicallyInitializedStaticMutex;
 void unsafeThreadWasDetached(ThreadIdentifier);
 void threadDidExit(ThreadIdentifier);
 void threadWasJoined(ThreadIdentifier);
+
+// Use these to declare and define a static local variable (static T;) so that
+//  it is leaked so that its destructors are not called at exit. Using this
+//  macro also allows workarounds a compiler bug present in Apple's version of GCC 4.0.1.
+#ifndef DEFINE_STATIC_LOCAL
+#if COMPILER(GCC) && defined(__APPLE_CC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 1
+#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+static type* name##Ptr = new type arguments; \
+type& name = *name##Ptr
+#else
+#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+static type& name = *new type arguments
+#endif
+#endif
 
 static Mutex& threadMapMutex()
 {
@@ -195,9 +207,7 @@ ThreadIdentifier createThreadInternal(ThreadFunction entryPoint, void* data, con
     }
 
     // Balanced by adoptPtr() in wtfThreadEntryPoint.
-    ThreadFunctionInvocation* leakedInvocation = invocation.leakPtr();
-    UNUSED_PARAM(leakedInvocation);
-
+    invocation.leakPtr();
     return establishIdentifierForPthreadHandle(threadHandle);
 }
 
@@ -207,8 +217,6 @@ void initializeCurrentThreadInternal(const char* threadName)
     pthread_setname_np(threadName);
 #elif OS(QNX)
     pthread_setname_np(pthread_self(), threadName);
-#else
-    UNUSED_PARAM(threadName);
 #endif
 
 #if OS(MAC_OS_X) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1060

@@ -60,8 +60,6 @@
 #define Atomics_h
 
 #include "Platform.h"
-#include "StdLibExtras.h"
-#include "UnusedParam.h"
 
 #if OS(WINDOWS)
 #include <windows.h>
@@ -173,13 +171,28 @@ inline bool weakCompareAndSwap(unsigned* location, unsigned expected, unsigned n
 #endif
     return result;
 #else
-    UNUSED_PARAM(location);
-    UNUSED_PARAM(expected);
-    UNUSED_PARAM(newValue);
     CRASH();
     return false;
 #endif
 }
+
+
+    /*
+    * C++'s idea of a reinterpret_cast lacks sufficient cojones.
+    */
+    template<typename ToType, typename FromType>
+    inline ToType bitwise_cast(FromType from)
+    {
+        static_assert(sizeof(FromType) == sizeof(ToType), "bitwise_cast size of FromType and ToType must be equal!");
+        union {
+            FromType from;
+            ToType to;
+        } u;
+        u.from = from;
+        return u.to;
+    }
+
+
 
 inline bool weakCompareAndSwap(void*volatile* location, void* expected, void* newValue)
 {
@@ -198,9 +211,6 @@ inline bool weakCompareAndSwap(void*volatile* location, void* expected, void* ne
     return weakCompareAndSwap(bitwise_cast<unsigned*>(location), bitwise_cast<unsigned>(expected), bitwise_cast<unsigned>(newValue));
 #endif
 #else // ENABLE(COMPARE_AND_SWAP)
-    UNUSED_PARAM(location);
-    UNUSED_PARAM(expected);
-    UNUSED_PARAM(newValue);
     CRASH();
     return 0;
 #endif // ENABLE(COMPARE_AND_SWAP)

@@ -256,7 +256,6 @@
 					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../include";
 			};
 			name = Debug;
@@ -279,7 +278,6 @@
 					/Users/dp/Code/LabSound/osx/build/Debug,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../include";
 			};
 			name = Release;

@@ -470,7 +470,6 @@
     <ClInclude Include="..\include\third_party\WTF\config.h" />
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
-    <ClInclude Include="..\include\third_party\WTF\DoublyLinkedList.h" />
     <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h" />
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h" />
     <ClInclude Include="..\include\third_party\WTF\Float32Array.h" />
@@ -484,17 +483,12 @@
     <ClInclude Include="..\include\third_party\WTF\MainThread.h" />
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h" />
-    <ClInclude Include="..\include\third_party\WTF\MemoryObjectInfo.h" />
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h" />
-    <ClInclude Include="..\include\third_party\WTF\Noncopyable.h" />
     <ClInclude Include="..\include\third_party\WTF\NullPtr.h" />
-    <ClInclude Include="..\include\third_party\WTF\ObjcRuntimeExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h" />
     <ClInclude Include="..\include\third_party\WTF\PassOwnPtr.h" />
     <ClInclude Include="..\include\third_party\WTF\Platform.h" />
     <ClInclude Include="..\include\third_party\WTF\RefPtr.h" />
-    <ClInclude Include="..\include\third_party\WTF\StdLibExtras.h" />
-    <ClInclude Include="..\include\third_party\WTF\StringExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
     <ClInclude Include="..\include\third_party\WTF\Threading.h" />
@@ -506,7 +500,6 @@
     <ClInclude Include="..\include\third_party\WTF\Uint32Array.h" />
     <ClInclude Include="..\include\third_party\WTF\Uint8Array.h" />
     <ClInclude Include="..\include\third_party\WTF\Uint8ClampedArray.h" />
-    <ClInclude Include="..\include\third_party\WTF\UnusedParam.h" />
     <ClInclude Include="..\include\third_party\WTF\ValueCheck.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />
     <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />

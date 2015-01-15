@@ -551,12 +551,6 @@
 #endif
 #endif
 
-#if !defined(HAVE_STRNSTR)
-#if OS(DARWIN) || (OS(FREEBSD) && !defined(__GLIBC__))
-#define HAVE_STRNSTR 1
-#endif
-#endif
-
 #if !OS(WINDOWS) && !OS(SOLARIS) \
     && !OS(RVCT) \
     && !OS(ANDROID)

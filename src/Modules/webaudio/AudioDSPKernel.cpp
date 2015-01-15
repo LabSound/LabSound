@@ -21,6 +21,5 @@ namespace WebCore {
     , m_sampleRate(sampleRate)
     {
     }
-
     
 }

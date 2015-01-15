@@ -30,7 +30,6 @@
 #define AudioBus_h
 
 #include "AudioChannel.h"
-#include "WTF/Noncopyable.h"
 #include <vector>
 
 namespace WebCore {
@@ -41,7 +40,7 @@ namespace WebCore {
 // The data layout is "planar" as opposed to "interleaved".
 // An AudioBus with one channel is mono, an AudioBus with two channels is stereo, etc.
 class AudioBus {
-    WTF_MAKE_NONCOPYABLE(AudioBus);
+    AudioBus(const AudioBus&);  // noncopyable
 public:
     enum {
         ChannelLeft = 0,

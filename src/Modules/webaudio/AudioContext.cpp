@@ -80,10 +80,8 @@ bool isSampleRateRangeGood(float sampleRate)
 const unsigned MaxHardwareContexts = 4;
 unsigned AudioContext::s_hardwareContextCount = 0;
     
-std::unique_ptr<AudioContext> AudioContext::create(ExceptionCode& ec)
+std::unique_ptr<AudioContext> AudioContext::create(ExceptionCode&)
 {
-    UNUSED_PARAM(ec);
-
     ASSERT(isMainThread());
     if (s_hardwareContextCount >= MaxHardwareContexts)
         return 0;

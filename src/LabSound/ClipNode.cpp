@@ -57,7 +57,7 @@ namespace LabSound {
             if (mode == ClipNode::TANH) {
                 float outputGain = aVal->value(r);
                 float inputGain = bVal->value(r);
-                for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();
@@ -69,7 +69,7 @@ namespace LabSound {
             else {
                 float minf = aVal->value(r);
                 float maxf = bVal->value(r);
-                for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
                     float* destination = destinationBus->channel(channelIndex)->mutableData();
@@ -93,7 +93,7 @@ namespace LabSound {
         virtual double tailTime() const { return 0; }
         virtual double latencyTime() const { return 0; }
 
-        int numChannels;
+        unsigned int numChannels;
         ClipNode::Mode mode;
 		std::shared_ptr<AudioParam> aVal;
 		std::shared_ptr<AudioParam> bVal;

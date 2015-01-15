@@ -35,7 +35,6 @@
 
 #include "Assertions.h"
 #include "Locker.h"
-#include "Noncopyable.h"
 
 #if OS(WINDOWS)
 #include <windows.h>
@@ -72,7 +71,7 @@ typedef void* PlatformCondition;
 #endif
     
 class Mutex {
-    WTF_MAKE_NONCOPYABLE(Mutex);
+    Mutex(const Mutex&); // noncopyable
 public:
     WTF_EXPORT_PRIVATE Mutex();
     WTF_EXPORT_PRIVATE ~Mutex();
@@ -90,7 +89,7 @@ private:
 typedef Locker<Mutex> MutexLocker;
 
 class MutexTryLocker {
-    WTF_MAKE_NONCOPYABLE(MutexTryLocker);
+    MutexTryLocker(const MutexTryLocker&); // noncopyable
 public:
     MutexTryLocker(Mutex& mutex) : m_mutex(mutex), m_locked(mutex.tryLock()) { }
     ~MutexTryLocker()
@@ -107,7 +106,7 @@ private:
 };
 
 class ThreadCondition {
-    WTF_MAKE_NONCOPYABLE(ThreadCondition);
+    ThreadCondition(const ThreadCondition&); // noncopyable
 public:
     WTF_EXPORT_PRIVATE ThreadCondition();
     WTF_EXPORT_PRIVATE ~ThreadCondition();

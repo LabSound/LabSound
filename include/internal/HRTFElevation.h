@@ -30,7 +30,6 @@
 #define HRTFElevation_h
 
 #include "HRTFKernel.h"
-#include "WTF/Noncopyable.h"
 #include <string>
 
 namespace WebCore {
@@ -40,7 +39,7 @@ using namespace WTF;
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
 
 class HRTFElevation {
-    WTF_MAKE_NONCOPYABLE(HRTFElevation);
+    HRTFElevation(const HRTFElevation&); // noncopyable
 public:
     // Loads and returns an HRTFElevation with the given HRTF database subject name and elevation from browser (or WebKit.framework) resources.
     // Normally, there will only be a single HRTF database set, but this API supports the possibility of multiple ones with different names.

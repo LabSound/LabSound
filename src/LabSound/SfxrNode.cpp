@@ -196,18 +196,18 @@ inline uint32_t rnd(uint32_t n) {
 #define PI 3.14159265f
 
 
-float frnd(float range)
+inline float frnd(float range)
 {
 	return (float)rnd(10000)/10000*range;
 }
 
-float rndr(float from, float to) {
+inline float rndr(float from, float to) {
     return frnd(1) * (to - from) + from;
 }
 
-float sqr(float a) { return a * a; }
-float cube(float a) { return a * a * a; }
-float flurp(float a) { return a / (1.0f - a); }
+inline float sqr(float a) { return a * a; }
+inline float cube(float a) { return a * a * a; }
+inline float flurp(float a) { return a / (1.0f - a); }
 
 
 class SfxrNode::Sfxr {

@@ -112,3 +112,6 @@ xcuserdata
 examples/*.dll
 examples/*.def
 
+# Sublime Edit
+*.sublime-workspace
+

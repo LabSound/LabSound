@@ -1,9 +1,7 @@
 
 #include "LabSoundConfig.h"
 #include "ThreadSpecific.h"
-#include "StdLibExtras.h"
 #include "ThreadingPrimitives.h"
-#include "DoublyLinkedList.h"
 
 #if !USE(PTHREADS)
 

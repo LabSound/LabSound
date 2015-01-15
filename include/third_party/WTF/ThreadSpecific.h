@@ -42,8 +42,6 @@
 #ifndef WTF_ThreadSpecific_h
 #define WTF_ThreadSpecific_h
 
-#include "Noncopyable.h"
-#include "StdLibExtras.h"
 #include <stdlib.h>
 
 #if USE(PTHREADS)
@@ -51,6 +49,15 @@
 #elif OS(WINDOWS)
 #include <windows.h>
 #endif
+
+
+// This version of placement new omits a 0 check.
+enum NotNullTag { NotNull };
+inline void* operator new(size_t, NotNullTag, void* location)
+{
+    ASSERT(location);
+    return location;
+}
 
 namespace WTF {
 
@@ -61,7 +68,7 @@ void ThreadSpecificThreadExit();
 #endif
 
 template<typename T> class ThreadSpecific {
-    WTF_MAKE_NONCOPYABLE(ThreadSpecific);
+    ThreadSpecific(const ThreadSpecific&); // noncopyable
 public:
     ThreadSpecific();
     bool isSet(); // Useful as a fast check to see if this thread has set this value.
@@ -85,7 +92,7 @@ private:
     void static destroy(void* ptr);
 
     struct Data {
-        WTF_MAKE_NONCOPYABLE(Data);
+        Data(const Data&); // noncopyable
     public:
         Data(T* value, ThreadSpecific<T>* owner) : value(value), owner(owner) {}
 
@@ -247,6 +254,7 @@ inline bool ThreadSpecific<T>::isSet()
 {
     return !!get();
 }
+
 
 template<typename T>
 inline ThreadSpecific<T>::operator T*()

@@ -26,7 +26,6 @@
 #define RealtimeAnalyser_h
 
 #include "AudioArray.h"
-#include "WTF/Noncopyable.h"
 #include <vector>
 
 namespace WebCore {
@@ -37,7 +36,7 @@ class AudioBus;
 class FFTFrame;
 
 class RealtimeAnalyser {
-    WTF_MAKE_NONCOPYABLE(RealtimeAnalyser);
+    RealtimeAnalyser(const RealtimeAnalyser&); // noncopyable
 public:
     RealtimeAnalyser();
     virtual ~RealtimeAnalyser();

@@ -30,7 +30,6 @@
 #define HRTFDatabase_h
 
 #include "HRTFElevation.h"
-#include "WTF/Noncopyable.h"
 #include <vector>
 
 namespace WebCore {
@@ -38,7 +37,7 @@ namespace WebCore {
 class HRTFKernel;
 
 class HRTFDatabase {
-    WTF_MAKE_NONCOPYABLE(HRTFDatabase);
+    HRTFDatabase(const HRTFDatabase&); // noncopyable
 public:
     static std::unique_ptr<HRTFDatabase> create(float sampleRate);
 

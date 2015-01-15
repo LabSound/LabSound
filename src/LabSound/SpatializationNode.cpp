@@ -9,20 +9,22 @@
 
 namespace LabSound {
     
-    // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-    float distanceFromPointToLine(const FloatPoint3D& x0,
-                                  const FloatPoint3D& x1, const FloatPoint3D& x2,
-                                  float& t)
-    {
-        FloatPoint3D x2x1 = x2 - x1;
-        FloatPoint3D x1x0 = x1 - x0;
-        float l = x2x1.length();
-        t = -x1x0.dot(x2x1) / (l * l);
-        
-        FloatPoint3D x0x1 = x0 - x1;
-        FloatPoint3D x0x2 = x0 - x2;
-        float d = x0x1.cross(x0x2).length() / x2x1.length();
-        return d;
+    namespace {
+        // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        float distanceFromPointToLine(const FloatPoint3D& x0,
+                                      const FloatPoint3D& x1, const FloatPoint3D& x2,
+                                      float& t)
+        {
+            FloatPoint3D x2x1 = x2 - x1;
+            FloatPoint3D x1x0 = x1 - x0;
+            float l = x2x1.length();
+            t = -x1x0.dot(x2x1) / (l * l);
+            
+            FloatPoint3D x0x1 = x0 - x1;
+            FloatPoint3D x0x2 = x0 - x2;
+            float d = x0x1.cross(x0x2).length() / x2x1.length();
+            return d;
+        }
     }
     
     void Occluders::setOccluder(int id,

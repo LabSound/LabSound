@@ -37,7 +37,6 @@
 #include <WTF/Assertions.h>
 
 #include <WTF/Compiler.h>
-#include <WTF/StdLibExtras.h>
 #include <vector>
 #include <string>
 
@@ -58,7 +57,7 @@
 #endif
 #endif // Mac Platform
 
-#if COMPILER(MSVC) && !OS(WINCE)
+#if COMPILER(MSVC)
 #include <crtdbg.h>
 #endif
 
@@ -70,10 +69,6 @@
 #include <cxxabi.h>
 #include <dlfcn.h>
 #include <execinfo.h>
-#endif
-
-#if PLATFORM(BLACKBERRY)
-#include <BlackBerryPlatformLog.h>
 #endif
 
 extern "C" {
@@ -211,7 +206,7 @@ extern "C" {
 
 	static void printCallSite(const char* file, int line, const char* function)
 	{
-#if OS(WINDOWS) && !OS(WINCE) && defined(_DEBUG)
+#if OS(WINDOWS) && defined(_DEBUG)
 		_CrtDbgReport(_CRT_WARN, file, line, NULL, "%s\n", function);
 #else
 		// By using this format, which matches the format used by MSVC for compiler errors, developers

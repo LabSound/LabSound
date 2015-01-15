@@ -38,7 +38,7 @@ namespace WTF {
 // Holds ThreadIdentifier in the thread-specific storage and employs pthreads-specific 2-pass destruction to reliably remove
 // ThreadIdentifier from threadMap. It assumes regular ThreadSpecific types don't use multiple-pass destruction.
 class ThreadIdentifierData {
-    WTF_MAKE_NONCOPYABLE(ThreadIdentifierData);
+    ThreadIdentifierData(const ThreadIdentifierData&); // noncopyable
 public:
     ~ThreadIdentifierData();
 

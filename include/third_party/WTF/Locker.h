@@ -28,12 +28,10 @@
 #ifndef Locker_h
 #define Locker_h
 
-#include "Noncopyable.h"
-
 namespace WTF {
 
 template <typename T> class Locker {
-    WTF_MAKE_NONCOPYABLE(Locker);
+	Locker(const Locker&); // noncopyable
 public:
     Locker(T& lockable) : m_lockable(lockable) { m_lockable.lock(); }
     ~Locker() { m_lockable.unlock(); }

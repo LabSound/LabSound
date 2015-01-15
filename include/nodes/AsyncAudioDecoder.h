@@ -41,7 +41,7 @@ using namespace WTF;
 // Upon successful decoding, a completion callback will be invoked with the decoded PCM data in an AudioBuffer.
 
 class AsyncAudioDecoder {
-    WTF_MAKE_NONCOPYABLE(AsyncAudioDecoder);
+    AsyncAudioDecoder(const AsyncAudioDecoder&); // noncopyable
 public:
     AsyncAudioDecoder();
     ~AsyncAudioDecoder();
@@ -51,7 +51,7 @@ public:
 
 private:
     class DecodingTask {
-        WTF_MAKE_NONCOPYABLE(DecodingTask);
+        DecodingTask(const DecodingTask&); // noncopyable
     public:
         static std::unique_ptr<AsyncAudioDecoder::DecodingTask> create(std::shared_ptr<std::vector<uint8_t>> audioData,
                                                                        float sampleRate,

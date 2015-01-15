@@ -625,9 +625,6 @@
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\DoublyLinkedList.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
@@ -667,19 +664,10 @@
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\MemoryObjectInfo.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Noncopyable.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\NullPtr.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ObjcRuntimeExtras.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h">
@@ -694,19 +682,10 @@
     <ClInclude Include="..\include\third_party\WTF\RefPtr.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\StdLibExtras.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\StringExtras.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Threading.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadingPrimitives.h">
@@ -731,9 +710,6 @@
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Uint32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\UnusedParam.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ValueCheck.h">

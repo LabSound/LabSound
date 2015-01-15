@@ -254,6 +254,9 @@
 		E25245F518724EC300983485 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
 		E253C5461A514877006EA796 /* BpmDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BpmDelay.cpp; sourceTree = "<group>"; };
 		E2814CFB1A638B3400AEFB6C /* AudioDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDSPKernel.cpp; sourceTree = "<group>"; };
+		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
+		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		E2D5CD7A1A19B20C00B031C8 /* json11.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = json11.hpp; path = ../include/third_party/json11/json11.hpp; sourceTree = "<group>"; };
 		E2D5CD7B1A19B23400B031C8 /* ADSR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSR.h; path = ../include/third_party/STK/ADSR.h; sourceTree = "<group>"; };
 		E2D5CD7C1A19B23400B031C8 /* Asymp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Asymp.h; path = ../include/third_party/STK/Asymp.h; sourceTree = "<group>"; };
@@ -551,16 +554,10 @@
 		E2D5CF1F1A19B66900B031C8 /* MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainThread.h; path = ../include/third_party/WTF/MainThread.h; sourceTree = "<group>"; };
 		E2D5CF201A19B66900B031C8 /* MathExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../include/third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
 		E2D5CF211A19B66900B031C8 /* MediaTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaTime.h; path = ../include/third_party/WTF/MediaTime.h; sourceTree = "<group>"; };
-		E2D5CF221A19B66900B031C8 /* MemoryObjectInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryObjectInfo.h; path = ../include/third_party/WTF/MemoryObjectInfo.h; sourceTree = "<group>"; };
-		E2D5CF231A19B66900B031C8 /* MessageQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MessageQueue.h; path = ../include/third_party/WTF/MessageQueue.h; sourceTree = "<group>"; };
-		E2D5CF241A19B66900B031C8 /* Noncopyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Noncopyable.h; path = ../include/third_party/WTF/Noncopyable.h; sourceTree = "<group>"; };
-		E2D5CF251A19B66900B031C8 /* ObjcRuntimeExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjcRuntimeExtras.h; path = ../include/third_party/WTF/ObjcRuntimeExtras.h; sourceTree = "<group>"; };
 		E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OwnPtrCommon.h; path = ../include/third_party/WTF/OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PassOwnPtr.h; path = ../include/third_party/WTF/PassOwnPtr.h; sourceTree = "<group>"; };
 		E2D5CF281A19B66900B031C8 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../include/third_party/WTF/Platform.h; sourceTree = "<group>"; };
 		E2D5CF291A19B66900B031C8 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefPtr.h; path = ../include/third_party/WTF/RefPtr.h; sourceTree = "<group>"; };
-		E2D5CF2A1A19B66900B031C8 /* StdLibExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdLibExtras.h; path = ../include/third_party/WTF/StdLibExtras.h; sourceTree = "<group>"; };
-		E2D5CF2B1A19B66900B031C8 /* StringExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringExtras.h; path = ../include/third_party/WTF/StringExtras.h; sourceTree = "<group>"; };
 		E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadFunctionInvocation.h; path = ../include/third_party/WTF/ThreadFunctionInvocation.h; sourceTree = "<group>"; };
 		E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadIdentifierDataPthreads.h; path = ../include/third_party/WTF/ThreadIdentifierDataPthreads.h; sourceTree = "<group>"; };
 		E2D5CF2E1A19B66900B031C8 /* Threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threading.h; path = ../include/third_party/WTF/Threading.h; sourceTree = "<group>"; };
@@ -572,7 +569,6 @@
 		E2D5CF341A19B66900B031C8 /* Uint8ClampedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint8ClampedArray.h; path = ../include/third_party/WTF/Uint8ClampedArray.h; sourceTree = "<group>"; };
 		E2D5CF351A19B66900B031C8 /* Uint16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint16Array.h; path = ../include/third_party/WTF/Uint16Array.h; sourceTree = "<group>"; };
 		E2D5CF361A19B66900B031C8 /* Uint32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint32Array.h; path = ../include/third_party/WTF/Uint32Array.h; sourceTree = "<group>"; };
-		E2D5CF371A19B66900B031C8 /* UnusedParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnusedParam.h; path = ../include/third_party/WTF/UnusedParam.h; sourceTree = "<group>"; };
 		E2D5CF381A19B66900B031C8 /* ValueCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueCheck.h; path = ../include/third_party/WTF/ValueCheck.h; sourceTree = "<group>"; };
 		E2D5CF391A19B66900B031C8 /* WTFExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WTFExport.h; path = ../include/third_party/WTF/WTFExport.h; sourceTree = "<group>"; };
 		E2F817171A2E19DF00E31150 /* MediaStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStream.h; path = nodes/MediaStream.h; sourceTree = "<group>"; };
@@ -878,6 +874,7 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
+				E285226E1A6422F6003F1CA7 /* config */,
 				082FE01C19C6009400046275 /* third_party */,
 				E251D9BE184CE6C900F7B7BC /* include */,
 				E2FB873F183D20E100A5A764 /* platform */,
@@ -911,6 +908,16 @@
 			);
 			name = ooura;
 			path = ../src/ooura;
+			sourceTree = "<group>";
+		};
+		E285226E1A6422F6003F1CA7 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				E285226F1A642304003F1CA7 /* LabSound.xcconfig */,
+				E28522701A642310003F1CA7 /* Debug.xcconfig */,
+				E28522711A64231C003F1CA7 /* Release.xcconfig */,
+			);
+			path = config;
 			sourceTree = "<group>";
 		};
 		E2D5CE821A19B3D200B031C8 /* internal */ = {
@@ -1069,16 +1076,10 @@
 				E2D5CF1F1A19B66900B031C8 /* MainThread.h */,
 				E2D5CF201A19B66900B031C8 /* MathExtras.h */,
 				E2D5CF211A19B66900B031C8 /* MediaTime.h */,
-				E2D5CF221A19B66900B031C8 /* MemoryObjectInfo.h */,
-				E2D5CF231A19B66900B031C8 /* MessageQueue.h */,
-				E2D5CF241A19B66900B031C8 /* Noncopyable.h */,
-				E2D5CF251A19B66900B031C8 /* ObjcRuntimeExtras.h */,
 				E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */,
 				E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */,
 				E2D5CF281A19B66900B031C8 /* Platform.h */,
 				E2D5CF291A19B66900B031C8 /* RefPtr.h */,
-				E2D5CF2A1A19B66900B031C8 /* StdLibExtras.h */,
-				E2D5CF2B1A19B66900B031C8 /* StringExtras.h */,
 				E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */,
 				E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */,
 				E2D5CF2E1A19B66900B031C8 /* Threading.h */,
@@ -1090,7 +1091,6 @@
 				E2D5CF341A19B66900B031C8 /* Uint8ClampedArray.h */,
 				E2D5CF351A19B66900B031C8 /* Uint16Array.h */,
 				E2D5CF361A19B66900B031C8 /* Uint32Array.h */,
-				E2D5CF371A19B66900B031C8 /* UnusedParam.h */,
 				E2D5CF381A19B66900B031C8 /* ValueCheck.h */,
 				E2D5CF391A19B66900B031C8 /* WTFExport.h */,
 			);
@@ -1517,61 +1517,30 @@
 /* Begin XCBuildConfiguration section */
 		068F18FF3E791FD308513337 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E28522711A64231C003F1CA7 /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../include/third_party",
-					"$(PROJECT_DIR)/../include/internal",
-				);
-				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OBJROOT = "$(SYMROOT)";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = LabSound;
-				SDKROOT = macosx;
-				SYMROOT = build;
-				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
 		1C0D2D9E74052F052778707B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E28522701A642310003F1CA7 /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
-				CONFIGURATION_TEMP_DIR = "$(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../include/third_party",
-					"$(PROJECT_DIR)/../include/internal",
-				);
-				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OBJROOT = "$(SYMROOT)";
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = LabSound;
-				SDKROOT = macosx;
-				SYMROOT = build;
-				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
 		448B3AB821DF6926574B7ECC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E285226F1A642304003F1CA7 /* LabSound.xcconfig */;
 			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
-				CONFIGURATION_TEMP_DIR = "$(OBJROOT)";
 				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
@@ -1604,22 +1573,18 @@
 					libpd/libpd_wrapper,
 					"libpd/pure-data/src",
 				);
-				OBJROOT = obj/x64/Debug;
-				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-std=c++11",
 					"-stdlib=libc++",
 				);
-				SYMROOT = "$(BUILD_DIR)";
 			};
 			name = Debug;
 		};
 		7BB013C71308184445C54388 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E285226F1A642304003F1CA7 /* LabSound.xcconfig */;
 			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
-				CONFIGURATION_TEMP_DIR = "$(OBJROOT)";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"BUILDING_WTF=1",
@@ -1652,13 +1617,10 @@
 					libpd/libpd_wrapper,
 					"libpd/pure-data/src",
 				);
-				OBJROOT = obj/x64/Release;
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = (
 					"-std=c++11",
 					"-stdlib=libc++",
 				);
-				SYMROOT = "$(BUILD_DIR)";
 			};
 			name = Release;
 		};

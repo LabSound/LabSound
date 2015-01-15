@@ -190,14 +190,6 @@ These macros are compiled out of release builds.
 Expressions inside them are evaluated in debug builds only.
 */
 
-#if OS(WINCE)
-/* FIXME: We include this here only to avoid a conflict with the ASSERT macro. */
-#include <windows.h>
-#undef min
-#undef max
-#undef ERROR
-#endif
-
 #if OS(WINDOWS)
 /* FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform */
 #undef ASSERT

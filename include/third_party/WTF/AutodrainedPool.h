@@ -29,8 +29,6 @@
 #ifndef AutodrainedPool_h
 #define AutodrainedPool_h
 
-#include "Noncopyable.h"
-
 #if PLATFORM(MAC) && !defined(__OBJC__)
 typedef struct objc_object *id;
 #endif
@@ -38,7 +36,7 @@ typedef struct objc_object *id;
 namespace WTF {
 
 class AutodrainedPool {
-    WTF_MAKE_NONCOPYABLE(AutodrainedPool);
+	AutodrainedPool(const AutodrainedPool&); // noncopyable
 public:
 #if PLATFORM(MAC)
     WTF_EXPORT_PRIVATE AutodrainedPool();

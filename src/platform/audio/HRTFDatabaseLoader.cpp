@@ -94,7 +94,7 @@ void HRTFDatabaseLoader::loadAsynchronously()
 {
     ASSERT(isMainThread());
 
-    MutexLocker locker(m_threadLock);
+    std::lock_guard<std::mutex> locker(m_threadLock);
     
     if (!m_hrtfDatabase.get() && !m_databaseLoaderThread) {
         // Start the asynchronous database loading process.
@@ -109,7 +109,7 @@ bool HRTFDatabaseLoader::isLoaded() const
 
 void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
 {
-    MutexLocker locker(m_threadLock);
+    std::lock_guard<std::mutex> locker(m_threadLock);
     
     // waitForThreadCompletion() should not be called twice for the same thread.
     if (m_databaseLoaderThread)

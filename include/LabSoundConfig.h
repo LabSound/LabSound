@@ -6,8 +6,7 @@
 //
 //
 
-#ifndef LABSOUND_CONFIG_H
-#define LABSOUND_CONFIG_H
+#pragma once
 
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
@@ -46,4 +45,3 @@
 #  endif
 #endif
 
-#endif // LABSOUND_CONFIG_H

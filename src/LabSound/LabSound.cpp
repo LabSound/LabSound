@@ -26,6 +26,11 @@ namespace LabSound {
         context->lazyInitialize();
         return context;
     }
+
+
+    void update(std::shared_ptr<LabSound::AudioContext> context) {
+
+    }
     
     void finish(std::shared_ptr<LabSound::AudioContext> context) {
         for (int i = 0; i < 10; ++i) {

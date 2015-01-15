@@ -3,7 +3,6 @@
 #define included_wtf_RefPtr_h
 
 #include "Assertions.h"
-#include "Noncopyable.h"
 #include "PassOwnPtr.h"
 #include <algorithm>
 

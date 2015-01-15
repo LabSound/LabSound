@@ -36,7 +36,6 @@
 #include "Logging.h"
 #include <complex>
 #include <wtf/MathExtras.h>
-#include <wtf/MemoryObjectInfo.h>
 
 namespace WebCore {
     

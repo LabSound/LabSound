@@ -59,6 +59,9 @@ namespace LabSound {
     
     // init() will return an audio context object
     std::shared_ptr<AudioContext> init();
+
+    // call periodically to allow book-keeping to occur, notifications to send, and so on
+    void update(std::shared_ptr<LabSound::AudioContext> context);
     
     // when done with the context call finish
     void finish(std::shared_ptr<LabSound::AudioContext> context);

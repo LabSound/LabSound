@@ -30,7 +30,6 @@
 #include "MainThread.h"
 
 #include <WTF/CurrentTime.h>
-#include <WTF/StdLibExtras.h>
 #include <WTF/Threading.h>
 #include <deque>
 #include <WTF/ThreadSpecific.h>
@@ -70,6 +69,21 @@ static bool callbacksPaused; // This global variable is only accessed from main 
 #if !PLATFORM(MAC)
 static ThreadIdentifier mainThreadIdentifier;
 #endif
+
+// Use these to declare and define a static local variable (static T;) so that
+//  it is leaked so that its destructors are not called at exit. Using this
+//  macro also allows workarounds a compiler bug present in Apple's version of GCC 4.0.1.
+#ifndef DEFINE_STATIC_LOCAL
+#if COMPILER(GCC) && defined(__APPLE_CC__) && __GNUC__ == 4 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ == 1
+#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+static type* name##Ptr = new type arguments; \
+type& name = *name##Ptr
+#else
+#define DEFINE_STATIC_LOCAL(type, name, arguments) \
+static type& name = *new type arguments
+#endif
+#endif
+
 
 static Mutex& mainThreadFunctionQueueMutex()
 {

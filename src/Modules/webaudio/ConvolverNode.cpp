@@ -65,9 +65,9 @@ ConvolverNode::~ConvolverNode()
 void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
-    ASSERT(outputBus);
     if (!isInitialized() || !m_reverb.get()) {
-        outputBus->zero();
+        if (outputBus)
+            outputBus->zero();
         return;
     }
 

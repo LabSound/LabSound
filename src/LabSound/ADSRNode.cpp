@@ -87,7 +87,7 @@ namespace LabSound {
                 }
             }
 
-            for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+            for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source = sourceBus->channel(channelIndex)->data();
                 float* destination = destinationBus->channel(channelIndex)->mutableData();
@@ -147,7 +147,7 @@ namespace LabSound {
         int m_releaseSteps;
         float m_releaseStepSize;
 
-        int numChannels;
+        unsigned int numChannels;
         double m_attackTimeTarget, m_decayTimeTarget, m_noteOffTime;
         float m_currentGain;
         std::vector<float> gainValues;

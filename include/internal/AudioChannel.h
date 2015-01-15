@@ -30,7 +30,6 @@
 #define AudioChannel_h
 
 #include "AudioArray.h"
-#include "WTF/Noncopyable.h"
 #include <memory>
 
 namespace WebCore {
@@ -38,7 +37,7 @@ namespace WebCore {
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
 class AudioChannel {
-    WTF_MAKE_NONCOPYABLE(AudioChannel);
+    AudioChannel(const AudioChannel&); // noncopyable
 public:
     // Memory can be externally referenced, or can be internally allocated with an AudioFloatArray.
 
