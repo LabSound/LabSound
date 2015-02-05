@@ -63,7 +63,6 @@
 
 #include "Atomics.h"
 #include "DynamicAnnotations.h"
-#include "ThreadingPrimitives.h"
 
 namespace WTF {
 

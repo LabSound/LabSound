@@ -32,6 +32,7 @@
 #define ThreadIdentifierDataPthreads_h
 
 #include "Threading.h"
+#include <pthread.h>
 
 namespace WTF {
 

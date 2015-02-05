@@ -30,6 +30,7 @@
 
 #include "LabSoundConfig.h"
 #include "Threading.h"
+#include <mutex>
 
 #if USE(PTHREADS)
 
@@ -90,7 +91,7 @@ private:
 
 typedef std::map<ThreadIdentifier, OwnPtr<PthreadState> > ThreadMap;
 
-static Mutex* atomicallyInitializedStaticMutex;
+static std::mutex* atomicallyInitializedStaticMutex;
 
 void unsafeThreadWasDetached(ThreadIdentifier);
 void threadDidExit(ThreadIdentifier);
@@ -110,9 +111,9 @@ static type& name = *new type arguments
 #endif
 #endif
 
-static Mutex& threadMapMutex()
+static std::mutex& threadMapMutex()
 {
-    DEFINE_STATIC_LOCAL(Mutex, mutex, ());
+    DEFINE_STATIC_LOCAL(std::mutex, mutex, ());
     return mutex;
 }
 
@@ -136,7 +137,7 @@ void initializeThreading()
     enableIEEE754Denormal();
 #endif
 
-    atomicallyInitializedStaticMutex = new Mutex;
+    atomicallyInitializedStaticMutex = new std::mutex;
     threadMapMutex();
     ThreadIdentifierData::initializeOnce();
 }
@@ -160,7 +161,7 @@ static ThreadMap& threadMap()
 
 static ThreadIdentifier identifierByPthreadHandle(const pthread_t& pthreadHandle)
 {
-    MutexLocker locker(threadMapMutex());
+    std::lock_guard<std::mutex> locker(threadMapMutex());
 
     ThreadMap::iterator i = threadMap().begin();
     for (; i != threadMap().end(); ++i) {
@@ -174,7 +175,7 @@ static ThreadIdentifier identifierByPthreadHandle(const pthread_t& pthreadHandle
 static ThreadIdentifier establishIdentifierForPthreadHandle(const pthread_t& pthreadHandle)
 {
     ASSERT(!identifierByPthreadHandle(pthreadHandle));
-    MutexLocker locker(threadMapMutex());
+    std::lock_guard<std::mutex> locker(threadMapMutex());
     static ThreadIdentifier identifierCount = 1;
     threadMap()[identifierCount] =adoptPtr(new PthreadState(pthreadHandle));
     return identifierCount++;
@@ -241,7 +242,7 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 
     {
         // We don't want to lock across the call to join, since that can block our thread and cause deadlock.
-        MutexLocker locker(threadMapMutex());
+        std::lock_guard<std::mutex> locker(threadMapMutex());
         pthreadHandle = pthreadHandleForIdentifierWithLockAlreadyHeld(threadID);
         ASSERT(pthreadHandle);
     }
@@ -253,7 +254,7 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
     else if (joinResult)
         LOG_ERROR("ThreadIdentifier %u was unable to be joined.\n", threadID);
 
-    MutexLocker locker(threadMapMutex());
+    std::lock_guard<std::mutex> locker(threadMapMutex());
     auto i = threadMap().find(threadID);
     ASSERT(i != threadMap().end());
     PthreadState* state = i->second.get();
@@ -274,7 +275,7 @@ void detachThread(ThreadIdentifier threadID)
 {
     ASSERT(threadID);
 
-    MutexLocker locker(threadMapMutex());
+    std::lock_guard<std::mutex> locker(threadMapMutex());
     pthread_t pthreadHandle = pthreadHandleForIdentifierWithLockAlreadyHeld(threadID);
     ASSERT(pthreadHandle);
 
@@ -294,7 +295,7 @@ void detachThread(ThreadIdentifier threadID)
 
 void threadDidExit(ThreadIdentifier threadID)
 {
-    MutexLocker locker(threadMapMutex());
+    std::lock_guard<std::mutex> locker(threadMapMutex());
     auto i = threadMap().find(threadID);
     ASSERT(i != threadMap().end());
     PthreadState* state = i->second.get();
@@ -326,96 +327,6 @@ ThreadIdentifier currentThread()
     return id;
 }
 
-Mutex::Mutex()
-{
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);
-
-    int result = pthread_mutex_init(&m_mutex, &attr);
-    ASSERT_UNUSED(result, !result);
-
-    pthread_mutexattr_destroy(&attr);
-}
-
-Mutex::~Mutex()
-{
-    int result = pthread_mutex_destroy(&m_mutex);
-    ASSERT_UNUSED(result, !result);
-}
-
-void Mutex::lock()
-{
-    int result = pthread_mutex_lock(&m_mutex);
-    ASSERT_UNUSED(result, !result);
-}
-
-bool Mutex::tryLock()
-{
-    int result = pthread_mutex_trylock(&m_mutex);
-
-    if (result == 0)
-        return true;
-    if (result == EBUSY)
-        return false;
-
-    ASSERT_NOT_REACHED();
-    return false;
-}
-
-void Mutex::unlock()
-{
-    int result = pthread_mutex_unlock(&m_mutex);
-    ASSERT_UNUSED(result, !result);
-}
-
-ThreadCondition::ThreadCondition()
-{ 
-    pthread_cond_init(&m_condition, NULL);
-}
-
-ThreadCondition::~ThreadCondition()
-{
-    pthread_cond_destroy(&m_condition);
-}
-    
-void ThreadCondition::wait(Mutex& mutex)
-{
-    int result = pthread_cond_wait(&m_condition, &mutex.impl());
-    ASSERT_UNUSED(result, !result);
-}
-
-bool ThreadCondition::timedWait(Mutex& mutex, double absoluteTime)
-{
-    if (absoluteTime < currentTime())
-        return false;
-
-    if (absoluteTime > INT_MAX) {
-        wait(mutex);
-        return true;
-    }
-
-    int timeSeconds = static_cast<int>(absoluteTime);
-    int timeNanoseconds = static_cast<int>((absoluteTime - timeSeconds) * 1E9);
-
-    timespec targetTime;
-    targetTime.tv_sec = timeSeconds;
-    targetTime.tv_nsec = timeNanoseconds;
-
-    return pthread_cond_timedwait(&m_condition, &mutex.impl(), &targetTime) == 0;
-}
-
-void ThreadCondition::signal()
-{
-    int result = pthread_cond_signal(&m_condition);
-    ASSERT_UNUSED(result, !result);
-}
-
-void ThreadCondition::broadcast()
-{
-    int result = pthread_cond_broadcast(&m_condition);
-    ASSERT_UNUSED(result, !result);
-}
 
 } // namespace WTF
 

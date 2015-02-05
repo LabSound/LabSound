@@ -8,13 +8,14 @@
 
 #pragma once
 
-enum ExceptionCode {
-    NO_ERR = 0,
-    INVALID_STATE_ERR = 1,
-    SYNTAX_ERR = 2,
-    NOT_SUPPORTED_ERR = 3,
-    INDEX_SIZE_ERR
-};
-
+namespace LabSound {
+    enum ExceptionCode {
+        NO_ERR = 0,
+        INVALID_STATE_ERR = 1,
+        SYNTAX_ERR = 2,
+        NOT_SUPPORTED_ERR = 3,
+        INDEX_SIZE_ERR
+    };
+}
 
 

@@ -35,6 +35,7 @@
 #include "ThreadIdentifierDataPthreads.h"
 
 #include "Threading.h"
+#include <pthread.h>
 
 #if OS(ANDROID)
 #   define PTHREAD_KEYS_MAX 1024

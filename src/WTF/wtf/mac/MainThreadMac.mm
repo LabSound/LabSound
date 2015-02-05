@@ -32,6 +32,8 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/NSThread.h>
 #import <stdio.h>
+#include <pthread.h>
+
 #import <wtf/Assertions.h>
 #import <wtf/Threading.h>
 

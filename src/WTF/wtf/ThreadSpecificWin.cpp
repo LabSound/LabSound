@@ -1,7 +1,6 @@
 
 #include "LabSoundConfig.h"
 #include "ThreadSpecific.h"
-#include "ThreadingPrimitives.h"
 
 #if !USE(PTHREADS)
 

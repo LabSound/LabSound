@@ -80,7 +80,7 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
     if (!isValid)
         return;
         
-    MutexLocker locker(m_eventsLock);
+    std::lock_guard<std::mutex> locker(m_eventsLock);
     
     unsigned i = 0;
     float insertTime = event.time();
@@ -100,7 +100,7 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
 
 void AudioParamTimeline::cancelScheduledValues(float startTime)
 {
-    MutexLocker locker(m_eventsLock);
+    std::lock_guard<std::mutex> locker(m_eventsLock);
 
     // Remove all events starting at startTime.
     for (unsigned i = 0; i < m_events.size(); ++i) {
@@ -115,21 +115,19 @@ float AudioParamTimeline::valueForContextTime(AudioContext* context, float defau
 {
     ASSERT(context);
 
-    {
-        MutexTryLocker tryLocker(m_eventsLock);
-        if (!tryLocker.locked() || !context || !m_events.size() || context->currentTime() < m_events[0].time()) {
-            hasValue = false;
-            return defaultValue;
-        }
+    if (!m_eventsLock.try_lock() || !context || !m_events.size() || context->currentTime() < m_events[0].time()) {
+        hasValue = false;
+        return defaultValue;
     }
 
     // Ask for just a single value.
-    float value;
     double sampleRate = context->sampleRate();
     double startTime = context->currentTime();
     double endTime = startTime + 1.1 / sampleRate; // time just beyond one sample-frame
     double controlRate = sampleRate / AudioNode::ProcessingSizeInFrames; // one parameter change per render quantum
-    value = valuesForTimeRange(startTime, endTime, defaultValue, &value, 1, sampleRate, controlRate);
+    float value = valuesForTimeRange(startTime, endTime, defaultValue, &value, 1, sampleRate, controlRate);
+
+    m_eventsLock.unlock();
 
     hasValue = true;
     return value;
@@ -145,8 +143,7 @@ float AudioParamTimeline::valuesForTimeRange(
     double controlRate)
 {
     // We can't contend the lock in the realtime audio thread.
-    MutexTryLocker tryLocker(m_eventsLock);
-    if (!tryLocker.locked()) {
+    if (!m_eventsLock.try_lock()) {
         if (values) {
             for (unsigned i = 0; i < numberOfValues; ++i)
                 values[i] = defaultValue;
@@ -155,6 +152,7 @@ float AudioParamTimeline::valuesForTimeRange(
     }
 
     float value = valuesForTimeRangeImpl(startTime, endTime, defaultValue, values, numberOfValues, sampleRate, controlRate);
+    m_eventsLock.unlock();
 
     return value;
 }
@@ -168,7 +166,6 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     double sampleRate,
     double controlRate)
 {
-    ASSERT(values);
     if (!values)
         return defaultValue;
 

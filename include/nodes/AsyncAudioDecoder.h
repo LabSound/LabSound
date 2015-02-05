@@ -28,6 +28,7 @@
 #include "WTF/MessageQueue.h"
 #include "WTF/RefPtr.h"
 #include "WTF/Threading.h"
+#include <mutex>
 #include <vector>
 
 namespace WebCore {
@@ -82,7 +83,7 @@ private:
     void runLoop();
 
     WTF::ThreadIdentifier m_threadID;
-    WTF::Mutex m_threadCreationMutex;
+    std::mutex m_threadCreationMutex;
     MessageQueue<DecodingTask> m_queue;
 };
 

@@ -32,6 +32,8 @@
 #include <WTF/CurrentTime.h>
 #include <WTF/Threading.h>
 #include <deque>
+#include <mutex>
+#include <thread>
 #include <WTF/ThreadSpecific.h>
 
 namespace WTF {
@@ -39,9 +41,9 @@ namespace WTF {
 struct FunctionWithContext {
     MainThreadFunction* function;
     void* context;
-    ThreadCondition* syncFlag;
+    std::condition_variable* syncFlag;
 
-    FunctionWithContext(MainThreadFunction* function = 0, void* context = 0, ThreadCondition* syncFlag = 0)
+    FunctionWithContext(MainThreadFunction* function = 0, void* context = 0, std::condition_variable* syncFlag = 0)
         : function(function)
         , context(context)
         , syncFlag(syncFlag)
@@ -85,9 +87,9 @@ static type& name = *new type arguments
 #endif
 
 
-static Mutex& mainThreadFunctionQueueMutex()
+static std::mutex& mainThreadFunctionQueueMutex()
 {
-    DEFINE_STATIC_LOCAL(Mutex, staticMutex, ());
+    DEFINE_STATIC_LOCAL(std::mutex, staticMutex, ());
     return staticMutex;
 }
 
@@ -156,7 +158,7 @@ void dispatchFunctionsFromMainThread()
     FunctionWithContext invocation;
     while (true) {
         {
-            MutexLocker locker(mainThreadFunctionQueueMutex());
+            std::lock_guard<std::mutex> locker(mainThreadFunctionQueueMutex());
             if (!functionQueue().size())
                 break;
             invocation = functionQueue().front();
@@ -165,8 +167,8 @@ void dispatchFunctionsFromMainThread()
 
         invocation.function(invocation.context);
         if (invocation.syncFlag) {
-            MutexLocker locker(mainThreadFunctionQueueMutex());
-            invocation.syncFlag->signal();
+            std::lock_guard<std::mutex> locker(mainThreadFunctionQueueMutex());
+            invocation.syncFlag->notify_one();
         }
 
         // If we are running accumulated functions for too long so UI may become unresponsive, we need to
@@ -185,7 +187,7 @@ void callOnMainThread(MainThreadFunction* function, void* context)
     ASSERT(function);
     bool needToSchedule = false;
     {
-        MutexLocker locker(mainThreadFunctionQueueMutex());
+        std::lock_guard<std::mutex> locker(mainThreadFunctionQueueMutex());
         needToSchedule = functionQueue().size() == 0;
         functionQueue().push_back(FunctionWithContext(function, context));
     }
@@ -202,20 +204,20 @@ void callOnMainThreadAndWait(MainThreadFunction* function, void* context)
         return;
     }
 
-    ThreadCondition syncFlag;
-    Mutex& functionQueueMutex = mainThreadFunctionQueueMutex();
-    MutexLocker locker(functionQueueMutex);
+    std::condition_variable syncFlag;
+    std::mutex& functionQueueMutex = mainThreadFunctionQueueMutex();
+    std::unique_lock<std::mutex> locker(functionQueueMutex);
     functionQueue().push_back(FunctionWithContext(function, context, &syncFlag));
     if (functionQueue().size() == 1)
         scheduleDispatchFunctionsOnMainThread();
-    syncFlag.wait(functionQueueMutex);
+    syncFlag.wait(locker);
 }
 
 void cancelCallOnMainThread(MainThreadFunction* function, void* context)
 {
     ASSERT(function);
 
-    MutexLocker locker(mainThreadFunctionQueueMutex());
+    std::lock_guard<std::mutex> locker(mainThreadFunctionQueueMutex());
 
     FunctionWithContextFinder pred(FunctionWithContext(function, context));
 

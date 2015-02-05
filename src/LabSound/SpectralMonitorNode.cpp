@@ -21,7 +21,7 @@ namespace LabSound {
     // FFT class directly inspired by that in Cinder Audio 2.
     class FFT {
     public:
-        FFT(int size)
+        FFT(size_t size)
         : size(size) {
             oouraIp = (int *)calloc( 2 + (int)sqrt( size/2 ), sizeof( int ) );
             oouraW = (float *)calloc( size/2, sizeof( float ) );

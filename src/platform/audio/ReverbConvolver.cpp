@@ -142,9 +142,9 @@ ReverbConvolver::~ReverbConvolver()
 
         // Wake up thread so it can return
         {
-            MutexLocker locker(m_backgroundThreadLock);
+            std::lock_guard<std::mutex> locker(m_backgroundThreadLock);
             m_moreInputBuffered = true;
-            m_backgroundThreadCondition.signal();
+            m_backgroundThreadCondition.notify_one();
         }
 
         waitForThreadCompletion(m_backgroundThread);
@@ -157,9 +157,9 @@ void ReverbConvolver::backgroundThreadEntry()
         // Wait for realtime thread to give us more input
         m_moreInputBuffered = false;        
         {
-            MutexLocker locker(m_backgroundThreadLock);
+            std::unique_lock<std::mutex> locker(m_backgroundThreadLock);
             while (!m_moreInputBuffered && !m_wantsToExit)
-                m_backgroundThreadCondition.wait(m_backgroundThreadLock);
+                m_backgroundThreadCondition.wait(locker);
         }
 
         // Process all of the stages until their read indices reach the input buffer's write index
@@ -211,9 +211,9 @@ void ReverbConvolver::process(ContextGraphLock& g, ContextRenderLock&, const Aud
     // signal from time to time, since we'll get to it the next time we're called.  We're called repeatedly
     // and frequently (around every 3ms).  The background thread is processing well into the future and has a considerable amount of 
     // leeway here...
-    if (m_backgroundThreadLock.tryLock()) {
+    if (m_backgroundThreadLock.try_lock()) {
         m_moreInputBuffered = true;
-        m_backgroundThreadCondition.signal();
+        m_backgroundThreadCondition.notify_one();
         m_backgroundThreadLock.unlock();
     }
 }

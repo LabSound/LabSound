@@ -175,7 +175,6 @@
 
 #include "AudioNodeOutput.h"
 #include "SfxrNode.h"
-#include "ThreadingPrimitives.h"
 
 using namespace std;
 using namespace WTF;

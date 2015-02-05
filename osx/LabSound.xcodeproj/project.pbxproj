@@ -561,7 +561,6 @@
 		E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadFunctionInvocation.h; path = ../include/third_party/WTF/ThreadFunctionInvocation.h; sourceTree = "<group>"; };
 		E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadIdentifierDataPthreads.h; path = ../include/third_party/WTF/ThreadIdentifierDataPthreads.h; sourceTree = "<group>"; };
 		E2D5CF2E1A19B66900B031C8 /* Threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threading.h; path = ../include/third_party/WTF/Threading.h; sourceTree = "<group>"; };
-		E2D5CF2F1A19B66900B031C8 /* ThreadingPrimitives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadingPrimitives.h; path = ../include/third_party/WTF/ThreadingPrimitives.h; sourceTree = "<group>"; };
 		E2D5CF301A19B66900B031C8 /* ThreadSafeRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadSafeRefCounted.h; path = ../include/third_party/WTF/ThreadSafeRefCounted.h; sourceTree = "<group>"; };
 		E2D5CF311A19B66900B031C8 /* ThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadSpecific.h; path = ../include/third_party/WTF/ThreadSpecific.h; sourceTree = "<group>"; };
 		E2D5CF321A19B66900B031C8 /* TypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TypedArrayBase.h; path = ../include/third_party/WTF/TypedArrayBase.h; sourceTree = "<group>"; };
@@ -1083,7 +1082,6 @@
 				E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */,
 				E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */,
 				E2D5CF2E1A19B66900B031C8 /* Threading.h */,
-				E2D5CF2F1A19B66900B031C8 /* ThreadingPrimitives.h */,
 				E2D5CF301A19B66900B031C8 /* ThreadSafeRefCounted.h */,
 				E2D5CF311A19B66900B031C8 /* ThreadSpecific.h */,
 				E2D5CF321A19B66900B031C8 /* TypedArrayBase.h */,
@@ -1539,9 +1537,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E285226F1A642304003F1CA7 /* LabSound.xcconfig */;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					DEBUG,
 					PD,
@@ -1555,28 +1550,8 @@
 					USEAPI_DUMMY,
 					"BUILDING_WTF=1",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					platform,
-					platform/animation,
-					platform/audio,
-					platform/graphics,
-					platform/graphics/transforms,
-					platform/text,
-					Modules/webaudio,
-					WTF,
-					WTF/icu,
-					WTF/wtf,
-					libpd/cpp,
-					libpd/libpd_wrapper,
-					"libpd/pure-data/src",
-				);
-				OTHER_CFLAGS = (
-					"-std=c++11",
-					"-stdlib=libc++",
-				);
 			};
 			name = Debug;
 		};
@@ -1584,8 +1559,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E285226F1A642304003F1CA7 /* LabSound.xcconfig */;
 			buildSettings = {
-				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"BUILDING_WTF=1",
 					NDEBUG,
@@ -1599,28 +1572,8 @@
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					platform,
-					platform/animation,
-					platform/audio,
-					platform/graphics,
-					platform/graphics/transforms,
-					platform/text,
-					Modules/webaudio,
-					WTF,
-					WTF/icu,
-					WTF/wtf,
-					libpd/cpp,
-					libpd/libpd_wrapper,
-					"libpd/pure-data/src",
-				);
-				OTHER_CFLAGS = (
-					"-std=c++11",
-					"-stdlib=libc++",
-				);
 			};
 			name = Release;
 		};

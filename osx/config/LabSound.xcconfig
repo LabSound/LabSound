@@ -11,6 +11,7 @@ VALID_ARCHS = x86_64
 SYMROOT = build
 OBJROOT = $(SYMROOT)
 CONFIGURATION_TEMP_DIR = $(PROJECT_TEMP_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+OTHER_CPLUSPLUSFLAGS = -std=c++11 -stdlib=libc++
 
 // static analyzer is pretty awesome, but don't need to run it always
 RUN_CLANG_STATIC_ANALYZER = NO
@@ -50,3 +51,4 @@ CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES
 CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES
 OTHER_CFLAGS = -Wextra -Wno-unused-parameter -Wformat=2 -Wunreachable-code
 GCC_TREAT_WARNINGS_AS_ERRORS = NO
+HEADER_SEARCH_PATHS = platform platform/animation platform/audio platform/graphics platform/graphics/transforms platform/text Modules/webaudio WTF WTF/icu WTF/wtf libpd/cpp libpd/libpd_wrapper libpd/pure-data/src

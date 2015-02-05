@@ -688,9 +688,6 @@
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadingPrimitives.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadSafeRefCounted.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>

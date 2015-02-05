@@ -13,8 +13,8 @@ int main(int, char**)
     
     auto context = LabSound::init();
 
-    SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
-    //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
+    //SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
+    SoundBuffer ir("impulse-responses/filter-telephone.wav", context->sampleRate());
     
     SoundBuffer sample("human-voice.mp4", context->sampleRate());
     shared_ptr<ConvolverNode> convolve;
@@ -40,7 +40,7 @@ int main(int, char**)
         voice = sample.play(g, r, dryGain, 0);
     }
     
-    const int seconds = 10;
+    const int seconds = 20;
     for (int t = 0; t < seconds; ++t)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));

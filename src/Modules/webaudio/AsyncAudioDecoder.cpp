@@ -35,7 +35,7 @@ namespace WebCore {
 AsyncAudioDecoder::AsyncAudioDecoder()
 {
     // Start worker thread.
-    MutexLocker lock(m_threadCreationMutex);
+    std::lock_guard<std::mutex> lock(m_threadCreationMutex);
     m_threadID = createThread(AsyncAudioDecoder::threadEntry, this, "Audio Decoder");
 }
 
@@ -74,7 +74,7 @@ void AsyncAudioDecoder::runLoop()
 
     {
         // Wait for until we have m_threadID established before starting the run loop.
-        MutexLocker lock(m_threadCreationMutex);
+        std::lock_guard<std::mutex> lock(m_threadCreationMutex);
     }
 
     // Keep running decoding tasks until we're killed.

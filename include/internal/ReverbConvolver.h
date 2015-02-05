@@ -35,7 +35,7 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
-#include "WTF/Threading.h"
+#include <mutex>
 #include <vector>
 
 namespace LabSound {
@@ -91,8 +91,8 @@ private:
     ThreadIdentifier m_backgroundThread;
     bool m_wantsToExit;
     bool m_moreInputBuffered;
-    mutable Mutex m_backgroundThreadLock;
-    mutable ThreadCondition m_backgroundThreadCondition;
+    mutable std::mutex m_backgroundThreadLock;
+    mutable std::condition_variable m_backgroundThreadCondition;
 };
 
 } // namespace WebCore

@@ -34,7 +34,8 @@
 
 namespace WebCore {
 
-class AudioBus;
+    using namespace LabSound;
+    class AudioBus;
 
 class AudioBuffer {
 public:   
