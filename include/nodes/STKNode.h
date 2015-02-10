@@ -13,7 +13,19 @@
 #include "AudioNodeOutput.h"
 
 #include "ADSRNode.h"
+
+#if COMPILER(CLANG)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconstant_conversion"
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
+
 #include "STK/STKIncludes.h"
+
+#if COMPILER(CLANG)
+#pragma clang diagnostic pop
+#endif
 
 #if OS(WINDOWS)
 #include <direct.h>

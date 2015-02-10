@@ -63,7 +63,7 @@ namespace LabSound {
         }
 #endif
 
-        int size;
+        size_t size;
         int* oouraIp;
         float* oouraW;
     };
@@ -82,7 +82,7 @@ namespace LabSound {
             cursor = 0;
             windowSize = s;
             buffer.resize(windowSize);
-            for (int i = 0; i < windowSize; ++i) {
+            for (size_t i = 0; i < windowSize; ++i) {
                 buffer[i] = 0;
             }
             delete fft;
@@ -91,7 +91,7 @@ namespace LabSound {
         
         float _db;
         size_t windowSize;
-        int cursor;
+        size_t cursor;
         std::vector<float> buffer;
         std::recursive_mutex magMutex;
         FFT* fft;
@@ -136,7 +136,7 @@ namespace LabSound {
         {
             std::vector<const float*> channels;
             unsigned numberOfChannels = bus->numberOfChannels();
-            for (int c = 0; c < numberOfChannels; ++ c)
+            for (unsigned c = 0; c < numberOfChannels; ++ c)
                 channels.push_back(bus->channel(c)->data());
 
             // if the fft is smaller than the quantum, just grab a chunk
@@ -153,11 +153,11 @@ namespace LabSound {
                 std::lock_guard<std::recursive_mutex> lock(detail->magMutex);
 
                 detail->buffer.resize(detail->windowSize);
-                for (int i = 0; i < framesToProcess; ++i) {
+                for (size_t i = 0; i < framesToProcess; ++i) {
                     detail->buffer[i + detail->cursor] = 0;
                 }
-                for (int c = 0; c < numberOfChannels; ++c)
-                    for (int i = 0; i < framesToProcess; ++i) {
+                for (unsigned c = 0; c < numberOfChannels; ++c)
+                    for (size_t i = 0; i < framesToProcess; ++i) {
                         float p = channels[c][i];
                         detail->buffer[i + detail->cursor] += p;
                     }

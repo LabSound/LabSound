@@ -53,8 +53,8 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
         return;
 
     toOutput->addInput(g, fromInput);
-    fromInput->m_outputs.insert(toOutput);          /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
-    AudioNodeInput::changedOutputs(g, fromInput);
+    fromInput->addOutput(g, toOutput);
+    AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
 
     // Sombody has just connected to us, so count it as a reference.
     fromInput->node()->ref(g, AudioNode::RefTypeConnection);
@@ -69,8 +69,8 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeIn
     // First try to disconnect from "active" connections.
     auto it = fromInput->m_outputs.find(toOutput);
     if (it != fromInput->m_outputs.end()) {
-        fromInput->m_outputs.erase(it);             /// @dp m_outputs shouldn't be visible. An accessor would allow elimination of changedOutputs
-        AudioNodeInput::changedOutputs(g, fromInput);
+        fromInput->removeOutput(g, *it);
+        AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
         toOutput->removeInput(g, fromInput);
         fromInput->node()->deref(g, AudioNode::RefTypeConnection);
         return;
@@ -98,7 +98,7 @@ void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
     
     self->m_disabledOutputs.insert(output);
     self->m_outputs.erase(it);
-    changedOutputs(g, self);
+    changedOutputs(g.contextPtr(), self);
 
     // Propagate disabled state to outputs.
     self->node()->disableOutputsIfNecessary(g);
@@ -115,7 +115,7 @@ void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>
     // Move output from disabled list to active list.
     self->m_outputs.insert(output);
     self->m_disabledOutputs.erase(it);
-    AudioNodeInput::changedOutputs(g, self);
+    AudioNodeInput::changedOutputs(g.contextPtr(), self);
 
     // Propagate enabled state to outputs.
     self->node()->enableOutputsIfNecessary(g);

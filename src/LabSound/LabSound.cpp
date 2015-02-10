@@ -27,19 +27,18 @@ namespace LabSound {
         return context;
     }
 
-
     void update(std::shared_ptr<LabSound::AudioContext> context) {
-
     }
     
     void finish(std::shared_ptr<LabSound::AudioContext> context) {
         for (int i = 0; i < 10; ++i) {
-            ContextGraphLock g(context);
+            ContextGraphLock g(context, "LabSound::finish");
             if (!g.context()) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             else {
                 context->stop(g);
+                context->deleteMarkedNodes();
                 return;
             }
         }
@@ -57,14 +56,6 @@ namespace LabSound {
         thisOutput->disconnect(g, r, 0, ec);
         return ec == NO_ERR;
     }
-
-	static double MIDIToFrequency(int MIDINote) {
-		return 8.1757989156 * pow(2, MIDINote / 12);
-	}
-
-	static float truncate(float d, unsigned int numberOfDecimalsToKeep) {
-		return roundf(d * powf(10, numberOfDecimalsToKeep)) / powf(10, numberOfDecimalsToKeep);
-	}
 
 } // LabSound
 

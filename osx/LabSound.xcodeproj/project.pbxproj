@@ -1284,7 +1284,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0610;
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "LabSound" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1518,6 +1518,7 @@
 			baseConfigurationReference = E28522711A64231C003F1CA7 /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 			};
@@ -1528,6 +1529,7 @@
 			baseConfigurationReference = E28522701A642310003F1CA7 /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 			};
@@ -1552,6 +1554,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};

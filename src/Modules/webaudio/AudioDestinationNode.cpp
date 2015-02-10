@@ -59,7 +59,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     // This will take care of all AudioNodes because they all process within this scope.
     DenormalDisabler denormalDisabler;
     
-    ContextRenderLock renderLock(m_context);
+    ContextRenderLock renderLock(m_context, "AudioDestinationNode::render");
     if (!renderLock.context())
         return;                     // return if couldn't acquire lock
     
@@ -68,7 +68,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
         return;
     }
 
-    ContextGraphLock graphLock(m_context);
+    ContextGraphLock graphLock(m_context, "AudioDestinationNode::render");
     
     if (!graphLock.context()) {
         destinationBus->zero();

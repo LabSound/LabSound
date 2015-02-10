@@ -154,7 +154,7 @@ namespace LabSound {
             for (int i = 0; i < numChannels; ++i)
                 dest[i] = destinationBus->channel(i)->mutableData();
 
-            for (int i = 0; i < framesToProcess; ++i) {
+            for (size_t i = 0; i < framesToProcess; ++i) {
                 float peakEnv = 0;
                 for (int j = 0; j < numChannels; ++j) {
                     peakEnv += source[j][i];

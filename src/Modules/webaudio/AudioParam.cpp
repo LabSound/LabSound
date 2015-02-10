@@ -172,7 +172,7 @@ void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param,
 
     output->addParam(g, param);
     param->m_outputs.insert(output);
-    AudioParam::changedOutputs(g, param);
+    AudioParam::changedOutputs(g.contextPtr(), param);
 }
 
 void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
@@ -183,7 +183,7 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
     auto it = param->m_outputs.find(output);
     if (it != param->m_outputs.end()) {
         param->m_outputs.erase(it);
-        AudioParam::changedOutputs(g, param);
+        AudioParam::changedOutputs(g.contextPtr(), param);
         output->removeParam(g, param);
     }
 }

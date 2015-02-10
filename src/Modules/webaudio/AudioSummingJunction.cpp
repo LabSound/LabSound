@@ -43,11 +43,21 @@ AudioSummingJunction::~AudioSummingJunction()
 {
 }
 
-void AudioSummingJunction::changedOutputs(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> self)
+    void AudioSummingJunction::addOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> o) {
+        ASSERT(g.context());
+        m_outputs.insert(o);
+    }
+
+    void AudioSummingJunction::removeOutput(ContextGraphLock &g, std::shared_ptr<AudioNodeOutput> o) {
+        ASSERT(g.context());
+        m_outputs.erase(o);
+    }
+    
+void AudioSummingJunction::changedOutputs(std::shared_ptr<WebCore::AudioContext> context, std::shared_ptr<AudioSummingJunction> self)
 {
-    ASSERT(g.context());
+    ASSERT(context);
     if (!self->m_renderingStateNeedUpdating && self->canUpdateState()) {
-        g.context()->markSummingJunctionDirty(g, self);
+        context->markSummingJunctionDirty(self);
         self->m_renderingStateNeedUpdating = true;
     }
 }

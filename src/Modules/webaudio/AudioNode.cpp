@@ -139,13 +139,12 @@ void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
         return;
     }
 
-
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
     AudioNodeInput::connect(g, input, output);
 
     // Let context know that a connection has been made.
-    g.context()->incrementConnectionCount(g);
+    g.context()->incrementConnectionCount();
     
     updatePullStatus(g, r);
 }
@@ -295,26 +294,20 @@ void AudioNode::disableOutputsIfNecessary(ContextGraphLock& g)
 
 void AudioNode::ref(ContextGraphLock& g, RefType refType)
 {
-    switch (refType) {
-    case RefTypeNormal:
+    if (refType == RefTypeNormal)
         atomicIncrement(&m_normalRefCount);
-        break;
-    case RefTypeConnection:
+    if (refType == RefTypeConnection) {
         atomicIncrement(&m_connectionRefCount);
-        break;
-    default:
-        ASSERT_NOT_REACHED();
+        
+        // See the disabling code in finishDeref() below. This handles the case where a node
+        // is being re-connected after being used at least once and disconnected.
+        // In this case, we need to re-enable.
+        enableOutputsIfNecessary(g);
     }
 
 #if DEBUG_AUDIONODE_REFERENCES
     fprintf(stderr, "%p: %d: AudioNode::ref(%d) %d %d\n", this, nodeType(), refType, m_normalRefCount, m_connectionRefCount);
 #endif
-
-    // See the disabling code in finishDeref() below. This handles the case where a node
-    // is being re-connected after being used at least once and disconnected.
-    // In this case, we need to re-enable.
-    if (refType == RefTypeConnection)
-        enableOutputsIfNecessary(g);
 }
 
 void AudioNode::deref(ContextGraphLock& g, RefType refType)
@@ -327,12 +320,6 @@ void AudioNode::deref(ContextGraphLock& g, RefType refType)
     
     // This is where the real deref work happens.
     finishDeref(g, refType);
-
-    // Once AudioContext::uninitialize() is called there's no more chances for deleteMarkedNodes() to get called, so we call here.
-    // We can't call in AudioContext::~AudioContext() since it will never be called as long as any AudioNode is alive
-    // because AudioNodes keep a reference to the context.
-//    if (ac->isAudioThreadFinished())
-//        ac->deleteMarkedNodes();
 }
 
 void AudioNode::finishDeref(ContextGraphLock& g, RefType refType)

@@ -29,7 +29,7 @@
 #include "ExceptionCodes.h"
 #include <vector>
 
-#define DEBUG_AUDIONODE_REFERENCES 0
+#define DEBUG_AUDIONODE_REFERENCES 1
 
 
 namespace LabSound {

@@ -47,6 +47,7 @@ namespace WebCore {
 
 ConvolverNode::ConvolverNode(float sampleRate)
     : AudioNode(sampleRate)
+    , m_swapOnRender(false)
     , m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -64,8 +65,16 @@ ConvolverNode::~ConvolverNode()
 
 void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
+    if (m_swapOnRender) {
+        m_reverb = std::move(m_newReverb);
+        m_buffer = m_newBuffer;
+        m_newBuffer.reset();
+        m_swapOnRender = false;
+    }
+    
     AudioBus* outputBus = output(0)->bus();
-    if (!isInitialized() || !m_reverb.get()) {
+    
+    if (!isInitialized() || !m_reverb) {
         if (outputBus)
             outputBus->zero();
         return;
@@ -80,8 +89,8 @@ void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t fr
 
 void ConvolverNode::reset(ContextRenderLock& r)
 {
-    if (m_reverb.get())
-        m_reverb->reset();
+    m_newReverb.reset();
+    m_swapOnRender = true;
 }
 
 void ConvolverNode::initialize()
@@ -101,9 +110,8 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
 {
-    ASSERT(g.context() && (g.context() == r.context()));
     if (!buffer)
         return;
 
@@ -125,14 +133,18 @@ void ConvolverNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::sh
     bufferBus.setSampleRate(buffer->sampleRate());
 
     // Create the reverb with the given impulse response.
-    m_reverb = std::unique_ptr<Reverb>(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2,
-                                                  g.context()->isOfflineContext(), m_normalize));
-    m_buffer = buffer;
+    const bool nonRealtimeForLargeBuffers = false;
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2,
+                                                  nonRealtimeForLargeBuffers, m_normalize));
+    m_newBuffer = buffer;
+    m_swapOnRender = true;
 }
 
 std::shared_ptr<AudioBuffer> ConvolverNode::buffer()
 {
-    ASSERT(isMainThread());
+    if (m_swapOnRender) {
+        return m_newBuffer;
+    }
     return m_buffer;
 }
 

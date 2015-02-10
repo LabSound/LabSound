@@ -236,9 +236,9 @@ bool AudioContext::isInitialized() const
     double AudioContext::currentTime() const { return m_destinationNode->currentTime(); }
     float AudioContext::sampleRate() const { return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); }
     
-    void AudioContext::incrementConnectionCount(ContextGraphLock& g)
+    void AudioContext::incrementConnectionCount()
     {
-        m_connectionCount++;
+        atomicIncrement(&m_connectionCount);    // running tally
     }
 
     
@@ -450,33 +450,19 @@ void AudioContext::deleteMarkedNodes()
     m_isDeletionScheduled = false;
 }
 
-void AudioContext::markSummingJunctionDirty(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> summingJunction)
+void AudioContext::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
 {
-    ASSERT(g.context());
-    ASSERT(summingJunction);
-    m_dirtySummingJunctions.insert(summingJunction);
-}
-
-void AudioContext::removeMarkedSummingJunction(AudioSummingJunction* summingJunction)
-{
-    ASSERT(isMainThread());
-    for (std::set<std::shared_ptr<AudioSummingJunction>>::iterator
-         i = m_dirtySummingJunctions.begin(); i != m_dirtySummingJunctions.end(); ++i) {
-        if ((*i).get() == summingJunction) {
-            m_dirtySummingJunctions.erase(i);
-            return;
-        }
-    }
+    if (summingJunction)
+        m_dirtySummingJunctions.push(summingJunction);
 }
 
 void AudioContext::handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r)
 {
     ASSERT(r.context());
 
-    for (auto i : m_dirtySummingJunctions)
-        i->updateRenderingState(g, r);
-
-    m_dirtySummingJunctions.clear();
+    std::shared_ptr<AudioSummingJunction> asj;
+    while (m_dirtySummingJunctions.try_pop(asj))
+        asj->updateRenderingState(g, r);
 }
 
 

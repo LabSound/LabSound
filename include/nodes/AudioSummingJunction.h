@@ -50,7 +50,7 @@ public:
     virtual ~AudioSummingJunction();
 
     // This must be called whenever we modify m_outputs.
-    static void changedOutputs(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction> self);
+    static void changedOutputs(std::shared_ptr<WebCore::AudioContext> context, std::shared_ptr<AudioSummingJunction> self);
 
     // This copies m_outputs to m_renderingOutputs. Please see comments for these lists below.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
@@ -65,6 +65,9 @@ public:
     virtual bool canUpdateState() = 0;
     virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) = 0;
 
+    void addOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    void removeOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    
 protected:
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.

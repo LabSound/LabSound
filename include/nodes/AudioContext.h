@@ -25,6 +25,7 @@
 #ifndef AudioContext_h
 #define AudioContext_h
 
+#include "ConcurrentQueue.h"
 #include "ExceptionCodes.h"
 #include "WTF/RefPtr.h"
 #include <mutex>
@@ -55,6 +56,10 @@ namespace WebCore {
     
 class AudioContext {
 public:
+    
+    const char* m_graphLocker;
+    const char* m_renderLocker;
+    
     // Create an AudioContext for rendering to the audio hardware.
     // A default audio destination node MUST be create and assigned as a next step.
     // Things won't work if the context is not created in this way.
@@ -128,7 +133,7 @@ public:
     void processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
 
     // Keeps track of the number of connections made.
-    void incrementConnectionCount(ContextGraphLock&);
+    void incrementConnectionCount();
 
     unsigned connectionCount() const { return m_connectionCount; }
 
@@ -141,11 +146,7 @@ public:
     // In the audio thread at the start of each render cycle, we'll call handleDeferredFinishDerefs().
     void handleDeferredFinishDerefs(ContextGraphLock& g);
 
-    // Only accessed when the graph lock is held.
-    void markSummingJunctionDirty(ContextGraphLock& g, std::shared_ptr<AudioSummingJunction>);
-
-    // Must be called on main thread.
-    void removeMarkedSummingJunction(AudioSummingJunction*);
+    void markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction>);
 
     void startRendering();
     void fireCompletionEvent();
@@ -211,7 +212,7 @@ private:
     bool m_isDeletionScheduled;
 
     // Only accessed when the graph lock is held.
-    std::set<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
+    LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
     void handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r);
 
     // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
@@ -222,7 +223,7 @@ private:
     bool m_automaticPullNodesNeedUpdating;
     void updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r);
 
-    unsigned m_connectionCount;
+    int m_connectionCount;
 
     // Graph locking.
     

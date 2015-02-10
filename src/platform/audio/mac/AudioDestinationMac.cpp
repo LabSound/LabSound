@@ -158,20 +158,24 @@ public:
         
         m_buffers = (AudioBufferList*) malloc(offsetof(AudioBufferList, mBuffers[0]) + sizeof(AudioBuffer) * outDesc.mChannelsPerFrame);
         m_buffers->mNumberBuffers = outDesc.mChannelsPerFrame;
-        for (int i = 0; i < m_buffers->mNumberBuffers; ++i) {
+        for (uint32_t i = 0; i < m_buffers->mNumberBuffers; ++i) {
             m_buffers->mBuffers[i].mNumberChannels = 1;
             m_buffers->mBuffers[i].mDataByteSize = bufferSize * outDesc.mBytesPerFrame;
             m_buffers->mBuffers[i].mData = m_audioBus->channel(i)->mutableData();
         }
     }
     
-    static OSStatus inputCallback(void* inRefCon, AudioUnitRenderActionFlags* ioActionFlags, const AudioTimeStamp* inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
+    static OSStatus inputCallback(void* inRefCon,
+                                  AudioUnitRenderActionFlags* ioActionFlags,
+                                  const AudioTimeStamp* inTimeStamp,
+                                  UInt32 inBusNumber, UInt32 inNumberFrames,
+                                  AudioBufferList *ioData)
     {
         Input* input = reinterpret_cast<Input*>( inRefCon );
         OSStatus result = AudioUnitRender(input->m_inputUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, input->m_buffers);
         
         if (result != noErr)
-            for (int i = 0; i < input->m_buffers->mNumberBuffers; ++i)
+            for (uint32_t i = 0; i < input->m_buffers->mNumberBuffers; ++i)
                 input->m_audioBus->channel(i)->zero();
         
         return noErr;
@@ -195,7 +199,9 @@ float AudioDestination::hardwareSampleRate()
     AudioDeviceID deviceID = kAudioDeviceUnknown;
     UInt32 infoSize = sizeof(deviceID);
 
-    AudioObjectPropertyAddress defaultOutputDeviceAddress = { kAudioHardwarePropertyDefaultOutputDevice, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
+    AudioObjectPropertyAddress defaultOutputDeviceAddress = { kAudioHardwarePropertyDefaultOutputDevice,
+                                                              kAudioObjectPropertyScopeGlobal,
+                                                              kAudioObjectPropertyElementMaster };
     OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultOutputDeviceAddress, 0, 0, &infoSize, (void*)&deviceID);
     if (result)
         return 0; // error
@@ -203,7 +209,9 @@ float AudioDestination::hardwareSampleRate()
     Float64 nominalSampleRate;
     infoSize = sizeof(Float64);
 
-    AudioObjectPropertyAddress nominalSampleRateAddress = { kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
+    AudioObjectPropertyAddress nominalSampleRateAddress = { kAudioDevicePropertyNominalSampleRate,
+                                                            kAudioObjectPropertyScopeGlobal,
+                                                            kAudioObjectPropertyElementMaster };
     result = AudioObjectGetPropertyData(deviceID, &nominalSampleRateAddress, 0, 0, &infoSize, (void*)&nominalSampleRate);
     if (result)
         return 0; // error
@@ -310,8 +318,7 @@ OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioD
     m_renderBus.setChannelMemory(1, (float*)buffers[1].mData, numberOfFrames);
 
     // FIXME: Add support for local/live audio input.
-    // LabSound m_callback.render(0, &m_renderBus, numberOfFrames);
-    m_callback.render(m_input->m_audioBus, &m_renderBus, numberOfFrames); // LabSound
+    m_callback.render(m_input->m_audioBus, &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i) {

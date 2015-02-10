@@ -41,12 +41,12 @@ public:
     
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&);
+    virtual void reset(ContextRenderLock&) override;    /// @TODO get rid of lock on reset
     virtual void initialize();
     virtual void uninitialize();
 
     // Impulse responses
-    void setBuffer(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioBuffer>);
+    void setBuffer(std::shared_ptr<AudioBuffer>);
     std::shared_ptr<AudioBuffer> buffer();
 
     bool normalize() const { return m_normalize; }
@@ -58,6 +58,11 @@ private:
 
     std::unique_ptr<Reverb> m_reverb;
     std::shared_ptr<AudioBuffer> m_buffer;
+
+    // lock free swap on update
+    bool m_swapOnRender;
+    std::unique_ptr<Reverb> m_newReverb;
+    std::shared_ptr<AudioBuffer> m_newBuffer;
 
     // Normalize the impulse response or not. Must default to true.
     bool m_normalize;
