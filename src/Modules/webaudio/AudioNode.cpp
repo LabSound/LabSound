@@ -257,12 +257,12 @@ void AudioNode::unsilenceOutputs()
     }
 }
 
-void AudioNode::enableOutputsIfNecessary(ContextGraphLock& g)
+    void AudioNode::enableOutputsIfNecessary(std::shared_ptr<AudioContext> c)
 {
     if (m_isDisabled && m_connectionRefCount > 0) {
         m_isDisabled = false;
         for (auto i : m_outputs)
-            AudioNodeOutput::enable(g, i);
+            AudioNodeOutput::enable(c, i);
     }
 }
 
@@ -292,7 +292,7 @@ void AudioNode::disableOutputsIfNecessary(ContextGraphLock& g)
     }
 }
 
-void AudioNode::ref(ContextGraphLock& g, RefType refType)
+void AudioNode::ref(std::shared_ptr<AudioContext> c, RefType refType)
 {
     if (refType == RefTypeNormal)
         atomicIncrement(&m_normalRefCount);
@@ -302,7 +302,7 @@ void AudioNode::ref(ContextGraphLock& g, RefType refType)
         // See the disabling code in finishDeref() below. This handles the case where a node
         // is being re-connected after being used at least once and disconnected.
         // In this case, we need to re-enable.
-        enableOutputsIfNecessary(g);
+        enableOutputsIfNecessary(c);
     }
 
 #if DEBUG_AUDIONODE_REFERENCES

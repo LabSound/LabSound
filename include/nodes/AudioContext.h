@@ -49,6 +49,7 @@ namespace WebCore {
     class AudioDestinationNode;
     class AudioListener;
     class AudioNode;
+    class AudioScheduledSourceNode;
     class AudioSummingJunction;
     class HRTFDatabaseLoader;
     class MediaStreamAudioSourceNode;
@@ -189,6 +190,12 @@ private:
     // When the context goes away, there might still be some sources which haven't finished playing.
     // Make sure to dereference them here.
     void derefUnfinishedSourceNodes(ContextGraphLock& g);
+    
+public:
+    void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
+private:
+    void handleAutomaticSources();
+
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
@@ -245,6 +252,9 @@ private:
 
     // Number of AudioBufferSourceNodes that are active (playing).
     int m_activeSourceCount;
+    
+    std::mutex automaticSourcesMutex;
+    std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 };
 
 } // WebCore

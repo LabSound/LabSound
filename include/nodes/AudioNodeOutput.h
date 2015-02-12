@@ -75,7 +75,7 @@ public:
     // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
     // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
     static void disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self);
-    static void enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self);
+    static void enable(std::shared_ptr<AudioContext>, std::shared_ptr<AudioNodeOutput> self);
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     // It must be called within the context's graph lock.

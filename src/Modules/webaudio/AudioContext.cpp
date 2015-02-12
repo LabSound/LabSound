@@ -63,6 +63,8 @@
 #include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 
+using namespace std;
+
 namespace WebCore {
     
 namespace {
@@ -321,7 +323,7 @@ void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLo
 void AudioContext::refNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
 {
     ASSERT(g.context());
-    node->ref(g, AudioNode::RefTypeConnection);
+    node->ref(g.contextPtr(), AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
 
@@ -348,6 +350,22 @@ void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g)
     m_referencedNodes.clear();
 }
 
+    
+void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> sn) {
+    lock_guard<mutex> lock(automaticSourcesMutex);
+    automaticSources.emplace_back(sn);
+}
+    
+void AudioContext::handleAutomaticSources() {
+    lock_guard<mutex> lock(automaticSourcesMutex);
+    for (auto i = automaticSources.begin(); i != automaticSources.end(); ++i) {
+        if ((*i)->hasFinished()) {
+            i = automaticSources.erase(i);
+            if (i == automaticSources.end())
+                break;
+        }
+    }
+}
 
 void AudioContext::addDeferredFinishDeref(ContextGraphLock& g, AudioNode* node)
 {
@@ -381,6 +399,8 @@ void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&
     handleDirtyAudioSummingJunctions(g, r);
 
     updateAutomaticPullNodes(g, r);
+    
+    handleAutomaticSources();
 }
 
 void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g)

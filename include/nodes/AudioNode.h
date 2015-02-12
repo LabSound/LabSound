@@ -41,9 +41,10 @@ namespace WebCore {
     
     using namespace LabSound;
 
-class AudioNodeInput;
-class AudioNodeOutput;
-class AudioParam;
+    class AudioContext;
+    class AudioNodeInput;
+    class AudioNodeOutput;
+    class AudioParam;
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
@@ -97,7 +98,7 @@ public:
     // JavaScript references to the object.
     enum RefType { RefTypeNormal, RefTypeConnection };
 
-    void ref(ContextGraphLock& g, RefType refType);
+    void ref(std::shared_ptr<AudioContext>, RefType refType);
     void deref(ContextGraphLock& g, RefType refType);
     void finishDeref(ContextGraphLock& g, RefType refType);
 
@@ -163,7 +164,7 @@ public:
     void silenceOutputs();
     void unsilenceOutputs();
 
-    void enableOutputsIfNecessary(ContextGraphLock& g);
+    void enableOutputsIfNecessary(std::shared_ptr<AudioContext>);
     void disableOutputsIfNecessary(ContextGraphLock& g);
 
 protected:

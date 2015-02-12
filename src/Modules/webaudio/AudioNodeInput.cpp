@@ -57,7 +57,7 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
     AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
 
     // Sombody has just connected to us, so count it as a reference.
-    fromInput->node()->ref(g, AudioNode::RefTypeConnection);
+    fromInput->node()->ref(g.contextPtr(), AudioNode::RefTypeConnection);
 }
 
 void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
@@ -104,7 +104,7 @@ void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
     self->node()->disableOutputsIfNecessary(g);
 }
 
-void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output || !self->node())
         return;
@@ -115,10 +115,10 @@ void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>
     // Move output from disabled list to active list.
     self->m_outputs.insert(output);
     self->m_disabledOutputs.erase(it);
-    AudioNodeInput::changedOutputs(g.contextPtr(), self);
+    AudioNodeInput::changedOutputs(c, self);
 
     // Propagate enabled state to outputs.
-    self->node()->enableOutputsIfNecessary(g);
+    self->node()->enableOutputsIfNecessary(c);
 }
 
 void AudioNodeInput::didUpdate(ContextGraphLock& g, ContextRenderLock& r)

@@ -219,11 +219,11 @@ void AudioNodeOutput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutp
     }
 }
 
-void AudioNodeOutput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<AudioNodeOutput> self)
 {
     if (!self->m_isEnabled) {
         for (auto i : self->m_inputs) {
-            AudioNodeInput::enable(g, i, self);
+            AudioNodeInput::enable(c, i, self);
         }
         self->m_isEnabled = true;
     }

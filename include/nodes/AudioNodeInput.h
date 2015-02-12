@@ -59,7 +59,7 @@ public:
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.
     // Must be called with the context's graph lock.
-    static void enable(ContextGraphLock& r, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
+    static void enable(std::shared_ptr<AudioContext>, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
     static void disable(ContextGraphLock& r, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput>);
 
     // pull() processes all of the AudioNodes connected to us.

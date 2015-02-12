@@ -42,7 +42,7 @@ AudioSummingJunction::AudioSummingJunction()
 AudioSummingJunction::~AudioSummingJunction()
 {
 }
-
+// &&& This should be a render lock, not a graph lock
     void AudioSummingJunction::addOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> o) {
         ASSERT(g.context());
         m_outputs.insert(o);

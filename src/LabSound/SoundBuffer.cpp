@@ -59,7 +59,8 @@ namespace LabSound {
 	}
 
 	// Output to a specific note 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r,
+                                                             std::shared_ptr<AudioNode> outputNode, float when)
     {
         if (audioBuffer && g.context()) {
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(g.context()->destination()->sampleRate()));
@@ -71,6 +72,7 @@ namespace LabSound {
             if (ec != NO_ERR) {
                 // @dp add this - audio context should be responsible for clean up, not the sound buffer itself ac->manageLifespan(sourceBufferNode);
                 sourceBufferNode->start(r, when);
+                g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
                 return sourceBufferNode;
             }
         }
@@ -91,17 +93,18 @@ namespace LabSound {
             if (!ac)
                 return nullptr;
             
-            std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(ac->destination()->sampleRate()));
+            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac->destination()->sampleRate()));
             
             // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(g, r, audioBuffer);
+            sourceBufferNode->setBuffer(g, r, audioBuffer);
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBuffer->connect(g, r, ac->destination().get(), 0, 0, ec);
-            sourceBuffer->startGrain(when, start, end - start, ec);
+            sourceBufferNode->connect(g, r, ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->startGrain(when, start, end - start, ec);
+            g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
 
-            return sourceBuffer;
+            return sourceBufferNode;
         }
 
         return nullptr;
