@@ -42,16 +42,16 @@ AudioSummingJunction::AudioSummingJunction()
 AudioSummingJunction::~AudioSummingJunction()
 {
 }
-// &&& This should be a render lock, not a graph lock
-    void AudioSummingJunction::addOutput(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> o) {
-        ASSERT(r.context());
-        m_outputs.insert(o);
-    }
+    
+void AudioSummingJunction::addOutput(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> o) {
+    ASSERT(r.context());
+    m_outputs.insert(o);
+}
 
-    void AudioSummingJunction::removeOutput(ContextRenderLock &r, std::shared_ptr<AudioNodeOutput> o) {
-        ASSERT(r.context());
-        m_outputs.erase(o);
-    }
+void AudioSummingJunction::removeOutput(ContextRenderLock &r, std::shared_ptr<AudioNodeOutput> o) {
+    ASSERT(r.context());
+    m_outputs.erase(o);
+}
     
 void AudioSummingJunction::changedOutputs(std::shared_ptr<WebCore::AudioContext> context, std::shared_ptr<AudioSummingJunction> self)
 {

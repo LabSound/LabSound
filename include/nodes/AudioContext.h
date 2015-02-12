@@ -164,8 +164,10 @@ private:
     AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
     void constructCommon();
 
+public:
     void uninitialize(ContextGraphLock&, ContextRenderLock&);
 
+private:
     friend class LabSound::ContextGraphLock;
     friend class LabSound::ContextRenderLock;
     std::mutex m_graphLock;

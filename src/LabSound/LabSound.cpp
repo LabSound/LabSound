@@ -33,12 +33,14 @@ namespace LabSound {
     void finish(std::shared_ptr<LabSound::AudioContext> context) {
         for (int i = 0; i < 10; ++i) {
             ContextGraphLock g(context, "LabSound::finish");
+            ContextRenderLock r(context, "LabSound::finish");
             if (!g.context()) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             else {
-                context->stop(g);
+                context->stop(g, r);
                 context->deleteMarkedNodes();
+                context->uninitialize(g, r);
                 return;
             }
         }

@@ -207,8 +207,6 @@ void AudioContext::clear()
 
 void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
 {
-    // &&& This routine should be called during destruction
-    
     ASSERT(isMainThread());
 
     if (!m_isInitialized)
@@ -437,7 +435,7 @@ void AudioContext::markForDeletion(ContextGraphLock& g, ContextRenderLock& r, Au
 
 void AudioContext::scheduleNodeDeletion(ContextGraphLock& g)
 {
-    // &&& all this deletion stuff should be handled by a concurrent queue
+    // &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
     
     bool isGood = m_isInitialized && g.context();
     ASSERT(isGood);
