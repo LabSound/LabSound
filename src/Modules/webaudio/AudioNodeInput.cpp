@@ -43,7 +43,8 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::connect(ContextGraphLock& g, ContextRenderLock& r,
+                             std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!fromInput || !toOutput || !fromInput->node())
         return;
@@ -53,14 +54,15 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
         return;
 
     toOutput->addInput(g, fromInput);
-    fromInput->addOutput(g, toOutput);
+    fromInput->addOutput(r, toOutput);
     AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
 
     // Sombody has just connected to us, so count it as a reference.
     fromInput->node()->ref(g.contextPtr(), AudioNode::RefTypeConnection);
 }
 
-void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::disconnect(ContextGraphLock& g, ContextRenderLock& r,
+                                std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
     if (!fromInput || !toOutput || !fromInput->node())
@@ -69,10 +71,10 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeIn
     // First try to disconnect from "active" connections.
     auto it = fromInput->m_outputs.find(toOutput);
     if (it != fromInput->m_outputs.end()) {
-        fromInput->removeOutput(g, *it);
+        fromInput->removeOutput(r, *it);
         AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
         toOutput->removeInput(g, fromInput);
-        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
+        fromInput->node()->deref(g, r, AudioNode::RefTypeConnection);
         return;
     }
     
@@ -81,7 +83,7 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeIn
     if (it2 != fromInput->m_disabledOutputs.end()) {
         fromInput->m_disabledOutputs.erase(it2);
         toOutput->removeInput(g, fromInput);
-        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
+        fromInput->node()->deref(g, r, AudioNode::RefTypeConnection);
         return;
     }
 

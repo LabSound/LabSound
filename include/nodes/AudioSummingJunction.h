@@ -65,8 +65,8 @@ public:
     virtual bool canUpdateState() = 0;
     virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) = 0;
 
-    void addOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
-    void removeOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    void addOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    void removeOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
     
 protected:
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.

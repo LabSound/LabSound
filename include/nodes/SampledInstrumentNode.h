@@ -173,4 +173,4 @@ namespace LabSound {
 
 	};
 
-} // LabSound 
+} // LabSound

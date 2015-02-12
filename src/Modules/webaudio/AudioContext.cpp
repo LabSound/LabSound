@@ -205,8 +205,10 @@ void AudioContext::clear()
     } while (m_nodesToDelete.size());
 }
 
-void AudioContext::uninitialize(ContextGraphLock& g)
+void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
 {
+    // &&& This routine should be called during destruction
+    
     ASSERT(isMainThread());
 
     if (!m_isInitialized)
@@ -224,7 +226,7 @@ void AudioContext::uninitialize(ContextGraphLock& g)
     }
 
     // Get rid of the sources which may still be playing.
-    derefUnfinishedSourceNodes(g);
+    derefUnfinishedSourceNodes(g, r);
 
     m_isInitialized = false;
 }
@@ -253,7 +255,7 @@ bool AudioContext::isRunnable() const
     return m_hrtfDatabaseLoader->isLoaded();
 }
 
-void AudioContext::stop(ContextGraphLock& g)
+void AudioContext::stop(ContextGraphLock& g, ContextRenderLock& r)
 {
     if (m_isStopScheduled)
         return;
@@ -262,7 +264,7 @@ void AudioContext::stop(ContextGraphLock& g)
     
     m_isStopScheduled = true;
     
-    uninitialize(g);
+    uninitialize(g, r);
     clear();
 }
 
@@ -315,7 +317,7 @@ void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLo
 {
     ASSERT(g.context() && r.context());
     for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-        derefNode(g, m_finishedNodes[i]);
+        derefNode(g, r, m_finishedNodes[i]);
 
     m_finishedNodes.clear();
 }
@@ -327,11 +329,11 @@ void AudioContext::refNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::derefNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
+void AudioContext::derefNode(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNode> node)
 {
     ASSERT(g.context());
     
-    node->deref(g, AudioNode::RefTypeConnection);
+    node->deref(g, r, AudioNode::RefTypeConnection);
 
     for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
         if (node == *i) {
@@ -341,11 +343,11 @@ void AudioContext::derefNode(ContextGraphLock& g, std::shared_ptr<AudioNode> nod
     }
 }
 
-void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g)
+void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r)
 {
     ASSERT(g.context());
     for (unsigned i = 0; i < m_referencedNodes.size(); ++i)
-        m_referencedNodes[i]->deref(g, AudioNode::RefTypeConnection);
+        m_referencedNodes[i]->deref(g, r, AudioNode::RefTypeConnection);
 
     m_referencedNodes.clear();
 }
@@ -353,7 +355,7 @@ void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g)
     
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> sn) {
     lock_guard<mutex> lock(automaticSourcesMutex);
-    automaticSources.emplace_back(sn);
+    automaticSources.push_back(sn);
 }
     
 void AudioContext::handleAutomaticSources() {
@@ -387,7 +389,7 @@ void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&
     ASSERT(r.context());
  
     // Take care of finishing any derefs where the tryLock() failed previously.
-    handleDeferredFinishDerefs(g);
+    handleDeferredFinishDerefs(g, r);
 
     // Dynamically clean up nodes which are no longer needed.
     derefFinishedSourceNodes(g, r);
@@ -403,12 +405,12 @@ void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&
     handleAutomaticSources();
 }
 
-void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g)
+void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g, ContextRenderLock& r)
 {
     ASSERT(g.context());
     for (unsigned i = 0; i < m_deferredFinishDerefList.size(); ++i) {
         AudioNode* node = m_deferredFinishDerefList[i];
-        node->finishDeref(g, AudioNode::RefTypeConnection);
+        node->finishDeref(g, r, AudioNode::RefTypeConnection);
     }
     
     m_deferredFinishDerefList.clear();
@@ -435,6 +437,8 @@ void AudioContext::markForDeletion(ContextGraphLock& g, ContextRenderLock& r, Au
 
 void AudioContext::scheduleNodeDeletion(ContextGraphLock& g)
 {
+    // &&& all this deletion stuff should be handled by a concurrent queue
+    
     bool isGood = m_isInitialized && g.context();
     ASSERT(isGood);
     if (!isGood)

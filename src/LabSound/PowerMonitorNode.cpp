@@ -54,7 +54,7 @@ namespace LabSound {
         {
             std::vector<const float*> channels;
             unsigned numberOfChannels = bus->numberOfChannels();
-            for (int c = 0; c < numberOfChannels; ++ c)
+            for (unsigned c = 0; c < numberOfChannels; ++ c)
                 channels.push_back(bus->channel(c)->data());
 
             int start = framesToProcess - _windowSize;
@@ -63,7 +63,7 @@ namespace LabSound {
                 start = 0;
 
             float power = 0;
-            for (int c = 0; c < numberOfChannels; ++c)
+            for (unsigned c = 0; c < numberOfChannels; ++c)
                 for (int i = start; i < end; ++i) {
                     float p = channels[c][i];
                     power += p * p;

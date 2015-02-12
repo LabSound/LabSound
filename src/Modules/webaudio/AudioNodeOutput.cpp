@@ -167,12 +167,12 @@ void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNode
         m_inputs.erase(it);
 }
 
-void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
     while (self->m_inputs.size()) {
         auto input = self->m_inputs.begin();
-        (*input)->disconnect(g, *input, self);
+        (*input)->disconnect(g, r, *input, self);
     }
 }
 
@@ -203,9 +203,9 @@ void AudioNodeOutput::disconnectAllParams(ContextGraphLock& g, std::shared_ptr<A
     }
 }
 
-void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAll(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
-    self->disconnectAllInputs(g, self);
+    self->disconnectAllInputs(g, r, self);
     self->disconnectAllParams(g, self);
 }
 

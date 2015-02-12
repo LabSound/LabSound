@@ -53,8 +53,10 @@ public:
     AudioNode* node() const { return m_node; }
 
     // Must be called with the context's graph lock.
-    static void connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void connect(ContextGraphLock& g, ContextRenderLock&,
+                        std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(ContextGraphLock& g, ContextRenderLock&,
+                           std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.

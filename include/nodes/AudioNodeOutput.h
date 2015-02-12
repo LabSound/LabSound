@@ -64,7 +64,7 @@ public:
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
     unsigned renderingParamFanOutCount() const;
 
-    static void disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAll(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
 
     void setNumberOfChannels(ContextRenderLock&, unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
@@ -105,8 +105,8 @@ private:
     unsigned paramFanOutCount();
 
     // Must be called within the context's graph lock.
-    static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-    static void disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllInputs(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.

@@ -99,8 +99,8 @@ public:
     enum RefType { RefTypeNormal, RefTypeConnection };
 
     void ref(std::shared_ptr<AudioContext>, RefType refType);
-    void deref(ContextGraphLock& g, RefType refType);
-    void finishDeref(ContextGraphLock& g, RefType refType);
+    void deref(ContextGraphLock& g, ContextRenderLock&, RefType refType);
+    void finishDeref(ContextGraphLock&, ContextRenderLock&, RefType refType);
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).

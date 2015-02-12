@@ -141,7 +141,7 @@ void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
 
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
-    AudioNodeInput::connect(g, input, output);
+    AudioNodeInput::connect(g, r, input, output);
 
     // Let context know that a connection has been made.
     g.context()->incrementConnectionCount();
@@ -172,7 +172,7 @@ void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned o
         return;
     }
 
-    AudioNodeOutput::disconnectAll(g, this->output(outputIndex));
+    AudioNodeOutput::disconnectAll(g, r, this->output(outputIndex));
     updatePullStatus(g, r);
 }
 
@@ -310,19 +310,12 @@ void AudioNode::ref(std::shared_ptr<AudioContext> c, RefType refType)
 #endif
 }
 
-void AudioNode::deref(ContextGraphLock& g, RefType refType)
+void AudioNode::deref(ContextGraphLock& g, ContextRenderLock& r, RefType refType)
 {
-    if (!g.context()) {
-        // If the context is gone already, there's not much to do.
-        finishDeref(g, refType);
-        return;
-    }
-    
-    // This is where the real deref work happens.
-    finishDeref(g, refType);
+    finishDeref(g, r, refType);
 }
 
-void AudioNode::finishDeref(ContextGraphLock& g, RefType refType)
+void AudioNode::finishDeref(ContextGraphLock& g, ContextRenderLock& r, RefType refType)
 {
     switch (refType) {
     case RefTypeNormal:
@@ -346,7 +339,7 @@ void AudioNode::finishDeref(ContextGraphLock& g, RefType refType)
             if (!m_isMarkedForDeletion) {
                 // All references are gone - we need to go away.
                 for (unsigned i = 0; i < m_outputs.size(); ++i)
-                    AudioNodeOutput::disconnectAll(g, output(i)); // This will deref() nodes we're connected to.
+                    AudioNodeOutput::disconnectAll(g, r, output(i)); // This will deref() nodes we're connected to.
 
                 // Mark for deletion at end of each render quantum or when context shuts down.
 //                if (!shuttingDown)

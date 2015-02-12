@@ -43,13 +43,13 @@ AudioSummingJunction::~AudioSummingJunction()
 {
 }
 // &&& This should be a render lock, not a graph lock
-    void AudioSummingJunction::addOutput(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> o) {
-        ASSERT(g.context());
+    void AudioSummingJunction::addOutput(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> o) {
+        ASSERT(r.context());
         m_outputs.insert(o);
     }
 
-    void AudioSummingJunction::removeOutput(ContextGraphLock &g, std::shared_ptr<AudioNodeOutput> o) {
-        ASSERT(g.context());
+    void AudioSummingJunction::removeOutput(ContextRenderLock &r, std::shared_ptr<AudioNodeOutput> o) {
+        ASSERT(r.context());
         m_outputs.erase(o);
     }
     
