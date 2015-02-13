@@ -84,7 +84,6 @@ int AudioContext::s_hardwareContextCount = 0;
     
 std::unique_ptr<AudioContext> AudioContext::create(ExceptionCode&)
 {
-    ASSERT(isMainThread());
     if (s_hardwareContextCount >= MaxHardwareContexts)
         return 0;
 
@@ -207,8 +206,6 @@ void AudioContext::clear()
 
 void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
 {
-    ASSERT(isMainThread());
-
     if (!m_isInitialized)
         return;
 
@@ -257,8 +254,6 @@ void AudioContext::stop(ContextGraphLock& g, ContextRenderLock& r)
 {
     if (m_isStopScheduled)
         return;
-    
-    ASSERT(isMainThread());
     
     m_isStopScheduled = true;
     
@@ -467,7 +462,6 @@ void AudioContext::deleteMarkedNodesDispatch(void* userData)
 
 void AudioContext::deleteMarkedNodes()
 {
-    ASSERT(isMainThread());
     m_nodesToDelete.clear();
     m_isDeletionScheduled = false;
 }
@@ -542,15 +536,7 @@ void AudioContext::startRendering()
 
 void AudioContext::fireCompletionEvent()
 {
-    ASSERT(isMainThread());
-    if (!isMainThread())
-        return;
-        
-    AudioBuffer* renderedBuffer = m_renderTarget.get();
-
-    ASSERT(renderedBuffer);
-    if (!renderedBuffer)
-        return;
+    // this is called when an offline audio destination has finished rendering. And nothing happens.
 }
 
 void AudioContext::incrementActiveSourceCount()

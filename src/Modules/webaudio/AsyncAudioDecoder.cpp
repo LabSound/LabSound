@@ -51,7 +51,6 @@ AsyncAudioDecoder::~AsyncAudioDecoder()
 void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
                                     PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
 {
-    ASSERT(isMainThread());
     ASSERT(audioData);
     if (!audioData)
         return;
@@ -70,8 +69,6 @@ void AsyncAudioDecoder::threadEntry(void* threadData)
 
 void AsyncAudioDecoder::runLoop()
 {
-    ASSERT(!isMainThread());
-
     {
         // Wait for until we have m_threadID established before starting the run loop.
         std::lock_guard<std::mutex> lock(m_threadCreationMutex);

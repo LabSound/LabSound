@@ -41,8 +41,6 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
 
 std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(float sampleRate)
 {
-    ASSERT(isMainThread());
-
     if (!s_loader) {
         s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate);
         s_loader->loadAsynchronously();
@@ -54,13 +52,10 @@ HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate)
     : m_databaseLoaderThread(0)
     , m_databaseSampleRate(sampleRate)
 {
-    ASSERT(isMainThread());
 }
 
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
 {
-    ASSERT(isMainThread());
-
     waitForLoaderThreadCompletion();
     m_hrtfDatabase.reset();
     
@@ -80,7 +75,6 @@ static void databaseLoaderEntry(void* threadData)
 
 void HRTFDatabaseLoader::load()
 {
-    ASSERT(!isMainThread());
     if (!m_hrtfDatabase.get()) {
         // Load the default HRTF database.
         m_hrtfDatabase = HRTFDatabase::create(m_databaseSampleRate);
@@ -92,8 +86,6 @@ void HRTFDatabaseLoader::load()
 
 void HRTFDatabaseLoader::loadAsynchronously()
 {
-    ASSERT(isMainThread());
-
     std::lock_guard<std::mutex> locker(m_threadLock);
     
     if (!m_hrtfDatabase.get() && !m_databaseLoaderThread) {

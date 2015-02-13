@@ -74,7 +74,6 @@ void OfflineAudioDestinationNode::uninitialize()
 
 void OfflineAudioDestinationNode::startRendering()
 {
-    ASSERT(isMainThread());
     ASSERT(m_renderTarget.get());
     if (!m_renderTarget.get())
         return;
@@ -95,7 +94,6 @@ void OfflineAudioDestinationNode::offlineRenderEntry(void* threadData)
 
 void OfflineAudioDestinationNode::offlineRender()
 {
-    ASSERT(!isMainThread());
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
