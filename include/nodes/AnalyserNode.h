@@ -32,16 +32,14 @@ namespace WebCore {
 
 class AnalyserNode : public AudioBasicInspectorNode {
 public:
-    AnalyserNode(float sampleRate);
+    AnalyserNode(float sampleRate, size_t fftSize);
     virtual ~AnalyserNode();
     
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock& r) override;
 
-    // Javascript bindings
     size_t fftSize() const { return m_analyser.fftSize(); }
-    void setFftSize(unsigned size, ExceptionCode&);
 
     size_t frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
 

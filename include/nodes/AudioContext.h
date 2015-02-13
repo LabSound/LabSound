@@ -152,7 +152,7 @@ public:
     void startRendering();
     void fireCompletionEvent();
     
-    static unsigned s_hardwareContextCount;
+    static int s_hardwareContextCount;
 
     /// @LabSound - external users shouldn't use this; it is called either by one of the
     /// context's object creation routines, such as createGainNode, or by LabSound::init.

@@ -18,7 +18,7 @@ namespace LabSound {
         WTF::initializeThreading();
         WTF::initializeMainThread();
         
-        // Create an audio context object
+        // Create an audio context object with the default audio destination
         ExceptionCode ec;
         std::shared_ptr<LabSound::AudioContext> context = LabSound::AudioContext::create(ec);
         context->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(context));

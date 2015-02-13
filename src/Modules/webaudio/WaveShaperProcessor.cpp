@@ -47,6 +47,8 @@ AudioDSPKernel* WaveShaperProcessor::createKernel()
 
 void WaveShaperProcessor::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
 {
+    // can't rewrite the curve whilst rendering
+    ASSERT(r.context());
     m_curve = curve;
 }
 

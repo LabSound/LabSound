@@ -113,7 +113,6 @@ void initializeMainThread()
 
     mainThreadFunctionQueueMutex();
     initializeMainThreadPlatform();
-    initializeGCThreads();
 }
 
 #else
@@ -222,17 +221,6 @@ void cancelCallOnMainThread(MainThreadFunction* function, void* context)
     FunctionWithContextFinder pred(FunctionWithContext(function, context));
 
     functionQueue().erase( std::remove_if(functionQueue().begin(), functionQueue().end(), pred), functionQueue().end() );
-#if 0
-    while (true) {
-        // We must redefine 'i' each pass, because the itererator's operator= 
-        // requires 'this' to be valid, and remove() invalidates all iterators
-
-        FunctionQueue::iterator i(functionQueue().findIf(pred));
-        if (i == functionQueue().end())
-            break;
-        functionQueue().remove(i);
-    }
-#endif
 }
 
 void setMainThreadCallbacksPaused(bool paused)
@@ -248,49 +236,5 @@ void setMainThreadCallbacksPaused(bool paused)
         scheduleDispatchFunctionsOnMainThread();
 }
 
-#if !PLATFORM(MAC)
-bool isMainThread()
-{
-    return currentThread() == mainThreadIdentifier;
-}
-#endif
-
-#if ENABLE(PARALLEL_GC)
-static ThreadSpecific<bool>* isGCThread;
-#endif
-
-void initializeGCThreads()
-{
-#if ENABLE(PARALLEL_GC)
-    isGCThread = new ThreadSpecific<bool>();
-#endif
-}
-
-#if ENABLE(PARALLEL_GC)
-void registerGCThread()
-{
-    if (!isGCThread) {
-        // This happens if we're running in a process that doesn't care about
-        // MainThread.
-        return;
-    }
-
-    **isGCThread = true;
-}
-
-bool isMainThreadOrGCThread()
-{
-    if (isGCThread->isSet() && **isGCThread)
-        return true;
-
-    return isMainThread();
-}
-#elif PLATFORM(MAC)
-// This is necessary because JavaScriptCore.exp doesn't support preprocessor macros.
-bool isMainThreadOrGCThread()
-{
-    return isMainThread();
-}
-#endif
 
 } // namespace WTF

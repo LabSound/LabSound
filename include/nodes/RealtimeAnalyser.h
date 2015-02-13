@@ -26,6 +26,7 @@
 #define RealtimeAnalyser_h
 
 #include "AudioArray.h"
+#include "AudioContextLock.h"
 #include <vector>
 
 namespace WebCore {
@@ -38,13 +39,12 @@ class FFTFrame;
 class RealtimeAnalyser {
     RealtimeAnalyser(const RealtimeAnalyser&); // noncopyable
 public:
-    RealtimeAnalyser();
+    RealtimeAnalyser(size_t fftSize);
     virtual ~RealtimeAnalyser();
     
     void reset();
 
     size_t fftSize() const { return m_fftSize; }
-    bool setFftSize(size_t);
 
     size_t frequencyBinCount() const { return m_fftSize / 2; }
 
@@ -62,17 +62,16 @@ public:
     void getFloatTimeDomainData(std::vector<float>&); // LabSound
     void getByteTimeDomainData(std::vector<uint8_t>&);
 
-    // The audio thread writes input data here.
-    void writeInput(AudioBus*, size_t framesToProcess);
+    void writeInput(ContextRenderLock& r, AudioBus*, size_t framesToProcess);
 
     static const double DefaultSmoothingTimeConstant;
     static const double DefaultMinDecibels;
     static const double DefaultMaxDecibels;
 
-    static const unsigned DefaultFFTSize;
-    static const unsigned MinFFTSize;
-    static const unsigned MaxFFTSize;
-    static const unsigned InputBufferSize;
+    static const size_t DefaultFFTSize;
+    static const size_t MinFFTSize;
+    static const size_t MaxFFTSize;
+    static const size_t InputBufferSize;
 
 private:
     // The audio thread writes the input audio here.

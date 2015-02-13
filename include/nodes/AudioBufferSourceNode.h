@@ -61,8 +61,8 @@ public:
     unsigned numberOfChannels();
 
     // Play-state
-    void startGrain(double when, double grainOffset, ExceptionCode&);
-    void startGrain(double when, double grainOffset, double grainDuration, ExceptionCode&);
+    void startGrain(double when, double grainOffset);
+    void startGrain(double when, double grainOffset, double grainDuration);
 
     // Note: the attribute was originally exposed as .looping, but to be more consistent in naming with <audio>
     // and with how it's described in the specification, the proper attribute name is .loop
@@ -114,6 +114,11 @@ private:
     // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
     // If true, it will wrap around to the start of the buffer each time it reaches the end.
     bool m_isLooping;
+    
+    bool m_startRequested;
+    double m_requestWhen;
+    double m_requestGrainOffset;
+    double m_requestGrainDuration;
 
     double m_loopStart;
     double m_loopEnd;

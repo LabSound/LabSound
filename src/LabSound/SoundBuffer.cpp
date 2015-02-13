@@ -101,7 +101,7 @@ namespace LabSound {
             // bus the sound to the mixer.
             ExceptionCode ec;
             sourceBufferNode->connect(g, r, ac->destination().get(), 0, 0, ec);
-            sourceBufferNode->startGrain(when, start, end - start, ec);
+            sourceBufferNode->startGrain(when, start, end - start);
             g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
 
             return sourceBufferNode;

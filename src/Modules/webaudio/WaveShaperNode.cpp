@@ -37,7 +37,6 @@ WaveShaperNode::WaveShaperNode(float sampleRate)
 
 void WaveShaperNode::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
 {
-    ASSERT(isMainThread()); 
     waveShaperProcessor()->setCurve(r, curve);
 }
 

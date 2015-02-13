@@ -45,22 +45,40 @@ const double RealtimeAnalyser::DefaultSmoothingTimeConstant  = 0.8;
 const double RealtimeAnalyser::DefaultMinDecibels = -100;
 const double RealtimeAnalyser::DefaultMaxDecibels = -30;
 
-const unsigned RealtimeAnalyser::DefaultFFTSize = 2048;
 // All FFT implementations are expected to handle power-of-two sizes MinFFTSize <= size <= MaxFFTSize.
-const unsigned RealtimeAnalyser::MinFFTSize = 32;
-const unsigned RealtimeAnalyser::MaxFFTSize = 2048;
-const unsigned RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
+const size_t RealtimeAnalyser::DefaultFFTSize = 2048;
+const size_t RealtimeAnalyser::MinFFTSize = 32;
+const size_t RealtimeAnalyser::MaxFFTSize = 2048;
+const size_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-RealtimeAnalyser::RealtimeAnalyser()
+namespace {
+    size_t roundNextPowerOfTwo(size_t v) {
+        v--;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        v |= v >> 32;
+        v++;
+        return v;
+    }
+}
+    
+RealtimeAnalyser::RealtimeAnalyser(size_t fftSize)
     : m_inputBuffer(InputBufferSize)
     , m_writeIndex(0)
-    , m_fftSize(DefaultFFTSize)
-    , m_magnitudeBuffer(DefaultFFTSize / 2)
     , m_smoothingTimeConstant(DefaultSmoothingTimeConstant)
     , m_minDecibels(DefaultMinDecibels)
     , m_maxDecibels(DefaultMaxDecibels)
-    , m_analysisFrame(new FFTFrame(DefaultFFTSize))
 {
+    size_t size = max(min(roundNextPowerOfTwo(fftSize), MaxFFTSize), MinFFTSize);
+    m_fftSize = size;
+    
+    m_analysisFrame = std::unique_ptr<FFTFrame>(new FFTFrame(size));
+    
+    // m_magnitudeBuffer has size = fftSize / 2 because it contains floats reduced from complex values in m_analysisFrame.
+    m_magnitudeBuffer.allocate(size / 2);
 }
 
 RealtimeAnalyser::~RealtimeAnalyser()
@@ -74,31 +92,9 @@ void RealtimeAnalyser::reset()
     m_magnitudeBuffer.zero();
 }
 
-bool RealtimeAnalyser::setFftSize(size_t size)
+void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus, size_t framesToProcess)
 {
-    ASSERT(isMainThread());
-
-    // Only allow powers of two.
-    unsigned log2size = static_cast<unsigned>(log2(size));
-    bool isPOT(1UL << log2size == size);
-
-    if (!isPOT || size > MaxFFTSize || size < MinFFTSize)
-        return false;
-
-    if (m_fftSize != size) {
-        m_analysisFrame = std::unique_ptr<FFTFrame>(new FFTFrame(size));
-        // m_magnitudeBuffer has size = fftSize / 2 because it contains floats reduced from complex values in m_analysisFrame.
-        m_magnitudeBuffer.allocate(size / 2);
-        m_fftSize = size;
-    }
-
-    return true;
-}
-
-void RealtimeAnalyser::writeInput(AudioBus* bus, size_t framesToProcess)
-{
-    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess;
-    ASSERT(isBusGood);
+    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess && r.context();
     if (!isBusGood)
         return;
         
@@ -135,8 +131,6 @@ namespace {
 
 void applyWindow(float* p, size_t n)
 {
-    ASSERT(isMainThread());
-    
     // Blackman window
     double alpha = 0.16;
     double a0 = 0.5 * (1 - alpha);
@@ -154,8 +148,6 @@ void applyWindow(float* p, size_t n)
 
 void RealtimeAnalyser::doFFTAnalysis()
 {    
-    ASSERT(isMainThread());
-
     // Unroll the input buffer into a temporary buffer, where we'll apply an analysis window followed by an FFT.
     size_t fftSize = this->fftSize();
     
@@ -168,10 +160,10 @@ void RealtimeAnalyser::doFFTAnalysis()
     if (writeIndex < fftSize) {
         memcpy(tempP, inputBuffer + writeIndex - fftSize + InputBufferSize, sizeof(*tempP) * (fftSize - writeIndex));
         memcpy(tempP + fftSize - writeIndex, inputBuffer, sizeof(*tempP) * writeIndex);
-    } else 
+    }
+    else
         memcpy(tempP, inputBuffer + writeIndex - fftSize, sizeof(*tempP) * fftSize);
 
-    
     // Window the input samples.
     applyWindow(tempP, fftSize);
     
@@ -204,8 +196,6 @@ void RealtimeAnalyser::doFFTAnalysis()
 
 void RealtimeAnalyser::getFloatFrequencyData(std::vector<float>& destinationArray)
 {
-    ASSERT(isMainThread());
-
     if (!destinationArray.size())
         return;
         
@@ -227,8 +217,6 @@ void RealtimeAnalyser::getFloatFrequencyData(std::vector<float>& destinationArra
 
 void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t>& destinationArray)
 {
-    ASSERT(isMainThread());
-
     if (!destinationArray.size())
         return;
         
@@ -263,8 +251,6 @@ void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t>& destinationArr
 // LabSound begin
 void RealtimeAnalyser::getFloatTimeDomainData(std::vector<float>& destinationArray)
 {
-    ASSERT(isMainThread());
-    
     if (!destinationArray.size())
         return;
     
@@ -288,8 +274,6 @@ void RealtimeAnalyser::getFloatTimeDomainData(std::vector<float>& destinationArr
 
 void RealtimeAnalyser::getByteTimeDomainData(std::vector<uint8_t>& destinationArray)
 {
-    ASSERT(isMainThread());
-
     if (!destinationArray.size())
         return;
         

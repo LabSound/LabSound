@@ -48,17 +48,6 @@ WTF_EXPORT_PRIVATE void setMainThreadCallbacksPaused(bool paused);
 
 WTF_EXPORT_PRIVATE bool isMainThread();
 
-void initializeGCThreads();
-
-#if ENABLE(PARALLEL_GC)
-void registerGCThread();
-WTF_EXPORT_PRIVATE bool isMainThreadOrGCThread();
-#elif PLATFORM(MAC)
-WTF_EXPORT_PRIVATE bool isMainThreadOrGCThread();
-#else
-inline bool isMainThreadOrGCThread() { return isMainThread(); }
-#endif
-
 // NOTE: these functions are internal to the callOnMainThread implementation.
 void initializeMainThreadPlatform();
 void scheduleDispatchFunctionsOnMainThread();
@@ -79,5 +68,4 @@ using WTF::callOnMainThreadAndWait;
 using WTF::cancelCallOnMainThread;
 using WTF::setMainThreadCallbacksPaused;
 using WTF::isMainThread;
-using WTF::isMainThreadOrGCThread;
 #endif // MainThread_h

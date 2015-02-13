@@ -708,27 +708,11 @@
 #define ENABLE_COMPARE_AND_SWAP 1
 #endif
 
-#define ENABLE_OBJECT_MARK_LOGGING 0
-
-#if !defined(ENABLE_PARALLEL_GC) && !ENABLE(OBJECT_MARK_LOGGING) && (PLATFORM(MAC) || PLATFORM(IOS) || PLATFORM(BLACKBERRY) || PLATFORM(GTK)) && ENABLE(COMPARE_AND_SWAP)
-#define ENABLE_PARALLEL_GC 1
-#elif PLATFORM(QT)
-// Parallel GC is temporarily disabled on Qt because of regular crashes, see https://bugs.webkit.org/show_bug.cgi?id=90957 for details
-#define ENABLE_PARALLEL_GC 0
-#endif
-
-#if !defined(ENABLE_GC_VALIDATION) && !defined(NDEBUG)
-#define ENABLE_GC_VALIDATION 1
-#endif
-
 #if PLATFORM(MAC) && !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
 #define WTF_USE_COREMEDIA 1
 #endif
 
-#if PLATFORM(MAC) && (PLATFORM(IOS) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 1070)
-#define HAVE_INVERTED_WHEEL_EVENTS 1
-#endif
-
+// PLATFORM(MAC) is also true for iOS
 #if PLATFORM(MAC)
 #define WTF_USE_COREAUDIO 1
 #endif

@@ -55,6 +55,7 @@ AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
     , m_loopEnd(0)
     , m_virtualReadIndex(0)
     , m_isGrain(false)
+    , m_startRequested(false)
     , m_grainOffset(0.0)
     , m_grainDuration(DefaultGrainDuration)
     , m_lastGain(1.0)
@@ -79,8 +80,6 @@ AudioBufferSourceNode::~AudioBufferSourceNode()
 void AudioBufferSourceNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
-    
-    ASSERT(r.context());
     if (!buffer() || !isInitialized() || ! r.context()) {
         outputBus->zero();
         return;
@@ -94,6 +93,35 @@ void AudioBufferSourceNode::process(ContextGraphLock& g, ContextRenderLock& r, s
         return;
     }
 
+    if (m_startRequested) {
+        // Do sanity checking of grain parameters versus buffer size.
+        double bufferDuration = buffer()->duration();
+        
+        double grainOffset = std::max(0.0, m_requestGrainOffset);
+        m_grainOffset = std::min(bufferDuration, grainOffset);
+        m_grainOffset = grainOffset;
+        
+        // Handle default/unspecified duration.
+        double maxDuration = bufferDuration - grainOffset;
+        double grainDuration = m_requestGrainDuration;
+        if (!grainDuration)
+            grainDuration = maxDuration;
+        
+        grainDuration = std::max(0.0, grainDuration);
+        grainDuration = std::min(maxDuration, grainDuration);
+        m_grainDuration = grainDuration;
+        
+        m_isGrain = true;
+        m_startTime = m_requestWhen;
+        
+        // We call timeToSampleFrame here since at playbackRate == 1 we don't want to go through linear interpolation
+        // at a sub-sample position since it will degrade the quality.
+        // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
+        // Since playbackRate == 1 is very common, it's worth considering quality.
+        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, buffer()->sampleRate());
+        m_startRequested = false;
+    }
+    
     size_t quantumFrameOffset;
     size_t bufferFramesToProcess;
 
@@ -348,49 +376,23 @@ unsigned AudioBufferSourceNode::numberOfChannels()
     return output(0)->numberOfChannels();
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset, ExceptionCode& ec)
+void AudioBufferSourceNode::startGrain(double when, double grainOffset)
 {
     // Duration of 0 has special value, meaning calculate based on the entire buffer's duration.
-    startGrain(when, grainOffset, 0, ec);
+    startGrain(when, grainOffset, 0);
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration, ExceptionCode& ec)
+void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration)
 {
-    ASSERT(isMainThread());
-    if (m_playbackState != UNSCHEDULED_STATE) {
-        ec = INVALID_STATE_ERR;
-        return;
-    }
-
     if (!buffer())
         return;
+
+    m_requestWhen = when;
+    m_requestGrainOffset = grainOffset;
+    m_requestGrainDuration = grainDuration;
         
-    // Do sanity checking of grain parameters versus buffer size.
-    double bufferDuration = buffer()->duration();
-
-    grainOffset = std::max(0.0, grainOffset);
-    grainOffset = std::min(bufferDuration, grainOffset);
-    m_grainOffset = grainOffset;
-
-    // Handle default/unspecified duration.
-    double maxDuration = bufferDuration - grainOffset;
-    if (!grainDuration)
-        grainDuration = maxDuration;
-
-    grainDuration = std::max(0.0, grainDuration);
-    grainDuration = std::min(maxDuration, grainDuration);
-    m_grainDuration = grainDuration;
-
-    m_isGrain = true;
-    m_startTime = when;
-    
-    // We call timeToSampleFrame here since at playbackRate == 1 we don't want to go through linear interpolation
-    // at a sub-sample position since it will degrade the quality.
-    // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
-    // Since playbackRate == 1 is very common, it's worth considering quality.
-    m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, buffer()->sampleRate());
-    
     m_playbackState = SCHEDULED_STATE;
+    m_startRequested = true;
 }
 
 double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)

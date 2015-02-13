@@ -67,8 +67,6 @@ void initializeMainThreadPlatform()
     mainThreadEstablishedAsPthreadMain = false;
     mainThreadPthread = pthread_self();
     mainThreadNSThread = [[NSThread currentThread] retain];
-    
-    initializeGCThreads();
 }
 
 void initializeMainThreadToProcessMainThreadPlatform()
@@ -82,8 +80,6 @@ void initializeMainThreadToProcessMainThreadPlatform()
     mainThreadEstablishedAsPthreadMain = true;
     mainThreadPthread = 0;
     mainThreadNSThread = nil;
-    
-    initializeGCThreads();
 }
 
 static void timerFired(CFRunLoopTimerRef timer, void*)

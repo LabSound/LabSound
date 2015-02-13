@@ -79,8 +79,8 @@ bool isSampleRateRangeGood(float sampleRate)
 }
 
 // Don't allow more than this number of simultaneous AudioContexts talking to hardware.
-const unsigned MaxHardwareContexts = 4;
-unsigned AudioContext::s_hardwareContextCount = 0;
+const int MaxHardwareContexts = 4;
+int AudioContext::s_hardwareContextCount = 0;
     
 std::unique_ptr<AudioContext> AudioContext::create(ExceptionCode&)
 {
@@ -185,8 +185,8 @@ void AudioContext::lazyInitialize()
                     // Each time provideInput() is called, a portion of the audio stream is rendered. Let's call this time period a "render quantum".
                     // NOTE: for now default AudioContext does not need an explicit startRendering() call from JavaScript.
                     // We may want to consider requiring it for symmetry with OfflineAudioContext.
-                    m_destinationNode->startRendering();                    
-                    ++s_hardwareContextCount;
+                    m_destinationNode->startRendering();
+                    atomicIncrement(&s_hardwareContextCount);
                 }
 
             }
@@ -220,7 +220,7 @@ void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
 
     if (!isOfflineContext()) {
         ASSERT(s_hardwareContextCount);
-        --s_hardwareContextCount;
+        atomicDecrement(&s_hardwareContextCount);
     }
 
     // Get rid of the sources which may still be playing.
@@ -551,13 +551,6 @@ void AudioContext::fireCompletionEvent()
     ASSERT(renderedBuffer);
     if (!renderedBuffer)
         return;
-    /* LabSound
-    // Avoid firing the event if the document has already gone away.
-    if (scriptExecutionContext()) {
-        // Call the offline rendering completion event listener.
-        dispatchEvent(OfflineAudioCompletionEvent::create(renderedBuffer));
-    }
-     */
 }
 
 void AudioContext::incrementActiveSourceCount()

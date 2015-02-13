@@ -31,8 +31,9 @@
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(float sampleRate)
+AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
     : AudioBasicInspectorNode(sampleRate)
+    , m_analyser(fftSize)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -47,7 +48,7 @@ AnalyserNode::~AnalyserNode()
     uninitialize();
 }
 
-void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
 
@@ -59,7 +60,7 @@ void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock&, size_t frame
     AudioBus* inputBus = input(0)->bus();
     
     // Give the analyser the audio which is passing through this AudioNode.
-    m_analyser.writeInput(inputBus, framesToProcess);
+    m_analyser.writeInput(r, inputBus, framesToProcess);
 
     // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
     // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
@@ -70,12 +71,6 @@ void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock&, size_t frame
 void AnalyserNode::reset(ContextRenderLock& r)
 {
     m_analyser.reset();
-}
-
-void AnalyserNode::setFftSize(unsigned size, ExceptionCode& ec)
-{
-    if (!m_analyser.setFftSize(size))
-        ec = NOT_SUPPORTED_ERR;
 }
 
 } // namespace WebCore
