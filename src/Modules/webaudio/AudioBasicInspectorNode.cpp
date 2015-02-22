@@ -35,7 +35,6 @@ namespace WebCore {
 
 AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate)
     : AudioNode(sampleRate)
-    , m_needAutomaticPull(false)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -50,7 +49,7 @@ void AudioBasicInspectorNode::pullInputs(ContextGraphLock& g, ContextRenderLock&
     input(0)->pull(g, r, output(0)->bus(), framesToProcess);
 }
 
-void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
+void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     if (input != this->input(0).get())
         return;
@@ -62,36 +61,7 @@ void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextGraphLock& g,
         output(0)->setNumberOfChannels(r, numberOfChannels);
     }
 
-    AudioNode::checkNumberOfChannelsForInput(g, r, input);
-
-    updatePullStatus(g, r);
-}
-
-void AudioBasicInspectorNode::updatePullStatus(ContextGraphLock& g, ContextRenderLock& r)
-{
-    ASSERT(r.context());
-    auto ac = r.context();
-
-    if (output(0)->isConnected()) {
-        // When an AudioBasicInspectorNode is connected to a downstream node, it will get pulled by the
-        // downstream node, thus remove it from the context's automatic pull list.
-        if (m_needAutomaticPull) {
-            ac->removeAutomaticPullNode(g, r, this);
-            m_needAutomaticPull = false;
-        }
-    } else {
-        unsigned numberOfInputConnections = input(0)->numberOfRenderingConnections();
-        if (numberOfInputConnections && !m_needAutomaticPull) {
-            // When an AudioBasicInspectorNode is not connected to any downstream node while still connected from
-            // upstream node(s), add it to the context's automatic pull list.
-            ac->addAutomaticPullNode(g, r, this);
-            m_needAutomaticPull = true;
-        } else if (!numberOfInputConnections && m_needAutomaticPull) {
-            // The AudioBasicInspectorNode is connected to nothing, remove it from the context's automatic pull list.
-            ac->removeAutomaticPullNode(g, r, this);
-            m_needAutomaticPull = false;
-        }
-    }
+    AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
 } // namespace WebCore

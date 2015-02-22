@@ -28,8 +28,8 @@ namespace LabSound {
         std::shared_ptr<AudioParam> frequency() const;
         std::shared_ptr<AudioParam> detune()    const;
 
-		void noteOn(ContextRenderLock&);
-		void noteOff(ContextRenderLock&);
+		void noteOn(double when);
+		void noteOff(ContextRenderLock&, double when);
 
         void update(ContextGraphLock& g, ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
 
@@ -37,10 +37,10 @@ namespace LabSound {
 
         // Satisfy the AudioNode interface
         virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override;
-        virtual void reset(ContextRenderLock& r) override { /*m_currentSampleFrame = 0;*/ }
+        virtual void reset(std::shared_ptr<AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }
-        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
+        virtual bool propagatesSilence(double now) const OVERRIDE;
         // ^
 
         class Data;

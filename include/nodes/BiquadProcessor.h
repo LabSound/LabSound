@@ -64,7 +64,7 @@ public:
                               float* magResponse,
                               float* phaseResponse);
 
-    void checkForDirtyCoefficients(ContextRenderLock&);
+    void checkForDirtyCoefficients(std::shared_ptr<AudioContext>);
     
     bool filterCoefficientsDirty() const { return m_filterCoefficientsDirty; }
     bool hasSampleAccurateValues() const { return m_hasSampleAccurateValues; }

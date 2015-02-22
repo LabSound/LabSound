@@ -121,7 +121,7 @@ void PannerNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t frame
     destination->copyWithGainFrom(*destination, &m_lastGain, totalGain);
 }
 
-void PannerNode::reset(ContextRenderLock& r)
+void PannerNode::reset(std::shared_ptr<AudioContext>)
 {
     m_lastGain = -1.0; // force to snap to initial gain
     if (m_panner.get())

@@ -115,11 +115,11 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void NoiseNode::reset(ContextRenderLock& r)
+    void NoiseNode::reset(std::shared_ptr<AudioContext>)
     {
     }
     
-    bool NoiseNode::propagatesSilence(ContextRenderLock& r) const
+    bool NoiseNode::propagatesSilence(double now) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

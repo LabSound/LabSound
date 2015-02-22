@@ -58,8 +58,8 @@ public:
     virtual ~AudioScheduledSourceNode() {}
 
     // Scheduling.
-    void start(ContextRenderLock&, double when);
-    void stop(ContextRenderLock&, double when);
+    void start(double when);
+    void stop(double when);
 
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }

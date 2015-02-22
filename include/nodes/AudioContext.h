@@ -122,13 +122,13 @@ public:
     void derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r);
 
     // We schedule deletion of all marked nodes at the end of each realtime render quantum.
-    void markForDeletion(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
+    void markForDeletion(ContextRenderLock& r, AudioNode*);
     void deleteMarkedNodes();
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
-    void addAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
-    void removeAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
+    void addAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode>);
+    void removeAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode>);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     void processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
@@ -195,6 +195,7 @@ private:
     
 public:
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
+
 private:
     void handleAutomaticSources();
 
@@ -216,6 +217,13 @@ private:
     // (when handlePostRenderTasks() has completed).
     std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
+    // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
+    bool m_automaticPullNodesNeedUpdating;
+    void updateAutomaticPullNodes(ContextRenderLock& r);
+    // the queue for added pull nodes, and the vector of known pull nodes
+    std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;
+    std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;
+    
     // They will be scheduled for deletion (on the main thread) at the end of a render cycle (in realtime thread).
     std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
     bool m_isDeletionScheduled;
@@ -224,13 +232,6 @@ private:
     LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
     void handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r);
 
-    // For the sake of thread safety, we maintain a seperate vector of automatic pull nodes for rendering in m_renderingAutomaticPullNodes.
-    // It will be copied from m_automaticPullNodes by updateAutomaticPullNodes() at the very start or end of the rendering quantum.
-    std::set<AudioNode*> m_automaticPullNodes;
-    std::vector<AudioNode*> m_renderingAutomaticPullNodes;
-    // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
-    bool m_automaticPullNodesNeedUpdating;
-    void updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r);
 
     int m_connectionCount;
 

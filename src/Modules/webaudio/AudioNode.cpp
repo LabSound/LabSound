@@ -145,8 +145,6 @@ void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
 
     // Let context know that a connection has been made.
     g.context()->incrementConnectionCount();
-    
-    updatePullStatus(g, r);
 }
 
 void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
@@ -173,7 +171,6 @@ void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned o
     }
 
     AudioNodeOutput::disconnectAll(g, r, this->output(outputIndex));
-    updatePullStatus(g, r);
 }
 
 void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
@@ -200,7 +197,7 @@ void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, si
         if (!silentInputs)
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
 
-        bool ps = propagatesSilence(r);
+        bool ps = propagatesSilence(r.context()->currentTime());
         if (silentInputs && ps)
             silenceOutputs();
         else {
@@ -210,7 +207,7 @@ void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, si
     }
 }
 
-void AudioNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
+void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     for (auto &i : m_inputs) {
         if (i.get() == input) {
@@ -220,12 +217,9 @@ void AudioNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRender
     }
 }
 
-bool AudioNode::propagatesSilence(ContextRenderLock& r) const
+bool AudioNode::propagatesSilence(double now) const
 {
-    if (!r.context())
-        return true;
-    
-    return m_lastNonSilentTime + latencyTime() + tailTime() < r.context()->currentTime();
+    return m_lastNonSilentTime + latencyTime() + tailTime() < now;
 }
 
 void AudioNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
@@ -337,7 +331,7 @@ void AudioNode::finishDeref(ContextGraphLock& g, ContextRenderLock& r, RefType r
     if (!m_connectionRefCount) {
         if (!m_normalRefCount) {
             if (!m_isMarkedForDeletion) {
-                // All references are gone - we need to go away.
+                // All references are gone - this node needs to go away.
                 for (unsigned i = 0; i < m_outputs.size(); ++i)
                     AudioNodeOutput::disconnectAll(g, r, output(i)); // This will deref() nodes we're connected to.
 
@@ -346,7 +340,6 @@ void AudioNode::finishDeref(ContextGraphLock& g, ContextRenderLock& r, RefType r
 //                    ac->markForDeletion(this);
                 
                 m_isMarkedForDeletion = true;
-
             }
         }
         else if (refType == RefTypeConnection)

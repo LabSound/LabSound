@@ -38,12 +38,12 @@ namespace WebCore {
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-float AudioParam::value(ContextRenderLock& r)
+float AudioParam::value(std::shared_ptr<AudioContext> c)
 {
     // Update value for timeline.
-    if (r.context()) {
+    if (c) {
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(c, narrowPrecisionToFloat(m_value), hasValue);
         
         if (hasValue)
             m_value = timelineValue;
@@ -65,13 +65,13 @@ float AudioParam::smoothedValue()
     return narrowPrecisionToFloat(m_smoothedValue);
 }
 
-bool AudioParam::smooth(ContextRenderLock& r)
+bool AudioParam::smooth(std::shared_ptr<AudioContext> c)
 {
     // If values have been explicitly scheduled on the timeline, then use the exact value.
     // Smoothing effectively is performed by the timeline.
     bool useTimelineValue = false;
-    if (r.context()) {
-        m_value = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), useTimelineValue);
+    if (c) {
+        m_value = m_timeline.valueForContextTime(c, narrowPrecisionToFloat(m_value), useTimelineValue);
     }
     
     if (m_smoothedValue == m_value) {
@@ -124,7 +124,7 @@ void AudioParam::calculateFinalValues(ContextGraphLock& g, ContextRenderLock& r,
     else {
         // Calculate control-rate (k-rate) intrinsic value.
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r.context(), narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r.contextPtr(), narrowPrecisionToFloat(m_value), hasValue);
 
         if (hasValue)
             m_value = timelineValue;

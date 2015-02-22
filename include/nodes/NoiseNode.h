@@ -26,14 +26,14 @@ namespace LabSound {
 
         // AudioNode
         virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock& r) override;
+        virtual void reset(std::shared_ptr<AudioContext>) override;
 
         unsigned short type() const { return m_type; }
         void setType(unsigned short, ExceptionCode&);
 
     private:
 
-        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
+        virtual bool propagatesSilence(double now) const OVERRIDE;
 
         // One of the noise types defined in the enum.
         unsigned short m_type;

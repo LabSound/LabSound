@@ -131,7 +131,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     return;
 }
 
-void AudioScheduledSourceNode::start(ContextRenderLock& r, double when)
+void AudioScheduledSourceNode::start(double when)
 {
     if (m_playbackState != UNSCHEDULED_STATE)
         return;
@@ -140,7 +140,7 @@ void AudioScheduledSourceNode::start(ContextRenderLock& r, double when)
     m_playbackState = SCHEDULED_STATE;
 }
 
-void AudioScheduledSourceNode::stop(ContextRenderLock&, double when)
+void AudioScheduledSourceNode::stop(double when)
 {
     if (!(m_playbackState == SCHEDULED_STATE || m_playbackState == PLAYING_STATE))
         return;

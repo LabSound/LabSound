@@ -146,7 +146,7 @@ void AudioBufferSourceNode::process(ContextGraphLock& g, ContextRenderLock& r, s
     }
 
     // Apply the gain (in-place) to the output bus.
-    float totalGain = gain()->value(r) * m_buffer->gain();
+    float totalGain = gain()->value(r.contextPtr()) * m_buffer->gain();
     outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
     outputBus->clearSilentFlag();
 }
@@ -340,10 +340,10 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
 }
 
 
-void AudioBufferSourceNode::reset(ContextRenderLock& r)
+void AudioBufferSourceNode::reset(std::shared_ptr<AudioContext> c)
 {
     m_virtualReadIndex = 0;
-    m_lastGain = gain()->value(r);
+    m_lastGain = gain()->value(c);
 }
 
 bool AudioBufferSourceNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
@@ -407,7 +407,7 @@ double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
     if (buffer())
         sampleRateFactor = buffer()->sampleRate() / sampleRate();
     
-    double basePitchRate = playbackRate()->value(r);
+    double basePitchRate = playbackRate()->value(r.contextPtr());
 
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
 
@@ -435,7 +435,7 @@ void AudioBufferSourceNode::setLooping(bool looping)
     m_isLooping = looping;
 }
 
-bool AudioBufferSourceNode::propagatesSilence(ContextRenderLock& r) const
+bool AudioBufferSourceNode::propagatesSilence(double now) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_buffer;
 }

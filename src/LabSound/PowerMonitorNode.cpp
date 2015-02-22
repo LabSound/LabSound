@@ -88,7 +88,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void PowerMonitorNode::reset(ContextRenderLock& r)
+    void PowerMonitorNode::reset(std::shared_ptr<AudioContext>)
     {
         _db = 0;
     }

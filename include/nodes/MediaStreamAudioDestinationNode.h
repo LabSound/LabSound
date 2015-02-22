@@ -43,7 +43,7 @@ public:
 
     // AudioNode.
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock& r) override;
+    virtual void reset(std::shared_ptr<AudioContext>) override;
     
     MediaStreamSource* mediaStreamSource();
 
@@ -52,7 +52,7 @@ private:
     virtual double latencyTime() const OVERRIDE { return 0; }
 
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return false; }
+    virtual bool propagatesSilence(double now) const OVERRIDE { return false; }
 
     std::shared_ptr<MediaStream> m_stream;
     std::shared_ptr<MediaStreamSource> m_source;

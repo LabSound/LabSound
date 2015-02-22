@@ -25,8 +25,8 @@ namespace LabSound {
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
         //
-		void noteOn(ContextRenderLock& r);
-		void noteOff(ContextRenderLock& r);
+		void noteOn(double when);
+		void noteOff(ContextRenderLock&, double when);
         bool finished(ContextRenderLock&); // if a noteOff has been issued, finished will be true after the release period
 
 		void set(float aT, float aL, float d, float s, float r);

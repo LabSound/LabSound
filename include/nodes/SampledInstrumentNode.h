@@ -73,7 +73,7 @@ namespace LabSound {
 			// Bus the sound to the output destination .
 			ExceptionCode ec;
 			theSample->connect(g, r, destinationNode.get(), 0, 0, ec);
-			theSample->start(r, 0.0);
+			theSample->start(0.0);
 
 			return theSample;
 
@@ -169,7 +169,7 @@ namespace LabSound {
 		//virtual void reset() override {}
 		//virtual double tailTime() const OVERRIDE { return 0; }
 		//virtual double latencyTime() const OVERRIDE { return 0; }
-		//virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return true; }
+		//virtual bool propagatesSilence(double now) const OVERRIDE { return true; }
 
 	};
 

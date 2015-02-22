@@ -68,7 +68,7 @@ void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t fra
         outputBus->copyFrom(*inputBus);
 }
 
-void AnalyserNode::reset(ContextRenderLock& r)
+void AnalyserNode::reset(std::shared_ptr<AudioContext>)
 {
     m_analyser.reset();
 }

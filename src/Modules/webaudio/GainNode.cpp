@@ -71,15 +71,15 @@ void GainNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesT
             }
         } else {
             // Apply the gain with de-zippering into the output bus.
-            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r));
+            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r.contextPtr()));
         }
     }
 }
 
-void GainNode::reset(ContextRenderLock& r)
+void GainNode::reset(std::shared_ptr<AudioContext> c)
 {
     // Snap directly to desired gain.
-    m_lastGain = gain()->value(r);
+    m_lastGain = gain()->value(c);
 }
 
 // FIXME: this can go away when we do mixing with gain directly in summing junction of AudioNodeInput
@@ -87,7 +87,7 @@ void GainNode::reset(ContextRenderLock& r)
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in which case we must safely
 // uninitialize and then re-initialize with the new channel count.
-void GainNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
+void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     if (!input)
         return;
@@ -110,7 +110,7 @@ void GainNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderL
         initialize();
     }
 
-    AudioNode::checkNumberOfChannelsForInput(g, r, input);
+    AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
 } // namespace WebCore

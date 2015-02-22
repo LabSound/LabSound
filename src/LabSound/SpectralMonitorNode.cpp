@@ -178,7 +178,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
 
-    void SpectralMonitorNode::reset(ContextRenderLock& r)
+    void SpectralMonitorNode::reset(std::shared_ptr<AudioContext>)
     {
         detail->setWindowSize(detail->windowSize);
     }

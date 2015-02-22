@@ -46,7 +46,7 @@ public:
 
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock& r) override;
+    virtual void reset(std::shared_ptr<AudioContext>) override;
 
     // AudioSourceProviderClient
     virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) override;
@@ -55,7 +55,7 @@ public:
 
 private:
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE { return false; }
+    virtual bool propagatesSilence(double now) const OVERRIDE { return false; }
 
     std::shared_ptr<MediaStream> m_mediaStream;
     AudioSourceProvider* m_audioSourceProvider;

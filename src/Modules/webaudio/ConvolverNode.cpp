@@ -87,7 +87,7 @@ void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t fr
     m_reverb->process(g, r, input(0)->bus(), outputBus, framesToProcess);
 }
 
-void ConvolverNode::reset(ContextRenderLock& r)
+void ConvolverNode::reset(std::shared_ptr<AudioContext>)
 {
     m_newReverb.reset();
     m_swapOnRender = true;

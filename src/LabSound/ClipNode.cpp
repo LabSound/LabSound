@@ -10,6 +10,7 @@
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
 #include "VectorMath.h"
+#include "AudioContextLock.h"
 
 #include <iostream>
 #include <vector>
@@ -55,8 +56,8 @@ namespace LabSound {
                 gainValues.resize(framesToProcess);
 
             if (mode == ClipNode::TANH) {
-                float outputGain = aVal->value(r);
-                float inputGain = bVal->value(r);
+                float outputGain = aVal->value(r.contextPtr());
+                float inputGain = bVal->value(r.contextPtr());
                 for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
@@ -67,8 +68,8 @@ namespace LabSound {
                 }
             }
             else {
-                float minf = aVal->value(r);
-                float maxf = bVal->value(r);
+                float minf = aVal->value(r.contextPtr());
+                float maxf = bVal->value(r.contextPtr());
                 for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();

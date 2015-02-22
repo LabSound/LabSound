@@ -62,7 +62,7 @@ void MediaStreamAudioDestinationNode::process(ContextGraphLock& g, ContextRender
  */
 }
 
-void MediaStreamAudioDestinationNode::reset(ContextRenderLock& r)
+void MediaStreamAudioDestinationNode::reset(std::shared_ptr<AudioContext>)
 {
 }
 

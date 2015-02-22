@@ -109,7 +109,7 @@ public:
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
-    virtual void reset(ContextRenderLock& r) = 0;
+    virtual void reset(std::shared_ptr<AudioContext>) = 0;
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
@@ -142,7 +142,7 @@ public:
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock&, AudioNodeInput*);
+    virtual void checkNumberOfChannelsForInput( ContextRenderLock&, AudioNodeInput*);
 
 #if DEBUG_AUDIONODE_REFERENCES
     static void printNodeCounts();
@@ -159,7 +159,7 @@ public:
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
-    virtual bool propagatesSilence(ContextRenderLock& r) const;
+    virtual bool propagatesSilence(double now) const;
     bool inputsAreSilent();
     void silenceOutputs();
     void unsilenceOutputs();
@@ -176,10 +176,6 @@ protected:
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
     virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess);
-
-    // connect and disconnect will call this after the connection is made. Currently required by AudioBasicInspectorNode
-    virtual void updatePullStatus(ContextGraphLock&, ContextRenderLock&) {}
-
 
 private:
     volatile bool m_isInitialized;

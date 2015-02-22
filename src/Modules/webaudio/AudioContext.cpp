@@ -374,7 +374,7 @@ void AudioContext::handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock& 
  
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
     handleDirtyAudioSummingJunctions(g, r);
-    updateAutomaticPullNodes(g, r);
+    updateAutomaticPullNodes(r);
 }
 
 void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
@@ -393,7 +393,7 @@ void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&
     // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
     handleDirtyAudioSummingJunctions(g, r);
 
-    updateAutomaticPullNodes(g, r);
+    updateAutomaticPullNodes(r);
     
     handleAutomaticSources();
 }
@@ -409,18 +409,12 @@ void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g, ContextRender
     m_deferredFinishDerefList.clear();
 }
 
-void AudioContext::markForDeletion(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
+void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
 {
-    ASSERT(g.context());
+    ASSERT(r.context());
     for (auto i : m_referencedNodes) {
         if (i.get() == node) {
             m_nodesMarkedForDeletion.push_back(i);
-            
-            // This is probably the best time for us to remove the node from automatic pull list,
-            // since all connections are gone and we hold the graph lock. Then when handlePostRenderTasks()
-            // gets a chance to schedule the deletion work, updateAutomaticPullNodes() also gets a chance to
-            // modify m_renderingAutomaticPullNodes.
-            removeAutomaticPullNode(g, r, node);
             return;
         }
     }
@@ -482,9 +476,9 @@ void AudioContext::handleDirtyAudioSummingJunctions(ContextGraphLock& g, Context
 }
 
 
-void AudioContext::addAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
+void AudioContext::addAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(g.context() && r.context());
+    ASSERT(r.context());
 
     if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end()) {
         m_automaticPullNodes.insert(node);
@@ -492,9 +486,9 @@ void AudioContext::addAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& 
     }
 }
 
-void AudioContext::removeAutomaticPullNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
+void AudioContext::removeAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(g.context() && r.context());
+    ASSERT(r.context());
 
     auto it = m_automaticPullNodes.find(node);
     if (it != m_automaticPullNodes.end()) {
@@ -503,9 +497,9 @@ void AudioContext::removeAutomaticPullNode(ContextGraphLock& g, ContextRenderLoc
     }
 }
 
-void AudioContext::updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::updateAutomaticPullNodes(ContextRenderLock& r)
 {
-    ASSERT(g.context() && r.context());
+    ASSERT(r.context());
 
     if (m_automaticPullNodesNeedUpdating) {
         // Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
@@ -513,8 +507,7 @@ void AudioContext::updateAutomaticPullNodes(ContextGraphLock& g, ContextRenderLo
 
         unsigned j = 0;
         for (auto i = m_automaticPullNodes.begin(); i != m_automaticPullNodes.end(); ++i, ++j) {
-            AudioNode* output = *i;
-            m_renderingAutomaticPullNodes[j] = output;
+            m_renderingAutomaticPullNodes[j] = *i;
         }
 
         m_automaticPullNodesNeedUpdating = false;

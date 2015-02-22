@@ -49,7 +49,7 @@ public:
 
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock& r) override;
+    virtual void reset(std::shared_ptr<AudioContext>) override;
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
@@ -88,7 +88,7 @@ public:
     virtual void clearPannerNode(ContextRenderLock& r) override;
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
-    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
+    virtual bool propagatesSilence(double now) const OVERRIDE;
 
 private:
     virtual double tailTime() const OVERRIDE { return 0; }

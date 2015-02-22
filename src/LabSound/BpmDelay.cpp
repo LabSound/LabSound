@@ -41,7 +41,7 @@ namespace LabSound {
 		// Processes the source to destination bus.  The number of channels must match in source and destination.
 		void process(ContextGraphLock& g, ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
 
-			perryVerb.setT60(m_delayTime->value(r));
+			perryVerb.setT60(m_delayTime->value(r.contextPtr()));
 
 			const float *source = sourceBus->channel(0)->data();
 

@@ -111,7 +111,7 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     }
 }
 
-float AudioParamTimeline::valueForContextTime(AudioContext* context, float defaultValue, bool& hasValue)
+float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> context, float defaultValue, bool& hasValue)
 {
     ASSERT(context);
 

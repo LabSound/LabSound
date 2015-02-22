@@ -55,7 +55,7 @@ public:
     
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void reset(std::shared_ptr<AudioContext>) override;
 
     unsigned short type() const { return m_type; }
     void setType(ContextRenderLock& r, unsigned short, ExceptionCode&);
@@ -70,7 +70,7 @@ private:
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
 
-    virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
+    virtual bool propagatesSilence(double now) const OVERRIDE;
 
     // One of the waveform types defined in the enum.
     unsigned short m_type;

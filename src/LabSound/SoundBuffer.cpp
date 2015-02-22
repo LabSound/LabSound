@@ -71,7 +71,7 @@ namespace LabSound {
             sourceBufferNode->connect(g, r, outputNode.get(), 0, 0, ec);
             if (ec != NO_ERR) {
                 // @dp add this - audio context should be responsible for clean up, not the sound buffer itself ac->manageLifespan(sourceBufferNode);
-                sourceBufferNode->start(r, when);
+                sourceBufferNode->start(when);
                 g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
                 return sourceBufferNode;
             }

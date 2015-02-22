@@ -96,7 +96,7 @@ void MediaStreamAudioSourceNode::process(ContextGraphLock& g, ContextRenderLock&
     }
 }
 
-void MediaStreamAudioSourceNode::reset(ContextRenderLock&)
+void MediaStreamAudioSourceNode::reset(std::shared_ptr<AudioContext>)
 {
 }
 

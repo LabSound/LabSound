@@ -36,6 +36,7 @@
  */
 
 #include "PeakCompNode.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "LabSound.h"
@@ -93,8 +94,10 @@ namespace LabSound {
             if (!numChannels)
                 return;
 
+            std::shared_ptr<AudioContext> c = r.contextPtr();
+            
             // copy attributes to run time variables
-            float v = m_threshold->value(r);
+            float v = m_threshold->value(c);
             if (v <= 0) {
                 // dB to linear (could use the function from m_pd.h)
                 threshold = powf(10, (v*0.05f));
@@ -102,32 +105,32 @@ namespace LabSound {
             else
                 threshold = 0;
 
-            v = m_ratio->value(r);
+            v = m_ratio->value(c);
             if (v >= 1) {
                 ratio = 1.f/v;
             }
             else
                 ratio = 1;
 
-            v = m_attack->value(r);
+            v = m_attack->value(c);
             if (v >= 0.001) {
                 attack = v * 0.001;
             }
             else
                 attack = 0.000001;
 
-            v = m_release->value(r);
+            v = m_release->value(c);
             if (v >= 0.001) {
                 release = v * 0.001;
             }
             else
                 release = 0.000001;
 
-            v = m_makeup->value(r);
+            v = m_makeup->value(c);
             // dB to linear (could use the function from m_pd.h)
             makeupGain = pow(10, (v * 0.05));
 
-            v = m_knee->value(r);
+            v = m_knee->value(c);
             if (v >= 0 && v <= 1)
             {
                 // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.
@@ -212,7 +215,7 @@ namespace LabSound {
         virtual double tailTime() const { return 0; }
         virtual double latencyTime() const { return 0; }
         
-        int numChannels;
+        unsigned int numChannels;
 
 		std::shared_ptr<AudioParam> m_threshold;
 		std::shared_ptr<AudioParam> m_ratio;

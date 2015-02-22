@@ -174,6 +174,7 @@
 #include "LabSound.h"
 
 #include "AudioNodeOutput.h"
+#include "AudioContextLock.h"
 #include "SfxrNode.h"
 
 using namespace std;
@@ -627,8 +628,8 @@ namespace LabSound {
         uninitialize();
     }
 
-    void SfxrNode::noteOn(ContextRenderLock& r) {
-        start(r, 0);
+    void SfxrNode::noteOn() {
+        start(0);
         sfxr->ResetSample(true);
         sfxr->ResetSample(false);
         sfxr->PlaySample();
@@ -660,7 +661,7 @@ namespace LabSound {
         int n = nonSilentFramesToProcess;
 
 #define UPDATE(typ, cur, val) \
-{ typ v = val->value(r); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
+{ typ v = val->value(r.contextPtr()); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
 
         bool needUpdate = false;
         UPDATE(int, wave_type, _waveType)
@@ -712,11 +713,11 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SfxrNode::reset(ContextRenderLock& r)
+    void SfxrNode::reset(std::shared_ptr<AudioContext>)
     {
     }
 
-    bool SfxrNode::propagatesSilence(ContextRenderLock& r) const
+    bool SfxrNode::propagatesSilence(double now) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }
@@ -728,7 +729,7 @@ namespace LabSound {
     // parameters for default sounds found here -
     // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
 
-    void SfxrNode::setDefaultBeep(ContextRenderLock& r) {
+    void SfxrNode::setDefaultBeep() {
         // Wave shape
         _waveType->setValue(SQUARE);
 
@@ -776,8 +777,8 @@ namespace LabSound {
         sfxr->wav_bits = 16;
     }
 
-    void SfxrNode::coin(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::coin() {
+        setDefaultBeep();
         _startFrequency->setValue(0.4f + frnd(0.5f));
         _attack->setValue(0);
         _sustainTime->setValue(0.1f);
@@ -789,10 +790,10 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::laser(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::laser(std::shared_ptr<AudioContext> c) {
+        setDefaultBeep();
         _waveType->setValue(rnd(2));
-        if(_waveType->value(r) == SINE && rnd(1))
+        if(_waveType->value(c) == SINE && rnd(1))
             _waveType->setValue(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3 + frnd(0.6));
@@ -800,11 +801,11 @@ namespace LabSound {
             _slide->setValue(-0.35 - frnd(0.3));
         } else {
             _startFrequency->setValue(0.5 + frnd(0.5));
-            _minFrequency->setValue(_startFrequency->value(r) - 0.2 - frnd(0.6));
-            if (_minFrequency->value(r) < 0.2) _minFrequency->setValue(0.2);
+            _minFrequency->setValue(_startFrequency->value(c) - 0.2 - frnd(0.6));
+            if (_minFrequency->value(c) < 0.2) _minFrequency->setValue(0.2);
             _slide->setValue(-0.15 - frnd(0.2));
         }
-        if (_waveType->value(r) == SAWTOOTH)
+        if (_waveType->value(c) == SAWTOOTH)
             _squareDuty->setValue(1);
         if (rnd(1)) {
             _squareDuty->setValue(frnd(0.5));
@@ -825,8 +826,8 @@ namespace LabSound {
         _hpFilterCutoff->setValue(frnd(0.3));
     }
 
-    void SfxrNode::explosion(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::explosion() {
+        setDefaultBeep();
         _waveType->setValue(NOISE);
         if (rnd(1)) {
             _startFrequency->setValue(sqr(0.1 + frnd(0.4)));
@@ -857,8 +858,8 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::powerUp(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::powerUp() {
+        setDefaultBeep();
         if (rnd(1)) {
             _waveType->setValue(SAWTOOTH);
             _squareDuty->setValue(1);
@@ -883,14 +884,14 @@ namespace LabSound {
         _decayTime->setValue(0.1 + frnd(0.4));
     }
 
-    void SfxrNode::hit(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::hit(std::shared_ptr<AudioContext> c) {
+        setDefaultBeep();
         _waveType->setValue(rnd(2));
-        if (_waveType->value(r) == SINE)
+        if (_waveType->value(c) == SINE)
             _waveType->setValue(NOISE);
-        if (_waveType->value(r) == SQUARE)
+        if (_waveType->value(c) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
-        if (_waveType->value(r) == SAWTOOTH)
+        if (_waveType->value(c) == SAWTOOTH)
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2 + frnd(0.6));
         _slide->setValue(-0.3 - frnd(0.4));
@@ -901,8 +902,8 @@ namespace LabSound {
             _hpFilterCutoff->setValue(frnd(0.3));
     }
 
-    void SfxrNode::jump(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::jump() {
+        setDefaultBeep();
         _waveType->setValue(SQUARE);
         _squareDuty->setValue(frnd(0.6));
         _startFrequency->setValue(0.3 + frnd(0.3));
@@ -916,10 +917,10 @@ namespace LabSound {
             _lpFilterCutoff->setValue(1 - frnd(0.6));
     }
 
-    void SfxrNode::select(ContextRenderLock& r) {
-        setDefaultBeep(r);
+    void SfxrNode::select(std::shared_ptr<AudioContext> c) {
+        setDefaultBeep();
         _waveType->setValue(rnd(1));
-        if (_waveType->value(r) == SQUARE)
+        if (_waveType->value(c) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
         else
             _squareDuty->setValue(1);
@@ -930,7 +931,7 @@ namespace LabSound {
         _hpFilterCutoff->setValue(0.1);
     }
 
-    void SfxrNode::mutate(ContextRenderLock& r) {
+    void SfxrNode::mutate(std::shared_ptr<AudioContext> r) {
         if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
@@ -954,7 +955,7 @@ namespace LabSound {
         if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
     }
 
-    void SfxrNode::randomize(ContextRenderLock& r) {
+    void SfxrNode::randomize(std::shared_ptr<AudioContext> r) {
         if (rnd(1))
             _startFrequency->setValue(cube(frnd(2) - 1) + 0.5);
         else

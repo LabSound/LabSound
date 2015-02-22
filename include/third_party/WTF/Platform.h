@@ -90,8 +90,6 @@
 #define WTF_MIPS_ISA_REV(v) (defined WTF_MIPS_ARCH_REV && WTF_MIPS_ARCH_REV == v)
 #define WTF_MIPS_DOUBLE_FLOAT (defined __mips_hard_float && !defined __mips_single_float)
 #define WTF_MIPS_FP64 (defined __mips_fpr && __mips_fpr == 64)
-/* MIPS requires allocators to use aligned memory */
-#define WTF_USE_ARENA_ALLOC_ALIGNMENT_INTEGER 1
 #endif /* MIPS */
 
 /* CPU(PPC) - PowerPC 32-bit */
@@ -169,10 +167,6 @@
     || defined(_ARM_)
 #define WTF_CPU_ARM 1
 
-#if defined(__ARM_PCS_VFP)
-#define WTF_CPU_ARM_HARDFP 1
-#endif
-
 #if defined(__ARMEB__) || (COMPILER(RVCT) && defined(__BIG_ENDIAN))
 #define WTF_CPU_BIG_ENDIAN 1
 
@@ -203,8 +197,6 @@
     || defined(__ARM_ARCH_5TE__) \
     || defined(__ARM_ARCH_5TEJ__)
 #define WTF_ARM_ARCH_VERSION 5
-/*ARMv5TE requires allocators to use aligned memory*/
-#define WTF_USE_ARENA_ALLOC_ALIGNMENT_INTEGER 1
 
 #elif defined(__ARM_ARCH_6__) \
     || defined(__ARM_ARCH_6J__) \
@@ -222,13 +214,6 @@
 /* RVCT sets _TARGET_ARCH_ARM */
 #elif defined(__TARGET_ARCH_ARM)
 #define WTF_ARM_ARCH_VERSION __TARGET_ARCH_ARM
-
-#if defined(__TARGET_ARCH_5E) \
-    || defined(__TARGET_ARCH_5TE) \
-    || defined(__TARGET_ARCH_5TEJ)
-/*ARMv5TE requires allocators to use aligned memory*/
-#define WTF_USE_ARENA_ALLOC_ALIGNMENT_INTEGER 1
-#endif
 
 #else
 #define WTF_ARM_ARCH_VERSION 0
@@ -312,11 +297,7 @@
 
 #endif /* ARM */
 
-#if CPU(ARM) || CPU(MIPS) || CPU(SH4) || CPU(SPARC)
-#define WTF_CPU_NEEDS_ALIGNED_ACCESS 1
-#endif
-
-/* ==== OS() - underlying operating system; only to be used for mandated low-level services like 
+/* ==== OS() - underlying operating system; only to be used for mandated low-level services like
    virtual memory, not to choose a GUI toolkit ==== */
 
 /* OS(ANDROID) - Android */
@@ -347,19 +328,6 @@
 #elif OS(DARWIN) && defined(TARGET_OS_MAC) && TARGET_OS_MAC
 #define WTF_OS_MAC_OS_X 1
 
-/* FIXME: These can be removed after sufficient time has passed since the removal of BUILDING_ON / TARGETING macros. */
-
-#define ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MIN_REQUIRED 0 / 0
-#define ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MAX_ALLOWED 0 / 0
-
-#define BUILDING_ON_LEOPARD ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MIN_REQUIRED
-#define BUILDING_ON_SNOW_LEOPARD ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MIN_REQUIRED
-#define BUILDING_ON_LION ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MIN_REQUIRED
-
-#define TARGETING_LEOPARD ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MAX_ALLOWED
-#define TARGETING_SNOW_LEOPARD ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MAX_ALLOWED
-#define TARGETING_LION ERROR_PLEASE_COMPARE_WITH_MAC_OS_X_VERSION_MAX_ALLOWED
-#endif
 
 /* OS(FREEBSD) - FreeBSD */
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__FreeBSD_kernel__)
@@ -483,210 +451,35 @@
 
 #endif  /* OS(WINCE) && !PLATFORM(QT) */
 
-#if OS(WINCE) && !PLATFORM(QT)
-#define WTF_USE_WCHAR_UNICODE 1
-#elif PLATFORM(GTK)
-/* The GTK+ Unicode backend is configurable */
-#else
-#define WTF_USE_ICU_UNICODE 1
-#endif
-
-#if PLATFORM(MAC) && !PLATFORM(IOS)
-#if CPU(X86_64)
-#define WTF_USE_PLUGIN_HOST_PROCESS 1
-#endif
-#define WTF_USE_CF 1
-#define WTF_USE_PTHREADS 1
-#define HAVE_READLINE 1
-#endif /* PLATFORM(MAC) && !PLATFORM(IOS) */
-
-#if PLATFORM(CHROMIUM) && OS(DARWIN)
-#define WTF_USE_CF 1
-#define WTF_USE_PTHREADS 1
-#endif
-
-#if PLATFORM(QT) && OS(DARWIN)
-#define WTF_USE_CF 1
-#endif
-
-#if PLATFORM(IOS)
-#define ENABLE_GEOLOCATION 1
-#define ENABLE_ORIENTATION_EVENTS 1
-#define HAVE_READLINE 1
-#define WTF_USE_CF 1
-#define WTF_USE_PTHREADS 1
-#endif
-
 #if PLATFORM(WIN) && !OS(WINCE)
 #define WTF_USE_CF 1
 #endif
 
-#if PLATFORM(WX)
-#if !CPU(PPC)
-#if !defined(ENABLE_ASSEMBLER)
-#define ENABLE_ASSEMBLER 1
-#endif
-#endif
-#if OS(DARWIN)
-#define WTF_USE_CF 1
-#endif
-#endif
-
-#if OS(UNIX) && (PLATFORM(GTK) || PLATFORM(QT))
-#define WTF_USE_PTHREADS 1
 #endif
 
 #if OS(UNIX)
 #define HAVE_SIGNAL_H 1
-#define WTF_USE_OS_RANDOMNESS 1
-#endif
-
-#if (OS(FREEBSD) || OS(OPENBSD)) && !defined(__GLIBC__)
-#define HAVE_PTHREAD_NP_H 1
-#endif
-
-#if !defined(HAVE_VASPRINTF)
-#if !COMPILER(MSVC) && !COMPILER(RVCT) && !COMPILER(MINGW) && !(COMPILER(GCC) && OS(QNX))
-#define HAVE_VASPRINTF 1
-#endif
-#endif
-
-#if !OS(WINDOWS) && !OS(SOLARIS) \
-    && !OS(RVCT) \
-    && !OS(ANDROID)
-#define HAVE_TM_GMTOFF 1
-#define HAVE_TM_ZONE 1
-#define HAVE_TIMEGM 1
 #endif
 
 #if OS(DARWIN)
 
-#define HAVE_ERRNO_H 1
-#define HAVE_LANGINFO_H 1
-#define HAVE_MMAP 1
-#define HAVE_MERGESORT 1
-#define HAVE_STRINGS_H 1
-#define HAVE_SYS_PARAM_H 1
-#define HAVE_SYS_TIME_H 1
-#define HAVE_SYS_TIMEB_H 1
-#define WTF_USE_ACCELERATE 1
-
-#if PLATFORM(IOS) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 1060
-
-#define HAVE_DISPATCH_H 1
-#define HAVE_HOSTED_CORE_ANIMATION 1
+#define WTF_USE_CF 1
+#define WTF_USE_PTHREADS 1
 
 #if !PLATFORM(IOS)
-#define HAVE_MADV_FREE_REUSE 1
-#define HAVE_MADV_FREE 1
 #define HAVE_PTHREAD_SETNAME_NP 1
 #endif
 
 #endif
 
 #if PLATFORM(IOS)
-#define HAVE_MADV_FREE 1
 #define HAVE_PTHREAD_SETNAME_NP 1
 #endif
 
-#elif OS(WINDOWS)
-
-#if !OS(WINCE)
-#define HAVE_SYS_TIMEB_H 1
-#define HAVE_ALIGNED_MALLOC 1
+#if OS(WINDOWS)
 #define HAVE_ISDEBUGGERPRESENT 1
 #endif
-#define HAVE_VIRTUALALLOC 1
-#define WTF_USE_OS_RANDOMNESS 1
 
-#elif OS(QNX)
-
-#define HAVE_ERRNO_H 1
-#define HAVE_MMAP 1
-#define HAVE_MADV_FREE_REUSE 1
-#define HAVE_MADV_FREE 1
-#define HAVE_STRINGS_H 1
-#define HAVE_SYS_PARAM_H 1
-#define HAVE_SYS_TIME_H 1
-#define WTF_USE_PTHREADS 1
-
-#elif OS(ANDROID)
-
-#define HAVE_ERRNO_H 1
-#define HAVE_NMAP 1
-#define HAVE_STRINGS_H 1
-#define HAVE_SYS_PARAM_H 1
-#define HAVE_SYS_TIME_H 1
-
-#else
-
-#error Undefined platform
-
-#endif
-
-/* ENABLE macro defaults */
-
-#define ENABLE_DEBUG_WITH_BREAKPOINT 0
-#define ENABLE_SAMPLING_COUNTERS 0
-
-#if !defined(ENABLE_TEXT_CARET) && !PLATFORM(IOS)
-#define ENABLE_TEXT_CARET 1
-#endif
-
-#if PLATFORM(MAC) || PLATFORM(IOS)
-#define ENABLE_CSS_IMAGE_SET 1
-#endif
-
-#if ENABLE(WEBGL) && !defined(WTF_USE_3D_GRAPHICS)
-#define WTF_USE_3D_GRAPHICS 1
-#endif
-
-/* Qt always uses Texture Mapper */
-#if PLATFORM(QT)
-#define WTF_USE_TEXTURE_MAPPER 1
-#endif
-
-#if USE(TEXTURE_MAPPER) && USE(3D_GRAPHICS) && !defined(WTF_USE_TEXTURE_MAPPER_GL)
-#define WTF_USE_TEXTURE_MAPPER_GL 1
-#endif
-
-/* Compositing on the UI-process in WebKit2 */
-#if PLATFORM(QT)
-#define WTF_USE_COORDINATED_GRAPHICS 1
-#endif
-
-#if PLATFORM(MAC) || PLATFORM(IOS)
-#define WTF_USE_PROTECTION_SPACE_AUTH_CALLBACK 1
-#endif
-
-#if PLATFORM(MAC) && !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
-#define ENABLE_THREADED_SCROLLING 1
-#endif
-
-/* FIXME: Eventually we should enable this for all platforms and get rid of the define. */
-#if PLATFORM(IOS) || PLATFORM(MAC) || PLATFORM(WIN) || PLATFORM(QT) || PLATFORM(GTK) || PLATFORM(EFL)
-#define WTF_USE_PLATFORM_STRATEGIES 1
-#endif
-
-#if PLATFORM(WIN)
-#define WTF_USE_CROSS_PLATFORM_CONTEXT_MENUS 1
-#endif
-
-#if CPU(ARM_THUMB2)
-#define ENABLE_BRANCH_COMPACTION 1
-#endif
-
-#if !defined(ENABLE_THREADING_LIBDISPATCH) && HAVE(DISPATCH_H)
-#define ENABLE_THREADING_LIBDISPATCH 1
-#elif !defined(ENABLE_THREADING_OPENMP) && defined(_OPENMP)
-#define ENABLE_THREADING_OPENMP 1
-#elif !defined(THREADING_GENERIC)
-#define ENABLE_THREADING_GENERIC 1
-#endif
-
-#if ENABLE(GLIB_SUPPORT)
-#include "gobject/GTypedefs.h"
-#endif
 
 /* FIXME: This define won't be needed once #27551 is fully landed. However, 
    since most ports try to support sub-project independence, adding new headers
@@ -700,29 +493,5 @@
 #define WTF_USE_EXPORT_MACROS_FOR_TESTING 1
 #endif
 
-#if (PLATFORM(QT) && !OS(DARWIN) && !OS(WINDOWS)) || PLATFORM(GTK) || PLATFORM(EFL)
-#define WTF_USE_UNIX_DOMAIN_SOCKETS 1
-#endif
-
-#if !defined(ENABLE_COMPARE_AND_SWAP) && (OS(WINDOWS) || (COMPILER(GCC) && (CPU(X86) || CPU(X86_64) || CPU(ARM_THUMB2))))
-#define ENABLE_COMPARE_AND_SWAP 1
-#endif
-
-#if PLATFORM(MAC) && !PLATFORM(IOS) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 1080
-#define WTF_USE_COREMEDIA 1
-#endif
-
-// PLATFORM(MAC) is also true for iOS
-#if PLATFORM(MAC)
-#define WTF_USE_COREAUDIO 1
-#endif
-
-#if !defined(WTF_USE_V8) && PLATFORM(CHROMIUM)
-#define WTF_USE_V8 1
-#endif
-
-#if PLATFORM(QT)
-#include <qglobal.h>
-#endif
 
 #endif /* WTF_Platform_h */

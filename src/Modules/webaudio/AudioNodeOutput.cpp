@@ -96,7 +96,7 @@ void AudioNodeOutput::propagateChannelCount(ContextGraphLock& g, ContextRenderLo
         for (auto i = m_inputs.begin(); i != m_inputs.end(); ++i) {
             AudioNodeInput* input = (*i).get();
             auto connectionNode = input->node();
-            connectionNode->checkNumberOfChannelsForInput(g, r, input);
+            connectionNode->checkNumberOfChannelsForInput(r, input);
         }
     }
 }

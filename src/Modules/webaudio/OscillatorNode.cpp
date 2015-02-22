@@ -131,6 +131,8 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
     float* phaseIncrements = m_phaseIncrements.data();
 
     float finalScale = m_waveTable->rateScale();
+    
+    std::shared_ptr<AudioContext> c = r.contextPtr();
 
     if (m_frequency->hasSampleAccurateValues()) {
         hasSampleAccurateValues = true;
@@ -141,7 +143,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
         m_frequency->calculateSampleAccurateValues(g, r, phaseIncrements, framesToProcess);
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_frequency->smooth(r);
+        m_frequency->smooth(c);
         float frequency = m_frequency->smoothedValue();
         finalScale *= frequency;
     }
@@ -165,7 +167,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
         }
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_detune->smooth(r);
+        m_detune->smooth(c);
         float detune = m_detune->smoothedValue();
         float detuneScale = powf(2, detune / 1200);
         finalScale *= detuneScale;
@@ -291,7 +293,7 @@ void OscillatorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t f
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::reset(ContextRenderLock& r)
+void OscillatorNode::reset(std::shared_ptr<AudioContext>)
 {
     m_virtualReadIndex = 0;
 }
@@ -302,7 +304,7 @@ void OscillatorNode::setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTabl
     m_type = CUSTOM;
 }
 
-bool OscillatorNode::propagatesSilence(ContextRenderLock& r) const
+bool OscillatorNode::propagatesSilence(double now) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_waveTable.get();
 }

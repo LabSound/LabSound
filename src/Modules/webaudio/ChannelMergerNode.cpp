@@ -81,13 +81,13 @@ void ChannelMergerNode::process(ContextGraphLock& g, ContextRenderLock&, size_t 
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
-void ChannelMergerNode::reset(ContextRenderLock& r)
+void ChannelMergerNode::reset(std::shared_ptr<AudioContext>)
 {
 }
 
 // Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
 // number of channels of our output.
-void ChannelMergerNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
+void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     // Count how many channels we have all together from all of the inputs.
     unsigned numberOfOutputChannels = 0;
@@ -102,7 +102,7 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextGraphLock& g, Conte
     ASSERT(output);
     output->setNumberOfChannels(r, numberOfOutputChannels);
 
-    AudioNode::checkNumberOfChannelsForInput(g, r, input);
+    AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
 } // namespace WebCore

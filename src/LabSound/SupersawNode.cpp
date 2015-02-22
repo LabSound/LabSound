@@ -12,6 +12,7 @@
 
 #include "LabSound.h"
 #include "ADSRNode.h"
+#include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 
@@ -37,7 +38,8 @@ namespace LabSound {
 
         void update(ContextGraphLock& g, ContextRenderLock& r, bool okayToReallocate) {
             int currentN = saws.size();
-            int n = int(sawCount->value(r) + 0.5f);
+            std::shared_ptr<AudioContext> c = r.contextPtr();
+            int n = int(sawCount->value(c) + 0.5f);
             if (okayToReallocate && (n != currentN)) {
                 ExceptionCode ec;
 
@@ -54,22 +56,22 @@ namespace LabSound {
                 for (auto i : saws) {
                     i->setType(r, OscillatorNode::SAWTOOTH, ec);
                     LabSound::connect(g, r, i, gainNode.get());
-                    i->start(r, 0);
+                    i->start(0);
                 }
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
             }
 
-            if (cachedFrequency != frequency->value(r)) {
-                cachedFrequency = frequency->value(r);
+            if (cachedFrequency != frequency->value(c)) {
+                cachedFrequency = frequency->value(c);
                 for (auto i : saws) {
                     i->frequency()->setValue(cachedFrequency);
                     i->frequency()->resetSmoothedValue();
                 }
             }
 
-            if (cachedDetune != detune->value(r)) {
-                cachedDetune = detune->value(r);
+            if (cachedDetune != detune->value(c)) {
+                cachedDetune = detune->value(c);
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
                 for (size_t i = 0; i < saws.size(); ++i) {
                     saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
@@ -128,16 +130,16 @@ namespace LabSound {
     std::shared_ptr<AudioParam> SupersawNode::frequency() const { return _data->frequency; }
     std::shared_ptr<AudioParam> SupersawNode::sawCount()  const { return _data->sawCount; }
 
-    void SupersawNode::noteOn(ContextRenderLock& r)  {
-        _data->gainNode->noteOn(r);
+    void SupersawNode::noteOn(double when)  {
+        _data->gainNode->noteOn(when);
     }
-    void SupersawNode::noteOff(ContextRenderLock& r) {
-        _data->gainNode->noteOff(r);
+    void SupersawNode::noteOff(ContextRenderLock& r, double when) {
+        _data->gainNode->noteOff(r, when);
     }
 
-    bool SupersawNode::propagatesSilence(ContextRenderLock& r) const
+    bool SupersawNode::propagatesSilence(double now) const
     {
-        return _data->gainNode->propagatesSilence(r);
+        return _data->gainNode->propagatesSilence(now);
     }
 
 } // namespace LabSound

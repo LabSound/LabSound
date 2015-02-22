@@ -125,7 +125,7 @@ void AudioNodeInput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<Aud
 
 void AudioNodeInput::didUpdate(ContextGraphLock& g, ContextRenderLock& r)
 {
-    m_node->checkNumberOfChannelsForInput(g, r, this);
+    m_node->checkNumberOfChannelsForInput(r, this);
 }
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock& r)

@@ -43,12 +43,12 @@ public:
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
     virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void reset(std::shared_ptr<AudioContext>) override;
     virtual void initialize();
     virtual void uninitialize();
 
     // Called in the main thread when the number of channels for the input may have changed.
-    virtual void checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock&, AudioNodeInput*) override;
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 
     // Returns the number of channels for both the input and the output.
     unsigned numberOfChannels();

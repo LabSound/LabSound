@@ -57,6 +57,7 @@ namespace LabSound {
         }
         
         WebCore::AudioContext* context() { return m_context.get(); }
+        std::shared_ptr<WebCore::AudioContext> contextPtr() { return m_context; }
         
     private:
         std::shared_ptr<WebCore::AudioContext> m_context;

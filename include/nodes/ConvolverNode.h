@@ -41,7 +41,7 @@ public:
     
     // AudioNode
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;    /// @TODO get rid of lock on reset
+    virtual void reset(std::shared_ptr<AudioContext>) override;
     virtual void initialize();
     virtual void uninitialize();
 

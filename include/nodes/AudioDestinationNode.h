@@ -43,7 +43,7 @@ public:
     
     // AudioNode   
     virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override { } // we're pulled by hardware so this is never called
-    virtual void reset(ContextRenderLock& r) override { m_currentSampleFrame = 0; };
+    virtual void reset(std::shared_ptr<AudioContext>) override { m_currentSampleFrame = 0; };
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).

@@ -18,7 +18,7 @@ namespace LabSound {
 
         // AudioNode
         virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock& r) override;
+        virtual void reset(std::shared_ptr<AudioContext>) override;
 
         // SfxrNode - values in sfxr units
         std::shared_ptr<AudioParam> waveType() { return _waveType; }
@@ -67,24 +67,24 @@ namespace LabSound {
 
         enum WaveType { SQUARE = 0, SAWTOOTH, SINE, NOISE };
 
-        void noteOn(ContextRenderLock& r);
+        void noteOn();
 
         // some presets
-        void setDefaultBeep(ContextRenderLock& r);
-        void coin(ContextRenderLock& r);
-        void laser(ContextRenderLock& r);
-        void explosion(ContextRenderLock& r);
-        void powerUp(ContextRenderLock& r);
-        void hit(ContextRenderLock& r);
-        void jump(ContextRenderLock& r);
-        void select(ContextRenderLock& r);
+        void setDefaultBeep();
+        void coin();
+        void laser(std::shared_ptr<AudioContext>);
+        void explosion();
+        void powerUp();
+        void hit(std::shared_ptr<AudioContext>);
+        void jump();
+        void select(std::shared_ptr<AudioContext>);
 
         // mutate the current sound
-        void mutate(ContextRenderLock& r);
-        void randomize(ContextRenderLock& r);
+        void mutate(std::shared_ptr<AudioContext>);
+        void randomize(std::shared_ptr<AudioContext>);
 
     private:
-        virtual bool propagatesSilence(ContextRenderLock& r) const OVERRIDE;
+        virtual bool propagatesSilence(double now) const OVERRIDE;
 
         std::shared_ptr<AudioParam> _waveType;
 		std::shared_ptr<AudioParam> _attack;

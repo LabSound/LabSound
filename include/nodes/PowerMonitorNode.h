@@ -17,7 +17,7 @@ namespace LabSound {
         
         // AudioNode
         virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock& r) override;
+        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
         // ..AudioNode
 
         // instantaneous estimation of power

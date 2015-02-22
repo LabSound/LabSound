@@ -39,11 +39,7 @@ public:
 
     // AudioNode
     virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
-    virtual void checkNumberOfChannelsForInput(ContextGraphLock&, ContextRenderLock&, AudioNodeInput*) override;
-
-private:
-    virtual void updatePullStatus(ContextGraphLock& g, ContextRenderLock& r) override;
-    bool m_needAutomaticPull; // When setting to true, AudioBasicInspectorNode will be pulled automaticlly by AudioContext before the end of each render quantum.
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 };
 
 } // namespace WebCore

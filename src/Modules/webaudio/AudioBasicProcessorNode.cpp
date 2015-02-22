@@ -89,7 +89,7 @@ void AudioBasicProcessorNode::pullInputs(ContextGraphLock& g, ContextRenderLock&
     input(0)->pull(g, r, output(0)->bus(), framesToProcess);
 }
 
-void AudioBasicProcessorNode::reset(ContextRenderLock&)
+void AudioBasicProcessorNode::reset(std::shared_ptr<AudioContext>)
 {
     if (processor())
         processor()->reset();
@@ -98,7 +98,7 @@ void AudioBasicProcessorNode::reset(ContextRenderLock&)
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in which case we must safely
 // uninitialize and then re-initialize with the new channel count.
-void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextGraphLock& g, ContextRenderLock& r, AudioNodeInput* input)
+void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     if (!input)
         return;
@@ -126,7 +126,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextGraphLock& g,
         initialize();
     }
 
-    AudioNode::checkNumberOfChannelsForInput(g, r, input);
+    AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
 unsigned AudioBasicProcessorNode::numberOfChannels()

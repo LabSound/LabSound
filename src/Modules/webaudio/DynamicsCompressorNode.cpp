@@ -29,6 +29,7 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "DynamicsCompressor.h"
+#include "AudioContextLock.h"
 
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;
@@ -65,11 +66,11 @@ void DynamicsCompressorNode::process(ContextGraphLock& g, ContextRenderLock& r, 
     AudioBus* outputBus = output(0)->bus();
     ASSERT(outputBus);
 
-    float threshold = m_threshold->value(r);
-    float knee = m_knee->value(r);
-    float ratio = m_ratio->value(r);
-    float attack = m_attack->value(r);
-    float release = m_release->value(r);
+    float threshold = m_threshold->value(r.contextPtr());
+    float knee = m_knee->value(r.contextPtr());
+    float ratio = m_ratio->value(r.contextPtr());
+    float attack = m_attack->value(r.contextPtr());
+    float release = m_release->value(r.contextPtr());
 
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamThreshold, threshold);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamKnee, knee);
@@ -83,7 +84,7 @@ void DynamicsCompressorNode::process(ContextGraphLock& g, ContextRenderLock& r, 
     m_reduction->setValue(reduction);
 }
 
-void DynamicsCompressorNode::reset(ContextRenderLock& r)
+void DynamicsCompressorNode::reset(std::shared_ptr<AudioContext>)
 {
     m_dynamicsCompressor->reset();
 }

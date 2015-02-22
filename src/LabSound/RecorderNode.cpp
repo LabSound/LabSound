@@ -94,7 +94,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void RecorderNode::reset(ContextRenderLock& r)
+    void RecorderNode::reset(std::shared_ptr<AudioContext>)
     {
         std::vector<float> clear;
         {
