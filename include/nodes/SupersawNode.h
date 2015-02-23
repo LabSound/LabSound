@@ -36,7 +36,7 @@ namespace LabSound {
     private:
 
         // Satisfy the AudioNode interface
-        virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override;
+        virtual void process(ContextRenderLock&, size_t) override;
         virtual void reset(std::shared_ptr<AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const OVERRIDE { return 0; }
         virtual double latencyTime() const OVERRIDE { return 0; }

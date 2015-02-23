@@ -54,7 +54,7 @@ public:
 
     // This copies m_outputs to m_renderingOutputs. Please see comments for these lists below.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
-    void updateRenderingState(ContextGraphLock& g, ContextRenderLock& r);
+    void updateRenderingState(ContextRenderLock& r);
 
     // Rendering code accesses its version of the current connections here.
     unsigned numberOfRenderingConnections() const { return (unsigned) m_renderingOutputs.size(); }
@@ -63,7 +63,7 @@ public:
     bool isConnected() const { return numberOfRenderingConnections() > 0; }
 
     virtual bool canUpdateState() = 0;
-    virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) = 0;
+    virtual void didUpdate(ContextRenderLock&) = 0;
 
     void addOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
     void removeOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);

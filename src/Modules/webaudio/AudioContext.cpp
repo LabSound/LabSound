@@ -368,12 +368,12 @@ void AudioContext::addDeferredFinishDeref(ContextGraphLock& g, AudioNode* node)
     m_deferredFinishDerefList.push_back(node);
 }
 
-void AudioContext::handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
 {
     ASSERT(r.context());
  
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
-    handleDirtyAudioSummingJunctions(g, r);
+    handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes(r);
 }
 
@@ -391,7 +391,7 @@ void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&
     scheduleNodeDeletion(g);
 
     // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
-    handleDirtyAudioSummingJunctions(g, r);
+    handleDirtyAudioSummingJunctions(r);
 
     updateAutomaticPullNodes(r);
     
@@ -466,13 +466,13 @@ void AudioContext::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction
         m_dirtySummingJunctions.push(summingJunction);
 }
 
-void AudioContext::handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
 {
     ASSERT(r.context());
 
     std::shared_ptr<AudioSummingJunction> asj;
     while (m_dirtySummingJunctions.try_pop(asj))
-        asj->updateRenderingState(g, r);
+        asj->updateRenderingState(r);
 }
 
 
@@ -514,12 +514,12 @@ void AudioContext::updateAutomaticPullNodes(ContextRenderLock& r)
     }
 }
 
-void AudioContext::processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void AudioContext::processAutomaticPullNodes(ContextRenderLock& r, size_t framesToProcess)
 {
     ASSERT(r.context());
 
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(g, r, framesToProcess);
+        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
 }
 
 void AudioContext::startRendering()

@@ -113,7 +113,7 @@ public:
     void notifyNodeFinishedProcessing(ContextRenderLock&, AudioNode*);
 
     // Called at the start of each render quantum.
-    void handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock&);
+    void handlePreRenderTasks(ContextRenderLock&);
 
     // Called at the end of each render quantum.
     void handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&);
@@ -131,7 +131,7 @@ public:
     void removeAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode>);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-    void processAutomaticPullNodes(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
+    void processAutomaticPullNodes(ContextRenderLock&, size_t framesToProcess);
 
     // Keeps track of the number of connections made.
     void incrementConnectionCount();
@@ -230,12 +230,10 @@ private:
 
     // Only accessed when the graph lock is held.
     LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
-    void handleDirtyAudioSummingJunctions(ContextGraphLock& g, ContextRenderLock& r);
+    void handleDirtyAudioSummingJunctions(ContextRenderLock& r);
 
 
     int m_connectionCount;
-
-    // Graph locking.
     
     // Only accessed in the audio thread.
     std::vector<AudioNode*> m_deferredFinishDerefList;

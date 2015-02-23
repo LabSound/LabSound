@@ -65,8 +65,8 @@ public:
     virtual ~PannerNode();
 
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
     virtual void initialize();
     virtual void uninitialize();
@@ -129,7 +129,7 @@ protected:
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
-    void notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode*);
+    void notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode*);
 
     std::unique_ptr<Panner> m_panner;
     unsigned m_panningModel;

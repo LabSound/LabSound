@@ -113,7 +113,7 @@ void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, Exceptio
     m_type = type;
 }
 
-bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
     ASSERT(isGood);
@@ -140,7 +140,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
 
         // Get the sample-accurate frequency values and convert to phase increments.
         // They will be converted to phase increments below.
-        m_frequency->calculateSampleAccurateValues(g, r, phaseIncrements, framesToProcess);
+        m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
         m_frequency->smooth(c);
@@ -153,7 +153,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
 
         // Get the sample-accurate detune values.
         float* detuneValues = hasFrequencyChanges ? m_detuneValues.data() : phaseIncrements;
-        m_detune->calculateSampleAccurateValues(g, r, detuneValues, framesToProcess);
+        m_detune->calculateSampleAccurateValues(r, detuneValues, framesToProcess);
 
         // Convert from cents to rate scalar.
         float k = 1.f / 1200.0;
@@ -181,7 +181,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextGraphLock& g,
     return hasSampleAccurateValues;
 }
 
-void OscillatorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
 
@@ -229,7 +229,7 @@ void OscillatorNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t f
 
     float rateScale = m_waveTable->rateScale();
     float invRateScale = 1 / rateScale;
-    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(g, r, framesToProcess);
+    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(r, framesToProcess);
 
     float frequency = 0;
     float* higherWaveData = 0;

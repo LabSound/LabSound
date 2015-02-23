@@ -84,7 +84,7 @@ size_t DelayDSPKernel::bufferLengthForDelay(double maxDelayTime, double sampleRa
     return 1 + AudioUtilities::timeToSampleFrame(maxDelayTime, sampleRate);
 }
 
-void DelayDSPKernel::process(ContextGraphLock& g, ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
 {
     size_t bufferLength = m_buffer.size();
     float* buffer = m_buffer.data();
@@ -105,9 +105,9 @@ void DelayDSPKernel::process(ContextGraphLock& g, ContextRenderLock& r, const fl
     bool sampleAccurate = delayProcessor() && delayProcessor()->delayTime()->hasSampleAccurateValues();
 
     if (sampleAccurate)
-        delayProcessor()->delayTime()->calculateSampleAccurateValues(g, r, delayTimes, framesToProcess);
+        delayProcessor()->delayTime()->calculateSampleAccurateValues(r, delayTimes, framesToProcess);
     else {
-        delayTime = delayProcessor() ? delayProcessor()->delayTime()->finalValue(g, r) : m_desiredDelayFrames / sampleRate;
+        delayTime = delayProcessor() ? delayProcessor()->delayTime()->finalValue(r) : m_desiredDelayFrames / sampleRate;
 
         // Make sure the delay time is in a valid range.
         delayTime = min(maxTime, delayTime);

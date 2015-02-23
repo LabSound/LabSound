@@ -173,7 +173,7 @@ void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned o
     AudioNodeOutput::disconnectAll(g, r, this->output(outputIndex));
 }
 
-void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 {
     if (!r.context())
         return;
@@ -191,7 +191,7 @@ void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, si
     if (m_lastProcessingTime != currentTime) {
         m_lastProcessingTime = currentTime; // important to first update this time because of feedback loops in the rendering graph
 
-        pullInputs(g, r, framesToProcess);
+        pullInputs(r, framesToProcess);
 
         bool silentInputs = inputsAreSilent();
         if (!silentInputs)
@@ -201,7 +201,7 @@ void AudioNode::processIfNecessary(ContextGraphLock& g, ContextRenderLock& r, si
         if (silentInputs && ps)
             silenceOutputs();
         else {
-            process(g, r, framesToProcess);
+            process(r, framesToProcess);
             unsilenceOutputs();
         }
     }
@@ -222,11 +222,11 @@ bool AudioNode::propagatesSilence(double now) const
     return m_lastNonSilentTime + latencyTime() + tailTime() < now;
 }
 
-void AudioNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     // Process all of the AudioNodes connected to our inputs.
     for (unsigned i = 0; i < m_inputs.size(); ++i)
-        input(i)->pull(g, r, 0, framesToProcess);
+        input(i)->pull(r, 0, framesToProcess);
 }
 
 bool AudioNode::inputsAreSilent()

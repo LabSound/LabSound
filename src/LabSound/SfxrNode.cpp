@@ -635,7 +635,7 @@ namespace LabSound {
         sfxr->PlaySample();
     }
 
-    void SfxrNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+    void SfxrNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
 

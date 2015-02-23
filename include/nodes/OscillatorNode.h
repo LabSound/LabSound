@@ -54,7 +54,7 @@ public:
     virtual ~OscillatorNode();
     
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     unsigned short type() const { return m_type; }
@@ -68,7 +68,7 @@ public:
 private:
 
     // Returns true if there are sample-accurate timeline parameter changes.
-    bool calculateSampleAccuratePhaseIncrements(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess);
+    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&, size_t framesToProcess);
 
     virtual bool propagatesSilence(double now) const OVERRIDE;
 

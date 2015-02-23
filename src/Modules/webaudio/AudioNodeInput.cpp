@@ -123,7 +123,7 @@ void AudioNodeInput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<Aud
     self->node()->enableOutputsIfNecessary(c);
 }
 
-void AudioNodeInput::didUpdate(ContextGraphLock& g, ContextRenderLock& r)
+void AudioNodeInput::didUpdate(ContextRenderLock& r)
 {
     m_node->checkNumberOfChannelsForInput(r, this);
 }
@@ -178,7 +178,7 @@ AudioBus* AudioNodeInput::internalSummingBus()
     return m_internalSummingBus.get();
 }
 
-void AudioNodeInput::sumAllConnections(ContextGraphLock& g, ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
+void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
 {
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
     ASSERT(numberOfRenderingConnections() > 1);
@@ -194,20 +194,20 @@ void AudioNodeInput::sumAllConnections(ContextGraphLock& g, ContextRenderLock& r
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(g, r, 0, framesToProcess);
+        AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
 
         // Sum, with unity-gain.
         summingBus->sumFrom(*connectionBus);
     }
 }
 
-AudioBus* AudioNodeInput::pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
         AudioNodeOutput* output = this->renderingOutput(0);
-        return output->pull(g, r, inPlaceBus, framesToProcess);
+        return output->pull(r, inPlaceBus, framesToProcess);
     }
 
     AudioBus* internalSummingBus = this->internalSummingBus();
@@ -220,7 +220,7 @@ AudioBus* AudioNodeInput::pull(ContextGraphLock& g, ContextRenderLock& r, AudioB
     }
 
     // Handle multiple connections case.
-    sumAllConnections(g, r, internalSummingBus, framesToProcess);
+    sumAllConnections(r, internalSummingBus, framesToProcess);
     
     return internalSummingBus;
 }

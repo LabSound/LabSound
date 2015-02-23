@@ -30,7 +30,7 @@ namespace LabSound {
         uninitialize();
     }
     
-    void PowerMonitorNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+    void PowerMonitorNode::process(ContextRenderLock&, size_t framesToProcess)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.

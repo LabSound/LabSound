@@ -37,7 +37,7 @@ public:
     virtual ~HRTFPanner();
 
     // Panner
-    virtual void pan(ContextGraphLock&, ContextRenderLock&, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) override;
+    virtual void pan(ContextRenderLock&, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) override;
     virtual void reset() override;
 
     size_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }

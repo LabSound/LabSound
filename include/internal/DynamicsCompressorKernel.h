@@ -51,7 +51,7 @@ public:
     void setNumberOfChannels(unsigned);
 
     // Performs stereo-linked compression.
-    void process(ContextGraphLock& g, ContextRenderLock&,
+    void process(ContextRenderLock&,
                  float* sourceChannels[],
                  float* destinationChannels[],
                  unsigned numberOfChannels,

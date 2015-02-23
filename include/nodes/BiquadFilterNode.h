@@ -58,7 +58,7 @@ public:
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextGraphLock& g, ContextRenderLock&,
+    void getFrequencyResponse(ContextRenderLock&,
                               const std::vector<float>& frequencyHz,
                               std::vector<float>& magResponse,
                               std::vector<float>& phaseResponse);

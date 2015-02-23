@@ -36,7 +36,7 @@ public:
     virtual ~AnalyserNode();
     
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     size_t fftSize() const { return m_analyser.fftSize(); }

@@ -48,7 +48,7 @@ ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutp
     initialize();
 }
 
-void ChannelSplitterNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+void ChannelSplitterNode::process(ContextRenderLock&, size_t framesToProcess)
 {
     AudioBus* source = input(0)->bus();
     ASSERT(source);

@@ -52,7 +52,7 @@ void WaveShaperProcessor::setCurve(ContextRenderLock& r, std::shared_ptr<std::ve
     m_curve = curve;
 }
 
-void WaveShaperProcessor::process(ContextGraphLock& g, ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
 {
     if (!isInitialized()) {
         destination->zero();
@@ -62,7 +62,7 @@ void WaveShaperProcessor::process(ContextGraphLock& g, ContextRenderLock& r, con
     if (r.context()) {
         // For each channel of our input, process using the corresponding WaveShaperDSPKernel into the output channel.
         for (unsigned i = 0; i < m_kernels.size(); ++i)
-            m_kernels[i]->process(g, r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+            m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
     }
     else {
         // Too bad - the tryLock() failed. We must be in the middle of a setCurve() call.

@@ -43,7 +43,7 @@ public:
     ~AudioResampler() { }
     
     // Given an AudioSourceProvider, process() resamples the source stream into destinationBus.
-    void process(ContextGraphLock& g, ContextRenderLock&, AudioSourceProvider*, AudioBus* destinationBus, size_t framesToProcess);
+    void process(ContextRenderLock&, AudioSourceProvider*, AudioBus* destinationBus, size_t framesToProcess);
 
     // Resets the processing state.
     void reset();

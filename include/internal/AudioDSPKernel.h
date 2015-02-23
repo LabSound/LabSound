@@ -46,7 +46,7 @@ public:
     virtual ~AudioDSPKernel() {}
 
     // Subclasses must override process() to do the processing and reset() to reset DSP state.
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) = 0;
+    virtual void process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) = 0;
     virtual void reset() = 0;
 
     float sampleRate() const { return m_sampleRate; }

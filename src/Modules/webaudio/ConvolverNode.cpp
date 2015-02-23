@@ -63,7 +63,7 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     if (m_swapOnRender) {
         m_reverb = std::move(m_newReverb);
@@ -84,7 +84,7 @@ void ConvolverNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t fr
     // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
     // FIXME:  If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
     // we keep getting fed silence.
-    m_reverb->process(g, r, input(0)->bus(), outputBus, framesToProcess);
+    m_reverb->process(r, input(0)->bus(), outputBus, framesToProcess);
 }
 
 void ConvolverNode::reset(std::shared_ptr<AudioContext>)

@@ -38,7 +38,7 @@ namespace WebCore {
 // settings of the Biquad.
 static const double MaxBiquadDelayTime = 0.2;
 
-void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextGraphLock& g, ContextRenderLock& r, bool useSmoothing, bool forceUpdate)
+void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool useSmoothing, bool forceUpdate)
 {
     if (forceUpdate || biquadProcessor()->filterCoefficientsDirty()) {
         double value1;
@@ -47,10 +47,10 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextGraphLock& g, Context
         double detune; // in Cents
 
         if (biquadProcessor()->hasSampleAccurateValues()) {
-            value1 = biquadProcessor()->parameter1()->finalValue(g, r);
-            value2 = biquadProcessor()->parameter2()->finalValue(g, r);
-            gain = biquadProcessor()->parameter3()->finalValue(g, r);
-            detune = biquadProcessor()->parameter4()->finalValue(g, r);
+            value1 = biquadProcessor()->parameter1()->finalValue(r);
+            value2 = biquadProcessor()->parameter2()->finalValue(r);
+            gain = biquadProcessor()->parameter3()->finalValue(r);
+            detune = biquadProcessor()->parameter4()->finalValue(r);
         } else if (useSmoothing) {
             value1 = biquadProcessor()->parameter1()->smoothedValue();
             value2 = biquadProcessor()->parameter2()->smoothedValue();
@@ -108,7 +108,7 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextGraphLock& g, Context
     }
 }
 
-void BiquadDSPKernel::process(ContextGraphLock& g, ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
 {
     ASSERT(source && destination && biquadProcessor());
     
@@ -116,12 +116,12 @@ void BiquadDSPKernel::process(ContextGraphLock& g, ContextRenderLock& r, const f
     // FIXME: as an optimization, implement a way that a Biquad object can simply copy its internal filter coefficients from another Biquad object.
     // Then re-factor this code to only run for the first BiquadDSPKernel of each BiquadProcessor.
 
-    updateCoefficientsIfNecessary(g, r, true, false);
+    updateCoefficientsIfNecessary(r, true, false);
 
     m_biquad.process(source, destination, framesToProcess);
 }
 
-void BiquadDSPKernel::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
                                            int nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
@@ -146,7 +146,7 @@ void BiquadDSPKernel::getFrequencyResponse(ContextGraphLock& g, ContextRenderLoc
     // set. Forcefully update the coefficients even if they are not
     // dirty.
 
-    updateCoefficientsIfNecessary(g, r, false, true);
+    updateCoefficientsIfNecessary(r, false, true);
 
     m_biquad.getFrequencyResponse(nFrequencies, &frequency[0], magResponse, phaseResponse);
 }

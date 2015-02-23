@@ -48,7 +48,7 @@ AnalyserNode::~AnalyserNode()
     uninitialize();
 }
 
-void AnalyserNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
 

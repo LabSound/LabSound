@@ -97,7 +97,7 @@ MultiChannelResampler::MultiChannelResampler(double scaleFactor, unsigned number
         m_kernels.push_back(std::unique_ptr<SincResampler>(new SincResampler(scaleFactor)));
 }
 
-void MultiChannelResampler::process(ContextGraphLock& g, ContextRenderLock&, AudioSourceProvider* provider, AudioBus* destination, size_t framesToProcess)
+void MultiChannelResampler::process(ContextRenderLock&, AudioSourceProvider* provider, AudioBus* destination, size_t framesToProcess)
 {
     // The provider can provide us with multi-channel audio data. But each of our single-channel resamplers (kernels)
     // below requires a provider which provides a single unique channel of data.

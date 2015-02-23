@@ -43,12 +43,12 @@ public:
     }
     
     // AudioDSPKernel
-    virtual void process(ContextGraphLock& g, ContextRenderLock& r, const float* source, float* dest, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock& r, const float* source, float* dest, size_t framesToProcess) override;
     virtual void reset() override { m_biquad.reset(); }
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+    void getFrequencyResponse(ContextRenderLock& r,
                               int nFrequencies,
                               const float* frequencyHz,
                               float* magResponse,
@@ -68,7 +68,7 @@ protected:
     // used. If |forceUpdate| is true, we update the coefficients even
     // if they are not dirty. (Used when computing the frequency
     // response.)
-    void updateCoefficientsIfNecessary(ContextGraphLock& g, ContextRenderLock& r, bool useSmoothing, bool forceUpdate);
+    void updateCoefficientsIfNecessary(ContextRenderLock& r, bool useSmoothing, bool forceUpdate);
 };
 
 } // namespace WebCore

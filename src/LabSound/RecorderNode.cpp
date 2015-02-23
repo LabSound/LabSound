@@ -38,7 +38,7 @@ namespace LabSound {
     }
 
     
-    void RecorderNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+    void RecorderNode::process(ContextRenderLock&, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
         

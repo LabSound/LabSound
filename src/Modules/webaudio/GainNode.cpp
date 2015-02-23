@@ -47,7 +47,7 @@ GainNode::GainNode(float sampleRate)
     initialize();
 }
 
-void GainNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
@@ -66,7 +66,7 @@ void GainNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesT
             ASSERT(framesToProcess <= m_sampleAccurateGainValues.size());
             if (framesToProcess <= m_sampleAccurateGainValues.size()) {
                 float* gainValues = m_sampleAccurateGainValues.data();
-                gain()->calculateSampleAccurateValues(g, r, gainValues, framesToProcess);
+                gain()->calculateSampleAccurateValues(r, gainValues, framesToProcess);
                 outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
             }
         } else {

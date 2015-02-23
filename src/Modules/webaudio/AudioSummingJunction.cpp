@@ -62,7 +62,7 @@ void AudioSummingJunction::changedOutputs(std::shared_ptr<WebCore::AudioContext>
     }
 }
 
-void AudioSummingJunction::updateRenderingState(ContextGraphLock& g, ContextRenderLock& r)
+void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
     ASSERT(r.context());
     if (m_renderingStateNeedUpdating && canUpdateState()) {
@@ -72,10 +72,10 @@ void AudioSummingJunction::updateRenderingState(ContextGraphLock& g, ContextRend
         for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i, ++j) {
             AudioNodeOutput* output = (*i).get(); // safe because m_renderingOutputs is only used during a single rendering quantum when the lock is held
             m_renderingOutputs[j] = output;
-            output->updateRenderingState(g, r);
+            output->updateRenderingState(r);
         }
 
-        didUpdate(g, r);
+        didUpdate(r);
 
         m_renderingStateNeedUpdating = false;
     }

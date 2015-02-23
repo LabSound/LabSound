@@ -77,7 +77,7 @@ AudioBufferSourceNode::~AudioBufferSourceNode()
     uninitialize();
 }
 
-void AudioBufferSourceNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus();
     if (!buffer() || !isInitialized() || ! r.context()) {
@@ -440,12 +440,12 @@ bool AudioBufferSourceNode::propagatesSilence(double now) const
     return !isPlayingOrScheduled() || hasFinished() || !m_buffer;
 }
 
-void AudioBufferSourceNode::setPannerNode(ContextGraphLock& g, ContextRenderLock& r, PannerNode* pannerNode)
+void AudioBufferSourceNode::setPannerNode(PannerNode* pannerNode)
 {
     m_pannerNode = pannerNode;
 }
 
-void AudioBufferSourceNode::clearPannerNode(ContextRenderLock& r)
+void AudioBufferSourceNode::clearPannerNode()
 {
     m_pannerNode = 0;
 }

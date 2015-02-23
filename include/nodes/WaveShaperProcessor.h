@@ -43,7 +43,7 @@ public:
 
     virtual AudioDSPKernel* createKernel();
 
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
+    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
 
     void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve() { return m_curve; }

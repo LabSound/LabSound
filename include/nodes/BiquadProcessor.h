@@ -54,11 +54,11 @@ public:
     
     virtual AudioDSPKernel* createKernel();
         
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
+    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextGraphLock& g, ContextRenderLock&,
+    void getFrequencyResponse(ContextRenderLock&,
                               int nFrequencies,
                               const float* frequencyHz,
                               float* magResponse,

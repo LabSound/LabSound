@@ -65,7 +65,7 @@ namespace LabSound {
 
 		~STKNode() { }
 
-		void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override {
+		void process(ContextRenderLock&, size_t framesToProcess) override {
 
 			// First output bus 
 			AudioBus* outputBus = output(0)->bus();

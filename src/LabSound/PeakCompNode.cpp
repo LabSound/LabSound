@@ -90,7 +90,7 @@ namespace LabSound {
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextGraphLock& g, ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
             if (!numChannels)
                 return;
 
@@ -147,19 +147,19 @@ namespace LabSound {
 
             // Handle both the 1 -> N and N -> N case here.
             const float* source[16];
-            for (int i = 0; i < numChannels; ++i) {
+            for (unsigned int i = 0; i < numChannels; ++i) {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source[i] = sourceBus->channel(i)->data();
                 else
                     source[i] = sourceBus->channel(0)->data();
             }
             float* dest[16];
-            for (int i = 0; i < numChannels; ++i)
+            for (unsigned int i = 0; i < numChannels; ++i)
                 dest[i] = destinationBus->channel(i)->mutableData();
 
             for (size_t i = 0; i < framesToProcess; ++i) {
                 float peakEnv = 0;
-                for (int j = 0; j < numChannels; ++j) {
+                for (unsigned int j = 0; j < numChannels; ++j) {
                     peakEnv += source[j][i];
                 }
                 //release recursive
@@ -169,7 +169,7 @@ namespace LabSound {
                 //knee smoothening and gain reduction
                 kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.f), 0.f)) + (kneeCoeffs * kneeRecursive[1]);
 
-                for (int j = 0; j < numChannels; ++j) {
+                for (unsigned int j = 0; j < numChannels; ++j) {
                     dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;
                 }
             }

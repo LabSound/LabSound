@@ -47,7 +47,7 @@ public:
 
     // AudioSummingJunction
     virtual bool canUpdateState() override { return !node()->isMarkedForDeletion(); }
-    virtual void didUpdate(ContextGraphLock& g, ContextRenderLock&) override;
+    virtual void didUpdate(ContextRenderLock&) override;
 
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
@@ -69,7 +69,7 @@ public:
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
     // Called from context's audio thread.
-    AudioBus* pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
     // Called from context's audio thread.
@@ -95,7 +95,7 @@ private:
 
     // Called from context's audio thread.
     AudioBus* internalSummingBus();
-    void sumAllConnections(ContextGraphLock& g, ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess);
+    void sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess);
 
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };

@@ -114,7 +114,7 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double& azi
     return desiredAzimuthIndex;
 }
 
-void HRTFPanner::pan(ContextGraphLock& g, ContextRenderLock& r, double desiredAzimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess)
+void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess)
 {
     unsigned numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
 
@@ -239,8 +239,8 @@ void HRTFPanner::pan(ContextGraphLock& g, ContextRenderLock& r, double desiredAz
         // First run through delay lines for inter-aural time difference.
         m_delayLineL.setDelayFrames(frameDelayL);
         m_delayLineR.setDelayFrames(frameDelayR);
-        m_delayLineL.process(g, r, segmentSourceL, segmentDestinationL, framesPerSegment);
-        m_delayLineR.process(g, r, segmentSourceR, segmentDestinationR, framesPerSegment);
+        m_delayLineL.process(r, segmentSourceL, segmentDestinationL, framesPerSegment);
+        m_delayLineR.process(r, segmentSourceR, segmentDestinationR, framesPerSegment);
 
         bool needsCrossfading = m_crossfadeIncr;
         

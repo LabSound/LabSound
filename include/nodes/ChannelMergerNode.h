@@ -41,7 +41,7 @@ public:
     virtual ~ChannelMergerNode() {}
 
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.

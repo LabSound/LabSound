@@ -50,7 +50,7 @@ public:
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus* pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     // Called from context's audio thread.
@@ -79,7 +79,7 @@ public:
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     // It must be called within the context's graph lock.
-    void updateRenderingState(ContextGraphLock& g, ContextRenderLock&);
+    void updateRenderingState(ContextRenderLock&);
     
 private:
     AudioNode* m_node;
@@ -113,11 +113,11 @@ private:
     void updateInternalBus();
 
     // Announce to any nodes we're connected to that we changed our channel count for its input.
-    void propagateChannelCount(ContextGraphLock& g, ContextRenderLock&);
+    void propagateChannelCount(ContextRenderLock&);
 
     // updateNumberOfChannels() is called in the audio thread at the start or end of the render quantum to pick up channel changes.
     // It must be called with the context's graph lock.
-    void updateNumberOfChannels(ContextGraphLock& g, ContextRenderLock&);
+    void updateNumberOfChannels(ContextRenderLock&);
 
     // m_numberOfChannels will only be changed in the audio thread.
     // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread in updateNumberOfChannels().

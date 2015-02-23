@@ -54,7 +54,7 @@ ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
     initialize();
 }
 
-void ChannelMergerNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+void ChannelMergerNode::process(ContextRenderLock&, size_t framesToProcess)
 {
     auto output = this->output(0);
     ASSERT(output);

@@ -165,7 +165,7 @@ namespace LabSound {
         std::vector<std::shared_ptr<SamplerSound>> samples;
 
 		// Satisfy the AudioNode interface
-		//virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t) override {}
+		//virtual void process(ContextRenderLock&, size_t) override {}
 		//virtual void reset() override {}
 		//virtual double tailTime() const OVERRIDE { return 0; }
 		//virtual double latencyTime() const OVERRIDE { return 0; }

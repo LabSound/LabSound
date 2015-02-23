@@ -39,7 +39,7 @@ public:
     DelayDSPKernel(double maxDelayTime, float sampleRate);
     virtual ~DelayDSPKernel() {}
     
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) override;
     virtual void reset() override;
     
     double maxDelayTime() const { return m_maxDelayTime; }

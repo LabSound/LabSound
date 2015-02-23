@@ -46,7 +46,7 @@ EqualPowerPanner::EqualPowerPanner(float sampleRate)
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
 }
 
-void EqualPowerPanner::pan(ContextGraphLock&, ContextRenderLock&,
+void EqualPowerPanner::pan(ContextRenderLock&,
                            double azimuth, double /*elevation*/, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess)
 {
     bool isInputSafe = inputBus && (inputBus->numberOfChannels() == 1 || inputBus->numberOfChannels() == 2) && framesToProcess <= inputBus->length();

@@ -48,7 +48,7 @@ public:
     virtual ~AudioBufferSourceNode();
 
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock& r, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
@@ -84,8 +84,8 @@ public:
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
-    void setPannerNode(ContextGraphLock& g, ContextRenderLock& r, PannerNode*);
-    virtual void clearPannerNode(ContextRenderLock& r) override;
+    void setPannerNode(PannerNode*);
+    virtual void clearPannerNode() override;
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
     virtual bool propagatesSilence(double now) const OVERRIDE;

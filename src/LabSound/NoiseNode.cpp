@@ -50,7 +50,7 @@ namespace LabSound {
     }
 
 
-    void NoiseNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+    void NoiseNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
         AudioBus* outputBus = output(0)->bus();
 

@@ -58,7 +58,7 @@ public:
     // AudioProcessor methods
     virtual void initialize();
     virtual void uninitialize();
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
     virtual void reset() override;
     virtual void setNumberOfChannels(unsigned numberOfChannels);
 

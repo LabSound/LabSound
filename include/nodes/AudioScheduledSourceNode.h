@@ -79,7 +79,7 @@ protected:
                               size_t& quantumFrameOffset,
                               size_t& nonSilentFramesToProcess);
 
-    // Called when we have no more sound to play or the noteOff() time has been reached.
+    // Called when we have no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock&);
 
     PlaybackState m_playbackState;
@@ -93,7 +93,7 @@ protected:
     double m_endTime; // in seconds
 
     // this is the base declaration
-    virtual void clearPannerNode(ContextRenderLock& r) {}
+    virtual void clearPannerNode() {}
     
     static const double UnknownTime;
 };

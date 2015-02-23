@@ -46,7 +46,7 @@ void BiquadFilterNode::setType(unsigned short type, ExceptionCode& ec)
 }
 
 
-void BiquadFilterNode::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
                                             const std::vector<float>& frequencyHz,
                                             std::vector<float>& magResponse,
                                             std::vector<float>& phaseResponse)
@@ -58,7 +58,7 @@ void BiquadFilterNode::getFrequencyResponse(ContextGraphLock& g, ContextRenderLo
                      std::min(magResponse.size(), phaseResponse.size()));
 
     if (n) {
-        biquadProcessor()->getFrequencyResponse(g, r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
+        biquadProcessor()->getFrequencyResponse(r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
 }
 

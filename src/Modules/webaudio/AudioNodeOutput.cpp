@@ -69,25 +69,25 @@ void AudioNodeOutput::updateInternalBus()
     m_actualDestinationBus = m_internalBus.get();
 }
 
-void AudioNodeOutput::updateRenderingState(ContextGraphLock& g, ContextRenderLock& r)
+void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
 {
-    updateNumberOfChannels(g, r);
+    updateNumberOfChannels(r);
     m_renderingFanOutCount = fanOutCount();
     m_renderingParamFanOutCount = paramFanOutCount();
 }
 
-void AudioNodeOutput::updateNumberOfChannels(ContextGraphLock& g, ContextRenderLock& r)
+void AudioNodeOutput::updateNumberOfChannels(ContextRenderLock& r)
 {
     if (m_numberOfChannels != m_desiredNumberOfChannels) {
         ASSERT(r.context());
 
         m_numberOfChannels = m_desiredNumberOfChannels;
         updateInternalBus();
-        propagateChannelCount(g, r);
+        propagateChannelCount(r);
     }
 }
 
-void AudioNodeOutput::propagateChannelCount(ContextGraphLock& g, ContextRenderLock& r)
+void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
 {
     if (isChannelCountKnown()) {
         ASSERT(r.context());
@@ -101,12 +101,12 @@ void AudioNodeOutput::propagateChannelCount(ContextGraphLock& g, ContextRenderLo
     }
 }
 
-AudioBus* AudioNodeOutput::pull(ContextGraphLock& g, ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus* AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
     
-    updateNumberOfChannels(g, r);
+    updateNumberOfChannels(r);
     
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // We try to do in-place processing (using inPlaceBus) if at all possible,
@@ -119,7 +119,7 @@ AudioBus* AudioNodeOutput::pull(ContextGraphLock& g, ContextRenderLock& r, Audio
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_actualDestinationBus = isInPlace ? inPlaceBus : m_internalBus.get();
 
-    node()->processIfNecessary(g, r, framesToProcess);
+    node()->processIfNecessary(r, framesToProcess);
     return m_actualDestinationBus;
 }
 

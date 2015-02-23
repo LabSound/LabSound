@@ -112,7 +112,7 @@ namespace LabSound {
         delete detail;
     }
 
-    void SpectralMonitorNode::process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess)
+    void SpectralMonitorNode::process(ContextRenderLock&, size_t framesToProcess)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.

@@ -50,7 +50,7 @@ MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
     uninitialize();
 }
 
-void MediaStreamAudioDestinationNode::process(ContextGraphLock& g, ContextRenderLock&, size_t numberOfFrames)
+void MediaStreamAudioDestinationNode::process(ContextRenderLock&, size_t numberOfFrames)
 {
     m_mixBus.copyFrom(*input(0)->bus());
     

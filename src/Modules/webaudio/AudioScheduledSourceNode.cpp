@@ -151,7 +151,7 @@ void AudioScheduledSourceNode::stop(double when)
 
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
-    clearPannerNode(r);
+    clearPannerNode();
     auto ac = r.context();
     ASSERT(ac);
     

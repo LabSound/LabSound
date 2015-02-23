@@ -90,7 +90,7 @@ void BiquadProcessor::checkForDirtyCoefficients(std::shared_ptr<AudioContext> c)
     }
 }
 
-void BiquadProcessor::process(ContextGraphLock& g, ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void BiquadProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
 {
     if (!isInitialized()) {
         destination->zero();
@@ -101,7 +101,7 @@ void BiquadProcessor::process(ContextGraphLock& g, ContextRenderLock& r, const A
             
     // For each channel of our input, process using the corresponding BiquadDSPKernel into the output channel.
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(g, r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+        m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
 }
 
 void BiquadProcessor::setType(FilterType type)
@@ -112,7 +112,7 @@ void BiquadProcessor::setType(FilterType type)
     }
 }
 
-void BiquadProcessor::getFrequencyResponse(ContextGraphLock& g, ContextRenderLock& r,
+void BiquadProcessor::getFrequencyResponse(ContextRenderLock& r,
                                            int nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
@@ -124,7 +124,7 @@ void BiquadProcessor::getFrequencyResponse(ContextGraphLock& g, ContextRenderLoc
     
     std::unique_ptr<BiquadDSPKernel> responseKernel(new BiquadDSPKernel(this));
 
-    responseKernel->getFrequencyResponse(g, r, nFrequencies, frequencyHz, magResponse, phaseResponse);
+    responseKernel->getFrequencyResponse(r, nFrequencies, frequencyHz, magResponse, phaseResponse);
 }
 
 } // namespace WebCore

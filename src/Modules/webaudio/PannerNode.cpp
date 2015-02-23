@@ -69,12 +69,12 @@ PannerNode::~PannerNode()
     uninitialize();
 }
 
-void PannerNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     // We override pullInputs(), so we can detect new AudioSourceNodes which have connected to us when new connections are made.
     // These AudioSourceNodes need to be made aware of our existence in order to handle doppler shift pitch changes.
 
-    auto ac = g.context();
+    auto ac = r.context();
     if (!ac)
         return;
     
@@ -82,13 +82,13 @@ void PannerNode::pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t fr
         m_connectionCount = ac->connectionCount();
 
         // Recursively go through all nodes connected to us.
-        notifyAudioSourcesConnectedToNode(g, r, this);
+        notifyAudioSourcesConnectedToNode(r, this);
     }
     
-    AudioNode::pullInputs(g, r, framesToProcess);
+    AudioNode::pullInputs(r, framesToProcess);
 }
 
-void PannerNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess)
+void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destination = output(0)->bus();
 
@@ -108,7 +108,7 @@ void PannerNode::process(ContextGraphLock& g, ContextRenderLock& r, size_t frame
     double azimuth;
     double elevation;
     getAzimuthElevation(r, &azimuth, &elevation);
-    m_panner->pan(g, r, azimuth, elevation, source, destination, framesToProcess);
+    m_panner->pan(r, azimuth, elevation, source, destination, framesToProcess);
 
     // Get the distance and cone gain.
     double totalGain = distanceConeGain(r);
@@ -317,7 +317,7 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     return float(distanceGain * coneGain);
 }
 
-void PannerNode::notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextRenderLock& r, AudioNode* node)
+void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode* node)
 {
     ASSERT(node);
     if (!node)
@@ -326,7 +326,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextR
     // First check if this node is an AudioBufferSourceNode. If so, let it know about us so that doppler shift pitch can be taken into account.
     if (node->nodeType() == NodeTypeAudioBufferSource) {
         AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
-        bufferSourceNode->setPannerNode(g, r, this);
+        bufferSourceNode->setPannerNode(this);
     }
     else {
         // Go through all inputs to this node.
@@ -337,7 +337,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextGraphLock& g, ContextR
             for (unsigned j = 0; j < input->numberOfRenderingConnections(); ++j) {
                 AudioNodeOutput* connectedOutput = input->renderingOutput(j);
                 AudioNode* connectedNode = connectedOutput->node();
-                notifyAudioSourcesConnectedToNode(g, r, connectedNode); // recurse
+                notifyAudioSourcesConnectedToNode(r, connectedNode); // recurse
             }
         }
     }

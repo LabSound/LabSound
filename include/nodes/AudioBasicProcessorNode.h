@@ -41,8 +41,8 @@ public:
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
-    virtual void process(ContextGraphLock& g, ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextGraphLock& g, ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
     virtual void initialize();
     virtual void uninitialize();

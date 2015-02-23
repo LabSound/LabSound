@@ -76,7 +76,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     }
 
     // Let the context take care of any business at the start of each render quantum.
-    m_context->handlePreRenderTasks(graphLock, renderLock);
+    m_context->handlePreRenderTasks(renderLock);
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
@@ -84,7 +84,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
 
     // This will cause the node(s) connected to this destination node to process, which in turn will pull on their input(s),
     // all the way backwards through the rendering graph.
-    AudioBus* renderedBus = input(0)->pull(graphLock, renderLock, destinationBus, numberOfFrames);
+    AudioBus* renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
         destinationBus->zero();
@@ -94,7 +94,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     }
 
     // Process nodes which need a little extra help because they are not connected to anything, but still need to process.
-    m_context->processAutomaticPullNodes(graphLock, renderLock, numberOfFrames);
+    m_context->processAutomaticPullNodes(renderLock, numberOfFrames);
 
     // Let the context take care of any business at the end of each render quantum.
     m_context->handlePostRenderTasks(graphLock, renderLock);

@@ -32,7 +32,7 @@ using namespace std;
 
 namespace WebCore {
 
-void WaveShaperDSPKernel::process(ContextGraphLock& g, ContextRenderLock&, const float* source, float* destination, size_t framesToProcess)
+void WaveShaperDSPKernel::process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess)
 {
     ASSERT(source && destination && waveShaperProcessor());
 

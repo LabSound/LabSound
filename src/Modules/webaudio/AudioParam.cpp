@@ -93,23 +93,23 @@ bool AudioParam::smooth(std::shared_ptr<AudioContext> c)
     return false;
 }
 
-float AudioParam::finalValue(ContextGraphLock& g, ContextRenderLock& r)
+float AudioParam::finalValue(ContextRenderLock& r)
 {
     float value;
-    calculateFinalValues(g, r, &value, 1, false);
+    calculateFinalValues(r, &value, 1, false);
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextGraphLock& g, ContextRenderLock& r, float* values, unsigned numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values, unsigned numberOfValues)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
         return;
 
-    calculateFinalValues(g, r, values, numberOfValues, true);
+    calculateFinalValues(r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(ContextGraphLock& g, ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -142,7 +142,7 @@ void AudioParam::calculateFinalValues(ContextGraphLock& g, ContextRenderLock& r,
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(g, r, 0, AudioNode::ProcessingSizeInFrames);
+        AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
         summingBus.sumFrom(*connectionBus);
