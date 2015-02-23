@@ -59,6 +59,9 @@ void AudioNodeInput::connect(ContextGraphLock& g, ContextRenderLock& r,
 
     // Sombody has just connected to us, so count it as a reference.
     fromInput->node()->ref(g.contextPtr(), AudioNode::RefTypeConnection);
+    
+    // Let context know that a connection has been made.
+    g.context()->incrementConnectionCount();
 }
 
 void AudioNodeInput::disconnect(ContextGraphLock& g, ContextRenderLock& r,

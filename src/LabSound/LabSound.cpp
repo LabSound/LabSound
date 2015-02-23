@@ -49,13 +49,13 @@ namespace LabSound {
 
     bool connect(ContextGraphLock& g, ContextRenderLock& r, WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
         ExceptionCode ec = NO_ERR;
-        thisOutput->connect(g, r, toThisInput, 0, 0, ec);
+        thisOutput->connect(g.context(), toThisInput, 0, 0, ec);
         return ec == NO_ERR;
     }
 
     bool disconnect(ContextGraphLock& g, ContextRenderLock& r, WebCore::AudioNode* thisOutput) {
         ExceptionCode ec = NO_ERR;
-        thisOutput->disconnect(g, r, 0, ec);
+        thisOutput->disconnect(g.context(), 0, ec);
         return ec == NO_ERR;
     }
 

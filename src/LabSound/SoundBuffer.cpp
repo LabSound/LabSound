@@ -68,7 +68,7 @@ namespace LabSound {
             
             // bus the sound to the output node
             ExceptionCode ec;
-            sourceBufferNode->connect(g, r, outputNode.get(), 0, 0, ec);
+            sourceBufferNode->connect(g.context(), outputNode.get(), 0, 0, ec);
             if (ec != NO_ERR) {
                 // @dp add this - audio context should be responsible for clean up, not the sound buffer itself ac->manageLifespan(sourceBufferNode);
                 sourceBufferNode->start(when);
@@ -100,7 +100,7 @@ namespace LabSound {
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBufferNode->connect(g, r, ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->connect(g.context(), ac->destination().get(), 0, 0, ec);
             sourceBufferNode->startGrain(when, start, end - start);
             g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
 

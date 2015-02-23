@@ -69,14 +69,13 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     }
 
     ContextGraphLock graphLock(m_context, "AudioDestinationNode::render");
-    
     if (!graphLock.context()) {
         destinationBus->zero();
         return;
     }
 
     // Let the context take care of any business at the start of each render quantum.
-    m_context->handlePreRenderTasks(renderLock);
+    m_context->handlePreRenderTasks(graphLock, renderLock);
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)

@@ -115,10 +115,10 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
     return 0;
 }
 
-void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
+void AudioNode::connect(AudioContext* context,
                         AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
 {
-    if (!g.context()) {
+    if (!context) {
         ec = SYNTAX_ERR;
         return;
     }
@@ -141,10 +141,7 @@ void AudioNode::connect(ContextGraphLock& g, ContextRenderLock &r,
 
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
-    AudioNodeInput::connect(g, r, input, output);
-
-    // Let context know that a connection has been made.
-    g.context()->incrementConnectionCount();
+    context->connect(input, output);
 }
 
 void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
@@ -162,7 +159,7 @@ void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, 
     AudioParam::connect(g, param, this->output(outputIndex));
 }
 
-void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::disconnect(AudioContext* context, unsigned outputIndex, ExceptionCode& ec)
 {
     // Sanity check input and output indices.
     if (outputIndex >= numberOfOutputs()) {
@@ -170,7 +167,7 @@ void AudioNode::disconnect(ContextGraphLock& g, ContextRenderLock& r, unsigned o
         return;
     }
 
-    AudioNodeOutput::disconnectAll(g, r, this->output(outputIndex));
+    context->disconnect(this->output(outputIndex));
 }
 
 void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)

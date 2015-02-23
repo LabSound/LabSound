@@ -368,15 +368,38 @@ void AudioContext::addDeferredFinishDeref(ContextGraphLock& g, AudioNode* node)
     m_deferredFinishDerefList.push_back(node);
 }
 
-void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
+void AudioContext::handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
 {
     ASSERT(r.context());
  
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
     handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes(r);
+
+    {
+        lock_guard<mutex> lock(automaticSourcesMutex);
+        for (auto i : pendingConnections) {
+            if (i.connect) {
+                AudioNodeInput::connect(g, r, i.fromInput, i.toOutput);
+            }
+            else {
+                AudioNodeOutput::disconnectAll(g, r, i.toOutput);
+            }
+        }
+        pendingConnections.clear();
+    }
 }
 
+void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput) {
+    lock_guard<mutex> lock(automaticSourcesMutex);
+    pendingConnections.emplace_back(PendingConnection(fromInput, toOutput, true));
+}
+void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput) {
+    lock_guard<mutex> lock(automaticSourcesMutex);
+    pendingConnections.emplace_back(PendingConnection(std::shared_ptr<AudioNodeInput>(), toOutput, false));
+}
+
+    
 void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
 {
     ASSERT(r.context());
@@ -425,6 +448,13 @@ void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
 void AudioContext::scheduleNodeDeletion(ContextGraphLock& g)
 {
     // &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
+    
+    // then this routine sould go away completely
+    
+    // finishDeref is the only caller, it should simply add itself to the scheduled deletion queue
+    
+    
+    // marked for deletion should go away too
     
     bool isGood = m_isInitialized && g.context();
     ASSERT(isGood);

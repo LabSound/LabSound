@@ -54,6 +54,8 @@ namespace WebCore {
     class HRTFDatabaseLoader;
     class MediaStreamAudioSourceNode;
     class AsyncAudioDecoder;
+    class AudioNodeInput;
+    class AudioNodeOutput;
     
 class AudioContext {
 public:
@@ -113,7 +115,7 @@ public:
     void notifyNodeFinishedProcessing(ContextRenderLock&, AudioNode*);
 
     // Called at the start of each render quantum.
-    void handlePreRenderTasks(ContextRenderLock&);
+    void handlePreRenderTasks(ContextGraphLock&, ContextRenderLock&);
 
     // Called at the end of each render quantum.
     void handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock&);
@@ -254,8 +256,24 @@ private:
     // Number of AudioBufferSourceNodes that are active (playing).
     int m_activeSourceCount;
     
+    struct PendingConnection {
+        PendingConnection(std::shared_ptr<AudioNodeInput> fromInput,
+                          std::shared_ptr<AudioNodeOutput> toOutput,
+                          bool connect)
+        : fromInput(fromInput), toOutput(toOutput), connect(connect) {}
+
+        bool connect; // true = connect, false = disconnect
+        std::shared_ptr<AudioNodeInput> fromInput;
+        std::shared_ptr<AudioNodeOutput> toOutput;
+    };
+    
     std::mutex automaticSourcesMutex;
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
+    std::vector<PendingConnection> pendingConnections;
+
+public:
+    void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
 };
 
 } // WebCore

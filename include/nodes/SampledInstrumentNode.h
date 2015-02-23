@@ -72,7 +72,7 @@ namespace LabSound {
 
 			// Bus the sound to the output destination .
 			ExceptionCode ec;
-			theSample->connect(g, r, destinationNode.get(), 0, 0, ec);
+			theSample->connect(g.context(), destinationNode.get(), 0, 0, ec);
 			theSample->start(0.0);
 
 			return theSample;
