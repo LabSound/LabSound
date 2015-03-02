@@ -54,8 +54,8 @@ public:
                               float* magResponse,
                               float* phaseResponse);
 
-    virtual double tailTime() const OVERRIDE;
-    virtual double latencyTime() const OVERRIDE;
+    virtual double tailTime() const override;
+    virtual double latencyTime() const override;
 
 protected:
     Biquad m_biquad;

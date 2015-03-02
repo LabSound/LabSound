@@ -39,7 +39,7 @@ namespace WebCore {
 
 class AudioNodeOutput;
 
-class AudioParam : public AudioSummingJunction {//, public ThreadSafeRefCounted<AudioParam> {
+class AudioParam : public AudioSummingJunction {
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
@@ -104,8 +104,8 @@ public:
     void calculateSampleAccurateValues(ContextRenderLock&, float* values, unsigned numberOfValues);
 
     // Connect an audio-rate signal to control this parameter.
-    static void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
-    static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void connect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void disconnect(std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.

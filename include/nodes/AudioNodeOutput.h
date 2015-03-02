@@ -64,7 +64,7 @@ public:
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
     unsigned renderingParamFanOutCount() const;
 
-    static void disconnectAll(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAll(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
 
     void setNumberOfChannels(ContextRenderLock&, unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
@@ -74,11 +74,10 @@ public:
 
     // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
     // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
-    static void disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self);
-    static void enable(std::shared_ptr<AudioContext>, std::shared_ptr<AudioNodeOutput> self);
+    static void disable(ContextRenderLock&, std::shared_ptr<AudioNodeOutput> self);
+    static void enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self);
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
-    // It must be called within the context's graph lock.
     void updateRenderingState(ContextRenderLock&);
     
 private:
@@ -89,10 +88,10 @@ private:
     
     // These are called from AudioNodeInput.
     // They must be called with the context's graph lock.
-    void addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
-    void removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
-    void addParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
-    void removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
+    void addInput(std::shared_ptr<AudioNodeInput>);
+    void removeInput(std::shared_ptr<AudioNodeInput>);
+    void addParam(std::shared_ptr<AudioParam>);
+    void removeParam(std::shared_ptr<AudioParam>);
 
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
@@ -105,8 +104,8 @@ private:
     unsigned paramFanOutCount();
 
     // Must be called within the context's graph lock.
-    static void disconnectAllInputs(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
-    static void disconnectAllParams(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllInputs(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
@@ -115,12 +114,8 @@ private:
     // Announce to any nodes we're connected to that we changed our channel count for its input.
     void propagateChannelCount(ContextRenderLock&);
 
-    // updateNumberOfChannels() is called in the audio thread at the start or end of the render quantum to pick up channel changes.
-    // It must be called with the context's graph lock.
-    void updateNumberOfChannels(ContextRenderLock&);
-
     // m_numberOfChannels will only be changed in the audio thread.
-    // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread in updateNumberOfChannels().
+    // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread
     unsigned m_numberOfChannels;
     unsigned m_desiredNumberOfChannels;
     
@@ -130,8 +125,10 @@ private:
     // m_actualDestinationBus is set in pull() and will either point to one of our internal busses or to the in-place bus.
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
-
-    std::set<std::shared_ptr<AudioNodeInput>> m_inputs;
+    
+#define AUDIONODEOUTPUT_MAXINPUTS 4
+    std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
+    
     bool m_isEnabled;
 
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.

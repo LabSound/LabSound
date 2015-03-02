@@ -38,8 +38,8 @@ namespace LabSound {
         size_t windowSize() const { return _windowSize; }
         
     private:
-        virtual double tailTime() const OVERRIDE { return 0; }      // required for BasicInspector
-        virtual double latencyTime() const OVERRIDE { return 0; }   // required for BasicInspector
+        virtual double tailTime() const override { return 0; }      // required for BasicInspector
+        virtual double latencyTime() const override { return 0; }   // required for BasicInspector
 
         float _db;
         size_t _windowSize;

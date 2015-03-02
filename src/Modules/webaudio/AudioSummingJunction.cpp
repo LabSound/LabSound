@@ -33,6 +33,24 @@
 using namespace std;
 
 namespace WebCore {
+    
+LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
+
+
+void AudioSummingJunction::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
+{
+    if (summingJunction)
+        m_dirtySummingJunctions.push(summingJunction);
+}
+
+void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
+{
+    ASSERT(r.context());
+    
+    std::shared_ptr<AudioSummingJunction> asj;
+    while (m_dirtySummingJunctions.try_pop(asj))
+        asj->updateRenderingState(r);
+}
 
 AudioSummingJunction::AudioSummingJunction()
 : m_renderingStateNeedUpdating(false)
@@ -46,26 +64,20 @@ AudioSummingJunction::~AudioSummingJunction()
 void AudioSummingJunction::addOutput(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> o) {
     ASSERT(r.context());
     m_outputs.insert(o);
+    m_renderingStateNeedUpdating = true;
 }
 
 void AudioSummingJunction::removeOutput(ContextRenderLock &r, std::shared_ptr<AudioNodeOutput> o) {
     ASSERT(r.context());
     m_outputs.erase(o);
+    m_renderingStateNeedUpdating = true;
 }
     
-void AudioSummingJunction::changedOutputs(std::shared_ptr<WebCore::AudioContext> context, std::shared_ptr<AudioSummingJunction> self)
-{
-    ASSERT(context);
-    if (!self->m_renderingStateNeedUpdating && self->canUpdateState()) {
-        context->markSummingJunctionDirty(self);
-        self->m_renderingStateNeedUpdating = true;
-    }
-}
-
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
-    ASSERT(r.context());
     if (m_renderingStateNeedUpdating && canUpdateState()) {
+        ASSERT(r.context());
+        
         // Copy from m_outputs to m_renderingOutputs.
         m_renderingOutputs.resize(m_outputs.size());
         unsigned j = 0;

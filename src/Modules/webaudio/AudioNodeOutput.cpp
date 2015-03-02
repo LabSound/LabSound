@@ -30,9 +30,16 @@
 #include "AudioContextLock.h"
 #include "AudioNodeInput.h"
 #include "AudioParam.h"
-#include <wtf/Threading.h>
+
+#include <mutex>
+
+using namespace std;
 
 namespace WebCore {
+
+namespace {
+    mutex outputMutex;
+}
 
 AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     : m_node(node)
@@ -71,20 +78,15 @@ void AudioNodeOutput::updateInternalBus()
 
 void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
 {
-    updateNumberOfChannels(r);
-    m_renderingFanOutCount = fanOutCount();
-    m_renderingParamFanOutCount = paramFanOutCount();
-}
-
-void AudioNodeOutput::updateNumberOfChannels(ContextRenderLock& r)
-{
     if (m_numberOfChannels != m_desiredNumberOfChannels) {
         ASSERT(r.context());
-
+        
         m_numberOfChannels = m_desiredNumberOfChannels;
         updateInternalBus();
         propagateChannelCount(r);
     }
+    m_renderingFanOutCount = fanOutCount();
+    m_renderingParamFanOutCount = paramFanOutCount();
 }
 
 void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
@@ -93,11 +95,11 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
         ASSERT(r.context());
         
         // Announce to any nodes we're connected to that we changed our channel count for its input.
-        for (auto i = m_inputs.begin(); i != m_inputs.end(); ++i) {
-            AudioNodeInput* input = (*i).get();
-            auto connectionNode = input->node();
-            connectionNode->checkNumberOfChannelsForInput(r, input);
-        }
+        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+            if (auto in = m_inputs[i]) {
+                auto connectionNode = in->node();
+                connectionNode->checkNumberOfChannelsForInput(r, in.get());
+            }
     }
 }
 
@@ -106,19 +108,19 @@ AudioBus* AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
     
-    updateNumberOfChannels(r);
-    
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // We try to do in-place processing (using inPlaceBus) if at all possible,
     // but we can't process in-place if we're connected to more than one input (fan-out > 1).
     // In this case pull() is called multiple times per rendering quantum, and the processIfNecessary() call below will
     // cause our node to process() only the first time, caching the output in m_internalOutputBus for subsequent calls.    
     
+    updateRenderingState(r);
+    
     bool isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() && (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
 
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_actualDestinationBus = isInPlace ? inPlaceBus : m_internalBus.get();
-
+    
     node()->processIfNecessary(r, framesToProcess);
     return m_actualDestinationBus;
 }
@@ -131,7 +133,10 @@ AudioBus* AudioNodeOutput::bus() const
 
 unsigned AudioNodeOutput::fanOutCount()
 {
-    return m_inputs.size();
+    unsigned count = 0;
+    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+        count += m_inputs[i]? 1:0;
+    return count;
 }
 
 unsigned AudioNodeOutput::paramFanOutCount()
@@ -149,82 +154,103 @@ unsigned AudioNodeOutput::renderingParamFanOutCount() const
     return m_renderingParamFanOutCount;
 }
 
-void AudioNodeOutput::addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::addInput(std::shared_ptr<AudioNodeInput> input)
 {
     if (!input)
         return;
     
-    m_inputs.insert(input);
+    lock_guard<mutex> lock(outputMutex);
+    
+    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+        if (!m_inputs[i]) {
+            m_inputs[i] = input;
+            m_inputs[i]->setDirty();
+            return;
+        }
+    
+    ASSERT(0 == "couldn't add input");
 }
 
-void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
 {
     if (!input)
         return;
 
-    auto it = m_inputs.find(input);
-    if (it != m_inputs.end())
-        m_inputs.erase(it);
+    lock_guard<mutex> lock(outputMutex);
+    
+    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+        if (m_inputs[i] == input) {
+            m_inputs[i]->setDirty();
+            m_inputs[i].reset();
+            return;
+        }
 }
 
-void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllInputs(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
+    lock_guard<mutex> lock(outputMutex);
+    
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
-    while (self->m_inputs.size()) {
-        auto input = self->m_inputs.begin();
-        (*input)->disconnect(g, r, *input, self);
-    }
+    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+        if (auto ptr = self->m_inputs[i]) {
+            AudioNodeInput::disconnect(r, ptr, self);
+            ptr.reset();
+        }
 }
 
-void AudioNodeOutput::addParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::addParam(std::shared_ptr<AudioParam> param)
 {
     if (!param)
         return;
 
+    lock_guard<mutex> lock(outputMutex);
     m_params.insert(param);
 }
 
-void AudioNodeOutput::removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::removeParam(std::shared_ptr<AudioParam> param)
 {
     if (!param)
         return;
 
+    lock_guard<mutex> lock(outputMutex);
     auto it = m_params.find(param);
     if (it != m_params.end())
         m_params.erase(it);
 }
 
-void AudioNodeOutput::disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllParams(std::shared_ptr<AudioNodeOutput> self)
 {
     // AudioParam::disconnect() changes m_params by calling removeParam().
     while (self->m_params.size()) {
         auto param = self->m_params.begin();
-        (*param)->disconnect(g, *param, self);
+        (*param)->disconnect(*param, self);
     }
 }
 
-void AudioNodeOutput::disconnectAll(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAll(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
-    self->disconnectAllInputs(g, r, self);
-    self->disconnectAllParams(g, self);
+    self->disconnectAllInputs(r, self);
+    self->disconnectAllParams(self);
 }
 
-void AudioNodeOutput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
     if (self->m_isEnabled) {
-        for (auto i : self->m_inputs) {
-            AudioNodeInput::disable(g, i, self);
-        }
+        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+            if (auto ptr = self->m_inputs[i])
+                ptr->disable(r, self);
+
         self->m_isEnabled = false;
     }
 }
 
-void AudioNodeOutput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
 {
     if (!self->m_isEnabled) {
-        for (auto i : self->m_inputs) {
-            AudioNodeInput::enable(c, i, self);
-        }
+        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
+            if (auto ptr = self->m_inputs[i])
+                ptr->enable(r, self);
+
         self->m_isEnabled = true;
     }
 }

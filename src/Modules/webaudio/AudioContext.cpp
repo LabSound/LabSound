@@ -289,7 +289,7 @@ std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSourc
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
     node->setFormat(g, r, 2, sampleRate());
 
-    refNode(g, node); // context keeps reference until node is disconnected
+    refNode(r, node); // context keeps reference until node is disconnected
     return node;
 }
 
@@ -306,27 +306,26 @@ void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode*
     ASSERT(0 == "node to finish not referenced");
 }
 
-void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::derefFinishedSourceNodes(ContextRenderLock& r)
 {
-    ASSERT(g.context() && r.context());
+    ASSERT(r.context());
     for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-        derefNode(g, r, m_finishedNodes[i]);
+        derefNode(r, m_finishedNodes[i]);
 
     m_finishedNodes.clear();
 }
 
-void AudioContext::refNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
+void AudioContext::refNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(g.context());
-    node->ref(g.contextPtr(), AudioNode::RefTypeConnection);
+    node->ref(r, AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::derefNode(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioNode> node)
+void AudioContext::derefNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(g.context());
+    ASSERT(r.context());
     
-    node->deref(g, r, AudioNode::RefTypeConnection);
+    node->deref(r, AudioNode::RefTypeConnection);
 
     for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
         if (node == *i) {
@@ -340,7 +339,7 @@ void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g, ContextRender
 {
     ASSERT(g.context());
     for (unsigned i = 0; i < m_referencedNodes.size(); ++i)
-        m_referencedNodes[i]->deref(g, r, AudioNode::RefTypeConnection);
+        m_referencedNodes[i]->deref(r, AudioNode::RefTypeConnection);
 
     m_referencedNodes.clear();
 }
@@ -368,22 +367,22 @@ void AudioContext::addDeferredFinishDeref(ContextGraphLock& g, AudioNode* node)
     m_deferredFinishDerefList.push_back(node);
 }
 
-void AudioContext::handlePreRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
 {
     ASSERT(r.context());
  
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
-    handleDirtyAudioSummingJunctions(r);
+    AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes(r);
 
     {
         lock_guard<mutex> lock(automaticSourcesMutex);
         for (auto i : pendingConnections) {
             if (i.connect) {
-                AudioNodeInput::connect(g, r, i.fromInput, i.toOutput);
+                AudioNodeInput::connect(r, i.fromInput, i.toOutput);
             }
             else {
-                AudioNodeOutput::disconnectAll(g, r, i.toOutput);
+                AudioNodeOutput::disconnectAll(r, i.toOutput);
             }
         }
         pendingConnections.clear();
@@ -400,33 +399,31 @@ void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput) {
 }
 
     
-void AudioContext::handlePostRenderTasks(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 {
     ASSERT(r.context());
  
     // Take care of finishing any derefs where the tryLock() failed previously.
-    handleDeferredFinishDerefs(g, r);
+    handleDeferredFinishDerefs(r);
 
     // Dynamically clean up nodes which are no longer needed.
-    derefFinishedSourceNodes(g, r);
+    derefFinishedSourceNodes(r);
 
     // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
-    scheduleNodeDeletion(g);
+    scheduleNodeDeletion(r);
 
-    // Fixup the state of any dirty AudioSummingJunctions and AudioNodeOutputs.
-    handleDirtyAudioSummingJunctions(r);
-
+    AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes(r);
     
     handleAutomaticSources();
 }
 
-void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::handleDeferredFinishDerefs(ContextRenderLock& r)
 {
-    ASSERT(g.context());
+    ASSERT(r.context());
     for (unsigned i = 0; i < m_deferredFinishDerefList.size(); ++i) {
         AudioNode* node = m_deferredFinishDerefList[i];
-        node->finishDeref(g, r, AudioNode::RefTypeConnection);
+        node->deref(r, AudioNode::RefTypeConnection);
     }
     
     m_deferredFinishDerefList.clear();
@@ -445,18 +442,18 @@ void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
     ASSERT(0 == "Attempting to delete unreferenced node");
 }
 
-void AudioContext::scheduleNodeDeletion(ContextGraphLock& g)
+void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 {
     // &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
     
     // then this routine sould go away completely
     
-    // finishDeref is the only caller, it should simply add itself to the scheduled deletion queue
+    // node->deref is the only caller, it should simply add itself to the scheduled deletion queue
     
     
     // marked for deletion should go away too
     
-    bool isGood = m_isInitialized && g.context();
+    bool isGood = m_isInitialized && r.context();
     ASSERT(isGood);
     if (!isGood)
         return;
@@ -488,21 +485,6 @@ void AudioContext::deleteMarkedNodes()
 {
     m_nodesToDelete.clear();
     m_isDeletionScheduled = false;
-}
-
-void AudioContext::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
-{
-    if (summingJunction)
-        m_dirtySummingJunctions.push(summingJunction);
-}
-
-void AudioContext::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
-{
-    ASSERT(r.context());
-
-    std::shared_ptr<AudioSummingJunction> asj;
-    while (m_dirtySummingJunctions.try_pop(asj))
-        asj->updateRenderingState(r);
 }
 
 

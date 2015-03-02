@@ -43,7 +43,7 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(ContextGraphLock& g, ContextRenderLock& r,
+void AudioNodeInput::connect(ContextRenderLock& r,
                              std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!fromInput || !toOutput || !fromInput->node())
@@ -53,21 +53,20 @@ void AudioNodeInput::connect(ContextGraphLock& g, ContextRenderLock& r,
     if (fromInput->m_outputs.find(toOutput) != fromInput->m_outputs.end())
         return;
 
-    toOutput->addInput(g, fromInput);
+    toOutput->addInput(fromInput);
     fromInput->addOutput(r, toOutput);
-    AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
-
+   
     // Sombody has just connected to us, so count it as a reference.
-    fromInput->node()->ref(g.contextPtr(), AudioNode::RefTypeConnection);
+    fromInput->node()->ref(r, AudioNode::RefTypeConnection);
     
     // Let context know that a connection has been made.
-    g.context()->incrementConnectionCount();
+    r.context()->incrementConnectionCount();
 }
 
-void AudioNodeInput::disconnect(ContextGraphLock& g, ContextRenderLock& r,
+void AudioNodeInput::disconnect(ContextRenderLock& r,
                                 std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(g.context());
+    ASSERT(r.context());
     if (!fromInput || !toOutput || !fromInput->node())
         return;
     
@@ -75,9 +74,8 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, ContextRenderLock& r,
     auto it = fromInput->m_outputs.find(toOutput);
     if (it != fromInput->m_outputs.end()) {
         fromInput->removeOutput(r, *it);
-        AudioNodeInput::changedOutputs(g.contextPtr(), fromInput);
-        toOutput->removeInput(g, fromInput);
-        fromInput->node()->deref(g, r, AudioNode::RefTypeConnection);
+        toOutput->removeInput(fromInput);
+        fromInput->node()->deref(r, AudioNode::RefTypeConnection);
         return;
     }
     
@@ -85,45 +83,46 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, ContextRenderLock& r,
     auto it2 = fromInput->m_disabledOutputs.find(toOutput);
     if (it2 != fromInput->m_disabledOutputs.end()) {
         fromInput->m_disabledOutputs.erase(it2);
-        toOutput->removeInput(g, fromInput);
-        fromInput->node()->deref(g, r, AudioNode::RefTypeConnection);
+        toOutput->removeInput(fromInput);
+        fromInput->node()->deref(r, AudioNode::RefTypeConnection);
         return;
     }
 
     ASSERT_NOT_REACHED();
 }
 
-void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::disable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> output)
 {
-    if (!output || !self->node())
+    if (!output || !node())
         return;
 
-    auto it = self->m_outputs.find(output);
-    ASSERT(it != self->m_outputs.end());
+    auto it = m_outputs.find(output);
+    if (it == m_outputs.end())
+        return;
     
-    self->m_disabledOutputs.insert(output);
-    self->m_outputs.erase(it);
-    changedOutputs(g.contextPtr(), self);
+    m_disabledOutputs.insert(output);
+    m_outputs.erase(it);
+    m_renderingStateNeedUpdating = true;
 
     // Propagate disabled state to outputs.
-    self->node()->disableOutputsIfNecessary(g);
+    node()->disableOutputsIfNecessary(r);
 }
 
-void AudioNodeInput::enable(std::shared_ptr<AudioContext> c, std::shared_ptr<AudioNodeInput> self, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> output)
 {
-    if (!output || !self->node())
+    if (!output || !node())
         return;
 
-    auto it = self->m_disabledOutputs.find(output);
-    ASSERT(it != self->m_disabledOutputs.end());
+    auto it = m_disabledOutputs.find(output);
+    ASSERT(it != m_disabledOutputs.end());
 
     // Move output from disabled list to active list.
-    self->m_outputs.insert(output);
-    self->m_disabledOutputs.erase(it);
-    AudioNodeInput::changedOutputs(c, self);
+    m_outputs.insert(output);
+    m_disabledOutputs.erase(it);
+    m_renderingStateNeedUpdating = true;
 
     // Propagate enabled state to outputs.
-    self->node()->enableOutputsIfNecessary(c);
+    node()->enableOutputsIfNecessary(r);
 }
 
 void AudioNodeInput::didUpdate(ContextRenderLock& r)
@@ -206,6 +205,8 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
 
 AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
+    updateRenderingState(r);
+    
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
@@ -221,7 +222,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
         internalSummingBus->zero();
         return internalSummingBus;
     }
-
+    
     // Handle multiple connections case.
     sumAllConnections(r, internalSummingBus, framesToProcess);
     

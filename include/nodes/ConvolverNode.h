@@ -53,8 +53,8 @@ public:
     void setNormalize(bool normalize) { m_normalize = normalize; }
 
 private:
-    virtual double tailTime() const OVERRIDE;
-    virtual double latencyTime() const OVERRIDE;
+    virtual double tailTime() const override;
+    virtual double latencyTime() const override;
 
     std::unique_ptr<Reverb> m_reverb;
     std::shared_ptr<AudioBuffer> m_buffer;

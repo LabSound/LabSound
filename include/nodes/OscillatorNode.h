@@ -70,7 +70,7 @@ private:
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&, size_t framesToProcess);
 
-    virtual bool propagatesSilence(double now) const OVERRIDE;
+    virtual bool propagatesSilence(double now) const override;
 
     // One of the waveform types defined in the enum.
     unsigned short m_type;

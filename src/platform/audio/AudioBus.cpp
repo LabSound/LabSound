@@ -322,7 +322,7 @@ void AudioBus::sumFrom(const AudioBus &sourceBus)
 void AudioBus::copyWithGainFrom(const AudioBus &sourceBus, float* lastMixGain, float targetGain)
 {
     if (!topologyMatches(sourceBus)) {
-        ASSERT_NOT_REACHED();
+        // happens if a connection has been made, but the channel count has yet to be propagated.
         zero();
         return;
     }
@@ -332,7 +332,7 @@ void AudioBus::copyWithGainFrom(const AudioBus &sourceBus, float* lastMixGain, f
         return;
     }
 
-    unsigned numberOfChannels = this->numberOfChannels();
+    unsigned numberOfChannels = m_channels.size();
     ASSERT(numberOfChannels <= MaxBusChannels);
     if (numberOfChannels > MaxBusChannels)
         return;

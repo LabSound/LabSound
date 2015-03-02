@@ -98,9 +98,8 @@ public:
     // JavaScript references to the object.
     enum RefType { RefTypeNormal, RefTypeConnection };
 
-    void ref(std::shared_ptr<AudioContext>, RefType refType);
-    void deref(ContextGraphLock& g, ContextRenderLock&, RefType refType);
-    void finishDeref(ContextGraphLock&, ContextRenderLock&, RefType refType);
+    void ref(ContextRenderLock&, RefType refType);
+    void deref(ContextRenderLock&, RefType refType);
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
@@ -119,8 +118,11 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
-    unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
-    unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
+#define AUDIONODE_MAXINPUTS 4
+#define AUDIONODE_MAXOUTPUTS 4
+
+    unsigned int numberOfInputs() const { return m_inputCount; }
+    unsigned int numberOfOutputs() const { return m_outputCount; }
 
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
@@ -128,7 +130,7 @@ public:
     void connect(AudioContext*,
                  AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
     
-    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
+    void connect(std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
     void disconnect(AudioContext*, unsigned outputIndex, ExceptionCode&);
 
     virtual float sampleRate() const { return m_sampleRate; }
@@ -164,8 +166,8 @@ public:
     void silenceOutputs();
     void unsilenceOutputs();
 
-    void enableOutputsIfNecessary(std::shared_ptr<AudioContext>);
-    void disableOutputsIfNecessary(ContextGraphLock& g);
+    void enableOutputsIfNecessary(ContextRenderLock&);
+    void disableOutputsIfNecessary(ContextRenderLock&);
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
@@ -181,8 +183,11 @@ private:
     volatile bool m_isInitialized;
     NodeType m_nodeType;
     float m_sampleRate;
-    std::vector<std::shared_ptr<AudioNodeInput> > m_inputs;
-    std::vector<std::shared_ptr<AudioNodeOutput> > m_outputs;
+
+    std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODE_MAXINPUTS];
+    std::shared_ptr<AudioNodeOutput> m_outputs[AUDIONODE_MAXOUTPUTS];
+    int m_inputCount;
+    int m_outputCount;
 
     double m_lastProcessingTime;
     double m_lastNonSilentTime;

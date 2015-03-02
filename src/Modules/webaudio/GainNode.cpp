@@ -46,6 +46,10 @@ GainNode::GainNode(float sampleRate)
     
     initialize();
 }
+    
+    GainNode::~GainNode() {
+        printf("Releasing gain node\n");
+    }
 
 void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
@@ -69,7 +73,8 @@ void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
                 gain()->calculateSampleAccurateValues(r, gainValues, framesToProcess);
                 outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
             }
-        } else {
+        }
+        else {
             // Apply the gain with de-zippering into the output bus.
             outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r.contextPtr()));
         }

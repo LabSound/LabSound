@@ -48,11 +48,11 @@ public:
     MediaStreamSource* mediaStreamSource();
 
 private:
-    virtual double tailTime() const OVERRIDE { return 0; }
-    virtual double latencyTime() const OVERRIDE { return 0; }
+    virtual double tailTime() const override { return 0; }
+    virtual double latencyTime() const override { return 0; }
 
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence(double now) const OVERRIDE { return false; }
+    virtual bool propagatesSilence(double now) const override { return false; }
 
     std::shared_ptr<MediaStream> m_stream;
     std::shared_ptr<MediaStreamSource> m_source;

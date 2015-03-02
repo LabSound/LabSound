@@ -68,14 +68,8 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
         return;
     }
 
-    ContextGraphLock graphLock(m_context, "AudioDestinationNode::render");
-    if (!graphLock.context()) {
-        destinationBus->zero();
-        return;
-    }
-
     // Let the context take care of any business at the start of each render quantum.
-    m_context->handlePreRenderTasks(graphLock, renderLock);
+    m_context->handlePreRenderTasks(renderLock);
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
@@ -96,7 +90,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     m_context->processAutomaticPullNodes(renderLock, numberOfFrames);
 
     // Let the context take care of any business at the end of each render quantum.
-    m_context->handlePostRenderTasks(graphLock, renderLock);
+    m_context->handlePostRenderTasks(renderLock);
     
     // Advance current sample-frame.
     m_currentSampleFrame += numberOfFrames;

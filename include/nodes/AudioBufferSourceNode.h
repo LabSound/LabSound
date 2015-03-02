@@ -88,11 +88,11 @@ public:
     virtual void clearPannerNode() override;
 
     // If we are no longer playing, propogate silence ahead to downstream nodes.
-    virtual bool propagatesSilence(double now) const OVERRIDE;
+    virtual bool propagatesSilence(double now) const override;
 
 private:
-    virtual double tailTime() const OVERRIDE { return 0; }
-    virtual double latencyTime() const OVERRIDE { return 0; }
+    virtual double tailTime() const override { return 0; }
+    virtual double latencyTime() const override { return 0; }
 
     // Returns true on success.
     bool renderFromBuffer(ContextRenderLock&, AudioBus*, unsigned destinationFrameOffset, size_t numberOfFrames);

@@ -55,8 +55,8 @@ public:
     std::shared_ptr<AudioParam> reduction() { return m_reduction; }
 
 private:
-    virtual double tailTime() const OVERRIDE;
-    virtual double latencyTime() const OVERRIDE;
+    virtual double tailTime() const override;
+    virtual double latencyTime() const override;
 
     std::unique_ptr<DynamicsCompressor> m_dynamicsCompressor;
     std::shared_ptr<AudioParam> m_threshold;

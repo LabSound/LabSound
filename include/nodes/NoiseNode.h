@@ -33,7 +33,7 @@ namespace LabSound {
 
     private:
 
-        virtual bool propagatesSilence(double now) const OVERRIDE;
+        virtual bool propagatesSilence(double now) const override;
 
         // One of the noise types defined in the enum.
         unsigned short m_type;

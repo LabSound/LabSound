@@ -167,9 +167,9 @@ namespace LabSound {
 		// Satisfy the AudioNode interface
 		//virtual void process(ContextRenderLock&, size_t) override {}
 		//virtual void reset() override {}
-		//virtual double tailTime() const OVERRIDE { return 0; }
-		//virtual double latencyTime() const OVERRIDE { return 0; }
-		//virtual bool propagatesSilence(double now) const OVERRIDE { return true; }
+		//virtual double tailTime() const override { return 0; }
+		//virtual double latencyTime() const override { return 0; }
+		//virtual bool propagatesSilence(double now) const override { return true; }
 
 	};
 

@@ -240,22 +240,6 @@
 #define WARN_UNUSED_RETURN
 #endif
 
-/* OVERRIDE and FINAL */
-
-#if COMPILER_SUPPORTS(CXX_OVERRIDE_CONTROL)
-#define OVERRIDE override
-
-#if COMPILER_QUIRK(FINAL_IS_CALLED_SEALED)
-#define FINAL sealed
-#else
-#define FINAL final
-#endif
-
-#else
-#define OVERRIDE
-#define FINAL
-#endif
-
 /* REFERENCED_FROM_ASM */
 
 #ifndef REFERENCED_FROM_ASM

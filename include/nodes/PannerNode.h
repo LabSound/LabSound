@@ -120,8 +120,8 @@ public:
     std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
     std::shared_ptr<AudioParam> coneGain() { return m_coneGain; }
 
-    virtual double tailTime() const OVERRIDE { return m_panner ? m_panner->tailTime() : 0; }
-    virtual double latencyTime() const OVERRIDE { return m_panner ? m_panner->latencyTime() : 0; }
+    virtual double tailTime() const override { return m_panner ? m_panner->tailTime() : 0; }
+    virtual double latencyTime() const override { return m_panner ? m_panner->latencyTime() : 0; }
 
 protected:
     // Returns the combined distance and cone gain attenuation.

@@ -84,7 +84,7 @@ namespace LabSound {
         void randomize(std::shared_ptr<AudioContext>);
 
     private:
-        virtual bool propagatesSilence(double now) const OVERRIDE;
+        virtual bool propagatesSilence(double now) const override;
 
         std::shared_ptr<AudioParam> _waveType;
 		std::shared_ptr<AudioParam> _attack;

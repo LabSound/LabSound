@@ -30,8 +30,8 @@ namespace LabSound {
         void getData(std::vector<float>& result);
         
     private:
-        virtual double tailTime() const OVERRIDE { return 0; }
-        virtual double latencyTime() const OVERRIDE { return 0; }
+        virtual double tailTime() const override { return 0; }
+        virtual double latencyTime() const override { return 0; }
 
         bool m_mixToMono;
         bool m_recording;

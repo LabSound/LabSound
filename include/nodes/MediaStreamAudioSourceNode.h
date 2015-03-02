@@ -55,7 +55,7 @@ public:
 
 private:
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence(double now) const OVERRIDE { return false; }
+    virtual bool propagatesSilence(double now) const override { return false; }
 
     std::shared_ptr<MediaStream> m_mediaStream;
     AudioSourceProvider* m_audioSourceProvider;

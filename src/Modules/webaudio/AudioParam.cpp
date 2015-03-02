@@ -34,6 +34,11 @@
 #include <wtf/MathExtras.h>
 
 namespace WebCore {
+    
+    using namespace std;
+    namespace {
+        mutex paramMutex;
+    }
 
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
@@ -162,7 +167,8 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, un
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, narrowPrecisionToFloat(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
-void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+    
+void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
@@ -170,21 +176,24 @@ void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param,
     if (param->m_outputs.find(output) != param->m_outputs.end())
         return;
 
-    output->addParam(g, param);
+    output->addParam(param);
+    
+    lock_guard<mutex> lock(paramMutex);
     param->m_outputs.insert(output);
-    AudioParam::changedOutputs(g.contextPtr(), param);
+    param->m_renderingStateNeedUpdating = true;
 }
 
-void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
 
+    lock_guard<mutex> lock(paramMutex);
     auto it = param->m_outputs.find(output);
     if (it != param->m_outputs.end()) {
         param->m_outputs.erase(it);
-        AudioParam::changedOutputs(g.contextPtr(), param);
-        output->removeParam(g, param);
+        param->m_renderingStateNeedUpdating = true;
+        output->removeParam(param);
     }
 }
 

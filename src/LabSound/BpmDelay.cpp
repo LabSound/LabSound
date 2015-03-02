@@ -64,8 +64,8 @@ namespace LabSound {
 			channels = i;
 		}
 
-		virtual double tailTime() const { return 0; }
-		virtual double latencyTime() const { return 0; }
+		virtual double tailTime() const override { return 0; }
+		virtual double latencyTime() const override { return 0; }
 
 		int channels;
 

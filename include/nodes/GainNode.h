@@ -39,7 +39,7 @@ class AudioContext;
 class GainNode : public AudioNode {
 public:
     GainNode(float sampleRate);
-    virtual ~GainNode() {}
+    virtual ~GainNode();
     
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
@@ -51,8 +51,8 @@ public:
     std::shared_ptr<AudioParam> gain() const { return m_gain; }
     
 protected:  /// @LabSound - was private
-    virtual double tailTime() const OVERRIDE { return 0; }
-    virtual double latencyTime() const OVERRIDE { return 0; }
+    virtual double tailTime() const override { return 0; }
+    virtual double latencyTime() const override { return 0; }
 
 
     float m_lastGain; // for de-zippering

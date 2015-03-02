@@ -105,10 +105,10 @@ namespace LabSound {
 		// Satisfy the AudioNode interface
 		virtual void reset(std::shared_ptr<AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
 
-		// virtual double tailTime() const OVERRIDE { return 0; }
-		// virtual double latencyTime() const OVERRIDE { return 0; }
+		// virtual double tailTime() const override { return 0; }
+		// virtual double latencyTime() const override { return 0; }
 
-		virtual bool propagatesSilence(double now) const OVERRIDE{
+		virtual bool propagatesSilence(double now) const override {
 			return false;
 		}
 

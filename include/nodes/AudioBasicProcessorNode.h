@@ -54,8 +54,8 @@ public:
     unsigned numberOfChannels();
 
 protected:
-    virtual double tailTime() const OVERRIDE;
-    virtual double latencyTime() const OVERRIDE;
+    virtual double tailTime() const override;
+    virtual double latencyTime() const override;
 
     AudioProcessor* processor() { return m_processor.get(); }
     std::unique_ptr<AudioProcessor> m_processor;
