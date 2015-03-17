@@ -51,7 +51,6 @@ namespace WebCore {
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.
 // An AudioDestinationNode has one input and no outputs and represents the final destination to the audio hardware.
 // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
-
 class AudioNode {
 public:
 
@@ -64,6 +63,9 @@ public:
 		#endif
 		
 	};
+    
+    #define AUDIONODE_MAXINPUTS 4
+    #define AUDIONODE_MAXOUTPUTS 4
 
     AudioNode(float sampleRate);
     virtual ~AudioNode();
@@ -118,8 +120,6 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
-#define AUDIONODE_MAXINPUTS 4
-#define AUDIONODE_MAXOUTPUTS 4
 
     unsigned int numberOfInputs() const { return m_inputCount; }
     unsigned int numberOfOutputs() const { return m_outputCount; }
@@ -203,6 +203,7 @@ private:
     static bool s_isNodeCountInitialized;
     static int s_nodeCount[NodeTypeEnd];
 #endif
+    
 };
 
 } // namespace WebCore

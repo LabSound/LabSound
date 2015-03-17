@@ -1,6 +1,6 @@
 /*
  *
- * Technically these Macros were originally part of the WTF library:
+ * Technically these macros were originally part of the WTF library:
  *
  * Copyright (C) 2003, 2006, 2007, 2013 Apple Inc. All rights reserved.
  *

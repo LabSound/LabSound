@@ -4,7 +4,6 @@
 #pragma once
 
 #include "LabSoundConfig.h"
-#include "WTF/RefPtr.h"
 #include "AudioContext.h"
 #include "SpatializationNode.h"
 #include "AudioNode.h"

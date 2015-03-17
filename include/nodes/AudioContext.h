@@ -27,7 +27,6 @@
 
 #include "ConcurrentQueue.h"
 #include "ExceptionCodes.h"
-#include "WTF/RefPtr.h"
 #include <mutex>
 #include <set>
 #include <vector>
@@ -41,8 +40,8 @@ namespace WebCore {
     
     using namespace LabSound;
 
-// AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
-// For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
+    // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
+    // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
 
     class AudioBuffer;
     class AudioBufferCallback;
