@@ -44,7 +44,6 @@ namespace WebCore {
     // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
 
     class AudioBuffer;
-    class AudioBufferCallback;
     class AudioDestinationNode;
     class AudioListener;
     class AudioNode;
@@ -103,7 +102,7 @@ public:
     void decrementActiveSourceCount();
 
     // Asynchronous audio file data decoding.
-    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, PassRefPtr<AudioBufferCallback>, PassRefPtr<AudioBufferCallback>, ExceptionCode& ec);
+    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, std::function<void()>, std::function<void()>, ExceptionCode& ec);
 
     AudioListener* listener() { return m_listener.get(); }
 

@@ -34,7 +34,6 @@
 namespace WebCore {
 
 class AudioBuffer;
-class AudioBufferCallback;
 
 using namespace WTF;
 
@@ -42,49 +41,66 @@ using namespace WTF;
 // Upon successful decoding, a completion callback will be invoked with the decoded PCM data in an AudioBuffer.
 
 class AsyncAudioDecoder {
-    AsyncAudioDecoder(const AsyncAudioDecoder&); // noncopyable
-public:
-    AsyncAudioDecoder();
-    ~AsyncAudioDecoder();
 
-    // Must be called on the main thread.
-    void decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
-
+    
 private:
-    class DecodingTask {
-        DecodingTask(const DecodingTask&); // noncopyable
-    public:
-        static std::unique_ptr<AsyncAudioDecoder::DecodingTask> create(std::shared_ptr<std::vector<uint8_t>> audioData,
-                                                                       float sampleRate,
-                                                                       PassRefPtr<AudioBufferCallback> successCallback,
-                                                                       PassRefPtr<AudioBufferCallback> errorCallback);
-        void decode();
-        
-    private:
-        DecodingTask(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate, PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback);
+    
+   AsyncAudioDecoder(const AsyncAudioDecoder&); // noncopyable
 
+    class DecodingTask
+    {
+
+        DecodingTask(const DecodingTask&); // noncopyable
+        
+        DecodingTask(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
+                     std::function<void()> successCallback,
+                     std::function<void()> errorCallback);
+        
         std::shared_ptr<std::vector<uint8_t>> audioData() { return m_audioData; }
         float sampleRate() const { return m_sampleRate; }
-        AudioBufferCallback* successCallback() { return m_successCallback.get(); }
-        AudioBufferCallback* errorCallback() { return m_errorCallback.get(); }
+        
         std::shared_ptr<AudioBuffer> audioBuffer() { return m_audioBuffer; }
-
+        
         static void notifyCompleteDispatch(void* userData);
         void notifyComplete();
-
+        
         std::shared_ptr<std::vector<uint8_t>> m_audioData;
         float m_sampleRate;
-        RefPtr<AudioBufferCallback> m_successCallback;
-        RefPtr<AudioBufferCallback> m_errorCallback;
+        
+        std::function<void()> m_successCallback;
+        std::function<void()> m_errorCallback;
+        
         std::shared_ptr<AudioBuffer> m_audioBuffer;
+        
+    public:
+        
+        static std::unique_ptr<AsyncAudioDecoder::DecodingTask> create(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
+                                                                       std::function<void()> successCallback,
+                                                                       std::function<void()>  errorCallback);
+        void decode();
+    
     };
     
-    static void threadEntry(void* threadData);
+    static void threadEntry(void * threadData);
+    
     void runLoop();
 
     WTF::ThreadIdentifier m_threadID;
+    
     std::mutex m_threadCreationMutex;
+    
     MessageQueue<DecodingTask> m_queue;
+    
+public:
+    
+    AsyncAudioDecoder();
+    ~AsyncAudioDecoder();
+    
+    // Must be called on the main thread!
+    void decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
+                     std::function<void()> successCallback,
+                     std::function<void()>  errorCallback);
+    
 };
 
 } // namespace WebCore
