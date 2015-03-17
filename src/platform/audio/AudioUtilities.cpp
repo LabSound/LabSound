@@ -23,14 +23,11 @@
  */
 
 #include "LabSoundConfig.h"
+#include "Assertions.h"
 #include "AudioUtilities.h"
 #include <wtf/MathExtras.h>
-#include <wtf/Assertions.h>
 
-
-namespace WebCore {
-
-namespace AudioUtilities {
+namespace WebCore { namespace AudioUtilities {
 
 float decibelsToLinear(float decibels)
 {
@@ -57,7 +54,6 @@ size_t timeToSampleFrame(double time, double sampleRate)
 {
     return static_cast<size_t>(round(time * sampleRate));
 }
-} // AudioUtilites
-
-} // WebCore
+    
+} } // end AudioUtilites & WebCore
 

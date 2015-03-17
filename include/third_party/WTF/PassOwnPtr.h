@@ -68,7 +68,7 @@ namespace WTF {
         typedef PtrType PassOwnPtr::*UnspecifiedBoolType;
         operator UnspecifiedBoolType() const { return m_ptr ? &PassOwnPtr::m_ptr : 0; }
 
-        PassOwnPtr& operator=(const PassOwnPtr&) { COMPILE_ASSERT(!sizeof(T*), PassOwnPtr_should_never_be_assigned_to); return *this; }
+        PassOwnPtr& operator=(const PassOwnPtr&) { static_assert(!sizeof(T*), "Dont Assign to PassOwnPtr"); return *this; }
 
         template<typename U> friend PassOwnPtr<U> adoptPtr(U*);
 		template<typename U> friend PassOwnPtr<U[]> adoptArrayPtr(U*);
@@ -78,10 +78,10 @@ namespace WTF {
 
         // We should never have two OwnPtrs for the same underlying object (otherwise we'll get
         // double-destruction), so these equality operators should never be needed.
-        template<typename U> bool operator==(const PassOwnPtr<U>&) { COMPILE_ASSERT(!sizeof(U*), OwnPtrs_should_never_be_equal); return false; }
-        template<typename U> bool operator!=(const PassOwnPtr<U>&) { COMPILE_ASSERT(!sizeof(U*), OwnPtrs_should_never_be_equal); return false; }
-        template<typename U> bool operator==(const OwnPtr<U>&) { COMPILE_ASSERT(!sizeof(U*), OwnPtrs_should_never_be_equal); return false; }
-        template<typename U> bool operator!=(const OwnPtr<U>&) { COMPILE_ASSERT(!sizeof(U*), OwnPtrs_should_never_be_equal); return false; }
+        template<typename U> bool operator==(const PassOwnPtr<U>&) { static_assert(!sizeof(U*), "Shouldn't be equal. Ever."); return false; }
+        template<typename U> bool operator!=(const PassOwnPtr<U>&) { static_assert(!sizeof(U*), "Shouldn't be equal. Ever."); return false; }
+        template<typename U> bool operator==(const OwnPtr<U>&) { static_assert(!sizeof(U*), "Shouldn't be equal. Ever."); return false; }
+        template<typename U> bool operator!=(const OwnPtr<U>&) { static_assert(!sizeof(U*), "Shouldn't be equal. Ever."); return false; }
 
         mutable PtrType m_ptr;
     };

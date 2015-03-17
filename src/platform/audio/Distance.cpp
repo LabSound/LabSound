@@ -27,7 +27,7 @@
  */
 
 #include "LabSoundConfig.h"
-#include <WTF/Assertions.h>
+#include "Assertions.h"
 #include "Distance.h"
 
 #include <algorithm>

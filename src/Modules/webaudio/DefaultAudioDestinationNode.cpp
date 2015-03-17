@@ -25,8 +25,6 @@
 #include "LabSoundConfig.h"
 #include "DefaultAudioDestinationNode.h"
 
-#include "Logging.h"
-
 namespace WebCore {
     
 DefaultAudioDestinationNode::DefaultAudioDestinationNode(std::shared_ptr<AudioContext> c)
@@ -45,7 +43,8 @@ void DefaultAudioDestinationNode::initialize()
         return;
 
     float hardwareSampleRate = AudioDestination::hardwareSampleRate();
-    LOG(WebAudio, ">>>> hardwareSampleRate = %f\n", hardwareSampleRate);
+    
+    LOG("Hardware Samplerate: %f\n", hardwareSampleRate);
     
     m_destination = std::move(std::unique_ptr<AudioDestination>(AudioDestination::create(*this, hardwareSampleRate)));
     

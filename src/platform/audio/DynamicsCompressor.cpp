@@ -30,6 +30,8 @@
 
 #include "AudioBus.h"
 #include "AudioUtilities.h"
+#include "Assertions.h"
+
 #include <wtf/MathExtras.h>
 
 namespace WebCore {
