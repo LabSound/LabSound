@@ -28,6 +28,7 @@
 #include "AudioBus.h"
 #include <set>
 #include <vector>
+#include <array>
 
 namespace LabSound {
     class ContextGraphLock;
@@ -37,8 +38,8 @@ namespace LabSound {
 
 namespace WebCore {
 
-class AudioContext;
-class AudioNodeOutput;
+    class AudioContext;
+    class AudioNodeOutput;
     
     using namespace LabSound;
 
@@ -72,8 +73,8 @@ public:
 protected:
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
-# define SUMMING_JUNCTION_MAX_OUTPUTS 8
-    std::shared_ptr<AudioNodeOutput> m_outputs[SUMMING_JUNCTION_MAX_OUTPUTS];
+    # define SUMMING_JUNCTION_MAX_OUTPUTS 8
+    std::array<std::shared_ptr<AudioNodeOutput>, SUMMING_JUNCTION_MAX_OUTPUTS> m_outputs;
 
     // numberOfConnections() should never be called from the audio rendering thread.
     // Instead numberOfRenderingConnections() and renderingOutput() should be used.

@@ -32,6 +32,7 @@
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
 #include <wtf/MathExtras.h>
+#include <algorithm>
 
 namespace WebCore {
     
@@ -142,8 +143,9 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     AudioBus summingBus(1, numberOfValues, false);
     summingBus.setChannelMemory(0, values, numberOfValues);
 
-    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i) {
-        AudioNodeOutput* output = renderingOutput(i);
+    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i)
+    {
+        auto output = renderingOutput(i);
         ASSERT(output);
 
         // Render audio from this output.
@@ -172,14 +174,32 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
 {
     if (!output)
         return;
-
-    if (param->m_outputs.find(output) != param->m_outputs.end())
+    
+    // Changed to support fixed-size arrays
+    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
+    
+    // Not found...
+    if (it != param->m_outputs.end())
+    {
         return;
-
+    }
+    
+    int firstAvailableIdx = -1;
+    for (int i = 0; i < param->m_outputs.size(); i++)
+    {
+        if (param->m_outputs[i].get() == nullptr)
+        {
+            firstAvailableIdx = i;
+            break;
+        }
+    }
+    
+    ASSERT(firstAvailableIdx > -1);
+    
     output->addParam(param);
     
     lock_guard<mutex> lock(paramMutex);
-    param->m_outputs.insert(output);
+    param->m_outputs[firstAvailableIdx] = output;
     param->m_renderingStateNeedUpdating = true;
 }
 
@@ -188,10 +208,15 @@ void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<A
     if (!output)
         return;
 
+    // Changed to support fixed-size arrays
+    
     lock_guard<mutex> lock(paramMutex);
-    auto it = param->m_outputs.find(output);
-    if (it != param->m_outputs.end()) {
-        param->m_outputs.erase(it);
+    
+    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
+    
+    if (it != param->m_outputs.end())
+    {
+        it->reset(); // releases ownership
         param->m_renderingStateNeedUpdating = true;
         output->removeParam(param);
     }
