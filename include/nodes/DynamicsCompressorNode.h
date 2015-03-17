@@ -27,7 +27,6 @@
 
 #include "AudioNode.h"
 #include "AudioParam.h"
-#include "WTF/RefPtr.h"
 
 namespace WebCore {
 

@@ -38,8 +38,6 @@
 #include <WTF/ThreadFunctionInvocation.h>
 #include <WTF/ThreadIdentifierDataPthreads.h>
 #include <WTF/ThreadSpecific.h>
-#include <WTF/RefPtr.h>
-#include <WTF/PassOwnPtr.h>
 #include <errno.h>
 #include <map>
 
@@ -89,7 +87,7 @@ private:
     pthread_t m_pthreadHandle;
 };
 
-typedef std::map<ThreadIdentifier, OwnPtr<PthreadState> > ThreadMap;
+typedef std::map<ThreadIdentifier, std::unique_ptr<PthreadState> > ThreadMap;
 
 static std::mutex* atomicallyInitializedStaticMutex;
 
@@ -177,7 +175,7 @@ static ThreadIdentifier establishIdentifierForPthreadHandle(const pthread_t& pth
     ASSERT(!identifierByPthreadHandle(pthreadHandle));
     std::lock_guard<std::mutex> locker(threadMapMutex());
     static ThreadIdentifier identifierCount = 1;
-    threadMap()[identifierCount] =adoptPtr(new PthreadState(pthreadHandle));
+    threadMap()[identifierCount] = std::unique_ptr<PthreadState>(new PthreadState(pthreadHandle));
     return identifierCount++;
 }
 
@@ -193,22 +191,20 @@ static pthread_t pthreadHandleForIdentifierWithLockAlreadyHeld(ThreadIdentifier 
 static void* wtfThreadEntryPoint(void* param)
 {
     // Balanced by .leakPtr() in createThreadInternal.
-    OwnPtr<ThreadFunctionInvocation> invocation = adoptPtr(static_cast<ThreadFunctionInvocation*>(param));
+    std::unique_ptr<ThreadFunctionInvocation> invocation(static_cast<ThreadFunctionInvocation*>(param)); // re-own ptr
     invocation->function(invocation->data);
     return 0;
 }
 
 ThreadIdentifier createThreadInternal(ThreadFunction entryPoint, void* data, const char*)
 {
-    OwnPtr<ThreadFunctionInvocation> invocation = adoptPtr(new ThreadFunctionInvocation(entryPoint, data));
+    std::unique_ptr<ThreadFunctionInvocation> invocation(new ThreadFunctionInvocation(entryPoint, data));
     pthread_t threadHandle;
     if (pthread_create(&threadHandle, 0, wtfThreadEntryPoint, invocation.get())) {
-        LOG_ERROR("Failed to create pthread at entry point %p with data %p", wtfThreadEntryPoint, invocation.get());
+        LOG_ERROR("Failed to create pthread at entry point %p with data %p", wtfThreadEntryPoint, invocation.release()); // Leak the ptr
         return 0;
     }
 
-    // Balanced by adoptPtr() in wtfThreadEntryPoint.
-    invocation.leakPtr();
     return establishIdentifierForPthreadHandle(threadHandle);
 }
 

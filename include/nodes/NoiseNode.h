@@ -26,7 +26,7 @@ namespace LabSound {
 
         // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(std::shared_ptr<AudioContext>) override;
+        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
 
         unsigned short type() const { return m_type; }
         void setType(unsigned short, ExceptionCode&);

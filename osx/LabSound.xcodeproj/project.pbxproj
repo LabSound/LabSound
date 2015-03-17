@@ -554,7 +554,7 @@
 		E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OwnPtrCommon.h; path = ../include/third_party/WTF/OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PassOwnPtr.h; path = ../include/third_party/WTF/PassOwnPtr.h; sourceTree = "<group>"; };
 		E2D5CF281A19B66900B031C8 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../include/third_party/WTF/Platform.h; sourceTree = "<group>"; };
-		E2D5CF291A19B66900B031C8 /* RefPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefPtr.h; path = ../include/third_party/WTF/RefPtr.h; sourceTree = "<group>"; };
+		E2D5CF291A19B66900B031C8 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OwnPtr.h; path = ../include/third_party/WTF/OwnPtr.h; sourceTree = "<group>"; };
 		E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadFunctionInvocation.h; path = ../include/third_party/WTF/ThreadFunctionInvocation.h; sourceTree = "<group>"; };
 		E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadIdentifierDataPthreads.h; path = ../include/third_party/WTF/ThreadIdentifierDataPthreads.h; sourceTree = "<group>"; };
 		E2D5CF2E1A19B66900B031C8 /* Threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threading.h; path = ../include/third_party/WTF/Threading.h; sourceTree = "<group>"; };
@@ -1074,7 +1074,7 @@
 				E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */,
 				E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */,
 				E2D5CF281A19B66900B031C8 /* Platform.h */,
-				E2D5CF291A19B66900B031C8 /* RefPtr.h */,
+				E2D5CF291A19B66900B031C8 /* OwnPtr.h */,
 				E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */,
 				E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */,
 				E2D5CF2E1A19B66900B031C8 /* Threading.h */,

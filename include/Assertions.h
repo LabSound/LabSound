@@ -29,8 +29,8 @@
 #ifndef LabSound_Assertions_h
 #define LabSound_Assertions_h
 
-#include "Platform.h"
-#include "ExportMacros.h"
+#include <WTF/Platform.h>
+#include <WTF/ExportMacros.h>
 #include "Logging.h"
 
 // FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform

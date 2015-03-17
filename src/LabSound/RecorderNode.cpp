@@ -94,7 +94,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void RecorderNode::reset(std::shared_ptr<AudioContext>)
+    void RecorderNode::reset(std::shared_ptr<WebCore::AudioContext>)
     {
         std::vector<float> clear;
         {

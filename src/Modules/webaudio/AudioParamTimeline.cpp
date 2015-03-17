@@ -31,6 +31,7 @@
 #include "FloatConversion.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
+#include "Assertions.h"
 
 using namespace std;
 

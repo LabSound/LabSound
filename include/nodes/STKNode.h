@@ -58,8 +58,8 @@ namespace LabSound {
                 stk::Stk::setSampleRate(sampleRate);
             });
             
-			addOutput(adoptPtr(new AudioNodeOutput(this, 1)));
-			setNodeType((AudioNode::NodeType) LabSound::NodeTypeSTK);
+			addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 1)));
+			setNodeType(LabSound::NodeTypeSTK);
 			initialize();
 		}
 
@@ -103,7 +103,7 @@ namespace LabSound {
 	private:
 
 		// Satisfy the AudioNode interface
-		virtual void reset(std::shared_ptr<AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
+		virtual void reset(std::shared_ptr<WebCore::AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
 
 		// virtual double tailTime() const override { return 0; }
 		// virtual double latencyTime() const override { return 0; }

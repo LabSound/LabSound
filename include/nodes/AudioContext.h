@@ -202,7 +202,8 @@ private:
 
     // Only accessed in the audio thread.
     std::vector<std::shared_ptr<AudioNode>> m_finishedNodes;
-
+    
+    /* DANGER: OLD DOCUMENTATION/COMMENT */
     // We don't use RefPtr<AudioNode> here because AudioNode has a more complex ref() / deref() implementation
     // with an optional argument for refType.  We need to use the special refType: RefTypeConnection
     // Either accessed when the graph lock is held, or on the main thread when the audio thread has finished.
