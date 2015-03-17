@@ -88,7 +88,7 @@ public:
     // Returns true when initialize() was called AND all asynchronous initialization has completed.
     bool isRunnable() const;
 
-    virtual void stop(ContextGraphLock&, ContextRenderLock&);
+    virtual void stop(ContextGraphLock&);
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node) { m_destinationNode = node; }
     std::shared_ptr<AudioDestinationNode> destination() { return m_destinationNode; }
@@ -118,7 +118,7 @@ public:
     void handlePostRenderTasks(ContextRenderLock&);
 
     // Called periodically at the end of each render quantum to dereference finished source nodes.
-    void derefFinishedSourceNodes(ContextRenderLock& r);
+    void derefFinishedSourceNodes(ContextGraphLock& r);
 
     // We schedule deletion of all marked nodes at the end of each realtime render quantum.
     void markForDeletion(ContextRenderLock& r, AudioNode*);
@@ -144,7 +144,7 @@ public:
     void addDeferredFinishDeref(ContextGraphLock& g, AudioNode*);
 
     // In the audio thread at the start of each render cycle, we'll call handleDeferredFinishDerefs().
-    void handleDeferredFinishDerefs(ContextRenderLock&);
+    void handleDeferredFinishDerefs(ContextGraphLock&);
 
     void startRendering();
     void fireCompletionEvent();
@@ -155,6 +155,8 @@ public:
     /// context's object creation routines, such as createGainNode, or by LabSound::init.
     /// It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
+    
+    void update(ContextGraphLock&);
 
 private:
     explicit AudioContext();
@@ -162,7 +164,7 @@ private:
     void constructCommon();
 
 public:
-    void uninitialize(ContextGraphLock&, ContextRenderLock&);
+    void uninitialize(ContextGraphLock&);
 
 private:
     friend class LabSound::ContextGraphLock;
@@ -183,12 +185,12 @@ private:
     // In turn, these nodes reference all nodes they're connected to.  All nodes are ultimately connected to the AudioDestinationNode.
     // When the context dereferences a source node, it will be deactivated from the rendering graph along with all other nodes it is
     // uniquely connected to.  See the AudioNode::ref() and AudioNode::deref() methods for more details.
-    void refNode(ContextRenderLock&, std::shared_ptr<AudioNode>);
-    void derefNode(ContextRenderLock&, std::shared_ptr<AudioNode>);
+    void refNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
+    void derefNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
 
     // When the context goes away, there might still be some sources which haven't finished playing.
     // Make sure to dereference them here.
-    void derefUnfinishedSourceNodes(ContextGraphLock&, ContextRenderLock&);
+    void derefUnfinishedSourceNodes(ContextGraphLock&);
     
 public:
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);

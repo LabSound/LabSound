@@ -34,6 +34,10 @@
 using namespace std;
  
 namespace WebCore {
+    
+    namespace {
+        mutex outputsMutex;
+    }
 
 AudioNodeInput::AudioNodeInput(AudioNode* node)
 : AudioSummingJunction()
@@ -43,40 +47,47 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(ContextRenderLock& r,
+void AudioNodeInput::connect(ContextGraphLock& g,
                              std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!fromInput || !toOutput || !fromInput->node())
         return;
+    
+    ASSERT(g.context());
+    lock_guard<mutex> lock(outputsMutex);
 
-    // Check if input is already connected to this output.
-    if (fromInput->m_outputs.find(toOutput) != fromInput->m_outputs.end())
-        return;
+    // return if input is already connected to this output.
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
+        if (fromInput->m_outputs[i] == toOutput)
+            return;
 
     toOutput->addInput(fromInput);
-    fromInput->addOutput(r, toOutput);
+    fromInput->addOutput(toOutput);
    
-    // Sombody has just connected to us, so count it as a reference.
-    fromInput->node()->ref(r, AudioNode::RefTypeConnection);
+    // increment the reference count on the node
+    fromInput->node()->ref(g, AudioNode::RefTypeConnection);
     
-    // Let context know that a connection has been made.
-    r.context()->incrementConnectionCount();
+    // Inform context that a connection has been made.
+    g.context()->incrementConnectionCount();
 }
 
-void AudioNodeInput::disconnect(ContextRenderLock& r,
+void AudioNodeInput::disconnect(ContextGraphLock& g,
                                 std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    ASSERT(r.context());
+    ASSERT(g.context());
     if (!fromInput || !toOutput || !fromInput->node())
         return;
     
+    lock_guard<mutex> lock(outputsMutex);
+    
     // First try to disconnect from "active" connections.
-    auto it = fromInput->m_outputs.find(toOutput);
-    if (it != fromInput->m_outputs.end()) {
-        fromInput->removeOutput(r, *it);
-        toOutput->removeInput(fromInput);
-        fromInput->node()->deref(r, AudioNode::RefTypeConnection);
-        return;
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (fromInput->m_outputs[i] == toOutput) {
+            fromInput->removeOutput(toOutput);
+            toOutput->removeInput(fromInput);
+            fromInput->node()->deref(g, AudioNode::RefTypeConnection);
+            return;
+        }
     }
     
     // Otherwise, try to disconnect from disabled connections.
@@ -84,45 +95,52 @@ void AudioNodeInput::disconnect(ContextRenderLock& r,
     if (it2 != fromInput->m_disabledOutputs.end()) {
         fromInput->m_disabledOutputs.erase(it2);
         toOutput->removeInput(fromInput);
-        fromInput->node()->deref(r, AudioNode::RefTypeConnection);
+        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
         return;
     }
 
     ASSERT_NOT_REACHED();
 }
 
-void AudioNodeInput::disable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output || !node())
         return;
 
-    auto it = m_outputs.find(output);
-    if (it == m_outputs.end())
-        return;
-    
-    m_disabledOutputs.insert(output);
-    m_outputs.erase(it);
-    m_renderingStateNeedUpdating = true;
+    lock_guard<mutex> lock(outputsMutex);
 
-    // Propagate disabled state to outputs.
-    node()->disableOutputsIfNecessary(r);
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (m_outputs[i] == output) {
+            m_disabledOutputs.insert(output);
+            m_outputs[i].reset();
+            m_renderingStateNeedUpdating = true;
+            node()->disableOutputsIfNecessary(g);    // Propagate disabled state to outputs.
+        }
+    }
 }
 
-void AudioNodeInput::enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> output)
+void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output || !node())
         return;
 
+    lock_guard<mutex> lock(outputsMutex);
+    
     auto it = m_disabledOutputs.find(output);
     ASSERT(it != m_disabledOutputs.end());
 
     // Move output from disabled list to active list.
-    m_outputs.insert(output);
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (!m_outputs[i]) {
+            m_outputs[i] = output;
+            m_renderingStateNeedUpdating = true;
+            
+            // Propagate enabled state to outputs.
+            node()->enableOutputsIfNecessary(g);
+            break;
+        }
+    }
     m_disabledOutputs.erase(it);
-    m_renderingStateNeedUpdating = true;
-
-    // Propagate enabled state to outputs.
-    node()->enableOutputsIfNecessary(r);
 }
 
 void AudioNodeInput::didUpdate(ContextRenderLock& r)
@@ -137,6 +155,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
 
+    lock_guard<mutex> lock(outputsMutex);
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
@@ -192,7 +211,7 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
     summingBus->zero();
 
     for (unsigned i = 0; i < numberOfRenderingConnections(); ++i) {
-        AudioNodeOutput* output = renderingOutput(i);
+        auto output = renderingOutput(i);
         ASSERT(output);
 
         // Render audio from this output.
@@ -210,7 +229,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
-        AudioNodeOutput* output = this->renderingOutput(0);
+        auto output = this->renderingOutput(0);
         return output->pull(r, inPlaceBus, framesToProcess);
     }
 

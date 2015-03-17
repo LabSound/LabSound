@@ -53,16 +53,16 @@ public:
     AudioNode* node() const { return m_node; }
 
     // Must be called with the context's graph lock.
-    static void connect(ContextRenderLock&,
+    static void connect(ContextGraphLock&,
                         std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(ContextRenderLock&,
+    static void disconnect(ContextGraphLock&,
                            std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.
     // Must be called with the context's graph lock.
-    void enable(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
-    void disable(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    void enable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
+    void disable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
 
     // pull() processes all of the AudioNodes connected to us.
     // In the case of multiple connections it sums the result into an internal summing bus.

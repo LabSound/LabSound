@@ -22,7 +22,7 @@ namespace LabSound {
                 m_context->m_graphLocker = locker;
             }
             else {
-                ASSERT(false);
+                //ASSERT(false);
             }
         }
         
@@ -47,7 +47,7 @@ namespace LabSound {
                 m_context->m_renderLocker = locker;
             }
             else {
-                ASSERT(false);
+                //ASSERT(false);
             }
         }
         

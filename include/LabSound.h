@@ -58,16 +58,13 @@ namespace LabSound {
     
     // init() will return an audio context object
     std::shared_ptr<AudioContext> init();
-
-    // call periodically to allow book-keeping to occur, notifications to send, and so on
-    void update(std::shared_ptr<LabSound::AudioContext> context);
     
     // when done with the context call finish
     void finish(std::shared_ptr<LabSound::AudioContext> context);
     
     // Connect/Disconnect return true on success
-    bool connect(ContextGraphLock& g, ContextRenderLock& r, AudioNode* thisOutput, AudioNode* toThisInput);
-    bool disconnect(ContextGraphLock& g, ContextRenderLock& r, AudioNode* thisOutput);
+    bool connect(ContextGraphLock& g, AudioNode* thisOutput, AudioNode* toThisInput);
+    bool disconnect(ContextGraphLock& g, AudioNode* thisOutput);
 }
 
 #endif
