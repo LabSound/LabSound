@@ -64,7 +64,7 @@ public:
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
     unsigned renderingParamFanOutCount() const;
 
-    static void disconnectAll(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAll(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
 
     void setNumberOfChannels(ContextRenderLock&, unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
@@ -74,8 +74,8 @@ public:
 
     // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
     // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
-    static void disable(ContextRenderLock&, std::shared_ptr<AudioNodeOutput> self);
-    static void enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self);
+    static void disable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput> self);
+    static void enable(ContextGraphLock& r, std::shared_ptr<AudioNodeOutput> self);
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock&);
@@ -104,7 +104,7 @@ private:
     unsigned paramFanOutCount();
 
     // Must be called within the context's graph lock.
-    static void disconnectAllInputs(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
     static void disconnectAllParams(std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.

@@ -204,7 +204,7 @@ void AudioContext::clear()
     } while (m_nodesToDelete.size());
 }
 
-void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::uninitialize(ContextGraphLock& g)
 {
     if (!m_isInitialized)
         return;
@@ -221,7 +221,7 @@ void AudioContext::uninitialize(ContextGraphLock& g, ContextRenderLock& r)
     }
 
     // Get rid of the sources which may still be playing.
-    derefUnfinishedSourceNodes(g, r);
+    derefUnfinishedSourceNodes(g);
 
     m_isInitialized = false;
 }
@@ -250,14 +250,14 @@ bool AudioContext::isRunnable() const
     return m_hrtfDatabaseLoader->isLoaded();
 }
 
-void AudioContext::stop(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::stop(ContextGraphLock& g)
 {
     if (m_isStopScheduled)
         return;
     
     m_isStopScheduled = true;
     
-    uninitialize(g, r);
+    uninitialize(g);
     clear();
 }
 
@@ -289,7 +289,7 @@ std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSourc
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
     node->setFormat(g, r, 2, sampleRate());
 
-    refNode(r, node); // context keeps reference until node is disconnected
+    refNode(g, node); // context keeps reference until node is disconnected
     return node;
 }
 
@@ -306,26 +306,26 @@ void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode*
     ASSERT(0 == "node to finish not referenced");
 }
 
-void AudioContext::derefFinishedSourceNodes(ContextRenderLock& r)
+void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g)
 {
-    ASSERT(r.context());
+    ASSERT(g.context());
     for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-        derefNode(r, m_finishedNodes[i]);
+        derefNode(g, m_finishedNodes[i]);
 
     m_finishedNodes.clear();
 }
 
-void AudioContext::refNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
+void AudioContext::refNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
 {
-    node->ref(r, AudioNode::RefTypeConnection);
+    node->ref(g, AudioNode::RefTypeConnection);
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::derefNode(ContextRenderLock& r, std::shared_ptr<AudioNode> node)
+void AudioContext::derefNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
 {
-    ASSERT(r.context());
+    ASSERT(g.context());
     
-    node->deref(r, AudioNode::RefTypeConnection);
+    node->deref(g, AudioNode::RefTypeConnection);
 
     for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i) {
         if (node == *i) {
@@ -335,11 +335,11 @@ void AudioContext::derefNode(ContextRenderLock& r, std::shared_ptr<AudioNode> no
     }
 }
 
-void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g, ContextRenderLock& r)
+void AudioContext::derefUnfinishedSourceNodes(ContextGraphLock& g)
 {
     ASSERT(g.context());
     for (unsigned i = 0; i < m_referencedNodes.size(); ++i)
-        m_referencedNodes[i]->deref(r, AudioNode::RefTypeConnection);
+        m_referencedNodes[i]->deref(g, AudioNode::RefTypeConnection);
 
     m_referencedNodes.clear();
 }
@@ -374,19 +374,6 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes(r);
-
-    {
-        lock_guard<mutex> lock(automaticSourcesMutex);
-        for (auto i : pendingConnections) {
-            if (i.connect) {
-                AudioNodeInput::connect(r, i.fromInput, i.toOutput);
-            }
-            else {
-                AudioNodeOutput::disconnectAll(r, i.toOutput);
-            }
-        }
-        pendingConnections.clear();
-    }
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput) {
@@ -398,17 +385,31 @@ void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput) {
     pendingConnections.emplace_back(PendingConnection(std::shared_ptr<AudioNodeInput>(), toOutput, false));
 }
 
+void AudioContext::update(ContextGraphLock& g) {
+    {
+        lock_guard<mutex> lock(automaticSourcesMutex);
+        for (auto i : pendingConnections) {
+            if (i.connect) {
+                AudioNodeInput::connect(g, i.fromInput, i.toOutput);
+            }
+            else {
+                AudioNodeOutput::disconnectAll(g, i.toOutput);
+            }
+        }
+        pendingConnections.clear();
+    }
+    
+    // Take care of finishing any derefs where the tryLock() failed previously.
+    handleDeferredFinishDerefs(g);
+    
+    // Dynamically clean up nodes which are no longer needed.
+    derefFinishedSourceNodes(g);
+}
     
 void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 {
     ASSERT(r.context());
  
-    // Take care of finishing any derefs where the tryLock() failed previously.
-    handleDeferredFinishDerefs(r);
-
-    // Dynamically clean up nodes which are no longer needed.
-    derefFinishedSourceNodes(r);
-
     // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
     scheduleNodeDeletion(r);
 
@@ -418,12 +419,12 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
     handleAutomaticSources();
 }
 
-void AudioContext::handleDeferredFinishDerefs(ContextRenderLock& r)
+void AudioContext::handleDeferredFinishDerefs(ContextGraphLock& g)
 {
-    ASSERT(r.context());
+    ASSERT(g.context());
     for (unsigned i = 0; i < m_deferredFinishDerefList.size(); ++i) {
         AudioNode* node = m_deferredFinishDerefList[i];
-        node->deref(r, AudioNode::RefTypeConnection);
+        node->deref(g, AudioNode::RefTypeConnection);
     }
     
     m_deferredFinishDerefList.clear();

@@ -186,14 +186,14 @@ void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
         }
 }
 
-void AudioNodeOutput::disconnectAllInputs(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     lock_guard<mutex> lock(outputMutex);
     
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
     for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
         if (auto ptr = self->m_inputs[i]) {
-            AudioNodeInput::disconnect(r, ptr, self);
+            AudioNodeInput::disconnect(g, ptr, self);
             ptr.reset();
         }
 }
@@ -227,29 +227,29 @@ void AudioNodeOutput::disconnectAllParams(std::shared_ptr<AudioNodeOutput> self)
     }
 }
 
-void AudioNodeOutput::disconnectAll(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    self->disconnectAllInputs(r, self);
+    self->disconnectAllInputs(g, self);
     self->disconnectAllParams(self);
 }
 
-void AudioNodeOutput::disable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     if (self->m_isEnabled) {
         for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
             if (auto ptr = self->m_inputs[i])
-                ptr->disable(r, self);
+                ptr->disable(g, self);
 
         self->m_isEnabled = false;
     }
 }
 
-void AudioNodeOutput::enable(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     if (!self->m_isEnabled) {
         for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
             if (auto ptr = self->m_inputs[i])
-                ptr->enable(r, self);
+                ptr->enable(g, self);
 
         self->m_isEnabled = true;
     }

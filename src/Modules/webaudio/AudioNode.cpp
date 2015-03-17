@@ -291,17 +291,17 @@ void AudioNode::unsilenceOutputs()
             out->bus()->clearSilentFlag();
 }
 
-void AudioNode::enableOutputsIfNecessary(ContextRenderLock& r)
+void AudioNode::enableOutputsIfNecessary(ContextGraphLock& g)
 {
     if (m_isDisabled && m_connectionRefCount > 0) {
         m_isDisabled = false;
         for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
             if (auto out = output(i))
-                AudioNodeOutput::enable(r, out);
+                AudioNodeOutput::enable(g, out);
     }
 }
 
-void AudioNode::disableOutputsIfNecessary(ContextRenderLock& r)
+void AudioNode::disableOutputsIfNecessary(ContextGraphLock& g)
 {
     // Disable outputs if appropriate. We do this if the number of connections is 0 or 1. The case
     // of 0 is from finishDeref() where there are no connections left. The case of 1 is from
@@ -323,12 +323,12 @@ void AudioNode::disableOutputsIfNecessary(ContextRenderLock& r)
             m_isDisabled = true;
             for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
                 if (auto out = output(i))
-                    AudioNodeOutput::disable(r, out);
+                    AudioNodeOutput::disable(g, out);
         }
     }
 }
 
-void AudioNode::ref(ContextRenderLock& r, RefType refType)
+void AudioNode::ref(ContextGraphLock& g, RefType refType)
 {
     if (refType == RefTypeNormal)
         atomicIncrement(&m_normalRefCount);
@@ -338,7 +338,7 @@ void AudioNode::ref(ContextRenderLock& r, RefType refType)
         // See the disabling code in finishDeref() below. This handles the case where a node
         // is being re-connected after being used at least once and disconnected.
         // In this case, we need to re-enable.
-        enableOutputsIfNecessary(r);
+        enableOutputsIfNecessary(g);
     }
 
 #if DEBUG_AUDIONODE_REFERENCES
@@ -346,7 +346,7 @@ void AudioNode::ref(ContextRenderLock& r, RefType refType)
 #endif
 }
 
-void AudioNode::deref(ContextRenderLock& r, RefType refType)
+void AudioNode::deref(ContextGraphLock& g, RefType refType)
 {
     switch (refType) {
         case RefTypeNormal:
@@ -371,7 +371,7 @@ void AudioNode::deref(ContextRenderLock& r, RefType refType)
                 // All references are gone - this node needs to go away.
                 for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
                     if (auto out = output(i))
-                        AudioNodeOutput::disconnectAll(r, out); // This will deref() nodes we're connected to.
+                        AudioNodeOutput::disconnectAll(g, out); // This will deref() nodes we're connected to.
                 
                 // Mark for deletion at end of each render quantum or when context shuts down.
                 //                if (!shuttingDown)
@@ -381,7 +381,7 @@ void AudioNode::deref(ContextRenderLock& r, RefType refType)
             }
         }
         else if (refType == RefTypeConnection)
-            disableOutputsIfNecessary(r);
+            disableOutputsIfNecessary(g);
     }
 }
 

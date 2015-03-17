@@ -37,9 +37,7 @@ namespace LabSound {
         }
 
         
-        void update(ContextRenderLock& r) {
-            std::shared_ptr<AudioContext> c = r.contextPtr();
-            
+        void update(std::shared_ptr<AudioContext> c) {
             if (cachedFrequency != frequency->value(c)) {
                 cachedFrequency = frequency->value(c);
                 for (auto i : saws) {
@@ -66,7 +64,7 @@ namespace LabSound {
                 ExceptionCode ec;
 
                 for (auto i : sawStorage) {
-                    LabSound::disconnect(g, r, i.get());
+                    LabSound::disconnect(g, i.get());
                 }
                 sawStorage.clear();
                 saws.clear();
@@ -77,14 +75,14 @@ namespace LabSound {
 
                 for (auto i : saws) {
                     i->setType(r, OscillatorNode::SAWTOOTH, ec);
-                    LabSound::connect(g, r, i, gainNode.get());
+                    LabSound::connect(g, i, gainNode.get());
                     i->start(0);
                 }
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
             }
             
-            update(r);
+            update(g.contextPtr());
         }
 
         SupersawNode* self;
@@ -109,11 +107,11 @@ namespace LabSound {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
 
         initialize();
-        LabSound::connect(g, r, _data->gainNode.get(), this);
+        LabSound::connect(g, _data->gainNode.get(), this);
     }
 
     void SupersawNode::process(ContextRenderLock& r, size_t framesToProcess) {
-        _data->update(r);
+        _data->update(r.contextPtr());
         AudioBus* outputBus = output(0)->bus();
 
         if (!isInitialized() || !outputBus->numberOfChannels()) {

@@ -36,6 +36,10 @@ namespace WebCore {
     
 LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
 
+    namespace {
+        mutex junctionMutex;
+    }
+    
 
 void AudioSummingJunction::markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction> summingJunction)
 {
@@ -46,7 +50,6 @@ void AudioSummingJunction::markSummingJunctionDirty(std::shared_ptr<AudioSumming
 void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
 {
     ASSERT(r.context());
-    
     std::shared_ptr<AudioSummingJunction> asj;
     while (m_dirtySummingJunctions.try_pop(asj))
         asj->updateRenderingState(r);
@@ -61,34 +64,75 @@ AudioSummingJunction::~AudioSummingJunction()
 {
 }
     
-void AudioSummingJunction::addOutput(ContextRenderLock& r, std::shared_ptr<AudioNodeOutput> o) {
-    ASSERT(r.context());
-    m_outputs.insert(o);
-    m_renderingStateNeedUpdating = true;
+size_t AudioSummingJunction::numberOfConnections() const {
+    size_t count = 0;
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (m_outputs[i])
+            ++count;
+    }
+    return count;
+}
+    
+size_t AudioSummingJunction::numberOfRenderingConnections() const {
+    size_t count = 0;
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (m_renderingOutputs[i])
+            ++count;
+    }
+    return count;
+}
+    
+void AudioSummingJunction::addOutput(std::shared_ptr<AudioNodeOutput> o) {
+    if (!o)
+        return;
+    
+    lock_guard<mutex> lock(junctionMutex);
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
+        if (m_outputs[i] == o)
+            return;
+
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
+        if (!m_outputs[i]) {
+            m_outputs[i] = o;
+            m_renderingStateNeedUpdating = true;
+            return;
+        }
+
+    ASSERT(0 == "Couldn't add output");
 }
 
-void AudioSummingJunction::removeOutput(ContextRenderLock &r, std::shared_ptr<AudioNodeOutput> o) {
-    ASSERT(r.context());
-    m_outputs.erase(o);
-    m_renderingStateNeedUpdating = true;
+void AudioSummingJunction::removeOutput(std::shared_ptr<AudioNodeOutput> o) {
+    if (!o)
+        return;
+    
+    lock_guard<mutex> lock(junctionMutex);
+    bool modified = false;
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
+        if (m_outputs[i] == o) {
+            m_outputs[i].reset();
+            modified = true;
+            break;
+        }
+    
+    if (modified)
+        m_renderingStateNeedUpdating = true;
 }
     
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
     if (m_renderingStateNeedUpdating && canUpdateState()) {
         ASSERT(r.context());
-        
+
         // Copy from m_outputs to m_renderingOutputs.
-        m_renderingOutputs.resize(m_outputs.size());
-        unsigned j = 0;
-        for (auto i = m_outputs.begin(); i != m_outputs.end(); ++i, ++j) {
-            AudioNodeOutput* output = (*i).get(); // safe because m_renderingOutputs is only used during a single rendering quantum when the lock is held
-            m_renderingOutputs[j] = output;
-            output->updateRenderingState(r);
+        for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+            auto output = m_outputs[i];
+            if (output) {
+                m_renderingOutputs[i] = output;
+                output->updateRenderingState(r);
+            }
         }
 
         didUpdate(r);
-
         m_renderingStateNeedUpdating = false;
     }
 }

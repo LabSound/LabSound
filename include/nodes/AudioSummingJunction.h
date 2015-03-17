@@ -54,16 +54,16 @@ public:
     void updateRenderingState(ContextRenderLock& r);
 
     // Rendering code accesses its version of the current connections here.
-    unsigned numberOfRenderingConnections() const { return (unsigned) m_renderingOutputs.size(); }
-    AudioNodeOutput* renderingOutput(unsigned i) { return m_renderingOutputs[i]; }
-    const AudioNodeOutput* renderingOutput(unsigned i) const { return m_renderingOutputs[i]; }
+    size_t numberOfRenderingConnections() const;
+    std::shared_ptr<AudioNodeOutput> renderingOutput(unsigned i) { return m_renderingOutputs[i]; }
+    const std::shared_ptr<AudioNodeOutput> renderingOutput(unsigned i) const { return m_renderingOutputs[i]; }
     bool isConnected() const { return numberOfRenderingConnections() > 0; }
 
     virtual bool canUpdateState() = 0;
     virtual void didUpdate(ContextRenderLock&) = 0;
 
-    void addOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
-    void removeOutput(ContextRenderLock&, std::shared_ptr<AudioNodeOutput>);
+    void addOutput(std::shared_ptr<AudioNodeOutput>);
+    void removeOutput(std::shared_ptr<AudioNodeOutput>);
     void setDirty() { m_renderingStateNeedUpdating = true; }
     
     static void markSummingJunctionDirty(std::shared_ptr<AudioSummingJunction>);
@@ -72,17 +72,18 @@ public:
 protected:
     // m_outputs contains the AudioNodeOutputs representing current connections which are not disabled.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
-    std::set<std::shared_ptr<AudioNodeOutput>> m_outputs;
+# define SUMMING_JUNCTION_MAX_OUTPUTS 8
+    std::shared_ptr<AudioNodeOutput> m_outputs[SUMMING_JUNCTION_MAX_OUTPUTS];
 
     // numberOfConnections() should never be called from the audio rendering thread.
     // Instead numberOfRenderingConnections() and renderingOutput() should be used.
-    size_t numberOfConnections() const { return m_outputs.size(); }
+    size_t numberOfConnections() const;
 
     // m_renderingOutputs is a copy of m_outputs which will never be modified during the graph rendering on the audio thread.
     // This is the list which is used by the rendering code.
     // Whenever m_outputs is modified, the context is told so it can later update m_renderingOutputs from m_outputs at a safe time.
     // Most of the time, m_renderingOutputs is identical to m_outputs.
-    std::vector<AudioNodeOutput*> m_renderingOutputs;
+    std::shared_ptr<AudioNodeOutput> m_renderingOutputs[SUMMING_JUNCTION_MAX_OUTPUTS];
 
     // m_renderingStateNeedUpdating indicates outputs were changed
     bool m_renderingStateNeedUpdating;

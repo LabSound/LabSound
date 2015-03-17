@@ -98,8 +98,8 @@ public:
     // JavaScript references to the object.
     enum RefType { RefTypeNormal, RefTypeConnection };
 
-    void ref(ContextRenderLock&, RefType refType);
-    void deref(ContextRenderLock&, RefType refType);
+    void ref(ContextGraphLock&, RefType refType);
+    void deref(ContextGraphLock&, RefType refType);
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
@@ -166,8 +166,8 @@ public:
     void silenceOutputs();
     void unsilenceOutputs();
 
-    void enableOutputsIfNecessary(ContextRenderLock&);
-    void disableOutputsIfNecessary(ContextRenderLock&);
+    void enableOutputsIfNecessary(ContextGraphLock&);
+    void disableOutputsIfNecessary(ContextGraphLock&);
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
