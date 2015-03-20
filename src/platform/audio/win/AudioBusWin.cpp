@@ -34,9 +34,11 @@
 #include <direct.h>
 #include <iostream>
 
-namespace WebCore {
+namespace WebCore 
+{
 
-	std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char *name, float sampleRate) {
+	std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char *name, float sampleRate) 
+	{
 
 		char cwd[MAX_PATH];
 
@@ -46,9 +48,10 @@ namespace WebCore {
 
 		FILE* f = fopen(pathToFile.c_str(), "rb");
 
-		std::cout << pathToFile << std::endl; 
+		std::cout << "loadPlatformResource(" << pathToFile << ")" << std::endl; 
 
-        if (f) {
+        if (f) 
+		{
 
             fseek(f, 0, SEEK_END);
             int l = ftell(f);
@@ -59,10 +62,13 @@ namespace WebCore {
             
             bool mixToMono = false;
 
-            auto fileDataBuffer = ArrayBuffer::create(reinterpret_cast<float*>(data), l);
+            auto fileDataBuffer = std::vector<float>(l);
+			memcpy(fileDataBuffer.data(), data, l);
+
             delete [] data;
 
-			return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile(fileDataBuffer->data(), fileDataBuffer->byteLength(), false, 44100));
+			// Fixme
+			return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile(fileDataBuffer.data(), fileDataBuffer.size(), false, 44100));
         }
 
 		ASSERT_NOT_REACHED();

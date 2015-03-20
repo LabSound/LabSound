@@ -201,6 +201,8 @@ double currentTime()
 
 #endif // USE(QUERY_PERFORMANCE_COUNTER)
 #endif // PLATFORM(WINDOWS)
+
+#if PLATFORM(MAC)
     
 double currentTime()
 {
@@ -208,8 +210,6 @@ double currentTime()
     gettimeofday(&now, 0);
     return now.tv_sec + now.tv_usec / 1000000.0;
 }
-
-#if PLATFORM(MAC)
 
 double monotonicallyIncreasingTime()
 {

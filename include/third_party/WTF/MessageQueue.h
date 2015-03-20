@@ -30,13 +30,14 @@
 #ifndef MessageQueue_h
 #define MessageQueue_h
 
-#include <limits>
-#include <deque>
 #include "Assertions.h"
 
 #include <condition_variable>
 #include <thread>
 #include <chrono>
+#include <memory>
+#include <limits>
+#include <deque>
 
 namespace WTF {
 
@@ -67,7 +68,7 @@ namespace WTF {
         std::unique_ptr<DataType> tryGetMessageIgnoringKilled();
 
         template<typename Predicate>
-        std::unique_ptr<DataType> waitForMessageFilteredWithTimeout(MessageQueueWaitResult&, Predicate&, std::chrono::duration<double> timeoutSeconds);
+        std::unique_ptr<DataType> waitForMessageFilteredWithTimeout(MessageQueueWaitResult&, Predicate&, double timeoutSeconds);
 
         template<typename Predicate>
         void removeIf(Predicate&&);
@@ -136,7 +137,7 @@ namespace WTF {
     {
         MessageQueueWaitResult exitReason;
         TruePredicate<DataType> tp;
-        std::unique_ptr<DataType> result = waitForMessageFilteredWithTimeout(exitReason, tp, std::chrono::duration<double>::max());
+        std::unique_ptr<DataType> result = waitForMessageFilteredWithTimeout(exitReason, tp, 1024);
         ASSERT(exitReason == MessageQueueTerminated || exitReason == MessageQueueMessageReceived);
         return result;
     }
@@ -144,23 +145,24 @@ namespace WTF {
     template<typename DataType>
     template<typename Predicate>
     inline std::unique_ptr<DataType> MessageQueue<DataType>::waitForMessageFilteredWithTimeout(MessageQueueWaitResult& result, 
-        Predicate& predicate, std::chrono::duration<double> timeoutSeconds)
+        Predicate& predicate, double timeoutSeconds)
     {
         std::unique_lock<std::mutex> lock(m_mutex);
         bool timedOut = false;
 
         auto found = m_queue.end();
-        while (!m_killed && !timedOut) {
+        while (!m_killed && !timedOut) 
+		{
             found = std::find_if(m_queue.begin(), m_queue.end(), predicate);
             if (found != m_queue.end()) {
                 break;
             }
 
-            auto now = std::chrono::system_clock::now();
-            timedOut = std::cv_status::timeout == m_condition.wait_until(lock, now + timeoutSeconds);
+			// Dimitri: not happy on windows 
+            timedOut = (std::cv_status::timeout == m_condition.wait_for(lock, std::chrono::microseconds(static_cast<int64_t>(timeoutSeconds * 1000000))));
         }
 
-        ASSERT(!timedOut || timeoutSeconds != std::chrono::duration<double>::max());
+        ASSERT(!timedOut || timeoutSeconds != 1024);
 
         if (m_killed) {
             result = MessageQueueTerminated;

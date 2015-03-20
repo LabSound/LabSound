@@ -84,17 +84,22 @@
  */
 
 #include "LabSoundConfig.h"
-#include "Threading.h"
 
+#include "Threading.h"
 #include "MainThread.h"
 #include "ThreadFunctionInvocation.h"
-#include <windows.h>
+
 #include <wtf/CurrentTime.h>
 #include <wtf/MathExtras.h>
+
 #include <map>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #if !USE(PTHREADS) && OS(WINDOWS)
 #include "ThreadSpecific.h"
+#include <windows.h>
 #endif
 
 #if !OS(WINCE)

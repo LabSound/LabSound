@@ -31,6 +31,7 @@
 
 #include "SincResampler.h"
 #include <vector>
+#include <memory>
 
 namespace LabSound {
     class ContextGraphLock;

@@ -243,7 +243,7 @@ void WaveTable::generateBasicWaveform(int shape)
     realP[0] = 0;
     imagP[0] = 0;
     
-    const float piFloat = M_PI;
+    const float piFloat = 3.14159265358979323846;
 
     for (unsigned n = 1; n < halfSize; ++n) {
         float omega = 2 * piFloat * n;

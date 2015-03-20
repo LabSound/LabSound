@@ -279,22 +279,7 @@
     <ClInclude Include="..\include\internal\ReverbConvolverStage.h" />
     <ClInclude Include="..\include\internal\ReverbInputBuffer.h" />
     <ClInclude Include="..\include\internal\SincResampler.h" />
-    <ClInclude Include="..\include\internal\util\FloatConversion.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatPoint.h" />
     <ClInclude Include="..\include\internal\util\graphics\FloatPoint3D.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatQuad.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntPoint.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutPoint.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h" />
-    <ClInclude Include="..\include\internal\util\Logging.h" />
-    <ClInclude Include="..\include\internal\util\TextDirection.h" />
-    <ClInclude Include="..\include\internal\util\WritingMode.h" />
     <ClInclude Include="..\include\internal\VectorMath.h" />
     <ClInclude Include="..\include\internal\win\AudioDestinationWin.h" />
     <ClInclude Include="..\include\internal\win\AudioFileReaderWin.h" />
@@ -458,45 +443,25 @@
     <ClInclude Include="..\include\third_party\STK\Wurley.h" />
     <ClInclude Include="..\include\third_party\STK\WvIn.h" />
     <ClInclude Include="..\include\third_party\STK\WvOut.h" />
-    <ClInclude Include="..\include\third_party\WTF\ArrayBuffer.h" />
-    <ClInclude Include="..\include\third_party\WTF\ArrayBufferView.h" />
-    <ClInclude Include="..\include\third_party\WTF\Assertions.h" />
     <ClInclude Include="..\include\third_party\WTF\Atomics.h" />
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h" />
     <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h" />
     <ClInclude Include="..\include\third_party\WTF\Compiler.h" />
-    <ClInclude Include="..\include\third_party\WTF\Complex.h" />
-    <ClInclude Include="..\include\third_party\WTF\config.h" />
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
     <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h" />
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h" />
-    <ClInclude Include="..\include\third_party\WTF\Float32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Float64Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Functional.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int16Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int8Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\IntegralTypedArrayBase.h" />
     <ClInclude Include="..\include\third_party\WTF\Locker.h" />
     <ClInclude Include="..\include\third_party\WTF\MainThread.h" />
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h" />
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h" />
-    <ClInclude Include="..\include\third_party\WTF\NullPtr.h" />
-    <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h" />
     <ClInclude Include="..\include\third_party\WTF\PassOwnPtr.h" />
     <ClInclude Include="..\include\third_party\WTF\Platform.h" />
-    <ClInclude Include="..\include\third_party\WTF\RefPtr.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSafeRefCounted.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
-    <ClInclude Include="..\include\third_party\WTF\TypedArrayBase.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint16Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint8Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint8ClampedArray.h" />
     <ClInclude Include="..\include\third_party\WTF\ValueCheck.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />
     <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />
@@ -588,8 +553,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioSourceNode.cpp">
@@ -676,8 +639,6 @@
     <ClCompile Include="..\src\platform\audio\VectorMath.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\platform\Logging.cpp">
     </ClCompile>
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp" />
     <ClCompile Include="..\src\STK\ADSR.cpp" />
@@ -772,7 +733,6 @@
     <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp" />
     <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp" />
     <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\third_party\STK\SKINI.msg" />

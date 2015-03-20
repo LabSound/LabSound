@@ -10,9 +10,18 @@
 
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
+
 #include "PlatformExportMacros.h"
 #include "Logging.h"
 #include "Assertions.h"
+
+#include <algorithm>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <vector>
+#include <memory>
+#include <math.h>
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL

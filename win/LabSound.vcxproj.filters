@@ -94,9 +94,6 @@
     <Filter Include="LabSound\API\core\util\include\graphics">
       <UniqueIdentifier>{8275b336-7cd2-4866-8ae4-9e0ad924af83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\API\core\util\include\graphics\transforms">
-      <UniqueIdentifier>{7e2a588c-2a18-406a-892b-637efe9cabb0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\API\core\util\src">
       <UniqueIdentifier>{513017b8-baf5-40e9-aab8-336104fa6b7c}</UniqueIdentifier>
     </Filter>
@@ -248,53 +245,8 @@
     <ClInclude Include="..\include\internal\win\AudioFileReaderWin.h">
       <Filter>LabSound\API\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\internal\util\graphics\FloatPoint3D.h">
       <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatQuad.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\FloatConversion.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\WritingMode.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\TextDirection.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\Logging.h">
-      <Filter>LabSound\API\core\util\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\internal\FFTFrame.h">
       <Filter>LabSound\API\core\fft\include</Filter>
@@ -587,15 +539,6 @@
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ArrayBuffer.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ArrayBufferView.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Assertions.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Atomics.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
@@ -608,12 +551,6 @@
     <ClInclude Include="..\include\third_party\WTF\Compiler.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Complex.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\config.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\CPU.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
@@ -624,27 +561,6 @@
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Float32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Float64Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Functional.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int8Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int16Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\IntegralTypedArrayBase.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Locker.h">
@@ -662,19 +578,10 @@
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\NullPtr.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\PassOwnPtr.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Platform.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\RefPtr.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h">
@@ -687,21 +594,6 @@
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\TypedArrayBase.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint8Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint8ClampedArray.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint16Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint32Array.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ValueCheck.h">
@@ -911,9 +803,6 @@
       <Filter>LabSound\API\core\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp">
       <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp">
@@ -1126,9 +1015,6 @@
     <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
-      <Filter>LabSound\API\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
@@ -1155,9 +1041,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\WaveShaperProcessor.cpp">
       <Filter>LabSound\API\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\platform\Logging.cpp">
-      <Filter>LabSound\API\core\util\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\FFTFrameKissFFT.cpp">
       <Filter>LabSound\API\core\fft\src</Filter>

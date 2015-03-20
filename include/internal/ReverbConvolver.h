@@ -35,8 +35,11 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
+
 #include <mutex>
 #include <vector>
+#include <condition_variable>
+#include <thread>
 
 namespace LabSound {
     class ContextGraphLock;

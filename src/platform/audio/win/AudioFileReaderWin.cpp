@@ -36,7 +36,7 @@
 #include "FloatConversion.h"
 #include <string>
 #include <iostream>
-#include "libsndfile\sndfile.h"
+#include "libsndfile/sndfile.h"
 
 namespace WebCore {
 
@@ -118,7 +118,7 @@ std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixT
 	}
 
 	// Assume stereo...
-	std::unique_ptr<AudioBus> audioBus = adoptPtr(new AudioBus(2, samplesPerChannel));
+	std::unique_ptr<AudioBus> audioBus(new AudioBus(2, samplesPerChannel));
     audioBus->setSampleRate(sampleRate); // save for later
 
 	memcpy(audioBus->channel(0)->mutableData(), (float*) dataLeft, sizeof(float) * samplesPerChannel);
@@ -135,18 +135,16 @@ std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixT
 
 }
 
-PassOwnPtr<AudioBus> createBusFromAudioFile(const char* filePath, bool mixToMono, float sampleRate) {
-
+std::unique_ptr<AudioBus> createBusFromAudioFile(const char* filePath, bool mixToMono, float sampleRate) 
+{
     AudioFileReader reader(filePath);
     return reader.createBus(sampleRate, mixToMono);
-
 }
 
-PassOwnPtr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_t dataSize, bool mixToMono, float sampleRate) {
-
+std::unique_ptr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_t dataSize, bool mixToMono, float sampleRate) 
+{
     AudioFileReader reader(data, dataSize);
     return reader.createBus(sampleRate, mixToMono); 
-
 }
 
 
