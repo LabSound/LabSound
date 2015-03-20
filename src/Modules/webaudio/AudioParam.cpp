@@ -185,7 +185,7 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     }
     
     int firstAvailableIdx = -1;
-    for (int i = 0; i < param->m_outputs.size(); i++)
+    for (size_t i = 0; i < param->m_outputs.size(); i++)
     {
         if (param->m_outputs[i].get() == nullptr)
         {

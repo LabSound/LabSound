@@ -156,7 +156,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
         m_detune->calculateSampleAccurateValues(r, detuneValues, framesToProcess);
 
         // Convert from cents to rate scalar.
-        float k = 1.f / 1200.0;
+        float k = 1.f / 1200.f;
         vsmul(detuneValues, 1, &k, detuneValues, 1, framesToProcess);
         for (unsigned i = 0; i < framesToProcess; ++i)
             detuneValues[i] = powf(2, detuneValues[i]); // FIXME: converting to expf() will be faster.
