@@ -27,9 +27,11 @@
 
 #include "ConcurrentQueue.h"
 #include "ExceptionCodes.h"
-#include <mutex>
 #include <set>
 #include <vector>
+#include <memory>
+#include <thread>
+#include <mutex>
 
 namespace LabSound {
     class ContextGraphLock;

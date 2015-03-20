@@ -93,9 +93,6 @@
 #include <wtf/MathExtras.h>
 #include <map>
 
-#include "WTF\PassOwnPtr.h"
-#include "WTF\RefPtr.h"
-
 #if !USE(PTHREADS) && OS(WINDOWS)
 #include "ThreadSpecific.h"
 #endif
@@ -196,7 +193,7 @@ static void clearThreadHandleForIdentifier(ThreadIdentifier id)
 
 static unsigned __stdcall wtfThreadEntryPoint(void* param)
 {
-    OwnPtr<ThreadFunctionInvocation> invocation = adoptPtr(static_cast<ThreadFunctionInvocation*>(param));
+    std::unique_ptr<ThreadFunctionInvocation> invocation(static_cast<ThreadFunctionInvocation*>(param));
     invocation->function(invocation->data);
 
 #if !USE(PTHREADS) && OS(WINDOWS)
@@ -211,27 +208,19 @@ ThreadIdentifier createThreadInternal(ThreadFunction entryPoint, void* data, con
 {
     unsigned threadIdentifier = 0;
     ThreadIdentifier threadID = 0;
-    OwnPtr<ThreadFunctionInvocation> invocation = adoptPtr(new ThreadFunctionInvocation(entryPoint, data));
-#if OS(WINCE)
-    // This is safe on WINCE, since CRT is in the core and innately multithreaded.
-    // On desktop Windows, need to use _beginthreadex (not available on WinCE) if using any CRT functions
-    HANDLE threadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)wtfThreadEntryPoint, invocation.get(), 0, (LPDWORD)&threadIdentifier);
-#else
+    std::unique_ptr<ThreadFunctionInvocation> invocation(new ThreadFunctionInvocation(entryPoint, data));
+
     HANDLE threadHandle = reinterpret_cast<HANDLE>(_beginthreadex(0, 0, wtfThreadEntryPoint, invocation.get(), 0, &threadIdentifier));
-#endif
-    if (!threadHandle) {
-#if OS(WINCE)
-        LOG_ERROR("Failed to create thread at entry point %p with data %p: %ld", entryPoint, data, ::GetLastError());
-#elif !HAVE(ERRNO_H)
-        LOG_ERROR("Failed to create thread at entry point %p with data %p.", entryPoint, data);
-#else
-        LOG_ERROR("Failed to create thread at entry point %p with data %p: %ld", entryPoint, data, errno);
-#endif
+
+    if (!threadHandle) 
+	{
+		LOG_ERROR("Failed to create thread at entry point %p with data %p.", entryPoint, data);
         return 0;
     }
 
     // The thread will take ownership of invocation.
-    invocation.leakPtr();
+    invocation.release();
+
     threadID = static_cast<ThreadIdentifier>(threadIdentifier);
     storeThreadHandleByIdentifier(threadIdentifier, threadHandle);
 

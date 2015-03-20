@@ -28,6 +28,11 @@
 #include "LabSoundConfig.h"
 #include "ExceptionCodes.h"
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <memory>
+#include <algorithm>
+#include <set>
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 

@@ -34,6 +34,7 @@
 #include <deque>
 #include <mutex>
 #include <thread>
+#include <condition_variable>
 #include <WTF/ThreadSpecific.h>
 
 namespace WTF {

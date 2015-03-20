@@ -73,7 +73,7 @@ protected:
     float m_sampleRate;
     size_t m_length;
 
-    std::vector<std::shared_ptr<std::vector<float>>> m_channels;
+    std::vector< std::shared_ptr<std::vector<float> > > m_channels;
 };
 
 } // namespace WebCore

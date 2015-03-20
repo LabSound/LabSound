@@ -64,6 +64,9 @@
 #include "Atomics.h"
 #include "Locker.h"
 #include "ThreadSafeRefCounted.h"
+#include <thread>
+#include <mutex>
+#include <memory>
 
 #include <stdint.h>
 

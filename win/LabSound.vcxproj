@@ -239,7 +239,6 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\config.h" />
     <ClInclude Include="..\include\internal\AudioArray.h" />
     <ClInclude Include="..\include\internal\AudioBus.h" />
     <ClInclude Include="..\include\internal\AudioChannel.h" />
@@ -491,7 +490,6 @@
     <ClInclude Include="..\include\third_party\WTF\RefPtr.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
-    <ClInclude Include="..\include\third_party\WTF\Threading.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSafeRefCounted.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
     <ClInclude Include="..\include\third_party\WTF\TypedArrayBase.h" />
@@ -759,15 +757,7 @@
     <ClCompile Include="..\src\STK\VoicForm.cpp" />
     <ClCompile Include="..\src\STK\Whistle.cpp" />
     <ClCompile Include="..\src\STK\Wurley.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Assertions.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
     </ClCompile>

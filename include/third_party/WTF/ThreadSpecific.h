@@ -43,6 +43,7 @@
 #define WTF_ThreadSpecific_h
 
 #include <stdlib.h>
+#include "Assertions.h"
 
 #if USE(PTHREADS)
 #include <pthread.h>

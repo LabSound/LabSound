@@ -36,6 +36,7 @@
 // FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform
 #if OS(WINDOWS)
 #undef ASSERT
+#define __func__ __FUNCTION__
 #endif
 
 #define CRASH() ((void)0)

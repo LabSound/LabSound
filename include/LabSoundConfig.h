@@ -12,6 +12,7 @@
 #include "WTF/ExportMacros.h"
 #include "PlatformExportMacros.h"
 #include "Logging.h"
+#include "Assertions.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL
@@ -37,12 +38,6 @@
 #  endif
 #  ifndef WINVER
 #    define WINVER 0x0500
-#  endif
-#  ifndef max
-#    define max max
-#  endif
-#  ifndef min
-#    define min min
 #  endif
 #endif
 
