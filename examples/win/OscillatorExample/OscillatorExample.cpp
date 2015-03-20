@@ -5,18 +5,23 @@ using namespace LabSound;
 int main(int argc, char *argv[], char *envp[]) {
 
     WebCore::ExceptionCode ec;
-	RefPtr<AudioContext> context = LabSound::init(); 
 
-	RefPtr<OscillatorNode> oscillator = context->createOscillator();
+	auto context = LabSound::init();
 
-	oscillator->connect(context->destination(), 0, 0, ec);
-	oscillator->start(0);
-	oscillator->setType(0, ec); // Default SinOsc
-	oscillator->frequency()->setValue(440.f); 
+	std::shared_ptr<OscillatorNode> oscillator;
 
-    for (float i = 0; i < 10; i += 0.01f) {
-		std::this_thread::sleep_for(std::chrono::microseconds(4000));
-    }
+	{
+        ContextGraphLock g(context, "Oscillator Example");
+        ContextRenderLock r(context, "Oscillator Example");
+		oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
+		oscillator->connect(context.get(), context->destination().get(), 0, 0, ec);
+        oscillator->start(0);   // play now
+        oscillator->frequency()->setValue(440.f);
+        oscillator->setType(r, 1, ec);
+	}
+
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+    LabSound::finish(context);
 
     return 0;
 
