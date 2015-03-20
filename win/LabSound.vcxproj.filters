@@ -605,8 +605,6 @@
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
