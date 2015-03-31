@@ -58,7 +58,7 @@ void ChannelMergerNode::process(ContextRenderLock&, size_t framesToProcess)
 {
     auto output = this->output(0);
     ASSERT(output);
-    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus()->length());    
+    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus()->length());
     
     // Merge all the channels from all the inputs into one output.
     unsigned outputChannelIndex = 0;

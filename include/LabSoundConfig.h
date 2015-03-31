@@ -11,6 +11,7 @@
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
 #include "PlatformExportMacros.h"
+#include "Logging.h"
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL

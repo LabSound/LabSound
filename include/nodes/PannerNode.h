@@ -33,7 +33,6 @@
 #include "Distance.h"
 #include "util/graphics/FloatPoint3D.h"
 #include "Panner.h"
-#include "WTF/RefPtr.h"
 
 namespace WebCore {
 

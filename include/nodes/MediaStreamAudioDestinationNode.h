@@ -28,7 +28,6 @@
 #include "AudioBasicInspectorNode.h"
 #include "AudioBus.h"
 #include "MediaStream.h"
-#include "WTF/RefPtr.h"
 
 namespace WebCore {
 

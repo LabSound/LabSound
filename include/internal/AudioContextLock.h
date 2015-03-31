@@ -10,6 +10,7 @@
 
 #include <mutex>
 #include "AudioContext.h"
+#include "Assertions.h"
 
 namespace LabSound {
 

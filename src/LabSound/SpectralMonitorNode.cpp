@@ -178,7 +178,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
 
-    void SpectralMonitorNode::reset(std::shared_ptr<AudioContext>)
+    void SpectralMonitorNode::reset(std::shared_ptr<WebCore::AudioContext>)
     {
         detail->setWindowSize(detail->windowSize);
     }

@@ -23,7 +23,7 @@
  */
 
 #include "LabSoundConfig.h"
-#include <WTF/Assertions.h>
+#include "Assertions.h"
 
 #include "VectorMath.h"
 

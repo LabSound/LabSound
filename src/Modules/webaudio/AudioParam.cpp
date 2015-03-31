@@ -32,6 +32,7 @@
 #include "AudioUtilities.h"
 #include "FloatConversion.h"
 #include <wtf/MathExtras.h>
+#include <algorithm>
 
 namespace WebCore {
     
@@ -174,24 +175,31 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     if (!output)
         return;
 
-    bool found = false;
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS && !found; ++i)
-        if (param->m_outputs[i] == output)
-            found = true;
+    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
     
-    if (!found)
+    // Not found...
+    if (it != param->m_outputs.end())
+    {
         return;
+    }
 
-    output->addParam(param);
-    
     lock_guard<mutex> lock(paramMutex);
     
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
-        if (!param->m_outputs[i]) {
-            param->m_outputs[i] = output;
+    int firstAvailableIdx = -1;
+    for (int i = 0; i < param->m_outputs.size(); i++)
+    {
+        if (param->m_outputs[i].get() == nullptr)
+        {
+            firstAvailableIdx = i;
             break;
         }
+    }
     
+    ASSERT(firstAvailableIdx > -1);
+    
+    output->addParam(param);
+    
+    param->m_outputs[firstAvailableIdx] = output;
     param->m_renderingStateNeedUpdating = true;
 }
 
@@ -200,14 +208,17 @@ void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<A
     if (!output)
         return;
 
+    // Changed to support fixed-size arrays
+    
     lock_guard<mutex> lock(paramMutex);
     
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        if (param->m_outputs[i] == output) {
-            param->m_outputs[i].reset();
-            param->m_renderingStateNeedUpdating = true;
-            output->removeParam(param);
-        }
+    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
+    
+    if (it != param->m_outputs.end())
+    {
+        it->reset(); // releases ownership
+        param->m_renderingStateNeedUpdating = true;
+        output->removeParam(param);
     }
 }
 

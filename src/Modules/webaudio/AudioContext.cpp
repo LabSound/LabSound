@@ -29,7 +29,6 @@
 #include "AnalyserNode.h"
 #include "AsyncAudioDecoder.h"
 #include "AudioBuffer.h"
-#include "AudioBufferCallback.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioContextLock.h"
 #include "AudioListener.h"
@@ -261,9 +260,10 @@ void AudioContext::stop(ContextGraphLock& g)
 }
 
 void AudioContext::decodeAudioData(std::shared_ptr<std::vector<uint8_t>> audioData,
-                                   PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback, ExceptionCode& ec)
+                                   std::function<void()> successCallback, std::function<void()> errorCallback, ExceptionCode& ec)
 {
-    if (!audioData) {
+    if (!audioData)
+    {
         ec = SYNTAX_ERR;
         return;
     }

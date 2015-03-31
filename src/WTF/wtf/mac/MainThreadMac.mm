@@ -27,14 +27,16 @@
  */
  
 #include "LabSoundConfig.h"
-#import "MainThread.h"
+#include "Assertions.h"
 
+#import "MainThread.h"
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/NSThread.h>
 #import <stdio.h>
+
 #include <pthread.h>
 
-#import <wtf/Assertions.h>
+
 #import <wtf/Threading.h>
 
 /// @LabSound renamed to LabJSWTFMainThreadCaller because it also exists in the JavaScriptCore framework.

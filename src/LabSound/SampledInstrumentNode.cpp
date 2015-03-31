@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
-#include <WTF/Assertions.h>
+#include "Assertions.h"
 
 #if OS(WINDOWS)
 #include <direct.h>

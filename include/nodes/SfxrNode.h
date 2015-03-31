@@ -18,7 +18,7 @@ namespace LabSound {
 
         // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(std::shared_ptr<AudioContext>) override;
+        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
 
         // SfxrNode - values in sfxr units
         std::shared_ptr<AudioParam> waveType() { return _waveType; }
@@ -72,16 +72,16 @@ namespace LabSound {
         // some presets
         void setDefaultBeep();
         void coin();
-        void laser(std::shared_ptr<AudioContext>);
+        void laser(std::shared_ptr<WebCore::AudioContext>);
         void explosion();
         void powerUp();
-        void hit(std::shared_ptr<AudioContext>);
+        void hit(std::shared_ptr<WebCore::AudioContext>);
         void jump();
-        void select(std::shared_ptr<AudioContext>);
+        void select(std::shared_ptr<WebCore::AudioContext>);
 
         // mutate the current sound
-        void mutate(std::shared_ptr<AudioContext>);
-        void randomize(std::shared_ptr<AudioContext>);
+        void mutate(std::shared_ptr<WebCore::AudioContext>);
+        void randomize(std::shared_ptr<WebCore::AudioContext>);
 
     private:
         virtual bool propagatesSilence(double now) const override;
