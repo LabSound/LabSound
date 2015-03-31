@@ -4,6 +4,7 @@
 #include <thread>
 
 using namespace LabSound;
+using namespace std;
 
 int main(int, char**)
 {
@@ -13,10 +14,10 @@ int main(int, char**)
     shared_ptr<MediaStreamAudioSourceNode> input;
 
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
-        input = context->createMediaStreamSource(ec);
-        input->connect(g, r, context->destination().get(), 0, 0, ec);
+        ContextGraphLock g(context, "live echo");
+        ContextRenderLock r(context, "live echo");
+        input = context->createMediaStreamSource(g,r, ec);
+        input->connect(context.get(), context->destination().get(), 0, 0, ec);
     }
     
     std::this_thread::sleep_for(std::chrono::seconds(10));

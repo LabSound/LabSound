@@ -128,8 +128,8 @@ public:
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
-    void addAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode>);
-    void removeAutomaticPullNode(ContextRenderLock& r, std::shared_ptr<AudioNode>);
+    void addAutomaticPullNode(std::shared_ptr<AudioNode>);
+    void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     void processAutomaticPullNodes(ContextRenderLock&, size_t framesToProcess);
@@ -142,12 +142,6 @@ public:
     // Returns the maximum numuber of channels we can support.
     static unsigned maxNumberOfChannels() { return MaxNumberOfChannels;}
     
-    // In AudioNode::deref() a tryLock() is used for calling finishDeref(), but if it fails keep track here.
-    void addDeferredFinishDeref(ContextGraphLock& g, AudioNode*);
-
-    // In the audio thread at the start of each render cycle, we'll call handleDeferredFinishDerefs().
-    void handleDeferredFinishDerefs(ContextGraphLock&);
-
     void startRendering();
     void fireCompletionEvent();
     
@@ -190,10 +184,6 @@ private:
     void refNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
     void derefNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
 
-    // When the context goes away, there might still be some sources which haven't finished playing.
-    // Make sure to dereference them here.
-    void derefUnfinishedSourceNodes(ContextGraphLock&);
-    
 public:
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
 
@@ -220,7 +210,7 @@ private:
 
     // m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
     bool m_automaticPullNodesNeedUpdating;
-    void updateAutomaticPullNodes(ContextRenderLock& r);
+    void updateAutomaticPullNodes();
     // the queue for added pull nodes, and the vector of known pull nodes
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;
@@ -229,11 +219,7 @@ private:
     std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
     bool m_isDeletionScheduled;
 
-
     int m_connectionCount;
-    
-    // Only accessed in the audio thread.
-    std::vector<AudioNode*> m_deferredFinishDerefList;
     
     // HRTF Database loader
     std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
@@ -261,12 +247,28 @@ private:
         std::shared_ptr<AudioNodeInput> fromInput;
         std::shared_ptr<AudioNodeOutput> toOutput;
     };
+    std::vector<PendingConnection> pendingConnections;
+    
+    struct PendingNodeConnection {
+        PendingNodeConnection(std::shared_ptr<AudioNode> from,
+                          std::shared_ptr<AudioNode> to,
+                          bool connect)
+        : from(from), to(to), connect(connect) {}
+        
+        bool connect; // true = connect, false = disconnect
+        std::shared_ptr<AudioNode> from;
+        std::shared_ptr<AudioNode> to;
+    };
+    std::vector<PendingNodeConnection> pendingNodeConnections;
     
     std::mutex automaticSourcesMutex;
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
-    std::vector<PendingConnection> pendingConnections;
 
 public:
+    void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
+    void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
+    void disconnect(std::shared_ptr<AudioNode>);
+    
     void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
     void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
 };

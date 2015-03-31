@@ -29,6 +29,7 @@
 #include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -98,7 +99,7 @@ void AudioSummingJunction::addOutput(std::shared_ptr<AudioNodeOutput> o) {
             return;
         }
 
-    ASSERT(0 == "Couldn't add output");
+    cerr << "Summing junction couldn't add output" << endl;
 }
 
 void AudioSummingJunction::removeOutput(std::shared_ptr<AudioNodeOutput> o) {

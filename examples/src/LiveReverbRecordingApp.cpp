@@ -13,6 +13,7 @@ int main(int, char**)
     ExceptionCode ec;
     
     auto context = LabSound::init();
+    auto ac = context.get();
     
     SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
@@ -24,23 +25,23 @@ int main(int, char**)
     shared_ptr<RecorderNode> recorder;
     
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
+        ContextGraphLock g(context, "live reverb recording");
+        ContextRenderLock r(context, "live reverb recording");
         input = context->createMediaStreamSource(g, r, ec);
         convolve = make_shared<ConvolverNode>(context->sampleRate());
-        convolve->setBuffer(g, r, ir.audioBuffer);
+        convolve->setBuffer(ir.audioBuffer);
         wetGain = make_shared<GainNode>(context->sampleRate());
         wetGain->gain()->setValue(2.f);
         dryGain = make_shared<GainNode>(context->sampleRate());
         dryGain->gain()->setValue(1.f);
-        input->connect(g, r, convolve.get(), 0, 0, ec);
-        convolve->connect(g, r, wetGain.get(), 0, 0, ec);
-        wetGain->connect(g, r, context->destination().get(), 0, 0, ec);
-        dryGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        input->connect(ac, convolve.get(), 0, 0, ec);
+        convolve->connect(ac, wetGain.get(), 0, 0, ec);
+        wetGain->connect(ac, context->destination().get(), 0, 0, ec);
+        dryGain->connect(ac, context->destination().get(), 0, 0, ec);
         recorder = make_shared<RecorderNode>(context->sampleRate());
         recorder->startRecording();
-        dryGain->connect(g, r, recorder.get(), 0, 0, ec);
-        wetGain->connect(g, r, recorder.get(), 0, 0, ec);
+        dryGain->connect(ac, recorder.get(), 0, 0, ec);
+        wetGain->connect(ac, recorder.get(), 0, 0, ec);
     }
     
     std::this_thread::sleep_for(std::chrono::seconds(10));

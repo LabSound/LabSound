@@ -108,7 +108,7 @@ namespace LabSound {
                 
             case window_parzen: {
                 for (int i = 0; i < bSize; i++) {
-                    buffer[i] *= 1.0 - abs((2.0 * i - bSize) / ( bSize + 1.0));
+                    buffer[i] *= 1.0 - fabs((2.0 * i - bSize) / ( bSize + 1.0));
                 }
             }
             break;

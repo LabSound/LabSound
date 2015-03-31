@@ -11,14 +11,15 @@ int main(int, char**)
     ExceptionCode ec;
     
     auto context = LabSound::init();
+    auto ac = context.get();
 
     SoundBuffer train("trainrolling.wav", context->sampleRate());
     auto panner = std::make_shared<PannerNode>(context->sampleRate());
     std::shared_ptr<AudioBufferSourceNode> trainNode;
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
-        panner->connect(g, r, context->destination().get(), 0, 0, ec);
+        ContextGraphLock g(context, "spatialization");
+        ContextRenderLock r(context, "spatialization");
+        panner->connect(ac, context->destination().get(), 0, 0, ec);
         trainNode = train.play(g, r, panner, 0.0f);
     }
     

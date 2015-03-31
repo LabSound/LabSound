@@ -143,8 +143,9 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     summingBus.setChannelMemory(0, values, numberOfValues);
 
     for (unsigned i = 0; i < numberOfRenderingConnections(); ++i) {
-        AudioNodeOutput* output = renderingOutput(i);
-        ASSERT(output);
+        auto output = renderingOutput(i);
+        if (!output)
+            continue;
 
         // Render audio from this output.
         AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
@@ -173,13 +174,24 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     if (!output)
         return;
 
-    if (param->m_outputs.find(output) != param->m_outputs.end())
+    bool found = false;
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS && !found; ++i)
+        if (param->m_outputs[i] == output)
+            found = true;
+    
+    if (!found)
         return;
 
     output->addParam(param);
     
     lock_guard<mutex> lock(paramMutex);
-    param->m_outputs.insert(output);
+    
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
+        if (!param->m_outputs[i]) {
+            param->m_outputs[i] = output;
+            break;
+        }
+    
     param->m_renderingStateNeedUpdating = true;
 }
 
@@ -189,11 +201,13 @@ void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<A
         return;
 
     lock_guard<mutex> lock(paramMutex);
-    auto it = param->m_outputs.find(output);
-    if (it != param->m_outputs.end()) {
-        param->m_outputs.erase(it);
-        param->m_renderingStateNeedUpdating = true;
-        output->removeParam(param);
+    
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        if (param->m_outputs[i] == output) {
+            param->m_outputs[i].reset();
+            param->m_renderingStateNeedUpdating = true;
+            output->removeParam(param);
+        }
     }
 }
 

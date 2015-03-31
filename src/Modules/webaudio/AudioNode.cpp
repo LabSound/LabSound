@@ -328,63 +328,6 @@ void AudioNode::disableOutputsIfNecessary(ContextGraphLock& g)
     }
 }
 
-void AudioNode::ref(ContextGraphLock& g, RefType refType)
-{
-    if (refType == RefTypeNormal)
-        atomicIncrement(&m_normalRefCount);
-    if (refType == RefTypeConnection) {
-        atomicIncrement(&m_connectionRefCount);
-        
-        // See the disabling code in finishDeref() below. This handles the case where a node
-        // is being re-connected after being used at least once and disconnected.
-        // In this case, we need to re-enable.
-        enableOutputsIfNecessary(g);
-    }
-
-#if DEBUG_AUDIONODE_REFERENCES
-    fprintf(stderr, "%p: %d: AudioNode::ref(%d) %d %d\n", this, nodeType(), refType, m_normalRefCount, m_connectionRefCount);
-#endif
-}
-
-void AudioNode::deref(ContextGraphLock& g, RefType refType)
-{
-    switch (refType) {
-        case RefTypeNormal:
-            ASSERT(m_normalRefCount > 0);
-            atomicDecrement(&m_normalRefCount);
-            break;
-        case RefTypeConnection:
-            ASSERT(m_connectionRefCount > 0);
-            atomicDecrement(&m_connectionRefCount);
-            break;
-        default:
-            ASSERT_NOT_REACHED();
-    }
-    
-#if DEBUG_AUDIONODE_REFERENCES
-    fprintf(stderr, "%p: %d: AudioNode::deref(%d) %d %d\n", this, nodeType(), refType, m_normalRefCount, m_connectionRefCount);
-#endif
-    
-    if (!m_connectionRefCount) {
-        if (!m_normalRefCount) {
-            if (!m_isMarkedForDeletion) {
-                // All references are gone - this node needs to go away.
-                for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
-                    if (auto out = output(i))
-                        AudioNodeOutput::disconnectAll(g, out); // This will deref() nodes we're connected to.
-                
-                // Mark for deletion at end of each render quantum or when context shuts down.
-                //                if (!shuttingDown)
-                //                    ac->markForDeletion(this);
-                
-                m_isMarkedForDeletion = true;
-            }
-        }
-        else if (refType == RefTypeConnection)
-            disableOutputsIfNecessary(g);
-    }
-}
-
 #if DEBUG_AUDIONODE_REFERENCES
 
 bool AudioNode::s_isNodeCountInitialized = false;
