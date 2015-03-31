@@ -24,10 +24,7 @@
 
 #include "LabSoundConfig.h"
 #include "AsyncAudioDecoder.h"
-
-
 #include "AudioBuffer.h"
-#include "AudioBufferCallback.h"
 #include <wtf/MainThread.h>
 
 namespace WebCore {
@@ -49,7 +46,7 @@ AsyncAudioDecoder::~AsyncAudioDecoder()
 }
 
 void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
-                                    PassRefPtr<AudioBufferCallback> successCallback, PassRefPtr<AudioBufferCallback> errorCallback)
+                                    std::function<void()>  successCallback, std::function<void()>  errorCallback)
 {
     ASSERT(audioData);
     if (!audioData)
@@ -75,7 +72,8 @@ void AsyncAudioDecoder::runLoop()
     }
 
     // Keep running decoding tasks until we're killed.
-    while (auto decodingTask = m_queue.waitForMessage()) {
+    while (auto decodingTask = m_queue.waitForMessage())
+    {
         // Let the task take care of its own ownership.
         // See DecodingTask::notifyComplete() for cleanup.
         decodingTask.release()->decode();
@@ -84,16 +82,16 @@ void AsyncAudioDecoder::runLoop()
 
 std::unique_ptr<AsyncAudioDecoder::DecodingTask> AsyncAudioDecoder::DecodingTask::create(std::shared_ptr<std::vector<uint8_t>> audioData,
                                                                                          float sampleRate,
-                                                                                         PassRefPtr<AudioBufferCallback> successCallback,
-                                                                                         PassRefPtr<AudioBufferCallback> errorCallback)
+                                                                                         std::function<void()>  successCallback,
+                                                                                         std::function<void()> errorCallback)
 {
     return std::unique_ptr<DecodingTask>(new DecodingTask(audioData, sampleRate, successCallback, errorCallback));
 }
 
 AsyncAudioDecoder::DecodingTask::DecodingTask(std::shared_ptr<std::vector<uint8_t>> audioData,
                                               float sampleRate,
-                                              PassRefPtr<AudioBufferCallback> successCallback,
-                                              PassRefPtr<AudioBufferCallback> errorCallback)
+                                              std::function<void()> successCallback,
+                                              std::function<void()> errorCallback)
     : m_audioData(audioData)
     , m_sampleRate(sampleRate)
     , m_successCallback(successCallback)
@@ -126,11 +124,14 @@ void AsyncAudioDecoder::DecodingTask::notifyCompleteDispatch(void* userData)
 
 void AsyncAudioDecoder::DecodingTask::notifyComplete()
 {
-    if (audioBuffer() && successCallback())
-        successCallback()->handleEvent(audioBuffer().get());
-    else if (errorCallback())
-        errorCallback()->handleEvent(audioBuffer().get());
-
+    if (audioBuffer() && m_successCallback)
+    {
+        m_successCallback();
+    }
+    else if (m_errorCallback)
+    {
+        m_errorCallback();
+    }
     // Our ownership was given up in AsyncAudioDecoder::runLoop()
     // Make sure to clean up here.
     /// @TODO replace with a deletion queue.

@@ -94,7 +94,7 @@ namespace LabSound {
             if (!numChannels)
                 return;
 
-            std::shared_ptr<AudioContext> c = r.contextPtr();
+            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
             
             // copy attributes to run time variables
             float v = m_threshold->value(c);

@@ -31,7 +31,6 @@
 
 #include "HRTFDatabase.h"
 #include "WTF/ThreadSafeRefCounted.h"
-#include "WTF/RefPtr.h"
 #include <mutex>
 
 namespace WebCore {

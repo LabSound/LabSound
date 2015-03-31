@@ -1,11 +1,10 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#pragma once
+#ifndef LABSOUND_H
+#define LABSOUND_H
 
 #include "LabSoundConfig.h"
-#include "WTF/RefPtr.h"
-#include "AudioContext.h"
 #include "SpatializationNode.h"
 #include "AudioNode.h"
 #include "AudioBufferSourceNode.h"
@@ -15,7 +14,7 @@ namespace LabSound {
     // Hoist WTF and WebCore within LabSound namespace
     using namespace WTF;
     using namespace WebCore;
-
+    
     enum NodeType {
 
         // Base WebAudio nodes
@@ -67,3 +66,5 @@ namespace LabSound {
     bool connect(ContextGraphLock& g, AudioNode* thisOutput, AudioNode* toThisInput);
     bool disconnect(ContextGraphLock& g, AudioNode* thisOutput);
 }
+
+#endif

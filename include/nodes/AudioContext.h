@@ -27,7 +27,6 @@
 
 #include "ConcurrentQueue.h"
 #include "ExceptionCodes.h"
-#include "WTF/RefPtr.h"
 #include <mutex>
 #include <set>
 #include <vector>
@@ -41,11 +40,10 @@ namespace WebCore {
     
     using namespace LabSound;
 
-// AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
-// For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
+    // AudioContext is the cornerstone of the web audio API and all AudioNodes are created from it.
+    // For thread safety between the audio thread and the main thread, it has a rendering graph locking mechanism. 
 
     class AudioBuffer;
-    class AudioBufferCallback;
     class AudioDestinationNode;
     class AudioListener;
     class AudioNode;
@@ -104,7 +102,7 @@ public:
     void decrementActiveSourceCount();
 
     // Asynchronous audio file data decoding.
-    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, PassRefPtr<AudioBufferCallback>, PassRefPtr<AudioBufferCallback>, ExceptionCode& ec);
+    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, std::function<void()>, std::function<void()>, ExceptionCode& ec);
 
     AudioListener* listener() { return m_listener.get(); }
 
@@ -206,7 +204,8 @@ private:
 
     // Only accessed in the audio thread.
     std::vector<std::shared_ptr<AudioNode>> m_finishedNodes;
-
+    
+    /* DANGER: OLD DOCUMENTATION/COMMENT */
     // We don't use RefPtr<AudioNode> here because AudioNode has a more complex ref() / deref() implementation
     // with an optional argument for refType.  We need to use the special refType: RefTypeConnection
     // Either accessed when the graph lock is held, or on the main thread when the audio thread has finished.

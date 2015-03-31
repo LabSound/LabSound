@@ -713,7 +713,7 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SfxrNode::reset(std::shared_ptr<AudioContext>)
+    void SfxrNode::reset(std::shared_ptr<WebCore::AudioContext>)
     {
     }
 
@@ -790,7 +790,7 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::laser(std::shared_ptr<AudioContext> c) {
+    void SfxrNode::laser(std::shared_ptr<WebCore::AudioContext> c) {
         setDefaultBeep();
         _waveType->setValue(rnd(2));
         if(_waveType->value(c) == SINE && rnd(1))
@@ -884,7 +884,7 @@ namespace LabSound {
         _decayTime->setValue(0.1 + frnd(0.4));
     }
 
-    void SfxrNode::hit(std::shared_ptr<AudioContext> c) {
+    void SfxrNode::hit(std::shared_ptr<WebCore::AudioContext> c) {
         setDefaultBeep();
         _waveType->setValue(rnd(2));
         if (_waveType->value(c) == SINE)
@@ -917,7 +917,7 @@ namespace LabSound {
             _lpFilterCutoff->setValue(1 - frnd(0.6));
     }
 
-    void SfxrNode::select(std::shared_ptr<AudioContext> c) {
+    void SfxrNode::select(std::shared_ptr<WebCore::AudioContext> c) {
         setDefaultBeep();
         _waveType->setValue(rnd(1));
         if (_waveType->value(c) == SQUARE)
@@ -931,7 +931,7 @@ namespace LabSound {
         _hpFilterCutoff->setValue(0.1);
     }
 
-    void SfxrNode::mutate(std::shared_ptr<AudioContext> r) {
+    void SfxrNode::mutate(std::shared_ptr<WebCore::AudioContext> r) {
         if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
@@ -955,7 +955,7 @@ namespace LabSound {
         if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
     }
 
-    void SfxrNode::randomize(std::shared_ptr<AudioContext> r) {
+    void SfxrNode::randomize(std::shared_ptr<WebCore::AudioContext> r) {
         if (rnd(1))
             _startFrequency->setValue(cube(frnd(2) - 1) + 0.5);
         else

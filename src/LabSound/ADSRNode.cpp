@@ -51,7 +51,7 @@ namespace LabSound {
             if (!numChannels)
                 return;
             
-            std::shared_ptr<AudioContext> c = r.contextPtr();
+            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
 
             if (m_noteOnTime >= 0) {
                 if (m_currentGain > 0) {
@@ -140,7 +140,7 @@ namespace LabSound {
             // note off at any time except while a note is on, has no effect
             m_noteOnTime = -1.;
             
-            std::shared_ptr<AudioContext> c = r.contextPtr();
+            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
             
             if (m_noteOffTime == DBL_MAX) {
                 m_noteOffTime = now + m_releaseTime->value(c);

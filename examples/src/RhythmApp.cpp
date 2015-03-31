@@ -17,8 +17,8 @@ int main(int, char**)
     
     vector<shared_ptr<AudioNode>> notes;    // store the notes to keep them around long enough to play
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
+        ContextGraphLock g(context, "RhythmApp");
+        ContextRenderLock r(context, "RhythmApp");
         
         float startTime = 0;
         float eighthNoteTime = 1.0f/4.0f;

@@ -31,7 +31,7 @@
  */
 
 #include "LabSoundConfig.h"
-#include <WTF/Assertions.h>
+#include "Assertions.h"
 #include <WTF/CurrentTime.h>
 
 #if PLATFORM(MAC)

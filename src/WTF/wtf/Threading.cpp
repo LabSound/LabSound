@@ -25,10 +25,9 @@
 
 #include "LabSoundConfig.h"
 #include "Threading.h"
-#include <wtf/PassOwnPtr.h>
-#include <wtf/RefPtr.h>
 #include <mutex>
 #include <string.h>
+#include <memory>
 
 namespace WTF {
 
@@ -108,17 +107,15 @@ struct ThreadFunctionWithReturnValueInvocation {
 
 static void compatEntryPoint(void* param)
 {
-    // Balanced by .leakPtr() in createThread.
-    OwnPtr<ThreadFunctionWithReturnValueInvocation> invocation = adoptPtr(static_cast<ThreadFunctionWithReturnValueInvocation*>(param));
+    std::unique_ptr<ThreadFunctionWithReturnValueInvocation> invocation(static_cast<ThreadFunctionWithReturnValueInvocation*>(param)); // New ownership
     invocation->function(invocation->data);
 }
 
 ThreadIdentifier createThread(ThreadFunctionWithReturnValue entryPoint, void* data, const char* name)
 {
-    OwnPtr<ThreadFunctionWithReturnValueInvocation> invocation = adoptPtr(new ThreadFunctionWithReturnValueInvocation(entryPoint, data));
+    std::unique_ptr<ThreadFunctionWithReturnValueInvocation> invocation(new ThreadFunctionWithReturnValueInvocation(entryPoint, data));
 
-    // Balanced by adoptPtr() in compatEntryPoint.
-    return createThread(compatEntryPoint, invocation.leakPtr(), name);
+    return createThread(compatEntryPoint, invocation.release(), name); // Does this really satisfy leaky?
 }
 
 WTF_EXPORT_PRIVATE int waitForThreadCompletion(ThreadIdentifier, void**);

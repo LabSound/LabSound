@@ -88,7 +88,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void PowerMonitorNode::reset(std::shared_ptr<AudioContext>)
+    void PowerMonitorNode::reset(std::shared_ptr<WebCore::AudioContext>)
     {
         _db = 0;
     }
