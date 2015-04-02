@@ -191,7 +191,6 @@
 		E2FB86F9183D202700A5A764 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB85FC183D202600A5A764 /* MediaTime.cpp */; };
 		E2FB8717183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */; };
 		E2FB8718183D202700A5A764 /* Threading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866D183D202700A5A764 /* Threading.cpp */; };
-		E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB866F183D202700A5A764 /* ThreadingNone.cpp */; };
 		E2FB871A183D202700A5A764 /* ThreadingPthreads.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8671183D202700A5A764 /* ThreadingPthreads.cpp */; };
 		E2FB8A25183DA85700A5A764 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8A23183DA85700A5A764 /* PWMNode.cpp */; };
 /* End PBXBuildFile section */
@@ -608,7 +607,6 @@
 		E2FB85FC183D202600A5A764 /* MediaTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MediaTime.cpp; sourceTree = "<group>"; };
 		E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadIdentifierDataPthreads.cpp; sourceTree = "<group>"; };
 		E2FB866D183D202700A5A764 /* Threading.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Threading.cpp; sourceTree = "<group>"; };
-		E2FB866F183D202700A5A764 /* ThreadingNone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadingNone.cpp; sourceTree = "<group>"; };
 		E2FB8671183D202700A5A764 /* ThreadingPthreads.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadingPthreads.cpp; sourceTree = "<group>"; };
 		E2FB8A23183DA85700A5A764 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PWMNode.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1142,7 +1140,6 @@
 				E2FB85FC183D202600A5A764 /* MediaTime.cpp */,
 				E2FB866B183D202700A5A764 /* ThreadIdentifierDataPthreads.cpp */,
 				E2FB866D183D202700A5A764 /* Threading.cpp */,
-				E2FB866F183D202700A5A764 /* ThreadingNone.cpp */,
 				E2FB8671183D202700A5A764 /* ThreadingPthreads.cpp */,
 			);
 			name = wtf;
@@ -1375,7 +1372,6 @@
 				E25245D418724E8800983485 /* HRTFDatabase.cpp in Sources */,
 				E2D5CE441A19B2D600B031C8 /* JCRev.cpp in Sources */,
 				E2D5CE411A19B2D600B031C8 /* Guitar.cpp in Sources */,
-				E2FB8719183D202700A5A764 /* ThreadingNone.cpp in Sources */,
 				E2FB8531183D1F1F00A5A764 /* AnalyserNode.cpp in Sources */,
 				E2FB8718183D202700A5A764 /* Threading.cpp in Sources */,
 				E2D5CE071A19B2B100B031C8 /* Envelope.cpp in Sources */,
