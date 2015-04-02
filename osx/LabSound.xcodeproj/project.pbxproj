@@ -484,7 +484,6 @@
 		E2D5CED61A19B43900B031C8 /* AudioBasicInspectorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBasicInspectorNode.h; path = nodes/AudioBasicInspectorNode.h; sourceTree = "<group>"; };
 		E2D5CED71A19B43900B031C8 /* AudioBasicProcessorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBasicProcessorNode.h; path = nodes/AudioBasicProcessorNode.h; sourceTree = "<group>"; };
 		E2D5CED81A19B43900B031C8 /* AudioBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBuffer.h; path = nodes/AudioBuffer.h; sourceTree = "<group>"; };
-		E2D5CED91A19B43900B031C8 /* AudioBufferCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBufferCallback.h; path = nodes/AudioBufferCallback.h; sourceTree = "<group>"; };
 		E2D5CEDA1A19B43900B031C8 /* AudioBufferSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBufferSourceNode.h; path = nodes/AudioBufferSourceNode.h; sourceTree = "<group>"; };
 		E2D5CEDB1A19B43900B031C8 /* AudioContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioContext.h; path = nodes/AudioContext.h; sourceTree = "<group>"; };
 		E2D5CEDC1A19B43900B031C8 /* AudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDestinationNode.h; path = nodes/AudioDestinationNode.h; sourceTree = "<group>"; };
@@ -981,7 +980,6 @@
 				E2D5CED61A19B43900B031C8 /* AudioBasicInspectorNode.h */,
 				E2D5CED71A19B43900B031C8 /* AudioBasicProcessorNode.h */,
 				E2D5CED81A19B43900B031C8 /* AudioBuffer.h */,
-				E2D5CED91A19B43900B031C8 /* AudioBufferCallback.h */,
 				E2D5CEDA1A19B43900B031C8 /* AudioBufferSourceNode.h */,
 				E2D5CEDB1A19B43900B031C8 /* AudioContext.h */,
 				E2D5CEDC1A19B43900B031C8 /* AudioDestinationNode.h */,
