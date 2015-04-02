@@ -143,7 +143,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     AudioBus summingBus(1, numberOfValues, false);
     summingBus.setChannelMemory(0, values, numberOfValues);
 
-    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i) {
+    for (size_t i = 0; i < numberOfRenderingConnections(); ++i) {
         auto output = renderingOutput(i);
         if (!output)
             continue;
@@ -186,7 +186,7 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     lock_guard<mutex> lock(paramMutex);
     
     int firstAvailableIdx = -1;
-    for (int i = 0; i < param->m_outputs.size(); i++)
+    for (size_t i = 0; i < param->m_outputs.size(); i++)
     {
         if (param->m_outputs[i].get() == nullptr)
         {

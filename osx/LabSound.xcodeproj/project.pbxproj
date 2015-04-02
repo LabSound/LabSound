@@ -540,31 +540,16 @@
 		E2D5CF131A19B4D300B031C8 /* PlatformExportMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatformExportMacros.h; sourceTree = "<group>"; };
 		E2D5CF151A19B66900B031C8 /* DynamicAnnotations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DynamicAnnotations.h; path = ../include/third_party/WTF/DynamicAnnotations.h; sourceTree = "<group>"; };
 		E2D5CF161A19B66900B031C8 /* ExportMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExportMacros.h; path = ../include/third_party/WTF/ExportMacros.h; sourceTree = "<group>"; };
-		E2D5CF171A19B66900B031C8 /* Float32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Float32Array.h; path = ../include/third_party/WTF/Float32Array.h; sourceTree = "<group>"; };
-		E2D5CF181A19B66900B031C8 /* Float64Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Float64Array.h; path = ../include/third_party/WTF/Float64Array.h; sourceTree = "<group>"; };
-		E2D5CF191A19B66900B031C8 /* Functional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Functional.h; path = ../include/third_party/WTF/Functional.h; sourceTree = "<group>"; };
-		E2D5CF1A1A19B66900B031C8 /* Int8Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Int8Array.h; path = ../include/third_party/WTF/Int8Array.h; sourceTree = "<group>"; };
-		E2D5CF1B1A19B66900B031C8 /* Int16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Int16Array.h; path = ../include/third_party/WTF/Int16Array.h; sourceTree = "<group>"; };
-		E2D5CF1C1A19B66900B031C8 /* Int32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Int32Array.h; path = ../include/third_party/WTF/Int32Array.h; sourceTree = "<group>"; };
-		E2D5CF1D1A19B66900B031C8 /* IntegralTypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IntegralTypedArrayBase.h; path = ../include/third_party/WTF/IntegralTypedArrayBase.h; sourceTree = "<group>"; };
 		E2D5CF1E1A19B66900B031C8 /* Locker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Locker.h; path = ../include/third_party/WTF/Locker.h; sourceTree = "<group>"; };
 		E2D5CF1F1A19B66900B031C8 /* MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainThread.h; path = ../include/third_party/WTF/MainThread.h; sourceTree = "<group>"; };
 		E2D5CF201A19B66900B031C8 /* MathExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../include/third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
 		E2D5CF211A19B66900B031C8 /* MediaTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaTime.h; path = ../include/third_party/WTF/MediaTime.h; sourceTree = "<group>"; };
-		E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OwnPtrCommon.h; path = ../include/third_party/WTF/OwnPtrCommon.h; sourceTree = "<group>"; };
 		E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PassOwnPtr.h; path = ../include/third_party/WTF/PassOwnPtr.h; sourceTree = "<group>"; };
 		E2D5CF281A19B66900B031C8 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../include/third_party/WTF/Platform.h; sourceTree = "<group>"; };
-		E2D5CF291A19B66900B031C8 /* OwnPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OwnPtr.h; path = ../include/third_party/WTF/OwnPtr.h; sourceTree = "<group>"; };
 		E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadFunctionInvocation.h; path = ../include/third_party/WTF/ThreadFunctionInvocation.h; sourceTree = "<group>"; };
 		E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadIdentifierDataPthreads.h; path = ../include/third_party/WTF/ThreadIdentifierDataPthreads.h; sourceTree = "<group>"; };
 		E2D5CF2E1A19B66900B031C8 /* Threading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threading.h; path = ../include/third_party/WTF/Threading.h; sourceTree = "<group>"; };
-		E2D5CF301A19B66900B031C8 /* ThreadSafeRefCounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadSafeRefCounted.h; path = ../include/third_party/WTF/ThreadSafeRefCounted.h; sourceTree = "<group>"; };
 		E2D5CF311A19B66900B031C8 /* ThreadSpecific.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadSpecific.h; path = ../include/third_party/WTF/ThreadSpecific.h; sourceTree = "<group>"; };
-		E2D5CF321A19B66900B031C8 /* TypedArrayBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TypedArrayBase.h; path = ../include/third_party/WTF/TypedArrayBase.h; sourceTree = "<group>"; };
-		E2D5CF331A19B66900B031C8 /* Uint8Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint8Array.h; path = ../include/third_party/WTF/Uint8Array.h; sourceTree = "<group>"; };
-		E2D5CF341A19B66900B031C8 /* Uint8ClampedArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint8ClampedArray.h; path = ../include/third_party/WTF/Uint8ClampedArray.h; sourceTree = "<group>"; };
-		E2D5CF351A19B66900B031C8 /* Uint16Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint16Array.h; path = ../include/third_party/WTF/Uint16Array.h; sourceTree = "<group>"; };
-		E2D5CF361A19B66900B031C8 /* Uint32Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uint32Array.h; path = ../include/third_party/WTF/Uint32Array.h; sourceTree = "<group>"; };
 		E2D5CF381A19B66900B031C8 /* ValueCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueCheck.h; path = ../include/third_party/WTF/ValueCheck.h; sourceTree = "<group>"; };
 		E2D5CF391A19B66900B031C8 /* WTFExport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WTFExport.h; path = ../include/third_party/WTF/WTFExport.h; sourceTree = "<group>"; };
 		E2F817171A2E19DF00E31150 /* MediaStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStream.h; path = nodes/MediaStream.h; sourceTree = "<group>"; };
@@ -1060,31 +1045,16 @@
 			children = (
 				E2D5CF151A19B66900B031C8 /* DynamicAnnotations.h */,
 				E2D5CF161A19B66900B031C8 /* ExportMacros.h */,
-				E2D5CF171A19B66900B031C8 /* Float32Array.h */,
-				E2D5CF181A19B66900B031C8 /* Float64Array.h */,
-				E2D5CF191A19B66900B031C8 /* Functional.h */,
-				E2D5CF1A1A19B66900B031C8 /* Int8Array.h */,
-				E2D5CF1B1A19B66900B031C8 /* Int16Array.h */,
-				E2D5CF1C1A19B66900B031C8 /* Int32Array.h */,
-				E2D5CF1D1A19B66900B031C8 /* IntegralTypedArrayBase.h */,
 				E2D5CF1E1A19B66900B031C8 /* Locker.h */,
 				E2D5CF1F1A19B66900B031C8 /* MainThread.h */,
 				E2D5CF201A19B66900B031C8 /* MathExtras.h */,
 				E2D5CF211A19B66900B031C8 /* MediaTime.h */,
-				E2D5CF261A19B66900B031C8 /* OwnPtrCommon.h */,
 				E2D5CF271A19B66900B031C8 /* PassOwnPtr.h */,
 				E2D5CF281A19B66900B031C8 /* Platform.h */,
-				E2D5CF291A19B66900B031C8 /* OwnPtr.h */,
 				E2D5CF2C1A19B66900B031C8 /* ThreadFunctionInvocation.h */,
 				E2D5CF2D1A19B66900B031C8 /* ThreadIdentifierDataPthreads.h */,
 				E2D5CF2E1A19B66900B031C8 /* Threading.h */,
-				E2D5CF301A19B66900B031C8 /* ThreadSafeRefCounted.h */,
 				E2D5CF311A19B66900B031C8 /* ThreadSpecific.h */,
-				E2D5CF321A19B66900B031C8 /* TypedArrayBase.h */,
-				E2D5CF331A19B66900B031C8 /* Uint8Array.h */,
-				E2D5CF341A19B66900B031C8 /* Uint8ClampedArray.h */,
-				E2D5CF351A19B66900B031C8 /* Uint16Array.h */,
-				E2D5CF361A19B66900B031C8 /* Uint32Array.h */,
 				E2D5CF381A19B66900B031C8 /* ValueCheck.h */,
 				E2D5CF391A19B66900B031C8 /* WTFExport.h */,
 			);

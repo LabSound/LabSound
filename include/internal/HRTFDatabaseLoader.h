@@ -30,14 +30,14 @@
 #define HRTFDatabaseLoader_h
 
 #include "HRTFDatabase.h"
-#include "WTF/ThreadSafeRefCounted.h"
+#include <thread>
 #include <mutex>
 
 namespace WebCore {
 
 // HRTFDatabaseLoader will asynchronously load the default HRTFDatabase in a new thread.
 
-class HRTFDatabaseLoader : public ThreadSafeRefCounted<HRTFDatabaseLoader> {
+class HRTFDatabaseLoader {
 public:
     // Both constructor and destructor must be called from the main thread.
     // It's expected that the singletons will be accessed instead.
@@ -74,7 +74,8 @@ public:
     static HRTFDatabase* defaultHRTFDatabase();
 
 private:
-    
+    static void databaseLoaderEntry(HRTFDatabaseLoader* threadData);
+
     // If it hasn't already been loaded, creates a new thread and initiates asynchronous loading of the default database.
     // This must be called from the main thread.
     void loadAsynchronously();
@@ -84,7 +85,9 @@ private:
 
     // Holding a m_threadLock is required when accessing m_databaseLoaderThread.
     std::mutex m_threadLock;
-    ThreadIdentifier m_databaseLoaderThread;
+    std::thread* m_databaseLoaderThread;
+    std::condition_variable m_loadingCondition;
+    bool m_loading;
 
     float m_databaseSampleRate;
 };

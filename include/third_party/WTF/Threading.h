@@ -63,7 +63,6 @@
 #include "Assertions.h"
 #include "Atomics.h"
 #include "Locker.h"
-#include "ThreadSafeRefCounted.h"
 
 #include <stdint.h>
 

@@ -19,7 +19,7 @@ inline void LabSoundLog(const char* file, int line, const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     
-    int r = vprintf(fmt, args);
+    vprintf(fmt, args);
 
     fflush(stdout);
     

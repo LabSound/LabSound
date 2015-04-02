@@ -49,28 +49,33 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronou
 }
 
 HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate)
-    : m_databaseLoaderThread(0)
-    , m_databaseSampleRate(sampleRate)
+: m_databaseSampleRate(sampleRate)
+, m_databaseLoaderThread(nullptr)
+, m_loading(false)
 {
+    ASSERT(!s_loader.get());
 }
 
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
 {
     waitForLoaderThreadCompletion();
+    delete m_databaseLoaderThread;
     m_hrtfDatabase.reset();
     
-    // Clear out singleton.
     ASSERT(this == s_loader.get());
-    s_loader = 0;
+    s_loader.reset();
 }
 
 
 // Asynchronously load the database in this thread.
-static void databaseLoaderEntry(void* threadData)
+void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
 {
+    std::lock_guard<std::mutex> locker(threadData->m_threadLock);
     HRTFDatabaseLoader* loader = reinterpret_cast<HRTFDatabaseLoader*>(threadData);
     ASSERT(loader);
+    threadData->m_loading = true;
     loader->load();
+    threadData->m_loadingCondition.notify_one();
 }
 
 void HRTFDatabaseLoader::load()
@@ -86,27 +91,24 @@ void HRTFDatabaseLoader::load()
 
 void HRTFDatabaseLoader::loadAsynchronously()
 {
-    std::lock_guard<std::mutex> locker(m_threadLock);
+    std::unique_lock<std::mutex> lock(m_threadLock);
     
-    if (!m_hrtfDatabase.get() && !m_databaseLoaderThread) {
+    if (!m_hrtfDatabase.get() && !m_loading) {
         // Start the asynchronous database loading process.
-        m_databaseLoaderThread = createThread(databaseLoaderEntry, this, "HRTF database loader");
+        m_databaseLoaderThread = new std::thread(databaseLoaderEntry, this);
     }
 }
 
 bool HRTFDatabaseLoader::isLoaded() const
 {
-    return m_hrtfDatabase.get();
+    return !!m_hrtfDatabase.get();
 }
 
 void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
 {
-    std::lock_guard<std::mutex> locker(m_threadLock);
-    
-    // waitForThreadCompletion() should not be called twice for the same thread.
-    if (m_databaseLoaderThread)
-        waitForThreadCompletion(m_databaseLoaderThread);
-    m_databaseLoaderThread = 0;
+    std::unique_lock<std::mutex> locker(m_threadLock);
+    while (!m_hrtfDatabase.get())
+        m_loadingCondition.wait(locker);
 }
 
 HRTFDatabase* HRTFDatabaseLoader::defaultHRTFDatabase()
