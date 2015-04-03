@@ -63,9 +63,6 @@ void AudioNodeInput::connect(ContextGraphLock& g,
 
     toOutput->addInput(fromInput);
     fromInput->addOutput(toOutput);
-   
-    // increment the reference count on the node
-    fromInput->node()->ref(g, AudioNode::RefTypeConnection);
     
     // Inform context that a connection has been made.
     g.context()->incrementConnectionCount();
@@ -85,7 +82,6 @@ void AudioNodeInput::disconnect(ContextGraphLock& g,
         if (fromInput->m_outputs[i] == toOutput) {
             fromInput->removeOutput(toOutput);
             toOutput->removeInput(fromInput);
-            fromInput->node()->deref(g, AudioNode::RefTypeConnection);
             return;
         }
     }
@@ -95,7 +91,6 @@ void AudioNodeInput::disconnect(ContextGraphLock& g,
     if (it2 != fromInput->m_disabledOutputs.end()) {
         fromInput->m_disabledOutputs.erase(it2);
         toOutput->removeInput(fromInput);
-        fromInput->node()->deref(g, AudioNode::RefTypeConnection);
         return;
     }
 
@@ -164,8 +159,10 @@ unsigned AudioNodeInput::numberOfChannels() const
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (auto i : m_outputs) {
-        maxChannels = max(maxChannels, i->bus()->numberOfChannels());
+    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        auto output = m_outputs[i];
+        if (output)
+            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
     }
     
     return maxChannels;

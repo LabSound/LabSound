@@ -12,6 +12,7 @@ int main(int, char**)
     ExceptionCode ec;
     
     auto context = LabSound::init();
+    auto ac = context.get();
     float sampleRate = context->sampleRate();
     
     std::shared_ptr<OscillatorNode> oscillator;
@@ -24,17 +25,17 @@ int main(int, char**)
 
     vector<shared_ptr<AudioNode>> notes;
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
+        ContextGraphLock g(context, "rhythm tone panning");
+        ContextRenderLock r(context, "rhythm tone panning");
         oscillator = make_shared<OscillatorNode>(r, sampleRate);
         oscGain = make_shared<GainNode>(sampleRate);
-        oscillator->connect(g, r, oscGain.get(), 0, 0, ec);
-        oscGain->connect(g,r , context->destination().get(), 0, 0, ec);
+        oscillator->connect(ac, oscGain.get(), 0, 0, ec);
+        oscGain->connect(ac, context->destination().get(), 0, 0, ec);
         oscGain->gain()->setValue(1.0f);
-        oscillator->start(r, 0);
+        oscillator->start(0);
         
         drumGain = make_shared<GainNode>(sampleRate);
-        drumGain->connect(g, r, context->destination().get(), 0, 0, ec);
+        drumGain->connect(ac, context->destination().get(), 0, 0, ec);
         drumGain->gain()->setValue(1.0f);
         
         float startTime = 0;

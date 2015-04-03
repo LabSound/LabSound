@@ -64,7 +64,7 @@ namespace LabSound {
                 ExceptionCode ec;
 
                 for (auto i : sawStorage) {
-                    LabSound::disconnect(g, i.get());
+                    g.context()->disconnect(i);
                 }
                 sawStorage.clear();
                 saws.clear();
@@ -73,9 +73,9 @@ namespace LabSound {
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
-                for (auto i : saws) {
+                for (auto i : sawStorage) {
                     i->setType(r, OscillatorNode::SAWTOOTH, ec);
-                    LabSound::connect(g, i, gainNode.get());
+                    g.context()->connect(i, gainNode);
                     i->start(0);
                 }
                 cachedFrequency = FLT_MAX;
@@ -107,7 +107,6 @@ namespace LabSound {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
 
         initialize();
-        LabSound::connect(g, _data->gainNode.get(), this);
     }
 
     void SupersawNode::process(ContextRenderLock& r, size_t framesToProcess) {

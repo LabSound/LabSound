@@ -62,19 +62,16 @@ namespace LabSound {
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r,
                                                              std::shared_ptr<AudioNode> outputNode, float when)
     {
-        if (audioBuffer && g.context()) {
-            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(g.context()->destination()->sampleRate()));
+        auto ac = g.context();
+        if (audioBuffer && ac) {
+            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(outputNode->sampleRate()));
             sourceBufferNode->setBuffer(g, r, audioBuffer);
             
             // bus the sound to the output node
-            ExceptionCode ec;
-            sourceBufferNode->connect(g.context(), outputNode.get(), 0, 0, ec);
-            if (ec != NO_ERR) {
-                // @dp add this - audio context should be responsible for clean up, not the sound buffer itself ac->manageLifespan(sourceBufferNode);
-                sourceBufferNode->start(when);
-                g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
-                return sourceBufferNode;
-            }
+            ac->connect(sourceBufferNode, outputNode);
+            sourceBufferNode->start(when);
+            ac->holdSourceNodeUntilFinished(sourceBufferNode);
+            return sourceBufferNode;
         }
         return 0;
     }

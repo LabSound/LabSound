@@ -33,13 +33,24 @@ On Windows, user projects will also need the following dependencies:
 
 LabSound includes WebAudio HRTF implementation. This creates an additional dependency on a folder of HRTF impulse wav files. These files should be located in a directory called `resources/` in the current working directory of the application. 
 
-## Building Library on OSX
+## Building with XCode on OSX
 
-Premake4 was used to generate the platform-specific project files, however both the supplied XCode Workspace and Visual Studio Solution are kept up-to-date. On OSX, the workspace should build out of the box. 
+Premake4 was used to generate the platform-specific project files. On OSX, the both the LabSound project and Examples workspace should build from a clean checkout. 
 
-## Building Library on Windows 
+## Building with Sublime on OSX
 
-Windows requires number of additional dependencies that are included, under their respective license terms, in this repository. These include RTAudio, KissFFT, and libsndfile. Of these, RTAudio and KissFFT have nonrestrictive licenses, although libsndfile is GPL. The functionality of KissFFT is cross platform, although the Windows ifft implementation produces noisy output when generating the wavetables for the standard oscillators. 
+To do a build in Sublime using xctool, xctool must be in the path. If it isn't in the 
+launchctl path, one way to add it is in Sublime's Python console, eg -
+
+os.environ["PATH"] = os.environ["PATH"]+":/Users/dp/local/bin"
+
+xcodebuild works as well, but xctool is much more user friendly.
+
+
+## Building with Visual Studio 2013 on Windows 
+
+Windows requires number of additional dependencies that are included, under their respective license terms, in this repository. These include RTAudio, KissFFT, and libsndfile. Of these, RTAudio and KissFFT have nonrestrictive BSD-compatible licenses, although libsndfile is LGPL. The functionality of KissFFT is cross platform, although the Windows ifft implementation produces noisy output when generating the wavetables for the standard oscillators. 
+
 
 ## Examples + Wiki
 

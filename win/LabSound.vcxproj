@@ -468,7 +468,6 @@
     <ClInclude Include="..\include\third_party\WTF\Platform.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadSafeRefCounted.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
     <ClInclude Include="..\include\third_party\WTF\ValueCheck.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />

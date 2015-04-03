@@ -100,14 +100,6 @@ public:
     NodeType nodeType() const { return m_nodeType; }
     void setNodeType(NodeType);
 
-    // We handle our own ref-counting because of the threading issues and subtle nature of
-    // how AudioNodes can continue processing (playing one-shot sound) after there are no more
-    // JavaScript references to the object.
-    enum RefType { RefTypeNormal, RefTypeConnection };
-
-    void ref(ContextGraphLock&, RefType refType);
-    void deref(ContextGraphLock&, RefType refType);
-
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
@@ -185,6 +177,8 @@ protected:
     virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess);
 
 private:
+    friend class AudioContext;
+    
     volatile bool m_isInitialized;
     NodeType m_nodeType;
     float m_sampleRate;

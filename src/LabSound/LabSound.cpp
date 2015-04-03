@@ -26,7 +26,10 @@ namespace LabSound {
             std::this_thread::sleep_for(sleepDuration);
             if (mainContext) {
                 ContextGraphLock g(mainContext, "LabSound::update");
-                mainContext->update(g);
+                // test both because the mainContext might have been destructed during the acquisition of the main context,
+                // particularly during app shutdown. No point in continuing to process.
+                if (g.context() && mainContext)
+                    mainContext->update(g);
             }
             else {
                 // thread is finished
@@ -49,7 +52,6 @@ namespace LabSound {
         mainContext->lazyInitialize();
 
         soundThread = new std::thread(update);
-        soundThread->join();
         
         return mainContext;
     }
@@ -74,18 +76,6 @@ namespace LabSound {
             }
         }
         std::cerr << "LabSound could not acquire lock for shutdown" << std::endl;
-    }
-
-    bool connect(ContextGraphLock& g, WebCore::AudioNode* thisOutput, WebCore::AudioNode* toThisInput) {
-        ExceptionCode ec = NO_ERR;
-        thisOutput->connect(g.context(), toThisInput, 0, 0, ec);
-        return ec == NO_ERR;
-    }
-
-    bool disconnect(ContextGraphLock& g, WebCore::AudioNode* thisOutput) {
-        ExceptionCode ec = NO_ERR;
-        thisOutput->disconnect(g.context(), 0, ec);
-        return ec == NO_ERR;
     }
 
 } // LabSound

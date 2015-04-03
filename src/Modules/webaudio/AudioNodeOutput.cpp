@@ -168,7 +168,7 @@ void AudioNodeOutput::addInput(std::shared_ptr<AudioNodeInput> input)
             return;
         }
     
-    ASSERT(0 == "couldn't add input");
+    ASSERT(0 == "couldn't add input to AudioNodeOutput");
 }
 
 void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)

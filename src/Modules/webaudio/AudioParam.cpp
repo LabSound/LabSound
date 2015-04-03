@@ -143,10 +143,10 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     AudioBus summingBus(1, numberOfValues, false);
     summingBus.setChannelMemory(0, values, numberOfValues);
 
-    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i)
-    {
+    for (size_t i = 0; i < numberOfRenderingConnections(); ++i) {
         auto output = renderingOutput(i);
-        ASSERT(output);
+        if (!output)
+            continue;
 
         // Render audio from this output.
         AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
@@ -174,8 +174,7 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
 {
     if (!output)
         return;
-    
-    // Changed to support fixed-size arrays
+
     auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
     
     // Not found...
@@ -183,6 +182,8 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     {
         return;
     }
+
+    lock_guard<mutex> lock(paramMutex);
     
     int firstAvailableIdx = -1;
     for (size_t i = 0; i < param->m_outputs.size(); i++)
@@ -198,7 +199,6 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
     
     output->addParam(param);
     
-    lock_guard<mutex> lock(paramMutex);
     param->m_outputs[firstAvailableIdx] = output;
     param->m_renderingStateNeedUpdating = true;
 }

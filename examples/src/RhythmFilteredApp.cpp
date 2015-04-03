@@ -21,12 +21,12 @@ int main(int, char**)
 
     vector<shared_ptr<AudioNode>> notes;    // store the notes to keep them around long enough to play
     {
-        ContextGraphLock g(context);
-        ContextRenderLock r(context);
+        ContextGraphLock g(context, "rhythm filtered");
+        ContextRenderLock r(context, "rhythm filtered");
         filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
         filter->setType(BiquadFilterNode::LOWPASS, ec);
         filter->frequency()->setValue(500.0f);
-        filter->connect(g, r, context->destination().get(), 0, 0, ec);
+        filter->connect(context.get(), context->destination().get(), 0, 0, ec);
         
         float startTime = 0;
         float eighthNoteTime = 1.0f/4.0f;
