@@ -163,9 +163,6 @@
     <ClCompile Include="OscillatorExample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OscillatorExample.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\win\LabSound.vcxproj">
       <Project>{c2c11853-81f3-c348-8c6e-8da318e0c84e}</Project>
       <Private>false</Private>

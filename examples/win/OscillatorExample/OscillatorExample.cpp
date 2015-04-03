@@ -1,4 +1,8 @@
-#include "OscillatorExample.h"
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include "LabSound.h"
+#include "LabSoundIncludes.h"
 
 using namespace LabSound;
 
@@ -16,7 +20,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
 		oscillator->connect(context.get(), context->destination().get(), 0, 0, ec);
         oscillator->start(0);
-        oscillator->setType(r, 0, ec);
+        oscillator->setType(r, 1, ec);
 
 	}
 
@@ -24,7 +28,7 @@ int main(int argc, char *argv[], char *envp[]) {
 	{
 		std::cout << f << std::endl;
 		oscillator->frequency()->setValue(f);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(5));

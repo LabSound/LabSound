@@ -23,7 +23,8 @@
 #include <memory>
 #include <math.h>
 
-#if defined(__AVX__) || ((_M_IX86_FP) && (_M_IX86_FP >= 2))
+// All 64 bit processors support SSE2
+#if defined(__AVX__) || ((_M_IX86_FP) && (_M_IX86_FP >= 2)) || (_M_AMD64) || defined(_M_X64)
 #define __SSE2__
 #endif
 
