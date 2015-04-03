@@ -519,6 +519,7 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioDestinationNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\Modules\webaudio\AudioListener.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioNode.cpp">

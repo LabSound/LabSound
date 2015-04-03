@@ -89,7 +89,8 @@
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(ProjectDir)\..\..\..\src\libs\libsndfile-1.dll $(ProjectDir)\$(Configuration)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,7 +107,8 @@
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(ProjectDir)\..\..\..\src\libs\libsndfile-1.dll $(ProjectDir)\$(Configuration)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,7 +129,8 @@
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(ProjectDir)\..\..\..\src\libs\libsndfile-1.dll $(ProjectDir)\$(Configuration)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,7 +151,8 @@
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y $(ProjectDir)\..\..\..\src\libs\libsndfile-1.dll $(ProjectDir)\$(Configuration)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
