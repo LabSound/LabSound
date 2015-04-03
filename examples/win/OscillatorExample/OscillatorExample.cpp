@@ -24,11 +24,11 @@ int main(int argc, char *argv[], char *envp[]) {
 
 	}
 
+	int count = 0; 
 	for (int f = 220; f < 22050; f *= 2)
 	{
 		std::cout << f << std::endl;
-		oscillator->frequency()->setValue(f);
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		oscillator->frequency()->setValueAtTime(f, ++count);
 	}
 
 	std::this_thread::sleep_for(std::chrono::seconds(5));
