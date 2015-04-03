@@ -466,7 +466,6 @@
     <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
-    <ClInclude Include="..\include\third_party\WTF\ValueCheck.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />
     <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />
     <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h" />

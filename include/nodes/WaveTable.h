@@ -35,8 +35,6 @@
 
 namespace WebCore {
 
-using namespace WTF;
-
 class WaveTable {
 public:
     static std::unique_ptr<WaveTable> createSine(float sampleRate);

@@ -29,7 +29,7 @@
 #ifndef AudioArray_h
 #define AudioArray_h
 
-#include "WTF/CheckedArithmetic.h"
+#include "Assertions.h"
 #include <stdlib.h>
 #include <string.h>
 

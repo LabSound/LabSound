@@ -584,9 +584,6 @@
     <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ValueCheck.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\nodes\ADSRNode.h">
       <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
