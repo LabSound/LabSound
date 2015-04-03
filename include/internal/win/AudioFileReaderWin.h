@@ -29,8 +29,6 @@
 #ifndef AudioFileReaderWin_h
 #define AudioFileReaderWin_h
 
-#include "PassOwnPtr.h"
-
 namespace WebCore {
 
 class AudioBus;
@@ -48,37 +46,13 @@ public:
     // Returns 0 if error
     std::unique_ptr<AudioBus> createBus(float sampleRate, bool mixToMono);
 
-    const void* data() const { return m_data; }
+    const void * data() const { return m_data; }
     size_t dataSize() const { return m_dataSize; }
 
 private:
 
-    const void* m_data;
+    const void * m_data;
     size_t m_dataSize;
-
-	////////////////////////////////////////////////////////////
-    /// Functions for implementing custom read and write to memory files
-    ////////////////////////////////////////////////////////////
-    static sf_count_t MemoryGetLength(void* UserData);
-    static sf_count_t MemoryRead(void* Ptr, sf_count_t Count, void* UserData);
-    static sf_count_t MemorySeek(sf_count_t Offset, int Whence, void* UserData);
-    static sf_count_t MemoryTell(void* UserData);
-    static sf_count_t MemoryWrite(const void* Ptr, sf_count_t Count, void* UserData);
-
-    ////////////////////////////////////////////////////////////
-    /// Structure holding data related to memory operations
-    ////////////////////////////////////////////////////////////
-    struct MemoryInfos
-    {
-        const char* DataStart; ///< Pointer to the begining of the data
-        const char* DataPtr;   ///< Pointer to the current read / write position
-        sf_count_t  TotalSize; ///< Total size of the data, in bytes
-    };
-
-    ////////////////////////////////////////////////////////////
-    // Member data
-    ////////////////////////////////////////////////////////////
-
 
 };
 
