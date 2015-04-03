@@ -557,13 +557,7 @@
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Locker.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MainThread.h">

@@ -457,9 +457,7 @@
     <ClInclude Include="..\include\third_party\WTF\Compiler.h" />
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
-    <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h" />
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h" />
-    <ClInclude Include="..\include\third_party\WTF\Locker.h" />
     <ClInclude Include="..\include\third_party\WTF\MainThread.h" />
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h" />
