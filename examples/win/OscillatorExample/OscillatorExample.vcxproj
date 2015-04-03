@@ -87,6 +87,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -105,6 +106,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -127,6 +129,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -149,6 +152,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\src\build\$(Platform)\$(Configuration);..\..\..\src\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>
