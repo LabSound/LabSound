@@ -237,5 +237,10 @@ void setMainThreadCallbacksPaused(bool paused)
         scheduleDispatchFunctionsOnMainThread();
 }
 
+bool isMainThread()
+{
+    return currentThread() == mainThreadIdentifier;
+}
+
 
 } // namespace WTF
