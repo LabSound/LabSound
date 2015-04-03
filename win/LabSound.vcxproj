@@ -107,6 +107,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -143,6 +144,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -181,6 +183,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -221,6 +224,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>

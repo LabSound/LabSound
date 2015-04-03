@@ -23,6 +23,10 @@
 #include <memory>
 #include <math.h>
 
+#if defined(__AVX__) || ((_M_IX86_FP) && (_M_IX86_FP >= 2))
+#define __SSE2__
+#endif
+
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL
 #  define HAVE_LIBDL 1
