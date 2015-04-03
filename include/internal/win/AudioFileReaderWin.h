@@ -30,7 +30,6 @@
 #define AudioFileReaderWin_h
 
 #include "PassOwnPtr.h"
-#include "libsndfile\sndfile.h"
 
 namespace WebCore {
 

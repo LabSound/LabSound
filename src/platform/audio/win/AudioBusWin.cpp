@@ -24,7 +24,6 @@
  */
 
 #include "LabSoundConfig.h"
-#include "libsndfile\sndfile.h"
 
 #include "AudioBus.h"
 #include "AudioFileReader.h"
