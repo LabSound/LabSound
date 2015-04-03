@@ -453,7 +453,6 @@
     <ClInclude Include="..\include\third_party\STK\WvOut.h" />
     <ClInclude Include="..\include\third_party\WTF\Atomics.h" />
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h" />
-    <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h" />
     <ClInclude Include="..\include\third_party\WTF\Compiler.h" />
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
