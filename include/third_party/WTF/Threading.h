@@ -62,7 +62,6 @@
 #include "Platform.h"
 #include "Assertions.h"
 #include "Atomics.h"
-#include "Locker.h"
 #include <thread>
 #include <mutex>
 #include <memory>
