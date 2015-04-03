@@ -98,7 +98,7 @@ WaveTable::WaveTable(float sampleRate)
 void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, float* &lowerWaveData, float* &higherWaveData, float& tableInterpolationFactor)
 {
     // Negative frequencies are allowed, in which case we alias to the positive frequency.
-    fundamentalFrequency = fabsf(fundamentalFrequency);
+    fundamentalFrequency = std::abs(fundamentalFrequency);
 
     // Calculate the pitch range.
     float ratio = fundamentalFrequency > 0 ? fundamentalFrequency / m_lowestFundamentalFrequency : 0.5;
@@ -147,7 +147,6 @@ unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
 // Thus, higher ranges have more high-frequency partials culled out.
 void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, unsigned numberOfComponents)
 {
-
     float normalizationScale = 1;
 
     unsigned fftSize = m_waveTableSize;
@@ -156,7 +155,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
 
-	//std::cout << "Created wavetable of size " << numberOfComponents << std::endl;
+	std::cout << "Created wavetable of size " << numberOfComponents << std::endl;
 
     m_bandLimitedTables.reserve(m_numberOfRanges);
 
@@ -241,7 +240,7 @@ void WaveTable::generateBasicWaveform(int shape)
 
     // Clear DC and Nyquist.
     realP[0] = 0;
-    imagP[0] = 0;
+	imagP[0] = 0;
     
     const float piFloat = float(3.14159265358979323846);
 
