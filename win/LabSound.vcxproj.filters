@@ -802,12 +802,6 @@
     <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
       <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp">
       <Filter>LabSound\third_party\rtaudio\src</Filter>
     </ClCompile>
@@ -1320,6 +1314,12 @@
     </ClCompile>
     <ClCompile Include="..\src\STK\Wurley.cpp">
       <Filter>LabSound\third_party\STK\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\win\ThreadingWin.cpp">
+      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\WTF\wtf\win\ThreadSpecificWin.cpp">
+      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

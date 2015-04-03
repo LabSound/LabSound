@@ -737,9 +737,9 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp" />
     <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp" />
+    <ClCompile Include="..\src\WTF\wtf\win\ThreadingWin.cpp" />
+    <ClCompile Include="..\src\WTF\wtf\win\ThreadSpecificWin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\third_party\STK\SKINI.msg" />
