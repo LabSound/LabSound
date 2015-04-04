@@ -13,7 +13,7 @@ int main(int, char**)
     auto ac = context.get();
     
     std::shared_ptr<OscillatorNode> oscillator;
-    SoundBuffer tonbi("tonbi.wav", context->sampleRate());
+    SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
     std::shared_ptr<AudioBufferSourceNode> tonbiSound;
     auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
     context->addAutomaticPullNode(recorder);

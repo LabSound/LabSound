@@ -8,6 +8,9 @@
 
 #pragma once
 
+#ifndef _LABSOUND_CONFIG_H
+#define _LABSOUND_CONFIG_H
+
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
 
@@ -55,3 +58,4 @@
 #  endif
 #endif
 
+#endif

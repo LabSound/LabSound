@@ -13,9 +13,9 @@ int main(int, char**)
     auto context = LabSound::init();
     float sampleRate = context->sampleRate();
     
-    SoundBuffer kick("kick.wav", sampleRate);
-    SoundBuffer hihat("hihat.wav", sampleRate);
-    SoundBuffer snare("snare.wav", sampleRate);
+    SoundBuffer kick("samples/kick.wav", sampleRate);
+    SoundBuffer hihat("samples/hihat.wav", sampleRate);
+    SoundBuffer snare("samples/snare.wav", sampleRate);
     
     shared_ptr<BiquadFilterNode> filter;
 

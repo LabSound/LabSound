@@ -13,7 +13,7 @@ int main(int, char**)
     auto context = LabSound::init();
     auto ac = context.get();
 
-    SoundBuffer train("trainrolling.wav", context->sampleRate());
+    SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
     auto panner = std::make_shared<PannerNode>(context->sampleRate());
     std::shared_ptr<AudioBufferSourceNode> trainNode;
     {

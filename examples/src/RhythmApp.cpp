@@ -11,9 +11,9 @@ int main(int, char**)
     auto context = LabSound::init();
     float sampleRate = context->sampleRate();
     
-    SoundBuffer kick("kick.wav", sampleRate);
-    SoundBuffer hihat("hihat.wav", sampleRate);
-    SoundBuffer snare("snare.wav", sampleRate);
+    SoundBuffer kick("samples/kick.wav", sampleRate);
+    SoundBuffer hihat("samples/hihat.wav", sampleRate);
+    SoundBuffer snare("samples/snare.wav", sampleRate);
     
     vector<shared_ptr<AudioNode>> notes;    // store the notes to keep them around long enough to play
     {

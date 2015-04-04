@@ -12,9 +12,9 @@
 #include <iostream>
 #include <atomic>
 
-namespace LabSound {
+namespace LabSound
+{
 
-    
     std::timed_mutex g_TimedMutex;
     std::thread g_GraphUpdateThread;
 
@@ -70,14 +70,14 @@ namespace LabSound {
     void finish(std::shared_ptr<LabSound::AudioContext> context) 
 	{
 
-		std::cout << "Context Use Count " << context.use_count() << std::endl; 
+		//std::cout << "Context Use Count " << context.use_count() << std::endl;
 
 		// Halt the graph update thread
 		runGraphUpdate = false;
 
         mainContext.reset(); // -> -1 to the use_count
 
-		std::cout << "Context Use Count " << context.use_count() << std::endl; 
+		//std::cout << "Context Use Count " << context.use_count() << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(updateRate_ms * 2));
         

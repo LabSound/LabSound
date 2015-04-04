@@ -13,10 +13,10 @@ int main(int, char**)
     
     auto context = LabSound::init();
 
-    SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
+    SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir("impulse-responses/filter-telephone.wav", context->sampleRate());
     
-    SoundBuffer sample("human-voice.mp4", context->sampleRate());
+    SoundBuffer sample("samples/voice.mp4", context->sampleRate());
     shared_ptr<ConvolverNode> convolve;
     shared_ptr<GainNode> wetGain;
     shared_ptr<GainNode> dryGain;

@@ -19,9 +19,9 @@ int main(int, char**)
     std::shared_ptr<GainNode> oscGain;
     std::shared_ptr<GainNode> drumGain;
     
-    SoundBuffer kick("kick.wav", sampleRate);
-    SoundBuffer hihat("hihat.wav", sampleRate);
-    SoundBuffer snare("snare.wav", sampleRate);
+    SoundBuffer kick("samples/kick.wav", sampleRate);
+    SoundBuffer hihat("samples/hihat.wav", sampleRate);
+    SoundBuffer snare("samples/snare.wav", sampleRate);
 
     vector<shared_ptr<AudioNode>> notes;
     {
