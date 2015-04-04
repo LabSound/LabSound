@@ -27,16 +27,13 @@
 #import "AudioBus.h"
 
 #import "AudioFileReader.h"
-#import <WTF/AutodrainedPool.h>
 #import <Foundation/Foundation.h>
 
 namespace WebCore {
 
 std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char* name, float sampleRate)
 {
-    // This method can be called from other than the main thread, so we need an auto-release pool.
-    AutodrainedPool pool;
-    
+
     NSBundle *bundle = [NSBundle mainBundle];
     /// @LabSound changed audio to HRTF
     NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"HRTF"];
