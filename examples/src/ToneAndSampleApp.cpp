@@ -26,7 +26,7 @@ int main(int, char**)
         oscillator->start(0);
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(r, 1, ec);
-        tonbiSound = tonbi.play(g, r, 0.0f);
+        tonbiSound = tonbi.play(r, 0.0f);
     }
 
     const int seconds = 2;

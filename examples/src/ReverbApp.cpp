@@ -37,7 +37,7 @@ int main(int, char**)
         dryGain->connect(context.get(), context->destination().get(), 0, 0, ec);
         dryGain->connect(context.get(), convolve.get(), 0, 0, ec);
         
-        voice = sample.play(g, r, dryGain, 0);
+        voice = sample.play(r, dryGain, 0);
     }
     
     const int seconds = 20;

@@ -20,7 +20,7 @@ int main(int, char**)
         ContextGraphLock g(context, "spatialization");
         ContextRenderLock r(context, "spatialization");
         panner->connect(ac, context->destination().get(), 0, 0, ec);
-        trainNode = train.play(g, r, panner, 0.0f);
+        trainNode = train.play(r, panner, 0.0f);
     }
     
     if (trainNode)

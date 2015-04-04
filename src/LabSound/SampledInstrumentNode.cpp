@@ -31,17 +31,19 @@ namespace LabSound {
 	}
 
 	// Definitely have ADSR... 
-	void SampledInstrumentNode::noteOn(ContextGraphLock& g, ContextRenderLock& r, float midiNoteNumber, float amplitude) {
-	
-		for (auto &sample : samples) {
-
+	void SampledInstrumentNode::noteOn(ContextRenderLock& r, float midiNoteNumber, float amplitude)
+    {
+        auto ac = r.context();
+        if (!ac) return;
+        
+		for (auto &sample : samples)
+        {
 			// Find note in sample map
-			if (sample->appliesToNote(midiNoteNumber)) {
-				sample->startNote(g, r, midiNoteNumber, amplitude);
+			if (sample->appliesToNote(midiNoteNumber))
+            {
+				sample->startNote(r, midiNoteNumber, amplitude);
 			}
-
 		}
-
 	}
 
 	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {

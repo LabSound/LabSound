@@ -345,9 +345,9 @@ void AudioBufferSourceNode::reset(std::shared_ptr<AudioContext> c)
     m_lastGain = gain()->value(c);
 }
 
-bool AudioBufferSourceNode::setBuffer(ContextGraphLock& g, ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
+bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
 {
-    ASSERT(g.context() && r.context());
+    ASSERT(r.context());
     
     if (buffer) {
         // Do any necesssary re-configuration to the buffer's number of channels.

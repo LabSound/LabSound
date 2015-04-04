@@ -37,35 +37,35 @@ namespace LabSound {
     {
     }
   
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextGraphLock& g, ContextRenderLock& r, float sampleRate)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
         if (audioBuffer) {
             std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(sampleRate));
             
             // Connect the source node to the parsed audio data for playback
-            sourceBuffer->setBuffer(g, r, audioBuffer);
+            sourceBuffer->setBuffer(r, audioBuffer);
             return sourceBuffer;
         }
-        return 0;
+        return nullptr;
     }
     
 	// Output to the default context output 
-	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r, float when)
+	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float when)
 	{
-		if (audioBuffer && g.context()) {
-			return play(g,r, g.context()->destination(), when);
+		if (audioBuffer && r.context()) {
+			return play(r, r.context()->destination(), when);
 		}
-		return 0;
+        return nullptr;
 	}
 
 	// Output to a specific note 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r,
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r,
                                                              std::shared_ptr<AudioNode> outputNode, float when)
     {
-        auto ac = g.context();
+        auto ac = r.context();
         if (audioBuffer && ac) {
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(outputNode->sampleRate()));
-            sourceBufferNode->setBuffer(g, r, audioBuffer);
+            sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the output node
             ac->connect(sourceBufferNode, outputNode);
@@ -73,33 +73,33 @@ namespace LabSound {
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
             return sourceBufferNode;
         }
-        return 0;
+        return nullptr;
     }
     
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offfset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r, float start, float end, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {
         if (audioBuffer) {
 
             if (end == 0)
                 end = audioBuffer->duration();
             
-            auto ac = g.context();
+            auto ac = r.context();
             if (!ac)
                 return nullptr;
             
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac->destination()->sampleRate()));
             
             // Connect the source node to the parsed audio data for playback
-            sourceBufferNode->setBuffer(g, r, audioBuffer);
+            sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBufferNode->connect(g.context(), ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->connect(r.context(), ac->destination().get(), 0, 0, ec);
             sourceBufferNode->startGrain(when, start, end - start);
-            g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
+            r.context()->holdSourceNodeUntilFinished(sourceBufferNode);
 
             return sourceBufferNode;
         }

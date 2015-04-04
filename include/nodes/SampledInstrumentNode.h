@@ -56,23 +56,25 @@ namespace LabSound {
 
 		}
 
-		std::shared_ptr<AudioBufferSourceNode> startNote(ContextGraphLock& g, ContextRenderLock& r,
-                                                         uint8_t midiNoteNumber, float amplitude = 1.0) {
-
+		std::shared_ptr<AudioBufferSourceNode> startNote(ContextRenderLock& r, uint8_t midiNoteNumber, float amplitude = 1.0) {
+            
+            auto ac = r.context();
+            if (!ac) return nullptr;
+            
 			// var semitoneRatio = Math.pow(2, 1/12);
 			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
 
-			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create(g, r, g.context()->sampleRate()));
+			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create(r, ac->sampleRate()));
 
 			theSample->playbackRate()->setValue(pitchRatio); 
 			theSample->gain()->setValue(amplitude); 
 
 			// Connect the source node to the parsed audio data for playback
-			theSample->setBuffer(g, r, audioBuffer->audioBuffer);
+			theSample->setBuffer(r, audioBuffer->audioBuffer);
 
 			// Bus the sound to the output destination .
 			ExceptionCode ec;
-			theSample->connect(g.context(), destinationNode.get(), 0, 0, ec);
+			theSample->connect(ac, destinationNode.get(), 0, 0, ec);
 			theSample->start(0.0);
 
 			return theSample;
@@ -144,7 +146,7 @@ namespace LabSound {
         
 		void loadInstrumentConfiguration(std::string path);
 
-		void noteOn(ContextGraphLock& g, ContextRenderLock& r, float frequency, float amplitude);
+		void noteOn(ContextRenderLock& r, float frequency, float amplitude);
 		float noteOff(ContextRenderLock& r, float amplitude);
 
 		void stopAll(); 

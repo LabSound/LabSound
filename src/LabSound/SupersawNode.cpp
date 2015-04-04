@@ -55,7 +55,8 @@ namespace LabSound {
             }
         }
         
-        void update(ContextGraphLock& g, ContextRenderLock& r, bool okayToReallocate) {
+        
+        void update(ContextRenderLock& r, bool okayToReallocate) {
             std::shared_ptr<AudioContext> c = r.contextPtr();
             
             int currentN = saws.size();
@@ -64,7 +65,7 @@ namespace LabSound {
                 ExceptionCode ec;
 
                 for (auto i : sawStorage) {
-                    g.context()->disconnect(i);
+                    c->disconnect(i);
                 }
                 sawStorage.clear();
                 saws.clear();
@@ -75,14 +76,14 @@ namespace LabSound {
 
                 for (auto i : sawStorage) {
                     i->setType(r, OscillatorNode::SAWTOOTH, ec);
-                    g.context()->connect(i, gainNode);
+                    c->connect(i, gainNode);
                     i->start(0);
                 }
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
             }
             
-            update(g.contextPtr());
+            //update(g.contextPtr());
         }
 
         SupersawNode* self;
@@ -97,7 +98,7 @@ namespace LabSound {
         float cachedFrequency;
     };
 
-    SupersawNode::SupersawNode(ContextGraphLock& g, ContextRenderLock& r,float sampleRate)
+    SupersawNode::SupersawNode(ContextRenderLock& r,float sampleRate)
     : AudioNode(sampleRate)
     , _data(new Data(this, sampleRate))
     {
@@ -123,8 +124,8 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SupersawNode::update(ContextGraphLock& g, ContextRenderLock& r) {
-        _data->update(g, r, true);
+    void SupersawNode::update(ContextRenderLock& r) {
+        _data->update(r, true);
     }
 
     std::shared_ptr<AudioParam> SupersawNode::attack()    const { return _data->gainNode->attackTime(); }
