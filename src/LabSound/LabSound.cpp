@@ -43,11 +43,13 @@ namespace LabSound
                 break;
             }
         }
-        printf("LabSound GraphUpdateThread thread finished\n");
+        LOG("LabSound GraphUpdateThread thread finished");
     }
     
     std::shared_ptr<LabSound::AudioContext> init() 
 	{
+        
+        LOG("Initialize Context");
         
         runGraphUpdate = true;
         
@@ -68,7 +70,9 @@ namespace LabSound
 
     void finish(std::shared_ptr<LabSound::AudioContext> context) 
 	{
-
+        
+        LOG("Finish Context");
+        
 		//std::cout << "Context Use Count " << context.use_count() << std::endl;
 
 		// Halt the graph update thread
@@ -97,7 +101,7 @@ namespace LabSound
             }
         }
 
-        std::cerr << "LabSound could not acquire lock for shutdown" << std::endl;
+        LOG("Could not acquire lock for shutdown");
     }
 
 } // LabSound
