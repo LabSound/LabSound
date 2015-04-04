@@ -20,7 +20,7 @@ int main(int argc, char *argv[], char *envp[]) {
 		oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
 		oscillator->connect(context.get(), context->destination().get(), 0, 0, ec);
         oscillator->start(0);
-        oscillator->setType(r, 1, ec);
+        oscillator->setType(r, 0, ec);
 
 	}
 

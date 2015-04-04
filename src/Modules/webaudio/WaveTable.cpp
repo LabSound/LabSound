@@ -147,7 +147,7 @@ unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
 // Thus, higher ranges have more high-frequency partials culled out.
 void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, unsigned numberOfComponents)
 {
-    float normalizationScale = 1;
+    float normalizationScale = 1.0;
 
     unsigned fftSize = m_waveTableSize;
     unsigned halfSize = fftSize / 2 + 1;
@@ -244,45 +244,68 @@ void WaveTable::generateBasicWaveform(int shape)
     
     const float piFloat = float(3.14159265358979323846);
 
-    for (unsigned n = 1; n < halfSize; ++n) {
-        float omega = 2 * piFloat * n;
-        float invOmega = 1 / omega;
+    for (unsigned n = 1; n < halfSize; ++n) 
+	{
+        float piFactor = 2 / (n * piFloat);
 
-        // Fourier coefficients according to standard definition.
-        float a; // Coefficient for cos().
+        // All waveforms are odd functions with a positive slope at time 0. Hence the coefficients
+        // for cos() are always 0.
+
+        // Fourier coefficients according to standard definition:
+        // b = 1/pi*integrate(f(x)*sin(n*x), x, -pi, pi)
+        //   = 2/pi*integrate(f(x)*sin(n*x), x, 0, pi)
+        // since f(x) is an odd function.
+
         float b; // Coefficient for sin().
 
-        // Calculate Fourier coefficients depending on the shape.
-        // Note that the overall scaling (magnitude) of the waveforms is normalized in createBandLimitedTables().
+        // Calculate Fourier coefficients depending on the shape. Note that the overall scaling
+        // (magnitude) of the waveforms is normalized in createBandLimitedTables().
         switch (shape) {
         case OscillatorNode::SINE:
             // Standard sine wave function.
-            a = 0;
             b = (n == 1) ? 1 : 0;
             break;
         case OscillatorNode::SQUARE:
-            // Square-shaped waveform with the first half its maximum value and the second half its minimum value.
-            a = 0;
-            b = invOmega * ((n & 1) ? 2 : 0);
+            // Square-shaped waveform with the first half its maximum value and the second half its
+            // minimum value.
+            //
+            // See http://mathworld.wolfram.com/FourierSeriesSquareWave.html
+            //
+            // b[n] = 2/n/pi*(1-(-1)^n)
+            //      = 4/n/pi for n odd and 0 otherwise.
+            //      = 2*(2/(n*pi)) for n odd
+            b = (n & 1) ? 2 * piFactor : 0;
             break;
         case OscillatorNode::SAWTOOTH:
-            // Sawtooth-shaped waveform with the first half ramping from zero to maximum and the second half from minimum to zero.
-            a = 0;
-            b = -invOmega * cos(0.5 * omega);
+            // Sawtooth-shaped waveform with the first half ramping from zero to maximum and the
+            // second half from minimum to zero.
+            //
+            // b[n] = -2*(-1)^n/pi/n
+            //      = (2/(n*pi))*(-1)^(n+1)
+            b = piFactor * ((n & 1) ? 1 : -1);
             break;
         case OscillatorNode::TRIANGLE:
-            // Triangle-shaped waveform going from its maximum value to its minimum value then back to the maximum value.
-            a = (4 - 4 * cos(0.5 * omega)) / (n * n * piFloat * piFloat);
-            b = 0;
+            // Triangle-shaped waveform going from 0 at time 0 to 1 at time pi/2 and back to 0 at
+            // time pi.
+            //
+            // See http://mathworld.wolfram.com/FourierSeriesTriangleWave.html
+            //
+            // b[n] = 8*sin(pi*k/2)/(pi*k)^2
+            //      = 8/pi^2/n^2*(-1)^((n-1)/2) for n odd and 0 otherwise
+            //      = 2*(2/(n*pi))^2 * (-1)^((n-1)/2)
+            if (n & 1) {
+                b = 2 * (piFactor * piFactor) * ((((n - 1) >> 1) & 1) ? -1 : 1);
+            } else {
+                b = 0;
+            }
             break;
         default:
             ASSERT_NOT_REACHED();
-            a = 0;
             b = 0;
             break;
         }
 
-        realP[n] = a;
+        realP[n] = 0;
         imagP[n] = b;
     }
 

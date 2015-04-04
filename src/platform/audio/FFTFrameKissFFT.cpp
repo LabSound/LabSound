@@ -168,7 +168,7 @@ namespace WebCore {
 
 		 for (uint32_t i = 0; i < inputSize; ++i) {
 			m_cpxInputData[i].r = m_realData.data()[i];
-			m_cpxInputData[i].i =  m_imagData.data()[i];
+			m_cpxInputData[i].i = m_imagData.data()[i];
 		 }
 
 		// Compute inverse transform.
@@ -180,7 +180,6 @@ namespace WebCore {
 		// Scale so that a forward then inverse FFT yields exactly the original data.
 		const float scale = 1.0 / m_FFTSize;
 		VectorMath::vsmul(interleavedData, 1, &scale, data, 1, m_FFTSize);
-
 
 	}
     
