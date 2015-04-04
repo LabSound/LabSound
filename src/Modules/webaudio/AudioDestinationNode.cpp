@@ -45,6 +45,7 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
 
 AudioDestinationNode::~AudioDestinationNode()
 {
+    LOG("Destruct %p", this);
     uninitialize();
 }
 
