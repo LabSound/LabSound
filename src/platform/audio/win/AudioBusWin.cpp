@@ -32,6 +32,9 @@
 #include "SoundBuffer.h"
 #include <direct.h>
 #include <iostream>
+#include <stdlib.h>
+
+#define MAX_PATH _MAX_PATH
 
 namespace WebCore 
 {

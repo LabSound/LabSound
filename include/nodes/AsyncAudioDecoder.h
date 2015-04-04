@@ -33,8 +33,6 @@ namespace WebCore {
 
 class AudioBuffer;
 
-using namespace WTF;
-
 // AsyncAudioDecoder asynchronously decodes audio file data from an vector<uint_8> in a worker thread.
 // Upon successful decoding, a completion callback will be invoked with the decoded PCM data in an AudioBuffer.
 
@@ -83,7 +81,7 @@ private:
     
     void runLoop();
 
-    WTF::ThreadIdentifier m_threadID;
+    std::thread m_threadID;
     
     std::mutex m_threadCreationMutex;
     

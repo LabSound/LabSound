@@ -7,7 +7,6 @@
 #include "NoiseNode.h"
 
 using namespace std;
-using namespace WTF;
 using namespace WebCore;
 
 namespace LabSound {

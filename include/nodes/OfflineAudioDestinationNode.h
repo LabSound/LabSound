@@ -53,7 +53,7 @@ private:
     std::unique_ptr<AudioBus> m_renderBus;
     
     // Rendering thread.
-    volatile ThreadIdentifier m_renderThread;
+	std::thread m_renderThread;
     bool m_startedRendering;
     static void offlineRenderEntry(void* threadData);
     void offlineRender();

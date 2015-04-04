@@ -5,18 +5,19 @@
 #include <fstream>
 #include <streambuf>
 #include "Assertions.h"
+#include <stdlib.h>
 
 #if OS(WINDOWS)
-#include <direct.h>
-#define getcwd _getcwd
-#endif
-#if OS(DARWIN)
-#include <limits.h>
-#include <unistd.h>
-#define MAX_PATH PATH_MAX
+	#include <direct.h>
+	#define getcwd _getcwd
+	#define MAX_PATH _MAX_PATH
 #endif
 
-//
+#if OS(DARWIN)
+	#include <limits.h>
+	#include <unistd.h>
+	#define MAX_PATH PATH_MAX
+#endif
 
 namespace LabSound {
 

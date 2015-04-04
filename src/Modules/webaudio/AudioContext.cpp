@@ -60,7 +60,6 @@
 #endif
 
 #include <wtf/Atomics.h>
-#include <wtf/MainThread.h>
 
 using namespace std;
 
@@ -477,7 +476,9 @@ void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 
         // Don't let ourself get deleted before the callback.
         // See matching deref() in deleteMarkedNodesDispatch().
-        callOnMainThread(deleteMarkedNodesDispatch, this);
+        //callOnMainThread(deleteMarkedNodesDispatch, this); // Dimitri: ensure we are on main thread
+		deleteMarkedNodesDispatch(this);
+
     }
 }
 

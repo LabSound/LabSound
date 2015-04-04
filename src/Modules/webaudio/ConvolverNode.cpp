@@ -31,7 +31,6 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "Reverb.h"
-#include <wtf/MainThread.h>
 
 using namespace std;
 

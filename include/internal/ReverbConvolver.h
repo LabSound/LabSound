@@ -72,7 +72,9 @@ public:
     void backgroundThreadEntry();
 
     size_t latencyFrames() const;
+
 private:
+
     std::vector<std::unique_ptr<ReverbConvolverStage> > m_stages;
     std::vector<std::unique_ptr<ReverbConvolverStage> > m_backgroundStages;
     size_t m_impulseResponseLength;
@@ -91,7 +93,7 @@ private:
 
     // Background thread and synchronization
     bool m_useBackgroundThreads;
-    ThreadIdentifier m_backgroundThread;
+    std::thread m_backgroundThread;
     bool m_wantsToExit;
     bool m_moreInputBuffered;
     mutable std::mutex m_backgroundThreadLock;

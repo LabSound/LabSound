@@ -30,8 +30,6 @@
 #include "HRTFDatabaseLoader.h"
 
 #include "HRTFDatabase.h"
-#include <wtf/MainThread.h>
-
 #include <iostream>
 
 namespace WebCore {

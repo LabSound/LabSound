@@ -29,7 +29,6 @@
 #include "AudioContext.h"
 #include "HRTFDatabaseLoader.h"
 #include <algorithm>
-#include <wtf/MainThread.h>
 
 using namespace std;
  
@@ -64,9 +63,9 @@ void OfflineAudioDestinationNode::uninitialize()
     if (!isInitialized())
         return;
 
-    if (m_renderThread) {
-        waitForThreadCompletion(m_renderThread);
-        m_renderThread = 0;
+    if (m_renderThread.joinable())
+	{
+       m_renderThread.join();
     }
 
     AudioNode::uninitialize();
@@ -80,12 +79,12 @@ void OfflineAudioDestinationNode::startRendering()
     
     if (!m_startedRendering) {
         m_startedRendering = true;
-        m_renderThread = createThread(OfflineAudioDestinationNode::offlineRenderEntry, this, "offline renderer");
+        m_renderThread = std::thread(OfflineAudioDestinationNode::offlineRenderEntry, this, "offline renderer");
     }
 }
 
 // Do offline rendering in this thread.
-void OfflineAudioDestinationNode::offlineRenderEntry(void* threadData)
+void OfflineAudioDestinationNode::offlineRenderEntry(void * threadData)
 {
     OfflineAudioDestinationNode* destinationNode = reinterpret_cast<OfflineAudioDestinationNode*>(threadData);
     ASSERT(destinationNode);

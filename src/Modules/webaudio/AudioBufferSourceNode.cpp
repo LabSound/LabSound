@@ -33,7 +33,6 @@
 #include "FloatConversion.h"
 
 #include <algorithm>
-#include <wtf/MainThread.h>
 #include <wtf/MathExtras.h>
 
 using namespace std;

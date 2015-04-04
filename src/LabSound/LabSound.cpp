@@ -6,7 +6,7 @@
 #include "AudioContextLock.h"
 #include "ExceptionCodes.h"
 #include "DefaultAudioDestinationNode.h"
-#include "WTF/MainThread.h"
+
 #include <chrono>
 #include <thread>
 #include <iostream>

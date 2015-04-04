@@ -25,7 +25,6 @@
 #include "LabSoundConfig.h"
 #include "AsyncAudioDecoder.h"
 #include "AudioBuffer.h"
-#include <wtf/MainThread.h>
 
 namespace WebCore {
 
@@ -33,16 +32,14 @@ AsyncAudioDecoder::AsyncAudioDecoder()
 {
     // Start worker thread.
     std::lock_guard<std::mutex> lock(m_threadCreationMutex);
-    m_threadID = createThread(AsyncAudioDecoder::threadEntry, this, "Audio Decoder");
+    m_threadID = std::thread(AsyncAudioDecoder::threadEntry, this, "Audio Decoder");
 }
 
 AsyncAudioDecoder::~AsyncAudioDecoder()
 {
     m_queue.kill();
     
-    // Stop thread.
-    waitForThreadCompletion(m_threadID);
-    m_threadID = 0;
+	if (m_threadID.joinable()) m_threadID.join();
 }
 
 void AsyncAudioDecoder::decodeAsync(std::shared_ptr<std::vector<uint8_t>> audioData, float sampleRate,
@@ -109,7 +106,7 @@ void AsyncAudioDecoder::DecodingTask::decode()
     m_audioBuffer = AudioBuffer::createFromAudioFileData(m_audioData->data(), m_audioData->size(), false, sampleRate());
     
     // Decoding is finished, but we need to do the callbacks on the main thread.
-    callOnMainThread(notifyCompleteDispatch, this);
+   notifyCompleteDispatch(this);
 }
 
 void AsyncAudioDecoder::DecodingTask::notifyCompleteDispatch(void* userData)
