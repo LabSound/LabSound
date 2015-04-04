@@ -50,8 +50,6 @@
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-#include "WTF/Threading.h"
-
 namespace WebCore {
 
 // Defines the interface for an "FFT frame", an object which is able to perform a forward

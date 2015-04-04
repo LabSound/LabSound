@@ -26,7 +26,6 @@
 #define AsyncAudioDecoder_h
 
 #include "WTF/MessageQueue.h"
-#include "WTF/Threading.h"
 #include <mutex>
 #include <vector>
 

@@ -461,14 +461,10 @@
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h" />
-    <ClInclude Include="..\include\third_party\WTF\MainThread.h" />
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h" />
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h" />
     <ClInclude Include="..\include\third_party\WTF\Platform.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />
     <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />
     <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h" />
@@ -651,19 +647,12 @@
     <ClCompile Include="..\src\STK\STKInlineCompile.cpp" />
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioDestinationWin.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\win\ThreadingWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\win\ThreadSpecificWin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\third_party\STK\SKINI.msg" />

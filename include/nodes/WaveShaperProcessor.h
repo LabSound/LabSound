@@ -29,8 +29,6 @@
 #include "AudioDSPKernelProcessor.h"
 #include "AudioNode.h"
 
-#include "WTF/Threading.h"
-
 namespace WebCore {
 
 // WaveShaperProcessor is an AudioDSPKernelProcessor which uses WaveShaperDSPKernel objects to implement non-linear distortion effects.

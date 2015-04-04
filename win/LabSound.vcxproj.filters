@@ -25,9 +25,6 @@
     <Filter Include="LabSound\third_party\WTF\wtf\src">
       <UniqueIdentifier>{15d923c9-74a2-498d-9431-c8493ff49436}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\third_party\WTF\wtf\src\win">
-      <UniqueIdentifier>{6400bf36-182a-4093-aba4-161868025508}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\third_party\WTF\wtf\include">
       <UniqueIdentifier>{833c7173-3de2-4043-992b-211417964cdc}</UniqueIdentifier>
     </Filter>
@@ -557,9 +554,6 @@
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\MainThread.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
@@ -570,15 +564,6 @@
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Platform.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ADSRNode.h">
@@ -784,9 +769,6 @@
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
       <Filter>LabSound\API\core\src\win</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp">
       <Filter>LabSound\third_party\rtaudio\src</Filter>
     </ClCompile>
@@ -800,12 +782,6 @@
       <Filter>LabSound\third_party\kissfft\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
       <Filter>LabSound\third_party\WTF\wtf\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\AudioBus.cpp">
@@ -1068,12 +1044,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\WaveTable.cpp">
       <Filter>LabSound\API\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\ThreadingWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\ThreadSpecificWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\STK\STKInlineCompile.cpp">
       <Filter>LabSound\third_party\STK\src</Filter>
