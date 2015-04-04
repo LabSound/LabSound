@@ -572,9 +572,6 @@
     <ClInclude Include="..\include\nodes\AnalyserNode.h">
       <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\nodes\AsyncAudioDecoder.h">
-      <Filter>LabSound\API\public_include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBasicInspectorNode.h">
       <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
@@ -884,9 +881,6 @@
       <Filter>LabSound\API\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
-      <Filter>LabSound\API\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">

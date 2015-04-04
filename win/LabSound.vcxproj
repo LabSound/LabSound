@@ -298,7 +298,6 @@
     <ClInclude Include="..\include\internal\ZeroPole.h" />
     <ClInclude Include="..\include\nodes\ADSRNode.h" />
     <ClInclude Include="..\include\nodes\AnalyserNode.h" />
-    <ClInclude Include="..\include\nodes\AsyncAudioDecoder.h" />
     <ClInclude Include="..\include\nodes\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBasicProcessorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBuffer.h" />
@@ -500,8 +499,6 @@
     <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">
     </ClCompile>

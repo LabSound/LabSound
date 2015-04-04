@@ -52,7 +52,6 @@ namespace WebCore {
     class AudioScheduledSourceNode;
     class HRTFDatabaseLoader;
     class MediaStreamAudioSourceNode;
-    class AsyncAudioDecoder;
     class AudioNodeInput;
     class AudioNodeOutput;
     
@@ -102,9 +101,6 @@ public:
 
     void incrementActiveSourceCount();
     void decrementActiveSourceCount();
-
-    // Asynchronous audio file data decoding.
-    void decodeAudioData(std::shared_ptr<std::vector<uint8_t>> data, std::function<void()>, std::function<void()>, ExceptionCode& ec);
 
     AudioListener* listener() { return m_listener.get(); }
 
@@ -228,8 +224,6 @@ private:
     std::shared_ptr<AudioBuffer> m_renderTarget;
     
     bool m_isOfflineContext;
-
-    std::unique_ptr<AsyncAudioDecoder> m_audioDecoder;
 
     // This is considering 32 is large enough for multiple channels audio. 
     // It is somewhat arbitrary and could be increased if necessary.
