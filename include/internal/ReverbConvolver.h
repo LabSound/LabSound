@@ -40,6 +40,7 @@
 #include <vector>
 #include <condition_variable>
 #include <thread>
+#include <atomic>
 
 namespace LabSound {
     class ContextGraphLock;
@@ -94,7 +95,7 @@ private:
     // Background thread and synchronization
     bool m_useBackgroundThreads;
     std::thread m_backgroundThread;
-    bool m_wantsToExit;
+    std::atomic<bool> m_wantsToExit;
     bool m_moreInputBuffered;
     mutable std::mutex m_backgroundThreadLock;
     mutable std::condition_variable m_backgroundThreadCondition;

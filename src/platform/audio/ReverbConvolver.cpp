@@ -51,12 +51,6 @@ const size_t RealtimeFrameLimit = 8192  + 4096; // ~278msec @ 44.1KHz
 const size_t MinFFTSize = 128;
 const size_t MaxRealtimeFFTSize = 2048;
 
-static void backgroundThreadEntry(void* threadData)
-{
-    ReverbConvolver* reverbConvolver = static_cast<ReverbConvolver*>(threadData);
-    reverbConvolver->backgroundThreadEntry();
-}
-
 ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSliceSize, size_t maxFFTSize, size_t convolverRenderPhase, bool useBackgroundThreads)
     : m_impulseResponseLength(impulseResponse->length())
     , m_accumulationBuffer(impulseResponse->length() + renderSliceSize)
@@ -64,7 +58,6 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
     , m_minFFTSize(MinFFTSize) // First stage will have this size - successive stages will double in size each time
     , m_maxFFTSize(maxFFTSize) // until we hit m_maxFFTSize
     , m_useBackgroundThreads(useBackgroundThreads)
-    , m_backgroundThread(0)
     , m_wantsToExit(false)
     , m_moreInputBuffered(false)
 {
@@ -131,7 +124,7 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
     // Start up background thread
     // FIXME: would be better to up the thread priority here.  It doesn't need to be real-time, but higher than the default...
     if (this->useBackgroundThreads() && m_backgroundStages.size() > 0)
-        m_backgroundThread = std::thread(WebCore::backgroundThreadEntry, this);
+        m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
 }
 
 ReverbConvolver::~ReverbConvolver()
