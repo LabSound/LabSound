@@ -178,7 +178,6 @@
 #include "SfxrNode.h"
 
 using namespace std;
-using namespace WTF;
 using namespace WebCore;
 using namespace LabSound;
 

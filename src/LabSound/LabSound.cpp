@@ -20,7 +20,7 @@ namespace LabSound {
 
     std::shared_ptr<LabSound::AudioContext> mainContext;
 
-	std::atomic<bool> runGraphUpdate = true;
+    std::atomic<bool> runGraphUpdate;
     
     const int updateRate_ms = 10;
 
@@ -49,9 +49,8 @@ namespace LabSound {
     
     std::shared_ptr<LabSound::AudioContext> init() 
 	{
-        // Initialize threads for the WTF library
-       // WTF::initializeThreading();
-       // WTF::initializeMainThread();
+        
+        runGraphUpdate = true;
         
         // Create an audio context object with the default audio destination
         ExceptionCode ec;
