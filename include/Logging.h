@@ -22,7 +22,9 @@ inline void LabSoundLog(const char* file, int line, const char* fmt, ...)
     va_list args;
     va_start(args, fmt);
     
-    vprintf(fmt, args);
+    std::string s = {"[" + std::string(file) + "] @ " + std::to_string(line) + "\n\t" + fmt};
+    
+    vprintf(s.c_str(), args);
 
     fflush(stdout);
     
