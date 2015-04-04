@@ -22,14 +22,13 @@ namespace LabSound
 
     std::atomic<bool> runGraphUpdate;
     
-    const int updateRate_ms = 10;
+    const int update_rate_ms = 10;
 
-    void UpdateGraph() 
+    void UpdateGraph()
 	{
         while (runGraphUpdate)
 		{
-            std::chrono::milliseconds sleepDuration(updateRate_ms);
-            std::this_thread::sleep_for(sleepDuration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
             if (mainContext) 
 			{
                 ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
@@ -41,7 +40,7 @@ namespace LabSound
             else 
 			{
                 // thread is finished
-                //break;
+                break;
             }
         }
         printf("LabSound GraphUpdateThread thread finished\n");
@@ -79,7 +78,7 @@ namespace LabSound
 
 		//std::cout << "Context Use Count " << context.use_count() << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(updateRate_ms * 2));
+        std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms * 2));
         
         for (int i = 0; i < 10; ++i) 
 		{
