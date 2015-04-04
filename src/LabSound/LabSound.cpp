@@ -10,39 +10,48 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <atomic>
 
 namespace LabSound {
 
     
-    std::timed_mutex mutex;
-    std::thread* soundThread = nullptr;
+    std::timed_mutex g_TimedMutex;
+    std::thread g_GraphUpdateThread;
+
     std::shared_ptr<LabSound::AudioContext> mainContext;
+
+	std::atomic<bool> runGraphUpdate = true;
     
     const int updateRate_ms = 10;
 
-    static void update() {
-        while (true) {
+    void UpdateGraph() 
+	{
+        while (runGraphUpdate)
+		{
             std::chrono::milliseconds sleepDuration(updateRate_ms);
             std::this_thread::sleep_for(sleepDuration);
-            if (mainContext) {
-                ContextGraphLock g(mainContext, "LabSound::update");
+            if (mainContext) 
+			{
+                ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
                 // test both because the mainContext might have been destructed during the acquisition of the main context,
                 // particularly during app shutdown. No point in continuing to process.
                 if (g.context() && mainContext)
-                    mainContext->update(g);
+                    g.context()->update(g);
             }
-            else {
+            else 
+			{
                 // thread is finished
-                break;
+                //break;
             }
         }
-        printf("LabSound Audio thread finished\n");
+        printf("LabSound GraphUpdateThread thread finished\n");
     }
     
-    std::shared_ptr<LabSound::AudioContext> init() {
+    std::shared_ptr<LabSound::AudioContext> init() 
+	{
         // Initialize threads for the WTF library
-        WTF::initializeThreading();
-        WTF::initializeMainThread();
+       // WTF::initializeThreading();
+       // WTF::initializeMainThread();
         
         // Create an audio context object with the default audio destination
         ExceptionCode ec;
@@ -51,30 +60,45 @@ namespace LabSound {
         mainContext->initHRTFDatabase();
         mainContext->lazyInitialize();
 
-        soundThread = new std::thread(update);
+        g_GraphUpdateThread = std::thread(UpdateGraph);
+
+		//g_GraphUpdateThread.detach();
         
         return mainContext;
     }
 
-    
-    void finish(std::shared_ptr<LabSound::AudioContext> context) {
-        
-        // stop sound thread
-        mainContext.reset();
+
+    void finish(std::shared_ptr<LabSound::AudioContext> context) 
+	{
+
+		std::cout << "Context Use Count " << context.use_count() << std::endl; 
+
+		// Halt the graph update thread
+		runGraphUpdate = false;
+
+        mainContext.reset(); // -> -1 to the use_count
+
+		std::cout << "Context Use Count " << context.use_count() << std::endl; 
+
         std::this_thread::sleep_for(std::chrono::milliseconds(updateRate_ms * 2));
         
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) 
+		{
             ContextGraphLock g(context, "LabSound::finish");
-            if (!g.context()) {
+
+            if (!g.context()) 
+			{
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
-            else {
+            else 
+			{
                 context->stop(g);
                 context->deleteMarkedNodes();
                 context->uninitialize(g);
                 return;
             }
         }
+
         std::cerr << "LabSound could not acquire lock for shutdown" << std::endl;
     }
 

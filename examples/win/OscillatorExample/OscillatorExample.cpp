@@ -22,26 +22,25 @@ int main(int argc, char *argv[], char *envp[]) {
 		oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
 
 		limiter = std::make_shared<GainNode>(context->sampleRate());
+
 		limiter->gain()->setValue(0.25f);
-		limiter->connect(context.get(), context->destination().get(), 0, 0, ec); // connect to DAC
+		oscillator->connect(context.get(), limiter.get(), 0, 0, ec); // Connect oscillator to gain
 
-		oscillator->connect(context.get(), limiter.get(), 0, 0, ec);
-
-        oscillator->start(0);
+		limiter->connect(context.get(), context->destination().get(), 0, 0, ec); // connect gain to DAC
+      
+		oscillator->start(0);
         oscillator->setType(r, 0, ec);
-
 	}
 
-	int count = 0; 
-	for (int f = 220; f < 22050; f *= 2)
+	float f = 220.f; 
+	for (int s = 0; s < 3; s++)
 	{
-		std::cout << f << std::endl;
-		oscillator->frequency()->setValueAtTime(f, ++count);
+		f *= 2; 
+		oscillator->frequency()->setValueAtTime(f, s);
 	}
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(4));
     LabSound::finish(context);
 
     return 0;
-
 }
