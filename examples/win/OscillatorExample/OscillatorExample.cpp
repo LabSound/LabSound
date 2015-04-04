@@ -13,12 +13,20 @@ int main(int argc, char *argv[], char *envp[]) {
 	auto context = LabSound::init();
 
 	std::shared_ptr<OscillatorNode> oscillator;
+	std::shared_ptr<GainNode> limiter;
 
 	{
         ContextGraphLock g(context, "Oscillator Example");
         ContextRenderLock r(context, "Oscillator Example");
+
 		oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-		oscillator->connect(context.get(), context->destination().get(), 0, 0, ec);
+
+		limiter = std::make_shared<GainNode>(context->sampleRate());
+		limiter->gain()->setValue(0.25f);
+		limiter->connect(context.get(), context->destination().get(), 0, 0, ec); // connect to DAC
+
+		oscillator->connect(context.get(), limiter.get(), 0, 0, ec);
+
         oscillator->start(0);
         oscillator->setType(r, 0, ec);
 

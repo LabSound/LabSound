@@ -113,10 +113,8 @@ private:
     
 #if USE(WEBAUDIO_KISSFFT)
     
-    static kiss_fft_cfg contextForSize(unsigned fftSize, int trans);
-
-    kiss_fft_cfg m_forwardContext;
-    kiss_fft_cfg m_inverseContext;
+    kiss_fftr_cfg mFFT;
+    kiss_fftr_cfg mIFFT;
 
     kiss_fft_cpx* m_cpxInputData;
     kiss_fft_cpx* m_cpxOutputData;
