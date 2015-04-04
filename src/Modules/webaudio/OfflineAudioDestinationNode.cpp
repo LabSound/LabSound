@@ -79,6 +79,7 @@ void OfflineAudioDestinationNode::startRendering()
     if (!m_startedRendering) 
 	{
         m_startedRendering = true;
+		//@todo: proper notification when thread is completed with condition variable
         m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
     }
 }

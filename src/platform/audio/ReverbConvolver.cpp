@@ -121,10 +121,12 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
             fftSize = m_maxFFTSize;
     }
 
-    // Start up background thread
-    // FIXME: would be better to up the thread priority here.  It doesn't need to be real-time, but higher than the default...
     if (this->useBackgroundThreads() && m_backgroundStages.size() > 0)
-        m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
+	{
+		//@todo: proper notification when thread is completed with condition variable
+		m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
+	}
+
 }
 
 ReverbConvolver::~ReverbConvolver()
