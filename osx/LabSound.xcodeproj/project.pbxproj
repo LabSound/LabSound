@@ -104,7 +104,6 @@
 		E2FB8573183D1F1F00A5A764 /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8529183D1F1F00A5A764 /* WaveShaperNode.cpp */; };
 		E2FB8575183D1F1F00A5A764 /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB852C183D1F1F00A5A764 /* WaveShaperProcessor.cpp */; };
 		E2FB8576183D1F1F00A5A764 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB852E183D1F1F00A5A764 /* WaveTable.cpp */; };
-		E2FB86D9183D202700A5A764 /* CurrentTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB859D183D202600A5A764 /* CurrentTime.cpp */; };
 		E2FB8A25183DA85700A5A764 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FB8A23183DA85700A5A764 /* PWMNode.cpp */; };
 /* End PBXBuildFile section */
 
@@ -421,7 +420,6 @@
 		E2FB8529183D1F1F00A5A764 /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperNode.cpp; sourceTree = "<group>"; };
 		E2FB852C183D1F1F00A5A764 /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperProcessor.cpp; sourceTree = "<group>"; };
 		E2FB852E183D1F1F00A5A764 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
-		E2FB859D183D202600A5A764 /* CurrentTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CurrentTime.cpp; sourceTree = "<group>"; };
 		E2FB8A23183DA85700A5A764 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PWMNode.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -608,7 +606,6 @@
 				E251D9BE184CE6C900F7B7BC /* include */,
 				E2FB873F183D20E100A5A764 /* platform */,
 				E2FB84BC183D1F1F00A5A764 /* webaudio */,
-				E2FB8579183D202600A5A764 /* wtf */,
 				E2FB8499183D1E8F00A5A764 /* LabSound */,
 				331016163E6A35550C430842 /* Products */,
 			);
@@ -870,15 +867,6 @@
 			path = ../src/Modules/webaudio;
 			sourceTree = "<group>";
 		};
-		E2FB8579183D202600A5A764 /* wtf */ = {
-			isa = PBXGroup;
-			children = (
-				E2FB859D183D202600A5A764 /* CurrentTime.cpp */,
-			);
-			name = wtf;
-			path = ../src/WTF/wtf;
-			sourceTree = "<group>";
-		};
 		E2FB873F183D20E100A5A764 /* platform */ = {
 			isa = PBXGroup;
 			children = (
@@ -1047,7 +1035,6 @@
 				E25245C818724E7500983485 /* FFTFrame.cpp in Sources */,
 				E2FB8554183D1F1F00A5A764 /* ChannelSplitterNode.cpp in Sources */,
 				E25245C118724E6800983485 /* EqualPowerPanner.cpp in Sources */,
-				E2FB86D9183D202700A5A764 /* CurrentTime.cpp in Sources */,
 				E25245BC18724E4A00983485 /* Distance.cpp in Sources */,
 				E25245A718724E3200983485 /* AudioFIFO.cpp in Sources */,
 				E2FB8544183D1F1F00A5A764 /* AudioNodeInput.cpp in Sources */,
