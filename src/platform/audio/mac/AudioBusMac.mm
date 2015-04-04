@@ -36,11 +36,11 @@ std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char* name, float
 
     NSBundle *bundle = [NSBundle mainBundle];
     /// @LabSound changed audio to HRTF
-    NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"HRTF"];
+    NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"hrtf"];
 
     /// @LabSound added read from $(CWD)/HRTF directory if bundle asset not available
     if (!audioFileURL) {
-        NSString *path = [NSString stringWithFormat:@"HRTF/%s.wav", name];
+        NSString *path = [NSString stringWithFormat:@"hrtf/%s.wav", name];
         audioFileURL = [NSURL fileURLWithPath:path];
     }
     

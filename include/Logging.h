@@ -11,11 +11,14 @@
 
 #include <cstdarg>
 #include <stdio.h>
+#include <string>
+#include <iostream>
 
-#define LOG(...) LabSoundLog(__FILE__, __LINE__, __func__, __VA_ARGS__);
+#define LOG(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__);
 
 inline void LabSoundLog(const char* file, int line, const char* fmt, ...)
 {
+    
     va_list args;
     va_start(args, fmt);
     
