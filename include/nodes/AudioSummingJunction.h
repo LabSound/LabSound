@@ -31,7 +31,6 @@
 #include <array>
 
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
 

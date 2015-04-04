@@ -775,7 +775,6 @@
 				E2FB873F183D20E100A5A764 /* LabSound */,
 				E285226E1A6422F6003F1CA7 /* config */,
 				082FE01C19C6009400046275 /* third_party */,
-				E2FB8499183D1E8F00A5A764 /* LabSound */,
 				331016163E6A35550C430842 /* Products */,
 			);
 			name = LabSound;
@@ -895,14 +894,6 @@
 				E2D5CF391A19B66900B031C8 /* WTFExport.h */,
 			);
 			name = WTF;
-			sourceTree = "<group>";
-		};
-		E2FB8499183D1E8F00A5A764 /* LabSound */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = LabSound;
-			path = ../src/LabSound;
 			sourceTree = "<group>";
 		};
 		E2FB84BC183D1F1F00A5A764 /* src */ = {

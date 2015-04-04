@@ -43,7 +43,6 @@
 #include <atomic>
 
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
 

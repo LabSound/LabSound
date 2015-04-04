@@ -33,12 +33,9 @@
 #include <vector>
 #include <memory>
 
-
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
-
 
 namespace WebCore {
 
