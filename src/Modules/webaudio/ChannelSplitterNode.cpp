@@ -36,8 +36,8 @@ ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutp
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
-    if (numberOfOutputs > AudioContext::maxNumberOfChannels())
-        numberOfOutputs = AudioContext::maxNumberOfChannels();
+    if (numberOfOutputs > AudioContext::maxNumberOfChannels)
+        numberOfOutputs = AudioContext::maxNumberOfChannels;
     
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
     for (unsigned i = 0; i < numberOfOutputs; ++i)

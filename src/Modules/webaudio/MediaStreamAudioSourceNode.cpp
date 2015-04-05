@@ -56,7 +56,7 @@ void MediaStreamAudioSourceNode::setFormat(ContextGraphLock& g, ContextRenderLoc
 {
     if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != sampleRate()) {
         // The sample-rate must be equal to the context's sample-rate.
-        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels() || sourceSampleRate != sampleRate()) {
+        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != sampleRate()) {
             // process() will generate silence for these uninitialized values.
             LOG("MediaStreamAudioSourceNode::setFormat(%u, %f) - unhandled format change", static_cast<unsigned>(numberOfChannels), sourceSampleRate);
             m_sourceNumberOfChannels = 0;

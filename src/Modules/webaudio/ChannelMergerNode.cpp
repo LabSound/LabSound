@@ -40,8 +40,8 @@ namespace WebCore {
 ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
     : AudioNode(sampleRate)
 {
-    if (numberOfInputs > AudioContext::maxNumberOfChannels())
-        numberOfInputs = AudioContext::maxNumberOfChannels();
+    if (numberOfInputs > AudioContext::maxNumberOfChannels)
+        numberOfInputs = AudioContext::maxNumberOfChannels;
     
     // Create the requested number of inputs.
     for (unsigned i = 0; i < numberOfInputs; ++i)

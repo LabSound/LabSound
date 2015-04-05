@@ -48,8 +48,7 @@ namespace LabSound
         LOG("Initialize Context");
         
         // Create an audio context object with the default audio destination
-        ExceptionCode ec;
-        mainContext = LabSound::AudioContext::create(ec);
+        mainContext = std::make_shared<LabSound::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(mainContext));
         mainContext->initHRTFDatabase();
         mainContext->lazyInitialize();

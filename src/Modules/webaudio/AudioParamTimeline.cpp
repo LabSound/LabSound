@@ -37,6 +37,8 @@ using namespace std;
 
 namespace WebCore {
 
+// &&& Threading / Locking
+
 void AudioParamTimeline::setValueAtTime(float value, float time)
 {
     insertEvent(ParamEvent(ParamEvent::SetValue, value, time, 0, 0, 0));

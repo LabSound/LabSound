@@ -353,7 +353,7 @@ bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<Audi
         // Do any necesssary re-configuration to the buffer's number of channels.
         unsigned numberOfChannels = buffer->numberOfChannels();
 
-        if (numberOfChannels > AudioContext::maxNumberOfChannels())
+        if (numberOfChannels > AudioContext::maxNumberOfChannels)
             return false;
 
         output(0)->setNumberOfChannels(r, numberOfChannels);

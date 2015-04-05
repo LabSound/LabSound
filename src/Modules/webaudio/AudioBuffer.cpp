@@ -37,7 +37,7 @@ namespace WebCore {
 
 std::shared_ptr<AudioBuffer> AudioBuffer::create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
 {
-    if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels() || !numberOfFrames)
+    if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
         return 0;
     
     return std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
