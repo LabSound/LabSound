@@ -118,6 +118,7 @@ float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> cont
 
     if (!m_eventsLock.try_lock() || !context || !m_events.size() || context->currentTime() < m_events[0].time()) {
         hasValue = false;
+		m_eventsLock.unlock();
         return defaultValue;
     }
 
@@ -127,8 +128,6 @@ float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> cont
     double endTime = startTime + 1.1 / sampleRate; // time just beyond one sample-frame
     double controlRate = sampleRate / AudioNode::ProcessingSizeInFrames; // one parameter change per render quantum
     float value = valuesForTimeRange(startTime, endTime, defaultValue, &value, 1, sampleRate, controlRate);
-
-    m_eventsLock.unlock();
 
     hasValue = true;
     return value;
@@ -149,12 +148,11 @@ float AudioParamTimeline::valuesForTimeRange(
             for (unsigned i = 0; i < numberOfValues; ++i)
                 values[i] = defaultValue;
         }
+		m_eventsLock.unlock();
         return defaultValue;
     }
 
     float value = valuesForTimeRangeImpl(startTime, endTime, defaultValue, values, numberOfValues, sampleRate, controlRate);
-    m_eventsLock.unlock();
-
     return value;
 }
 

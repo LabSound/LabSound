@@ -11,6 +11,7 @@
 #include <mutex>
 #include "AudioContext.h"
 #include "Assertions.h"
+#include <iostream>
 
 namespace LabSound {
 
@@ -22,7 +23,7 @@ namespace LabSound {
                 m_context->m_graphLocker = locker;
             }
             else {
-                //ASSERT(false);
+                std::cerr << "Failed to acquire graph lock" << std::endl;
             }
         }
         
@@ -47,7 +48,7 @@ namespace LabSound {
                 m_context->m_renderLocker = locker;
             }
             else {
-                //ASSERT(false);
+                 std::cerr << "Failed to acquire render lock" << std::endl;
             }
         }
         

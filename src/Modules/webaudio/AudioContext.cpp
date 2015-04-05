@@ -253,6 +253,8 @@ void AudioContext::stop(ContextGraphLock& g)
     
     m_isStopScheduled = true;
     
+	deleteMarkedNodes();
+
     uninitialize(g);
     clear();
 }
