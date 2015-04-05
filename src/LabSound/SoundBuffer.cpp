@@ -81,7 +81,7 @@ namespace LabSound {
     // the start. If 0 is passed as end, then the sound will play to the end.
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {
-        auto ac = g.context();
+        auto ac = r.context();
         if (audioBuffer && ac) {
             if (end == 0)
                 end = audioBuffer->duration();
