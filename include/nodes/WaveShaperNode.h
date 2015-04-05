@@ -31,18 +31,19 @@
 
 namespace WebCore {
     
-class WaveShaperNode : public AudioBasicProcessorNode {
+class WaveShaperNode : public AudioBasicProcessorNode
+{
+    
+    WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
+    
 public:
-    explicit WaveShaperNode(float sampleRate);
+    
+    WaveShaperNode(float sampleRate);
 
     void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve();
-
-private:    
-
-    WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
 };
 
 } // namespace WebCore
 
-#endif // WaveShaperNode_h
+#endif
