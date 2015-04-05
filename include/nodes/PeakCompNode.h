@@ -46,11 +46,15 @@
 #include "AudioBasicInspectorNode.h"
 #include "GainNode.h"
 
-namespace LabSound {
+namespace LabSound
+{
     using namespace WebCore;
 
     class PeakCompNode : public WebCore::AudioBasicProcessorNode
     {
+        class PeakCompNodeInternal;
+        PeakCompNodeInternal * internalNode; // We do not own this!
+        
     public:
         PeakCompNode(float sampleRate);
         virtual ~PeakCompNode();
@@ -63,12 +67,7 @@ namespace LabSound {
         std::shared_ptr<AudioParam> release() const;
         std::shared_ptr<AudioParam> makeup() const;
         std::shared_ptr<AudioParam> knee() const;
-        
-    private:
-        class PeakCompNodeInternal;
-        PeakCompNodeInternal* data;
-    };
-    
-}
 
+    };
+}
 #endif

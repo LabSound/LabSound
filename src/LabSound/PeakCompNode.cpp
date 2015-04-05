@@ -52,13 +52,12 @@ using namespace std;
 
 namespace LabSound {
 
-
-    class PeakCompNode::PeakCompNodeInternal : public WebCore::AudioProcessor {
+    class PeakCompNode::PeakCompNodeInternal : public WebCore::AudioProcessor
+    {
+        
     public:
 
-        PeakCompNodeInternal(float sampleRate)
-        : AudioProcessor(sampleRate)
-        , numChannels(1)
+        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1)
         {
             m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);   // db
             m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);   // default 1:1
@@ -69,7 +68,8 @@ namespace LabSound {
 
             // Initialise parameters
 
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 2; i++)
+            {
                 kneeRecursive[i] = 0.f;
                 attackRecursive[i] = 0.f;
                 releaseRecursive[i] = 0.f;
@@ -78,19 +78,19 @@ namespace LabSound {
             // Get sample rate
             fFs = sampleRate;
             onebyfFS = 1.0f / fFs;
+            
         }
 
-        virtual ~PeakCompNodeInternal() {
-        }
-
-        // AudioProcessor interface
-        virtual void initialize() {
-        }
+        virtual ~PeakCompNodeInternal() { }
+        
+        virtual void initialize() { }
 
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
+        {
+            
             if (!numChannels)
                 return;
 
@@ -203,9 +203,10 @@ namespace LabSound {
         float 		makeupGain;
 
         // Resets filter state
-        virtual void reset() { }
+        virtual void reset() { /* @tofix */ }
 
-        virtual void setNumberOfChannels(unsigned i) {
+        virtual void setNumberOfChannels(unsigned i)
+        {
             if (i > 16)
                 numChannels = 16;
             else
@@ -225,19 +226,20 @@ namespace LabSound {
 		std::shared_ptr<AudioParam> m_knee;
     };
 
-    std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return data->m_threshold; }
-    std::shared_ptr<AudioParam> PeakCompNode::ratio() const { return data->m_ratio; }
-    std::shared_ptr<AudioParam> PeakCompNode::attack() const { return data->m_attack; }
-    std::shared_ptr<AudioParam> PeakCompNode::release() const { return data->m_release; }
-    std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return data->m_makeup; }
-    std::shared_ptr<AudioParam> PeakCompNode::knee() const { return data->m_knee; }
+    std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return internalNode->m_threshold; }
+    std::shared_ptr<AudioParam> PeakCompNode::ratio() const { return internalNode->m_ratio; }
+    std::shared_ptr<AudioParam> PeakCompNode::attack() const { return internalNode->m_attack; }
+    std::shared_ptr<AudioParam> PeakCompNode::release() const { return internalNode->m_release; }
+    std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return internalNode->m_makeup; }
+    std::shared_ptr<AudioParam> PeakCompNode::knee() const { return internalNode->m_knee; }
 
-    PeakCompNode::PeakCompNode(float sampleRate)
-    : WebCore::AudioBasicProcessorNode(sampleRate)
-    , data(new PeakCompNodeInternal(sampleRate))
+    PeakCompNode::PeakCompNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
     {
-        m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
+        
+        m_processor.reset(new PeakCompNodeInternal(sampleRate));
 
+        internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
+        
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePeakComp);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
@@ -246,10 +248,8 @@ namespace LabSound {
         initialize();
     }
     
-    PeakCompNode::~PeakCompNode() {
-        data->numChannels = 0;
-        delete data;
-        data = 0;
+    PeakCompNode::~PeakCompNode()
+    {
         uninitialize();
     }
     
