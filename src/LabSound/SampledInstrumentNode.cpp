@@ -5,18 +5,19 @@
 #include <fstream>
 #include <streambuf>
 #include "Assertions.h"
+#include <stdlib.h>
 
 #if OS(WINDOWS)
-#include <direct.h>
-#define getcwd _getcwd
-#endif
-#if OS(DARWIN)
-#include <limits.h>
-#include <unistd.h>
-#define MAX_PATH PATH_MAX
+	#include <direct.h>
+	#define getcwd _getcwd
+	#define MAX_PATH _MAX_PATH
 #endif
 
-//
+#if OS(DARWIN)
+	#include <limits.h>
+	#include <unistd.h>
+	#define MAX_PATH PATH_MAX
+#endif
 
 namespace LabSound {
 
@@ -30,17 +31,19 @@ namespace LabSound {
 	}
 
 	// Definitely have ADSR... 
-	void SampledInstrumentNode::noteOn(ContextGraphLock& g, ContextRenderLock& r, float midiNoteNumber, float amplitude) {
-	
-		for (auto &sample : samples) {
-
+	void SampledInstrumentNode::noteOn(ContextRenderLock& r, float midiNoteNumber, float amplitude)
+    {
+        auto ac = r.context();
+        if (!ac) return;
+        
+		for (auto &sample : samples)
+        {
 			// Find note in sample map
-			if (sample->appliesToNote(midiNoteNumber)) {
-				sample->startNote(g, r, midiNoteNumber, amplitude);
+			if (sample->appliesToNote(midiNoteNumber))
+            {
+				sample->startNote(r, midiNoteNumber, amplitude);
 			}
-
 		}
-
 	}
 
 	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {

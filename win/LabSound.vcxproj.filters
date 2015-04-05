@@ -25,9 +25,6 @@
     <Filter Include="LabSound\third_party\WTF\wtf\src">
       <UniqueIdentifier>{15d923c9-74a2-498d-9431-c8493ff49436}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\third_party\WTF\wtf\src\win">
-      <UniqueIdentifier>{6400bf36-182a-4093-aba4-161868025508}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\third_party\WTF\wtf\include">
       <UniqueIdentifier>{833c7173-3de2-4043-992b-211417964cdc}</UniqueIdentifier>
     </Filter>
@@ -73,9 +70,6 @@
     <Filter Include="LabSound\API\core\include">
       <UniqueIdentifier>{92e537fe-49eb-4d8e-bf0e-b630225fd969}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\API\include">
-      <UniqueIdentifier>{7f5ecd14-8876-4a5c-98e5-2f0ab9a87c80}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\API\src">
       <UniqueIdentifier>{8c48dbca-6e36-4159-83b6-20870be40d38}</UniqueIdentifier>
     </Filter>
@@ -97,11 +91,11 @@
     <Filter Include="LabSound\API\core\util\include\graphics">
       <UniqueIdentifier>{8275b336-7cd2-4866-8ae4-9e0ad924af83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\API\core\util\include\graphics\transforms">
-      <UniqueIdentifier>{7e2a588c-2a18-406a-892b-637efe9cabb0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\API\core\util\src">
       <UniqueIdentifier>{513017b8-baf5-40e9-aab8-336104fa6b7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LabSound\API\public_include">
+      <UniqueIdentifier>{7f5ecd14-8876-4a5c-98e5-2f0ab9a87c80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -248,56 +242,8 @@
     <ClInclude Include="..\include\internal\win\AudioFileReaderWin.h">
       <Filter>LabSound\API\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\internal\util\graphics\FloatPoint3D.h">
       <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatQuad.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\FloatSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\IntSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutPoint.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutRect.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\LayoutSize.h">
-      <Filter>LabSound\API\core\util\include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\graphics\transforms\TransformationMatrix.h">
-      <Filter>LabSound\API\core\util\include\graphics\transforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\FloatConversion.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\WritingMode.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\TextDirection.h">
-      <Filter>LabSound\API\core\util\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\util\Logging.h">
-      <Filter>LabSound\API\core\util\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\internal\FFTFrame.h">
       <Filter>LabSound\API\core\fft\include</Filter>
@@ -590,33 +536,13 @@
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ArrayBuffer.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ArrayBufferView.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Assertions.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Atomics.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Compiler.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Complex.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\config.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\CPU.h">
@@ -625,37 +551,7 @@
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Float32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Float64Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Functional.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int8Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int16Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Int32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\IntegralTypedArrayBase.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Locker.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\MainThread.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h">
@@ -667,242 +563,197 @@
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\NullPtr.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\PassOwnPtr.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\Platform.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\RefPtr.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\TypedArrayBase.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint8Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint8ClampedArray.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint16Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\Uint32Array.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\ValueCheck.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\config.h">
-      <Filter>LabSound</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\nodes\ADSRNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AnalyserNode.h">
-      <Filter>LabSound\API\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\nodes\AsyncAudioDecoder.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBasicInspectorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBasicProcessorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBuffer.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBufferCallback.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioBufferSourceNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioContext.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioDestinationNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioGain.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioListener.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioNodeInput.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioNodeOutput.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioParam.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioParamTimeline.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioProcessingEvent.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioScheduledSourceNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioSourceNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\AudioSummingJunction.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\BiquadDSPKernel.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\BiquadFilterNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\BiquadProcessor.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\BpmDelay.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ChannelMergerNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ChannelSplitterNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ClipNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ConvolverNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DefaultAudioDestinationNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DelayDSPKernel.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DelayNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DelayProcessor.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DiodeNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\DynamicsCompressorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\EasyVerbNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\GainNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\MediaElementAudioSourceNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\MediaStreamAudioDestinationNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\MediaStreamAudioSourceNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\NoiseNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\OfflineAudioCompletionEvent.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\OfflineAudioDestinationNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\OscillatorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\PannerNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\PdNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\PeakCompNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\PowerMonitorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\PWMNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\RealtimeAnalyser.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\RecorderNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SampledInstrumentNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\ScriptProcessorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SfxrNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SoundBuffer.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SpatializationNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SpectralMonitorNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\STKNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\SupersawNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\WaveShaperDSPKernel.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\WaveShaperNode.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\WaveShaperProcessor.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\WaveTable.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nodes\WindowFunctions.h">
-      <Filter>LabSound\API\include</Filter>
+      <Filter>LabSound\API\public_include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -914,18 +765,6 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
       <Filter>LabSound\API\core\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp">
       <Filter>LabSound\third_party\rtaudio\src</Filter>
@@ -939,25 +778,7 @@
     <ClCompile Include="..\src\kissfft\kiss_fftr.cpp">
       <Filter>LabSound\third_party\kissfft\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Assertions.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
       <Filter>LabSound\third_party\WTF\wtf\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\AudioBus.cpp">
@@ -1062,9 +883,6 @@
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
-      <Filter>LabSound\API\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
@@ -1143,9 +961,6 @@
     <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
-      <Filter>LabSound\API\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
@@ -1172,9 +987,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\WaveShaperProcessor.cpp">
       <Filter>LabSound\API\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\platform\Logging.cpp">
-      <Filter>LabSound\API\core\util\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\FFTFrameKissFFT.cpp">
       <Filter>LabSound\API\core\fft\src</Filter>
@@ -1227,236 +1039,11 @@
     <ClCompile Include="..\src\Modules\webaudio\WaveTable.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\STK\ADSR.cpp">
+    <ClCompile Include="..\src\STK\STKInlineCompile.cpp">
       <Filter>LabSound\third_party\STK\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\STK\Asymp.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BandedWG.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BeeThree.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BiquadSTK.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Blit.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BlitSaw.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BlitSquare.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BlowBotl.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\BlowHole.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Bowed.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Brass.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Chorus.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Clarinet.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Delay.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\DelayA.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\DelayL.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Drummer.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Echo.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Envelope.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FileLoop.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FileRead.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FileWrite.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FileWvIn.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FileWvOut.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Fir.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Flute.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FM.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FMVoices.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FormSwep.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\FreeVerb.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Granulate.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Guitar.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\HevyMetl.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Iir.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\JCRev.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\LentPitShift.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Mandolin.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Mesh2D.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Messager.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\MidiFileIn.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Modal.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\ModalBar.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Modulate.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Moog.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Noise.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\NRev.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\OnePole.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\OneZero.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\PercFlut.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Phonemes.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\PitShift.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Plucked.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\PoleZero.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\PRCRev.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Resonate.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Rhodey.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Sampler.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Saxofony.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Shakers.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Simple.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\SineWave.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\SingWave.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Sitar.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Skini.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Sphere.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\StifKarp.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Stk.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\TapDelay.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\TubeBell.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Twang.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\TwoPole.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\TwoZero.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Voicer.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\VoicForm.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Whistle.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\STK\Wurley.cpp">
-      <Filter>LabSound\third_party\STK\src</Filter>
+    <ClCompile Include="..\src\Modules\webaudio\AudioDSPKernel.cpp">
+      <Filter>LabSound\API\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

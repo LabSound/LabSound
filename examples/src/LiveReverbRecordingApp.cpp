@@ -15,7 +15,7 @@ int main(int, char**)
     auto context = LabSound::init();
     auto ac = context.get();
     
-    SoundBuffer ir("impulse-responses/tim-warehouse/cardiod-rear-35-10/cardiod-rear-levelled.wav", context->sampleRate());
+    SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
 
     shared_ptr<MediaStreamAudioSourceNode> input;

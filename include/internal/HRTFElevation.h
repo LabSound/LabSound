@@ -34,8 +34,6 @@
 
 namespace WebCore {
 
-using namespace WTF;
-
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
 
 class HRTFElevation {

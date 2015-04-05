@@ -34,6 +34,7 @@ DefaultAudioDestinationNode::DefaultAudioDestinationNode(std::shared_ptr<AudioCo
 
 DefaultAudioDestinationNode::~DefaultAudioDestinationNode()
 {
+    LOG("Destruct %p", this);
     uninitialize();
 }
 

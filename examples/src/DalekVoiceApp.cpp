@@ -6,7 +6,7 @@
 using namespace LabSound;
 using namespace std;
 
-#define USE_LIVEx
+//#define USE_LIVE
 
 // Send live audio to a Dalek filter, constructed according to
 // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
@@ -18,7 +18,7 @@ int main(int, char**)
     float sampleRate = context->sampleRate();
 
 #ifndef USE_LIVE
-    SoundBuffer sample("human-voice.mp4", sampleRate);
+    SoundBuffer sample("samples/voice.mp4", sampleRate);
 #endif
     
     shared_ptr<MediaStreamAudioSourceNode> input;

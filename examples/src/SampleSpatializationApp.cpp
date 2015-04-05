@@ -13,14 +13,14 @@ int main(int, char**)
     auto context = LabSound::init();
     auto ac = context.get();
 
-    SoundBuffer train("trainrolling.wav", context->sampleRate());
+    SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
     auto panner = std::make_shared<PannerNode>(context->sampleRate());
     std::shared_ptr<AudioBufferSourceNode> trainNode;
     {
         ContextGraphLock g(context, "spatialization");
         ContextRenderLock r(context, "spatialization");
         panner->connect(ac, context->destination().get(), 0, 0, ec);
-        trainNode = train.play(g, r, panner, 0.0f);
+        trainNode = train.play(r, panner, 0.0f);
     }
     
     if (trainNode)

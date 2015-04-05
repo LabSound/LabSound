@@ -47,9 +47,11 @@ GainNode::GainNode(float sampleRate)
     initialize();
 }
     
-    GainNode::~GainNode() {
-        printf("Releasing gain node\n");
-    }
+GainNode::~GainNode() 
+{
+	uninitialize();
+    printf("Releasing gain node\n");
+}
 
 void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
 {

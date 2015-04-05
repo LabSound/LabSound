@@ -56,7 +56,7 @@ public:
     , m_smoothingConstant(DefaultSmoothingConstant)
     {}
     
-    virtual ~AudioParam() {}
+    //virtual ~AudioParam() {}
     
     // AudioSummingJunction
     virtual bool canUpdateState() override { return true; }

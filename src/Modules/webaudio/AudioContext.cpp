@@ -27,7 +27,6 @@
 #include "AudioContext.h"
 
 #include "AnalyserNode.h"
-#include "AsyncAudioDecoder.h"
 #include "AudioBuffer.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioContextLock.h"
@@ -60,7 +59,6 @@
 #endif
 
 #include <wtf/Atomics.h>
-#include <wtf/MainThread.h>
 
 using namespace std;
 
@@ -257,17 +255,6 @@ void AudioContext::stop(ContextGraphLock& g)
     
     uninitialize(g);
     clear();
-}
-
-void AudioContext::decodeAudioData(std::shared_ptr<std::vector<uint8_t>> audioData,
-                                   std::function<void()> successCallback, std::function<void()> errorCallback, ExceptionCode& ec)
-{
-    if (!audioData)
-    {
-        ec = SYNTAX_ERR;
-        return;
-    }
-    m_audioDecoder->decodeAsync(audioData, sampleRate(), successCallback, errorCallback);
 }
 
 std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(ContextGraphLock& g, ContextRenderLock& r, ExceptionCode& ec)
@@ -477,7 +464,9 @@ void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 
         // Don't let ourself get deleted before the callback.
         // See matching deref() in deleteMarkedNodesDispatch().
-        callOnMainThread(deleteMarkedNodesDispatch, this);
+        //callOnMainThread(deleteMarkedNodesDispatch, this); // Dimitri: ensure we are on main thread
+		deleteMarkedNodesDispatch(this);
+
     }
 }
 

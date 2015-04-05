@@ -8,10 +8,28 @@
 
 #pragma once
 
+#ifndef _LABSOUND_CONFIG_H
+#define _LABSOUND_CONFIG_H
+
 #include "WTF/Platform.h"
 #include "WTF/ExportMacros.h"
+
 #include "PlatformExportMacros.h"
 #include "Logging.h"
+#include "Assertions.h"
+
+#include <algorithm>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <vector>
+#include <memory>
+#include <math.h>
+
+// All 64 bit processors support SSE2
+#if defined(__AVX__) || ((_M_IX86_FP) && (_M_IX86_FP >= 2)) || (_M_AMD64) || defined(_M_X64)
+#define __SSE2__
+#endif
 
 #if defined(TARGET_OS_IPHONE) || defined(TARGET_OS_MAC)
 # ifndef HAVE_LIBDL
@@ -38,11 +56,6 @@
 #  ifndef WINVER
 #    define WINVER 0x0500
 #  endif
-#  ifndef max
-#    define max max
-#  endif
-#  ifndef min
-#    define min min
-#  endif
 #endif
 
+#endif

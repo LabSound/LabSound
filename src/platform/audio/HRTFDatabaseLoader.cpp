@@ -30,8 +30,6 @@
 #include "HRTFDatabaseLoader.h"
 
 #include "HRTFDatabase.h"
-#include <wtf/MainThread.h>
-
 #include <iostream>
 
 namespace WebCore {
@@ -41,7 +39,8 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
 
 std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(float sampleRate)
 {
-    if (!s_loader) {
+    if (!s_loader)
+    {
         s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate);
         s_loader->loadAsynchronously();
     }
@@ -80,12 +79,11 @@ void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
 
 void HRTFDatabaseLoader::load()
 {
-    if (!m_hrtfDatabase.get()) {
-        // Load the default HRTF database.
-        m_hrtfDatabase = HRTFDatabase::create(m_databaseSampleRate);
-    }
-    if (!m_hrtfDatabase.get()) { // @Lab added error reporting
-        std::cerr << "HRTF database not loaded" << std::endl;
+    m_hrtfDatabase = HRTFDatabase::create(m_databaseSampleRate);
+    
+    if (!m_hrtfDatabase.get())
+    {
+        std::cerr << "HRTF database not loaded..." << std::endl;
     }
 }
 

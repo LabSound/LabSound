@@ -24,7 +24,6 @@
 
 #include "LabSoundConfig.h"
 #include "WaveShaperNode.h"
-#include <wtf/MainThread.h>
 
 namespace WebCore {
 

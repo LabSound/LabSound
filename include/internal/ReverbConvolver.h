@@ -35,11 +35,14 @@
 #include "ReverbAccumulationBuffer.h"
 #include "ReverbConvolverStage.h"
 #include "ReverbInputBuffer.h"
+
 #include <mutex>
 #include <vector>
+#include <condition_variable>
+#include <thread>
+#include <atomic>
 
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
 
@@ -69,7 +72,9 @@ public:
     void backgroundThreadEntry();
 
     size_t latencyFrames() const;
+
 private:
+
     std::vector<std::unique_ptr<ReverbConvolverStage> > m_stages;
     std::vector<std::unique_ptr<ReverbConvolverStage> > m_backgroundStages;
     size_t m_impulseResponseLength;
@@ -88,8 +93,8 @@ private:
 
     // Background thread and synchronization
     bool m_useBackgroundThreads;
-    ThreadIdentifier m_backgroundThread;
-    bool m_wantsToExit;
+    std::thread m_backgroundThread;
+    std::atomic<bool> m_wantsToExit;
     bool m_moreInputBuffered;
     mutable std::mutex m_backgroundThreadLock;
     mutable std::condition_variable m_backgroundThreadCondition;

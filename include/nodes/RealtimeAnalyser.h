@@ -31,8 +31,6 @@
 
 namespace WebCore {
 
-    using namespace WTF;
-
 class AudioBus;
 class FFTFrame;
 

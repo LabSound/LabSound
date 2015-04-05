@@ -32,6 +32,7 @@
 #include "HRTFDatabase.h"
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 
 namespace WebCore {
 
