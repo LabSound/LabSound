@@ -33,6 +33,7 @@ WaveShaperNode::WaveShaperNode(float sampleRate)
 {
     m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new WaveShaperProcessor(sampleRate, 1)));
     setNodeType(NodeTypeWaveShaper);
+    initialize();
 }
 
 void WaveShaperNode::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)

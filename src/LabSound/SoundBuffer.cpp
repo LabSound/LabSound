@@ -46,16 +46,17 @@ namespace LabSound {
             sourceBuffer->setBuffer(g, r, audioBuffer);
             return sourceBuffer;
         }
-        return 0;
+        return nullptr;
     }
     
 	// Output to the default context output 
 	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r, float when)
 	{
-		if (audioBuffer && g.context()) {
-			return play(g,r, g.context()->destination(), when);
+        auto ac = g.context();
+		if (audioBuffer && ac) {
+			return play(g,r, ac->destination(), when);
 		}
-		return 0;
+        return nullptr;
 	}
 
 	// Output to a specific note 
@@ -73,7 +74,7 @@ namespace LabSound {
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
             return sourceBufferNode;
         }
-        return 0;
+        return nullptr;
     }
     
     // This variant starts a sound at a given offset relative to the beginning of the
@@ -81,14 +82,10 @@ namespace LabSound {
     // the start. If 0 is passed as end, then the sound will play to the end.
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextGraphLock& g, ContextRenderLock& r, float start, float end, float when)
     {
-        if (audioBuffer) {
-
+        auto ac = g.context();
+        if (audioBuffer && ac) {
             if (end == 0)
                 end = audioBuffer->duration();
-            
-            auto ac = g.context();
-            if (!ac)
-                return nullptr;
             
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac->destination()->sampleRate()));
             
@@ -97,15 +94,13 @@ namespace LabSound {
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBufferNode->connect(g.context(), ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->connect(ac, ac->destination().get(), 0, 0, ec);
             sourceBufferNode->startGrain(when, start, end - start);
-            g.context()->holdSourceNodeUntilFinished(sourceBufferNode);
+            ac->holdSourceNodeUntilFinished(sourceBufferNode);
 
             return sourceBufferNode;
         }
-
         return nullptr;
-
     }
 
 } // LabSound

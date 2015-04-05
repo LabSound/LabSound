@@ -27,6 +27,7 @@ namespace LabSound {
 		// All samples bus their output to this node... 
         gainNode = std::make_shared<GainNode>(sampleRate);
 		gainNode->gain()->setValue(4.0);
+        //initialize(); note - not subclassed from AudioNode
 	}
 
 	// Definitely have ADSR... 

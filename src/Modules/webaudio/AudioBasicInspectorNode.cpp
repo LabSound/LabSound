@@ -38,6 +38,7 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    initialize();
 }
 
 // We override pullInputs() as an optimization allowing this node to take advantage of in-place processing,

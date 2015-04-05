@@ -66,6 +66,7 @@ namespace LabSound {
     SpatializationNode::SpatializationNode(float sampleRate)
     : WebCore::PannerNode(sampleRate) {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeSpatialization);
+        initialize();
     }
     
     SpatializationNode::~SpatializationNode() {

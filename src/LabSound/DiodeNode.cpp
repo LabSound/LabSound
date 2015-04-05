@@ -22,6 +22,7 @@ namespace LabSound {
     {
         waveShaper = std::make_shared<WebCore::WaveShaperNode>(sampleRate);
         setCurve(r);
+        //initialize(); DiodeNode is not subclassed from node
     }
 
     void DiodeNode::setDistortion(ContextRenderLock& r, float distortion)
