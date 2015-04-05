@@ -34,6 +34,7 @@
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
+#include <map>
 #endif
 
 using namespace std;
@@ -333,13 +334,38 @@ int AudioNode::s_nodeCount[NodeTypeEnd];
 
 void AudioNode::printNodeCounts()
 {
+    
+    std::map<int, std::string> NodeLookupTable =
+    {
+        { NodeTypeUnknown, "NodeTypeUnknown" },
+        { NodeTypeDestination, "NodeTypeDestination" },
+        { NodeTypeOscillator, "NodeTypeOscillator" },
+        { NodeTypeAudioBufferSource, "NodeTypeAudioBufferSource" },
+        { NodeTypeMediaElementAudioSource, "NodeTypeMediaElementAudioSource" },
+        { NodeTypeMediaStreamAudioDestination, "NodeTypeMediaStreamAudioDestination" },
+        { NodeTypeMediaStreamAudioSource, "NodeTypeMediaStreamAudioSource" },
+        { NodeTypeJavaScript, "NodeTypeJavaScript" },
+        { NodeTypeBiquadFilter, "NodeTypeBiquadFilter" },
+        { NodeTypePanner, "NodeTypePanner" },
+        { NodeTypeConvolver, "NodeTypeConvolver" },
+        { NodeTypeDelay, "NodeTypeDelay" },
+        { NodeTypeGain, "NodeTypeGain" },
+        { NodeTypeChannelSplitter, "NodeTypeChannelSplitter" },
+        { NodeTypeChannelMerger, "NodeTypeChannelMerger" },
+        { NodeTypeAnalyser, "NodeTypeAnalyser" },
+        { NodeTypeDynamicsCompressor, "NodeTypeDynamicsCompressor" },
+        { NodeTypeWaveShaper, "NodeTypeWaveShaper" },
+        { NodeTypeEnd, "NodeTypeEnd" },
+    };
+
+    
     fprintf(stderr, "\n\n");
     fprintf(stderr, "===========================\n");
     fprintf(stderr, "AudioNode: reference counts\n");
     fprintf(stderr, "===========================\n");
 
     for (unsigned i = 0; i < NodeTypeEnd; ++i)
-        fprintf(stderr, "%d: %d\n", i, s_nodeCount[i]);
+        fprintf(stderr, "%d\tof \t%s \n", s_nodeCount[i], NodeLookupTable[i].c_str());
 
     fprintf(stderr, "===========================\n\n\n");
 }
