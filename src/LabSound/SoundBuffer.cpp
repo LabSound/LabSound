@@ -81,8 +81,8 @@ namespace LabSound {
     // the start. If 0 is passed as end, then the sound will play to the end.
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {
-        if (audioBuffer) {
-
+        auto ac = r.context();
+        if (audioBuffer && ac) {
             if (end == 0)
                 end = audioBuffer->duration();
             
@@ -97,15 +97,13 @@ namespace LabSound {
             
             // bus the sound to the mixer.
             ExceptionCode ec;
-            sourceBufferNode->connect(r.context(), ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->connect(ac, ac->destination().get(), 0, 0, ec);
             sourceBufferNode->startGrain(when, start, end - start);
-            r.context()->holdSourceNodeUntilFinished(sourceBufferNode);
+            ac->holdSourceNodeUntilFinished(sourceBufferNode);
 
             return sourceBufferNode;
         }
-
         return nullptr;
-
     }
 
 } // LabSound

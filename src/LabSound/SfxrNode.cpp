@@ -591,8 +591,6 @@ namespace LabSound {
         // Output is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-        initialize();
-
         _waveType = make_shared<AudioParam>("waveType", 0, 0, 3);
 		_attack = make_shared<AudioParam>("attack", 0, 0, 1);
 		_sustainTime = make_shared<AudioParam>("sustain", 0.3, 0, 1);
@@ -620,6 +618,8 @@ namespace LabSound {
         sfxr->ResetParams();
         sfxr->ResetSample(true);
         sfxr->PlaySample();
+        
+        initialize();
     }
 
     SfxrNode::~SfxrNode()

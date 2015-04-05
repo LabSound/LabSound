@@ -39,6 +39,7 @@ DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec)
     }
     m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new DelayProcessor(sampleRate, 1, maxDelayTime)));
     setNodeType(NodeTypeDelay);
+    initialize();
 }
 
 std::shared_ptr<AudioParam> DelayNode::delayTime()

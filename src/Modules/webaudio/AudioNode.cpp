@@ -209,13 +209,12 @@ void AudioNode::disconnect(AudioContext* context, unsigned outputIndex, Exceptio
 
 void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 {
-    if (!r.context())
-        return;
-    
     if (!isInitialized())
         return;
-
+    
     auto ac = r.context();
+    if (!ac)
+        return;
     
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
