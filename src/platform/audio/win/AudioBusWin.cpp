@@ -46,7 +46,7 @@ namespace WebCore
 
 		_getcwd(cwd, MAX_PATH); 
 
-		std::string pathToFile( std::string(cwd) + std::string("\\resources\\") + std::string(name) + std::string(".wav"));
+		std::string pathToFile( std::string(cwd) + std::string("\\hrtf\\") + std::string(name) + std::string(".wav"));
 
 		FILE* f = fopen(pathToFile.c_str(), "rb");
 

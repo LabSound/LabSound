@@ -6,9 +6,20 @@
 
 using namespace LabSound;
 
+#include <windows.h>
+
+std::string PrintCurrentDirectory()
+{
+	char buffer[MAX_PATH] = { 0 };
+	GetCurrentDirectory(MAX_PATH, buffer);
+	return std::string(buffer);
+}
+
 int main(int argc, char *argv[], char *envp[]) {
 
     WebCore::ExceptionCode ec;
+
+	std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
 
 	auto context = LabSound::init();
 
