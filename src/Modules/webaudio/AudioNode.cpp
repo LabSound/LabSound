@@ -344,7 +344,6 @@ void AudioNode::printNodeCounts()
         { NodeTypeMediaElementAudioSource, "NodeTypeMediaElementAudioSource" },
         { NodeTypeMediaStreamAudioDestination, "NodeTypeMediaStreamAudioDestination" },
         { NodeTypeMediaStreamAudioSource, "NodeTypeMediaStreamAudioSource" },
-        { NodeTypeJavaScript, "NodeTypeJavaScript" },
         { NodeTypeBiquadFilter, "NodeTypeBiquadFilter" },
         { NodeTypePanner, "NodeTypePanner" },
         { NodeTypeConvolver, "NodeTypeConvolver" },

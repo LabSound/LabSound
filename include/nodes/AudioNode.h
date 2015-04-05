@@ -83,7 +83,6 @@ public:
         NodeTypeMediaElementAudioSource,
         NodeTypeMediaStreamAudioDestination,
         NodeTypeMediaStreamAudioSource,
-        NodeTypeJavaScript,
         NodeTypeBiquadFilter,
         NodeTypePanner,
         NodeTypeConvolver,
