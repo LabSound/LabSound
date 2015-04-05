@@ -43,18 +43,20 @@ namespace WebCore {
 // A cone effect will attenuate the gain as the orientation moves away from the listener.
 // All of these effects follow the OpenAL specification very closely.
 
-class PannerNode : public AudioNode {
+class PannerNode : public AudioNode 
+{
+
 public:
-    // These must be defined as in the .idl file and must match those in the Panner class.
-    enum {
+
+    enum 
+	{
         EQUALPOWER = 0,
         HRTF = 1,
         SOUNDFIELD = 2,
     };
 
-    // These must be defined as in the .idl file and must match those
-    // in the DistanceEffect class.
-    enum {
+    enum 
+	{
         LINEAR_DISTANCE = 0,
         INVERSE_DISTANCE = 1,
         EXPONENTIAL_DISTANCE = 2,
