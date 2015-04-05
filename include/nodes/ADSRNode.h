@@ -13,33 +13,33 @@
 #include "AudioBasicInspectorNode.h"
 #include "GainNode.h"
 
-namespace LabSound {
-    using namespace WebCore;
+namespace LabSound
+{
 
     class ADSRNode : public WebCore::AudioBasicProcessorNode
     {
+        class ADSRNodeInternal;
+        ADSRNodeInternal * internalNode;
+        
     public:
+        
         ADSRNode(float sampleRate);
         virtual ~ADSRNode();
         
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
-        //
 		void noteOn(double when);
 		void noteOff(ContextRenderLock&, double when);
+        
         bool finished(ContextRenderLock&); // if a noteOff has been issued, finished will be true after the release period
 
 		void set(float aT, float aL, float d, float s, float r);
 
-        std::shared_ptr<AudioParam> attackTime() const;
-		std::shared_ptr<AudioParam> attackLevel() const;
-		std::shared_ptr<AudioParam> decayTime() const;
-		std::shared_ptr<AudioParam> sustainLevel() const;
-		std::shared_ptr<AudioParam> releaseTime() const;
-
-    private:
-        class AdsrNodeInternal;
-        AdsrNodeInternal* data;
+        std::shared_ptr<WebCore::AudioParam> attackTime() const; // Duration in ms
+        std::shared_ptr<WebCore::AudioParam> attackLevel() const; // Duration in ms
+        std::shared_ptr<WebCore::AudioParam> decayTime() const; // Duration in ms
+        std::shared_ptr<WebCore::AudioParam> sustainLevel() const; // Level 0-10
+        std::shared_ptr<WebCore::AudioParam> releaseTime() const; // Duration in ms
     };
     
 }
