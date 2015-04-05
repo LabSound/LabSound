@@ -5,7 +5,6 @@
 #include <iostream>
 
 using namespace LabSound;
-using namespace std;
 
  // Play live audio through a reverb convolution
 int main(int, char**)
@@ -18,27 +17,27 @@ int main(int, char**)
     SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
     //SoundBuffer ir(context, "impulse-responses/filter-telephone.wav");
 
-    shared_ptr<MediaStreamAudioSourceNode> input;
-    shared_ptr<ConvolverNode> convolve;
-    shared_ptr<GainNode> wetGain;
-    shared_ptr<GainNode> dryGain;
-    shared_ptr<RecorderNode> recorder;
+    std::shared_ptr<MediaStreamAudioSourceNode> input;
+    std::shared_ptr<ConvolverNode> convolve;
+    std::shared_ptr<GainNode> wetGain;
+    std::shared_ptr<GainNode> dryGain;
+    std::shared_ptr<RecorderNode> recorder;
     
     {
         ContextGraphLock g(context, "live reverb recording");
         ContextRenderLock r(context, "live reverb recording");
-        input = context->createMediaStreamSource(g, r, ec);
-        convolve = make_shared<ConvolverNode>(context->sampleRate());
+        input = context->createMediaStreamSource(g, r);
+        convolve = std::make_shared<ConvolverNode>(context->sampleRate());
         convolve->setBuffer(ir.audioBuffer);
-        wetGain = make_shared<GainNode>(context->sampleRate());
+        wetGain = std::make_shared<GainNode>(context->sampleRate());
         wetGain->gain()->setValue(2.f);
-        dryGain = make_shared<GainNode>(context->sampleRate());
+        dryGain = std::make_shared<GainNode>(context->sampleRate());
         dryGain->gain()->setValue(1.f);
         input->connect(ac, convolve.get(), 0, 0, ec);
         convolve->connect(ac, wetGain.get(), 0, 0, ec);
         wetGain->connect(ac, context->destination().get(), 0, 0, ec);
         dryGain->connect(ac, context->destination().get(), 0, 0, ec);
-        recorder = make_shared<RecorderNode>(context->sampleRate());
+        recorder = std::make_shared<RecorderNode>(context->sampleRate());
         recorder->startRecording();
         dryGain->connect(ac, recorder.get(), 0, 0, ec);
         wetGain->connect(ac, recorder.get(), 0, 0, ec);
