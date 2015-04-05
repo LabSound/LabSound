@@ -30,7 +30,7 @@
 #include "AudioParam.h"
 #include "AudioScheduledSourceNode.h"
 #include "PannerNode.h"
-#include <WTF/Threading.h>
+
 #include <memory>
 
 namespace WebCore {
@@ -53,7 +53,8 @@ public:
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
-    bool setBuffer(ContextGraphLock&, ContextRenderLock&, std::shared_ptr<AudioBuffer>);
+    bool setBuffer(ContextRenderLock&, std::shared_ptr<AudioBuffer>);
+    
     std::shared_ptr<AudioBuffer> buffer() { return m_buffer; }
 
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.

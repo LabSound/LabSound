@@ -31,10 +31,9 @@
 
 #include "AudioArray.h"
 #include <vector>
+#include <memory>
 
 namespace WebCore {
-
-using namespace WTF;
 
 class WaveTable {
 public:

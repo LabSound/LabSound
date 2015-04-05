@@ -16,7 +16,7 @@ namespace LabSound {
 
     class SupersawNode : public AudioNode {
     public:
-        SupersawNode(ContextGraphLock& g, ContextRenderLock& r, float sampleRate);
+        SupersawNode(ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode() {}
         
 		std::shared_ptr<AudioParam> attack()  const;
@@ -31,7 +31,7 @@ namespace LabSound {
 		void noteOn(double when);
 		void noteOff(ContextRenderLock&, double when);
 
-        void update(ContextGraphLock& g, ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
+        void update(ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
 
     private:
 

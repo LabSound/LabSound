@@ -32,7 +32,6 @@
 #define AudioProcessor_h
 
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
 
@@ -47,14 +46,18 @@ class AudioBus;
 // or as the processor for a basic (one input - one output) AudioNode.
 
 class AudioProcessor {
+    
 public:
-    AudioProcessor(float sampleRate)
-        : m_initialized(false)
-        , m_sampleRate(sampleRate)
+    
+    AudioProcessor(float sampleRate): m_initialized(false) , m_sampleRate(sampleRate)
     {
+        
     }
 
-    virtual ~AudioProcessor() { }
+    virtual ~AudioProcessor()
+    {
+    
+    }
 
     // Full initialization can be done here instead of in the constructor.
     virtual void initialize() = 0;
@@ -76,8 +79,10 @@ public:
     virtual double latencyTime() const = 0;
 
 protected:
+    
     bool m_initialized;
     float m_sampleRate;
+    
 };
 
 } // namespace WebCore

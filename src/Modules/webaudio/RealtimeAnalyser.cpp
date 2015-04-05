@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <limits.h>
 #include <complex>
-#include <wtf/MainThread.h>
 #include <wtf/MathExtras.h>
 
 using namespace std;

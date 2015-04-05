@@ -27,7 +27,6 @@
 
 #include "AudioBuffer.h"
 #include "AudioDestinationNode.h"
-#include "WTF/Threading.h"
 
 namespace WebCore {
 
@@ -54,9 +53,8 @@ private:
     std::unique_ptr<AudioBus> m_renderBus;
     
     // Rendering thread.
-    volatile ThreadIdentifier m_renderThread;
+	std::thread m_renderThread;
     bool m_startedRendering;
-    static void offlineRenderEntry(void* threadData);
     void offlineRender();
     
     // For completion callback on main thread.

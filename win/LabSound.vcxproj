@@ -107,6 +107,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -114,8 +115,10 @@
     </ResourceCompile>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +144,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)LabSound.pdb</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -149,8 +153,10 @@
     <Lib>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalDependencies>libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,6 +183,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -187,8 +194,10 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -215,6 +224,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DisableSpecificWarnings>4244;4267;4800;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ENABLE_MEDIA_STREAM=1;STATICALLY_LINKED_WITH_WTF;NDEBUG;RELEASE;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;WTF_USE_WEBAUDIO_IPP=1;__WINDOWS_DS__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;USEAPI_DUMMY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -225,8 +235,10 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalDependencies>libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../src/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -239,7 +251,6 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\config.h" />
     <ClInclude Include="..\include\internal\AudioArray.h" />
     <ClInclude Include="..\include\internal\AudioBus.h" />
     <ClInclude Include="..\include\internal\AudioChannel.h" />
@@ -280,29 +291,13 @@
     <ClInclude Include="..\include\internal\ReverbConvolverStage.h" />
     <ClInclude Include="..\include\internal\ReverbInputBuffer.h" />
     <ClInclude Include="..\include\internal\SincResampler.h" />
-    <ClInclude Include="..\include\internal\util\FloatConversion.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatPoint.h" />
     <ClInclude Include="..\include\internal\util\graphics\FloatPoint3D.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatQuad.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntPoint.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\IntSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutPoint.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutRect.h" />
-    <ClInclude Include="..\include\internal\util\graphics\LayoutSize.h" />
-    <ClInclude Include="..\include\internal\util\graphics\transforms\AffineTransform.h" />
-    <ClInclude Include="..\include\internal\util\Logging.h" />
-    <ClInclude Include="..\include\internal\util\TextDirection.h" />
-    <ClInclude Include="..\include\internal\util\WritingMode.h" />
     <ClInclude Include="..\include\internal\VectorMath.h" />
     <ClInclude Include="..\include\internal\win\AudioDestinationWin.h" />
     <ClInclude Include="..\include\internal\win\AudioFileReaderWin.h" />
     <ClInclude Include="..\include\internal\ZeroPole.h" />
     <ClInclude Include="..\include\nodes\ADSRNode.h" />
     <ClInclude Include="..\include\nodes\AnalyserNode.h" />
-    <ClInclude Include="..\include\nodes\AsyncAudioDecoder.h" />
     <ClInclude Include="..\include\nodes\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBasicProcessorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBuffer.h" />
@@ -459,46 +454,16 @@
     <ClInclude Include="..\include\third_party\STK\Wurley.h" />
     <ClInclude Include="..\include\third_party\STK\WvIn.h" />
     <ClInclude Include="..\include\third_party\STK\WvOut.h" />
-    <ClInclude Include="..\include\third_party\WTF\ArrayBuffer.h" />
-    <ClInclude Include="..\include\third_party\WTF\ArrayBufferView.h" />
-    <ClInclude Include="..\include\third_party\WTF\Assertions.h" />
     <ClInclude Include="..\include\third_party\WTF\Atomics.h" />
     <ClInclude Include="..\include\third_party\WTF\AutodrainedPool.h" />
-    <ClInclude Include="..\include\third_party\WTF\CheckedArithmetic.h" />
     <ClInclude Include="..\include\third_party\WTF\Compiler.h" />
-    <ClInclude Include="..\include\third_party\WTF\Complex.h" />
-    <ClInclude Include="..\include\third_party\WTF\config.h" />
     <ClInclude Include="..\include\third_party\WTF\CPU.h" />
     <ClInclude Include="..\include\third_party\WTF\CurrentTime.h" />
-    <ClInclude Include="..\include\third_party\WTF\DynamicAnnotations.h" />
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h" />
-    <ClInclude Include="..\include\third_party\WTF\Float32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Float64Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Functional.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int16Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Int8Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\IntegralTypedArrayBase.h" />
-    <ClInclude Include="..\include\third_party\WTF\Locker.h" />
-    <ClInclude Include="..\include\third_party\WTF\MainThread.h" />
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h" />
     <ClInclude Include="..\include\third_party\WTF\MediaTime.h" />
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h" />
-    <ClInclude Include="..\include\third_party\WTF\NullPtr.h" />
-    <ClInclude Include="..\include\third_party\WTF\OwnPtrCommon.h" />
-    <ClInclude Include="..\include\third_party\WTF\PassOwnPtr.h" />
     <ClInclude Include="..\include\third_party\WTF\Platform.h" />
-    <ClInclude Include="..\include\third_party\WTF\RefPtr.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadFunctionInvocation.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadIdentifierDataPthreads.h" />
-    <ClInclude Include="..\include\third_party\WTF\Threading.h" />
-    <ClInclude Include="..\include\third_party\WTF\ThreadSpecific.h" />
-    <ClInclude Include="..\include\third_party\WTF\TypedArrayBase.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint16Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint32Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint8Array.h" />
-    <ClInclude Include="..\include\third_party\WTF\Uint8ClampedArray.h" />
-    <ClInclude Include="..\include\third_party\WTF\ValueCheck.h" />
     <ClInclude Include="..\include\third_party\WTF\WTFExport.h" />
     <ClInclude Include="..\src\kissfft\kiss_fft.hpp" />
     <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h" />
@@ -535,8 +500,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\AsyncAudioDecoder.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioBasicInspectorNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioBasicProcessorNode.cpp">
@@ -549,6 +512,7 @@
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioDestinationNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\Modules\webaudio\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\Modules\webaudio\AudioListener.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AudioNode.cpp">
@@ -588,8 +552,6 @@
     <ClCompile Include="..\src\Modules\webaudio\DynamicsCompressorNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\GainNode.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\Modules\webaudio\MediaElementAudioSourceNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\MediaStreamAudioDestinationNode.cpp">
     </ClCompile>
@@ -678,99 +640,9 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\ZeroPole.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\platform\Logging.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\rtaudio\RtAudio.cpp" />
-    <ClCompile Include="..\src\STK\ADSR.cpp" />
-    <ClCompile Include="..\src\STK\Asymp.cpp" />
-    <ClCompile Include="..\src\STK\BandedWG.cpp" />
-    <ClCompile Include="..\src\STK\BeeThree.cpp" />
-    <ClCompile Include="..\src\STK\BiquadSTK.cpp" />
-    <ClCompile Include="..\src\STK\Blit.cpp" />
-    <ClCompile Include="..\src\STK\BlitSaw.cpp" />
-    <ClCompile Include="..\src\STK\BlitSquare.cpp" />
-    <ClCompile Include="..\src\STK\BlowBotl.cpp" />
-    <ClCompile Include="..\src\STK\BlowHole.cpp" />
-    <ClCompile Include="..\src\STK\Bowed.cpp" />
-    <ClCompile Include="..\src\STK\Brass.cpp" />
-    <ClCompile Include="..\src\STK\Chorus.cpp" />
-    <ClCompile Include="..\src\STK\Clarinet.cpp" />
-    <ClCompile Include="..\src\STK\Delay.cpp" />
-    <ClCompile Include="..\src\STK\DelayA.cpp" />
-    <ClCompile Include="..\src\STK\DelayL.cpp" />
-    <ClCompile Include="..\src\STK\Drummer.cpp" />
-    <ClCompile Include="..\src\STK\Echo.cpp" />
-    <ClCompile Include="..\src\STK\Envelope.cpp" />
-    <ClCompile Include="..\src\STK\FileLoop.cpp" />
-    <ClCompile Include="..\src\STK\FileRead.cpp" />
-    <ClCompile Include="..\src\STK\FileWrite.cpp" />
-    <ClCompile Include="..\src\STK\FileWvIn.cpp" />
-    <ClCompile Include="..\src\STK\FileWvOut.cpp" />
-    <ClCompile Include="..\src\STK\Fir.cpp" />
-    <ClCompile Include="..\src\STK\Flute.cpp" />
-    <ClCompile Include="..\src\STK\FM.cpp" />
-    <ClCompile Include="..\src\STK\FMVoices.cpp" />
-    <ClCompile Include="..\src\STK\FormSwep.cpp" />
-    <ClCompile Include="..\src\STK\FreeVerb.cpp" />
-    <ClCompile Include="..\src\STK\Granulate.cpp" />
-    <ClCompile Include="..\src\STK\Guitar.cpp" />
-    <ClCompile Include="..\src\STK\HevyMetl.cpp" />
-    <ClCompile Include="..\src\STK\Iir.cpp" />
-    <ClCompile Include="..\src\STK\JCRev.cpp" />
-    <ClCompile Include="..\src\STK\LentPitShift.cpp" />
-    <ClCompile Include="..\src\STK\Mandolin.cpp" />
-    <ClCompile Include="..\src\STK\Mesh2D.cpp" />
-    <ClCompile Include="..\src\STK\Messager.cpp" />
-    <ClCompile Include="..\src\STK\MidiFileIn.cpp" />
-    <ClCompile Include="..\src\STK\Modal.cpp" />
-    <ClCompile Include="..\src\STK\ModalBar.cpp" />
-    <ClCompile Include="..\src\STK\Modulate.cpp" />
-    <ClCompile Include="..\src\STK\Moog.cpp" />
-    <ClCompile Include="..\src\STK\Noise.cpp" />
-    <ClCompile Include="..\src\STK\NRev.cpp" />
-    <ClCompile Include="..\src\STK\OnePole.cpp" />
-    <ClCompile Include="..\src\STK\OneZero.cpp" />
-    <ClCompile Include="..\src\STK\PercFlut.cpp" />
-    <ClCompile Include="..\src\STK\Phonemes.cpp" />
-    <ClCompile Include="..\src\STK\PitShift.cpp" />
-    <ClCompile Include="..\src\STK\Plucked.cpp" />
-    <ClCompile Include="..\src\STK\PoleZero.cpp" />
-    <ClCompile Include="..\src\STK\PRCRev.cpp" />
-    <ClCompile Include="..\src\STK\Resonate.cpp" />
-    <ClCompile Include="..\src\STK\Rhodey.cpp" />
-    <ClCompile Include="..\src\STK\Sampler.cpp" />
-    <ClCompile Include="..\src\STK\Saxofony.cpp" />
-    <ClCompile Include="..\src\STK\Shakers.cpp" />
-    <ClCompile Include="..\src\STK\Simple.cpp" />
-    <ClCompile Include="..\src\STK\SineWave.cpp" />
-    <ClCompile Include="..\src\STK\SingWave.cpp" />
-    <ClCompile Include="..\src\STK\Sitar.cpp" />
-    <ClCompile Include="..\src\STK\Skini.cpp" />
-    <ClCompile Include="..\src\STK\Sphere.cpp" />
-    <ClCompile Include="..\src\STK\StifKarp.cpp" />
-    <ClCompile Include="..\src\STK\Stk.cpp" />
-    <ClCompile Include="..\src\STK\TapDelay.cpp" />
-    <ClCompile Include="..\src\STK\TubeBell.cpp" />
-    <ClCompile Include="..\src\STK\Twang.cpp" />
-    <ClCompile Include="..\src\STK\TwoPole.cpp" />
-    <ClCompile Include="..\src\STK\TwoZero.cpp" />
-    <ClCompile Include="..\src\STK\Voicer.cpp" />
-    <ClCompile Include="..\src\STK\VoicForm.cpp" />
-    <ClCompile Include="..\src\STK\Whistle.cpp" />
-    <ClCompile Include="..\src\STK\Wurley.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\ArrayBuffer.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ArrayBufferView.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Assertions.cpp">
-    </ClCompile>
+    <ClCompile Include="..\src\STK\STKInlineCompile.cpp" />
     <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Float32Array.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\MainThread.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\Threading.cpp">
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioBusWin.cpp">
     </ClCompile>
@@ -778,10 +650,6 @@
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\win\AudioFileReaderWin.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\ThreadingWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\ThreadSpecificWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\win\MainThreadWin.cpp" />
-    <ClCompile Include="..\src\WTF\wtf\win\OwnPtrWin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\third_party\STK\SKINI.msg" />

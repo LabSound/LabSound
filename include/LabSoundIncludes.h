@@ -56,7 +56,6 @@
 #include "AudioBuffer.h"
 #include "AudioBasicProcessorNode.h"
 #include "AudioBasicInspectorNode.h"
-#include "AsyncAudioDecoder.h"
 #include "AnalyserNode.h"
 
 #endif

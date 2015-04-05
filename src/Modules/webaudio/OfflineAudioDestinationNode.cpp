@@ -29,7 +29,6 @@
 #include "AudioContext.h"
 #include "HRTFDatabaseLoader.h"
 #include <algorithm>
-#include <wtf/MainThread.h>
 
 using namespace std;
  
@@ -40,7 +39,6 @@ const size_t renderQuantumSize = 128;
 OfflineAudioDestinationNode::OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget)
     : AudioDestinationNode(context, renderTarget->sampleRate())
     , m_renderTarget(renderTarget)
-    , m_renderThread(0)
     , m_startedRendering(false)
 {
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(renderTarget->numberOfChannels(), renderQuantumSize));
@@ -64,9 +62,9 @@ void OfflineAudioDestinationNode::uninitialize()
     if (!isInitialized())
         return;
 
-    if (m_renderThread) {
-        waitForThreadCompletion(m_renderThread);
-        m_renderThread = 0;
+    if (m_renderThread.joinable())
+	{
+       m_renderThread.join();
     }
 
     AudioNode::uninitialize();
@@ -78,22 +76,17 @@ void OfflineAudioDestinationNode::startRendering()
     if (!m_renderTarget.get())
         return;
     
-    if (!m_startedRendering) {
+    if (!m_startedRendering) 
+	{
         m_startedRendering = true;
-        m_renderThread = createThread(OfflineAudioDestinationNode::offlineRenderEntry, this, "offline renderer");
+		//@todo: proper notification when thread is completed with condition variable
+        m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
     }
-}
-
-// Do offline rendering in this thread.
-void OfflineAudioDestinationNode::offlineRenderEntry(void* threadData)
-{
-    OfflineAudioDestinationNode* destinationNode = reinterpret_cast<OfflineAudioDestinationNode*>(threadData);
-    ASSERT(destinationNode);
-    destinationNode->offlineRender();
 }
 
 void OfflineAudioDestinationNode::offlineRender()
 {
+
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
@@ -140,7 +133,8 @@ void OfflineAudioDestinationNode::offlineRender()
     }
     
     // Our work is done. Let the AudioContext know.
-    callOnMainThread(notifyCompleteDispatch, this);
+   //notifyCompleteDispatch(this); // Dimitri sez: super epic danger here. Refactor to use condition_variable
+
 }
 
 void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)

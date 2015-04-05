@@ -13,8 +13,6 @@
 
 namespace LabSound {
 
-    using namespace WTF;
-
     DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate)
     : vb(0.2f)
     , vl(0.4f)

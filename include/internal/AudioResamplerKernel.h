@@ -28,7 +28,6 @@
 #include "AudioArray.h"
 
 namespace LabSound {
-    class ContextGraphLock;
     class ContextRenderLock;
 }
 

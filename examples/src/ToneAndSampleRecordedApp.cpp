@@ -13,7 +13,7 @@ int main(int, char**)
     auto ac = context.get();
     
     std::shared_ptr<OscillatorNode> oscillator;
-    SoundBuffer tonbi("tonbi.wav", context->sampleRate());
+    SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
     std::shared_ptr<AudioBufferSourceNode> tonbiSound;
     auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
     context->addAutomaticPullNode(recorder);
@@ -27,8 +27,8 @@ int main(int, char**)
         oscillator->start(0);   // play now
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(r, 1, ec);
-        tonbiSound = tonbi.play(g, r, recorder, 0.0f);
-        tonbiSound = tonbi.play(g, r, 0.0f);
+        tonbiSound = tonbi.play(r, recorder, 0.0f);
+        tonbiSound = tonbi.play(r, 0.0f);
     }
     
     const int seconds = 4;

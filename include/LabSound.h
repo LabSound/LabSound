@@ -11,8 +11,6 @@
 
 namespace LabSound {
 
-    // Hoist WTF and WebCore within LabSound namespace
-    using namespace WTF;
     using namespace WebCore;
     
     enum NodeType {

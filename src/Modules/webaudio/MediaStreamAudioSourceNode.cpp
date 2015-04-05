@@ -29,7 +29,6 @@
 #include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
 #include "Logging.h"
-#include <wtf/Locker.h>
 
 namespace WebCore {
 

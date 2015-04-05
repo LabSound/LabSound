@@ -327,7 +327,7 @@
 #define WTF_OS_IOS 1
 #elif OS(DARWIN) && defined(TARGET_OS_MAC) && TARGET_OS_MAC
 #define WTF_OS_MAC_OS_X 1
-
+#endif
 
 /* OS(FREEBSD) - FreeBSD */
 #if defined(__FreeBSD__) || defined(__DragonFly__) || defined(__FreeBSD_kernel__)
@@ -480,7 +480,6 @@
 #define HAVE_ISDEBUGGERPRESENT 1
 #endif
 
-
 /* FIXME: This define won't be needed once #27551 is fully landed. However, 
    since most ports try to support sub-project independence, adding new headers
    to WTF causes many ports to break, and so this way we can address the build
@@ -492,6 +491,3 @@
 #if !defined(WTF_USE_EXPORT_MACROS_FOR_TESTING) && (PLATFORM(GTK) || PLATFORM(WIN))
 #define WTF_USE_EXPORT_MACROS_FOR_TESTING 1
 #endif
-
-
-#endif /* WTF_Platform_h */

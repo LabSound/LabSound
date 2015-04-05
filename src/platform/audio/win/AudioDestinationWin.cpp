@@ -45,14 +45,15 @@ namespace WebCore {
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
     
-// Factory method: Windows-implementation
-PassOwnPtr<AudioDestination> AudioDestination::create(AudioIOCallback& callback, float sampleRate) {
-    return adoptPtr(new AudioDestinationWin(callback, sampleRate));
+// Factory method - Windows-implementation
+AudioDestination * AudioDestination::create(AudioIOCallback& callback, float sampleRate) 
+{
+    return new AudioDestinationWin(callback, sampleRate);
 }
 
 float AudioDestination::hardwareSampleRate() {
 
-	// Default to 44100
+	// Danger: default to 44100
 	return 44100;
 
 }
