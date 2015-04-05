@@ -343,24 +343,31 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
     updateAutomaticPullNodes();
 }
 
-void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to) {
+void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to) 
+{
     lock_guard<mutex> lock(automaticSourcesMutex);
     pendingNodeConnections.emplace_back(from, to, true);
 }
-void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to) {
+
+void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
+{
     lock_guard<mutex> lock(automaticSourcesMutex);
     pendingNodeConnections.emplace_back(from, to, false);
 }
-void AudioContext::disconnect(std::shared_ptr<AudioNode> from) {
+void AudioContext::disconnect(std::shared_ptr<AudioNode> from) 
+{
     lock_guard<mutex> lock(automaticSourcesMutex);
     pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
 }
     
-void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput) {
+void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput) 
+{
     lock_guard<mutex> lock(automaticSourcesMutex);
     pendingConnections.emplace_back(PendingConnection(fromInput, toOutput, true));
 }
-void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput) {
+
+void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput) 
+{
     lock_guard<mutex> lock(automaticSourcesMutex);
     pendingConnections.emplace_back(PendingConnection(std::shared_ptr<AudioNodeInput>(), toOutput, false));
 }
@@ -446,7 +453,6 @@ void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
     // then this routine sould go away completely
     
     // node->deref is the only caller, it should simply add itself to the scheduled deletion queue
-    
     
     // marked for deletion should go away too
     

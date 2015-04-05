@@ -107,7 +107,6 @@ void AudioDestinationWin::start()
 	}
 	catch (RtAudioError & e)
 	{
-		m_isPlaying = false;
 		e.printMessage();
 	}
 }
@@ -121,7 +120,6 @@ void AudioDestinationWin::stop()
 	}
 	catch (RtAudioError & e)
 	{
-		m_isPlaying = true;
 		e.printMessage();
 	}
 }
