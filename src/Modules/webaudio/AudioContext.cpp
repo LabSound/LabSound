@@ -289,11 +289,16 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 	handleAutomaticSources();
 }
 
-
 void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
 	lock_guard<mutex> lock(automaticSourcesMutex);
 	pendingNodeConnections.emplace_back(from, to, true);
+}
+
+void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+{
+	lock_guard<mutex> lock(automaticSourcesMutex);
+	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(fromInput, toOutput, true));
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
@@ -301,16 +306,11 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<A
 	lock_guard<mutex> lock(automaticSourcesMutex);
 	pendingNodeConnections.emplace_back(from, to, false);
 }
+
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from)
 {
 	lock_guard<mutex> lock(automaticSourcesMutex);
 	pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
-}
-
-void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
-{
-	lock_guard<mutex> lock(automaticSourcesMutex);
-	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(fromInput, toOutput, true));
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput)
@@ -411,7 +411,6 @@ void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 		m_isDeletionScheduled = true;
 
 		deleteMarkedNodes();
-
 	}
 }
 
