@@ -60,12 +60,23 @@ namespace LabSound
         virtual ~PeakCompNode();
 
 		void set(float aT, float aL, float d, float s, float r);
-
+        
+        // Threshold given in dB, default 0
         std::shared_ptr<AudioParam> threshold() const;
+        
+        // Ratio, default 1:1
         std::shared_ptr<AudioParam> ratio() const;
+        
+        // Attack in ms, default .0001f
         std::shared_ptr<AudioParam> attack() const;
+        
+        // Release in ms, default .0001f
         std::shared_ptr<AudioParam> release() const;
+        
+        // Makeup gain in dB, default 0
         std::shared_ptr<AudioParam> makeup() const;
+        
+        // Knee smoothing (0 = hard, 1 = smooth), default 0
         std::shared_ptr<AudioParam> knee() const;
 
     };
