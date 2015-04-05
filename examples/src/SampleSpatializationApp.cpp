@@ -29,7 +29,7 @@ int main(int, char**)
         context->listener()->setPosition(0, 0, 0);
         panner->setVelocity(15, 0, 0);
         
-        const int seconds = 10;
+        const int seconds = 5;
         float halfTime = seconds * 0.5f;
         for (float i = 0; i < seconds; i += 0.01f)
         {
