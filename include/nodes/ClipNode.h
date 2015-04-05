@@ -4,15 +4,20 @@
 
 // ClipNode clips a signal, using either thresholding or tanh
 
-#pragma once
+#ifndef _LABSOUND_CLIP_NODE_H
+#define _LABSOUND_CLIP_NODE_H
 
 #include "AudioBasicProcessorNode.h"
 #include "AudioParam.h"
 
-namespace LabSound {
+namespace LabSound
+{
 
     class ClipNode : public WebCore::AudioBasicProcessorNode
     {
+        class ClipNodeInternal;
+        ClipNodeInternal * internalNode;
+        
     public:
         enum Mode { CLIP, TANH };
 
@@ -23,13 +28,11 @@ namespace LabSound {
 
         // in CLIP mode, a is the min value, and b is the max value.
         // in TANH mode, a is the overall gain, and b is the input gain.
-        //   The higher the input gain the more severe the distortion.
+        // The higher the input gain the more severe the distortion.
         std::shared_ptr<AudioParam> aVal();
 		std::shared_ptr<AudioParam> bVal();
-
-    private:
-        class ClipNodeInternal;
-        ClipNodeInternal* data;
     };
     
 }
+
+#endif

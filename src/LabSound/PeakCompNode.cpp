@@ -262,6 +262,7 @@ namespace LabSound
     
     PeakCompNode::~PeakCompNode()
     {
+        internalNode->numChannels = 0;
         uninitialize();
     }
     

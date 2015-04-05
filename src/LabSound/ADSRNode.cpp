@@ -248,6 +248,7 @@ namespace LabSound
 
     ADSRNode::~ADSRNode()
     {
+        internalNode->numChannels = 0;
         uninitialize();
     }
 

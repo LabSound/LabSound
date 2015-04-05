@@ -31,7 +31,7 @@ BiquadFilterNode::BiquadFilterNode(float sampleRate)
     : AudioBasicProcessorNode(sampleRate)
 {
     // Initially setup as lowpass filter.
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new BiquadProcessor(sampleRate, 1, false)));
+    m_processor.reset(new BiquadProcessor(sampleRate, 1, false));
     setNodeType(NodeTypeBiquadFilter);
     initialize();
 }
