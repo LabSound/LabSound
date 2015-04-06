@@ -21,9 +21,9 @@ namespace LabSound
     std::shared_ptr<LabSound::AudioContext> mainContext;
     
     const int update_rate_ms = 10;
-    
-    void UpdateGraph()
-    {
+
+    static void UpdateGraph()
+	{
         while (true)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
