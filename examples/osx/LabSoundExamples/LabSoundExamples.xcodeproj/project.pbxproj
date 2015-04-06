@@ -40,6 +40,7 @@
 		08650A151AD23A6400D19E38 /* SimpleRecording.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SimpleRecording.h; path = ../../src/SimpleRecording.h; sourceTree = "<group>"; };
 		08650A161AD23A6400D19E38 /* Spatialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Spatialization.h; path = ../../src/Spatialization.h; sourceTree = "<group>"; };
 		08650A171AD23AF300D19E38 /* ExampleBaseApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExampleBaseApp.h; path = ../../src/ExampleBaseApp.h; sourceTree = "<group>"; };
+		08650A181AD2E6E600D19E38 /* Validation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Validation.h; path = ../../src/Validation.h; sourceTree = "<group>"; };
 		E23015DC185F611A00FEC991 /* LabSoundExamples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LabSoundExamples; sourceTree = BUILT_PRODUCTS_DIR; };
 		E23015EC1860235E00FEC991 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E23015ED1860235E00FEC991 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -70,6 +71,7 @@
 		08650A0C1AD23A5C00D19E38 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				08650A181AD2E6E600D19E38 /* Validation.h */,
 				08650A141AD23A6400D19E38 /* Simple.h */,
 				08650A151AD23A6400D19E38 /* SimpleRecording.h */,
 				08650A0D1AD23A6400D19E38 /* ConvolutionReverb.h */,

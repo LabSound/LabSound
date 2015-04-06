@@ -10,6 +10,7 @@
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
 #include "Spatialization.h"
+#include "Validation.h"
 
 SimpleApp g_simpleExample;
 SimpleRecordingApp g_simpleRecordingExample;
@@ -21,10 +22,12 @@ MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 SpatializationApp g_spatialization;
 
+ValidationApp g_validation;
+
 int main (int argc, char *argv[])
 {
     
-    g_simpleExample.PlayExample();
+    g_validation.PlayExample();
     
     return 0;
 }

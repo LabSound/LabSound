@@ -4,7 +4,6 @@ struct PeakCompressorApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        
         auto context = LabSound::init();
         float sampleRate = context->sampleRate();
         
