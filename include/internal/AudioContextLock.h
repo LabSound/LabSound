@@ -22,8 +22,11 @@ namespace LabSound {
                 m_context = context;
                 m_context->m_graphLocker = locker;
             }
+            else if (context->m_graphLocker) {
+                std::cerr << locker << " failed to acquire graph lock, it's already held by " << context->m_graphLocker << std::endl;
+            }
             else {
-                std::cerr << "Failed to acquire graph lock" << std::endl;
+                std::cerr << locker << " failed to acquire graph lock" << std::endl;
             }
         }
         
@@ -47,8 +50,11 @@ namespace LabSound {
                 m_context = context;
                 m_context->m_renderLocker = locker;
             }
+            else if (context->m_graphLocker) {
+                std::cerr << locker << " failed to acquire graph lock, it's already held by " << m_context->m_graphLocker << std::endl;
+            }
             else {
-                 std::cerr << "Failed to acquire render lock" << std::endl;
+                std::cerr << locker << " failed to acquire graph lock" << std::endl;
             }
         }
         
