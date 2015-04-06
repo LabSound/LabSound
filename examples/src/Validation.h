@@ -15,7 +15,6 @@ struct ValidationApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
         
         auto context = LabSound::init();
@@ -41,12 +40,12 @@ struct ValidationApp : public LabSoundExampleApp
             limiter->gain()->setValue(0.5f);
             sinOsc->connect(context.get(), limiter.get(), 0, 0, ec); // Connect sinOsc to gain
             triOsc->connect(context.get(), limiter.get(), 0, 0, ec); // Connect triOsc to gain
-            megaSuperSaw->connect(context.get(), limiter.get(), 0, 0, ec); // Connect megaSuperSaw to gain
+            //megaSuperSaw->connect(context.get(), limiter.get(), 0, 0, ec); // Connect megaSuperSaw to gain
             
             limiter->connect(context.get(), context->destination().get(), 0, 0, ec); // connect gain to DAC
             panner->connect(context.get(), context->destination().get(), 0, 0, ec);  // connect panner to DAC
             
-            megaSuperSaw->noteOn(0);
+            //megaSuperSaw->noteOn(0);
             
             sinOsc->setType(r, 0, ec);
             sinOsc->start(1);
