@@ -20,10 +20,7 @@ namespace LabSound
     public:
 
         SupersawNode(ContextRenderLock& r, float sampleRate);
-        virtual ~SupersawNode() 
-		{
-			delete internalNode;
-		}
+        virtual ~SupersawNode();
         
 		std::shared_ptr<AudioParam> attack() const;
 		std::shared_ptr<AudioParam> decay() const;

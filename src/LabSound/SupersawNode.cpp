@@ -126,6 +126,12 @@ namespace LabSound
         initialize();
     }
 
+	SupersawNode::~SupersawNode()
+	{
+		delete internalNode;
+		uninitialize();
+	}
+
     void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess) 
 	{
         internalNode->update(r.contextPtr());
