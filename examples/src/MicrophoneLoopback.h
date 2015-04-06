@@ -1,26 +1,21 @@
-#include "LabSound.h"
-#include "LabSoundIncludes.h"
-#include <chrono>
-#include <thread>
+#include "ExampleBaseApp.h"
 
-using namespace LabSound;
-
-int main(int, char**)
+struct MicrophoneLoopbackApp : public LabSoundExampleApp
 {
-    ExceptionCode ec;
-    
-    auto context = LabSound::init();
-    std::shared_ptr<MediaStreamAudioSourceNode> input;
-
+    void PlayExample()
     {
-        ContextGraphLock g(context, "live echo");
-        ContextRenderLock r(context, "live echo");
-        input = context->createMediaStreamSource(g, r);
-        input->connect(context.get(), context->destination().get(), 0, 0, ec);
+        auto context = LabSound::init();
+        std::shared_ptr<MediaStreamAudioSourceNode> input;
+        
+        {
+            ContextGraphLock g(context, "Mic Loopback");
+            ContextRenderLock r(context, "Mic Loopback");
+            
+            input = context->createMediaStreamSource(g, r);
+            input->connect(context.get(), context->destination().get(), 0, 0, ec);
+        }
+        
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        LabSound::finish(context);
     }
-    
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    LabSound::finish(context);
-    
-    return 0;
-}
+};

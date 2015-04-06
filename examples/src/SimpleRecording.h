@@ -1,8 +1,8 @@
-#include "ExamplesBaseApp.h"
+#include "ExampleBaseApp.h"
 
-struct SimpleRecording : public LabSoundExampleApp
+struct SimpleRecordingApp : public LabSoundExampleApp
 {
-    void PlayExample() override
+    void PlayExample()
     {
         auto context = LabSound::init();
         auto ac = context.get();
@@ -16,7 +16,7 @@ struct SimpleRecording : public LabSoundExampleApp
         {
             ContextGraphLock g(context, "tone and sample");
             ContextRenderLock r(context, "tone and sample");
-            oscillator = make_shared<OscillatorNode>(r, context->sampleRate());
+            oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             oscillator->connect(ac, context->destination().get(), 0, 0, ec);
             oscillator->connect(ac, recorder.get(), 0, 0, ec);
             oscillator->start(0);
@@ -31,7 +31,7 @@ struct SimpleRecording : public LabSoundExampleApp
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-
+        
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
         std::vector<float> data;

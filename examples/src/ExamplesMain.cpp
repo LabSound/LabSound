@@ -1,14 +1,30 @@
 #include "ExampleBaseApp.h"
+
 #include "Simple.h"
 #include "SimpleRecording.h"
+#include "ConvolutionReverb.h"
+#include "Rhythm.h"
+#include "RhythmAndFilters.h"
+#include "PeakCompressor.h"
+#include "MicrophoneDalek.h"
+#include "MicrophoneLoopback.h"
+#include "MicrophoneReverb.h"
+#include "Spatialization.h"
+
+SimpleApp g_simpleExample;
+SimpleRecordingApp g_simpleRecordingExample;
+RhythmApp g_rhythm;
+RhythmAndFiltersApp g_rhythmAndFilters;
+PeakCompressorApp g_peakCompressor;
+MicrophoneDalekApp g_micrphoneDalek;
+MicrophoneLoopbackApp g_microphoneLoopback;
+MicrophoneReverbApp g_microphoneReverb;
+SpatializationApp g_spatialization;
 
 int main (int argc, char *argv[])
 {
     
-    SimpleExample mySimpleExample;
-    SimpleRecording mySimpleRecordingExample;
-    
-    mySimpleExample.PlayExample();
+    g_simpleExample.PlayExample();
     
     return 0;
 }

@@ -1,8 +1,8 @@
 #include "ExampleBaseApp.h"
 
-struct SimpleExample : public LabSoundExampleApp
+struct SimpleApp : public LabSoundExampleApp
 {
-    void PlayExample() override
+    void PlayExample()
     {
         auto context = LabSound::init();
         
