@@ -3,7 +3,12 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wconstant_conversion"
 #pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
 #pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
+
+#if defined(_MSC_VER)
+#pragma warning (disable: 181 111 4267 4996 4244 4701 4702 4133 4100 4127 4206 4312 4505 4365 4005 4013 4334)
 #endif
 
 #include "ADSR.cpp"
@@ -83,3 +88,7 @@
 #include "VoicForm.cpp"
 #include "Whistle.cpp"
 #include "Wurley.cpp"
+
+#if defined (__clang__)
+    #pragma clang diagnostic pop
+#endif
