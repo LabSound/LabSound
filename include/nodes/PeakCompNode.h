@@ -56,6 +56,7 @@ namespace LabSound
         PeakCompNodeInternal * internalNode; // We do not own this!
         
     public:
+
         PeakCompNode(float sampleRate);
         virtual ~PeakCompNode();
 
