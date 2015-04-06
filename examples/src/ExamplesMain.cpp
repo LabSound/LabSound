@@ -30,6 +30,6 @@ ValidationApp g_validation;
 
 int main (int argc, char *argv[])
 {
-    g_validation.PlayExample();   
+    g_micrphoneDalek.PlayExample();   
     return 0;
 }

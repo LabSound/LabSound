@@ -1,4 +1,4 @@
-//#define USE_LIVE 1
+#define USE_LIVE
 
 #include "ExampleBaseApp.h"
 
@@ -87,7 +87,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             AudioContext* ac = context.get();
             
 #ifdef USE_LIVE
-            input = ac->createMediaStreamSource(g, r, ec);
+            input = ac->createMediaStreamSource(g, r);
             input->connect(ac, vcInverter1.get(), 0, 0, ec);
             input->connect(ac, vcDiode4->node().get(), 0, 0, ec);
 #else
