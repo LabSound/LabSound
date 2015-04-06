@@ -19,14 +19,12 @@ namespace LabSound
     std::thread g_GraphUpdateThread;
 
     std::shared_ptr<LabSound::AudioContext> mainContext;
-
-    std::atomic<bool> runGraphUpdate;
     
     const int update_rate_ms = 10;
 
     void UpdateGraph()
 	{
-        while (runGraphUpdate)
+        while (true)
 		{
             std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
             if (mainContext) 
@@ -39,7 +37,6 @@ namespace LabSound
             }
             else 
 			{
-                // thread is finished
                 break;
             }
         }
@@ -48,22 +45,16 @@ namespace LabSound
     
     std::shared_ptr<LabSound::AudioContext> init() 
 	{
-        
         LOG("Initialize Context");
         
-        runGraphUpdate = true;
-        
         // Create an audio context object with the default audio destination
-        ExceptionCode ec;
-        mainContext = LabSound::AudioContext::create(ec);
+        mainContext = std::make_shared<LabSound::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(mainContext));
         mainContext->initHRTFDatabase();
         mainContext->lazyInitialize();
 
         g_GraphUpdateThread = std::thread(UpdateGraph);
 
-		//g_GraphUpdateThread.detach();
-        
         return mainContext;
     }
 
@@ -71,26 +62,25 @@ namespace LabSound
     void finish(std::shared_ptr<LabSound::AudioContext> context) 
 	{
         LOG("Finish Context");
-        
-		runGraphUpdate = false;
 
-        mainContext.reset(); // -> -1 to the use_count
+		// Invalidate local shared_ptr
+        mainContext.reset();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms * 2));
+		// Join update thread
+		if (g_GraphUpdateThread.joinable()) g_GraphUpdateThread.join();
         
-        for (int i = 0; i < 10; ++i) 
+        for (int i = 0; i < 4; ++i) 
 		{
             ContextGraphLock g(context, "LabSound::finish");
 
             if (!g.context()) 
 			{
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::milliseconds(5));
             }
             else 
 			{
+				// Stop now calls deleteMarkedNodes() and uninitialize()
                 context->stop(g);
-                context->deleteMarkedNodes();
-                context->uninitialize(g);
                 return;
             }
         }

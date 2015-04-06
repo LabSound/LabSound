@@ -72,7 +72,6 @@ OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
 
 OscillatorNode::~OscillatorNode()
 {
-	printf("Releasing oscillator node\n");
     uninitialize();
 }
 

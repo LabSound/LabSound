@@ -50,7 +50,7 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
 {
-    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels());
+    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
 
     m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
     m_actualDestinationBus = m_internalBus.get();
@@ -60,7 +60,7 @@ void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberO
 {
     if (m_numberOfChannels != numberOfChannels) {
         ASSERT(r.context());
-        ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels());
+        ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
         m_desiredNumberOfChannels = numberOfChannels;
     }
 }

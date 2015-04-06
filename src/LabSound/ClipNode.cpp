@@ -16,34 +16,32 @@
 #include <vector>
 
 using namespace WebCore;
-using namespace WebCore::VectorMath;
-using namespace std;
 
 namespace LabSound {
 
+    /////////////////////////////////////
+    // Prviate ClipNode Implementation //
+    /////////////////////////////////////
+    
     class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        ClipNodeInternal(float sampleRate)
-        : AudioProcessor(sampleRate)
-        , numChannels(1)
-        , mode(ClipNode::CLIP)
+        ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1), mode(ClipNode::CLIP)
         {
-            aVal = make_shared<AudioParam>("a", -1.0, -FLT_MAX, FLT_MAX);
-            bVal = make_shared<AudioParam>("b",  1.0, -FLT_MAX, FLT_MAX);
+            auto fMax = std::numeric_limits<float>::max();
+            aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
+            bVal = std::make_shared<AudioParam>("b",  1.0, -fMax, fMax);
         }
 
-        virtual ~ClipNodeInternal() {}
+        virtual ~ClipNodeInternal() { }
 
-        // AudioProcessor interface
-        virtual void initialize() {
-        }
+        virtual void initialize() { }
 
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r,
-                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
+        {
             if (!numChannels)
                 return;
 
@@ -55,39 +53,55 @@ namespace LabSound {
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
-            if (mode == ClipNode::TANH) {
+            if (mode == ClipNode::TANH)
+            {
                 float outputGain = aVal->value(r.contextPtr());
                 float inputGain = bVal->value(r.contextPtr());
-                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                
+                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+                {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
-                    float* destination = destinationBus->channel(channelIndex)->mutableData();
-                    for (size_t i = 0; i < framesToProcess; ++i) {
+                    
+                    float * destination = destinationBus->channel(channelIndex)->mutableData();
+                    for (size_t i = 0; i < framesToProcess; ++i)
+                    {
                         *destination++ = outputGain * tanhf(inputGain * source[i]);
                     }
                 }
             }
-            else {
+            
+            else
+            {
                 float minf = aVal->value(r.contextPtr());
                 float maxf = bVal->value(r.contextPtr());
-                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+                
+                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+                {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
-                    float* destination = destinationBus->channel(channelIndex)->mutableData();
-                    for (size_t i = 0; i < framesToProcess; ++i) {
+                    
+                    float * destination = destinationBus->channel(channelIndex)->mutableData();
+                    
+                    for (size_t i = 0; i < framesToProcess; ++i)
+                    {
                         float d = source[i];
-                        if (d < minf) d = minf;
-                        else if (d > maxf) d = maxf;
+                        
+                        if (d < minf)
+                            d = minf;
+                        else if (d > maxf)
+                            d = maxf;
+                        
                         *destination++ = d;
                     }
                 }
             }
         }
 
-        // Resets filter state
         virtual void reset() { }
 
-        virtual void setNumberOfChannels(unsigned i) {
+        virtual void setNumberOfChannels(unsigned i)
+        {
             numChannels = i;
         }
 
@@ -95,42 +109,46 @@ namespace LabSound {
         virtual double latencyTime() const override { return 0; }
 
         unsigned int numChannels;
+        
         ClipNode::Mode mode;
+        
 		std::shared_ptr<AudioParam> aVal;
 		std::shared_ptr<AudioParam> bVal;
-        vector<float> gainValues;
+        
+        std::vector<float> gainValues;
     };
 
-    ClipNode::ClipNode(float sampleRate)
-    : WebCore::AudioBasicProcessorNode(sampleRate)
-    , data(new ClipNodeInternal(sampleRate))
+    /////////////////////
+    // Public ClipNode //
+    /////////////////////
+    
+    ClipNode::ClipNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
     {
-        m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
-
+        m_processor.reset(new ClipNodeInternal(sampleRate));
+        
+        internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
+        
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeClip);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));
 
         initialize();
     }
     
-    ClipNode::~ClipNode() {
-        data->numChannels = 0;  // ensure there if there is a latent callback pending, pd is not invoked
-        //delete data; // not deleting it because the unique_ptr will take care of that
-        data = 0;
+    ClipNode::~ClipNode()
+    {
+        internalNode->numChannels = 0;
         uninitialize();
     }
 
-    void ClipNode::setMode(Mode m) {
-        data->mode = m;
+    void ClipNode::setMode(Mode m)
+    {
+        internalNode->mode = m;
     }
 
-    std::shared_ptr<AudioParam> ClipNode::aVal() { return data->aVal; }
-    std::shared_ptr<AudioParam> ClipNode::bVal() { return data->bVal; }
+    std::shared_ptr<AudioParam> ClipNode::aVal() { return internalNode->aVal; }
+    std::shared_ptr<AudioParam> ClipNode::bVal() { return internalNode->bVal; }
 
-
-
-
-} // LabSound
+} // end namespace LabSound
 

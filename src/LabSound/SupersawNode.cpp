@@ -36,7 +36,6 @@ namespace LabSound {
         {
         }
 
-        
         void update(std::shared_ptr<AudioContext> c) {
             if (cachedFrequency != frequency->value(c)) {
                 cachedFrequency = frequency->value(c);
@@ -54,7 +53,6 @@ namespace LabSound {
                 }
             }
         }
-        
         
         void update(ContextRenderLock& r, bool okayToReallocate) {
             std::shared_ptr<AudioContext> c = r.contextPtr();
@@ -83,7 +81,7 @@ namespace LabSound {
                 cachedDetune = FLT_MAX;
             }
             
-            //update(g.contextPtr());
+            update(r.contextPtr());
         }
 
         SupersawNode* self;

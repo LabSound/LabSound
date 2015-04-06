@@ -46,51 +46,49 @@
 #include <vector>
 
 using namespace WebCore;
-using namespace WebCore::VectorMath;
-using namespace LabSound;
-using namespace std;
 
-namespace LabSound {
+namespace LabSound
+{
 
-
-    class PeakCompNode::PeakCompNodeInternal : public WebCore::AudioProcessor {
+    /////////////////////////////////////////
+    // Prviate PeakCompNode Implementation //
+    /////////////////////////////////////////
+    
+    class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
+    {
+        
     public:
 
-        PeakCompNodeInternal(float sampleRate)
-        : AudioProcessor(sampleRate)
-        , numChannels(1)
+        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1)
         {
-            m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);   // db
-            m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);   // default 1:1
-            m_attack = std::make_shared<AudioParam>("attack",   0.001f,  0, 1000);   // attack in ms
-            m_release = std::make_shared<AudioParam>("release", 0.001f, 0, 1000);   // release in ms
-            m_makeup = std::make_shared<AudioParam>("makeup", 0, 0, 60);   // makeup gain, in db
-            m_knee = std::make_shared<AudioParam>("knee", 0, 0, 1);   // knee smoothing, 0 = hard, 1 = smooth. Default is 0
-
-            // Initialise parameters
-
-            for (int i = 0; i < 2; i++) {
+            m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);
+            m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);
+            m_attack = std::make_shared<AudioParam>("attack",   0.001f,  0, 1000);
+            m_release = std::make_shared<AudioParam>("release", 0.001f, 0, 1000);
+            m_makeup = std::make_shared<AudioParam>("makeup", 0, 0, 60);
+            m_knee = std::make_shared<AudioParam>("knee", 0, 0, 1);
+            
+            for (int i = 0; i < 2; i++)
+            {
                 kneeRecursive[i] = 0.f;
                 attackRecursive[i] = 0.f;
                 releaseRecursive[i] = 0.f;
             }
 
             // Get sample rate
-            fFs = sampleRate;
-            onebyfFS = 1.0f / fFs;
+            internalSampleRate = sampleRate;
+            oneOverSampleRate = 1.0f / sampleRate;
         }
 
-        virtual ~PeakCompNodeInternal() {
-        }
-
-        // AudioProcessor interface
-        virtual void initialize() {
-        }
+        virtual ~PeakCompNodeInternal() { }
+        
+        virtual void initialize() { }
 
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) {
+        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
+        {
             if (!numChannels)
                 return;
 
@@ -138,74 +136,86 @@ namespace LabSound {
             }
 
             // calc coefficients from run time vars
-            kneeCoeffs = expf(0.f - (onebyfFS / knee));
+            kneeCoeffs = expf(0.f - (oneOverSampleRate / knee));
             kneeCoeffsMinus = 1.f - kneeCoeffs;
-            attackCoeffs = expf(0.f - (onebyfFS / attack));
+            
+            attackCoeffs = expf(0.f - (oneOverSampleRate / attack));
             attackCoeffsMinus = 1.f - attackCoeffs;
-            releaseCoeff = expf(0.f - (onebyfFS / release));
+            
+            releaseCoeff = expf(0.f - (oneOverSampleRate / release));
             releaseCoeffMinus = 1.f - releaseCoeff;
 
             // Handle both the 1 -> N and N -> N case here.
-            const float* source[16];
-            for (unsigned int i = 0; i < numChannels; ++i) {
+            const float * source[16];
+            for (unsigned int i = 0; i < numChannels; ++i)
+            {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source[i] = sourceBus->channel(i)->data();
                 else
                     source[i] = sourceBus->channel(0)->data();
             }
-            float* dest[16];
+            
+            float * dest[16];
             for (unsigned int i = 0; i < numChannels; ++i)
                 dest[i] = destinationBus->channel(i)->mutableData();
 
-            for (size_t i = 0; i < framesToProcess; ++i) {
+            for (size_t i = 0; i < framesToProcess; ++i)
+            {
                 float peakEnv = 0;
-                for (unsigned int j = 0; j < numChannels; ++j) {
+                for (unsigned int j = 0; j < numChannels; ++j)
+                {
                     peakEnv += source[j][i];
                 }
-                //release recursive
+                // Release recursive
                 releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, releaseRecursive[1]));
-                //attack recursive
+                
+                // Attack recursive
                 attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
-                //knee smoothening and gain reduction
+                
+                // Knee smoothening and gain reduction
                 kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.f), 0.f)) + (kneeCoeffs * kneeRecursive[1]);
 
-                for (unsigned int j = 0; j < numChannels; ++j) {
+                for (unsigned int j = 0; j < numChannels; ++j)
+                {
                     dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;
                 }
             }
+            
             releaseRecursive[1] = releaseRecursive[0];
             attackRecursive[1] = attackRecursive[0];
             kneeRecursive[1] = kneeRecursive[0];
         }
 
-
-        double		f_float2Sig;		// Dummy variable for conversion of floats in inlet to signals
-        float		fFs;				// Sample rate
-
+        float		internalSampleRate;
+        float 		oneOverSampleRate;
+        
         // Arrays for delay lines
         float 		kneeRecursive[2];
         float 		attackRecursive[2];
         float 		releaseRecursive[2];
 
-        // Values
         float 		attack;
         float 		release;
         float 		ratio;
         float 		threshold;
+        
         float 		knee;
         float 		kneeCoeffs;
         float 		kneeCoeffsMinus;
+        
         float 		attackCoeffs;
         float 		attackCoeffsMinus;
+        
         float 		releaseCoeff;
         float 		releaseCoeffMinus;
-        float 		onebyfFS;           // one over sample rate
+
         float 		makeupGain;
 
         // Resets filter state
-        virtual void reset() { }
+        virtual void reset() { /* @tofix */ }
 
-        virtual void setNumberOfChannels(unsigned i) {
+        virtual void setNumberOfChannels(unsigned i)
+        {
             if (i > 16)
                 numChannels = 16;
             else
@@ -225,19 +235,23 @@ namespace LabSound {
 		std::shared_ptr<AudioParam> m_knee;
     };
 
-    std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return data->m_threshold; }
-    std::shared_ptr<AudioParam> PeakCompNode::ratio() const { return data->m_ratio; }
-    std::shared_ptr<AudioParam> PeakCompNode::attack() const { return data->m_attack; }
-    std::shared_ptr<AudioParam> PeakCompNode::release() const { return data->m_release; }
-    std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return data->m_makeup; }
-    std::shared_ptr<AudioParam> PeakCompNode::knee() const { return data->m_knee; }
-
-    PeakCompNode::PeakCompNode(float sampleRate)
-    : WebCore::AudioBasicProcessorNode(sampleRate)
-    , data(new PeakCompNodeInternal(sampleRate))
+    std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return internalNode->m_threshold; }
+    std::shared_ptr<AudioParam> PeakCompNode::ratio() const { return internalNode->m_ratio; }
+    std::shared_ptr<AudioParam> PeakCompNode::attack() const { return internalNode->m_attack; }
+    std::shared_ptr<AudioParam> PeakCompNode::release() const { return internalNode->m_release; }
+    std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return internalNode->m_makeup; }
+    std::shared_ptr<AudioParam> PeakCompNode::knee() const { return internalNode->m_knee; }
+    
+    /////////////////////////
+    // Public PeakCompNode //
+    /////////////////////////
+    
+    PeakCompNode::PeakCompNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
     {
-        m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
+        m_processor.reset(new PeakCompNodeInternal(sampleRate));
 
+        internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
+        
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePeakComp);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
@@ -246,10 +260,9 @@ namespace LabSound {
         initialize();
     }
     
-    PeakCompNode::~PeakCompNode() {
-        data->numChannels = 0;
-        delete data;
-        data = 0;
+    PeakCompNode::~PeakCompNode()
+    {
+        internalNode->numChannels = 0;
         uninitialize();
     }
     

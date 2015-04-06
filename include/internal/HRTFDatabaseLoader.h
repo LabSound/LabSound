@@ -86,7 +86,7 @@ private:
 
     // Holding a m_threadLock is required when accessing m_databaseLoaderThread.
     std::mutex m_threadLock;
-    std::thread* m_databaseLoaderThread;
+    std::thread m_databaseLoaderThread;
     std::condition_variable m_loadingCondition;
     bool m_loading;
 

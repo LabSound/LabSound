@@ -23,7 +23,6 @@ namespace LabSound {
         NodeTypeMediaElementAudioSource,
         NodeTypeMediaStreamAudioDestination,
         NodeTypeMediaStreamAudioSource,
-        NodeTypeJavaScript,
         NodeTypeBiquadFilter,
         NodeTypePanner,
         NodeTypeConvolver,

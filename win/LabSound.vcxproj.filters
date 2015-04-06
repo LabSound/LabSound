@@ -22,9 +22,6 @@
     <Filter Include="LabSound\third_party\WTF\wtf">
       <UniqueIdentifier>{A6315907-33E4-CB49-ADB9-7A2988D844E4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\third_party\WTF\wtf\src">
-      <UniqueIdentifier>{15d923c9-74a2-498d-9431-c8493ff49436}</UniqueIdentifier>
-    </Filter>
     <Filter Include="LabSound\third_party\WTF\wtf\include">
       <UniqueIdentifier>{833c7173-3de2-4043-992b-211417964cdc}</UniqueIdentifier>
     </Filter>
@@ -107,9 +104,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\kissfft\kiss_fft.hpp">
-      <Filter>LabSound\third_party\kissfft\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\platform\audio\HRTFDatabaseLoader.h">
       <Filter>LabSound\API\core\src</Filter>
     </ClInclude>
@@ -548,16 +542,10 @@
     <ClInclude Include="..\include\third_party\WTF\CPU.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\CurrentTime.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\ExportMacros.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MathExtras.h">
-      <Filter>LabSound\third_party\WTF\wtf\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\third_party\WTF\MediaTime.h">
       <Filter>LabSound\third_party\WTF\wtf\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\third_party\WTF\MessageQueue.h">
@@ -777,9 +765,6 @@
     </ClCompile>
     <ClCompile Include="..\src\kissfft\kiss_fftr.cpp">
       <Filter>LabSound\third_party\kissfft\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\WTF\wtf\CurrentTime.cpp">
-      <Filter>LabSound\third_party\WTF\wtf\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\platform\audio\AudioBus.cpp">
       <Filter>LabSound\API\core\src</Filter>

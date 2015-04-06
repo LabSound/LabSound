@@ -123,8 +123,6 @@ private:
     float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue, float* values, unsigned numberOfValues, double sampleRate, double controlRate);
 
     std::vector<ParamEvent> m_events;
-
-    std::mutex m_eventsLock;
 };
 
 } // namespace WebCore

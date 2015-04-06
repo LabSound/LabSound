@@ -37,50 +37,40 @@
 #include "VectorMath.h"
 #include "AudioNode.h"
 
-namespace WebCore {
-
-// DirectSound needs a larger buffer than 128. This number also needs 
-// to be changed in AudioNode.h where ProcessingSizeInFrames = 1024;
+namespace WebCore
+{
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
-    
-// Factory method - Windows-implementation
-AudioDestination * AudioDestination::create(AudioIOCallback& callback, float sampleRate) 
+
+AudioDestination * AudioDestination::create(AudioIOCallback& callback, float sampleRate)
 {
-    return new AudioDestinationWin(callback, sampleRate);
+	return new AudioDestinationWin(callback, sampleRate);
 }
 
-float AudioDestination::hardwareSampleRate() {
-
+float AudioDestination::hardwareSampleRate()
+{
 	// Danger: default to 44100
 	return 44100;
-
 }
 
-AudioDestinationWin::AudioDestinationWin(AudioIOCallback& callback, float sampleRate) :
-	m_callback(callback), 
-	m_renderBus(2, AudioNode::ProcessingSizeInFrames, false), 
-	m_sampleRate(sampleRate), 
-	m_isPlaying(false) {
-
-	printf("\nInitializing RtAudio Subsystem @ %f \n", sampleRate);
-
+AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, float sampleRate) : m_callback(callback)
+{
+	m_sampleRate = sampleRate;
 	m_renderBus.setSampleRate(hardwareSampleRate());
-
-    configure();
-
+	configure();
 }
 
-AudioDestinationWin::~AudioDestinationWin() {
-
-	if ( dac.isStreamOpen() ) dac.closeStream();
-
+AudioDestinationWin::~AudioDestinationWin()
+{
+	if (dac.isStreamOpen())
+		dac.closeStream();
 }
 
-void AudioDestinationWin::configure() {
-
-	if ( dac.getDeviceCount() < 1 ) {
+void AudioDestinationWin::configure()
+{
+	if (dac.getDeviceCount() < 1)
+	{
 		std::cout << "\nNo audio devices found!\n";
 	}
 
@@ -96,80 +86,76 @@ void AudioDestinationWin::configure() {
 
 	RtAudio::StreamOptions options;
 	options.flags |= RTAUDIO_NONINTERLEAVED;
-	//options.numberOfBuffers = 2; 
 
-	try {
+	try
+	{
 		dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
-		printf("\nRTAudio Stream Opened!\n"); 
-	} catch (RtAudioError & e) {
+	}
+	catch (RtAudioError & e)
+	{
 		e.printMessage();
 	}
-
 }
 
 
-void AudioDestinationWin::start() {
-	
-	try {
+void AudioDestinationWin::start()
+{
+	try
+	{
 		dac.startStream();
 		m_isPlaying = true;
-	} catch (RtAudioError & e) {
-		m_isPlaying = false; 
+	}
+	catch (RtAudioError & e)
+	{
 		e.printMessage();
 	}
-
 }
 
-void AudioDestinationWin::stop() {
-
-	try {
+void AudioDestinationWin::stop()
+{
+	try
+	{
 		dac.stopStream();
 		m_isPlaying = false;
 	}
-	catch (RtAudioError & e) {
-		m_isPlaying = true; 
+	catch (RtAudioError & e)
+	{
 		e.printMessage();
 	}
-
 }
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *inputBuffer) {
-
+void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *inputBuffer)
+{
 	float *myOutputBufferOfFloats = (float*) outputBuffer;
 
 	// Tells the given channel to use an externally allocated buffer (rtAudio's)
-	 m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
-	 m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
-	 		
-	// Source Bus :: Destination Bus (no source/input) 
+	m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
+	m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+
+	// Source Bus :: Destination Bus (no source/input)
 	m_callback.render(0, &m_renderBus, numberOfFrames);
 
 	// Clamp values at 0db (i.e., [-1.0, 1.0])
-    for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i) {
-        AudioChannel* channel = m_renderBus.channel(i);
-        VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
-    }
-
+	for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
+	{
+		AudioChannel* channel = m_renderBus.channel(i);
+		VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
+	}
 }
 
-// RTAudio callback ticks and asks for some output... 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ) {
-
-	// printf("%u \n", status); 
-	
+int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
+{
 	float *fBufOut = (float*) outputBuffer;
 
-	// Buffer is nBufferFrames * channels 
+	// Buffer is nBufferFrames * channels
 	memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationWin* audioOutput = static_cast<AudioDestinationWin*>(userData);
+	AudioDestinationWin* audioOutput = static_cast<AudioDestinationWin*>(userData);
 
-	// Get some audio output
-    audioOutput->render(nBufferFrames, fBufOut, inputBuffer);
+	audioOutput->render(nBufferFrames, fBufOut, inputBuffer);
 
-	return 0; 
-
+	return 0;
 }
 
 } // namespace WebCore

@@ -6,7 +6,7 @@
 using namespace LabSound;
 using namespace std;
 
-//#define USE_LIVE
+//#define USE_LIVE 1
 
 // Send live audio to a Dalek filter, constructed according to
 // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
@@ -61,7 +61,7 @@ int main(int, char**)
         
         // Now we create the objects on the Vc side of the graph
 #ifndef USE_LIVE
-        player = sample.create(g,r, sampleRate);
+        player = sample.create(r, sampleRate);
         if (!player) {
             std::cerr << "Sample buffer wasn't loaded" << std::endl;
             return 1;

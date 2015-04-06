@@ -30,6 +30,7 @@
 #define AudioDestinationWin_h
 
 #include "AudioBus.h"
+#include "AudioNode.h"
 #include "AudioDestination.h"
 #include "rtaudio\RtAudio.h"
 #include <iostream>
@@ -56,11 +57,11 @@ private:
 
     void configure();
 
-    AudioIOCallback& m_callback;
-    AudioBus m_renderBus;
+    AudioIOCallback & m_callback;
+	AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
-    bool m_isPlaying;
+    bool m_isPlaying = false;;
 
 	RtAudio dac;
 

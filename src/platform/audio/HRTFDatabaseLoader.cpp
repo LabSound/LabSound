@@ -47,10 +47,7 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronou
     return s_loader;
 }
 
-HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate)
-: m_databaseSampleRate(sampleRate)
-, m_databaseLoaderThread(nullptr)
-, m_loading(false)
+HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate) : m_databaseSampleRate(sampleRate), m_loading(false)
 {
     ASSERT(!s_loader.get());
 }
@@ -58,10 +55,13 @@ HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate)
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
 {
     waitForLoaderThreadCompletion();
-    delete m_databaseLoaderThread;
+    
+    if (m_databaseLoaderThread.joinable()) m_databaseLoaderThread.join();
+
     m_hrtfDatabase.reset();
     
     ASSERT(this == s_loader.get());
+    
     s_loader.reset();
 }
 
@@ -91,9 +91,9 @@ void HRTFDatabaseLoader::loadAsynchronously()
 {
     std::unique_lock<std::mutex> lock(m_threadLock);
     
-    if (!m_hrtfDatabase.get() && !m_loading) {
-        // Start the asynchronous database loading process.
-        m_databaseLoaderThread = new std::thread(databaseLoaderEntry, this);
+    if (!m_hrtfDatabase.get() && !m_loading)
+    {
+        m_databaseLoaderThread = std::thread(databaseLoaderEntry, this);
     }
 }
 

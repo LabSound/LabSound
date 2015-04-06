@@ -86,7 +86,6 @@ void OfflineAudioDestinationNode::startRendering()
 
 void OfflineAudioDestinationNode::offlineRender()
 {
-
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
@@ -149,7 +148,7 @@ void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)
 
 void OfflineAudioDestinationNode::notifyComplete()
 {
-    m_context->fireCompletionEvent();
+	if (m_context->renderingCompletedEvent) m_context->renderingCompletedEvent(); 
 }
 
 } // namespace WebCore
