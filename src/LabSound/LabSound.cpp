@@ -22,7 +22,7 @@ namespace LabSound
     
     const int update_rate_ms = 10;
 
-    void UpdateGraph()
+    static void UpdateGraph()
 	{
         while (true)
 		{
