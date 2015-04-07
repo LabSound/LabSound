@@ -28,6 +28,7 @@
 #include "AudioContext.h"
 #include "AudioContextLock.h"
 #include "AudioNodeOutput.h"
+#include "AudioNodeInput.h"
 #include "AudioUtilities.h"
 #include "VectorMath.h"
 #include "WaveTable.h"
@@ -57,13 +58,14 @@ OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
 
     // Use musical pitch standard A440 as a default.
     m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
+    
     // Default to no detuning.
     m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
 
     // Sets up default wavetable.
     ExceptionCode ec;
     setType(r, m_type, ec);
-
+    
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 

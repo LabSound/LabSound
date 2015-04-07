@@ -169,7 +169,7 @@ void AudioNode::connect(AudioContext* context,
         ec = INDEX_SIZE_ERR;
         return;
     }
-
+    
     if (destination && inputIndex >= destination->numberOfInputs()) {
         ec = INDEX_SIZE_ERR;
         return;

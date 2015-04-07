@@ -37,7 +37,7 @@ GainNode::GainNode(float sampleRate)
     , m_lastGain(1.0)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
 {
-    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
+    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0); // Semi-danger, gain can exceed 1
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
