@@ -8,13 +8,10 @@ struct InfiniteFMApp : public LabSoundExampleApp
         
         std::shared_ptr<OscillatorNode> carrier;
         std::shared_ptr<GainNode> carrierGain;
-        
         std::shared_ptr<OscillatorNode> modulator;
-        std::shared_ptr<GainNode> gain;
         std::shared_ptr<ADSRNode> trigger;
         
-        std::shared_ptr<GainNode> feedbackGain;
-        std::shared_ptr<DelayNode> chainDelay;
+        std::shared_ptr<GainNode> blackhole;
         
         {
             ContextGraphLock g(context, "Infinite FM");
@@ -22,35 +19,39 @@ struct InfiniteFMApp : public LabSoundExampleApp
             
             carrier = std::make_shared<OscillatorNode>(r, context->sampleRate());
             carrier->setType(r, 0, ec);
+            carrier->frequency()->setValue(100);
             carrier->start(0);
             
             carrierGain = std::make_shared<GainNode>(context->sampleRate());
-            carrierGain->gain()->setValue(0.0f);
+            carrierGain->gain()->setValue(30.0f);
+            
+            blackhole = std::make_shared<GainNode>(context->sampleRate());
+            blackhole->gain()->setValue(0.0f);
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             modulator->setType(r, 0, ec);
             modulator->start(0);
             
-            gain = std::make_shared<GainNode>(context->sampleRate());
-            gain->gain()->setValue(1.0f);
-            
-            feedbackGain = std::make_shared<GainNode>(context->sampleRate());
-            feedbackGain->gain()->setValue(1.0f);
-            
             trigger = std::make_shared<ADSRNode>(context->sampleRate());
             trigger->set(10, 5, 30, 1, 20);
-            
-            chainDelay = std::make_shared<DelayNode>(context->sampleRate(), 16.f, ec);
-            
+
             // Set up processing chain
+            carrier->connect(context.get(), carrierGain.get(), 0, 0, ec);
+            carrierGain->connect(modulator->frequency(), 0, ec); // I don't think this works...
+            modulator->connect(context.get(), context->destination().get(), 0, 0, ec);
             
+            /*
             // carrier => carrier(gain) => modulator => adsr => g
             carrier->connect(context.get(), carrierGain.get(), 0, 0, ec);
-            carrier->connect(modulator->frequency(), 0, ec); // this is supposed to work!
+            carrier->connect(modulator->frequency(), 0, ec); // I don't think this works...
+            
+            carrierGain->connect(context.get(), modulator.get(), 0, 0, ec);
+            
             modulator->connect(context.get(), trigger.get(), 0, 0, ec);
             trigger->connect(context.get(), context->destination().get(), 0, 0, ec);
             
-            carrierGain->connect(context.get(), context->destination().get(), 0, 0, ec);
+            carrierGain->connect(context.get(), blackhole.get(), 0, 0, ec);
+            blackhole->connect(context.get(), context->destination().get(), 0, 0, ec);
             
             // feedback chain: g => feedback gain => delay
             //gain->connect(context.get(), feedbackGain.get(), 0, 0, ec);
@@ -58,6 +59,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
             
             // g => dac
             //gain->connect(context.get(), context->destination().get(), 0, 0, ec);
+             */
             
         }
         
@@ -66,16 +68,17 @@ struct InfiniteFMApp : public LabSoundExampleApp
         {
             
             trigger->noteOn(now);
-            
-            carrier->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
-            carrierGain->gain()->setValue(std::uniform_int_distribution<int>(1, 4)(randomgenerator));
+
+            //carrier->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
+            //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
             
             //modulator->frequency()->setValue(carrier->frequency()->value(context));
             
-            trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 5, 30, 1, 20);
+            trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 2.5, 30, 1.0, (std::uniform_int_distribution<int>(1, 10)(randomgenerator)));
             
-            std::cout << carrier->frequency()->value(context) << std::endl;
-            std::cout << modulator->frequency()->value(context) << std::endl;
+            std::cout << carrierGain->gain()->value(context) << std::endl;
+            //std::cout << carrier->frequency()->value(context) << std::endl;
+            //std::cout << modulator->frequency()->value(context) << std::endl;
             
             //feedbackGain->gain()->setValue(std::uniform_real_distribution<float>(0.1, .98)(randomgenerator));
             //chainDelay->gain()->setValue(std::uniform_real_distribution<float>(0.1, .98)(randomgenerator));
