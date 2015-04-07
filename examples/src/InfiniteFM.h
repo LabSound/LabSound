@@ -6,60 +6,39 @@ struct InfiniteFMApp : public LabSoundExampleApp
     {
         auto context = LabSound::init();
         
-        std::shared_ptr<OscillatorNode> carrier;
-        std::shared_ptr<GainNode> carrierGain;
         std::shared_ptr<OscillatorNode> modulator;
-        std::shared_ptr<ADSRNode> trigger;
+        std::shared_ptr<GainNode> modulatorGain;
         
-        std::shared_ptr<GainNode> blackhole;
+        std::shared_ptr<OscillatorNode> osc;
+        
+        std::shared_ptr<ADSRNode> trigger;
         
         {
             ContextGraphLock g(context, "Infinite FM");
             ContextRenderLock r(context, "Infinite FM");
             
-            carrier = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            carrier->setType(r, 0, ec);
-            carrier->frequency()->setValue(100);
-            carrier->start(0);
-            
-            carrierGain = std::make_shared<GainNode>(context->sampleRate());
-            carrierGain->gain()->setValue(30.0f);
-            
-            blackhole = std::make_shared<GainNode>(context->sampleRate());
-            blackhole->gain()->setValue(0.0f);
-            
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             modulator->setType(r, 0, ec);
             modulator->start(0);
             
-            trigger = std::make_shared<ADSRNode>(context->sampleRate());
-            trigger->set(10, 5, 30, 1, 20);
+            modulatorGain = std::make_shared<GainNode>(context->sampleRate());
+            modulatorGain ->gain()->setValue(4.0f);
+            
+            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            osc->setType(r, 0, ec);
+            osc->frequency()->setValue(220);
+            osc->start(0);
+            
+            //trigger = std::make_shared<ADSRNode>(context->sampleRate());
+            //trigger->set(10, 5, 30, 1, 20);
 
             // Set up processing chain
-            carrier->connect(context.get(), carrierGain.get(), 0, 0, ec);
-            carrierGain->connect(modulator->frequency(), 0, ec); // I don't think this works...
-            modulator->connect(context.get(), context->destination().get(), 0, 0, ec);
+            modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
+            modulatorGain->connect(osc->frequency(), 0, ec); // I don't think this works...
+            osc->connect(context.get(), context->destination().get(), 0, 0, ec);
             
-            /*
-            // carrier => carrier(gain) => modulator => adsr => g
-            carrier->connect(context.get(), carrierGain.get(), 0, 0, ec);
-            carrier->connect(modulator->frequency(), 0, ec); // I don't think this works...
-            
-            carrierGain->connect(context.get(), modulator.get(), 0, 0, ec);
-            
-            modulator->connect(context.get(), trigger.get(), 0, 0, ec);
-            trigger->connect(context.get(), context->destination().get(), 0, 0, ec);
-            
-            carrierGain->connect(context.get(), blackhole.get(), 0, 0, ec);
-            blackhole->connect(context.get(), context->destination().get(), 0, 0, ec);
-            
-            // feedback chain: g => feedback gain => delay
-            //gain->connect(context.get(), feedbackGain.get(), 0, 0, ec);
-            //feedbackGain->connect(context.get(), chainDelay.get(), 0, 0, ec);
-            
-            // g => dac
-            //gain->connect(context.get(), context->destination().get(), 0, 0, ec);
-             */
+            // Shouldn't be needed... 
+            context->addAutomaticPullNode(modulatorGain);
             
         }
         
@@ -67,21 +46,15 @@ struct InfiniteFMApp : public LabSoundExampleApp
         while(true)
         {
             
-            trigger->noteOn(now);
-
+            // Debugging cruft --
             //carrier->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
             //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
+            //modulator->frequency()->setValue(carrier->frequency()->value(context))
+            //trigger->noteOn(now);
+            //trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 2.5, 30, 1.0, (std::uniform_int_distribution<int>(1, 10)(randomgenerator)));
+            // --
             
-            //modulator->frequency()->setValue(carrier->frequency()->value(context));
-            
-            trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 2.5, 30, 1.0, (std::uniform_int_distribution<int>(1, 10)(randomgenerator)));
-            
-            std::cout << carrierGain->gain()->value(context) << std::endl;
-            //std::cout << carrier->frequency()->value(context) << std::endl;
-            //std::cout << modulator->frequency()->value(context) << std::endl;
-            
-            //feedbackGain->gain()->setValue(std::uniform_real_distribution<float>(0.1, .98)(randomgenerator));
-            //chainDelay->gain()->setValue(std::uniform_real_distribution<float>(0.1, .98)(randomgenerator));
+            std::cout << modulator->frequency()->value(context) << std::endl;
             
             auto nextDelay = std::uniform_int_distribution<int>(256, 1024)(randomgenerator);
             now += nextDelay;

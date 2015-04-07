@@ -125,7 +125,7 @@ private:
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
     
-#define AUDIONODEOUTPUT_MAXINPUTS 4
+#define AUDIONODEOUTPUT_MAXINPUTS 8
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
     bool m_isEnabled;
