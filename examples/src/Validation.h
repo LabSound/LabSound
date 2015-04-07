@@ -15,6 +15,11 @@ struct ValidationApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
+        
+        auto randomFloat = std::uniform_real_distribution<float>(0, 1);
+        auto randomScaleDegree = std::uniform_int_distribution<int>(0, pentatonicMajor.size() - 1);
+        auto randomTimeIndex = std::uniform_int_distribution<int>(0, delayTimes.size() - 1);
+        
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
         
         auto context = LabSound::init();
@@ -48,13 +53,11 @@ struct ValidationApp : public LabSoundExampleApp
             //megaSuperSaw->noteOn(0);
             
             sinOsc->setType(r, 0, ec);
-            sinOsc->start(1);
+            sinOsc->start(0);
             
             triOsc->setType(r, 1, ec);
-            triOsc->start(2);
+            triOsc->start(0);
             
-            sinOsc->stop(3);
-            triOsc->stop(4);
             
             context->listener()->setPosition(0, 1, 0);
             panner->setVelocity(15, 3, 2);
@@ -64,14 +67,25 @@ struct ValidationApp : public LabSoundExampleApp
             
         }
         
-        float f = 220.f;
-        for (int s = 0; s < 4; s++)
+        
+        float elapsedTime = 0;
+        for (int s = 0; s < 48; s++)
         {
-            f *= 1.25;
-            sinOsc->frequency()->setValueAtTime(f, s);
-            triOsc->frequency()->setValueAtTime(f, s / 2);
+            int octaveOffset = 52;
+            float a = MidiToFrequency(pentatonicMajor[randomScaleDegree(randomgenerator)] + octaveOffset);
+            float b = MidiToFrequency(pentatonicMajor[randomScaleDegree(randomgenerator)] + octaveOffset);
+            
+            float delayTime = elapsedTime + (delayTimes[randomTimeIndex(randomgenerator)] / 1000.f);
+            
+            std::cout << delayTime << std::endl;
+            
+            sinOsc->frequency()->setValueAtTime(a, delayTime * 2);
+            triOsc->frequency()->setValueAtTime(b, delayTime);
+            
+            elapsedTime = delayTime;
         }
         
+        /*
         const int seconds = 2;
         float halfTime = seconds * 0.5f;
         for (float i = 0; i < seconds; i += 0.01f)
@@ -80,8 +94,9 @@ struct ValidationApp : public LabSoundExampleApp
             panner->setPosition(x, 0.1f, 0.1f);
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
+        */
         
-        std::this_thread::sleep_for(std::chrono::seconds(4));
+        std::this_thread::sleep_for(std::chrono::seconds((int)elapsedTime));
         LabSound::finish(context);
         
     }
