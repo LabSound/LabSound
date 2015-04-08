@@ -186,30 +186,30 @@ namespace LabSound
             kneeRecursive[1] = kneeRecursive[0];
         }
 
-        float		internalSampleRate;
-        float 		oneOverSampleRate;
+        float internalSampleRate;
+        float oneOverSampleRate;
         
         // Arrays for delay lines
-        float 		kneeRecursive[2];
-        float 		attackRecursive[2];
-        float 		releaseRecursive[2];
+        float kneeRecursive[2];
+        float attackRecursive[2];
+        float releaseRecursive[2];
 
-        float 		attack;
-        float 		release;
-        float 		ratio;
-        float 		threshold;
+        float attack;
+        float release;
+        float ratio;
+        float threshold;
         
-        float 		knee;
-        float 		kneeCoeffs;
-        float 		kneeCoeffsMinus;
+        float knee;
+        float kneeCoeffs;
+        float kneeCoeffsMinus;
         
-        float 		attackCoeffs;
-        float 		attackCoeffsMinus;
+        float attackCoeffs;
+        float attackCoeffsMinus;
         
-        float 		releaseCoeff;
-        float 		releaseCoeffMinus;
+        float releaseCoeff;
+        float releaseCoeffMinus;
 
-        float 		makeupGain;
+        float makeupGain;
 
         // Resets filter state
         virtual void reset() { /* @tofix */ }

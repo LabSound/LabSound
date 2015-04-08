@@ -16,39 +16,45 @@ using namespace WebCore;
 
 namespace LabSound {
 
-    class PWMNode::PWMNodeInternal : public WebCore::AudioProcessor {
+	////////////////////////////////////
+    // Private PWMNode Implementation //
+    ////////////////////////////////////
+
+    class PWMNode::PWMNodeInternal : public WebCore::AudioProcessor
+	{
+
     public:
 
-        PWMNodeInternal(float sampleRate)
-        : AudioProcessor(sampleRate)
-        , channels(1)
+        PWMNodeInternal(float sampleRate) : AudioProcessor(sampleRate), channels(1)
         {
+
         }
 
-        virtual ~PWMNodeInternal() {
-        }
+        virtual ~PWMNodeInternal() { }
 
-        // AudioProcessor interface
-        virtual void initialize() {
-        }
+        virtual void initialize() { }
 
         virtual void uninitialize() { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock&, const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
+        virtual void process(ContextRenderLock&, const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) 
+		{
             if (!channels)
                 return;
             
             const float* carrierP = source->channel(0)->data();
             const float* modP = source->channel(1)->data();
 
-            if (!modP && carrierP) {
+            if (!modP && carrierP) 
+			{
                 destination->copyFrom(*source);
             }
-            else {
+            else 
+			{
                 float* destP = destination->channel(0)->mutableData();
                 size_t n = framesToProcess;
-                while (n--) {
+                while (n--)
+				{
                     float carrier = *carrierP++;
                     float mod = *modP++;
                     *destP++ = (carrier > mod) ? 1.0f : -1.0f;
@@ -56,10 +62,10 @@ namespace LabSound {
             }
         }
 
-        // Resets filter state
         virtual void reset() { }
 
-        virtual void setNumberOfChannels(unsigned i) {
+        virtual void setNumberOfChannels(unsigned i)
+		{
             channels = i;
         }
 
@@ -69,14 +75,20 @@ namespace LabSound {
         int channels;
     };
 
+	////////////////////
+    // Public PWMNode //
+    ////////////////////
+
     PWMNode::PWMNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new PWMNodeInternal(sampleRate));
 
+		internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
+
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePWM);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); 
 
         initialize();
     }

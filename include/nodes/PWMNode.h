@@ -9,21 +9,21 @@
 #include "AudioBasicProcessorNode.h"
 #include "AudioParam.h"
 
-namespace LabSound {
+namespace LabSound 
+{
 
     // Expects two inputs.
     // input 0 is the carrier, and input 1 is the modulator.
     // If there is no modulator, then the node is a pass-through.
-
     class PWMNode : public WebCore::AudioBasicProcessorNode
     {
+		class PWMNodeInternal;
+        PWMNodeInternal * internalNode;
+
     public:
+
         PWMNode(float sampleRate);
         virtual ~PWMNode();
-
-    private:
-        class PWMNodeInternal;
-        PWMNodeInternal* data;
     };
     
 }

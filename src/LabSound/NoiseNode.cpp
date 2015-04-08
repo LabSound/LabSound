@@ -11,16 +11,10 @@ using namespace WebCore;
 
 namespace LabSound {
 
-    NoiseNode::NoiseNode(float sampleRate)
-    : AudioScheduledSourceNode(sampleRate)
-    , m_type(WHITE)
-    , whiteSeed(1489853723)
-    , lastBrown(0)
-    , pink0(0), pink1(0), pink2(0), pink3(0), pink4(0), pink5(0), pink6(0)
+    NoiseNode::NoiseNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)
     {
         setNodeType((AudioNode::NodeType) LabSound::NodeTypeNoise);
 
-        // Noise is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
         initialize();
@@ -31,9 +25,10 @@ namespace LabSound {
         uninitialize();
     }
 
-    void NoiseNode::setType(unsigned short type, ExceptionCode& ec)
+    void NoiseNode::setType(NoiseType type, ExceptionCode& ec)
     {
-        switch (type) {
+        switch (type) 
+		{
             case WHITE:
             case PINK:
             case BROWN:

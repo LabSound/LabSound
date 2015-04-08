@@ -12,36 +12,46 @@
 namespace LabSound {
 
 
-    class NoiseNode : public WebCore::AudioScheduledSourceNode {
+    class NoiseNode : public WebCore::AudioScheduledSourceNode 
+	{
+
     public:
-        // The noise type.
-        enum {
-            WHITE = 0,
-            PINK = 1,
-            BROWN = 2
+
+        enum NoiseType
+		{
+            WHITE,
+            PINK,
+            BROWN
         };
 
         NoiseNode(float sampleRate);
         virtual ~NoiseNode();
 
-        // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
         virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
 
         unsigned short type() const { return m_type; }
-        void setType(unsigned short, ExceptionCode&);
+
+        void setType(NoiseType newType, ExceptionCode&);
 
     private:
 
         virtual bool propagatesSilence(double now) const override;
 
-        // One of the noise types defined in the enum.
-        unsigned short m_type;
+        NoiseType m_type = WHITE;
 
-        uint32_t whiteSeed;
-        float lastBrown;
-        float pink0, pink1, pink2, pink3, pink4, pink5, pink6;
+        uint32_t whiteSeed = 1489853723;
+
+        float lastBrown = 0;
+
+        float pink0 = 0; 
+		float pink1 = 0;
+		float pink2 = 0;
+		float pink3 = 0;
+		float pink4 = 0;
+		float pink5 = 0;
+		float pink6 = 0;
+
     };
-
 
 }
