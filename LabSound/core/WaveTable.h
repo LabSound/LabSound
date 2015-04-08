@@ -29,13 +29,16 @@
 #ifndef WaveTable_h
 #define WaveTable_h
 
-#include "AudioArray.h"
 #include <vector>
 #include <memory>
 
-namespace WebCore {
+namespace WebCore
+{
 
-class WaveTable {
+class WaveTable 
+{
+	class AudioFloatArray;
+
 public:
     static std::unique_ptr<WaveTable> createSine(float sampleRate);
     static std::unique_ptr<WaveTable> createSquare(float sampleRate);

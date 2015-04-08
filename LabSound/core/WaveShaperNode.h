@@ -25,15 +25,15 @@
 #ifndef WaveShaperNode_h
 #define WaveShaperNode_h
 
-#include "AudioBasicProcessorNode.h"
-#include "BiquadProcessor.h"
-#include "WaveShaperProcessor.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
 
 namespace WebCore {
     
 class WaveShaperNode : public AudioBasicProcessorNode
 {
     
+	class WaveShaperProcessor;
+
     WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
     
 public:

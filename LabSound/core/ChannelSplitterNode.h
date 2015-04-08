@@ -25,7 +25,7 @@
 #ifndef ChannelSplitterNode_h
 #define ChannelSplitterNode_h
 
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
 
 namespace WebCore {
 

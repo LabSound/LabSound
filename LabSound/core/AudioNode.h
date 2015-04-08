@@ -25,8 +25,8 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include "LabSoundConfig.h"
-#include "ExceptionCodes.h"
+#include "LabSound/extended/ExceptionCodes.h"
+
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -83,9 +83,8 @@ namespace LabSound
 }
 
 namespace WebCore 
-
 {
-    
+  
     using namespace LabSound;
 
     class AudioContext;
@@ -101,14 +100,9 @@ namespace WebCore
 class AudioNode {
 public:
 
-    enum { 
-
-		#if OS(WINDOWS)
-			ProcessingSizeInFrames = 256
-		#else
-			ProcessingSizeInFrames = 128 
-		#endif
-		
+    enum 
+	{ 
+		ProcessingSizeInFrames = 256 
 	};
     
     #define AUDIONODE_MAXINPUTS 4

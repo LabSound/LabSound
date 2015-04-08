@@ -25,9 +25,8 @@
 #ifndef AudioNodeInput_h
 #define AudioNodeInput_h
 
-#include "AudioBus.h"
-#include "AudioNode.h"
-#include "AudioSummingJunction.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioSummingJunction.h"
 
 #include <set>
 
@@ -35,13 +34,16 @@ namespace WebCore {
 
 class AudioNode;
 class AudioNodeOutput;
+class AudioBus;
 
 // An AudioNodeInput represents an input to an AudioNode and can be connected from one or more AudioNodeOutputs.
 // In the case of multiple connections, the input will act as a unity-gain summing junction, mixing all the outputs.
 // The number of channels of the input's bus is the maximum of the number of channels of all its connections.
+class AudioNodeInput : public AudioSummingJunction 
+{
 
-class AudioNodeInput : public AudioSummingJunction {
 public:
+
     explicit AudioNodeInput(AudioNode*);
     virtual ~AudioNodeInput() {}
 
@@ -52,11 +54,9 @@ public:
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
 
-    // Must be called with the context's graph lock.
-    static void connect(ContextGraphLock&,
-                        std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(ContextGraphLock&,
-                           std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    // Must be called with the context's graph lock. Why static? 
+    static void connect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // disable() will take the output out of the active connections list and set aside in a disabled list.
     // enable() will put the output back into the active connections list.
@@ -83,6 +83,7 @@ public:
     unsigned numberOfChannels() const;        
     
 private:
+
     AudioNode* m_node;
 
     // The number of channels of the rendering connection with the largest number of channels.

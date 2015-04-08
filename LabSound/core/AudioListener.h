@@ -29,13 +29,15 @@
 #ifndef AudioListener_h
 #define AudioListener_h
 
-#include "util/graphics/FloatPoint3D.h"
+#include "LabSound/core/FloatPoint3D.h"
 
 namespace WebCore {
 
 // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
 
-class AudioListener {
+class AudioListener 
+
+{
 public:
     AudioListener();
 

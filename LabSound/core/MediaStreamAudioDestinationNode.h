@@ -25,15 +25,17 @@
 #ifndef MediaStreamAudioDestinationNode_h
 #define MediaStreamAudioDestinationNode_h
 
-#include "AudioBasicInspectorNode.h"
-#include "AudioBus.h"
-#include "MediaStream.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/MediaStream.h"
 
 namespace WebCore {
 
 class AudioContext;
+class AudioBus;
 
-class MediaStreamAudioDestinationNode : public AudioBasicInspectorNode {
+class MediaStreamAudioDestinationNode : public AudioBasicInspectorNode 
+
+{
 public:
     MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate);
     virtual ~MediaStreamAudioDestinationNode();
@@ -47,6 +49,7 @@ public:
     MediaStreamSource* mediaStreamSource();
 
 private:
+
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }
 
@@ -55,7 +58,7 @@ private:
 
     std::shared_ptr<MediaStream> m_stream;
     std::shared_ptr<MediaStreamSource> m_source;
-    AudioBus m_mixBus;
+    AudioBus * m_mixBus;
 };
 
 } // namespace WebCore

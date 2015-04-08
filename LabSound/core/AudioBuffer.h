@@ -29,7 +29,8 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
-#include "ExceptionCodes.h"
+#include "LabSound/extended/ExceptionCodes.h"
+
 #include <vector>
 #include <memory>
 

@@ -25,21 +25,24 @@
 #ifndef AudioNodeOutput_h
 #define AudioNodeOutput_h
 
-#include "AudioBus.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
+
 #include <set>
 
 namespace WebCore {
 
 class AudioContext;
 class AudioNodeInput;
+class AudioBus;
 
 // AudioNodeOutput represents a single output for an AudioNode.
 // It may be connected to one or more AudioNodeInputs.
 
-class AudioNodeOutput {
+class AudioNodeOutput 
+{
 public:
+
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
     explicit AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
 

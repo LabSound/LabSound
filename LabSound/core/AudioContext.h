@@ -3,8 +3,9 @@
 #ifndef AudioContext_h
 #define AudioContext_h
 
-#include "ConcurrentQueue.h"
-#include "ExceptionCodes.h"
+#include "LabSound/core/ConcurrentQueue.h"
+#include "LabSound/extended/ExceptionCodes.h"
+
 #include <set>
 #include <vector>
 #include <memory>
@@ -35,10 +36,7 @@ class AudioNodeOutput;
 template<class Input, class Output>
 struct PendingConnection
 {
-	PendingConnection(std::shared_ptr<Input> from,
-					  std::shared_ptr<Output> to,
-					  bool connect)
-		: from(from), to(to), connect(connect) {}
+	PendingConnection(std::shared_ptr<Input> from, std::shared_ptr<Output> to, bool connect) : from(from), to(to), connect(connect) {}
 	bool connect; // true: connect; false: disconnect
 	std::shared_ptr<Input> from;
 	std::shared_ptr<Output> to;

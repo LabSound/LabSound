@@ -25,14 +25,10 @@
 #ifndef PannerNode_h
 #define PannerNode_h
 
-#include "AudioBus.h"
-#include "AudioListener.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
-#include "Cone.h"
-#include "Distance.h"
-#include "util/graphics/FloatPoint3D.h"
-#include "Panner.h"
+#include "LabSound/core/AudioListener.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/FloatPoint3D.h"
 
 namespace WebCore {
 
@@ -45,6 +41,11 @@ namespace WebCore {
 
 class PannerNode : public AudioNode 
 {
+
+	class DistanceEffect;
+	class ConeEffect;
+	class AudioBus;
+	class Panner;
 
 public:
 
@@ -142,8 +143,9 @@ protected:
     // Gain
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
-    DistanceEffect m_distanceEffect;
-    ConeEffect m_coneEffect;
+
+    DistanceEffect * m_distanceEffect;
+    ConeEffect * m_coneEffect;
     float m_lastGain;
 
     unsigned m_connectionCount;

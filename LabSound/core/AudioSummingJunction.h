@@ -25,20 +25,20 @@
 #ifndef AudioSummingJunction_h
 #define AudioSummingJunction_h
 
-#include "AudioBus.h"
 #include <set>
 #include <vector>
 #include <array>
 
-namespace LabSound {
+namespace LabSound 
+{
     class ContextRenderLock;
 }
-
 
 namespace WebCore {
 
     class AudioContext;
     class AudioNodeOutput;
+	class AudioBus;
     
     using namespace LabSound;
 

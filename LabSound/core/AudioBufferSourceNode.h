@@ -25,11 +25,10 @@
 #ifndef AudioBufferSourceNode_h
 #define AudioBufferSourceNode_h
 
-#include "AudioBuffer.h"
-#include "AudioBus.h"
-#include "AudioParam.h"
-#include "AudioScheduledSourceNode.h"
-#include "PannerNode.h"
+#include "LabSound/core/AudioBuffer.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/PannerNode.h"
 
 #include <memory>
 
@@ -38,6 +37,7 @@ namespace WebCore {
     using namespace LabSound;
 
 class AudioContext;
+class AudioBus;
 
 // AudioBufferSourceNode is an AudioNode representing an audio source from an in-memory audio asset represented by an AudioBuffer.
 // It generally will be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).

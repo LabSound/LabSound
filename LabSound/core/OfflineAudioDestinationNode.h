@@ -25,8 +25,8 @@
 #ifndef OfflineAudioDestinationNode_h
 #define OfflineAudioDestinationNode_h
 
-#include "AudioBuffer.h"
-#include "AudioDestinationNode.h"
+#include "LabSound/core/AudioBuffer.h"
+#include "LabSound/core/AudioDestinationNode.h"
 
 namespace WebCore {
 

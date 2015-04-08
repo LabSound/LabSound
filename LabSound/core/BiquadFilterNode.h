@@ -25,8 +25,8 @@
 #ifndef BiquadFilterNode_h
 #define BiquadFilterNode_h
 
-#include "AudioBasicProcessorNode.h"
-#include "BiquadProcessor.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/BiquadProcessor.h"
 
 namespace WebCore {
 

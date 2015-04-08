@@ -25,16 +25,15 @@
 #ifndef OscillatorNode_h
 #define OscillatorNode_h
 
-#include "AudioParam.h"
-#include "AudioScheduledSourceNode.h"
-
-#include "AudioBus.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace WebCore {
 
 class AudioContext;
 class WaveTable;
-    
+class AudioBus;
+
 class OscillatorNode : public AudioScheduledSourceNode
 {
     

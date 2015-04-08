@@ -25,8 +25,10 @@
 #ifndef AnalyserNode_h
 #define AnalyserNode_h
 
-#include "AudioBasicInspectorNode.h"
-#include "RealtimeAnalyser.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+
+//@fixme this node is actually extended
+#include "LabSound/Extended/RealtimeAnalyser.h"
 
 namespace WebCore {
 

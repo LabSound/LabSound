@@ -25,8 +25,8 @@
 #ifndef DelayProcessor_h
 #define DelayProcessor_h
 
-#include "AudioDSPKernelProcessor.h"
-#include "AudioParam.h"
+#include "LabSound/core/AudioDSPKernelProcessor.h"
+#include "LabSound/core/AudioParam.h"
 
 namespace WebCore {
 

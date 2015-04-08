@@ -29,7 +29,7 @@
 #ifndef ChannelMergerNode_h
 #define ChannelMergerNode_h
 
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
 
 namespace WebCore {
 

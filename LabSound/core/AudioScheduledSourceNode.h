@@ -29,25 +29,26 @@
 #ifndef AudioScheduledSourceNode_h
 #define AudioScheduledSourceNode_h
 
-#include "AudioSourceNode.h"
+#include "LabSound/core/AudioSourceNode.h"
 
 namespace WebCore {
 
 class AudioBus;
 
-class AudioScheduledSourceNode : public AudioSourceNode {
+class AudioScheduledSourceNode : public AudioSourceNode 
+{
+
 public:
+
     // These are the possible states an AudioScheduledSourceNode can be in:
-    //
     // UNSCHEDULED_STATE - Initial playback state. Created, but not yet scheduled.
     // SCHEDULED_STATE - Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing.
     // PLAYING_STATE - Generating sound.
     // FINISHED_STATE - Finished generating sound.
-    //
     // The state can only transition to the next state, except for the FINISHED_STATE which can
     // never be changed.
-    enum PlaybackState {
-        // These must be defined with the same names and values as in the .idl file.
+    enum PlaybackState 
+	{
         UNSCHEDULED_STATE = 0,
         SCHEDULED_STATE = 1,
         PLAYING_STATE = 2,
@@ -62,10 +63,13 @@ public:
     void stop(double when);
 
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
+
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
+
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
 
 protected:
+
     // Get frame information for the current time quantum.
     // We handle the transition into PLAYING_STATE and FINISHED_STATE here,
     // zeroing out portions of the outputBus which are outside the range of startFrame and endFrame.
@@ -95,7 +99,7 @@ protected:
     // this is the base declaration
     virtual void clearPannerNode() {}
     
-    static const double UnknownTime;
+    static const double UnknownTime; // why static? 
 };
 
 } // namespace WebCore

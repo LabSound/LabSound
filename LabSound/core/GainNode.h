@@ -25,8 +25,8 @@
 #ifndef GainNode_h
 #define GainNode_h
 
-#include "AudioParam.h"
-#include "AudioNode.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioNode.h"
 
 namespace WebCore {
 

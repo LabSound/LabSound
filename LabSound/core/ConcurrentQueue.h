@@ -1,13 +1,5 @@
-
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
-
-//
-//  ConcurrentQueue.h
-//  CinderTest1
-//
-// http://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html
-//
 
 #pragma once
 
@@ -15,7 +7,8 @@
 #include <condition_variable>
 #include <queue>
 
-namespace LabSound {
+namespace LabSound 
+{
 
 template<typename Data>
 class concurrent_queue

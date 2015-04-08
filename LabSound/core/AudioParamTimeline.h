@@ -29,7 +29,7 @@
 #ifndef AudioParamTimeline_h
 #define AudioParamTimeline_h
 
-#include "AudioContext.h"
+#include "LabSound/core/AudioContext.h"
 #include <mutex>
 #include <vector>
 

@@ -25,12 +25,12 @@
 #ifndef DefaultAudioDestinationNode_h
 #define DefaultAudioDestinationNode_h
 
-#include "AudioDestination.h"
-#include "AudioDestinationNode.h"
+#include "LabSound/core/AudioDestinationNode.h"
 
 namespace WebCore {
 
 class AudioContext;
+class AudioDestination;
     
 class DefaultAudioDestinationNode : public AudioDestinationNode {
 public:

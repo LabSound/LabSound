@@ -25,7 +25,7 @@
 #ifndef ConvolverNode_h
 #define ConvolverNode_h
 
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
 
 namespace WebCore {
 

@@ -29,9 +29,10 @@
 #ifndef AudioParam_h
 #define AudioParam_h
 
-#include "AudioContext.h"
-#include "AudioParamTimeline.h"
-#include "AudioSummingJunction.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioParamTimeline.h"
+#include "LabSound/core/AudioSummingJunction.h"
+
 #include <sys/types.h>
 #include <string>
 

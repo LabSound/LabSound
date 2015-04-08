@@ -29,16 +29,20 @@
 #ifndef AudioSourceNode_h
 #define AudioSourceNode_h
 
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
 
 namespace WebCore {
 
-class AudioSourceNode : public AudioNode {
+class AudioSourceNode : public AudioNode 
+{
+
 public:
+
     AudioSourceNode(float sampleRate) : AudioNode(sampleRate) {}
     virtual ~AudioSourceNode() {}
     
 protected:
+
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }
 };

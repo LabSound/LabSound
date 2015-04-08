@@ -25,10 +25,10 @@
 #ifndef MediaStreamAudioSourceNode_h
 #define MediaStreamAudioSourceNode_h
 
-#include "AudioSourceNode.h"
-#include "AudioSourceProvider.h"
-#include "AudioSourceProviderClient.h"
-#include "MediaStream.h"
+#include "LabSound/core/AudioSourceNode.h"
+#include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/core/AudioSourceProviderClient.h"
+#include "LabSound/core/MediaStream.h"
 
 namespace WebCore {
 

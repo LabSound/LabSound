@@ -25,8 +25,8 @@
 #ifndef AudioBasicProcessorNode_h
 #define AudioBasicProcessorNode_h
 
-#include "AudioNode.h"
-#include "AudioProcessor.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioProcessor.h"
 #include <memory>
 
 namespace WebCore {
@@ -57,7 +57,7 @@ protected:
     virtual double tailTime() const override;
     virtual double latencyTime() const override;
 
-    AudioProcessor* processor() { return m_processor.get(); }
+    AudioProcessor * processor() { return m_processor.get(); }
     std::unique_ptr<AudioProcessor> m_processor;
 };
 

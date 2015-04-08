@@ -32,7 +32,40 @@
 #include "AudioUtilities.h"
 #include "DenormalDisabler.h"
 
+#include "internal/AudioSourceProvider.h"
+
 namespace WebCore {
+
+	// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
+    // If there is local/live audio input, we call set() with the audio input data every render quantum.
+    class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider {
+    public:
+        LocalAudioInputProvider()
+            : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
+        {
+        }
+        
+        virtual ~LocalAudioInputProvider() {}
+
+        void set(AudioBus* bus)
+        {
+            if (bus)
+                m_sourceBus.copyFrom(*bus);
+        }
+
+        // AudioSourceProvider.
+        virtual void provideInput(AudioBus* destinationBus, size_t numberOfFrames)
+        {
+            bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus.length() == numberOfFrames;
+            ASSERT(isGood);
+            if (isGood)
+                destinationBus->copyFrom(m_sourceBus);
+        }
+
+    private:
+        AudioBus m_sourceBus;
+    };
+
     
 AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate)
     : AudioNode(sampleRate)
