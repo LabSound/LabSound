@@ -51,5 +51,8 @@
     <ClInclude Include="..\src\ExampleBaseApp.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\InfiniteFM.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

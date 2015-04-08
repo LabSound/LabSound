@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\ConvolutionReverb.h" />
     <ClInclude Include="..\src\ExampleBaseApp.h" />
+    <ClInclude Include="..\src\InfiniteFM.h" />
     <ClInclude Include="..\src\MicrophoneDalek.h" />
     <ClInclude Include="..\src\MicrophoneLoopback.h" />
     <ClInclude Include="..\src\MicrophoneReverb.h" />
