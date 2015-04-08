@@ -251,6 +251,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Assertions.h" />
     <ClInclude Include="..\include\internal\AudioArray.h" />
     <ClInclude Include="..\include\internal\AudioBus.h" />
     <ClInclude Include="..\include\internal\AudioChannel.h" />
@@ -291,28 +292,28 @@
     <ClInclude Include="..\include\internal\ReverbConvolverStage.h" />
     <ClInclude Include="..\include\internal\ReverbInputBuffer.h" />
     <ClInclude Include="..\include\internal\SincResampler.h" />
-    <ClInclude Include="..\include\internal\util\graphics\FloatPoint3D.h" />
     <ClInclude Include="..\include\internal\VectorMath.h" />
     <ClInclude Include="..\include\internal\win\AudioDestinationWin.h" />
     <ClInclude Include="..\include\internal\win\AudioFileReaderWin.h" />
     <ClInclude Include="..\include\internal\ZeroPole.h" />
+    <ClInclude Include="..\include\LabSound.h" />
+    <ClInclude Include="..\include\LabSoundConfig.h" />
+    <ClInclude Include="..\include\LabSoundIncludes.h" />
+    <ClInclude Include="..\include\Logging.h" />
     <ClInclude Include="..\include\nodes\ADSRNode.h" />
     <ClInclude Include="..\include\nodes\AnalyserNode.h" />
     <ClInclude Include="..\include\nodes\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBasicProcessorNode.h" />
     <ClInclude Include="..\include\nodes\AudioBuffer.h" />
-    <ClInclude Include="..\include\nodes\AudioBufferCallback.h" />
     <ClInclude Include="..\include\nodes\AudioBufferSourceNode.h" />
     <ClInclude Include="..\include\nodes\AudioContext.h" />
     <ClInclude Include="..\include\nodes\AudioDestinationNode.h" />
-    <ClInclude Include="..\include\nodes\AudioGain.h" />
     <ClInclude Include="..\include\nodes\AudioListener.h" />
     <ClInclude Include="..\include\nodes\AudioNode.h" />
     <ClInclude Include="..\include\nodes\AudioNodeInput.h" />
     <ClInclude Include="..\include\nodes\AudioNodeOutput.h" />
     <ClInclude Include="..\include\nodes\AudioParam.h" />
     <ClInclude Include="..\include\nodes\AudioParamTimeline.h" />
-    <ClInclude Include="..\include\nodes\AudioProcessingEvent.h" />
     <ClInclude Include="..\include\nodes\AudioScheduledSourceNode.h" />
     <ClInclude Include="..\include\nodes\AudioSourceNode.h" />
     <ClInclude Include="..\include\nodes\AudioSummingJunction.h" />
@@ -332,11 +333,9 @@
     <ClInclude Include="..\include\nodes\DynamicsCompressorNode.h" />
     <ClInclude Include="..\include\nodes\EasyVerbNode.h" />
     <ClInclude Include="..\include\nodes\GainNode.h" />
-    <ClInclude Include="..\include\nodes\MediaElementAudioSourceNode.h" />
     <ClInclude Include="..\include\nodes\MediaStreamAudioDestinationNode.h" />
     <ClInclude Include="..\include\nodes\MediaStreamAudioSourceNode.h" />
     <ClInclude Include="..\include\nodes\NoiseNode.h" />
-    <ClInclude Include="..\include\nodes\OfflineAudioCompletionEvent.h" />
     <ClInclude Include="..\include\nodes\OfflineAudioDestinationNode.h" />
     <ClInclude Include="..\include\nodes\OscillatorNode.h" />
     <ClInclude Include="..\include\nodes\PannerNode.h" />
@@ -347,7 +346,6 @@
     <ClInclude Include="..\include\nodes\RealtimeAnalyser.h" />
     <ClInclude Include="..\include\nodes\RecorderNode.h" />
     <ClInclude Include="..\include\nodes\SampledInstrumentNode.h" />
-    <ClInclude Include="..\include\nodes\ScriptProcessorNode.h" />
     <ClInclude Include="..\include\nodes\SfxrNode.h" />
     <ClInclude Include="..\include\nodes\SoundBuffer.h" />
     <ClInclude Include="..\include\nodes\SpatializationNode.h" />
@@ -359,6 +357,7 @@
     <ClInclude Include="..\include\nodes\WaveShaperProcessor.h" />
     <ClInclude Include="..\include\nodes\WaveTable.h" />
     <ClInclude Include="..\include\nodes\WindowFunctions.h" />
+    <ClInclude Include="..\include\PlatformExportMacros.h" />
     <ClInclude Include="..\include\third_party\json11\json11.hpp" />
     <ClInclude Include="..\include\third_party\kissfft\kissfft.hpp" />
     <ClInclude Include="..\include\third_party\kissfft\kiss_fft.hpp" />
@@ -493,7 +492,6 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\SpatializationNode.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\LabSound\STKNode.cpp" />
     <ClCompile Include="..\src\LabSound\SupersawNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Modules\webaudio\AnalyserNode.cpp">

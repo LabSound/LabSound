@@ -9,13 +9,18 @@
 #include "AudioNode.h"
 #include "AudioBufferSourceNode.h"
 
-namespace LabSound {
+namespace LabSound 
+{
 
-    using namespace WebCore;
+    // init() will return an audio context object
+    std::shared_ptr<WebCore::AudioContext> init();
     
-    enum NodeType {
+    // when done with the context call finish
+    void finish(std::shared_ptr<WebCore::AudioContext> context);
 
-        // Base WebAudio nodes
+	enum NodeType 
+	{
+        // Core Webaudio Nodes
         NodeTypeUnknown,
         NodeTypeDestination,
         NodeTypeOscillator,
@@ -35,7 +40,7 @@ namespace LabSound {
         NodeTypeWaveShaper,
         NodeTypeEnd,
 
-        // LabSound nodes
+        // Labsound Extensions
         NodeTypeADSR,
         NodeTypeClip,
         NodeTypeDiode,
@@ -50,14 +55,7 @@ namespace LabSound {
         NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
 		NodeTypeSTK, 
-
     };
-    
-    // init() will return an audio context object
-    std::shared_ptr<AudioContext> init();
-    
-    // when done with the context call finish
-    void finish(std::shared_ptr<LabSound::AudioContext> context);
 }
 
 #endif
