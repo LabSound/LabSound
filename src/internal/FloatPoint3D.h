@@ -6,7 +6,7 @@
 #include <math.h>
 
 class FloatPoint3D;
-FloatPoint3D operator-(const FloatPoint3D& v1, const FloatPoint3D& v2);
+::FloatPoint3D operator-(const ::FloatPoint3D& v1, const ::FloatPoint3D& v2);
 
 class FloatPoint3D {
 public:
@@ -65,13 +65,12 @@ public:
     }
 };
 
-inline FloatPoint3D operator-(const FloatPoint3D& v1, const FloatPoint3D& v2) {
-    return FloatPoint3D(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+inline ::FloatPoint3D operator-(const ::FloatPoint3D& v1, const ::FloatPoint3D& v2) {
+    return ::FloatPoint3D(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-inline FloatPoint3D operator*(float scale, const FloatPoint3D& rhs) {
-    return FloatPoint3D(scale * rhs.x, scale * rhs.y, scale * rhs.z);
+inline ::FloatPoint3D operator*(float scale, const ::FloatPoint3D& rhs) {
+    return ::FloatPoint3D(scale * rhs.x, scale * rhs.y, scale * rhs.z);
 }
-
 
 #endif

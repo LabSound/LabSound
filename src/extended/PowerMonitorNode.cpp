@@ -1,24 +1,18 @@
-
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "PowerMonitorNode.h"
-#include "LabSound.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "RecorderNode.h"
+#include "LabSound/extended/PowerMonitorNode.h"
 
-#include "AudioBus.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "internal/AudioBus.h"
 
 namespace LabSound {
     
     using namespace WebCore;
     
-    PowerMonitorNode::PowerMonitorNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate)
-    , _db(0)
-    , _windowSize(128)
+    PowerMonitorNode::PowerMonitorNode(float sampleRate) : AudioBasicInspectorNode(sampleRate) , _db(0), _windowSize(128)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType((AudioNode::NodeType) NodeTypePowerMonitor);

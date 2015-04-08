@@ -61,8 +61,10 @@
     <ClInclude Include="..\LabSound\core\WindowFunctions.h" />
     <ClInclude Include="..\LabSound\extended\ADSRNode.h" />
     <ClInclude Include="..\LabSound\extended\Assertions.h" />
+    <ClInclude Include="..\LabSound\extended\AudioContextLock.h" />
     <ClInclude Include="..\LabSound\extended\ClipNode.h" />
     <ClInclude Include="..\LabSound\extended\DiodeNode.h" />
+    <ClInclude Include="..\LabSound\extended\ExceptionCodes.h" />
     <ClInclude Include="..\LabSound\extended\LabSound.h" />
     <ClInclude Include="..\LabSound\extended\LabSoundConfig.h" />
     <ClInclude Include="..\LabSound\extended\Logging.h" />
@@ -80,54 +82,52 @@
     <ClInclude Include="..\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\LabSound\extended\STKNode.h" />
     <ClInclude Include="..\LabSound\extended\SupersawNode.h" />
-    <ClInclude Include="..\src\internal\include\AudioArray.h" />
-    <ClInclude Include="..\src\internal\include\AudioBus.h" />
-    <ClInclude Include="..\src\internal\include\AudioChannel.h" />
-    <ClInclude Include="..\src\internal\include\AudioContextLock.h" />
-    <ClInclude Include="..\src\internal\include\AudioDestination.h" />
-    <ClInclude Include="..\src\internal\include\AudioDestinationConsumer.h" />
-    <ClInclude Include="..\src\internal\include\AudioDSPKernel.h" />
-    <ClInclude Include="..\src\internal\include\AudioDSPKernelProcessor.h" />
-    <ClInclude Include="..\src\internal\include\AudioFIFO.h" />
-    <ClInclude Include="..\src\internal\include\AudioFileReader.h" />
-    <ClInclude Include="..\src\internal\include\AudioIOCallback.h" />
-    <ClInclude Include="..\src\internal\include\AudioProcessor.h" />
-    <ClInclude Include="..\src\internal\include\AudioPullFIFO.h" />
-    <ClInclude Include="..\src\internal\include\AudioResampler.h" />
-    <ClInclude Include="..\src\internal\include\AudioResamplerKernel.h" />
-    <ClInclude Include="..\src\internal\include\AudioSourceProvider.h" />
-    <ClInclude Include="..\src\internal\include\AudioSourceProviderClient.h" />
-    <ClInclude Include="..\src\internal\include\AudioUtilities.h" />
-    <ClInclude Include="..\src\internal\include\Biquad.h" />
-    <ClInclude Include="..\src\internal\include\Cone.h" />
-    <ClInclude Include="..\src\internal\include\DenormalDisabler.h" />
-    <ClInclude Include="..\src\internal\include\DirectConvolver.h" />
-    <ClInclude Include="..\src\internal\include\Distance.h" />
-    <ClInclude Include="..\src\internal\include\DynamicsCompressor.h" />
-    <ClInclude Include="..\src\internal\include\DynamicsCompressorKernel.h" />
-    <ClInclude Include="..\src\internal\include\EqualPowerPanner.h" />
-    <ClInclude Include="..\src\internal\include\ExceptionCodes.h" />
-    <ClInclude Include="..\src\internal\include\FFTConvolver.h" />
-    <ClInclude Include="..\src\internal\include\FFTFrame.h" />
-    <ClInclude Include="..\src\internal\include\FloatConversion.h" />
-    <ClInclude Include="..\src\internal\include\FloatPoint3D.h" />
-    <ClInclude Include="..\src\internal\include\HRTFDatabase.h" />
-    <ClInclude Include="..\src\internal\include\HRTFDatabaseLoader.h" />
-    <ClInclude Include="..\src\internal\include\HRTFElevation.h" />
-    <ClInclude Include="..\src\internal\include\HRTFKernel.h" />
-    <ClInclude Include="..\src\internal\include\HRTFPanner.h" />
-    <ClInclude Include="..\src\internal\include\MultiChannelResampler.h" />
-    <ClInclude Include="..\src\internal\include\Panner.h" />
-    <ClInclude Include="..\src\internal\include\Reverb.h" />
-    <ClInclude Include="..\src\internal\include\ReverbAccumulationBuffer.h" />
-    <ClInclude Include="..\src\internal\include\ReverbConvolver.h" />
-    <ClInclude Include="..\src\internal\include\ReverbConvolverStage.h" />
-    <ClInclude Include="..\src\internal\include\ReverbInputBuffer.h" />
-    <ClInclude Include="..\src\internal\include\SincResampler.h" />
-    <ClInclude Include="..\src\internal\include\VectorMath.h" />
-    <ClInclude Include="..\src\internal\include\win\AudioDestinationWin.h" />
-    <ClInclude Include="..\src\internal\include\win\AudioFileReaderWin.h" />
-    <ClInclude Include="..\src\internal\include\ZeroPole.h" />
+    <ClInclude Include="..\src\internal\AudioArray.h" />
+    <ClInclude Include="..\src\internal\AudioBus.h" />
+    <ClInclude Include="..\src\internal\AudioChannel.h" />
+    <ClInclude Include="..\src\internal\AudioDestination.h" />
+    <ClInclude Include="..\src\internal\AudioDestinationConsumer.h" />
+    <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
+    <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
+    <ClInclude Include="..\src\internal\AudioFIFO.h" />
+    <ClInclude Include="..\src\internal\AudioFileReader.h" />
+    <ClInclude Include="..\src\internal\AudioIOCallback.h" />
+    <ClInclude Include="..\src\internal\AudioProcessor.h" />
+    <ClInclude Include="..\src\internal\AudioPullFIFO.h" />
+    <ClInclude Include="..\src\internal\AudioResampler.h" />
+    <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
+    <ClInclude Include="..\src\internal\AudioSourceProvider.h" />
+    <ClInclude Include="..\src\internal\AudioSourceProviderClient.h" />
+    <ClInclude Include="..\src\internal\AudioUtilities.h" />
+    <ClInclude Include="..\src\internal\Biquad.h" />
+    <ClInclude Include="..\src\internal\Cone.h" />
+    <ClInclude Include="..\src\internal\DenormalDisabler.h" />
+    <ClInclude Include="..\src\internal\DirectConvolver.h" />
+    <ClInclude Include="..\src\internal\Distance.h" />
+    <ClInclude Include="..\src\internal\DynamicsCompressor.h" />
+    <ClInclude Include="..\src\internal\DynamicsCompressorKernel.h" />
+    <ClInclude Include="..\src\internal\EqualPowerPanner.h" />
+    <ClInclude Include="..\src\internal\FFTConvolver.h" />
+    <ClInclude Include="..\src\internal\FFTFrame.h" />
+    <ClInclude Include="..\src\internal\FloatConversion.h" />
+    <ClInclude Include="..\src\internal\FloatPoint3D.h" />
+    <ClInclude Include="..\src\internal\HRTFDatabase.h" />
+    <ClInclude Include="..\src\internal\HRTFDatabaseLoader.h" />
+    <ClInclude Include="..\src\internal\HRTFElevation.h" />
+    <ClInclude Include="..\src\internal\HRTFKernel.h" />
+    <ClInclude Include="..\src\internal\HRTFPanner.h" />
+    <ClInclude Include="..\src\internal\MultiChannelResampler.h" />
+    <ClInclude Include="..\src\internal\Panner.h" />
+    <ClInclude Include="..\src\internal\Reverb.h" />
+    <ClInclude Include="..\src\internal\ReverbAccumulationBuffer.h" />
+    <ClInclude Include="..\src\internal\ReverbConvolver.h" />
+    <ClInclude Include="..\src\internal\ReverbConvolverStage.h" />
+    <ClInclude Include="..\src\internal\ReverbInputBuffer.h" />
+    <ClInclude Include="..\src\internal\SincResampler.h" />
+    <ClInclude Include="..\src\internal\VectorMath.h" />
+    <ClInclude Include="..\src\internal\win\AudioDestinationWin.h" />
+    <ClInclude Include="..\src\internal\win\AudioFileReaderWin.h" />
+    <ClInclude Include="..\src\internal\ZeroPole.h" />
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -280,33 +280,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\build\obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\build\obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\build\obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\src\build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>..\build\obj\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>LabSound</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\;$(ProjectDir)..\third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -344,7 +344,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\;$(ProjectDir)..\third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;DEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -382,7 +382,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\;$(ProjectDir)..\third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -423,7 +423,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\include;$(ProjectDir)..\include\nodes;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\internal\win;$(ProjectDir)..\include\internal\util;$(ProjectDir)..\include\internal\nodes;$(ProjectDir)..\include\third_party\;$(ProjectDir)..\include\third_party\STK;$(ProjectDir)..\include\third_party\WTF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\;$(ProjectDir)..\third_party;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>STATICALLY_LINKED_WITH_WTF;NDEBUG;WIN32;D_VARIADIC_MAX=10;D_NOMINMAX;NOMINMAX;WTF_USE_WEBAUDIO_KISSFFT=1;__WINDOWS_WASAPI__;HAVE_NO_OFLOG;HAVE_BOOST_THREAD;HAVE_LIBDL;HAVE_ALLOCA;HAVE_UNISTD_H;__OS_WINDOWS__;__LITTLE_ENDIAN__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>

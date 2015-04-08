@@ -1,16 +1,18 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "LabSound.h"
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "ExceptionCodes.h"
-#include "DefaultAudioDestinationNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/DefaultAudioDestinationNode.h"
+
+#include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/ExceptionCodes.h"
 
 #include <chrono>
 #include <thread>
 #include <iostream>
 #include <atomic>
+#include <mutex>
+#include <memory>
 
 namespace LabSound
 {
@@ -18,7 +20,7 @@ namespace LabSound
     std::timed_mutex g_TimedMutex;
     std::thread g_GraphUpdateThread;
     
-    std::shared_ptr<LabSound::AudioContext> mainContext;
+    std::shared_ptr<WebCore::AudioContext> mainContext;
     
     const int update_rate_ms = 10;
 
@@ -43,13 +45,13 @@ namespace LabSound
         LOG("LabSound GraphUpdateThread thread finished");
     }
     
-    std::shared_ptr<LabSound::AudioContext> init()
+    std::shared_ptr<WebCore::AudioContext> init()
     {
         LOG("Initialize Context");
         
         // Create an audio context object with the default audio destination
-        mainContext = std::make_shared<LabSound::AudioContext>();
-        mainContext->setDestinationNode(std::make_shared<DefaultAudioDestinationNode>(mainContext));
+        mainContext = std::make_shared<WebCore::AudioContext>();
+        mainContext->setDestinationNode(std::make_shared<WebCore::DefaultAudioDestinationNode>(mainContext));
         mainContext->initHRTFDatabase();
         mainContext->lazyInitialize();
         
@@ -59,7 +61,7 @@ namespace LabSound
     }
     
     
-    void finish(std::shared_ptr<LabSound::AudioContext> context)
+    void finish(std::shared_ptr<WebCore::AudioContext> context)
     {
         LOG("Finish Context");
         

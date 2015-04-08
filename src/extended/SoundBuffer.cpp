@@ -1,9 +1,11 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "SoundBuffer.h"
-#include "AudioContextLock.h"
-#include "AudioDestinationNode.h"
+#include "LabSound/core/AudioDestinationNode.h"
+
+#include "LabSound/extended/SoundBuffer.h"
+#include "LabSound/extended/AudioContextLock.h"
+
 #include <stdio.h>
 #include <iostream>
 

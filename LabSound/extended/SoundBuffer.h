@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "AudioBuffer.h"
-#include "AudioBufferSourceNode.h"
-#include "AudioContext.h"
+#include "LabSound/core/AudioBuffer.h"
+#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/AudioContext.h"
 
 namespace LabSound {
 

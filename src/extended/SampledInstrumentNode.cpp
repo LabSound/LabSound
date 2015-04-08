@@ -1,10 +1,10 @@
-#include "SampledInstrumentNode.h"
-#include "LabSound.h"
-#include "json11/json11.hpp"
+#include "LabSound/extended/SampledInstrumentNode.h"
+
+#include <json11/json11.hpp>
+
 #include <string>
 #include <fstream>
 #include <streambuf>
-#include "Assertions.h"
 #include <stdlib.h>
 
 #if OS(WINDOWS)
@@ -88,7 +88,8 @@ namespace LabSound {
 
 		}
 		
-		else {
+		else 
+		{
 			LOG_ERROR("JSON Parse Error: %s", err.c_str());
 		}
 

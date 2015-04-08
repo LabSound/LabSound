@@ -4,8 +4,8 @@
 #ifndef LabSound_src_RecorderNode_h
 #define LabSound_src_RecorderNode_h
 
-#include "AudioBasicInspectorNode.h"
-#include "AudioContext.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioContext.h"
 #include <vector>
 #include <mutex>
 

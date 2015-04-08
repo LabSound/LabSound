@@ -35,13 +35,15 @@
  https://ccrma.stanford.edu/~jos/filters/Nonlinear_Filter_Example_Dynamic.htm
  */
 
-#include "PeakCompNode.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "LabSound.h"
-#include "AudioProcessor.h"
-#include "VectorMath.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+
+#include "LabSound/extended/PeakCompNode.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioProcessor.h"
+#include "internal/VectorMath.h"
+#include "internal/AudioBus.h"
 
 #include <vector>
 

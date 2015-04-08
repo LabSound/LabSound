@@ -1,10 +1,6 @@
-
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
-
-#include "LabSoundConfig.h"
-#include "LabSound.h"
-#include "AudioNodeOutput.h"
-#include "NoiseNode.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/extended/NoiseNode.h"
+#include "internal/AudioBus.h"
 
 using namespace std;
 using namespace WebCore;

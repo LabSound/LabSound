@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
 

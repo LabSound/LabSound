@@ -1,4 +1,3 @@
-
 #ifndef LabSound_PeakCompNode_h
 #define LabSound_PeakCompNode_h
 
@@ -38,13 +37,12 @@
  https://ccrma.stanford.edu/~jos/filters/Nonlinear_Filter_Example_Dynamic.htm
  */
 
-#include "AudioContext.h"
-#include "AudioBus.h"
-#include "AudioParam.h"
-#include "AudioScheduledSourceNode.h"
-#include "AudioBasicProcessorNode.h"
-#include "AudioBasicInspectorNode.h"
-#include "GainNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/GainNode.h"
 
 namespace LabSound
 {

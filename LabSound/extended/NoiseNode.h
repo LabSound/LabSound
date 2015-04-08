@@ -1,16 +1,16 @@
-
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
 
-#include "AudioScheduledSourceNode.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
-#include "ExceptionCodes.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
 
-namespace LabSound {
+#include "LabSound/extended/ExceptionCodes.h"
 
+namespace LabSound 
+{
 
     class NoiseNode : public WebCore::AudioScheduledSourceNode 
 	{

@@ -7,12 +7,12 @@
 #ifndef __LabSound__STKNode__
 #define __LabSound__STKNode__
 
-#include "AudioContext.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "ADSRNode.h"
+#include "LabSound/extended/ADSRNode.h"
 
 #if COMPILER(CLANG)
 #pragma clang diagnostic push

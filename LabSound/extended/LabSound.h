@@ -61,44 +61,6 @@ namespace LabSound
 
     void finish(std::shared_ptr<WebCore::AudioContext> context);
 
-	enum NodeType 
-	{
-        // Core Webaudio Nodes
-        NodeTypeUnknown,
-        NodeTypeDestination,
-        NodeTypeOscillator,
-        NodeTypeAudioBufferSource,
-        NodeTypeMediaElementAudioSource,
-        NodeTypeMediaStreamAudioDestination,
-        NodeTypeMediaStreamAudioSource,
-        NodeTypeBiquadFilter,
-        NodeTypePanner,
-        NodeTypeConvolver,
-        NodeTypeDelay,
-        NodeTypeGain,
-        NodeTypeChannelSplitter,
-        NodeTypeChannelMerger,
-        NodeTypeAnalyser,
-        NodeTypeDynamicsCompressor,
-        NodeTypeWaveShaper,
-        NodeTypeEnd,
-
-        // Labsound Extensions
-        NodeTypeADSR,
-        NodeTypeClip,
-        NodeTypeDiode,
-        NodeTypeNoise,
-        NodeTypePd,
-        NodeTypePeakComp,
-        NodeTypePowerMonitor,
-        NodeTypePWM,
-        NodeTypeRecorder,
-        NodeTypeSfxr,
-        NodeTypeSpatialization,
-        NodeTypeSpectralMonitor,
-        NodeTypeSupersaw,
-		NodeTypeSTK, 
-    };
 }
 
 #endif

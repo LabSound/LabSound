@@ -8,15 +8,12 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "DiodeNode.h"
+#include "LabSound/extended/DiodeNode.h"
 #include <mutex>
 
 namespace LabSound {
 
-    DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate)
-    : vb(0.2f)
-    , vl(0.4f)
-    , h(1.0)
+    DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate) : vb(0.2f), vl(0.4f), h(1.0)
     {
         waveShaper = std::make_shared<WebCore::WaveShaperNode>(sampleRate);
         setCurve(r);

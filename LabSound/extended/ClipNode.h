@@ -7,8 +7,8 @@
 #ifndef _LABSOUND_CLIP_NODE_H
 #define _LABSOUND_CLIP_NODE_H
 
-#include "AudioBasicProcessorNode.h"
-#include "AudioParam.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/AudioParam.h"
 
 namespace LabSound
 {

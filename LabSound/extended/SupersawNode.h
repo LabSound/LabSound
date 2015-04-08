@@ -4,32 +4,30 @@
 #ifndef __LabSound__SupersawNode__
 #define __LabSound__SupersawNode__
 
-#include "AudioContext.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
 
 namespace LabSound 
 {
-
-    using namespace WebCore;
-
-    class SupersawNode : public AudioNode 
+    class SupersawNode : public WebCore::AudioNode 
 	{
         class SupersawNodeInternal;
 		SupersawNodeInternal * internalNode;
+
     public:
 
         SupersawNode(ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode();
         
-		std::shared_ptr<AudioParam> attack() const;
-		std::shared_ptr<AudioParam> decay() const;
-		std::shared_ptr<AudioParam> sustain() const;
-		std::shared_ptr<AudioParam> release() const;
+		std::shared_ptr<WebCore::AudioParam> attack() const;
+		std::shared_ptr<WebCore::AudioParam> decay() const;
+		std::shared_ptr<WebCore::AudioParam> sustain() const;
+		std::shared_ptr<WebCore::AudioParam> release() const;
 
-        std::shared_ptr<AudioParam> sawCount() const;
-        std::shared_ptr<AudioParam> frequency() const;
-        std::shared_ptr<AudioParam> detune() const;
+        std::shared_ptr<WebCore::AudioParam> sawCount() const;
+        std::shared_ptr<WebCore::AudioParam> frequency() const;
+        std::shared_ptr<WebCore::AudioParam> detune() const;
 
 		void noteOn(double when);
 		void noteOff(ContextRenderLock&, double when);
@@ -39,7 +37,7 @@ namespace LabSound
     private:
 
         virtual void process(ContextRenderLock&, size_t) override;
-        virtual void reset(std::shared_ptr<AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
+        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
         virtual bool propagatesSilence(double now) const override;

@@ -2,13 +2,15 @@
 // LabSound
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "ADSRNode.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "LabSound.h"
-#include "AudioProcessor.h"
-#include "VectorMath.h"
+#include "LabSound/extended/ADSRNode.h"
+#include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+
+#include "internal/AudioBus.h"
+#include "internal/AudioProcessor.h"
+#include "internal/VectorMath.h"
+
 #include <limits>
 
 using namespace WebCore;

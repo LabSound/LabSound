@@ -1,15 +1,16 @@
 //  Created by Nick Porcino on 2013 11/17.
 //  reference http://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
 
-#include "SupersawNode.h"
+#include "LabSound/core/OscillatorNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "OscillatorNode.h"
+#include "LabSound/extended/SupersawNode.h"
+#include "LabSound/extended/ADSRNode.h"
+#include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/ExceptionCodes.h"
 
-#include "LabSound.h"
-#include "ADSRNode.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "internal/AudioBus.h"
 
 using namespace WebCore;
 

@@ -57,150 +57,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\internal\include\win\AudioDestinationWin.h">
-      <Filter>Internal\include\win</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\win\AudioFileReaderWin.h">
-      <Filter>Internal\include\win</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ZeroPole.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioArray.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioBus.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioChannel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioContextLock.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioDestination.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioDestinationConsumer.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioDSPKernel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioDSPKernelProcessor.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioFIFO.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioFileReader.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioIOCallback.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioProcessor.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioPullFIFO.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioResampler.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioResamplerKernel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioSourceProvider.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioSourceProviderClient.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\AudioUtilities.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\Biquad.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\Cone.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\DenormalDisabler.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\DirectConvolver.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\Distance.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\DynamicsCompressor.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\DynamicsCompressorKernel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\EqualPowerPanner.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ExceptionCodes.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\FFTConvolver.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\FFTFrame.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\FloatConversion.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\FloatPoint3D.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\HRTFDatabase.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\HRTFDatabaseLoader.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\HRTFElevation.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\HRTFKernel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\HRTFPanner.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\MultiChannelResampler.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\Panner.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\Reverb.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ReverbAccumulationBuffer.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ReverbConvolver.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ReverbConvolverStage.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\ReverbInputBuffer.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\SincResampler.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\include\VectorMath.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\LabSound\extended\ADSRNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
@@ -386,6 +242,150 @@
     </ClInclude>
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp">
       <Filter>third_party\kissfft</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LabSound\extended\ExceptionCodes.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LabSound\extended\AudioContextLock.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ReverbInputBuffer.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\SincResampler.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\VectorMath.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ZeroPole.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioArray.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioBus.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioChannel.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioDestination.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioDestinationConsumer.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioDSPKernel.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioFIFO.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioFileReader.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioIOCallback.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioProcessor.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioPullFIFO.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioResampler.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioResamplerKernel.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioSourceProvider.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioSourceProviderClient.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\AudioUtilities.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Biquad.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Cone.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\DenormalDisabler.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\DirectConvolver.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Distance.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\DynamicsCompressor.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\DynamicsCompressorKernel.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\EqualPowerPanner.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\FFTConvolver.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\FFTFrame.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\FloatConversion.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\FloatPoint3D.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\HRTFDatabase.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\HRTFDatabaseLoader.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\HRTFElevation.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\HRTFKernel.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\HRTFPanner.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\MultiChannelResampler.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Panner.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Reverb.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ReverbAccumulationBuffer.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ReverbConvolver.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ReverbConvolverStage.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\win\AudioDestinationWin.h">
+      <Filter>Internal\include\win</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\win\AudioFileReaderWin.h">
+      <Filter>Internal\include\win</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,14 +4,13 @@
 #ifndef LabSound_ADSRNode_h_impl
 #define LabSound_ADSRNode_h_impl
 
-#include "AudioContext.h"
-#include "AudioBus.h"
-#include "AudioParam.h"
-
-#include "AudioScheduledSourceNode.h"
-#include "AudioBasicProcessorNode.h"
-#include "AudioBasicInspectorNode.h"
-#include "GainNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/GainNode.h"
 
 namespace LabSound
 {

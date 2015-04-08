@@ -1,14 +1,13 @@
-
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "LabSound.h"
-#include "PWMNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioBus.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "AudioProcessor.h"
+#include "LabSound/extended/PWMNode.h"
+
+#include "internal/AudioProcessor.h"
+#include "internal/AudioBus.h"
 
 #include <iostream>
 

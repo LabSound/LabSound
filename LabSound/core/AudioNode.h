@@ -36,13 +36,55 @@
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 
-
-namespace LabSound {
+namespace LabSound 
+{
     class ContextGraphLock;
     class ContextRenderLock;
+
+	enum NodeType 
+	{
+        // Core Webaudio Nodes
+        NodeTypeUnknown,
+        NodeTypeDestination,
+        NodeTypeOscillator,
+        NodeTypeAudioBufferSource,
+        NodeTypeMediaElementAudioSource,
+        NodeTypeMediaStreamAudioDestination,
+        NodeTypeMediaStreamAudioSource,
+        NodeTypeBiquadFilter,
+        NodeTypePanner,
+        NodeTypeConvolver,
+        NodeTypeDelay,
+        NodeTypeGain,
+        NodeTypeChannelSplitter,
+        NodeTypeChannelMerger,
+        NodeTypeAnalyser,
+        NodeTypeDynamicsCompressor,
+        NodeTypeWaveShaper,
+        NodeTypeEnd,
+
+        // Labsound Extensions
+        NodeTypeADSR,
+        NodeTypeClip,
+        NodeTypeDiode,
+        NodeTypeNoise,
+        NodeTypePd,
+        NodeTypePeakComp,
+        NodeTypePowerMonitor,
+        NodeTypePWM,
+        NodeTypeRecorder,
+        NodeTypeSfxr,
+        NodeTypeSpatialization,
+        NodeTypeSpectralMonitor,
+        NodeTypeSupersaw,
+		NodeTypeSTK, 
+    };
+
 }
 
-namespace WebCore {
+namespace WebCore 
+
+{
     
     using namespace LabSound;
 

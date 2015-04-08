@@ -3,13 +3,16 @@
 
 #pragma once
 
-#include "PannerNode.h"
+#include "LabSound/core/PannerNode.h"
 #include <map>
+
+class FloatPoint3D;
 
 namespace LabSound {
     
-    class Occluder {
-    public:
+
+    struct Occluder 
+	{
         float x, y, z;
         float innerRadius;
         float outerRadius;
@@ -35,23 +38,27 @@ namespace LabSound {
             return *this; }
     };
     
-    class Occluders {
+    class Occluders 
+	{
+
     public:
-        void setOccluder(int id,
-                         float x, float y, float z,
-                         float radius);
+        void setOccluder(int id, float x, float y, float z, float radius);
         
         void removeOccluder(int id);
         
-        float occlusion(const FloatPoint3D& sourcePos, const FloatPoint3D& listenerPos) const;
+        float occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & listenerPos) const;
 
     private:
+
         std::map<int, Occluder> occluders;
+
     };
     
     typedef std::shared_ptr<Occluders> OccludersPtr;
 
-    class SpatializationNode : public WebCore::PannerNode {
+    class SpatializationNode : public WebCore::PannerNode 
+	{
+
     public:
         SpatializationNode(float sampleRate);
         virtual ~SpatializationNode();

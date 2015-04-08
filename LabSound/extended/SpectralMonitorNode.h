@@ -1,30 +1,35 @@
-
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
+
 #pragma once
 
-#include "AudioBasicInspectorNode.h"
-#include "AudioContext.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioContext.h"
+
 #include <vector>
 #include <mutex>
 
-namespace LabSound {
+namespace LabSound 
+{
 
-    class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode {
+    class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode 
+	{
+
     public:
+
         SpectralMonitorNode(float sampleRate);
         virtual ~SpectralMonitorNode();
 
-        // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
         virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
-        // ..AudioNode
 
         void spectralMag(std::vector<float>& result);
         void windowSize(size_t ws);
         size_t windowSize() const;
 
     private:
+
+		//@tofix 
         class Detail;
         Detail* detail;
 

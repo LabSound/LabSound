@@ -5,7 +5,7 @@
 #ifndef LabSound_src_DiodeNode_h
 #define LabSound_src_DiodeNode_h
 
-#include "WaveShaperNode.h"
+#include "LabSound/core/WaveShaperNode.h"
 
 namespace LabSound {
 

@@ -1,20 +1,19 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "LabSoundConfig.h"
-#include "RecorderNode.h"
-#include "LabSound.h"
-#include "AudioBus.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-namespace LabSound {
+#include "LabSound/extended/RecorderNode.h"
+
+#include "internal/AudioBus.h"
+
+namespace LabSound 
+{
     
     using namespace WebCore;
     
-    RecorderNode::RecorderNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate)
-    , m_recording(false), m_mixToMono(false)
+    RecorderNode::RecorderNode(float sampleRate)  : AudioBasicInspectorNode(sampleRate) , m_recording(false), m_mixToMono(false)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -105,4 +104,3 @@ namespace LabSound {
     }
                                            
 } // namespace LabSound
-

@@ -1,12 +1,14 @@
 #ifndef Labsound_Config_h
 #define Labsound_Config_h
 
-#include "WTF/Platform.h"
-#include "WTF/ExportMacros.h"
+// tofix, this should be internal file
 
-#include "PlatformExportMacros.h"
-#include "Logging.h"
-#include "Assertions.h"
+#include <WTF/Platform.h>
+#include <WTF/ExportMacros.h>
+#include <WTF/PlatformExportMacros.h>
+
+#include "LabSound/extended/Logging.h"
+#include "LabSound/extended/Assertions.h"
 
 #include <algorithm>
 #include <thread>

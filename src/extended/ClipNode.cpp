@@ -2,22 +2,23 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "LabSound.h"
-#include "ClipNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioBus.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "AudioProcessor.h"
-#include "VectorMath.h"
-#include "AudioContextLock.h"
+#include "LabSound/extended/ClipNode.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioBus.h"
+#include "internal/AudioProcessor.h"
+#include "internal/VectorMath.h"
 
 #include <iostream>
 #include <vector>
 
 using namespace WebCore;
 
-namespace LabSound {
+namespace LabSound 
+{
 
     /////////////////////////////////////
     // Prviate ClipNode Implementation //

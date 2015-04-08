@@ -1,13 +1,14 @@
 #pragma once
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNode.h"
-#include "AudioParam.h"
-#include "AudioBufferSourceNode.h"
-#include "ADSRNode.h"
-#include "ExceptionCodes.h"
-#include "SoundBuffer.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioBufferSourceNode.h"
+
+#include "LabSound/extended/ADSRNode.h"
+#include "LabSound/extended/ExceptionCodes.h"
+#include "LabSound/extended/SoundBuffer.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include <iostream> 
 #include <array>
