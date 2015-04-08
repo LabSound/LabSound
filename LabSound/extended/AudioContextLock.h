@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include <mutex>
-#include "AudioContext.h"
-#include "Assertions.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/extended/Assertions.h"
+
 #include <iostream>
+#include <mutex>
 
 namespace LabSound {
 

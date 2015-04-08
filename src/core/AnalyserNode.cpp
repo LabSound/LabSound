@@ -22,18 +22,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "LabSound/core/AnalyserNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AnalyserNode.h"
-
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
-    : AudioBasicInspectorNode(sampleRate)
-    , m_analyser(fftSize)
+AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode(sampleRate) , m_analyser(fftSize)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

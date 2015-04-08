@@ -22,23 +22,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioSummingJunction.h"
+#include "LabSound/core/AudioSummingJunction.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioContext.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/extended/AudioContextLock.h"
+
 #include <algorithm>
 #include <iostream>
 
-using namespace std;
-
-namespace WebCore {
+namespace WebCore 
+{
     
 LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
 
-    namespace {
-        mutex junctionMutex;
+    namespace 
+	{
+        std::mutex junctionMutex;
     }
     
 
@@ -87,7 +87,7 @@ void AudioSummingJunction::addOutput(std::shared_ptr<AudioNodeOutput> o) {
     if (!o)
         return;
     
-    lock_guard<mutex> lock(junctionMutex);
+    std::lock_guard<std::mutex> lock(junctionMutex);
     for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
         if (m_outputs[i] == o)
             return;
@@ -99,14 +99,14 @@ void AudioSummingJunction::addOutput(std::shared_ptr<AudioNodeOutput> o) {
             return;
         }
 
-    cerr << "Summing junction couldn't add output" << endl;
+    std::cerr << "Summing junction couldn't add output" << std::endl;
 }
 
 void AudioSummingJunction::removeOutput(std::shared_ptr<AudioNodeOutput> o) {
     if (!o)
         return;
     
-    lock_guard<mutex> lock(junctionMutex);
+    std::lock_guard<std::mutex> lock(junctionMutex);
     bool modified = false;
     for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
         if (m_outputs[i] == o) {

@@ -22,19 +22,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
 
-#include "AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/AnalyserNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate)
-    : AudioNode(sampleRate)
+AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate) : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

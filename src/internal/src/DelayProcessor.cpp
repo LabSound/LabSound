@@ -22,17 +22,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DelayProcessor.h"
- 
-#include "DelayDSPKernel.h"
+#include "internal/AudioDSPKernelProcessor.h"
+#include "internal/DelayProcessor.h"
+#include "internal/DelayDSPKernel.h"
 
 using namespace std;
 
 namespace WebCore {
 
 DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime)
-    : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
+: AudioDSPKernelProcessor(sampleRate, numberOfChannels)
     , m_maxDelayTime(maxDelayTime)
 {
     m_delayTime = std::make_shared<AudioParam>("delayTime", 0.0, 0.0, maxDelayTime);
@@ -44,7 +43,7 @@ DelayProcessor::~DelayProcessor()
         uninitialize();
 }
 
-AudioDSPKernel* DelayProcessor::createKernel()
+AudioDSPKernel * DelayProcessor::createKernel()
 {
     return new DelayDSPKernel(this);
 }

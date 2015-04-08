@@ -29,7 +29,8 @@
 #ifndef AudioArray_h
 #define AudioArray_h
 
-#include "Assertions.h"
+#include "LabSound/extended/Assertions.h"
+
 #include <stdlib.h>
 #include <string.h>
 

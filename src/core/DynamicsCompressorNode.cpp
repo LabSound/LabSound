@@ -22,14 +22,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DynamicsCompressorNode.h"
+#include "LabSound/core/DynamicsCompressorNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "DynamicsCompressor.h"
-#include "AudioContextLock.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/DynamicsCompressor.h"
 
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;

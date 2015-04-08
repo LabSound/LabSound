@@ -31,14 +31,14 @@
 
 #include "LabSound/core/FloatPoint3D.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
 // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
-
 class AudioListener 
-
 {
 public:
+
     AudioListener();
 
     // Position
@@ -73,15 +73,16 @@ public:
     double speedOfSound() const { return m_speedOfSound; }
 
 private:
+
     // Position / Orientation
-    FloatPoint3D m_position;
-    FloatPoint3D m_orientation;
-    FloatPoint3D m_upVector;
+	FloatPoint3D m_position = {0, 0, 0};
+	FloatPoint3D m_orientation {0, 0, -1};
+	FloatPoint3D m_upVector = {0, 1, 0};
 
-    FloatPoint3D m_velocity;
+	FloatPoint3D m_velocity = {0, 0, 0};
 
-    double m_dopplerFactor;
-    double m_speedOfSound;
+    double m_dopplerFactor = 1.0;
+    double m_speedOfSound = 343.3;
 };
 
 } // WebCore

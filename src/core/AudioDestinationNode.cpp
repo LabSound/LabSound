@@ -22,19 +22,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioDestinationNode.h"
+#include "LabSound/core/AudioDestinationNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "AudioUtilities.h"
-#include "DenormalDisabler.h"
+#include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/AudioUtilities.h"
+#include "internal/DenormalDisabler.h"
 #include "internal/AudioSourceProvider.h"
+#include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
 	// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
     // If there is local/live audio input, we call set() with the audio input data every render quantum.
@@ -67,14 +68,15 @@ namespace WebCore {
     };
 
     
-AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate)
-    : AudioNode(sampleRate)
-    , m_currentSampleFrame(0)
-    , m_context(c)
+AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate) : AudioNode(sampleRate) , m_currentSampleFrame(0), m_context(c)
 {
+	m_localAudioInputProvider = new LocalAudioInputProvider();
+
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     setNodeType(NodeTypeDestination);
-    // note: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
+
+    // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
+	// initialize();
 }
 
 AudioDestinationNode::~AudioDestinationNode()
@@ -108,7 +110,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
-        m_localAudioInputProvider.set(sourceBus);
+        m_localAudioInputProvider->set(sourceBus);
 
     // This will cause the node(s) connected to this destination node to process, which in turn will pull on their input(s),
     // all the way backwards through the rendering graph.
@@ -129,6 +131,11 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     
     // Advance current sample-frame.
     m_currentSampleFrame += numberOfFrames;
+}
+
+AudioSourceProvider * AudioDestinationNode::localAudioInputProvider() 
+{ 
+	return static_cast<AudioSourceProvider*>(m_localAudioInputProvider); 
 }
 
 } // namespace WebCore

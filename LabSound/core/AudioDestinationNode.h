@@ -38,6 +38,10 @@ class AudioSourceProvider;
 class LocalAudioInputProvider;
 
 class AudioDestinationNode : public AudioNode, public AudioIOCallback {
+
+	class LocalAudioInputProvider;
+	LocalAudioInputProvider * m_localAudioInputProvider;
+
 public:
     AudioDestinationNode(std::shared_ptr<AudioContext>, float sampleRate);
     virtual ~AudioDestinationNode();
@@ -57,7 +61,7 @@ public:
 
     virtual void startRendering() = 0;
 
-    AudioSourceProvider * localAudioInputProvider() { return &m_localAudioInputProvider; }
+    AudioSourceProvider * localAudioInputProvider();
     
 protected:
 
@@ -68,7 +72,7 @@ protected:
     size_t m_currentSampleFrame;
 
     std::shared_ptr<AudioContext> m_context;
-    LocalAudioInputProvider m_localAudioInputProvider;
+
 };
 
 } // namespace WebCore

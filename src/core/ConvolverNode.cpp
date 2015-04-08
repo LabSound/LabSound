@@ -22,15 +22,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ConvolverNode.h"
 
-#include "AudioBuffer.h"
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "Reverb.h"
+#include "LabSound/core/ConvolverNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBuffer.h"
+
+#include "LabSound/extended/Assertions.h"
+
+#include "internal/AudioBus.h"
+#include "internal/Reverb.h"
 
 using namespace std;
 

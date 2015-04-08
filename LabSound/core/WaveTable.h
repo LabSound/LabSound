@@ -35,9 +35,10 @@
 namespace WebCore
 {
 
+	class AudioFloatArray;
+
 class WaveTable 
 {
-	class AudioFloatArray;
 
 public:
     static std::unique_ptr<WaveTable> createSine(float sampleRate);

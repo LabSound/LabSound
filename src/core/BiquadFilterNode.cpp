@@ -22,8 +22,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "BiquadFilterNode.h"
+#include "LabSound/core/BiquadFilterNode.h"
+
+#include "internal/BiquadProcessor.h"
 
 namespace WebCore {
 

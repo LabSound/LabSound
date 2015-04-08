@@ -22,20 +22,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioBasicProcessorNode.h"
+#include "LabSound/extended/Assertions.h"
 
-#include "AudioBus.h"
-#include "AudioContext.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "AudioProcessor.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioProcessor.h"
 
 namespace WebCore {
 
-AudioBasicProcessorNode::AudioBasicProcessorNode(float sampleRate)
-    : AudioNode(sampleRate)
+AudioBasicProcessorNode::AudioBasicProcessorNode(float sampleRate) : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -142,6 +140,11 @@ double AudioBasicProcessorNode::tailTime() const
 double AudioBasicProcessorNode::latencyTime() const
 {
     return m_processor->latencyTime();
+}
+
+AudioProcessor * AudioBasicProcessorNode::processor() 
+{ 
+	return m_processor.get(); 
 }
 
 } // namespace WebCore

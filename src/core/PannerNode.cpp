@@ -22,15 +22,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "PannerNode.h"
-#include "AudioContextLock.h"
-#include "AudioBufferSourceNode.h"
-#include "AudioBus.h"
-#include "AudioContext.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "HRTFPanner.h"
+#include "LabSound/core/PannerNode.h"
+#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/HRTFPanner.h"
+#include "internal/AudioBus.h"
+#include "internal/Panner.h"
+
 #include <wtf/MathExtras.h>
 
 using namespace std;
@@ -342,5 +345,28 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
         }
     }
 }
+
+unsigned short PannerNode::distanceModel() { return m_distanceEffect->model(); }
+float PannerNode::refDistance() { return static_cast<float>(m_distanceEffect->refDistance()); }
+
+void PannerNode::setRefDistance(float refDistance) { m_distanceEffect->setRefDistance(refDistance); }
+
+float PannerNode::maxDistance() { return static_cast<float>(m_distanceEffect->maxDistance()); }
+void PannerNode::setMaxDistance(float maxDistance) { m_distanceEffect->setMaxDistance(maxDistance); }
+
+float PannerNode::rolloffFactor() { return static_cast<float>(m_distanceEffect->rolloffFactor()); }
+void PannerNode::setRolloffFactor(float rolloffFactor) { m_distanceEffect->setRolloffFactor(rolloffFactor); }
+
+float PannerNode::coneInnerAngle() const { return static_cast<float>(m_coneEffect->innerAngle()); }
+void PannerNode::setConeInnerAngle(float angle) { m_coneEffect->setInnerAngle(angle); }
+
+float PannerNode::coneOuterAngle() const { return static_cast<float>(m_coneEffect->outerAngle()); }
+void PannerNode::setConeOuterAngle(float angle) { m_coneEffect->setOuterAngle(angle); }
+
+float PannerNode::coneOuterGain() const { return static_cast<float>(m_coneEffect->outerGain()); }
+void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angle); }
+
+double PannerNode::tailTime() const { return m_panner ? m_panner->tailTime() : 0; }
+double PannerNode::latencyTime() const { return m_panner ? m_panner->latencyTime() : 0; }
 
 } // namespace WebCore

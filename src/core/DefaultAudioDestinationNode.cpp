@@ -22,8 +22,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DefaultAudioDestinationNode.h"
+#include "LabSound/core/DefaultAudioDestinationNode.h"
+
+#include "LabSound/extended/Logging.h"
+#include "LabSound/extended/Assertions.h"
+
+#include "internal/AudioDestination.h"
 
 namespace WebCore {
     

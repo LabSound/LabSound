@@ -22,8 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "WaveShaperNode.h"
+#include "LabSound/core/WaveShaperNode.h"
+#include "internal/WaveShaperProcessor.h"
 
 namespace WebCore
 {

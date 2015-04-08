@@ -26,12 +26,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ChannelMergerNode.h"
+#include "LabSound/core/ChannelMergerNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/extended/Assertions.h"
+
+#include "internal/AudioBus.h"
 
 using namespace std;
 

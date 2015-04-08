@@ -22,18 +22,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "MediaStreamAudioSourceNode.h"
+#include "LabSound/core/MediaStreamAudioSourceNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeOutput.h"
-#include "Logging.h"
+#include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Logging.h"
+
+#include "internal/AudioSourceProvider.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 
 MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(std::shared_ptr<MediaStream> mediaStream,
-                                                       AudioSourceProvider* audioSourceProvider, float sampleRate)
+                                                       AudioSourceProvider * audioSourceProvider, float sampleRate)
     : AudioSourceNode(sampleRate)
     , m_mediaStream(mediaStream)
     , m_audioSourceProvider(audioSourceProvider)

@@ -22,33 +22,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioNodeInput.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNode.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioBus.h"
+
 #include <algorithm>
+#include <mutex>
 
 using namespace std;
  
-namespace WebCore {
+namespace WebCore 
+{
     
-    namespace {
-        mutex outputsMutex;
+    namespace 
+	{
+        std::mutex outputsMutex;
     }
 
-AudioNodeInput::AudioNodeInput(AudioNode* node)
-: AudioSummingJunction()
-, m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction() , m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeInput::connect(ContextGraphLock& g,
-                             std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!fromInput || !toOutput || !fromInput->node())
         return;
@@ -68,8 +70,7 @@ void AudioNodeInput::connect(ContextGraphLock& g,
     g.context()->incrementConnectionCount();
 }
 
-void AudioNodeInput::disconnect(ContextGraphLock& g,
-                                std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
     if (!fromInput || !toOutput || !fromInput->node())

@@ -22,16 +22,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "OscillatorNode.h"
+#include "LabSound/core/OscillatorNode.h"
+#include "LabSound/core/WaveTable.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioNodeInput.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeOutput.h"
-#include "AudioNodeInput.h"
-#include "AudioUtilities.h"
-#include "VectorMath.h"
-#include "WaveTable.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioUtilities.h"
+#include "internal/VectorMath.h"
+#include "internal/AudioBus.h"
+
 #include <algorithm>
 #include <wtf/MathExtras.h>
 

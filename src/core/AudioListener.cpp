@@ -26,20 +26,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioListener.h"
-#include "AudioBus.h"
+#include "LabSound/core/AudioListener.h"
+#include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
 AudioListener::AudioListener()
-    : m_position(0, 0, 0)
-    , m_orientation(0, 0, -1)
-    , m_upVector(0, 1, 0)
-    , m_velocity(0, 0, 0)
-    , m_dopplerFactor(1)
-    , m_speedOfSound(343.3)
 {
+
 }
 
 } // namespace WebCore

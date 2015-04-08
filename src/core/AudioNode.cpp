@@ -22,15 +22,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
-#include "AudioParam.h"
-#include "WTF/Atomics.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioBus.h"
+
+#include <WTF/Atomics.h>
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>

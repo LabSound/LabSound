@@ -22,15 +22,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "GainNode.h"
+#include "LabSound/core/GainNode.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioBus.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/extended/AudioContextLock.h"
 
-namespace WebCore {
+#include "internal/AudioBus.h"
+
+namespace WebCore 
+{
 
 GainNode::GainNode(float sampleRate)
     : AudioNode(sampleRate)

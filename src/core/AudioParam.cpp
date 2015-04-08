@@ -23,22 +23,25 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioParam.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioContextLock.h"
-#include "AudioNode.h"
-#include "AudioNodeOutput.h"
-#include "AudioUtilities.h"
-#include "FloatConversion.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/AudioUtilities.h"
+#include "internal/FloatConversion.h"
+#include "internal/AudioBus.h"
+
 #include <wtf/MathExtras.h>
 #include <algorithm>
 
-namespace WebCore {
+namespace WebCore 
+{
     
-    using namespace std;
-    namespace {
-        mutex paramMutex;
+    namespace 
+	{
+        std::mutex paramMutex;
     }
 
 const double AudioParam::DefaultSmoothingConstant = 0.05;
@@ -181,7 +184,7 @@ void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<Audi
         return;
     }
 
-    lock_guard<mutex> lock(paramMutex);
+    std::lock_guard<std::mutex> lock(paramMutex);
     
     int firstAvailableIdx = -1;
     for (size_t i = 0; i < param->m_outputs.size(); i++)
@@ -208,7 +211,7 @@ void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<A
 
     // Changed to support fixed-size arrays
     
-    lock_guard<mutex> lock(paramMutex);
+    std::lock_guard<std::mutex> lock(paramMutex);
     
     auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
     

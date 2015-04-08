@@ -22,13 +22,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 
-#include "AudioBus.h"
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioUtilities.h"
+#include "internal/AudioBus.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/extended/AudioContextLock.h"
+#include "internal/AudioUtilities.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
 

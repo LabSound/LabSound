@@ -26,12 +26,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "WaveTable.h"
+#include "LabSound/core/OscillatorNode.h"
+#include "LabSound/core/WaveTable.h"
 
-#include "FFTFrame.h"
-#include "OscillatorNode.h"
-#include "VectorMath.h"
+#include "LabSound/extended/Assertions.h"
+
+#include "internal/FFTFrame.h"
+#include "internal/VectorMath.h"
+#include "internal/AudioArray.h"
+
 #include <algorithm>
 #include <iostream>
 
@@ -39,7 +42,8 @@ const unsigned WaveTableSize = 4096; // This must be a power of two.
 const unsigned NumberOfRanges = 36; // There should be 3 * log2(WaveTableSize) 1/3 octave ranges.
 const float CentsPerRange = 1200 / 3; // 1/3 Octave.
 
-namespace WebCore {
+namespace WebCore 
+{
     
 using namespace VectorMath;
 
@@ -206,7 +210,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
         realP[0] = 0;
 
         // Create the band-limited table.
-        m_bandLimitedTables.push_back(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(m_waveTableSize)));
+        m_bandLimitedTables.push_back(std::unique_ptr<WebCore::AudioFloatArray>(new WebCore::AudioFloatArray(m_waveTableSize)));
 
         // Apply an inverse FFT to generate the time-domain table data.
         float* data = m_bandLimitedTables[rangeIndex]->data();
@@ -231,8 +235,8 @@ void WaveTable::generateBasicWaveform(int shape)
     unsigned fftSize = waveTableSize();
     unsigned halfSize = fftSize / 2;
 
-    AudioFloatArray real(halfSize);
-    AudioFloatArray imag(halfSize);
+    WebCore::AudioFloatArray real(halfSize);
+    WebCore::AudioFloatArray imag(halfSize);
     float* realP = real.data();
     float* imagP = imag.data();
 

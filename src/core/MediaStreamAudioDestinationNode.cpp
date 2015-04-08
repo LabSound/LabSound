@@ -22,19 +22,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "MediaStreamAudioDestinationNode.h"
+#include "LabSound/core/MediaStreamAudioDestinationNode.h"
 
-#include "AudioContext.h"
-#include "AudioNodeInput.h"
-#include "MediaStream.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/MediaStream.h"
+
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 
-MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate)
-    : AudioBasicInspectorNode(sampleRate)
-    , m_mixBus(numberOfChannels, ProcessingSizeInFrames)
+MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate) : AudioBasicInspectorNode(sampleRate)
 {
+	m_mixBus = new AudioBus(numberOfChannels, ProcessingSizeInFrames);
     setNodeType(NodeTypeMediaStreamAudioDestination);
 
     initialize();
@@ -48,18 +48,19 @@ MediaStreamSource* MediaStreamAudioDestinationNode::mediaStreamSource()
 MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
 {
     uninitialize();
+	delete m_mixBus; // Dimitri
 }
 
+//@tofix
 void MediaStreamAudioDestinationNode::process(ContextRenderLock&, size_t numberOfFrames)
 {
-    m_mixBus.copyFrom(*input(0)->bus());
+    m_mixBus->copyFrom(*input(0)->bus());
     
     // m_source is supposed to be derived from AudioDestinationConsumer.h
     // --- it should be very easy to pipe the audio from LabSound to something else via that API
     
-/* LabSound commented - will need to revisit later
-    m_source->consumeAudio(&m_mixBus, numberOfFrames);
- */
+	// LabSound commented - will need to revisit later
+	// m_source->consumeAudio(&m_mixBus, numberOfFrames);
 }
 
 void MediaStreamAudioDestinationNode::reset(std::shared_ptr<AudioContext>)

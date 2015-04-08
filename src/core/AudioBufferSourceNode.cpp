@@ -22,15 +22,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
-#include "AudioBufferSourceNode.h"
+#include "LabSound/extended/AudioContextLock.h"
 
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeOutput.h"
-#include "AudioUtilities.h"
-#include "FloatConversion.h"
+#include "internal/AudioUtilities.h"
+#include "internal/FloatConversion.h"
+#include "internal/AudioBus.h"
 
 #include <algorithm>
 #include <wtf/MathExtras.h>

@@ -93,27 +93,27 @@ public:
     void setVelocity(float x, float y, float z) { m_velocity = FloatPoint3D(x, y, z); }
 
     // Distance parameters
-    unsigned short distanceModel() { return m_distanceEffect.model(); }
+    unsigned short distanceModel();
     void setDistanceModel(unsigned short, ExceptionCode&);
 
-    float refDistance() { return static_cast<float>(m_distanceEffect.refDistance()); }
-    void setRefDistance(float refDistance) { m_distanceEffect.setRefDistance(refDistance); }
+    float refDistance();
+    void setRefDistance(float refDistance);
 
-    float maxDistance() { return static_cast<float>(m_distanceEffect.maxDistance()); }
-    void setMaxDistance(float maxDistance) { m_distanceEffect.setMaxDistance(maxDistance); }
+    float maxDistance();
+    void setMaxDistance(float maxDistance);
 
-    float rolloffFactor() { return static_cast<float>(m_distanceEffect.rolloffFactor()); }
-    void setRolloffFactor(float rolloffFactor) { m_distanceEffect.setRolloffFactor(rolloffFactor); }
+    float rolloffFactor();
+    void setRolloffFactor(float rolloffFactor);
 
     // Sound cones - angles in degrees
-    float coneInnerAngle() const { return static_cast<float>(m_coneEffect.innerAngle()); }
-    void setConeInnerAngle(float angle) { m_coneEffect.setInnerAngle(angle); }
+    float coneInnerAngle() const;
+    void setConeInnerAngle(float angle);
 
-    float coneOuterAngle() const { return static_cast<float>(m_coneEffect.outerAngle()); }
-    void setConeOuterAngle(float angle) { m_coneEffect.setOuterAngle(angle); }
+    float coneOuterAngle() const;
+    void setConeOuterAngle(float angle);
 
-    float coneOuterGain() const { return static_cast<float>(m_coneEffect.outerGain()); }
-    void setConeOuterGain(float angle) { m_coneEffect.setOuterGain(angle); }
+    float coneOuterGain() const;
+    void setConeOuterGain(float angle);
 
     void getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation);
     float dopplerRate(ContextRenderLock& r);
@@ -122,10 +122,11 @@ public:
     std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
     std::shared_ptr<AudioParam> coneGain() { return m_coneGain; }
 
-    virtual double tailTime() const override { return m_panner ? m_panner->tailTime() : 0; }
-    virtual double latencyTime() const override { return m_panner ? m_panner->latencyTime() : 0; }
+    virtual double tailTime() const override;
+    virtual double latencyTime() const override;
 
 protected:
+
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock& r);   /// @LabSound virtual
 

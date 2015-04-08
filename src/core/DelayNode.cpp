@@ -22,22 +22,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioDSPKernel.h"
-#include "DelayNode.h"
+#include "LabSound/core/DelayNode.h"
+#include "LabSound/core/AudioBasicProcessorNode.h"
+
+#include "internal/AudioDSPKernel.h"
+#include "internal/AudioProcessor.h"
+#include "internal/DelayProcessor.h"
 
 namespace WebCore {
 
 const double maximumAllowedDelayTime = 180;
 
-DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec)
-    : AudioBasicProcessorNode(sampleRate)
+DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec) : AudioBasicProcessorNode(sampleRate)
 {
     if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime) {
         ec = NOT_SUPPORTED_ERR;
         return;
     }
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(new DelayProcessor(sampleRate, 1, maxDelayTime)));
+    m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);
     initialize();
 }

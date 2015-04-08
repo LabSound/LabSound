@@ -26,17 +26,22 @@
 #define AudioBasicProcessorNode_h
 
 #include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioProcessor.h"
 #include <memory>
 
 namespace WebCore {
 
 class AudioBus;
 class AudioNodeInput;
-    
+class AudioProcessor;
+
 // AudioBasicProcessorNode is an AudioNode with one input and one output where the input and output have the same number of channels.
-class AudioBasicProcessorNode : public AudioNode {
+class AudioBasicProcessorNode : public AudioNode 
+{
+
+	std::unique_ptr<AudioProcessor> m_processor;
+
 public:
+
     AudioBasicProcessorNode(float sampleRate);
     virtual ~AudioBasicProcessorNode() {}
 
@@ -54,11 +59,12 @@ public:
     unsigned numberOfChannels();
 
 protected:
+
     virtual double tailTime() const override;
     virtual double latencyTime() const override;
 
-    AudioProcessor * processor() { return m_processor.get(); }
-    std::unique_ptr<AudioProcessor> m_processor;
+    AudioProcessor * processor();
+
 };
 
 } // namespace WebCore

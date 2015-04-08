@@ -23,15 +23,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioNode.h"
-#include "AudioParamTimeline.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioParamTimeline.h"
 
-#include "AudioUtilities.h"
-#include "FloatConversion.h"
+#include "internal/AudioUtilities.h"
+#include "internal/FloatConversion.h"
+#include "internal/AudioBus.h"
+
 #include <algorithm>
 #include <wtf/MathExtras.h>
-#include "Assertions.h"
+#include "LabSound/extended/Assertions.h"
 
 using namespace std;
 

@@ -22,23 +22,24 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioNodeOutput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioParam.h"
 
-#include "AudioBus.h"
-#include "AudioContext.h"
-#include "AudioContextLock.h"
-#include "AudioNodeInput.h"
-#include "AudioParam.h"
+#include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/AudioBus.h"
 #include <mutex>
 
 using namespace std;
 
-namespace WebCore {
+namespace WebCore 
+{
 
-namespace {
-    mutex outputMutex;
+namespace 
+{
+   std::mutex outputMutex;
 }
 
 AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)

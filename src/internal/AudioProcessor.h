@@ -31,11 +31,13 @@
 #ifndef AudioProcessor_h
 #define AudioProcessor_h
 
-namespace LabSound {
+namespace LabSound 
+{
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace WebCore 
+{
 
     using namespace LabSound;
     

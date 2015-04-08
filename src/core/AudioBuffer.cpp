@@ -26,12 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioBuffer.h"
+#include "LabSound/core/AudioBuffer.h"
 
-#include "AudioBus.h"
-#include "AudioContext.h"
-#include "AudioFileReader.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
+
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
 
 namespace WebCore {
 

@@ -22,19 +22,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "LabSound/extended/RealtimeAnalyser.h"
+#include "LabSound/extended/AudioContextLock.h"
 
-#include "RealtimeAnalyser.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioUtilities.h"
+#include "internal/FFTFrame.h"
+#include "internal/VectorMath.h"
 
-#include "AudioBus.h"
-#include "AudioUtilities.h"
-#include "FFTFrame.h"
-#include "VectorMath.h"
+#include <wtf/MathExtras.h>
 
 #include <algorithm>
 #include <limits.h>
 #include <complex>
-#include <wtf/MathExtras.h>
 
 using namespace std;
 
@@ -50,8 +50,10 @@ const size_t RealtimeAnalyser::MinFFTSize = 32;
 const size_t RealtimeAnalyser::MaxFFTSize = 2048;
 const size_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-namespace {
-    size_t roundNextPowerOfTwo(size_t v) {
+namespace 
+{
+    size_t roundNextPowerOfTwo(size_t v) 
+	{
         v--;
         v |= v >> 1;
         v |= v >> 2;
