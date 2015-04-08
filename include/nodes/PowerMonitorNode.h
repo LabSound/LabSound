@@ -1,6 +1,6 @@
-
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
+
 #pragma once
 
 #include "AudioBasicInspectorNode.h"
@@ -9,15 +9,16 @@
 
 namespace LabSound {
     
-    class PowerMonitorNode : public WebCore::AudioBasicInspectorNode {
+    class PowerMonitorNode : public WebCore::AudioBasicInspectorNode 
+	{
     public:
+
         PowerMonitorNode(float sampleRate);
+
         virtual ~PowerMonitorNode();
         
-        // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
         virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
-        // ..AudioNode
 
         // instantaneous estimation of power
         float db() const { return _db; }
@@ -37,11 +38,13 @@ namespace LabSound {
         size_t windowSize() const { return _windowSize; }
         
     private:
+
         virtual double tailTime() const override { return 0; }      // required for BasicInspector
         virtual double latencyTime() const override { return 0; }   // required for BasicInspector
 
         float _db;
         size_t _windowSize;
+
     };
 
 } // LabSound
