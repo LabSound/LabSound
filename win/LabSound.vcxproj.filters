@@ -85,9 +85,6 @@
     <Filter Include="LabSound\api %28public%29\extended\src">
       <UniqueIdentifier>{83e1b6db-d93a-4c9d-a94a-12154f51a51b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LabSound\api %28public%29\LabSound">
-      <UniqueIdentifier>{2cf90af0-ceb7-4ea6-81fe-6348bb401672}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\third_party\STK\SKINI.msg">
@@ -530,12 +527,6 @@
     <ClInclude Include="..\include\nodes\ClipNode.h">
       <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\nodes\BpmDelay.h">
-      <Filter>LabSound\api %28public%29\extended\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\nodes\EasyVerbNode.h">
-      <Filter>LabSound\api %28public%29\extended\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\nodes\NoiseNode.h">
       <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
@@ -716,9 +707,6 @@
     <ClInclude Include="..\include\internal\ReverbInputBuffer.h">
       <Filter>LabSound\implementation %28private%29\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\PlatformExportMacros.h">
-      <Filter>LabSound\api %28public%29\extended</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\Assertions.h">
       <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
@@ -730,6 +718,9 @@
     </ClInclude>
     <ClInclude Include="..\include\Logging.h">
       <Filter>LabSound\api %28public%29\extended\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PlatformExportMacros.h">
+      <Filter>LabSound\api %28public%29\core\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -862,13 +853,7 @@
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
       <Filter>LabSound\api %28public%29\extended\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\LabSound\BpmDelay.cpp">
-      <Filter>LabSound\api %28public%29\extended\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\LabSound\LabSound.cpp">
-      <Filter>LabSound\api %28public%29\extended\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\LabSound\EasyVerbNode.cpp">
       <Filter>LabSound\api %28public%29\extended\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\LabSound\ClipNode.cpp">

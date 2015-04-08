@@ -319,7 +319,6 @@
     <ClInclude Include="..\include\nodes\BiquadDSPKernel.h" />
     <ClInclude Include="..\include\nodes\BiquadFilterNode.h" />
     <ClInclude Include="..\include\nodes\BiquadProcessor.h" />
-    <ClInclude Include="..\include\nodes\BpmDelay.h" />
     <ClInclude Include="..\include\nodes\ChannelMergerNode.h" />
     <ClInclude Include="..\include\nodes\ChannelSplitterNode.h" />
     <ClInclude Include="..\include\nodes\ClipNode.h" />
@@ -330,7 +329,6 @@
     <ClInclude Include="..\include\nodes\DelayProcessor.h" />
     <ClInclude Include="..\include\nodes\DiodeNode.h" />
     <ClInclude Include="..\include\nodes\DynamicsCompressorNode.h" />
-    <ClInclude Include="..\include\nodes\EasyVerbNode.h" />
     <ClInclude Include="..\include\nodes\GainNode.h" />
     <ClInclude Include="..\include\nodes\MediaStreamAudioDestinationNode.h" />
     <ClInclude Include="..\include\nodes\MediaStreamAudioSourceNode.h" />
@@ -469,12 +467,10 @@
     <ClCompile Include="..\src\kissfft\kiss_fftr.cpp" />
     <ClCompile Include="..\src\LabSound\ADSRNode.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\LabSound\BpmDelay.cpp" />
     <ClCompile Include="..\src\LabSound\ClipNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\DiodeNode.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\LabSound\EasyVerbNode.cpp" />
     <ClCompile Include="..\src\LabSound\LabSound.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\NoiseNode.cpp">

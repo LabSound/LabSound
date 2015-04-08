@@ -52,7 +52,6 @@
 #include "SpectralMonitorNode.h"
 #include "STKNode.h"
 #include "SampledInstrumentNode.h"
-#include "EasyVerbNode.h"
 #include "RecorderNode.h"
 
 namespace LabSound 
