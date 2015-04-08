@@ -23,13 +23,12 @@
 
  */
 
-#include "LabSoundConfig.h"
+#include "LabSound/extended/LabSoundConfig.h"
+#include "LabSound/extended/SoundBuffer.h"
 
-#include "AudioBus.h"
-#include "AudioFileReader.h"
-#include "AutodrainedPool.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
 
-#include "SoundBuffer.h"
 #include <direct.h>
 #include <iostream>
 #include <stdlib.h>

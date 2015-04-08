@@ -25,8 +25,8 @@
 #ifndef RealtimeAnalyser_h
 #define RealtimeAnalyser_h
 
-#include "AudioArray.h"
-#include "AudioContextLock.h"
+#include "LabSound/core/AudioArray.h"
+#include "LabSound/extended/AudioContextLock.h"
 #include <vector>
 
 namespace WebCore {
@@ -72,6 +72,7 @@ public:
     static const size_t InputBufferSize;
 
 private:
+
     // The audio thread writes the input audio here.
     AudioFloatArray m_inputBuffer;
     unsigned m_writeIndex;

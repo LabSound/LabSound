@@ -26,13 +26,14 @@
 #define DelayNode_h
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
-#include "LabSound/core/DelayProcessor.h"
 
 namespace WebCore {
 
 class AudioParam;
+class DelayProcessor;
 
-enum DelayValues {
+enum DelayValues 
+{
 	D_32 = 0,
 	D_16T = 1,
 	D_32D = 2,
@@ -47,7 +48,7 @@ public:
     std::shared_ptr<AudioParam> delayTime();
 
 private:
-    DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
+    DelayProcessor * delayProcessor();
 };
 
 } // namespace WebCore

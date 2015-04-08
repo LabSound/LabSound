@@ -25,7 +25,8 @@
 #ifndef DelayDSPKernel_h
 #define DelayDSPKernel_h
 
-#include "internal/AudioArray.h"
+#include "LabSound/core/AudioArray.h"
+
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
 

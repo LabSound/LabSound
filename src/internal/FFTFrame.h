@@ -29,9 +29,10 @@
 #ifndef FFTFrame_h
 #define FFTFrame_h
 
+#include "LabSound/core/AudioArray.h"
+
 #include "LabSound/extended/LabSoundConfig.h"
 
-#include "AudioArray.h"
 #include <vector>
 
 #if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)

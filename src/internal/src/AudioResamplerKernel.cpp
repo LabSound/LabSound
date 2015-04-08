@@ -24,8 +24,8 @@
 
 #include "internal/AudioResamplerKernel.h"
 #include "internal/AudioResampler.h"
+#include "internal/AudioResampler.h"
 
-#include "AudioResampler.h"
 #include <algorithm>
 
 using namespace std;

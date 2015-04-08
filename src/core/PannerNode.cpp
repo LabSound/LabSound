@@ -33,6 +33,8 @@
 #include "internal/HRTFPanner.h"
 #include "internal/AudioBus.h"
 #include "internal/Panner.h"
+#include "internal/Cone.h"
+#include "internal/Distance.h"
 
 #include <wtf/MathExtras.h>
 
@@ -68,7 +70,9 @@ PannerNode::PannerNode(float sampleRate)
 }
 
 PannerNode::~PannerNode()
-{
+{	
+	delete m_distanceEffect;
+	delete m_coneEffect;
     uninitialize();
 }
 
@@ -143,6 +147,7 @@ void PannerNode::initialize()
 
 void PannerNode::uninitialize()
 {
+
     if (!isInitialized())
         return;
         
@@ -179,15 +184,16 @@ void PannerNode::setPanningModel(unsigned short model, ExceptionCode& ec)
 
 void PannerNode::setDistanceModel(unsigned short model, ExceptionCode& ec)
 {
-    switch (model) {
-    case DistanceEffect::ModelLinear:
-    case DistanceEffect::ModelInverse:
-    case DistanceEffect::ModelExponential:
-        m_distanceEffect.setModel(static_cast<DistanceEffect::ModelType>(model), true);
-        break;
-    default:
-        ec = NOT_SUPPORTED_ERR;
-        break;
+    switch (model) 
+	{
+		case DistanceEffect::ModelLinear:
+		case DistanceEffect::ModelInverse:
+		case DistanceEffect::ModelExponential:
+			m_distanceEffect->setModel(static_cast<DistanceEffect::ModelType>(model), true);
+			break;
+		default:
+			ec = NOT_SUPPORTED_ERR;
+			break;
     }
 }
 
@@ -308,12 +314,12 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     FloatPoint3D listenerPosition = listener(r)->position();
 
     double listenerDistance = m_position.distanceTo(listenerPosition);
-    double distanceGain = m_distanceEffect.gain(listenerDistance);
+    double distanceGain = m_distanceEffect->gain(listenerDistance);
     
     m_distanceGain->setValue(static_cast<float>(distanceGain));
 
     // FIXME: could optimize by caching coneGain
-    double coneGain = m_coneEffect.gain(m_position, m_orientation, listenerPosition);
+    double coneGain = m_coneEffect->gain(m_position, m_orientation, listenerPosition);
     
     m_coneGain->setValue(static_cast<float>(coneGain));
 

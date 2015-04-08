@@ -26,8 +26,6 @@
 #define MediaStreamAudioSourceNode_h
 
 #include "LabSound/core/AudioSourceNode.h"
-#include "LabSound/core/AudioSourceProvider.h"
-#include "LabSound/core/AudioSourceProviderClient.h"
 #include "LabSound/core/MediaStream.h"
 
 namespace WebCore {
@@ -35,8 +33,11 @@ namespace WebCore {
 class AudioContext;
     
 
-class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient {
+class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient 
+{
+
 public:
+
     MediaStreamAudioSourceNode(std::shared_ptr<MediaStream>, AudioSourceProvider*, float sampleRate);
     virtual ~MediaStreamAudioSourceNode();
 

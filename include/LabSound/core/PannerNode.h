@@ -38,14 +38,14 @@ namespace WebCore {
 // A distance effect will attenuate the gain as the position moves away from the listener.
 // A cone effect will attenuate the gain as the orientation moves away from the listener.
 // All of these effects follow the OpenAL specification very closely.
+	
+class DistanceEffect;
+class ConeEffect;
+class AudioBus;
+class Panner;
 
 class PannerNode : public AudioNode 
 {
-
-	class DistanceEffect;
-	class ConeEffect;
-	class AudioBus;
-	class Panner;
 
 public:
 
@@ -145,7 +145,7 @@ protected:
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
 
-    DistanceEffect * m_distanceEffect;
+	DistanceEffect * m_distanceEffect;
     ConeEffect * m_coneEffect;
     float m_lastGain;
 

@@ -28,12 +28,12 @@
 
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/WaveTable.h"
+#include "LabSound/core/AudioArray.h"
 
 #include "LabSound/extended/Assertions.h"
 
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
-#include "internal/AudioArray.h"
 
 #include <algorithm>
 #include <iostream>

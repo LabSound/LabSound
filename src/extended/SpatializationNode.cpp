@@ -2,11 +2,10 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "LabSound/core/PannerNode.h"
+#include "LabSound/core/FloatPoint3D.h"
 
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-
-#include "internal/FloatPoint3D.h"
 
 #include <wtf/MathExtras.h>
 

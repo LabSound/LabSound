@@ -27,15 +27,14 @@
  */
 
 #include "internal/HRTFElevation.h"
-
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
 #include "internal/HRTFPanner.h"
+
 #include <algorithm>
 #include <math.h>
-
 #include <iostream>
 #include <map>
 #include <string>

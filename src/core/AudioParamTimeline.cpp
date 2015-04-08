@@ -26,13 +26,14 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
 
+#include "LabSound/extended/Assertions.h"
+
 #include "internal/AudioUtilities.h"
 #include "internal/FloatConversion.h"
 #include "internal/AudioBus.h"
 
-#include <algorithm>
 #include <wtf/MathExtras.h>
-#include "LabSound/extended/Assertions.h"
+#include <algorithm>
 
 using namespace std;
 

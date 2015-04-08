@@ -1,12 +1,14 @@
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#include "LabSound/extended/SpectralMonitorNode.h"
-
-#include "internal/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/WindowFunctions.h"
+
+#include "LabSound/extended/SpectralMonitorNode.h"
+
+#include "internal/AudioBus.h"
+
 #include <ooura/fftsg.h>
 
 namespace LabSound {

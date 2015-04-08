@@ -25,7 +25,7 @@
 #ifndef AudioResamplerKernel_h
 #define AudioResamplerKernel_h
 
-#include "internal/AudioArray.h"
+#include "LabSound/core/AudioArray.h"
 
 namespace LabSound {
     class ContextRenderLock;

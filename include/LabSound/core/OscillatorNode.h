@@ -27,11 +27,11 @@
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/WaveTable.h"
 
 namespace WebCore {
 
 class AudioContext;
-class WaveTable;
 class AudioBus;
 
 class OscillatorNode : public AudioScheduledSourceNode

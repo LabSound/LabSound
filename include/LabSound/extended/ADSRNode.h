@@ -5,7 +5,6 @@
 #define LabSound_ADSRNode_h_impl
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"

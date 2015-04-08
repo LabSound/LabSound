@@ -31,7 +31,7 @@
 #include <limits>
 
 #if COMPILER(MSVC)
-#include "Assertions.h"
+#include "LabSound/extended/Assertions.h"
 #include <stdint.h>
 #endif
 

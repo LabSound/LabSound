@@ -26,10 +26,10 @@
 
 #include "internal/BiquadProcessor.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
-BiquadFilterNode::BiquadFilterNode(float sampleRate)
-    : AudioBasicProcessorNode(sampleRate)
+BiquadFilterNode::BiquadFilterNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
 {
     // Initially setup as lowpass filter.
     m_processor.reset(new BiquadProcessor(sampleRate, 1, false));
@@ -62,6 +62,36 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
     if (n) {
         biquadProcessor()->getFrequencyResponse(r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
+}
+
+BiquadProcessor * BiquadFilterNode::biquadProcessor() 
+{ 
+	return static_cast<BiquadProcessor*>(processor()); 
+}
+
+unsigned short BiquadFilterNode::type() 
+{ 
+	return biquadProcessor()->type(); 
+}
+
+std::shared_ptr<AudioParam> BiquadFilterNode::frequency() 
+{ 
+	return biquadProcessor()->parameter1(); 
+}
+
+std::shared_ptr<AudioParam> BiquadFilterNode::q() 
+{ 
+	return biquadProcessor()->parameter2(); 
+}
+std
+::shared_ptr<AudioParam> BiquadFilterNode::gain() 
+{ 
+	return biquadProcessor()->parameter3(); 
+}
+
+std::shared_ptr<AudioParam> BiquadFilterNode::detune() 
+{ 
+	return biquadProcessor()->parameter4(); 
 }
 
 } // namespace WebCore

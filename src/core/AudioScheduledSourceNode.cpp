@@ -23,13 +23,15 @@
  */
 
 #include "LabSound/core/AudioScheduledSourceNode.h"
-
-#include "internal/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
+
 #include "LabSound/extended/AudioContextLock.h"
+
 #include "internal/AudioUtilities.h"
-#include <algorithm>
+#include "internal/AudioBus.h"
+
 #include <wtf/MathExtras.h>
+#include <algorithm>
 
 using namespace std;
 

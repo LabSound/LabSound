@@ -29,7 +29,8 @@
 #ifndef ReverbConvolver_h
 #define ReverbConvolver_h
 
-#include "internal/AudioArray.h"
+#include "LabSound/core/AudioArray.h"
+
 #include "internal/DirectConvolver.h"
 #include "internal/FFTConvolver.h"
 #include "internal/ReverbAccumulationBuffer.h"

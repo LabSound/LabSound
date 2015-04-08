@@ -28,6 +28,7 @@
 #include <set>
 #include <vector>
 #include <array>
+#include <memory>
 
 namespace LabSound 
 {

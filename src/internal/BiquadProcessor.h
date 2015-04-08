@@ -30,6 +30,7 @@
 #include "internal/Biquad.h"
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 

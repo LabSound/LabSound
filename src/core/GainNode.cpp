@@ -23,9 +23,9 @@
  */
 
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioArray.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 

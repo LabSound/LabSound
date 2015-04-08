@@ -29,16 +29,19 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
 
-namespace WebCore {
+namespace WebCore
+{
 
 const double maximumAllowedDelayTime = 180;
 
 DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec) : AudioBasicProcessorNode(sampleRate)
 {
-    if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime) {
+    if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime) 
+	{
         ec = NOT_SUPPORTED_ERR;
         return;
     }
+
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);
     initialize();
@@ -47,6 +50,11 @@ DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec) :
 std::shared_ptr<AudioParam> DelayNode::delayTime()
 {
     return delayProcessor()->delayTime();
+}
+
+DelayProcessor * DelayNode::delayProcessor() 
+{ 
+	return static_cast<DelayProcessor*>(processor()); 
 }
 
 } // namespace WebCore

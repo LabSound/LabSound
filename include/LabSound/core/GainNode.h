@@ -27,6 +27,7 @@
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioArray.h"
 
 namespace WebCore {
 

@@ -29,20 +29,26 @@
 #ifndef DynamicsCompressorKernel_h
 #define DynamicsCompressorKernel_h
 
-#include "internal/AudioArray.h"
+#include "LabSound/core/AudioArray.h"
+
 #include <vector>
 #include <memory>
 
-namespace LabSound {
+namespace LabSound 
+{
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace WebCore 
+{
 
     using namespace LabSound;
     
-class DynamicsCompressorKernel {
+class DynamicsCompressorKernel 
+{
+
 public:
+
     DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels);
 
     void setNumberOfChannels(unsigned);

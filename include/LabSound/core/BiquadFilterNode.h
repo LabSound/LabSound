@@ -26,12 +26,12 @@
 #define BiquadFilterNode_h
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
-#include "LabSound/core/BiquadProcessor.h"
 
 namespace WebCore {
 
 class AudioParam;
-    
+class BiquadProcessor;
+
 class BiquadFilterNode : public AudioBasicProcessorNode {
 public:
     // These must be defined as in the .idl file and must match those in the BiquadProcessor class.
@@ -48,13 +48,13 @@ public:
     
     BiquadFilterNode(float sampleRate);
     
-    unsigned short type() { return biquadProcessor()->type(); }
+    unsigned short type();
     void setType(unsigned short type, ExceptionCode&);
 
-    std::shared_ptr<AudioParam> frequency() { return biquadProcessor()->parameter1(); }
-    std::shared_ptr<AudioParam> q() { return biquadProcessor()->parameter2(); }
-    std::shared_ptr<AudioParam> gain() { return biquadProcessor()->parameter3(); }
-    std::shared_ptr<AudioParam> detune() { return biquadProcessor()->parameter4(); }
+    std::shared_ptr<AudioParam> frequency();
+    std::shared_ptr<AudioParam> q();
+    std::shared_ptr<AudioParam> gain();
+    std::shared_ptr<AudioParam> detune();
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
@@ -65,7 +65,7 @@ public:
 
 private:
 
-    BiquadProcessor* biquadProcessor() { return static_cast<BiquadProcessor*>(processor()); }
+    BiquadProcessor * biquadProcessor();
 };
 
 } // namespace WebCore

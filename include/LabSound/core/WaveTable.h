@@ -29,13 +29,13 @@
 #ifndef WaveTable_h
 #define WaveTable_h
 
+#include "LabSound/core/AudioArray.h"
+
 #include <vector>
 #include <memory>
 
 namespace WebCore
 {
-
-	class AudioFloatArray;
 
 class WaveTable 
 {
@@ -89,7 +89,7 @@ private:
 
     // Creates tables based on numberOfComponents Fourier coefficients.
     void createBandLimitedTables(const float* real, const float* imag, unsigned numberOfComponents);
-    std::vector<std::unique_ptr<AudioFloatArray> > m_bandLimitedTables;
+    std::vector<std::unique_ptr<WebCore::AudioFloatArray> > m_bandLimitedTables;
 };
 
 } // namespace WebCore

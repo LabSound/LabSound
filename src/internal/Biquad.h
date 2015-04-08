@@ -29,8 +29,9 @@
 #ifndef Biquad_h
 #define Biquad_h
 
+#include "LabSound/core/AudioArray.h"
+
 #include "LabSound/extended/LabSoundConfig.h"
-#include "internal/AudioArray.h"
 
 #include <sys/types.h>
 #include <complex>

@@ -29,13 +29,23 @@
 #ifndef AudioSourceProvider_h
 #define AudioSourceProvider_h
 
+#include "LabSound/extended/AudioContextLock.h"
+
 namespace WebCore {
 
 class AudioBus;
-class AudioSourceProviderClient;
-    
+
+class AudioSourceProviderClient 
+{
+	public:
+		virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) = 0;
+	protected:
+		virtual ~AudioSourceProviderClient() { }
+};
+
 // Abstract base-class for a pull-model client.
-class AudioSourceProvider {
+class AudioSourceProvider 
+{
 public:
     // provideInput() gets called repeatedly to render time-slices of a continuous audio stream.
     virtual void provideInput(AudioBus* bus, size_t framesToProcess) = 0;
