@@ -26,10 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ReverbAccumulationBuffer.h"
+#include "LabSound/extended/Assertions.h"
 
-#include "VectorMath.h"
+#include "internal/ReverbAccumulationBuffer.h"
+#include "internal/VectorMath.h"
+
 #include <algorithm>
 
 namespace WebCore {

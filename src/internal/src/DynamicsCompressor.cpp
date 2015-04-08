@@ -26,12 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "DynamicsCompressor.h"
+#include "LabSound/extended/Assertions.h"
 
-#include "AudioBus.h"
-#include "AudioUtilities.h"
-#include "Assertions.h"
-
+#include "internal/DynamicsCompressor.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioUtilities.h"
 #include <wtf/MathExtras.h>
 
 namespace WebCore {

@@ -22,10 +22,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "WaveShaperDSPKernel.h"
+#include "LabSound/extended/LabSoundConfig.h"
 
-#include "WaveShaperProcessor.h"
+#include "internal/WaveShaperDSPKernel.h"
+#include "internal/WaveShaperProcessor.h"
+
 #include <algorithm>
 
 using namespace std;

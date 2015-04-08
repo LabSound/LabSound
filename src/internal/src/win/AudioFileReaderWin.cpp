@@ -27,20 +27,18 @@
 
 */
 
-#include "LabSoundConfig.h"
+#include "internal/win/AudioFileReaderWin.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
+#include "internal/FloatConversion.h"
 
-#include "AudioFileReaderWin.h"
-
-#include "AudioBus.h"
-#include "AudioFileReader.h"
-#include "FloatConversion.h"
 #include <string>
 #include <iostream>
 
 namespace WebCore 
 {
 
-AudioFileReader::AudioFileReader(const char* filePath) :  m_data(0), m_dataSize(0) 
+AudioFileReader::AudioFileReader(const char* filePath) : m_data(0), m_dataSize(0) 
 {
 
 }
@@ -55,7 +53,8 @@ AudioFileReader::~AudioFileReader()
 
 }
 
-std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono) {
+std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono) 
+{
 
 	/*
 	// m_data

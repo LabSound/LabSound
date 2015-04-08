@@ -26,10 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "HRTFDatabaseLoader.h"
+#include "internal/HRTFDatabaseLoader.h"
+#include "internal/HRTFDatabase.h"
 
-#include "HRTFDatabase.h"
 #include <iostream>
 
 namespace WebCore {

@@ -26,9 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "Assertions.h"
-#include "Distance.h"
+#include "LabSound/extended/Assertions.h"
+
+#include "internal/Distance.h"
 
 #include <algorithm>
 #include <math.h>
@@ -38,11 +38,6 @@ using namespace std;
 namespace WebCore {
 
 DistanceEffect::DistanceEffect()
-    : m_model(ModelInverse)
-    , m_isClamped(true)
-    , m_refDistance(1.0)
-    , m_maxDistance(10000.0)
-    , m_rolloffFactor(1.0)
 {
 }
 

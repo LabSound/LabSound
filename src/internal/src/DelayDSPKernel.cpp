@@ -22,11 +22,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DelayDSPKernel.h"
+#include "LabSound/core/AudioNode.h"
 
-#include "AudioNode.h"
-#include "AudioUtilities.h"
+#include "internal/DelayDSPKernel.h"
+#include "internal/AudioUtilities.h"
+
 #include <algorithm>
 
 using namespace std;

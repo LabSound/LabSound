@@ -25,8 +25,8 @@
 #ifndef WaveShaperDSPKernel_h
 #define WaveShaperDSPKernel_h
 
-#include "AudioDSPKernel.h"
-#include "WaveShaperProcessor.h"
+#include "internal/AudioDSPKernel.h"
+#include "internal/WaveShaperProcessor.h"
 
 namespace WebCore {
 

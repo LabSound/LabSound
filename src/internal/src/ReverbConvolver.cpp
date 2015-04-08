@@ -26,12 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ReverbConvolver.h"
+#include "LabSound/extended/AudioContextLock.h"
 
-#include "VectorMath.h"
-#include "AudioContextLock.h"
-#include "AudioBus.h"
+#include "internal/ReverbConvolver.h"
+#include "internal/VectorMath.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 

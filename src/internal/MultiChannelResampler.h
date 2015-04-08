@@ -29,7 +29,8 @@
 #ifndef MultiChannelResampler_h
 #define MultiChannelResampler_h
 
-#include "SincResampler.h"
+#include "internal/SincResampler.h"
+
 #include <vector>
 #include <memory>
 

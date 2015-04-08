@@ -26,8 +26,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioFIFO.h"
+
+#include "internal/AudioFIFO.h"
 
 namespace WebCore {
 

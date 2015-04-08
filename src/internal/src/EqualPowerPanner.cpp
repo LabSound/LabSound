@@ -22,11 +22,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "EqualPowerPanner.h"
+#include "internal/EqualPowerPanner.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioUtilities.h"
 
-#include "AudioBus.h"
-#include "AudioUtilities.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
 

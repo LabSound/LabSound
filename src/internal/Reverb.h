@@ -29,7 +29,8 @@
 #ifndef Reverb_h
 #define Reverb_h
 
-#include "ReverbConvolver.h"
+#include "internal/ReverbConvolver.h"
+
 #include <vector>
 
 namespace WebCore {

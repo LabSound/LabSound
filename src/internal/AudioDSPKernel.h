@@ -31,7 +31,7 @@
 #ifndef AudioDSPKernel_h
 #define AudioDSPKernel_h
 
-#include "AudioContextLock.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 namespace WebCore {
 

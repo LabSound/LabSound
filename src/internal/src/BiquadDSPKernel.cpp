@@ -22,11 +22,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "BiquadDSPKernel.h"
+#include "internal/BiquadDSPKernel.h"
+#include "internal/BiquadProcessor.h"
+#include "internal/FloatConversion.h"
 
-#include "BiquadProcessor.h"
-#include "FloatConversion.h"
 #include <limits.h>
 #include <vector>
 

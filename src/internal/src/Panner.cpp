@@ -26,11 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "Panner.h"
-
-#include "EqualPowerPanner.h"
-#include "HRTFPanner.h"
+#include "internal/Panner.h"
+#include "internal/EqualPowerPanner.h"
+#include "internal/HRTFPanner.h"
 
 namespace WebCore {
 

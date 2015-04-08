@@ -29,6 +29,8 @@
 #ifndef AudioFileReaderWin_h
 #define AudioFileReaderWin_h
 
+#include <memory>
+
 namespace WebCore {
 
 class AudioBus;
@@ -44,7 +46,7 @@ public:
     ~AudioFileReader();
 
     // Returns 0 if error
-    std::unique_ptr<AudioBus> createBus(float sampleRate, bool mixToMono);
+    std::unique_ptr<WebCore::AudioBus> createBus(float sampleRate, bool mixToMono);
 
     const void * data() const { return m_data; }
     size_t dataSize() const { return m_dataSize; }

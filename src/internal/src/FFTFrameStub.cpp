@@ -25,7 +25,8 @@
 
 // FFTFrame stub implementation to avoid link errors during bringup
 
-#include "LabSoundConfig.h"
+#include "LabSound/extended/LabSoundConfig.h"
+
 #if !OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 
 #include "FFTFrame.h"

@@ -29,7 +29,7 @@
 #ifndef HRTFElevation_h
 #define HRTFElevation_h
 
-#include "HRTFKernel.h"
+#include "internal/HRTFKernel.h"
 #include <string>
 
 namespace WebCore {

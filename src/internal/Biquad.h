@@ -29,21 +29,22 @@
 #ifndef Biquad_h
 #define Biquad_h
 
-#include "LabSoundConfig.h"
-#include "AudioArray.h"
+#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/AudioArray.h"
+
 #include <sys/types.h>
 #include <complex>
 
-
-namespace WebCore {
+namespace WebCore 
+{
 
 // A basic biquad (two-zero / two-pole digital filter)
-//
 // It can be configured to a number of common and very useful filters:
-//    lowpass, highpass, shelving, parameteric, notch, allpass, ...
-
-class Biquad {
+// lowpass, highpass, shelving, parameteric, notch, allpass, ...
+class Biquad 
+{
 public:   
+
     Biquad();
     virtual ~Biquad();
 
@@ -93,10 +94,8 @@ private:
 #if OS(DARWIN)
     void processFast(const float* sourceP, float* destP, size_t framesToProcess);
     void processSliceFast(double* sourceP, double* destP, double* coefficientsP, size_t framesToProcess);
-
     AudioDoubleArray m_inputBuffer;
     AudioDoubleArray m_outputBuffer;
-
 #else
     // Filter memory
     double m_x1; // input delayed by 1 sample
@@ -104,6 +103,7 @@ private:
     double m_y1; // output delayed by 1 sample
     double m_y2; // output delayed by 2 samples
 #endif
+
 };
 
 } // namespace WebCore

@@ -22,13 +22,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "HRTFPanner.h"
+#include "internal/HRTFPanner.h"
+#include "internal/AudioBus.h"
+#include "internal/FFTConvolver.h"
+#include "internal/HRTFDatabase.h"
+#include "internal/HRTFDatabaseLoader.h"
 
-#include "AudioBus.h"
-#include "FFTConvolver.h"
-#include "HRTFDatabase.h"
-#include "HRTFDatabaseLoader.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
 

@@ -28,14 +28,13 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-#include "LabSoundConfig.h"
 
-#include "AudioDestinationWin.h"
+#include "internal/win/AudioDestinationWin.h"
+#include "internal/FloatConversion.h"
+#include "internal/VectorMath.h"
 
-#include "AudioIOCallback.h"
-#include "FloatConversion.h"
-#include "VectorMath.h"
-#include "AudioNode.h"
+#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioIOCallback.h"
 
 namespace WebCore
 {

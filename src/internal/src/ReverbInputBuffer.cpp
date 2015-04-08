@@ -26,14 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ReverbInputBuffer.h"
+#include "internal/ReverbInputBuffer.h"
 
 namespace WebCore {
 
-ReverbInputBuffer::ReverbInputBuffer(size_t length)
-    : m_buffer(length)
-    , m_writeIndex(0)
+ReverbInputBuffer::ReverbInputBuffer(size_t length): m_buffer(length), m_writeIndex(0)
 {
 }
 

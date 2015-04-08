@@ -26,14 +26,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "FFTFrame.h"
+#include "LabSound/extended/Logging.h"
+
+#include "internal/FFTFrame.h"
 
 #ifndef NDEBUG
 #include <stdio.h>
 #endif
 
-#include "Logging.h"
 #include <complex>
 #include <wtf/MathExtras.h>
 

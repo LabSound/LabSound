@@ -26,14 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DirectConvolver.h"
+#include "internal/DirectConvolver.h"
+#include "internal/VectorMath.h"
 
 #if OS(DARWIN)
 #include <Accelerate/Accelerate.h>
 #endif
-
-#include "VectorMath.h"
 
 namespace WebCore {
 

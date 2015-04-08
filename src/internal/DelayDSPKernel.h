@@ -25,9 +25,9 @@
 #ifndef DelayDSPKernel_h
 #define DelayDSPKernel_h
 
-#include "LabSound/core/AudioArray.h"
-#include "LabSound/core/AudioDSPKernel.h"
-#include "LabSound/core/DelayProcessor.h"
+#include "internal/AudioArray.h"
+#include "internal/AudioDSPKernel.h"
+#include "internal/DelayProcessor.h"
 
 namespace WebCore {
 
@@ -60,7 +60,7 @@ private:
 
     AudioFloatArray m_delayTimes;
 
-    DelayProcessor* delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
+    DelayProcessor * delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
     size_t bufferLengthForDelay(double delayTime, double sampleRate) const;
 };
 

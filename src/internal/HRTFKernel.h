@@ -29,7 +29,7 @@
 #ifndef HRTFKernel_h
 #define HRTFKernel_h
 
-#include "FFTFrame.h"
+#include "internal/FFTFrame.h"
 #include <vector>
 
 namespace WebCore {

@@ -26,13 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "HRTFKernel.h"
+#include "internal/HRTFKernel.h"
+#include "internal/AudioChannel.h"
+#include "internal/Biquad.h"
+#include "internal/FFTFrame.h"
+#include "internal/FloatConversion.h"
 
-#include "AudioChannel.h"
-#include "Biquad.h"
-#include "FFTFrame.h"
-#include "FloatConversion.h"
 #include <wtf/MathExtras.h>
 
 using namespace std;

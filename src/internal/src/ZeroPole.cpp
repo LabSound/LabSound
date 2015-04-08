@@ -26,10 +26,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "ZeroPole.h"
-
-#include "DenormalDisabler.h"
+#include "internal/ZeroPole.h"
+#include "internal/DenormalDisabler.h"
 
 namespace WebCore {
 

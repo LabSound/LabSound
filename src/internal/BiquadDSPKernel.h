@@ -27,9 +27,9 @@
 #ifndef BiquadDSPKernel_h
 #define BiquadDSPKernel_h
 
-#include "LabSound/core/AudioDSPKernel.h"
-#include "LabSound/core/Biquad.h"
-#include "LabSound/core/BiquadProcessor.h"
+#include "internal/AudioDSPKernel.h"
+#include "internal/Biquad.h"
+#include "internal/BiquadProcessor.h"
 
 namespace WebCore {
 

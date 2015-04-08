@@ -29,12 +29,12 @@
 #ifndef ReverbConvolver_h
 #define ReverbConvolver_h
 
-#include "AudioArray.h"
-#include "DirectConvolver.h"
-#include "FFTConvolver.h"
-#include "ReverbAccumulationBuffer.h"
-#include "ReverbConvolverStage.h"
-#include "ReverbInputBuffer.h"
+#include "internal/AudioArray.h"
+#include "internal/DirectConvolver.h"
+#include "internal/FFTConvolver.h"
+#include "internal/ReverbAccumulationBuffer.h"
+#include "internal/ReverbConvolverStage.h"
+#include "internal/ReverbInputBuffer.h"
 
 #include <mutex>
 #include <vector>

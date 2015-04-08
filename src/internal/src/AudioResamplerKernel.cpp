@@ -22,8 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioResamplerKernel.h"
+#include "internal/AudioResamplerKernel.h"
+#include "internal/AudioResampler.h"
 
 #include "AudioResampler.h"
 #include <algorithm>

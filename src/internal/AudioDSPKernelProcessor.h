@@ -31,9 +31,10 @@
 #ifndef AudioDSPKernelProcessor_h
 #define AudioDSPKernelProcessor_h
 
-#include "AudioBus.h"
-#include "AudioDSPKernel.h"
-#include "AudioProcessor.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioDSPKernel.h"
+#include "internal/AudioProcessor.h"
+
 #include <vector>
 
 namespace WebCore {

@@ -22,10 +22,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioContextLock.h"
-#include "WaveShaperProcessor.h"
-#include "WaveShaperDSPKernel.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "internal/WaveShaperProcessor.h"
+#include "internal/WaveShaperDSPKernel.h"
 
 namespace WebCore {
     

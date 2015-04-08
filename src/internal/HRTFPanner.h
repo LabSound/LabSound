@@ -25,9 +25,9 @@
 #ifndef HRTFPanner_h
 #define HRTFPanner_h
 
-#include "DelayDSPKernel.h"
-#include "FFTConvolver.h"
-#include "Panner.h"
+#include "internal/DelayDSPKernel.h"
+#include "internal/FFTConvolver.h"
+#include "internal/Panner.h"
 
 namespace WebCore {
 

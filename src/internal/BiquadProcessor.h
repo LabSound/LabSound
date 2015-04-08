@@ -25,11 +25,11 @@
 #ifndef BiquadProcessor_h
 #define BiquadProcessor_h
 
-#include "AudioNode.h"
-#include "AudioParam.h"
-#include "Biquad.h"
-#include "AudioDSPKernel.h"
-#include "AudioDSPKernelProcessor.h"
+#include "LabSound/core/AudioParam.h"
+
+#include "internal/Biquad.h"
+#include "internal/AudioDSPKernel.h"
+#include "internal/AudioDSPKernelProcessor.h"
 
 namespace WebCore {
 

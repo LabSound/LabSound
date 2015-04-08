@@ -26,13 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioBus.h"
+#include "internal/AudioBus.h"
+#include "internal/DenormalDisabler.h"
+#include "internal/SincResampler.h"
+#include "internal/VectorMath.h"
 
-#include "DenormalDisabler.h"
-
-#include "SincResampler.h"
-#include "VectorMath.h"
 #include <algorithm>
 #include <assert.h>
 #include <math.h>

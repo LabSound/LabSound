@@ -1,11 +1,10 @@
-
-#include "LabSoundConfig.h"
+#include "LabSound/extended/LabSoundConfig.h"
 
 #if USE(WEBAUDIO_KISSFFT)
 
-#include "FFTFrame.h"
+#include "internal/FFTFrame.h"
+#include "internal/VectorMath.h"
 
-#include "VectorMath.h"
 #include <kissfft/kiss_fftr.hpp>
 #include <WTF/MathExtras.h>
 #include <iostream>

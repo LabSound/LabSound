@@ -29,7 +29,7 @@
 #ifndef AudioChannel_h
 #define AudioChannel_h
 
-#include "AudioArray.h"
+#include "internal/AudioArray.h"
 #include <memory>
 
 namespace WebCore {

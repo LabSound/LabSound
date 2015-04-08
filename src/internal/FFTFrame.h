@@ -29,8 +29,7 @@
 #ifndef FFTFrame_h
 #define FFTFrame_h
 
-#include "LabSoundConfig.h"
-
+#include "LabSound/extended/LabSoundConfig.h"
 
 #include "AudioArray.h"
 #include <vector>

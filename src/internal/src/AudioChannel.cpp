@@ -26,11 +26,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "internal/AudioChannel.h"
+#include "internal/VectorMath.h"
 
-#include "AudioChannel.h"
-
-#include "VectorMath.h"
 #include <algorithm>
 #include <math.h>
 

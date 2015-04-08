@@ -29,8 +29,7 @@
 #ifndef DirectConvolver_h
 #define DirectConvolver_h
 
-#include "AudioArray.h"
-
+#include "internal/AudioArray.h"
 
 namespace WebCore {
 

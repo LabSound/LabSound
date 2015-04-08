@@ -29,7 +29,7 @@
 #ifndef HRTFDatabase_h
 #define HRTFDatabase_h
 
-#include "HRTFElevation.h"
+#include "internal/HRTFElevation.h"
 #include <vector>
 
 namespace WebCore {

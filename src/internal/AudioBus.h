@@ -29,7 +29,7 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
-#include "AudioChannel.h"
+#include "internal/AudioChannel.h"
 #include <vector>
 
 namespace WebCore {

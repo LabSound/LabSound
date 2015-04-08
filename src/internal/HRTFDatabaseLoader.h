@@ -29,7 +29,8 @@
 #ifndef HRTFDatabaseLoader_h
 #define HRTFDatabaseLoader_h
 
-#include "HRTFDatabase.h"
+#include "internal/HRTFDatabase.h"
+
 #include <thread>
 #include <mutex>
 #include <condition_variable>

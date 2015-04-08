@@ -29,7 +29,7 @@
 #ifndef DynamicsCompressorKernel_h
 #define DynamicsCompressorKernel_h
 
-#include "AudioArray.h"
+#include "internal/AudioArray.h"
 #include <vector>
 #include <memory>
 

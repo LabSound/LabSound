@@ -22,10 +22,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "Assertions.h"
+#include "LabSound/extended/LabSoundConfig.h"
+#include "LabSound/extended/Assertions.h"
 
-#include "VectorMath.h"
+#include "internal/VectorMath.h"
 
 #if OS(DARWIN)
 #include <Accelerate/Accelerate.h>

@@ -26,13 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "Biquad.h"
+#include "internal/Biquad.h"
+#include "internal/DenormalDisabler.h"
 
-#include "DenormalDisabler.h"
+#include <wtf/MathExtras.h>
+
 #include <algorithm>
 #include <stdio.h>
-#include <wtf/MathExtras.h>
 
 #if OS(DARWIN)
 #include <Accelerate/Accelerate.h>

@@ -29,10 +29,12 @@
 #ifndef AudioDestinationWin_h
 #define AudioDestinationWin_h
 
-#include "AudioBus.h"
-#include "AudioNode.h"
-#include "AudioDestination.h"
-#include "rtaudio\RtAudio.h"
+#include "LabSound/core/AudioNode.h"
+
+#include "internal/AudioBus.h"
+#include "internal/AudioDestination.h"
+
+#include "rtaudio/RtAudio.h"
 #include <iostream>
 #include <cstdlib>
 

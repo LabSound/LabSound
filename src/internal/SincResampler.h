@@ -29,8 +29,8 @@
 #ifndef SincResampler_h
 #define SincResampler_h
 
-#include "AudioArray.h"
-#include "AudioSourceProvider.h"
+#include "internal/AudioArray.h"
+#include "internal/AudioSourceProvider.h"
 
 namespace WebCore {
 

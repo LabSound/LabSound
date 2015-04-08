@@ -26,10 +26,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "FFTConvolver.h"
-
-#include "VectorMath.h"
+#include "internal/FFTConvolver.h"
+#include "internal/VectorMath.h"
 
 namespace WebCore {
 

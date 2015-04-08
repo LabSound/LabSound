@@ -30,9 +30,8 @@ using namespace std;
 
 namespace WebCore {
 
-DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime)
-: AudioDSPKernelProcessor(sampleRate, numberOfChannels)
-    , m_maxDelayTime(maxDelayTime)
+DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime) : 
+AudioDSPKernelProcessor(sampleRate, numberOfChannels), m_maxDelayTime(maxDelayTime)
 {
     m_delayTime = std::make_shared<AudioParam>("delayTime", 0.0, 0.0, maxDelayTime);
 }

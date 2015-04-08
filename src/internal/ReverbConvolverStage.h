@@ -29,8 +29,8 @@
 #ifndef ReverbConvolverStage_h
 #define ReverbConvolverStage_h
 
-#include "AudioArray.h"
-#include "FFTFrame.h"
+#include "internal/AudioArray.h"
+#include "internal/FFTFrame.h"
 
 namespace WebCore {
 

@@ -22,10 +22,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioResampler.h"
+#include "internal/AudioResampler.h"
+#include "internal/AudioBus.h"
 
-#include "AudioBus.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
 

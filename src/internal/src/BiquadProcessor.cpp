@@ -22,10 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "BiquadProcessor.h"
-
-#include "BiquadDSPKernel.h"
+#include "internal/BiquadProcessor.h"
+#include "internal/BiquadDSPKernel.h"
 
 namespace WebCore {
     

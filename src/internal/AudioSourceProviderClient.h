@@ -25,6 +25,8 @@
 #ifndef AudioSourceProviderClient_h
 #define AudioSourceProviderClient_h
 
+#include "LabSound/extended/AudioContextLock.h"
+
 namespace WebCore {
 
 class AudioSourceProviderClient {

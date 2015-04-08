@@ -26,10 +26,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "MultiChannelResampler.h"
-
-#include "AudioBus.h"
+#include "internal/MultiChannelResampler.h"
+#include "internal/AudioBus.h"
 
 namespace WebCore {
 

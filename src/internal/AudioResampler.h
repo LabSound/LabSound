@@ -25,9 +25,10 @@
 #ifndef AudioResampler_h
 #define AudioResampler_h
 
-#include "AudioBus.h"
-#include "AudioResamplerKernel.h"
-#include "AudioSourceProvider.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioResamplerKernel.h"
+#include "internal/AudioSourceProvider.h"
+
 #include <vector>
 
 namespace WebCore {

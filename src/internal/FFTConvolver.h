@@ -29,8 +29,8 @@
 #ifndef FFTConvolver_h
 #define FFTConvolver_h
 
-#include "AudioArray.h"
-#include "FFTFrame.h"
+#include "internal/AudioArray.h"
+#include "internal/FFTFrame.h"
 
 namespace WebCore {
 

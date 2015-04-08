@@ -25,7 +25,9 @@
 #ifndef DenormalDisabler_h
 #define DenormalDisabler_h
 
-#include "WTF/MathExtras.h"
+#include "LabSound/extended/LabSoundConfig.h"
+
+#include <WTF/MathExtras.h>
 
 namespace WebCore {
 

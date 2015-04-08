@@ -33,10 +33,13 @@ namespace WebCore {
 
 // Distance models are defined according to the OpenAL specification:
 // http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm.
+class DistanceEffect
+{
 
-class DistanceEffect {
 public:
-    enum ModelType {
+
+    enum ModelType 
+	{
         ModelLinear = 0,
         ModelInverse = 1,
         ModelExponential = 2
@@ -65,15 +68,17 @@ public:
     double rolloffFactor() const { return m_rolloffFactor; }
 
 protected:
+
     double linearGain(double distance);
     double inverseGain(double distance);
     double exponentialGain(double distance);
 
-    ModelType m_model;
-    bool m_isClamped;
-    double m_refDistance;
-    double m_maxDistance;
-    double m_rolloffFactor;
+    ModelType m_model = ModelInverse;
+
+    bool m_isClamped = true;
+    double m_refDistance = 1.0;
+    double m_maxDistance = 10000.0;
+    double m_rolloffFactor = 1.0;
 };
 
 } // namespace WebCore

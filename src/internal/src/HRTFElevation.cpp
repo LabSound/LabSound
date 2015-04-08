@@ -26,14 +26,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "HRTFElevation.h"
+#include "internal/HRTFElevation.h"
 
-#include "AudioBus.h"
-#include "AudioFileReader.h"
-#include "Biquad.h"
-#include "FFTFrame.h"
-#include "HRTFPanner.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
+#include "internal/Biquad.h"
+#include "internal/FFTFrame.h"
+#include "internal/HRTFPanner.h"
 #include <algorithm>
 #include <math.h>
 

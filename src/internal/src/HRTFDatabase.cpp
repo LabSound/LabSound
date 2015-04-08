@@ -26,9 +26,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "HRTFDatabase.h"
-#include "HRTFElevation.h"
+#include "internal/HRTFDatabase.h"
+#include "internal/HRTFElevation.h"
 
 using namespace std;
 

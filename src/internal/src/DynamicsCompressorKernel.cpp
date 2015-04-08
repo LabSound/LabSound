@@ -26,11 +26,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "DynamicsCompressorKernel.h"
+#include "internal/DynamicsCompressorKernel.h"
+#include "internal/AudioUtilities.h"
+#include "internal/DenormalDisabler.h"
 
-#include "AudioUtilities.h"
-#include "DenormalDisabler.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
 
