@@ -1030,5 +1030,8 @@
     <ClCompile Include="..\src\Modules\webaudio\AudioDSPKernel.cpp">
       <Filter>LabSound\API\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\LabSound\PeakCompNode.cpp">
+      <Filter>LabSound\API\src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

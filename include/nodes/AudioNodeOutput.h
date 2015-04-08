@@ -126,7 +126,7 @@ private:
     AudioBus* m_actualDestinationBus;
     
 public:
-#define AUDIONODEOUTPUT_MAXINPUTS 4
+#define AUDIONODEOUTPUT_MAXINPUTS 8
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
 private:

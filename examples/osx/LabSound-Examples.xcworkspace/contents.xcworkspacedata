@@ -5,36 +5,6 @@
       location = "group:../../osx/LabSound.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:PeakCompApp/PeakCompApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:DalekVoiceApp/DalekVoiceApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:LiveEchoApp/LiveEchoApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:LiveReverbRecordingApp/LiveReverbRecordingApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:ReverbApp/ReverbApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:RhythmApp/RhythmApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:RhythmFilteredApp/RhythmFilteredApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:RhythmTonePanningApp/RhythmTonePanningApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:SampleSpatializationApp/SampleSpatializationApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:ToneAndSampleApp/ToneAndSampleApp.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:ToneAndSampleRecordedApp/ToneAndSampleRecordedApp.xcodeproj">
+      location = "group:LabSoundExamples/LabSoundExamples.xcodeproj">
    </FileRef>
 </Workspace>

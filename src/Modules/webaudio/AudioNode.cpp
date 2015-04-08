@@ -168,7 +168,7 @@ void AudioNode::connect(AudioContext* context,
         ec = INDEX_SIZE_ERR;
         return;
     }
-
+    
     if (destination && inputIndex >= destination->numberOfInputs()) {
         ec = INDEX_SIZE_ERR;
         return;
@@ -179,6 +179,7 @@ void AudioNode::connect(AudioContext* context,
     
     // &&& no need to defer this any more? If so remove connect from context and context from connect param list
     context->connect(input, output);
+
 }
 
 void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
@@ -192,8 +193,9 @@ void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex,
         ec = INDEX_SIZE_ERR;
         return;
     }
-
+    
     AudioParam::connect(param, this->output(outputIndex));
+    
 }
 
 void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)

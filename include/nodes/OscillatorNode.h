@@ -34,14 +34,13 @@ namespace WebCore {
 
 class AudioContext;
 class WaveTable;
-
-// OscillatorNode is an audio generator of periodic waveforms.
-
-class OscillatorNode : public AudioScheduledSourceNode {
+    
+class OscillatorNode : public AudioScheduledSourceNode
+{
+    
 public:
-    // The waveform type.
-    // These must be defined as in the .idl file.
-    enum {
+    enum
+    {
         SINE = 0,
         SQUARE = 1,
         SAWTOOTH = 2,
