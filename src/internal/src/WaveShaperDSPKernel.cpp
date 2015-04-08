@@ -22,8 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/LabSoundConfig.h"
-
+#include "internal/ConfigMacros.h"
 #include "internal/WaveShaperDSPKernel.h"
 #include "internal/WaveShaperProcessor.h"
 

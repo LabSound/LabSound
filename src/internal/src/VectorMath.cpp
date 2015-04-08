@@ -22,7 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 #include "LabSound/extended/Assertions.h"
 
 #include "internal/VectorMath.h"

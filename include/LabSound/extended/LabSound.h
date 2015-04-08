@@ -6,8 +6,6 @@
 #ifndef LabSound_H
 #define LabSound_H
 
-#include "LabSoundConfig.h"
-
 // WebAudio Public API
 #include "LabSound/core/WaveShaperNode.h"
 #include "LabSound/core/PannerNode.h"

@@ -26,10 +26,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/LabSoundConfig.h"
-
+#include "internal/ConfigMacros.h"
 #include "internal/SincResampler.h"
 #include "internal/AudioBus.h"
+
 #include <wtf/MathExtras.h>
 
 #ifdef __SSE2__

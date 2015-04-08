@@ -23,11 +23,11 @@
 
  */
 
-#include "LabSound/extended/LabSoundConfig.h"
 #include "LabSound/extended/SoundBuffer.h"
 
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
+#include "internal/ConfigMacros.h"
 
 #include <direct.h>
 #include <iostream>

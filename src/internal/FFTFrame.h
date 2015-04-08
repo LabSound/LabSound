@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 
 #include <vector>
 

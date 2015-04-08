@@ -26,13 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/LabSoundConfig.h"
-
 #include "internal/Reverb.h"
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
+#include "internal/ConfigMacros.h"
 
 #include <math.h>
 #include <wtf/MathExtras.h>

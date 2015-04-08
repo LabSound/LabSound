@@ -25,7 +25,7 @@
 #ifndef DenormalDisabler_h
 #define DenormalDisabler_h
 
-#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 
 #include <WTF/MathExtras.h>
 

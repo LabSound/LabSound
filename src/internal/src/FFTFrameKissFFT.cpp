@@ -1,4 +1,4 @@
-#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 
 #if USE(WEBAUDIO_KISSFFT)
 
