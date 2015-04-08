@@ -5,9 +5,6 @@
 #define LABSOUND_H
 
 #include "LabSoundConfig.h"
-#include "SpatializationNode.h"
-#include "AudioNode.h"
-#include "AudioBufferSourceNode.h"
 
 namespace LabSound 
 {
