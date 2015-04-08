@@ -26,8 +26,8 @@
 #include "LabSound/core/AudioContext.h"
 
 #include "LabSound/extended/Logging.h"
-#include "LabSound/extended/Assertions.h"
 
+#include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 #include "internal/HRTFDatabaseLoader.h"
 

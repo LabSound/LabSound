@@ -28,6 +28,7 @@
 
 
 #include "internal/AudioFIFO.h"
+#include "internal/Assertions.h"
 
 namespace WebCore {
 

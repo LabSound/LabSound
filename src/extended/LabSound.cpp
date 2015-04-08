@@ -6,6 +6,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/ExceptionCodes.h"
+#include "LabSound/extended/Logging.h"
 
 #include <chrono>
 #include <thread>

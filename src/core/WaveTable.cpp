@@ -30,8 +30,7 @@
 #include "LabSound/core/WaveTable.h"
 #include "LabSound/core/AudioArray.h"
 
-#include "LabSound/extended/Assertions.h"
-
+#include "internal/Assertions.h"
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 

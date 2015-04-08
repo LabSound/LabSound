@@ -27,6 +27,7 @@
  */
 
 #include "internal/ReverbInputBuffer.h"
+#include "internal/Assertions.h"
 
 namespace WebCore {
 

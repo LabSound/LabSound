@@ -25,8 +25,8 @@
 #include "LabSound/core/DefaultAudioDestinationNode.h"
 
 #include "LabSound/extended/Logging.h"
-#include "LabSound/extended/Assertions.h"
 
+#include "internal/Assertions.h"
 #include "internal/AudioDestination.h"
 
 namespace WebCore {

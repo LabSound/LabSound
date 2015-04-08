@@ -58,13 +58,11 @@
     <ClInclude Include="..\include\LabSound\core\WaveTable.h" />
     <ClInclude Include="..\include\LabSound\core\WindowFunctions.h" />
     <ClInclude Include="..\include\LabSound\extended\ADSRNode.h" />
-    <ClInclude Include="..\include\LabSound\extended\Assertions.h" />
     <ClInclude Include="..\include\LabSound\extended\AudioContextLock.h" />
     <ClInclude Include="..\include\LabSound\extended\ClipNode.h" />
     <ClInclude Include="..\include\LabSound\extended\DiodeNode.h" />
     <ClInclude Include="..\include\LabSound\extended\ExceptionCodes.h" />
     <ClInclude Include="..\include\LabSound\extended\LabSound.h" />
-    <ClInclude Include="..\include\LabSound\extended\LabSoundConfig.h" />
     <ClInclude Include="..\include\LabSound\extended\Logging.h" />
     <ClInclude Include="..\include\LabSound\extended\NoiseNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PdNode.h" />
@@ -79,6 +77,7 @@
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\STKNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
+    <ClInclude Include="..\src\internal\Assertions.h" />
     <ClInclude Include="..\src\internal\AudioBus.h" />
     <ClInclude Include="..\src\internal\AudioChannel.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
@@ -95,6 +94,7 @@
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h" />
     <ClInclude Include="..\src\internal\BiquadProcessor.h" />
     <ClInclude Include="..\src\internal\Cone.h" />
+    <ClInclude Include="..\src\internal\ConfigMacros.h" />
     <ClInclude Include="..\src\internal\DelayDSPKernel.h" />
     <ClInclude Include="..\src\internal\DelayProcessor.h" />
     <ClInclude Include="..\src\internal\DenormalDisabler.h" />
@@ -173,9 +173,9 @@
     <ClCompile Include="..\src\extended\SpatializationNode.cpp" />
     <ClCompile Include="..\src\extended\SpectralMonitorNode.cpp" />
     <ClCompile Include="..\src\extended\SupersawNode.cpp" />
-    <ClCompile Include="..\src\internal\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioBus.cpp" />
     <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
+    <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
     <ClCompile Include="..\src\internal\src\AudioFIFO.cpp" />
     <ClCompile Include="..\src\internal\src\AudioPullFIFO.cpp" />

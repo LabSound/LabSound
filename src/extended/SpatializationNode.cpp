@@ -7,8 +7,6 @@
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include <wtf/MathExtras.h>
-
 namespace LabSound
 {
     

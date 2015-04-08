@@ -22,7 +22,7 @@ struct LabSoundExampleApp
     
     float MidiToFrequency(int midiNote)
     {
-        return 440.0 * pow(2.0, (midiNote - 57.0) / 12.0);
+        return 440.0f * pow(2.0f, (midiNote - 57.0f) / 12.0f);
     }
     
     std::mt19937 randomgenerator;

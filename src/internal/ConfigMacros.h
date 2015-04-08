@@ -8,7 +8,7 @@
 #include <WTF/PlatformExportMacros.h>
 
 #include "LabSound/extended/Logging.h"
-#include "LabSound/extended/Assertions.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <thread>

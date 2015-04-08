@@ -26,6 +26,7 @@
 
 #include "internal/WaveShaperProcessor.h"
 #include "internal/WaveShaperDSPKernel.h"
+#include "internal/Assertions.h"
 
 namespace WebCore {
     

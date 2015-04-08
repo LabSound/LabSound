@@ -9,7 +9,6 @@
 #pragma once
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/extended/Assertions.h"
 
 #include <iostream>
 #include <mutex>

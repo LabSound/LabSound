@@ -28,10 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/Assertions.h"
-
 #include "internal/AudioDSPKernelProcessor.h"
 #include "internal/AudioDSPKernel.h"
+#include "internal/Assertions.h"
 
 namespace WebCore {
 

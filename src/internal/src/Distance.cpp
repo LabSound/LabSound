@@ -26,8 +26,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/extended/Assertions.h"
-
+#include "internal/Assertions.h"
 #include "internal/Distance.h"
 
 #include <algorithm>

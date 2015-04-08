@@ -26,6 +26,7 @@
 
 #include "internal/DelayDSPKernel.h"
 #include "internal/AudioUtilities.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 

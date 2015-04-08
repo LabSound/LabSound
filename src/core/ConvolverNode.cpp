@@ -29,8 +29,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBuffer.h"
 
-#include "LabSound/extended/Assertions.h"
-
+#include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 #include "internal/Reverb.h"
 

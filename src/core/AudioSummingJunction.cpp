@@ -28,6 +28,8 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/Assertions.h"
+
 #include <algorithm>
 #include <iostream>
 

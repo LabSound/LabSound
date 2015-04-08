@@ -29,8 +29,6 @@
 #ifndef AudioArray_h
 #define AudioArray_h
 
-#include "LabSound/extended/Assertions.h"
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -70,7 +68,7 @@ namespace WebCore {
 
                 T* allocation = static_cast<T*>(malloc(initialSize + extraAllocationBytes));
                 if (!allocation) {
-                    CRASH();
+                    //CRASH();
                 }
                 T* alignedData = alignedAddress(allocation, alignment);
 
@@ -95,7 +93,6 @@ namespace WebCore {
         {
             // Note that although it is a size_t, m_size is now guaranteed to be
             // no greater than max unsigned. This guarantee is enforced in allocate().
-            ASSERT_WITH_SECURITY_IMPLICATION(i < size());
             return data()[i];
         }
 
@@ -110,7 +107,6 @@ namespace WebCore {
         void zeroRange(unsigned start, unsigned end)
         {
             bool isSafe = (start <= end) && (end <= this->size());
-            ASSERT(isSafe);
             if (!isSafe)
                 return;
 
@@ -122,7 +118,6 @@ namespace WebCore {
         void copyToRange(const T* sourceData, unsigned start, unsigned end)
         {
             bool isSafe = (start <= end) && (end <= this->size());
-            ASSERT(isSafe);
             if (!isSafe)
                 return;
 

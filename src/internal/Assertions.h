@@ -31,7 +31,7 @@
 
 #include <WTF/Platform.h>
 #include <WTF/ExportMacros.h>
-#include "Logging.h"
+#include "LabSound/extended/Logging.h"
 
 // FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform
 #if OS(WINDOWS)

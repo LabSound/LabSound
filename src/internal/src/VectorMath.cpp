@@ -23,7 +23,7 @@
  */
 
 #include "internal/ConfigMacros.h"
-#include "LabSound/extended/Assertions.h"
+#include "internal/Assertions.h"
 
 #include "internal/VectorMath.h"
 

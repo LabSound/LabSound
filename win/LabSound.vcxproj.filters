@@ -201,9 +201,6 @@
     <ClInclude Include="..\include\LabSound\extended\ADSRNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\Assertions.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\AudioContextLock.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
@@ -217,9 +214,6 @@
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\LabSound.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\LabSoundConfig.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\Logging.h">
@@ -377,6 +371,12 @@
     </ClInclude>
     <ClInclude Include="..\include\LabSound\core\AudioSourceProvider.h">
       <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\ConfigMacros.h">
+      <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\internal\Assertions.h">
+      <Filter>Internal\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -656,7 +656,7 @@
     <ClCompile Include="..\src\internal\src\BiquadDSPKernel.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\internal\AudioDSPKernel.cpp">
+    <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
   </ItemGroup>

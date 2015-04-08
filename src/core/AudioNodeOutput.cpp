@@ -29,6 +29,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 
 #include <mutex>

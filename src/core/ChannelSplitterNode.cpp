@@ -27,8 +27,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 
-#include "LabSound/extended/Assertions.h"
-
+#include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 
 namespace WebCore 
