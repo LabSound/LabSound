@@ -46,7 +46,6 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
     , m_actualDestinationBus(0)
-    , m_isEnabled(true)
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
 {
@@ -231,28 +230,6 @@ void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNo
 {
     self->disconnectAllInputs(g, self);
     self->disconnectAllParams(self);
-}
-
-void AudioNodeOutput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
-{
-    if (self->m_isEnabled) {
-        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-            if (auto ptr = self->m_inputs[i])
-                ptr->disable(g, self);
-
-        self->m_isEnabled = false;
-    }
-}
-
-void AudioNodeOutput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
-{
-    if (!self->m_isEnabled) {
-        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-            if (auto ptr = self->m_inputs[i])
-                ptr->enable(g, self);
-
-        self->m_isEnabled = true;
-    }
 }
 
 } // namespace WebCore

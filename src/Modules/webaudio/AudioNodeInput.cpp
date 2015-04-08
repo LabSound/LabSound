@@ -69,7 +69,8 @@ void AudioNodeInput::connect(ContextGraphLock& g,
 }
 
 void AudioNodeInput::disconnect(ContextGraphLock& g,
-                                std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+                                std::shared_ptr<AudioNodeInput> fromInput,
+                                std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
     if (!fromInput || !toOutput || !fromInput->node())
@@ -85,57 +86,6 @@ void AudioNodeInput::disconnect(ContextGraphLock& g,
             return;
         }
     }
-    
-    // Otherwise, try to disconnect from disabled connections.
-    auto it2 = fromInput->m_disabledOutputs.find(toOutput);
-    if (it2 != fromInput->m_disabledOutputs.end()) {
-        fromInput->m_disabledOutputs.erase(it2);
-        toOutput->removeInput(fromInput);
-        return;
-    }
-
-    ASSERT_NOT_REACHED();
-}
-
-void AudioNodeInput::disable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> output)
-{
-    if (!output || !node())
-        return;
-
-    lock_guard<mutex> lock(outputsMutex);
-
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        if (m_outputs[i] == output) {
-            m_disabledOutputs.insert(output);
-            m_outputs[i].reset();
-            m_renderingStateNeedUpdating = true;
-            node()->disableOutputsIfNecessary(g);    // Propagate disabled state to outputs.
-        }
-    }
-}
-
-void AudioNodeInput::enable(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> output)
-{
-    if (!output || !node())
-        return;
-
-    lock_guard<mutex> lock(outputsMutex);
-    
-    auto it = m_disabledOutputs.find(output);
-    ASSERT(it != m_disabledOutputs.end());
-
-    // Move output from disabled list to active list.
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        if (!m_outputs[i]) {
-            m_outputs[i] = output;
-            m_renderingStateNeedUpdating = true;
-            
-            // Propagate enabled state to outputs.
-            node()->enableOutputsIfNecessary(g);
-            break;
-        }
-    }
-    m_disabledOutputs.erase(it);
 }
 
 void AudioNodeInput::didUpdate(ContextRenderLock& r)

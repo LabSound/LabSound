@@ -58,12 +58,6 @@ public:
     static void disconnect(ContextGraphLock&,
                            std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
-    // disable() will take the output out of the active connections list and set aside in a disabled list.
-    // enable() will put the output back into the active connections list.
-    // Must be called with the context's graph lock.
-    void enable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-    void disable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-
     // pull() processes all of the AudioNodes connected to us.
     // In the case of multiple connections it sums the result into an internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
@@ -87,11 +81,6 @@ private:
 
     // The number of channels of the rendering connection with the largest number of channels.
     unsigned numberOfRenderingChannels();
-
-    // m_disabledOutputs contains the AudioNodeOutputs which are disabled (will not be processed) by the audio graph rendering.
-    // But, from JavaScript's perspective, these outputs are still connected to us.
-    // Generally, these represent disabled connections from "notes" which have finished playing but are not yet garbage collected.
-    std::set<std::shared_ptr<AudioNodeOutput>> m_disabledOutputs;
 
     // Called from context's audio thread.
     AudioBus* internalSummingBus();

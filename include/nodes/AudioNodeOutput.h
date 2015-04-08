@@ -125,11 +125,11 @@ private:
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
     
+public:
 #define AUDIONODEOUTPUT_MAXINPUTS 4
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
-    bool m_isEnabled;
-
+private:
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
     unsigned m_renderingFanOutCount;

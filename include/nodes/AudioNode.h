@@ -99,6 +99,10 @@ public:
     NodeType nodeType() const { return m_nodeType; }
     void setNodeType(NodeType);
 
+    // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
+    // This is to save the cost of a dynamic_cast when scheduling nodes.
+    virtual bool isScheduledNode() const { return false; }
+
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
@@ -127,7 +131,7 @@ public:
                  AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
     
     void connect(std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
-    void disconnect(AudioContext*, unsigned outputIndex, ExceptionCode&);
+    void disconnect(unsigned outputIndex, ExceptionCode&);
 
     virtual float sampleRate() const { return m_sampleRate; }
 
@@ -162,9 +166,6 @@ public:
     void silenceOutputs();
     void unsilenceOutputs();
 
-    void enableOutputsIfNecessary(ContextGraphLock&);
-    void disableOutputsIfNecessary(ContextGraphLock&);
-
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
     void addInput(std::shared_ptr<AudioNodeInput>);
@@ -195,7 +196,6 @@ private:
     volatile int m_connectionRefCount;
     
     bool m_isMarkedForDeletion;
-    bool m_isDisabled;
     
 #if DEBUG_AUDIONODE_REFERENCES
     static bool s_isNodeCountInitialized;

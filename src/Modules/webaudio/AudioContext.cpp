@@ -32,12 +32,15 @@
 
 #include <wtf/Atomics.h>
 #include <stdio.h>
+#include <queue>
 
 using namespace std;
 
 namespace WebCore
 {
 
+
+    
 // Constructor for realtime rendering
 AudioContext::AudioContext()
 {
@@ -260,6 +263,7 @@ void AudioContext::handleAutomaticSources()
 	{
 		if ((*i)->hasFinished())
 		{
+            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), false);
 			i = automaticSources.erase(i);
 			if (i == automaticSources.end())
 				break;
@@ -292,7 +296,8 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
 	lock_guard<mutex> lock(automaticSourcesMutex);
-	pendingNodeConnections.emplace_back(from, to, true);
+	//pendingNodeConnections.emplace_back(from, to, true);
+    pendingNodeConnections.emplace(from, to, true);
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
@@ -304,13 +309,15 @@ void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::share
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
 	lock_guard<mutex> lock(automaticSourcesMutex);
-	pendingNodeConnections.emplace_back(from, to, false);
+	//pendingNodeConnections.emplace_back(from, to, false);
+    pendingNodeConnections.emplace(from, to, false);
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from)
 {
 	lock_guard<mutex> lock(automaticSourcesMutex);
-	pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
+	//pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
+    pendingNodeConnections.emplace(from, std::shared_ptr<AudioNode>(), false);
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput)
@@ -336,8 +343,21 @@ void AudioContext::update(ContextGraphLock& g)
 		}
 		pendingConnections.clear();
 
-		for (auto i : pendingNodeConnections)
+        double now = currentTime();
+        
+		//for (auto i : pendingNodeConnections)
+        while (!pendingNodeConnections.empty())
 		{
+            auto& testMe = pendingNodeConnections.top();
+            if (testMe.from->isScheduledNode()) {
+                AudioScheduledSourceNode* node = dynamic_cast<AudioScheduledSourceNode*>(testMe.from.get());
+                if (node->startTime() > now + sampleRate() * 1.f/1000.f * 1.f/10.f)
+                    break; // stop processing the queue if the scheduled time is > 100ms away
+            }
+            
+            auto i = pendingNodeConnections.top();
+            pendingNodeConnections.pop();
+            
 			if (i.connect)
 			{
 				AudioNodeInput::connect(g, i.to->input(0), i.from->output(0));
@@ -345,31 +365,27 @@ void AudioContext::update(ContextGraphLock& g)
 				referenceSourceNode(g, i.to);
 				atomicIncrement(&i.from->m_connectionRefCount);
 				atomicIncrement(&i.to->m_connectionRefCount);
-				i.from->enableOutputsIfNecessary(g);
-				i.to->enableOutputsIfNecessary(g);
 			}
 			else
 			{
-				if (!i.from)
-				{
-					ExceptionCode ec = NO_ERR;
-					atomicDecrement(&i.to->m_connectionRefCount);
-					i.to->disconnect(g.context(), 0, ec);
-					i.to->disableOutputsIfNecessary(g);
-				}
-				else
-				{
+                if (i.to && i.from) {
+                    atomicDecrement(&i.from->m_connectionRefCount);
+                    atomicDecrement(&i.to->m_connectionRefCount);
+                    AudioNodeInput::disconnect(g, i.from->input(0), i.to->output(0));
+                    dereferenceSourceNode(g, i.from);
+                    dereferenceSourceNode(g, i.to);
+                }
+				else if (i.from) {
 					atomicDecrement(&i.from->m_connectionRefCount);
-					atomicDecrement(&i.to->m_connectionRefCount);
-					AudioNodeInput::disconnect(g, i.from->input(0), i.to->output(0));
-					dereferenceSourceNode(g, i.from);
-					dereferenceSourceNode(g, i.to);
-					i.from->disableOutputsIfNecessary(g);
-					i.to->disableOutputsIfNecessary(g);
+                    // &&& disconnect that pest
 				}
+                else if (i.to) {
+                    atomicDecrement(&i.to->m_connectionRefCount);
+                    // &&& disconnect that pest
+                }
 			}
 		}
-		pendingNodeConnections.clear();
+		//pendingNodeConnections.clear();
 	}
 
 	// Dynamically clean up nodes which are no longer needed.
@@ -387,8 +403,6 @@ void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
 			return;
 		}
 	}
-
-	ASSERT(0 == "Attempting to delete unreferenced node");
 }
 
 void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)

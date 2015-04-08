@@ -68,8 +68,8 @@ namespace LabSound {
             sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the output node
-            ac->connect(sourceBufferNode, outputNode);
             sourceBufferNode->start(when);
+            ac->connect(sourceBufferNode, outputNode);
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
             return sourceBufferNode;
         }

@@ -38,13 +38,8 @@
  https://ccrma.stanford.edu/~jos/filters/Nonlinear_Filter_Example_Dynamic.htm
  */
 
-#include "AudioContext.h"
-#include "AudioBus.h"
 #include "AudioParam.h"
-#include "AudioScheduledSourceNode.h"
 #include "AudioBasicProcessorNode.h"
-#include "AudioBasicInspectorNode.h"
-#include "GainNode.h"
 
 namespace LabSound
 {
