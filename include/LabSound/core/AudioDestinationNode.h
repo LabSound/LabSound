@@ -43,7 +43,9 @@ class AudioDestinationNode : public AudioNode, public AudioIOCallback {
 	LocalAudioInputProvider * m_localAudioInputProvider;
 
 public:
+
     AudioDestinationNode(std::shared_ptr<AudioContext>, float sampleRate);
+
     virtual ~AudioDestinationNode();
     
     // AudioNode   

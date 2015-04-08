@@ -52,6 +52,7 @@ public:
     AudioSourceProvider* audioSourceProvider() const { return m_audioSourceProvider; }
 
 private:
+
     // As an audio source, we will never propagate silence.
     virtual bool propagatesSilence(double now) const override { return false; }
 

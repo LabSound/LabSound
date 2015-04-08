@@ -35,10 +35,14 @@
 
 namespace WebCore {
 
-class AudioParamTimeline {
+class AudioParamTimeline 
+{
+
 public:
+
     AudioParamTimeline()
     {
+
     }
 
     void setValueAtTime(float value, float time);
