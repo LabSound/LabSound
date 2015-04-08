@@ -37,11 +37,11 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioProcessor.h"
 #include "internal/VectorMath.h"
 #include "internal/AudioBus.h"
 

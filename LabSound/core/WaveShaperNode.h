@@ -27,18 +27,19 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace WebCore {
-    
+namespace WebCore
+{
+   class WaveShaperProcessor;
+
 class WaveShaperNode : public AudioBasicProcessorNode
 {
-    
-	class WaveShaperProcessor;
-
-    WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
+   
+    WaveShaperProcessor * waveShaperProcessor();
     
 public:
     
     WaveShaperNode(float sampleRate);
+	~WaveShaperNode() {}
 
     void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
     std::shared_ptr<std::vector<float>> curve();

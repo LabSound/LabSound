@@ -3,10 +3,10 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/PWMNode.h"
 
-#include "internal/AudioProcessor.h"
 #include "internal/AudioBus.h"
 
 #include <iostream>

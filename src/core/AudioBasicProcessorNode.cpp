@@ -25,11 +25,11 @@
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/Assertions.h"
 
 #include "internal/AudioBus.h"
-#include "internal/AudioProcessor.h"
 
 namespace WebCore {
 

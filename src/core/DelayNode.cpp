@@ -24,9 +24,9 @@
 
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/AudioProcessor.h"
 
 #include "internal/AudioDSPKernel.h"
-#include "internal/AudioProcessor.h"
 #include "internal/DelayProcessor.h"
 
 namespace WebCore {

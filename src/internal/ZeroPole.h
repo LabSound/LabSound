@@ -35,12 +35,10 @@ namespace WebCore {
 
 class ZeroPole {
 public:
+
     ZeroPole()
-        : m_zero(0)
-        , m_pole(0)
-        , m_lastX(0)
-        , m_lastY(0)
-    {
+	{
+
     }
 
     void process(const float *source, float *destination, unsigned framesToProcess);
@@ -55,10 +53,10 @@ public:
     float pole() const { return m_pole; }
 
 private:
-    float m_zero;
-    float m_pole;
-    float m_lastX;
-    float m_lastY;
+    float m_zero = 0.f;
+    float m_pole = 0.f;
+    float m_lastX = 0.f;
+    float m_lastY = 0.f;
 };
 
 } // namespace WebCore

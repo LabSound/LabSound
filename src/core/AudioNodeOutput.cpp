@@ -30,6 +30,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioBus.h"
+
 #include <mutex>
 
 using namespace std;

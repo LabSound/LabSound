@@ -44,9 +44,8 @@ namespace WebCore
 class AudioBus;
 
 // AudioProcessor is an abstract base class representing an audio signal processing object with a single input and a single output,
-// where the number of input channels equals the number of output channels.  It can be used as one part of a complex DSP algorithm,
+// where the number of input channels equals the number of output channels. It can be used as one part of a complex DSP algorithm,
 // or as the processor for a basic (one input - one output) AudioNode.
-
 class AudioProcessor {
     
 public:
