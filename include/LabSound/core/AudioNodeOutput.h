@@ -45,6 +45,7 @@ public:
 
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
     explicit AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
+	virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }

@@ -58,6 +58,11 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     m_actualDestinationBus = m_internalBus.get();
 }
 
+AudioNodeOutput::~AudioNodeOutput()
+{
+
+}
+
 void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberOfChannels)
 {
     if (m_numberOfChannels != numberOfChannels) {

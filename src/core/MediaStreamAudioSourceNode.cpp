@@ -25,11 +25,11 @@
 #include "LabSound/core/MediaStreamAudioSourceNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioSourceProvider.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
 
-#include "internal/AudioSourceProvider.h"
 #include "internal/AudioBus.h"
 
 namespace WebCore {

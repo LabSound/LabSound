@@ -36,6 +36,7 @@
     <ClInclude Include="..\include\LabSound\core\AudioProcessor.h" />
     <ClInclude Include="..\include\LabSound\core\AudioScheduledSourceNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioSourceNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioSourceProvider.h" />
     <ClInclude Include="..\include\LabSound\core\AudioSummingJunction.h" />
     <ClInclude Include="..\include\LabSound\core\BiquadFilterNode.h" />
     <ClInclude Include="..\include\LabSound\core\ChannelMergerNode.h" />
@@ -73,7 +74,6 @@
     <ClInclude Include="..\include\LabSound\extended\RealtimeAnalyser.h" />
     <ClInclude Include="..\include\LabSound\extended\RecorderNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SampledInstrumentNode.h" />
-    <ClInclude Include="..\include\LabSound\extended\SfxrNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SoundBuffer.h" />
     <ClInclude Include="..\include\LabSound\extended\SpatializationNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
@@ -90,7 +90,6 @@
     <ClInclude Include="..\src\internal\AudioPullFIFO.h" />
     <ClInclude Include="..\src\internal\AudioResampler.h" />
     <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
-    <ClInclude Include="..\src\internal\AudioSourceProvider.h" />
     <ClInclude Include="..\src\internal\AudioUtilities.h" />
     <ClInclude Include="..\src\internal\Biquad.h" />
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h" />
@@ -170,7 +169,6 @@
     <ClCompile Include="..\src\extended\PWMNode.cpp" />
     <ClCompile Include="..\src\extended\RecorderNode.cpp" />
     <ClCompile Include="..\src\extended\SampledInstrumentNode.cpp" />
-    <ClCompile Include="..\src\extended\SfxrNode.cpp" />
     <ClCompile Include="..\src\extended\SoundBuffer.cpp" />
     <ClCompile Include="..\src\extended\SpatializationNode.cpp" />
     <ClCompile Include="..\src\extended\SpectralMonitorNode.cpp" />
@@ -198,7 +196,6 @@
     <ClCompile Include="..\src\internal\src\FFTConvolver.cpp" />
     <ClCompile Include="..\src\internal\src\FFTFrame.cpp" />
     <ClCompile Include="..\src\internal\src\FFTFrameKissFFT.cpp" />
-    <ClCompile Include="..\src\internal\src\FFTFrameStub.cpp" />
     <ClCompile Include="..\src\internal\src\HRTFDatabase.cpp" />
     <ClCompile Include="..\src\internal\src\HRTFDatabaseLoader.cpp" />
     <ClCompile Include="..\src\internal\src\HRTFElevation.cpp" />

@@ -27,12 +27,12 @@
 
 #include "LabSound/core/AudioSourceNode.h"
 #include "LabSound/core/MediaStream.h"
+#include "LabSound/core/AudioSourceProvider.h"
 
 namespace WebCore {
 
 class AudioContext;
     
-
 class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient 
 {
 
@@ -41,7 +41,7 @@ public:
     MediaStreamAudioSourceNode(std::shared_ptr<MediaStream>, AudioSourceProvider*, float sampleRate);
     virtual ~MediaStreamAudioSourceNode();
 
-    MediaStream* mediaStream() { return m_mediaStream.get(); }
+    MediaStream * mediaStream() { return m_mediaStream.get(); }
 
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
@@ -50,7 +50,7 @@ public:
     // AudioSourceProviderClient
     virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) override;
 
-    AudioSourceProvider* audioSourceProvider() const { return m_audioSourceProvider; }
+    AudioSourceProvider * audioSourceProvider() const { return m_audioSourceProvider; }
 
 private:
 
@@ -58,7 +58,7 @@ private:
     virtual bool propagatesSilence(double now) const override { return false; }
 
     std::shared_ptr<MediaStream> m_mediaStream;
-    AudioSourceProvider* m_audioSourceProvider;
+    AudioSourceProvider * m_audioSourceProvider;
 
     unsigned m_sourceNumberOfChannels;
 };

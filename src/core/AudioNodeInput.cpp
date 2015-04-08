@@ -39,15 +39,22 @@ using namespace std;
 namespace WebCore 
 {
     
-    namespace 
-	{
-        std::mutex outputsMutex;
-    }
+namespace 
+{
+    std::mutex outputsMutex;
+}
+
+// Give Audiobus an 
 
 AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction() , m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
+}
+
+AudioNodeInput::~AudioNodeInput()
+{
+
 }
 
 void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)

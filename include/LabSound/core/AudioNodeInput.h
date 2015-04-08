@@ -45,7 +45,7 @@ class AudioNodeInput : public AudioSummingJunction
 public:
 
     explicit AudioNodeInput(AudioNode*);
-    virtual ~AudioNodeInput() {}
+    virtual ~AudioNodeInput();
 
     // AudioSummingJunction
     virtual bool canUpdateState() override { return !node()->isMarkedForDeletion(); }
@@ -95,7 +95,7 @@ private:
     std::set<std::shared_ptr<AudioNodeOutput>> m_disabledOutputs;
 
     // Called from context's audio thread.
-    AudioBus* internalSummingBus();
+    AudioBus * internalSummingBus();
     void sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess);
 
     std::unique_ptr<AudioBus> m_internalSummingBus;
