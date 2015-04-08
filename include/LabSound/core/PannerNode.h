@@ -145,8 +145,8 @@ protected:
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
 
-	DistanceEffect * m_distanceEffect;
-    ConeEffect * m_coneEffect;
+	std::unique_ptr<DistanceEffect> m_distanceEffect;
+	std::unique_ptr<ConeEffect> m_coneEffect;
     float m_lastGain;
 
     unsigned m_connectionCount;

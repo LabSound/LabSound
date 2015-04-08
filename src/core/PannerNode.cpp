@@ -54,6 +54,10 @@ PannerNode::PannerNode(float sampleRate)
     , m_lastGain(-1.0)
     , m_connectionCount(0)
 {
+
+	m_distanceEffect.reset(new DistanceEffect());
+	m_coneEffect.reset(new ConeEffect());
+
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
@@ -71,8 +75,6 @@ PannerNode::PannerNode(float sampleRate)
 
 PannerNode::~PannerNode()
 {	
-	delete m_distanceEffect;
-	delete m_coneEffect;
     uninitialize();
 }
 
