@@ -1,11 +1,3 @@
-//
-//  Logging.h
-//  LabSound
-//
-//  Created by Dimitri Diakopoulos on 3/16/15.
-//
-//
-
 #ifndef LabSound_Logging_h
 #define LabSound_Logging_h
 
