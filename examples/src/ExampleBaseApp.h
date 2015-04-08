@@ -1,6 +1,7 @@
 #pragma once
 
-#include "LabSound.h"
+#include "LabSound/extended/LabSound.h"
+
 #include <chrono>
 #include <thread>
 #include <vector>
