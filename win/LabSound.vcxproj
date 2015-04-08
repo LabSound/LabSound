@@ -298,7 +298,6 @@
     <ClInclude Include="..\include\internal\ZeroPole.h" />
     <ClInclude Include="..\include\LabSound.h" />
     <ClInclude Include="..\include\LabSoundConfig.h" />
-    <ClInclude Include="..\include\LabSoundIncludes.h" />
     <ClInclude Include="..\include\Logging.h" />
     <ClInclude Include="..\include\nodes\ADSRNode.h" />
     <ClInclude Include="..\include\nodes\AnalyserNode.h" />

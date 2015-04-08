@@ -1,18 +1,65 @@
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef LABSOUND_H
-#define LABSOUND_H
+#pragma once
+
+#ifndef LabSound_H
+#define LabSound_H
 
 #include "LabSoundConfig.h"
+
+// WebAudio Public API
+#include "WaveShaperNode.h"
+#include "PannerNode.h"
+#include "OscillatorNode.h"
+#include "OfflineAudioDestinationNode.h"
+#include "MediaStreamAudioSourceNode.h"
+#include "MediaStreamAudioDestinationNode.h"
+#include "GainNode.h"
+#include "DynamicsCompressorNode.h"
+#include "DelayNode.h"
+#include "ConvolverNode.h"
+#include "ChannelSplitterNode.h"
+#include "ChannelMergerNode.h"
+#include "BiquadFilterNode.h"
+#include "AudioScheduledSourceNode.h"
+#include "AudioParam.h"
+#include "AudioNodeOutput.h"
+#include "AudioNodeInput.h"
+#include "AudioNode.h"
+#include "AudioListener.h"
+#include "AudioDestinationNode.h"
+#include "AudioContext.h"
+#include "AudioBufferSourceNode.h"
+#include "AudioBasicProcessorNode.h"
+#include "AudioBasicInspectorNode.h"
+#include "AnalyserNode.h"
+
+// LabSound Extended API 
+#include "RealtimeAnalyser.h"
+#include "ADSRNode.h"
+#include "ClipNode.h"
+#include "DiodeNode.h"
+#include "NoiseNode.h"
+#include "PdNode.h"
+#include "PeakCompNode.h"
+#include "PowerMonitorNode.h"
+#include "PWMNode.h"
+#include "SfxrNode.h"
+#include "SoundBuffer.h"
+#include "SupersawNode.h"
+#include "SpatializationNode.h"
+#include "SpectralMonitorNode.h"
+#include "STKNode.h"
+#include "SampledInstrumentNode.h"
+#include "EasyVerbNode.h"
+#include "RecorderNode.h"
 
 namespace LabSound 
 {
 
-    // init() will return an audio context object
     std::shared_ptr<WebCore::AudioContext> init();
-    
-    // when done with the context call finish
+
     void finish(std::shared_ptr<WebCore::AudioContext> context);
 
 	enum NodeType 

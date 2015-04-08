@@ -59,7 +59,7 @@ public:
     // the render quantum size such that the parameter value changes once per render quantum.
     float valuesForTimeRange(double startTime, double endTime, float defaultValue, float* values, unsigned numberOfValues, double sampleRate, double controlRate);
 
-    bool hasValues() { return m_events.size(); }
+    bool hasValues() { return m_events.size() > 0; }
 
 private:
 

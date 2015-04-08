@@ -716,23 +716,20 @@
     <ClInclude Include="..\include\internal\ReverbInputBuffer.h">
       <Filter>LabSound\implementation %28private%29\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\PlatformExportMacros.h">
+      <Filter>LabSound\api %28public%29\extended</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\Assertions.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
+      <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
+      <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSoundConfig.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSoundIncludes.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
+      <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Logging.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\PlatformExportMacros.h">
-      <Filter>LabSound\api %28public%29\LabSound</Filter>
+      <Filter>LabSound\api %28public%29\extended\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

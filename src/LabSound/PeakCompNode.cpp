@@ -112,17 +112,17 @@ namespace LabSound
 
             v = m_attack->value(c);
             if (v >= 0.001) {
-                attack = v * 0.001;
+                attack = v * 0.001f;
             }
             else
-                attack = 0.000001;
+                attack = 0.000001f;
 
             v = m_release->value(c);
             if (v >= 0.001) {
-                release = v * 0.001;
+                release = v * 0.001f;
             }
             else
-                release = 0.000001;
+                release = 0.000001f;
 
             v = m_makeup->value(c);
             // dB to linear (could use the function from m_pd.h)
