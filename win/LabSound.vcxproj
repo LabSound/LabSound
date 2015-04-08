@@ -483,6 +483,7 @@
     </ClCompile>
     <ClCompile Include="..\src\LabSound\PdNode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\LabSound\PeakCompNode.cpp" />
     <ClCompile Include="..\src\LabSound\PWMNode.cpp">
     </ClCompile>
     <ClCompile Include="..\src\LabSound\RecorderNode.cpp">

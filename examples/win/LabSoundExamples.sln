@@ -3,27 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OscillatorExample", "OscillatorExample\OscillatorExample.vcxproj", "{9C88A880-EB5A-4BF2-8837-D6828C46E32E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C2C11853-81F3-C348-8C6E-8DA318E0C84E} = {C2C11853-81F3-C348-8C6E-8DA318E0C84E}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectIncubator", "ProjectIncubator\ProjectIncubator.vcxproj", "{E4110265-E043-4473-8185-8189ABCDAC49}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C2C11853-81F3-C348-8C6E-8DA318E0C84E} = {C2C11853-81F3-C348-8C6E-8DA318E0C84E}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STKNodeExample", "STKNodeExample\STKNodeExample.vcxproj", "{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSoundExamples", "LabSoundExamples.vcxproj", "{9C88A880-EB5A-4BF2-8837-D6828C46E32E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C2C11853-81F3-C348-8C6E-8DA318E0C84E} = {C2C11853-81F3-C348-8C6E-8DA318E0C84E}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSound", "..\..\win\LabSound.vcxproj", "{C2C11853-81F3-C348-8C6E-8DA318E0C84E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA1E3B2D-A71B-4B1E-8E55-02AEC6EB8F25}"
-	ProjectSection(SolutionItems) = preProject
-		Performance1.psess = Performance1.psess
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,22 +26,6 @@ Global
 		{9C88A880-EB5A-4BF2-8837-D6828C46E32E}.Release|Win32.Build.0 = Release|Win32
 		{9C88A880-EB5A-4BF2-8837-D6828C46E32E}.Release|x64.ActiveCfg = Release|x64
 		{9C88A880-EB5A-4BF2-8837-D6828C46E32E}.Release|x64.Build.0 = Release|x64
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Debug|Win32.Build.0 = Debug|Win32
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Debug|x64.ActiveCfg = Debug|x64
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Debug|x64.Build.0 = Debug|x64
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Release|Win32.ActiveCfg = Release|Win32
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Release|Win32.Build.0 = Release|Win32
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Release|x64.ActiveCfg = Release|x64
-		{E4110265-E043-4473-8185-8189ABCDAC49}.Release|x64.Build.0 = Release|x64
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Debug|Win32.Build.0 = Debug|Win32
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Debug|x64.ActiveCfg = Debug|x64
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Debug|x64.Build.0 = Debug|x64
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Release|Win32.ActiveCfg = Release|Win32
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Release|Win32.Build.0 = Release|Win32
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Release|x64.ActiveCfg = Release|x64
-		{2FCFA282-4206-4C7B-B2EB-4FD00F054B21}.Release|x64.Build.0 = Release|x64
 		{C2C11853-81F3-C348-8C6E-8DA318E0C84E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C2C11853-81F3-C348-8C6E-8DA318E0C84E}.Debug|Win32.Build.0 = Debug|Win32
 		{C2C11853-81F3-C348-8C6E-8DA318E0C84E}.Debug|x64.ActiveCfg = Debug|x64
@@ -68,8 +37,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

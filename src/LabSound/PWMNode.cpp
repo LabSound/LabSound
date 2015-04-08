@@ -69,11 +69,9 @@ namespace LabSound {
         int channels;
     };
 
-    PWMNode::PWMNode(float sampleRate)
-    : WebCore::AudioBasicProcessorNode(sampleRate)
-    , data(new PWMNodeInternal(sampleRate))
+    PWMNode::PWMNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
     {
-        m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
+        m_processor.reset(new PWMNodeInternal(sampleRate));
 
         setNodeType((AudioNode::NodeType) LabSound::NodeTypePWM);
 
@@ -83,9 +81,8 @@ namespace LabSound {
         initialize();
     }
 
-    PWMNode::~PWMNode() {
-        // no need to delete data because the m_processor unique_ptr will take care of it
-        data = 0;
+    PWMNode::~PWMNode()
+    {
         uninitialize();
     }
 

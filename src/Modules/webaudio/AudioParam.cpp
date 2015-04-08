@@ -60,8 +60,6 @@ float AudioParam::value(std::shared_ptr<AudioContext> c)
 
 void AudioParam::setValue(float value)
 {
-    // Check against JavaScript giving us bogus floating-point values.
-    // Don't ASSERT, since this can happen if somebody writes bad JS.
     if (!std::isnan(value) && !std::isinf(value))
         m_value = value;
 }

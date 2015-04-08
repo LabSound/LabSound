@@ -187,46 +187,6 @@ namespace LabSound
 		std::shared_ptr<AudioParam> m_sustainLevel;
 		std::shared_ptr<AudioParam> m_releaseTime;
     };
-    
-    std::shared_ptr<AudioParam> ADSRNode::attackTime() const { return internalNode->m_attackTime; }
-    std::shared_ptr<AudioParam> ADSRNode::attackLevel() const { return internalNode->m_attackLevel; }
-    std::shared_ptr<AudioParam> ADSRNode::decayTime() const { return internalNode->m_decayTime; }
-    std::shared_ptr<AudioParam> ADSRNode::sustainLevel() const { return internalNode->m_sustainLevel; }
-    std::shared_ptr<AudioParam> ADSRNode::releaseTime() const { return internalNode->m_releaseTime; }
-
-    void ADSRNode::set(float aT, float aL, float d, float s, float r)
-    {
-        internalNode->m_attackTime->setValue(aT);
-        internalNode->m_attackLevel->setValue(aL);
-        internalNode->m_decayTime->setValue(d);
-        internalNode->m_sustainLevel->setValue(s);
-        internalNode->m_releaseTime->setValue(r);
-    }
-
-    void ADSRNode::noteOn(double when)
-    {
-        internalNode->noteOn(when);
-    }
-
-    void ADSRNode::noteOff(ContextRenderLock& r, double when)
-    {
-        internalNode->noteOff(r, when);
-    }
-    
-    bool ADSRNode::finished(ContextRenderLock& r)
-    {
-        if (!r.context())
-            return true;
-        
-        double now = r.context()->currentTime();
-        
-        if (now > internalNode->m_noteOffTime)
-        {
-            internalNode->m_noteOffTime = 0;
-        }
-        
-        return now > internalNode->m_noteOffTime;
-    }
 
     /////////////////////
     // Public ADSRNode //
@@ -250,6 +210,66 @@ namespace LabSound
     {
         internalNode->numChannels = 0;
         uninitialize();
+    }
+
+
+    void ADSRNode::noteOn(double when)
+    {
+        internalNode->noteOn(when);
+    }
+    
+    void ADSRNode::noteOff(ContextRenderLock& r, double when)
+    {
+        internalNode->noteOff(r, when);
+    }
+    
+    std::shared_ptr<AudioParam> ADSRNode::attackTime() const
+    {
+        return internalNode->m_attackTime;
+    }
+    
+    void ADSRNode::set(float aT, float aL, float d, float s, float r)
+    {
+        internalNode->m_attackTime->setValue(aT);
+        internalNode->m_attackLevel->setValue(aL);
+        internalNode->m_decayTime->setValue(d);
+        internalNode->m_sustainLevel->setValue(s);
+        internalNode->m_releaseTime->setValue(r);
+    }
+
+    std::shared_ptr<AudioParam> ADSRNode::attackLevel() const
+    {
+        return internalNode->m_attackLevel;
+    }
+    
+    std::shared_ptr<AudioParam> ADSRNode::decayTime() const
+    {
+        return internalNode->m_decayTime;
+    }
+    
+    std::shared_ptr<AudioParam> ADSRNode::sustainLevel() const
+    {
+        return internalNode->m_sustainLevel;
+    }
+    
+    std::shared_ptr<AudioParam> ADSRNode::releaseTime() const
+    {
+        return internalNode->m_releaseTime;
+    }
+    
+    bool ADSRNode::finished(ContextRenderLock& r)
+    {
+        if (!r.context())
+            return true;
+        
+        double now = r.context()->currentTime();
+        
+        if (now > internalNode->m_noteOffTime)
+        {
+            internalNode->m_noteOffTime = 0;
+        }
+        
+        return now > internalNode->m_noteOffTime;
     }
 
 } // End namespace LabSound
