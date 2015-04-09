@@ -11,10 +11,10 @@
 
 namespace LabSound 
 {
-
     class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode 
 	{
-
+		class SpectralMonitorNodeInternal;
+        std::unique_ptr<SpectralMonitorNodeInternal> internalNode;
     public:
 
         SpectralMonitorNode(float sampleRate);
@@ -29,13 +29,8 @@ namespace LabSound
 
     private:
 
-		//@tofix 
-        class Detail;
-        Detail* detail;
-
         // required for BasicInspector
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
     };
-
-} // LabSound
+} 

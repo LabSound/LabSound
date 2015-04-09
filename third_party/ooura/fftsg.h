@@ -195,7 +195,8 @@ Dec. 2006  : Fix a minor bug in "fftsg.f"
 
 #pragma once
 
-namespace cinder { namespace audio2 { namespace dsp { namespace ooura {
+namespace ooura 
+{
 
 template <typename T> 
 void cdft(int n, int isgn, T *a, int *ip, T *w);
@@ -215,4 +216,4 @@ void dfct(int n, T *a, T *t, int *ip, T *w);
 template <typename T> 
 void dfst(int n, T *a, T *t, int *ip, T *w);
 
-} } } } // namespace cinder::audio2::dsp::ooura
+} ooura

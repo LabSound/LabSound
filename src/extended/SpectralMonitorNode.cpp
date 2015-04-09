@@ -8,97 +8,97 @@
 #include "LabSound/extended/SpectralMonitorNode.h"
 
 #include "internal/AudioBus.h"
+#include "internal/ConfigMacros.h"
 
 #include <ooura/fftsg.h>
 
-namespace LabSound {
+
+namespace LabSound 
+{
 
     using namespace WebCore;
-    using namespace cinder::audio2::dsp;
+
+	//////////////////////////////////////////////////////
+    // Prviate FFT + SpectralMonitorNode Implementation //
+    //////////////////////////////////////////////////////
 
     // FFT class directly inspired by that in Cinder Audio 2.
-    class FFT {
+    struct FFT 
+	{
     public:
-        FFT(size_t size)
-        : size(size) {
+        FFT(size_t size) : size(size)
+		{
             oouraIp = (int *)calloc( 2 + (int)sqrt( size/2 ), sizeof( int ) );
             oouraW = (float *)calloc( size/2, sizeof( float ) );
         }
-        ~FFT() {
+
+        ~FFT()
+		{
             free(oouraIp);
             free(oouraW);
         }
 
         // does an in place transform of waveform to real and imag.
         // real values are on even, imag on odd
-        void forward( std::vector<float>& waveform) {
+        void forward( std::vector<float>& waveform) 
+		{
             ASSERT(waveform.size() == size);
             ooura::rdft( size, 1, &waveform[0], oouraIp, oouraW );
         }
 
-#if 0
-        void inverse( const BufferSpectral *spectral, Buffer *waveform )
-        {
-            CI_ASSERT( waveform->getNumFrames() == mSize );
-            CI_ASSERT( spectral->getNumFrames() == mSizeOverTwo );
-
-            mBufferCopy.copyFrom( *spectral );
-
-            float *real = mBufferCopy.getData();
-            float *imag = &mBufferCopy.getData()[mSizeOverTwo];
-            float *a = waveform->getData();
-            
-            a[0] = real[0];
-            a[1] = imag[0];
-            
-            for( size_t k = 1; k < mSizeOverTwo; k++ ) {
-                a[k * 2] = real[k];
-                a[k * 2 + 1] = imag[k];
-            }
-            
-            ooura::rdft( (int)mSize, -1, a, mOouraIp, mOouraW );
-            dsp::mul( a, 2.0f / (float)mSize, a, mSize );
-        }
-#endif
-
         size_t size;
-        int* oouraIp;
-        float* oouraW;
+        int * oouraIp;
+        float * oouraW;
     };
 
-    class SpectralMonitorNode::Detail {
+    class SpectralMonitorNode::SpectralMonitorNodeInternal 
+	{
     public:
-        Detail()
-        : fft(0) {
+
+        SpectralMonitorNodeInternal() : fft(0) 
+		{
             setWindowSize(512);
         }
-        ~Detail() {
+
+        ~SpectralMonitorNodeInternal() 
+		{
             delete fft;
         }
 
-        void setWindowSize(int s) {
+        void setWindowSize(int s) 
+		{
             cursor = 0;
             windowSize = s;
+
             buffer.resize(windowSize);
-            for (size_t i = 0; i < windowSize; ++i) {
+
+            for (size_t i = 0; i < windowSize; ++i) 
+			{
                 buffer[i] = 0;
             }
+
             delete fft;
             fft = new FFT(s);
         }
         
         float _db;
+
         size_t windowSize;
         size_t cursor;
+
         std::vector<float> buffer;
         std::recursive_mutex magMutex;
-        FFT* fft;
+
+        FFT * fft;
     };
 
-    SpectralMonitorNode::SpectralMonitorNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate)
-    , detail(new Detail())
+	////////////////////////////////
+    // Public SpectralMonitorNode //
+    ////////////////////////////////
+
+    SpectralMonitorNode::SpectralMonitorNode(float sampleRate) : AudioBasicInspectorNode(sampleRate)
     {
+		internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType((AudioNode::NodeType) NodeTypeSpectralMonitor);
         initialize();
@@ -107,7 +107,6 @@ namespace LabSound {
     SpectralMonitorNode::~SpectralMonitorNode()
     {
         uninitialize();
-        delete detail;
     }
 
     void SpectralMonitorNode::process(ContextRenderLock&, size_t framesToProcess)
@@ -138,33 +137,41 @@ namespace LabSound {
                 channels.push_back(bus->channel(c)->data());
 
             // if the fft is smaller than the quantum, just grab a chunk
-            if (detail->windowSize < framesToProcess) {
-                detail->cursor = 0;
-                framesToProcess = detail->windowSize;
+            if (internalNode->windowSize < framesToProcess) 
+			{
+                internalNode->cursor = 0;
+                framesToProcess = internalNode->windowSize;
             }
 
             // if the quantum overlaps the end of the window, just fill up the buffer
-            if (detail->cursor + framesToProcess > detail->windowSize)
-                framesToProcess = detail->windowSize - detail->cursor;
+            if (internalNode->cursor + framesToProcess > internalNode->windowSize)
+                framesToProcess = internalNode->windowSize - internalNode->cursor;
 
             {
-                std::lock_guard<std::recursive_mutex> lock(detail->magMutex);
+                std::lock_guard<std::recursive_mutex> lock(internalNode->magMutex);
 
-                detail->buffer.resize(detail->windowSize);
-                for (size_t i = 0; i < framesToProcess; ++i) {
-                    detail->buffer[i + detail->cursor] = 0;
+                internalNode->buffer.resize(internalNode->windowSize);
+
+                for (size_t i = 0; i < framesToProcess; ++i) 
+				{
+                    internalNode->buffer[i + internalNode->cursor] = 0;
                 }
+
                 for (unsigned c = 0; c < numberOfChannels; ++c)
-                    for (size_t i = 0; i < framesToProcess; ++i) {
+				{
+					for (size_t i = 0; i < framesToProcess; ++i) 
+					{
                         float p = channels[c][i];
-                        detail->buffer[i + detail->cursor] += p;
+                        internalNode->buffer[i + internalNode->cursor] += p;
                     }
+				}
+
             }
 
             // advance the cursor
-            detail->cursor += framesToProcess;
-            if (detail->cursor >= detail->windowSize)
-                detail->cursor = 0;
+            internalNode->cursor += framesToProcess;
+            if (internalNode->cursor >= internalNode->windowSize)
+                internalNode->cursor = 0;
         }
         // to here
 
@@ -178,19 +185,22 @@ namespace LabSound {
 
     void SpectralMonitorNode::reset(std::shared_ptr<WebCore::AudioContext>)
     {
-        detail->setWindowSize(detail->windowSize);
+        internalNode->setWindowSize(internalNode->windowSize);
     }
 
-    void SpectralMonitorNode::spectralMag(std::vector<float>& result) {
+    void SpectralMonitorNode::spectralMag(std::vector<float>& result) 
+	{
         std::vector<float> window;
+
         {
-            std::lock_guard<std::recursive_mutex> lock(detail->magMutex);
-            window.swap(detail->buffer);
-            detail->setWindowSize(detail->windowSize);
+            std::lock_guard<std::recursive_mutex> lock(internalNode->magMutex);
+            window.swap(internalNode->buffer);
+            internalNode->setWindowSize(internalNode->windowSize);
         }
+
         // http://www.ni.com/white-paper/4844/en/
         applyWindow(LabSound::window_blackman, window);
-        detail->fft->forward(window);
+        internalNode->fft->forward(window);
 
         // similar to cinder audio2 Scope object, although Scope smooths spectral samples frame by frame
         // remove nyquist component - the first imaginary component
@@ -208,12 +218,14 @@ namespace LabSound {
         result.swap(window);
     }
 
-    void SpectralMonitorNode::windowSize(size_t ws) {
-        detail->setWindowSize(ws);
+    void SpectralMonitorNode::windowSize(size_t ws) 
+	{
+        internalNode->setWindowSize(ws);
     }
 
-    size_t SpectralMonitorNode::windowSize() const {
-        return detail->windowSize;
+    size_t SpectralMonitorNode::windowSize() const 
+	{
+        return internalNode->windowSize;
     }
 
 

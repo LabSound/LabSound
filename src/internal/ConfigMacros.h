@@ -1,7 +1,5 @@
-#ifndef Labsound_Config_h
-#define Labsound_Config_h
-
-// tofix, this should be internal file
+#ifndef _Internal_Config_Macros_
+#define _Internal_Config_Macros_
 
 #include <WTF/Platform.h>
 #include <WTF/ExportMacros.h>
