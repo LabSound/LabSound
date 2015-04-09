@@ -47,11 +47,11 @@ public:
     AudioDestinationWin(AudioIOCallback&, float sampleRate);
     virtual ~AudioDestinationWin();
 
-    virtual void start();
-    virtual void stop();
+    virtual void start() override;
+    virtual void stop() override;
 
-    bool isPlaying() { return m_isPlaying; }
-    float sampleRate() const { return m_sampleRate; }
+    bool isPlaying() override { return m_isPlaying; }
+    float sampleRate() const override { return m_sampleRate; }
 
 	void render(int numberOfFrames, void *outputBuffer, void *inputBuffer); 
 

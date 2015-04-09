@@ -186,8 +186,7 @@ public:
 };
 //LabSound end
 
-// Factory method: Mac-implementation
-AudioDestination* AudioDestination::create(AudioIOCallback& callback, float sampleRate)
+AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, float sampleRate)
 {
     return new AudioDestinationMac(callback, sampleRate);
 }

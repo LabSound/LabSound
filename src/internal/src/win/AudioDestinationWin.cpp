@@ -42,7 +42,7 @@ namespace WebCore
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 
-AudioDestination * AudioDestination::create(AudioIOCallback& callback, float sampleRate)
+AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, float sampleRate)
 {
 	return new AudioDestinationWin(callback, sampleRate);
 }
@@ -95,7 +95,6 @@ void AudioDestinationWin::configure()
 		e.printMessage();
 	}
 }
-
 
 void AudioDestinationWin::start()
 {

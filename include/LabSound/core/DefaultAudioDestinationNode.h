@@ -30,20 +30,20 @@
 namespace WebCore {
 
 class AudioContext;
-class AudioDestination;
+struct AudioDestination;
     
-class DefaultAudioDestinationNode : public AudioDestinationNode {
+class DefaultAudioDestinationNode : public AudioDestinationNode 
+{
+	std::unique_ptr<AudioDestination> m_destination;
+
 public:
+
     explicit DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
     virtual ~DefaultAudioDestinationNode();
     
-    // AudioNode   
     virtual void initialize();
     virtual void uninitialize();
     virtual void startRendering();
-    
-private:
-    std::unique_ptr<AudioDestination> m_destination;
 };
 
 } // namespace WebCore

@@ -36,10 +36,9 @@ class AudioIOCallback;
 // AudioDestination is an abstraction for audio hardware I/O.
 // The audio hardware periodically calls the AudioIOCallback render() method asking it to render/output the next render quantum of audio.
 // It optionally will pass in local/live audio input when it calls render().
-
-class AudioDestination {
-public:
-    static AudioDestination* create(AudioIOCallback&, float sampleRate);
+struct AudioDestination
+{
+    static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, float sampleRate);
 
     virtual ~AudioDestination() { }
 

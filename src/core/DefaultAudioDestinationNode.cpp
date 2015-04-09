@@ -50,9 +50,9 @@ void DefaultAudioDestinationNode::initialize()
     float hardwareSampleRate = AudioDestination::hardwareSampleRate();
     
     LOG("Hardware Samplerate: %f\n", hardwareSampleRate);
-    
-    m_destination = std::move(std::unique_ptr<AudioDestination>(AudioDestination::create(*this, hardwareSampleRate)));
-    
+
+    m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, hardwareSampleRate));
+
     AudioNode::initialize();
 }
 

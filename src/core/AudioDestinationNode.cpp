@@ -40,14 +40,18 @@ namespace WebCore
 
 	// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
     // If there is local/live audio input, we call set() with the audio input data every render quantum.
-    class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider {
+    class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider 
+	{
     public:
-        LocalAudioInputProvider()
-            : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
+        LocalAudioInputProvider() : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
         {
+
         }
         
-        virtual ~LocalAudioInputProvider() {}
+        virtual ~LocalAudioInputProvider() 
+		{
+		
+		}
 
         void set(AudioBus* bus)
         {
