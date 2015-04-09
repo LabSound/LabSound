@@ -26,13 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
+#include "internal/AudioDestinationMac.h"
+#include "internal/AudioIOCallback.h"
+#include "internal/FloatConversion.h"
+#include "internal/VectorMath.h"
 
-#include "AudioDestinationMac.h"
-
-#include "AudioIOCallback.h"
-#include "FloatConversion.h"
-#include "VectorMath.h"
 #include <CoreAudio/AudioHardware.h>
 
 namespace WebCore {

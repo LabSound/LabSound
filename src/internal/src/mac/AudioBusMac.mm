@@ -22,11 +22,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
+#import "internal/AudioBus.h"
+#import "internal/AudioFileReader.h"
 
-#import "AudioBus.h"
-
-#import "AudioFileReader.h"
 #import <Foundation/Foundation.h>
 
 namespace WebCore {

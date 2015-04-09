@@ -26,12 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSoundConfig.h"
-#include "AudioFileReaderMac.h"
-
-#include "AudioBus.h"
-#include "AudioFileReader.h"
-#include "FloatConversion.h"
+#include "internal/ConfigMacros.h"
+#include "internal/AudioFileReaderMac.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
+#include "internal/FloatConversion.h"
 #include <CoreFoundation/CoreFoundation.h>
 
 namespace WebCore {
