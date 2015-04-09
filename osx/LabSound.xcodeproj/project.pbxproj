@@ -100,6 +100,11 @@
 		08650CF11AD6241A00D19E38 /* RealtimeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */; };
 		08650CF21AD6241A00D19E38 /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */; };
 		08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD41AD6241A00D19E38 /* WaveTable.cpp */; };
+		08650CF51AD6247C00D19E38 /* json11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF41AD6247C00D19E38 /* json11.cpp */; };
+		08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF61AD6248400D19E38 /* kiss_fft.cpp */; };
+		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
+		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
+		08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFC1AD6249B00D19E38 /* fftsg.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -304,6 +309,11 @@
 		08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RealtimeAnalyser.cpp; path = ../src/core/RealtimeAnalyser.cpp; sourceTree = SOURCE_ROOT; };
 		08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperNode.cpp; path = ../src/core/WaveShaperNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CD41AD6241A00D19E38 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveTable.cpp; path = ../src/core/WaveTable.cpp; sourceTree = SOURCE_ROOT; };
+		08650CF41AD6247C00D19E38 /* json11.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json11.cpp; path = ../third_party/json11/src/json11.cpp; sourceTree = "<group>"; };
+		08650CF61AD6248400D19E38 /* kiss_fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fft.cpp; path = ../third_party/kissfft/src/kiss_fft.cpp; sourceTree = "<group>"; };
+		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
+		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
+		08650CFC1AD6249B00D19E38 /* fftsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fftsg.cpp; path = ../third_party/ooura/src/fftsg.cpp; sourceTree = "<group>"; };
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -324,6 +334,7 @@
 		082FDF2019C6002C00046275 /* STK */ = {
 			isa = PBXGroup;
 			children = (
+				08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */,
 			);
 			name = STK;
 			sourceTree = "<group>";
@@ -331,6 +342,7 @@
 		082FDF2119C6004800046275 /* json11 */ = {
 			isa = PBXGroup;
 			children = (
+				08650CF41AD6247C00D19E38 /* json11.cpp */,
 			);
 			name = json11;
 			sourceTree = "<group>";
@@ -532,6 +544,9 @@
 		08D67A061972E9860061116A /* kissfft */ = {
 			isa = PBXGroup;
 			children = (
+				08650CF61AD6248400D19E38 /* kiss_fft.cpp */,
+				08650CF71AD6248400D19E38 /* kiss_fftr.cpp */,
+				08650CFC1AD6249B00D19E38 /* fftsg.cpp */,
 			);
 			name = kissfft;
 			sourceTree = "<group>";
@@ -757,6 +772,7 @@
 				08650CEF1AD6241A00D19E38 /* OscillatorNode.cpp in Sources */,
 				08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */,
 				08650BF51AD6225900D19E38 /* ReverbConvolverStage.cpp in Sources */,
+				08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */,
 				08650BF71AD6225900D19E38 /* SincResampler.cpp in Sources */,
 				08650BE61AD6225900D19E38 /* EqualPowerPanner.cpp in Sources */,
 				08650BFA1AD6225900D19E38 /* WaveShaperProcessor.cpp in Sources */,
@@ -765,6 +781,7 @@
 				08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */,
 				08650BD81AD6225900D19E38 /* AudioPullFIFO.cpp in Sources */,
 				08650C5A1AD6239000D19E38 /* PdNode.cpp in Sources */,
+				08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */,
 				08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */,
 				08650BEF1AD6225900D19E38 /* HRTFPanner.cpp in Sources */,
 				08650BD71AD6225900D19E38 /* AudioFIFO.cpp in Sources */,
@@ -782,6 +799,7 @@
 				08650C611AD6239000D19E38 /* SoundBuffer.cpp in Sources */,
 				08650CDA1AD6241A00D19E38 /* AudioContext.cpp in Sources */,
 				08650BF81AD6225900D19E38 /* VectorMath.cpp in Sources */,
+				08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */,
 				08650BA91AD6222500D19E38 /* AudioBus.cpp in Sources */,
 				08650CD61AD6241A00D19E38 /* AudioBasicInspectorNode.cpp in Sources */,
 				08650CE91AD6241A00D19E38 /* DelayNode.cpp in Sources */,
@@ -806,6 +824,7 @@
 				08650CEC1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp in Sources */,
 				08650CDD1AD6241A00D19E38 /* AudioNode.cpp in Sources */,
 				08650BE51AD6225900D19E38 /* DynamicsCompressorKernel.cpp in Sources */,
+				08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */,
 				08650CEB1AD6241A00D19E38 /* GainNode.cpp in Sources */,
 				08650C031AD622A400D19E38 /* AudioFileReaderMac.cpp in Sources */,
 				08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */,
@@ -831,6 +850,7 @@
 				08650CDC1AD6241A00D19E38 /* AudioListener.cpp in Sources */,
 				08650BF31AD6225900D19E38 /* ReverbAccumulationBuffer.cpp in Sources */,
 				08650BD31AD6225900D19E38 /* AudioBus.cpp in Sources */,
+				08650CF51AD6247C00D19E38 /* json11.cpp in Sources */,
 				08650BE31AD6225900D19E38 /* Distance.cpp in Sources */,
 				08650BF61AD6225900D19E38 /* ReverbInputBuffer.cpp in Sources */,
 				08650BEB1AD6225900D19E38 /* HRTFDatabase.cpp in Sources */,
