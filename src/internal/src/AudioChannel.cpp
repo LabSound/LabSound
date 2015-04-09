@@ -28,6 +28,7 @@
 
 #include "internal/AudioChannel.h"
 #include "internal/VectorMath.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <math.h>

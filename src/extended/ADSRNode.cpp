@@ -116,7 +116,7 @@ namespace LabSound
                 }
                 else
                 {
-                    m_currentGain = (m_noteOffTime == DBL_MAX) ? s : 0;
+                    m_currentGain = (m_noteOffTime == std::numeric_limits<double>::max()) ? s : 0;
                     gainValues[i] = m_currentGain;
                 }
             }

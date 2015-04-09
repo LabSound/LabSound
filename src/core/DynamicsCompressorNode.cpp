@@ -30,6 +30,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/DynamicsCompressor.h"
+#include "internal/Assertions.h"
 
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;

@@ -25,6 +25,7 @@
 #include "internal/AudioResamplerKernel.h"
 #include "internal/AudioResampler.h"
 #include "internal/AudioResampler.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 

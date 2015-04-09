@@ -45,6 +45,8 @@
 #include "internal/VectorMath.h"
 #include "internal/AudioBus.h"
 
+#include <WTF/MathExtras.h>
+
 #include <vector>
 
 using namespace WebCore;

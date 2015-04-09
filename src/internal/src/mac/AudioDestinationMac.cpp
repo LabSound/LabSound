@@ -25,10 +25,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "LabSound/core/AudioIOCallback.h"
 
 #include "internal/ConfigMacros.h"
-#include "internal/AudioDestinationMac.h"
-#include "internal/AudioIOCallback.h"
+#include "internal/mac/AudioDestinationMac.h"
 #include "internal/FloatConversion.h"
 #include "internal/VectorMath.h"
 

@@ -4,6 +4,8 @@
 #pragma once
 
 #include <vector>
+#include <cmath>
+#include <tgmath.h> 
 
 #ifndef PI
 	#define PI       3.14159265358979323846

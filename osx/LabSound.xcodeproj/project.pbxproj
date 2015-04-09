@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		08650BA91AD6222500D19E38 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BA81AD6222500D19E38 /* AudioBus.cpp */; };
-		08650BD31AD6225900D19E38 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAA1AD6225900D19E38 /* AudioBus.cpp */; };
 		08650BD41AD6225900D19E38 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAB1AD6225900D19E38 /* AudioChannel.cpp */; };
 		08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */; };
 		08650BD61AD6225900D19E38 /* AudioDSPKernelProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */; };
@@ -58,7 +57,6 @@
 		08650C571AD6239000D19E38 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C471AD6239000D19E38 /* DiodeNode.cpp */; };
 		08650C581AD6239000D19E38 /* LabSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C481AD6239000D19E38 /* LabSound.cpp */; };
 		08650C591AD6239000D19E38 /* NoiseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C491AD6239000D19E38 /* NoiseNode.cpp */; };
-		08650C5A1AD6239000D19E38 /* PdNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4A1AD6239000D19E38 /* PdNode.cpp */; };
 		08650C5B1AD6239000D19E38 /* PeakCompNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */; };
 		08650C5C1AD6239000D19E38 /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */; };
 		08650C5D1AD6239000D19E38 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4D1AD6239000D19E38 /* PWMNode.cpp */; };
@@ -207,7 +205,6 @@
 		08650C471AD6239000D19E38 /* DiodeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DiodeNode.cpp; path = ../src/extended/DiodeNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650C481AD6239000D19E38 /* LabSound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LabSound.cpp; path = ../src/extended/LabSound.cpp; sourceTree = SOURCE_ROOT; };
 		08650C491AD6239000D19E38 /* NoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NoiseNode.cpp; path = ../src/extended/NoiseNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4A1AD6239000D19E38 /* PdNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PdNode.cpp; path = ../src/extended/PdNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakCompNode.cpp; path = ../src/extended/PeakCompNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PowerMonitorNode.cpp; path = ../src/extended/PowerMonitorNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650C4D1AD6239000D19E38 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PWMNode.cpp; path = ../src/extended/PWMNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -226,7 +223,6 @@
 		08650C7F1AD623C400D19E38 /* LabSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LabSound.h; path = ../include/LabSound/extended/LabSound.h; sourceTree = SOURCE_ROOT; };
 		08650C801AD623C400D19E38 /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = ../include/LabSound/extended/Logging.h; sourceTree = SOURCE_ROOT; };
 		08650C811AD623C400D19E38 /* NoiseNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoiseNode.h; path = ../include/LabSound/extended/NoiseNode.h; sourceTree = SOURCE_ROOT; };
-		08650C821AD623C400D19E38 /* PdNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PdNode.h; path = ../include/LabSound/extended/PdNode.h; sourceTree = SOURCE_ROOT; };
 		08650C831AD623C400D19E38 /* PeakCompNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PeakCompNode.h; path = ../include/LabSound/extended/PeakCompNode.h; sourceTree = SOURCE_ROOT; };
 		08650C841AD623C400D19E38 /* PowerMonitorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PowerMonitorNode.h; path = ../include/LabSound/extended/PowerMonitorNode.h; sourceTree = SOURCE_ROOT; };
 		08650C851AD623C400D19E38 /* PWMNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PWMNode.h; path = ../include/LabSound/extended/PWMNode.h; sourceTree = SOURCE_ROOT; };
@@ -478,7 +474,6 @@
 				08650C471AD6239000D19E38 /* DiodeNode.cpp */,
 				08650C481AD6239000D19E38 /* LabSound.cpp */,
 				08650C491AD6239000D19E38 /* NoiseNode.cpp */,
-				08650C4A1AD6239000D19E38 /* PdNode.cpp */,
 				08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */,
 				08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */,
 				08650C4D1AD6239000D19E38 /* PWMNode.cpp */,
@@ -504,7 +499,6 @@
 				08650C7F1AD623C400D19E38 /* LabSound.h */,
 				08650C801AD623C400D19E38 /* Logging.h */,
 				08650C811AD623C400D19E38 /* NoiseNode.h */,
-				08650C821AD623C400D19E38 /* PdNode.h */,
 				08650C831AD623C400D19E38 /* PeakCompNode.h */,
 				08650C841AD623C400D19E38 /* PowerMonitorNode.h */,
 				08650C851AD623C400D19E38 /* PWMNode.h */,
@@ -730,7 +724,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0620;
 			};
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "LabSound" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -780,7 +774,6 @@
 				08650CE01AD6241A00D19E38 /* AudioParam.cpp in Sources */,
 				08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */,
 				08650BD81AD6225900D19E38 /* AudioPullFIFO.cpp in Sources */,
-				08650C5A1AD6239000D19E38 /* PdNode.cpp in Sources */,
 				08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */,
 				08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */,
 				08650BEF1AD6225900D19E38 /* HRTFPanner.cpp in Sources */,
@@ -849,7 +842,6 @@
 				08650BF01AD6225900D19E38 /* MultiChannelResampler.cpp in Sources */,
 				08650CDC1AD6241A00D19E38 /* AudioListener.cpp in Sources */,
 				08650BF31AD6225900D19E38 /* ReverbAccumulationBuffer.cpp in Sources */,
-				08650BD31AD6225900D19E38 /* AudioBus.cpp in Sources */,
 				08650CF51AD6247C00D19E38 /* json11.cpp in Sources */,
 				08650BE31AD6225900D19E38 /* Distance.cpp in Sources */,
 				08650BF61AD6225900D19E38 /* ReverbInputBuffer.cpp in Sources */,
@@ -878,6 +870,7 @@
 					"$(PROJECT_DIR)/../include",
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
+					"$(PROJECT_DIR)/../third_party/STK",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 			};
@@ -894,6 +887,7 @@
 					"$(PROJECT_DIR)/../include",
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
+					"$(PROJECT_DIR)/../third_party/STK",
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 			};

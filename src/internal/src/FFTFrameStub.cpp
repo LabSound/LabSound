@@ -25,11 +25,11 @@
 
 // FFTFrame stub implementation to avoid link errors during bringup
 
-#include "LabSound/extended/LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 
 #if !OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 
-#include "FFTFrame.h"
+#include "internal/FFTFrame.h"
 
 namespace WebCore {
 

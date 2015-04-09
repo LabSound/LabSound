@@ -8,6 +8,8 @@
 
 #include "internal/AudioBus.h"
 
+#include <wtf/MathExtras.h>
+
 namespace LabSound {
     
     using namespace WebCore;

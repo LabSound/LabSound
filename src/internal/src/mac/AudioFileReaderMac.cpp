@@ -27,7 +27,7 @@
  */
 
 #include "internal/ConfigMacros.h"
-#include "internal/AudioFileReaderMac.h"
+#include "internal/mac/AudioFileReaderMac.h"
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/FloatConversion.h"

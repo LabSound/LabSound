@@ -26,7 +26,8 @@
 #ifndef WTF_MathExtras_h
 #define WTF_MathExtras_h
 
-#include "CPU.h"
+#include "WTF/CPU.h"
+#include "internal/ConfigMacros.h"
 
 #include <limits>
 

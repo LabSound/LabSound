@@ -28,6 +28,7 @@
 
 #include "internal/DirectConvolver.h"
 #include "internal/VectorMath.h"
+#include "internal/ConfigMacros.h"
 
 #if OS(DARWIN)
 #include <Accelerate/Accelerate.h>

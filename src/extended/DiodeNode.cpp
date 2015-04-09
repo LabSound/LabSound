@@ -9,6 +9,7 @@
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "LabSound/extended/DiodeNode.h"
+#include <WTF/MathExtras.h>
 #include <mutex>
 
 namespace LabSound {
