@@ -140,7 +140,8 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     }
 
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
-    // Note that connections would normally be mono, but we mix down to mono if necessary.
+    // Note that parameter connections would normally be mono, so mix down to mono if necessary.
+    //
     AudioBus summingBus(1, numberOfValues, false);
     summingBus.setChannelMemory(0, values, numberOfValues);
 
@@ -171,56 +172,31 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, un
 }
 
     
-void AudioParam::connect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
-
-    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
     
-    // Not found...
-    if (it != param->m_outputs.end())
-    {
-        return;
-    }
-
     std::lock_guard<std::mutex> lock(paramMutex);
     
-    int firstAvailableIdx = -1;
-    for (size_t i = 0; i < param->m_outputs.size(); i++)
-    {
-        if (param->m_outputs[i].get() == nullptr)
-        {
-            firstAvailableIdx = i;
-            break;
-        }
-    }
+    if (param->isConnected(output))
+        return;
     
-    ASSERT(firstAvailableIdx > -1);
-    
-    output->addParam(param);
-    
-    param->m_outputs[firstAvailableIdx] = output;
-    param->m_renderingStateNeedUpdating = true;
+    param->junctionConnectOutput(output);
+    output->addParam(g, param);
 }
 
-void AudioParam::disconnect(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
-
-    // Changed to support fixed-size arrays
     
     std::lock_guard<std::mutex> lock(paramMutex);
     
-    auto it = std::find(param->m_outputs.begin(), param->m_outputs.end(), output);
-    
-    if (it != param->m_outputs.end())
-    {
-        it->reset(); // releases ownership
-        param->m_renderingStateNeedUpdating = true;
-        output->removeParam(param);
+    if (param->isConnected(output)) {
+        param->junctionDisconnectOutput(output);
     }
+    output->removeParam(g, param);
 }
 
 } // namespace WebCore

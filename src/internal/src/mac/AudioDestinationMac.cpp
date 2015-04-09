@@ -25,14 +25,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include "LabSound/core/AudioIOCallback.h"
 
-#include "LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
+#include "internal/mac/AudioDestinationMac.h"
+#include "internal/FloatConversion.h"
+#include "internal/VectorMath.h"
 
-#include "AudioDestinationMac.h"
-
-#include "AudioIOCallback.h"
-#include "FloatConversion.h"
-#include "VectorMath.h"
 #include <CoreAudio/AudioHardware.h>
 
 namespace WebCore {

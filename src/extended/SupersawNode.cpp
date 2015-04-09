@@ -12,6 +12,8 @@
 
 #include "internal/AudioBus.h"
 
+#include <cfloat>
+
 using namespace WebCore;
 
 namespace LabSound 

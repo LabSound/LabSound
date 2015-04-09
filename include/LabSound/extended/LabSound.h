@@ -47,7 +47,6 @@
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
-#include "LabSound/extended/STKNode.h"
 #include "LabSound/extended/SampledInstrumentNode.h"
 #include "LabSound/extended/RecorderNode.h"
 

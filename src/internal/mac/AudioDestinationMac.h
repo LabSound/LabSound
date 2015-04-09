@@ -29,8 +29,8 @@
 #ifndef AudioDestinationMac_h
 #define AudioDestinationMac_h
 
-#include "AudioBus.h"
-#include "AudioDestination.h"
+#include "internal/AudioBus.h"
+#include "internal/AudioDestination.h"
 #include <AudioUnit/AudioUnit.h>
 
 namespace WebCore {

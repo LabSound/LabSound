@@ -30,6 +30,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/DynamicsCompressor.h"
+#include "internal/Assertions.h"
 
 // Set output to stereo by default.
 static const unsigned defaultNumberOfOutputChannels = 2;
@@ -38,8 +39,7 @@ using namespace std;
 
 namespace WebCore {
 
-DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate)
-    : AudioNode(sampleRate)
+DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, defaultNumberOfOutputChannels)));
@@ -94,17 +94,19 @@ void DynamicsCompressorNode::initialize()
     if (isInitialized())
         return;
 
-    AudioNode::initialize();    
-    m_dynamicsCompressor = std::unique_ptr<DynamicsCompressor>(new DynamicsCompressor(sampleRate(), defaultNumberOfOutputChannels));
+    m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), defaultNumberOfOutputChannels));
+    
+    AudioNode::initialize();
 }
 
 void DynamicsCompressorNode::uninitialize()
 {
     if (!isInitialized())
         return;
-
-    m_dynamicsCompressor.reset();
+    
     AudioNode::uninitialize();
+    
+    m_dynamicsCompressor.reset();
 }
 
 double DynamicsCompressorNode::tailTime() const

@@ -29,6 +29,8 @@
 #ifndef AudioIOCallback_h
 #define AudioIOCallback_h
 
+#include <stddef.h>
+
 namespace WebCore {
 
 class AudioBus;

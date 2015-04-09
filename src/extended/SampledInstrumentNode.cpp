@@ -1,5 +1,7 @@
 #include "LabSound/extended/SampledInstrumentNode.h"
 
+#include "internal/ConfigMacros.h"
+
 #include <json11/json11.hpp>
 
 #include <string>

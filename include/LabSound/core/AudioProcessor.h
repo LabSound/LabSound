@@ -31,6 +31,8 @@
 #ifndef AudioProcessor_h
 #define AudioProcessor_h
 
+#include <stddef.h>
+
 namespace LabSound 
 {
     class ContextRenderLock;

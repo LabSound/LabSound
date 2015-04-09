@@ -1,4 +1,3 @@
-
 // Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
@@ -11,6 +10,8 @@
 
 #include "internal/AudioBus.h"
 #include "internal/VectorMath.h"
+
+#include <WTF/MathExtras.h>
 
 #include <iostream>
 #include <vector>

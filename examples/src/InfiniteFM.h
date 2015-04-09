@@ -34,7 +34,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
 
             // Set up processing chain
             modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
-            modulatorGain->connect(osc->frequency(), 0, ec); // I don't think this works...
+            modulatorGain->connect(g, osc->frequency(), 0, ec); // I don't think this works...
             osc->connect(context.get(), context->destination().get(), 0, 0, ec);
             
             // Shouldn't be needed... 
@@ -47,7 +47,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
         {
             
             // Debugging cruft --
-            //carrier->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
+            modulator->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
             //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
             //modulator->frequency()->setValue(carrier->frequency()->value(context))
             //trigger->noteOn(now);

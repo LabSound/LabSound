@@ -11,6 +11,7 @@
 #include "internal/ConfigMacros.h"
 
 #include <ooura/fftsg.h>
+#include <cmath>
 
 
 namespace LabSound 
@@ -40,9 +41,8 @@ namespace LabSound
 
         // does an in place transform of waveform to real and imag.
         // real values are on even, imag on odd
-        void forward( std::vector<float>& waveform) 
-		{
-            ASSERT(waveform.size() == size);
+        void forward( std::vector<float>& waveform)
+        {
             ooura::rdft( size, 1, &waveform[0], oouraIp, oouraW );
         }
 
@@ -227,6 +227,5 @@ namespace LabSound
 	{
         return internalNode->windowSize;
     }
-
 
 } // namespace LabSound

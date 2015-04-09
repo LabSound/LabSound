@@ -216,4 +216,4 @@ void dfct(int n, T *a, T *t, int *ip, T *w);
 template <typename T> 
 void dfst(int n, T *a, T *t, int *ip, T *w);
 
-} ooura
+}

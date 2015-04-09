@@ -28,11 +28,11 @@
 
 // Mac OS X - specific FFTFrame implementation
 
-#include "LabSoundConfig.h"
+#include "internal/ConfigMacros.h"
 #if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 
-#include "FFTFrame.h"
-#include "VectorMath.h"
+#include "internal/FFTFrame.h"
+#include "internal/VectorMath.h"
 
 namespace WebCore {
 

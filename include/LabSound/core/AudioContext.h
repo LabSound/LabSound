@@ -4,6 +4,7 @@
 #define AudioContext_h
 
 #include "LabSound/core/ConcurrentQueue.h"
+#include "labSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/extended/ExceptionCodes.h"
 
 #include <set>
@@ -188,8 +189,25 @@ private:
 	std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 
 	std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
-	std::vector<PendingConnection<AudioNode, AudioNode>> pendingNodeConnections;
-
+    
+    
+    typedef PendingConnection<AudioNode, AudioNode> PendingNodeConnection;
+    
+    class CompareScheduledTime {
+    public:
+        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2) {
+            if (!p2.from->isScheduledNode())
+                return true;
+            if (!p1.from->isScheduledNode())
+                return false;
+            AudioScheduledSourceNode *ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
+            AudioScheduledSourceNode *ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
+            return ap2->startTime() < ap1->startTime();
+        }
+    };
+    
+    std::priority_queue<PendingNodeConnection, std::deque<PendingNodeConnection>, CompareScheduledTime> pendingNodeConnections;
+	//std::vector<PendingConnection<AudioNode, AudioNode>> pendingNodeConnections;
 };
 
 } // End namespace WebCore
