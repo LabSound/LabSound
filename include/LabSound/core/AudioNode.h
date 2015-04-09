@@ -102,7 +102,7 @@ public:
 
     enum 
 	{ 
-		ProcessingSizeInFrames = 256 
+		ProcessingSizeInFrames = 128
 	};
     
     #define AUDIONODE_MAXINPUTS 4
