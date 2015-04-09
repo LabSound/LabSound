@@ -233,7 +233,6 @@
 		08650C8A1AD623C400D19E38 /* SoundBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SoundBuffer.h; path = ../include/LabSound/extended/SoundBuffer.h; sourceTree = SOURCE_ROOT; };
 		08650C8B1AD623C400D19E38 /* SpatializationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpatializationNode.h; path = ../include/LabSound/extended/SpatializationNode.h; sourceTree = SOURCE_ROOT; };
 		08650C8C1AD623C400D19E38 /* SpectralMonitorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpectralMonitorNode.h; path = ../include/LabSound/extended/SpectralMonitorNode.h; sourceTree = SOURCE_ROOT; };
-		08650C8D1AD623C400D19E38 /* STKNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = STKNode.h; path = ../include/LabSound/extended/STKNode.h; sourceTree = SOURCE_ROOT; };
 		08650C8E1AD623C400D19E38 /* SupersawNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SupersawNode.h; path = ../include/LabSound/extended/SupersawNode.h; sourceTree = SOURCE_ROOT; };
 		08650C8F1AD623E300D19E38 /* AnalyserNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AnalyserNode.h; path = ../include/LabSound/core/AnalyserNode.h; sourceTree = SOURCE_ROOT; };
 		08650C901AD623E300D19E38 /* AudioArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioArray.h; path = ../include/LabSound/core/AudioArray.h; sourceTree = SOURCE_ROOT; };
@@ -509,7 +508,6 @@
 				08650C8A1AD623C400D19E38 /* SoundBuffer.h */,
 				08650C8B1AD623C400D19E38 /* SpatializationNode.h */,
 				08650C8C1AD623C400D19E38 /* SpectralMonitorNode.h */,
-				08650C8D1AD623C400D19E38 /* STKNode.h */,
 				08650C8E1AD623C400D19E38 /* SupersawNode.h */,
 			);
 			name = include;
