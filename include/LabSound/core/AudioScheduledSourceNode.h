@@ -61,12 +61,18 @@ public:
     // Scheduling.
     void start(double when);
     void stop(double when);
+    
+    double startTime() const { return m_startTime; }
 
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
 
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
 
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
+
+    // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
+    // This is to save the cost of a dynamic_cast when scheduling nodes.
+    virtual bool isScheduledNode() const override { return true; }
 
 protected:
 

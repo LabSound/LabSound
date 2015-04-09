@@ -82,7 +82,12 @@ public:
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock&);
+
     
+    // Must be called within the context's graph lock.
+    static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+
 private:
     AudioNode* m_node;
 
@@ -91,10 +96,10 @@ private:
     
     // These are called from AudioNodeInput.
     // They must be called with the context's graph lock.
-    void addInput(std::shared_ptr<AudioNodeInput>);
-    void removeInput(std::shared_ptr<AudioNodeInput>);
-    void addParam(std::shared_ptr<AudioParam>);
-    void removeParam(std::shared_ptr<AudioParam>);
+    void addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
+    void removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput>);
+    void addParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
+    void removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam>);
 
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
@@ -105,10 +110,6 @@ private:
     // This method should not be called in audio thread rendering code, instead renderingParamFanOutCount() should be used.
     // It must be called with the context's graph lock.
     unsigned paramFanOutCount();
-
-    // Must be called within the context's graph lock.
-    static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-    static void disconnectAllParams(std::shared_ptr<AudioNodeOutput>);
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
@@ -129,11 +130,11 @@ private:
     // It must only be changed in the audio thread (or constructor).
     AudioBus* m_actualDestinationBus;
     
+public:
 #define AUDIONODEOUTPUT_MAXINPUTS 8
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
-    bool m_isEnabled;
-
+private:
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
     unsigned m_renderingFanOutCount;
