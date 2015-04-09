@@ -37,10 +37,6 @@ using namespace std;
 
 namespace WebCore {
 
-namespace {
-    mutex outputMutex;
-}
-
 AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
@@ -153,12 +149,10 @@ unsigned AudioNodeOutput::renderingParamFanOutCount() const
     return m_renderingParamFanOutCount;
 }
 
-void AudioNodeOutput::addInput(std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
 {
     if (!input)
         return;
-    
-    lock_guard<mutex> lock(outputMutex);
     
     for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
         if (!m_inputs[i]) {
@@ -170,12 +164,10 @@ void AudioNodeOutput::addInput(std::shared_ptr<AudioNodeInput> input)
     ASSERT(0 == "couldn't add input to AudioNodeOutput");
 }
 
-void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
+void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
 {
     if (!input)
         return;
-
-    lock_guard<mutex> lock(outputMutex);
     
     for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
         if (m_inputs[i] == input) {
@@ -187,49 +179,45 @@ void AudioNodeOutput::removeInput(std::shared_ptr<AudioNodeInput> input)
 
 void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
-    lock_guard<mutex> lock(outputMutex);
-    
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
     for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
         if (auto ptr = self->m_inputs[i]) {
             AudioNodeInput::disconnect(g, ptr, self);
-            ptr.reset();
+            self->m_inputs[i].reset();
         }
 }
 
-void AudioNodeOutput::addParam(std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::addParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
 {
     if (!param)
         return;
 
-    lock_guard<mutex> lock(outputMutex);
     m_params.insert(param);
 }
 
-void AudioNodeOutput::removeParam(std::shared_ptr<AudioParam> param)
+void AudioNodeOutput::removeParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
 {
     if (!param)
         return;
 
-    lock_guard<mutex> lock(outputMutex);
     auto it = m_params.find(param);
     if (it != m_params.end())
         m_params.erase(it);
 }
 
-void AudioNodeOutput::disconnectAllParams(std::shared_ptr<AudioNodeOutput> self)
+void AudioNodeOutput::disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     // AudioParam::disconnect() changes m_params by calling removeParam().
     while (self->m_params.size()) {
         auto param = self->m_params.begin();
-        (*param)->disconnect(*param, self);
+        (*param)->disconnect(g, *param, self);
     }
 }
 
 void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
     self->disconnectAllInputs(g, self);
-    self->disconnectAllParams(self);
+    self->disconnectAllParams(g, self);
 }
 
 } // namespace WebCore

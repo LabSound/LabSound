@@ -57,7 +57,6 @@ ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
 void ChannelMergerNode::process(ContextRenderLock&, size_t framesToProcess)
 {
     auto output = this->output(0);
-    ASSERT(output);
     ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus()->length());
     
     // Merge all the channels from all the inputs into one output.
@@ -94,14 +93,12 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
         auto input = this->input(i);
         if (input->isConnected())
-            numberOfOutputChannels += input->bus()->numberOfChannels();
+            numberOfOutputChannels = std::max(input->bus()->numberOfChannels(), numberOfOutputChannels);
     }
 
     // Set the correct number of channels on the output
     auto output = this->output(0);
-    ASSERT(output);
     output->setNumberOfChannels(r, numberOfOutputChannels);
-
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 

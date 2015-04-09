@@ -17,6 +17,7 @@
 #include "Validation.h"
 #include "InfiniteFM.h"
 
+ConvolutionReverbApp g_convolutionReverbExample;
 SimpleApp g_simpleExample;
 SimpleRecordingApp g_simpleRecordingExample;
 RhythmApp g_rhythm;
@@ -31,6 +32,6 @@ InfiniteFMApp g_infiniteFM;
 
 int main (int argc, char *argv[])
 {
-    g_infiniteFM.PlayExample();
+    g_rhythm.PlayExample();
     return 0;
 }

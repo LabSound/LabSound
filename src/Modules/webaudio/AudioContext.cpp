@@ -351,7 +351,8 @@ void AudioContext::update(ContextGraphLock& g)
             auto& testMe = pendingNodeConnections.top();
             if (testMe.from->isScheduledNode()) {
                 AudioScheduledSourceNode* node = dynamic_cast<AudioScheduledSourceNode*>(testMe.from.get());
-                if (node->startTime() > now + sampleRate() * 1.f/1000.f * 1.f/10.f)
+                
+                if (node->startTime() > now + sampleRate() * 1.f/1000000.f * 1.f/10.f)
                     break; // stop processing the queue if the scheduled time is > 100ms away
             }
             
@@ -377,14 +378,33 @@ void AudioContext::update(ContextGraphLock& g)
                 }
 				else if (i.from) {
 					atomicDecrement(&i.from->m_connectionRefCount);
-                    // &&& disconnect that pest
+                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                        auto output = i.from->output(out);
+                        if (!output)
+                            continue;
+                        
+                        AudioNodeOutput::disconnectAllInputs(g, output);
+                        AudioNodeOutput::disconnectAllParams(g, output);
+                    }
 				}
                 else if (i.to) {
                     atomicDecrement(&i.to->m_connectionRefCount);
-                    // &&& disconnect that pest
+                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                        auto output = i.to->output(out);
+                        if (!output)
+                            continue;
+                        
+                        AudioNodeOutput::disconnectAllInputs(g, output);
+                        AudioNodeOutput::disconnectAllParams(g, output);
+                    }
                 }
 			}
 		}
+        
+        //auto d = destination();
+        //auto in = d->input(0);
+        //printf("%d\n", (int) in->numberOfRenderingConnections());
+        
 		//pendingNodeConnections.clear();
 	}
 

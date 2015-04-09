@@ -48,43 +48,38 @@ AudioNodeInput::AudioNodeInput(AudioNode* node)
 }
 
 void AudioNodeInput::connect(ContextGraphLock& g,
-                             std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
+                             std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    if (!fromInput || !toOutput || !fromInput->node())
+    if (!junction || !toOutput || !junction->node())
         return;
     
-    ASSERT(g.context());
     lock_guard<mutex> lock(outputsMutex);
 
     // return if input is already connected to this output.
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i)
-        if (fromInput->m_outputs[i] == toOutput)
-            return;
+    if (junction->isConnected(toOutput))
+        return;
 
-    toOutput->addInput(fromInput);
-    fromInput->addOutput(toOutput);
+    toOutput->addInput(g, junction);
+    junction->junctionConnectOutput(toOutput);
     
     // Inform context that a connection has been made.
+    ASSERT(g.context());
     g.context()->incrementConnectionCount();
 }
 
 void AudioNodeInput::disconnect(ContextGraphLock& g,
-                                std::shared_ptr<AudioNodeInput> fromInput,
+                                std::shared_ptr<AudioNodeInput> junction,
                                 std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!fromInput || !toOutput || !fromInput->node())
+    if (!junction || !junction->node() || !toOutput)
         return;
     
     lock_guard<mutex> lock(outputsMutex);
-    
-    // First try to disconnect from "active" connections.
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        if (fromInput->m_outputs[i] == toOutput) {
-            fromInput->removeOutput(toOutput);
-            toOutput->removeInput(fromInput);
-            return;
-        }
+
+    if (junction->isConnected(toOutput)) {
+        junction->junctionDisconnectOutput(toOutput);
+        toOutput->removeInput(g, junction);
     }
 }
 
@@ -110,7 +105,7 @@ unsigned AudioNodeInput::numberOfChannels() const
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
     for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        auto output = m_outputs[i];
+        auto output = renderingOutput(i);
         if (output)
             maxChannels = max(maxChannels, output->bus()->numberOfChannels());
     }
@@ -123,8 +118,11 @@ unsigned AudioNodeInput::numberOfRenderingChannels()
     // Find the number of channels of the rendering connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i)
-        maxChannels = max(maxChannels, renderingOutput(i)->bus()->numberOfChannels());
+    for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+        auto output = renderingOutput(i);
+        if (output)
+            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+    }
     
     return maxChannels;
 }
@@ -157,15 +155,15 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
         
     summingBus->zero();
 
-    for (unsigned i = 0; i < numberOfRenderingConnections(); ++i) {
+    for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
         auto output = renderingOutput(i);
-        ASSERT(output);
-
-        // Render audio from this output.
-        AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
-
-        // Sum, with unity-gain.
-        summingBus->sumFrom(*connectionBus);
+        if (output) {
+            // Render audio from this output.
+            AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
+            
+            // Sum, with unity-gain.
+            summingBus->sumFrom(*connectionBus);
+        }
     }
 }
 
@@ -176,8 +174,12 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // Handle single connection case.
     if (numberOfRenderingConnections() == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
-        auto output = this->renderingOutput(0);
-        return output->pull(r, inPlaceBus, framesToProcess);
+        
+        for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
+            auto output = renderingOutput(i);
+            if (output)
+                return output->pull(r, inPlaceBus, framesToProcess);
+        }
     }
 
     AudioBus* internalSummingBus = this->internalSummingBus();

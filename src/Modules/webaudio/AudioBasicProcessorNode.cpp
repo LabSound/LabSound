@@ -100,20 +100,15 @@ void AudioBasicProcessorNode::reset(std::shared_ptr<AudioContext>)
 // uninitialize and then re-initialize with the new channel count.
 void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
-    if (!input)
-        return;
-    
-    if (input != this->input(0).get())
+    if (!input || input != this->input(0).get())
         return;
 
-    ASSERT(processor());
     if (!processor())
         return;
 
     unsigned numberOfChannels = input->numberOfChannels();
     
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels()) {
-        // We're already initialized but the channel count has changed.
         uninitialize();
     }
     

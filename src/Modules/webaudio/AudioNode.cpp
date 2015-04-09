@@ -182,7 +182,7 @@ void AudioNode::connect(AudioContext* context,
 
 }
 
-void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
 {
     if (!param) {
         ec = SYNTAX_ERR;
@@ -194,7 +194,7 @@ void AudioNode::connect(std::shared_ptr<AudioParam> param, unsigned outputIndex,
         return;
     }
     
-    AudioParam::connect(param, this->output(outputIndex));
+    AudioParam::connect(g, param, this->output(outputIndex));
     
 }
 
