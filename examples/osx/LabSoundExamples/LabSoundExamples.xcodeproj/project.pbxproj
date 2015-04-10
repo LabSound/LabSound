@@ -253,14 +253,10 @@
 					"$(inherited)",
 					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../include/third_party",
-					"$(PROJECT_DIR)/../../../include/internal",
-					"$(PROJECT_DIR)/../../../include/nodes",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/osx/build/Debug,
+					"$(inherited)"
 				);
 				PRODUCT_NAME = LabSoundExamples;
 			};
@@ -273,14 +269,10 @@
 					"$(inherited)",
 					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../include/third_party",
-					"$(PROJECT_DIR)/../../../include/internal",
-					"$(PROJECT_DIR)/../../../include/nodes",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/osx/build/Debug,
+					"$(inherited)"
 				);
 				PRODUCT_NAME = LabSoundExamples;
 			};
