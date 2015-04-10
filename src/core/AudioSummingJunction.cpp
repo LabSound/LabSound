@@ -36,7 +36,7 @@
 namespace WebCore 
 {
     
-LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> m_dirtySummingJunctions;
+LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
 
     namespace 
 	{
@@ -48,7 +48,7 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r
 {
     ASSERT(r.context());
     std::shared_ptr<AudioSummingJunction> asj;
-    while (m_dirtySummingJunctions.try_pop(asj))
+    while (s_dirtySummingJunctions.try_pop(asj))
         asj->updateRenderingState(r);
 }
 
