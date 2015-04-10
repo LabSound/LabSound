@@ -41,13 +41,11 @@ class WaveTable
 {
 
 public:
-    static std::unique_ptr<WaveTable> createSine(float sampleRate);
-    static std::unique_ptr<WaveTable> createSquare(float sampleRate);
-    static std::unique_ptr<WaveTable> createSawtooth(float sampleRate);
-    static std::unique_ptr<WaveTable> createTriangle(float sampleRate);
 
-    // Creates an arbitrary wavetable given the frequency components (Fourier coefficients).
-    static std::unique_ptr<WaveTable> create(float sampleRate, std::vector<float>& real, std::vector<float>& imag);
+	WaveTable(float sampleRate, int basicWaveform);
+	WaveTable(float sampleRate, int basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+
+	~WaveTable();
 
     // Returns pointers to the lower and higher wavetable data for the pitch range containing
     // the given fundamental frequency. These two tables are in adjacent "pitch" ranges
@@ -64,7 +62,6 @@ public:
     float sampleRate() const { return m_sampleRate; }
 
 private:
-    explicit WaveTable(float sampleRate);
 
     void generateBasicWaveform(int);
 
@@ -89,6 +86,7 @@ private:
 
     // Creates tables based on numberOfComponents Fourier coefficients.
     void createBandLimitedTables(const float* real, const float* imag, unsigned numberOfComponents);
+
     std::vector<std::unique_ptr<WebCore::AudioFloatArray> > m_bandLimitedTables;
 };
 

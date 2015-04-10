@@ -36,6 +36,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <exception>
 
 const unsigned WaveTableSize = 4096; // This must be a power of two.
 const unsigned NumberOfRanges = 36; // There should be 3 * log2(WaveTableSize) 1/3 octave ranges.
@@ -46,56 +47,44 @@ namespace WebCore
     
 using namespace VectorMath;
 
-std::unique_ptr<WaveTable> WaveTable::create(float sampleRate, std::vector<float>& real, std::vector<float>& imag)
+WaveTable::WaveTable(float sampleRate, int basicWaveform) : 
+	m_sampleRate(sampleRate), 
+	m_waveTableSize(WaveTableSize), 
+	m_numberOfRanges(NumberOfRanges),
+	m_centsPerRange(CentsPerRange)
 {
-    bool isGood = real.size() == imag.size() && real.size() > 0;
-    ASSERT(isGood);
-    if (isGood) {
-        std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-        waveTable->createBandLimitedTables(&real[0], &imag[0], real.size());
-        return waveTable;
-    }
-    return 0;
-}
-
-std::unique_ptr<WaveTable> WaveTable::createSine(float sampleRate)
-{
-    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-    waveTable->generateBasicWaveform(OscillatorNode::SINE);
-    return waveTable;
-}
-
-std::unique_ptr<WaveTable> WaveTable::createSquare(float sampleRate)
-{
-    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-    waveTable->generateBasicWaveform(OscillatorNode::SQUARE);
-    return waveTable;
-}
-
-std::unique_ptr<WaveTable> WaveTable::createSawtooth(float sampleRate)
-{
-    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-    waveTable->generateBasicWaveform(OscillatorNode::SAWTOOTH);
-    return waveTable;
-}
-
-std::unique_ptr<WaveTable> WaveTable::createTriangle(float sampleRate)
-{
-    std::unique_ptr<WaveTable> waveTable(new WaveTable(sampleRate));
-    waveTable->generateBasicWaveform(OscillatorNode::TRIANGLE);
-    return waveTable;
-}
-
-WaveTable::WaveTable(float sampleRate)
-    : m_sampleRate(sampleRate)
-    , m_waveTableSize(WaveTableSize)
-    , m_numberOfRanges(NumberOfRanges)
-    , m_centsPerRange(CentsPerRange)
-{
-
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
     m_rateScale = m_waveTableSize / m_sampleRate;
+
+	generateBasicWaveform(basicWaveform);
+}
+
+WaveTable::WaveTable(float sampleRate, int basicWaveform, std::vector<float> & real, std::vector<float> & imag) 
+	: m_sampleRate(sampleRate),
+	m_waveTableSize(WaveTableSize), 
+	m_numberOfRanges(NumberOfRanges), 
+	m_centsPerRange(CentsPerRange)
+{
+    float nyquist = 0.5 * m_sampleRate;
+    m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
+    m_rateScale = m_waveTableSize / m_sampleRate;
+
+	bool isGood = real.size() == imag.size() && real.size() > 0;
+
+    if (isGood) 
+	{
+        createBandLimitedTables(&real[0], &imag[0], real.size());
+    }
+	else
+	{
+		throw std::runtime_error("Bad FFT data");
+	}
+}
+
+WaveTable::~WaveTable()
+{
+
 }
 
 void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, float* &lowerWaveData, float* &higherWaveData, float& tableInterpolationFactor)

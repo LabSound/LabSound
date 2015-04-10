@@ -38,7 +38,8 @@ class OscillatorNode : public AudioScheduledSourceNode
 {
     
 public:
-    enum
+
+    enum OscillatorType
     {
         SINE = 0,
         SQUARE = 1,

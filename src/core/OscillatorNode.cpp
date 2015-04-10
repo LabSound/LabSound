@@ -84,33 +84,42 @@ void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, Exceptio
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
 
-    switch (type) {
-    case SINE:
-        if (!s_waveTableSine)
-            s_waveTableSine = WaveTable::createSine(sampleRate);
-        waveTable = s_waveTableSine;
-        break;
-    case SQUARE:
-        if (!s_waveTableSquare)
-            s_waveTableSquare = WaveTable::createSquare(sampleRate);
-        waveTable = s_waveTableSquare;
-        break;
-    case SAWTOOTH:
-        if (!s_waveTableSawtooth)
-            s_waveTableSawtooth = WaveTable::createSawtooth(sampleRate);
-        waveTable = s_waveTableSawtooth;
-        break;
-    case TRIANGLE:
-        if (!s_waveTableTriangle)
-            s_waveTableTriangle = WaveTable::createTriangle(sampleRate);
-        waveTable = s_waveTableTriangle;
-        break;
-    case CUSTOM:
-    default:
-        // Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
-        // called explicitly.
-        ec = NOT_SUPPORTED_ERR;
-        return;
+    switch (type) 
+	{
+		case SINE:
+			if (!s_waveTableSine)
+			{
+				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SINE);
+			}
+			waveTable = s_waveTableSine;
+			break;
+		case SQUARE:
+			if (!s_waveTableSquare)
+			{
+				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SQUARE);
+			}
+			waveTable = s_waveTableSquare;
+			break;
+		case SAWTOOTH:
+			if (!s_waveTableSawtooth)
+			{
+				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SAWTOOTH);
+			}
+			waveTable = s_waveTableSawtooth;
+			break;
+		case TRIANGLE:
+			if (!s_waveTableTriangle)
+			{           
+				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorNode::TRIANGLE);
+			}
+			waveTable = s_waveTableTriangle;
+			break;
+		case CUSTOM:
+		default:
+			// Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
+			// called explicitly.
+			ec = NOT_SUPPORTED_ERR;
+			return;
     }
 
     setWaveTable(r, waveTable);
