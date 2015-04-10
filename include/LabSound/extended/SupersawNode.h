@@ -13,7 +13,7 @@ namespace LabSound
     class SupersawNode : public WebCore::AudioNode 
 	{
         class SupersawNodeInternal;
-		SupersawNodeInternal * internalNode;
+		std::unique_ptr<SupersawNodeInternal> internalNode;
 
     public:
 

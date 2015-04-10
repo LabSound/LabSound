@@ -35,6 +35,11 @@ namespace LabSound
 			frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
         }
 
+		~SupersawNodeInternal()
+		{
+
+		}
+
         void update(std::shared_ptr<AudioContext> c) 
 		{
             if (cachedFrequency != frequency->value(c)) 
@@ -119,7 +124,7 @@ namespace LabSound
 
     SupersawNode::SupersawNode(ContextRenderLock & r, float sampleRate) : AudioNode(sampleRate)
     {
-		internalNode = new SupersawNodeInternal(sampleRate);
+		internalNode.reset(new SupersawNodeInternal(sampleRate));
 
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -131,7 +136,6 @@ namespace LabSound
 
 	SupersawNode::~SupersawNode()
 	{
-		delete internalNode;
 		uninitialize();
 	}
 

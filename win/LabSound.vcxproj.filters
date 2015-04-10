@@ -222,9 +222,6 @@
     <ClInclude Include="..\include\LabSound\extended\NoiseNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\PdNode.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\PeakCompNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
@@ -377,6 +374,9 @@
     </ClInclude>
     <ClInclude Include="..\src\internal\Assertions.h">
       <Filter>Internal\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\Util.h">
+      <Filter>LabSound\extended\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

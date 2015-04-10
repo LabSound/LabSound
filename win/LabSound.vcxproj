@@ -65,7 +65,6 @@
     <ClInclude Include="..\include\LabSound\extended\LabSound.h" />
     <ClInclude Include="..\include\LabSound\extended\Logging.h" />
     <ClInclude Include="..\include\LabSound\extended\NoiseNode.h" />
-    <ClInclude Include="..\include\LabSound\extended\PdNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PeakCompNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PowerMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PWMNode.h" />
@@ -77,6 +76,7 @@
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\STKNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
+    <ClInclude Include="..\include\LabSound\extended\Util.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
     <ClInclude Include="..\src\internal\AudioBus.h" />
     <ClInclude Include="..\src\internal\AudioChannel.h" />
