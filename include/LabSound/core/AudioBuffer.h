@@ -34,20 +34,26 @@
 #include <vector>
 #include <memory>
 
-namespace WebCore {
+namespace WebCore
+{
 
     using namespace LabSound;
-    class AudioBus;
 
-class AudioBuffer {
+    class AudioBus;
+	class AudioBuffer;
+	
+std::shared_ptr<AudioBuffer> MakeAudioBufferFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate);
+
+class AudioBuffer 
+{
+
 public:   
+
     AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
+
     explicit AudioBuffer(AudioBus*);
 
-    static std::shared_ptr<AudioBuffer> create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
-
-    // Returns 0 if data is not a valid audio file.
-    static std::shared_ptr<AudioBuffer> createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate);
+	~AudioBuffer();
 
     // Format
     size_t length() const { return m_length; }

@@ -46,7 +46,7 @@ AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, flo
 	m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate);
 
 	// Create a new destination for offline rendering.
-	m_renderTarget = AudioBuffer::create(numberOfChannels, numberOfFrames, sampleRate);
+	m_renderTarget = std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
 
 	/*
 	// FIXME: offline contexts have limitations on supported sample-rates.

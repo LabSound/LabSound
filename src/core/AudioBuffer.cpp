@@ -34,23 +34,19 @@
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 
-namespace WebCore {
+#include <memory>
 
-std::shared_ptr<AudioBuffer> AudioBuffer::create(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
+namespace WebCore 
 {
-    if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
-        return 0;
-    
-    return std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
-}
 
-std::shared_ptr<AudioBuffer> AudioBuffer::createFromAudioFileData(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
+std::shared_ptr<AudioBuffer> MakeAudioBufferFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
     std::unique_ptr<AudioBus> bus = createBusFromInMemoryAudioFile(data, dataSize, mixToMono, sampleRate);
-    if (bus.get())
+    
+	if (bus.get())
         return std::make_shared<AudioBuffer>(bus.get());
 
-    return nullptr;
+    throw std::runtime_error("Could not create AudioBus from file");
 }
 
 AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
@@ -58,6 +54,10 @@ AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float
     , m_sampleRate(sampleRate)
     , m_length(numberOfFrames)
 {
+
+	if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
+		throw std::runtime_error("Invalid constructor parameters");
+
     m_channels.reserve(numberOfChannels);
 
     for (unsigned i = 0; i < numberOfChannels; ++i) {
@@ -74,16 +74,29 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
 {
     // Copy audio data from the bus to the vector<float>s we manage.
     unsigned numberOfChannels = bus->numberOfChannels();
+
     m_channels.reserve(numberOfChannels);
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+	{
         std::shared_ptr<std::vector<float>> channelDataArray(new std::vector<float>());
+
         channelDataArray->resize(m_length);
+
         const float *busData = bus->channel(i)->data();
+
         std::vector<float>& vec = *(channelDataArray.get());
+
         for (size_t j = 0; j < m_length; ++j)
-            vec[j] = busData[j];
+		{
+			vec[j] = busData[j];
+		}
         m_channels.push_back(channelDataArray);
     }
+}
+
+AudioBuffer::~AudioBuffer()
+{
+	releaseMemory();
 }
 
 void AudioBuffer::releaseMemory()

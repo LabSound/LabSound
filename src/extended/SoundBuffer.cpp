@@ -28,7 +28,7 @@ namespace LabSound {
             
             // create an audio buffer from the file data. The file data will be
             // parsed, and does not need to be retained.
-            audioBuffer = AudioBuffer::createFromAudioFileData(data, l, mixToMono, sampleRate);
+            audioBuffer = WebCore::MakeAudioBufferFromMemory(data, l, mixToMono, sampleRate);
             delete [] data;
         }
         else
