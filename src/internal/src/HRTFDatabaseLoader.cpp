@@ -78,7 +78,7 @@ void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
 
 void HRTFDatabaseLoader::load()
 {
-    m_hrtfDatabase = HRTFDatabase::create(m_databaseSampleRate);
+    m_hrtfDatabase.reset(new HRTFDatabase(m_databaseSampleRate));
     
     if (!m_hrtfDatabase.get())
     {

@@ -29,7 +29,9 @@
 #ifndef HRTFDatabase_h
 #define HRTFDatabase_h
 
+#include "LabSound/extended/Util.h"
 #include "internal/HRTFElevation.h"
+
 #include <vector>
 
 namespace WebCore {
@@ -37,9 +39,12 @@ namespace WebCore {
 class HRTFKernel;
 
 class HRTFDatabase {
-    HRTFDatabase(const HRTFDatabase&); // noncopyable
+
 public:
-    static std::unique_ptr<HRTFDatabase> create(float sampleRate);
+
+	DISALLOW_COPY_AND_ASSIGN(HRTFDatabase);
+
+	HRTFDatabase(float sampleRate);
 
     // getKernelsFromAzimuthElevation() returns a left and right ear kernel, and an interpolated left and right frame delay for the given azimuth and elevation.
     // azimuthBlend must be in the range 0 -> 1.
@@ -56,7 +61,6 @@ public:
     static const unsigned NumberOfRawElevations;
 
 private:
-    explicit HRTFDatabase(float sampleRate);
 
     // Minimum and maximum elevation angles (inclusive) for a HRTFDatabase.
     static const int MinElevation;

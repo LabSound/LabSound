@@ -40,14 +40,7 @@ const unsigned HRTFDatabase::NumberOfRawElevations = 10; // -45 -> +90 (each 15 
 const unsigned HRTFDatabase::InterpolationFactor = 1;
 const unsigned HRTFDatabase::NumberOfTotalElevations = NumberOfRawElevations * InterpolationFactor;
 
-std::unique_ptr<HRTFDatabase> HRTFDatabase::create(float sampleRate)
-{
-    return std::unique_ptr<HRTFDatabase>(new HRTFDatabase(sampleRate));
-}
-
-HRTFDatabase::HRTFDatabase(float sampleRate)
-    : m_elevations(NumberOfTotalElevations)
-    , m_sampleRate(sampleRate)
+HRTFDatabase::HRTFDatabase(float sampleRate) : m_elevations(NumberOfTotalElevations) , m_sampleRate(sampleRate)
 {
     unsigned elevationIndex = 0;
     for (int elevation = MinElevation; elevation <= MaxElevation; elevation += RawElevationAngleSpacing) {
