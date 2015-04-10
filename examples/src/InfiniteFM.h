@@ -47,7 +47,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
         {
             
             // Debugging cruft --
-            //carrier->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
+            modulator->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
             //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
             //modulator->frequency()->setValue(carrier->frequency()->value(context))
             //trigger->noteOn(now);

@@ -32,6 +32,6 @@ InfiniteFMApp g_infiniteFM;
 
 int main (int argc, char *argv[])
 {
-    g_rhythm.PlayExample();
+    g_infiniteFM.PlayExample();
     return 0;
 }
