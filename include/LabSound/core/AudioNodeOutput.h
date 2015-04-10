@@ -36,28 +36,29 @@ class AudioContext;
 class AudioNodeInput;
 class AudioBus;
 
+#define AUDIONODEOUTPUT_MAXINPUTS 8
+
 // AudioNodeOutput represents a single output for an AudioNode.
 // It may be connected to one or more AudioNodeInputs.
-
 class AudioNodeOutput 
 {
 public:
 
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
-    explicit AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
+    AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
 	virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
-    AudioNode* node() const { return m_node; }
+    AudioNode * node() const { return m_node; }
     
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus* pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     // Called from context's audio thread.
-    AudioBus* bus() const;
+    AudioBus * bus() const;
 
     // renderingFanOutCount() is the number of AudioNodeInputs that we're connected to during rendering.
     // Unlike fanOutCount() it will not change during the course of a render quantum.
@@ -67,29 +68,28 @@ public:
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
     unsigned renderingParamFanOutCount() const;
 
-    static void disconnectAll(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-
     void setNumberOfChannels(ContextRenderLock&, unsigned);
     unsigned numberOfChannels() const { return m_numberOfChannels; }
     bool isChannelCountKnown() const { return numberOfChannels() > 0; }
 
     bool isConnected() { return fanOutCount() > 0 || paramFanOutCount() > 0; }
-
-    // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
-    // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
-    static void disable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput> self);
-    static void enable(ContextGraphLock& r, std::shared_ptr<AudioNodeOutput> self);
-
+	
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock&);
 
-    
+    // Disable/Enable happens when there are still JavaScript references to a node, but it has otherwise "finished" its work.
+    // For example, when a note has finished playing.  It is kept around, because it may be played again at a later time.
+    //static void disable(ContextGraphLock&, std::shared_ptr<AudioNodeOutput> self);
+    //static void enable(ContextGraphLock& r, std::shared_ptr<AudioNodeOutput> self);
+
     // Must be called within the context's graph lock.
+    static void disconnectAll(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
     static void disconnectAllInputs(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
-    static void disconnectAllParams(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAllParams(ContextGraphLock&, std::shared_ptr<AudioNodeOutput>);
 
 private:
-    AudioNode* m_node;
+
+    AudioNode * m_node;
 
     friend class AudioNodeInput;
     friend class AudioParam;
@@ -131,7 +131,7 @@ private:
     AudioBus* m_actualDestinationBus;
     
 public:
-#define AUDIONODEOUTPUT_MAXINPUTS 8
+
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
 private:
