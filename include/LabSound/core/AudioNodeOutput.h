@@ -54,11 +54,10 @@ public:
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus * pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
-    // Called from context's audio thread.
-    AudioBus * bus() const;
+    AudioBus * bus(ContextRenderLock&) const;
 
     // renderingFanOutCount() is the number of AudioNodeInputs that we're connected to during rendering.
     // Unlike fanOutCount() it will not change during the course of a render quantum.
@@ -118,18 +117,22 @@ private:
     unsigned m_numberOfChannels;
     unsigned m_desiredNumberOfChannels;
     
-    // m_internalBus must only be changed in the audio thread with the context's graph lock (or constructor).
+    // m_internalBus and m_inPlaceBus must only be changed in the audio thread with the context's render lock (or constructor).
     std::unique_ptr<AudioBus> m_internalBus;
-
-    // m_actualDestinationBus is set in pull() and will either point to one of our internal busses or to the in-place bus.
-    // It must only be changed in the audio thread (or constructor).
-    AudioBus* m_actualDestinationBus;
+    
+    // temporary, during render quantum @TODO Should this be some kind of shared pointer?
+    // it is only valid for a single render quantum, so probably no.
+    AudioBus* m_inPlaceBus;
     
 public:
 
     std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
     
 private:
+    
+    // If m_isInPlace is true, use m_inPlaceBus as the valid AudioBus; If false, use the default m_internalBus.
+    bool m_isInPlace;
+    
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
     unsigned m_renderingFanOutCount;

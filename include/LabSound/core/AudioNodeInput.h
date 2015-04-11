@@ -62,26 +62,25 @@ public:
     // In the case of multiple connections it sums the result into an internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    // Called from context's audio thread.
     AudioBus* pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
-    // Called from context's audio thread.
-    AudioBus* bus();
+    AudioBus* bus(ContextRenderLock& r);
     
     // updateInternalBus() updates m_internalSummingBus appropriately for the number of channels.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
     void updateInternalBus(ContextRenderLock& r);
 
     // The number of channels of the connection with the largest number of channels.
-    unsigned numberOfChannels() const;        
+    // Only valid during render quantum because it is dependent on the active bus
+    unsigned numberOfChannels(ContextRenderLock& r) const;
     
 private:
 
     AudioNode* m_node;
 
     // The number of channels of the rendering connection with the largest number of channels.
-    unsigned numberOfRenderingChannels();
+    unsigned numberOfRenderingChannels(ContextRenderLock& r);
 
     // Called from context's audio thread.
     AudioBus * internalSummingBus();

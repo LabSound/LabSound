@@ -45,14 +45,14 @@ AnalyserNode::~AnalyserNode()
 
 void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus();
+    AudioBus* outputBus = output(0)->bus(r);
 
     if (!isInitialized() || !input(0)->isConnected()) {
         outputBus->zero();
         return;
     }
 
-    AudioBus* inputBus = input(0)->bus();
+    AudioBus* inputBus = input(0)->bus(r);
     
     // Give the analyser the audio which is passing through this AudioNode.
     m_analyser.writeInput(r, inputBus, framesToProcess);

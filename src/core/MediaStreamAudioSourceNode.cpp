@@ -74,7 +74,7 @@ void MediaStreamAudioSourceNode::setFormat(ContextGraphLock& g, ContextRenderLoc
 
 void MediaStreamAudioSourceNode::process(ContextRenderLock& r, size_t numberOfFrames)
 {
-    AudioBus* outputBus = output(0)->bus();
+    AudioBus* outputBus = output(0)->bus(r);
 
     if (!audioSourceProvider()) {
         outputBus->zero();

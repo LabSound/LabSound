@@ -38,9 +38,9 @@ namespace LabSound
     }
 
     
-    void RecorderNode::process(ContextRenderLock&, size_t framesToProcess)
+    void RecorderNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
-        AudioBus* outputBus = output(0)->bus();
+        AudioBus* outputBus = output(0)->bus(r);
         
         if (!isInitialized() || !input(0)->isConnected()) {
             if (outputBus)
@@ -49,7 +49,7 @@ namespace LabSound
         }
 
         // from here --- should this follow the WebAudio pattern have a writer object to call here?
-        AudioBus* bus = input(0)->bus();
+        AudioBus* bus = input(0)->bus(r);
         bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess;
         if (!isBusGood) {
             outputBus->zero();

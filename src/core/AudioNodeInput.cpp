@@ -98,7 +98,7 @@ void AudioNodeInput::didUpdate(ContextRenderLock& r)
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
-    unsigned numberOfInputChannels = numberOfChannels();
+    unsigned numberOfInputChannels = numberOfChannels(r);
 
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
@@ -107,7 +107,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-unsigned AudioNodeInput::numberOfChannels() const
+unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
@@ -115,13 +115,13 @@ unsigned AudioNodeInput::numberOfChannels() const
     for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
         auto output = renderingOutput(i);
         if (output)
-            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
     }
     
     return maxChannels;
 }
 
-unsigned AudioNodeInput::numberOfRenderingChannels()
+unsigned AudioNodeInput::numberOfRenderingChannels(ContextRenderLock& r)
 {
     // Find the number of channels of the rendering connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
@@ -129,17 +129,17 @@ unsigned AudioNodeInput::numberOfRenderingChannels()
     for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
         auto output = renderingOutput(i);
         if (output)
-            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
     }
     
     return maxChannels;
 }
 
-AudioBus* AudioNodeInput::bus()
+AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
     if (numberOfRenderingConnections() == 1)
-        return renderingOutput(0)->bus();
+        return renderingOutput(0)->bus(r);
 
     // Multiple connections case (or no connections).
     return internalSummingBus();
@@ -147,8 +147,6 @@ AudioBus* AudioNodeInput::bus()
 
 AudioBus* AudioNodeInput::internalSummingBus()
 {
-    ASSERT(numberOfRenderingChannels() == m_internalSummingBus->numberOfChannels());
-
     return m_internalSummingBus.get();
 }
 

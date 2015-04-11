@@ -233,16 +233,16 @@ void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 
         pullInputs(r, framesToProcess);
 
-        bool silentInputs = inputsAreSilent();
+        bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
 
         bool ps = propagatesSilence(r.context()->currentTime());
         if (silentInputs && ps)
-            silenceOutputs();
+            silenceOutputs(r);
         else {
             process(r, framesToProcess);
-            unsilenceOutputs();
+            unsilenceOutputs(r);
         }
     }
 }
@@ -272,28 +272,28 @@ void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
             in->pull(r, 0, framesToProcess);
 }
 
-bool AudioNode::inputsAreSilent()
+bool AudioNode::inputsAreSilent(ContextRenderLock& r)
 {
     for (unsigned i = 0; i < AUDIONODE_MAXINPUTS; ++i) {
         if (auto in = input(i))
-            if (!in->bus()->isSilent())
+            if (!in->bus(r)->isSilent())
                 return false;
     }
     return true;
 }
 
-void AudioNode::silenceOutputs()
+void AudioNode::silenceOutputs(ContextRenderLock& r)
 {
     for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
         if (auto out = output(i))
-            out->bus()->zero();
+            out->bus(r)->zero();
 }
 
-void AudioNode::unsilenceOutputs()
+void AudioNode::unsilenceOutputs(ContextRenderLock& r)
 {
     for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
         if (auto out = output(i))
-            out->bus()->clearSilentFlag();
+            out->bus(r)->clearSilentFlag();
 }
 
 #if DEBUG_AUDIONODE_REFERENCES

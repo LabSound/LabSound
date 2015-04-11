@@ -61,13 +61,13 @@ void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
     // happen in the summing junction input of the AudioNode we're connected to.
     // Then we can avoid all of the following:
 
-    AudioBus* outputBus = output(0)->bus();
+    AudioBus* outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
     if (!isInitialized() || !input(0)->isConnected())
         outputBus->zero();
     else {
-        AudioBus* inputBus = input(0)->bus();
+        AudioBus* inputBus = input(0)->bus(r);
 
         if (gain()->hasSampleAccurateValues()) {
             // Apply sample-accurate gain scaling for precise envelopes, grain windows, etc.
@@ -106,7 +106,7 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
     if (input != this->input(0).get())
         return;
         
-    unsigned numberOfChannels = input->numberOfChannels();    
+    unsigned numberOfChannels = input->numberOfChannels(r);
 
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels()) {
         // We're already initialized but the channel count has changed.
