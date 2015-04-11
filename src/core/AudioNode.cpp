@@ -198,7 +198,6 @@ void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, 
     }
     
     AudioParam::connect(g, param, this->output(outputIndex));
-    
 }
 
 void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
