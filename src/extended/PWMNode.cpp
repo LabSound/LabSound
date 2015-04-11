@@ -24,9 +24,8 @@ namespace LabSound {
 
     public:
 
-        PWMNodeInternal(float sampleRate) : AudioProcessor(sampleRate), channels(1)
+        PWMNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
         {
-
         }
 
         virtual ~PWMNodeInternal() { }
@@ -38,7 +37,7 @@ namespace LabSound {
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock&, const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) 
 		{
-            if (!channels)
+            if (!numberOfChannels())
                 return;
             
             const float* carrierP = source->channel(0)->data();
@@ -63,15 +62,8 @@ namespace LabSound {
 
         virtual void reset() { }
 
-        virtual void setNumberOfChannels(unsigned i)
-		{
-            channels = i;
-        }
-
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
-
-        int channels;
     };
 
 	////////////////////

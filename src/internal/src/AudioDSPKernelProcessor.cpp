@@ -36,8 +36,7 @@ namespace WebCore {
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
 AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sampleRate, unsigned numberOfChannels)
-    : AudioProcessor(sampleRate)
-    , m_numberOfChannels(numberOfChannels)
+    : AudioProcessor(sampleRate, numberOfChannels)
     , m_hasJustReset(true)
 {
 }
@@ -99,16 +98,6 @@ void AudioDSPKernelProcessor::reset()
 
     for (unsigned i = 0; i < m_kernels.size(); ++i)
         m_kernels[i]->reset();
-}
-
-void AudioDSPKernelProcessor::setNumberOfChannels(unsigned numberOfChannels)
-{
-    if (numberOfChannels == m_numberOfChannels)
-        return;
-        
-    ASSERT(!isInitialized());
-    if (!isInitialized())
-        m_numberOfChannels = numberOfChannels;
 }
 
 double AudioDSPKernelProcessor::tailTime() const

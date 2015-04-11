@@ -33,11 +33,8 @@ namespace WebCore {
 AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
     : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-    
+    // note: inputs and outputs added by AudioBasicInspectorNode, so need to create them here
     setNodeType(NodeTypeAnalyser);
-    
     initialize();
 }
 
