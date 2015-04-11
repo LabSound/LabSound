@@ -47,7 +47,7 @@ public:
     size_t frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
 
     void setMinDecibels(double k) { m_analyser.setMinDecibels(k); }
-    double_t minDecibels() const { return m_analyser.minDecibels(); }
+    double minDecibels() const { return m_analyser.minDecibels(); }
 
     void setMaxDecibels(double k) { m_analyser.setMaxDecibels(k); }
     double maxDecibels() const { return m_analyser.maxDecibels(); }

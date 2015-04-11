@@ -30,7 +30,8 @@
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode(sampleRate) , m_analyser(fftSize)
+AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
+    : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

@@ -13,7 +13,8 @@ namespace LabSound
     
     using namespace WebCore;
     
-    RecorderNode::RecorderNode(float sampleRate)  : AudioBasicInspectorNode(sampleRate) , m_recording(false), m_mixToMono(false)
+    RecorderNode::RecorderNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate, 2) , m_recording(false), m_mixToMono(false)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

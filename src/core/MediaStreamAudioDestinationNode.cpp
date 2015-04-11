@@ -32,7 +32,8 @@
 
 namespace WebCore {
 
-MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate) : AudioBasicInspectorNode(sampleRate)
+MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate)
+    : AudioBasicInspectorNode(sampleRate, numberOfChannels)
 {
 	m_mixBus = new AudioBus(numberOfChannels, ProcessingSizeInFrames);
     setNodeType(NodeTypeMediaStreamAudioDestination);

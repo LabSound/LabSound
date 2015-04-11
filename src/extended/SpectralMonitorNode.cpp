@@ -96,7 +96,8 @@ namespace LabSound
     // Public SpectralMonitorNode //
     ////////////////////////////////
 
-    SpectralMonitorNode::SpectralMonitorNode(float sampleRate) : AudioBasicInspectorNode(sampleRate)
+    SpectralMonitorNode::SpectralMonitorNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate, 2)
     {
 		internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));

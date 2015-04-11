@@ -32,10 +32,11 @@
 
 namespace WebCore {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate) : AudioNode(sampleRate)
+AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate, int outputChannelCount)
+    : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outputChannelCount)));
     initialize();
 }
 
