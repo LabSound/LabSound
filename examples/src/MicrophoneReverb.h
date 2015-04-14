@@ -9,7 +9,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         
         SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
         
-        std::shared_ptr<MediaStreamAudioSourceNode> input;
+        std::shared_ptr<AudioHardwareSourceNode> input;
         std::shared_ptr<ConvolverNode> convolve;
         std::shared_ptr<GainNode> wetGain;
         std::shared_ptr<GainNode> dryGain;
@@ -18,7 +18,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         {
             ContextGraphLock g(context, "live reverb recording");
             ContextRenderLock r(context, "live reverb recording");
-            input = context->createMediaStreamSource(g, r);
+            input = MakeHardwareSourceNode(r);
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
             convolve->setBuffer(ir.audioBuffer);
             wetGain = std::make_shared<GainNode>(context->sampleRate());

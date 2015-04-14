@@ -22,33 +22,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MediaStreamAudioSourceNode_h
-#define MediaStreamAudioSourceNode_h
+#ifndef AudioHardwareSourceNode_h
+#define AudioHardwareSourceNode_h
 
 #include "LabSound/core/AudioSourceNode.h"
-#include "LabSound/core/MediaStream.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
 namespace WebCore {
 
 class AudioContext;
     
-class MediaStreamAudioSourceNode : public AudioSourceNode, public AudioSourceProviderClient 
+class AudioHardwareSourceNode : public AudioSourceNode, public AudioSourceProviderClient
 {
 
 public:
 
-    MediaStreamAudioSourceNode(std::shared_ptr<MediaStream>, AudioSourceProvider*, float sampleRate);
-    virtual ~MediaStreamAudioSourceNode();
-
-    MediaStream * mediaStream() { return m_mediaStream.get(); }
+    AudioHardwareSourceNode(AudioSourceProvider*, float sampleRate);
+    virtual ~AudioHardwareSourceNode();
 
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     // AudioSourceProviderClient
-    virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) override;
+    virtual void setFormat(ContextRenderLock & r, size_t numberOfChannels, float sampleRate) override;
 
     AudioSourceProvider * audioSourceProvider() const { return m_audioSourceProvider; }
 
@@ -57,7 +54,6 @@ private:
     // As an audio source, we will never propagate silence.
     virtual bool propagatesSilence(double now) const override { return false; }
 
-    std::shared_ptr<MediaStream> m_mediaStream;
     AudioSourceProvider * m_audioSourceProvider;
 
     unsigned m_sourceNumberOfChannels;
@@ -65,4 +61,4 @@ private:
 
 } // namespace WebCore
 
-#endif // MediaStreamAudioSourceNode_h
+#endif

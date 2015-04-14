@@ -6,8 +6,7 @@
 #include "LabSound/core/DefaultAudioDestinationNode.h"
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/OscillatorNode.h"
-#include "LabSound/core/MediaStream.h"
-#include "LabSound/core/MediaStreamAudioSourceNode.h"
+#include "LabSound/core/AudioHardwareSourceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -22,8 +21,24 @@ using namespace std;
 namespace WebCore
 {
 
-
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r)
+{
+    AudioSourceProvider * provider = nullptr;
     
+    provider = r.contextPtr()->destination()->localAudioInputProvider();
+    
+    auto sampleRate = r.contextPtr()->sampleRate();
+    
+    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider, sampleRate));
+    
+    // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
+    inputNode->setFormat(r, 2, sampleRate);
+    
+    //m_referencedNodes.push_back(inputNode); // context keeps reference until node is disconnected
+    
+    return inputNode;
+}
+
 // Constructor for realtime rendering
 AudioContext::AudioContext()
 {
@@ -164,32 +179,6 @@ void AudioContext::stop(ContextGraphLock& g)
 
 	uninitialize(g);
 	clear();
-}
-
-std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(LabSound::ContextGraphLock & g, LabSound::ContextRenderLock & r)
-{
-	std::shared_ptr<MediaStream> mediaStream = std::make_shared<MediaStream>();
-
-	AudioSourceProvider* provider = 0;
-
-	if (mediaStream->isLocal() && mediaStream->audioTracks()->length())
-	{
-		provider = destination()->localAudioInputProvider();
-	}
-
-	else
-	{
-		// FIXME: get a provider for non-local MediaStreams (like from a remote peer).
-		provider = 0;
-	}
-
-	std::shared_ptr<MediaStreamAudioSourceNode> node(new MediaStreamAudioSourceNode(mediaStream, provider, sampleRate()));
-
-	// FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-	node->setFormat(g, r, 2, sampleRate());
-
-	m_referencedNodes.push_back(node); // context keeps reference until node is disconnected
-	return node;
 }
 
 void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode* node)

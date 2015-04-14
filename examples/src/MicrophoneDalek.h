@@ -16,7 +16,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         SoundBuffer sample("samples/voice.mp4", sampleRate);
 #endif
         
-        std::shared_ptr<MediaStreamAudioSourceNode> input;
+        std::shared_ptr<AudioHardwareSourceNode> input;
         
         std::shared_ptr<OscillatorNode> vIn;
         std::shared_ptr<GainNode> vInGain;
@@ -87,7 +87,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             AudioContext* ac = context.get();
             
 #ifdef USE_LIVE
-            input = ac->createMediaStreamSource(g, r);
+            input = MakeHardwareSourceNode(r);
             input->connect(ac, vcInverter1.get(), 0, 0);
             input->connect(ac, vcDiode4->node().get(), 0, 0);
 #else

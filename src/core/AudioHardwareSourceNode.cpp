@@ -22,7 +22,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/core/MediaStreamAudioSourceNode.h"
+#include "LabSound/core/AudioHardwareSourceNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
@@ -34,36 +34,31 @@
 
 namespace WebCore {
 
-MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(std::shared_ptr<MediaStream> mediaStream,
-                                                       AudioSourceProvider * audioSourceProvider, float sampleRate)
-    : AudioSourceNode(sampleRate)
-    , m_mediaStream(mediaStream)
-    , m_audioSourceProvider(audioSourceProvider)
-    , m_sourceNumberOfChannels(0)
+AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSourceProvider, float sampleRate) : AudioSourceNode(sampleRate)
+, m_audioSourceProvider(audioSourceProvider)
+, m_sourceNumberOfChannels(0)
 {
-    // Default to stereo. This could change depending on the format of the MediaStream's audio track.
+    
+    //@tofix: Default to stereo.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    setNodeType(NodeTypeMediaStreamAudioSource);
+    setNodeType(NodeTypeHardwareSource);
 
     initialize();
 }
 
-MediaStreamAudioSourceNode::~MediaStreamAudioSourceNode()
+AudioHardwareSourceNode::~AudioHardwareSourceNode()
 {
     uninitialize();
 }
 
-void MediaStreamAudioSourceNode::setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sourceSampleRate)
+void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
 {
-    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != sampleRate()) {
+    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != sampleRate())
+    {
         // The sample-rate must be equal to the context's sample-rate.
-        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != sampleRate()) {
-            // process() will generate silence for these uninitialized values.
-            LOG("MediaStreamAudioSourceNode::setFormat(%u, %f) - unhandled format change", static_cast<unsigned>(numberOfChannels), sourceSampleRate);
-            m_sourceNumberOfChannels = 0;
-            return;
-        }
+        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != sampleRate())
+            throw std::runtime_error("AudioHardwareSourceNode must match samplerate of context... ");
 
         m_sourceNumberOfChannels = numberOfChannels;
         
@@ -72,16 +67,18 @@ void MediaStreamAudioSourceNode::setFormat(ContextGraphLock& g, ContextRenderLoc
     }
 }
 
-void MediaStreamAudioSourceNode::process(ContextRenderLock& r, size_t numberOfFrames)
+void AudioHardwareSourceNode::process(ContextRenderLock& r, size_t numberOfFrames)
 {
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
 
-    if (!audioSourceProvider()) {
+    if (!audioSourceProvider())
+    {
         outputBus->zero();
         return;
     }
 
-    if (!mediaStream() || m_sourceNumberOfChannels != outputBus->numberOfChannels()) {
+    if (m_sourceNumberOfChannels != outputBus->numberOfChannels())
+    {
         outputBus->zero();
         return;
     }
@@ -90,15 +87,19 @@ void MediaStreamAudioSourceNode::process(ContextRenderLock& r, size_t numberOfFr
     // If we fail to acquire the lock then the MediaStream must be in the middle of
     // a format change, so we output silence in this case.
     if (r.context())
+    {
         audioSourceProvider()->provideInput(outputBus, numberOfFrames);
-    else {
+    }
+    else
+    {
         // We failed to acquire the lock.
         outputBus->zero();
     }
 }
 
-void MediaStreamAudioSourceNode::reset(std::shared_ptr<AudioContext>)
+void AudioHardwareSourceNode::reset(std::shared_ptr<AudioContext>)
 {
+    
 }
 
 } // namespace WebCore

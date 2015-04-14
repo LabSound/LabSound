@@ -47,9 +47,8 @@ namespace LabSound
         NodeTypeDestination,
         NodeTypeOscillator,
         NodeTypeAudioBufferSource,
-        NodeTypeMediaElementAudioSource,
-        NodeTypeMediaStreamAudioDestination,
-        NodeTypeMediaStreamAudioSource,
+        NodeTypeAudio,
+        NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
         NodeTypePanner,
         NodeTypeConvolver,
@@ -110,14 +109,13 @@ public:
     AudioNode(float sampleRate);
     virtual ~AudioNode();
 
+    //@tofix these are defined in multiple namespaces (labsound vs webcore)
     enum NodeType {
         NodeTypeUnknown,
         NodeTypeDestination,
         NodeTypeOscillator,
         NodeTypeAudioBufferSource,
-        NodeTypeMediaElementAudioSource,
-        NodeTypeMediaStreamAudioDestination,
-        NodeTypeMediaStreamAudioSource,
+        NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
         NodeTypePanner,
         NodeTypeConvolver,

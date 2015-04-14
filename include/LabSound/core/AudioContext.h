@@ -30,7 +30,7 @@ class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
 class HRTFDatabaseLoader;
-class MediaStreamAudioSourceNode;
+class AudioHardwareSourceNode;
 class AudioNodeInput;
 class AudioNodeOutput;
 
@@ -42,6 +42,9 @@ struct PendingConnection
 	std::shared_ptr<Input> from;
 	std::shared_ptr<Output> to;
 };
+
+//@tofix: refactor such that this factory function doesn't need to exist
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r);
 
 class AudioContext
 {
@@ -63,8 +66,6 @@ public:
 	AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
 
 	~AudioContext();
-
-	std::shared_ptr<MediaStreamAudioSourceNode> createMediaStreamSource(LabSound::ContextGraphLock & g, LabSound::ContextRenderLock & r);
 
 	void initHRTFDatabase();
 
