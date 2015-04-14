@@ -138,7 +138,7 @@ public:
 
 	void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
 
-	std::function<void()> renderingCompletedEvent;
+	std::function<void()> offlineRenderCompleteCallback;
 
 private:
 
