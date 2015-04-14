@@ -38,7 +38,9 @@ using namespace std;
 
 namespace WebCore {
 
-// &&& Threading / Locking
+    namespace {
+        std::mutex m_eventsMutex;
+    }
 
 void AudioParamTimeline::setValueAtTime(float value, float time)
 {
@@ -83,7 +85,9 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
     ASSERT(isValid);
     if (!isValid)
         return;
-        
+
+    std::lock_guard<std::mutex> lock(m_eventsMutex);
+
     unsigned i = 0;
     float insertTime = event.time();
     for (i = 0; i < m_events.size(); ++i) {
@@ -102,6 +106,8 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
 
 void AudioParamTimeline::cancelScheduledValues(float startTime)
 {
+    std::lock_guard<std::mutex> lock(m_eventsMutex);
+
     // Remove all events starting at startTime.
     for (unsigned i = 0; i < m_events.size(); ++i) {
         if (m_events[i].time() >= startTime) {
@@ -115,7 +121,8 @@ float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> cont
 {
     ASSERT(context);
 
-    if (!context || !m_events.size() || context->currentTime() < m_events[0].time()) {
+    std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
+    if (!lock.owns_lock() || !context || !m_events.size() || context->currentTime() < m_events[0].time()) {
         hasValue = false;
         return defaultValue;
     }
@@ -157,7 +164,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         return defaultValue;
 
     // Return default value if there are no events matching the desired time range.
-    if (!m_events.size() || endTime <= m_events[0].time()) {
+    std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
+    if (!lock.owns_lock() || !m_events.size() || endTime <= m_events[0].time()) {
         for (unsigned i = 0; i < numberOfValues; ++i)
             values[i] = defaultValue;
         return defaultValue;

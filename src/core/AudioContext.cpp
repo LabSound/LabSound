@@ -145,6 +145,8 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
+// @TODO webkit change c6e1946 removes isRunnable and simplifies HRTF database loading to be on demand
+// not during audio context start
 bool AudioContext::isRunnable() const
 {
 	if (!isInitialized())

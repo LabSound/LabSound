@@ -62,7 +62,6 @@ namespace LabSound
         NodeTypeAnalyser,
         NodeTypeDynamicsCompressor,
         NodeTypeWaveShaper,
-        NodeTypeEnd,
 
         // Labsound Extensions
         NodeTypeADSR,
@@ -79,6 +78,9 @@ namespace LabSound
         NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
 		NodeTypeSTK, 
+
+        // enumeration terminator
+        NodeTypeEnd,
     };
 
 }
@@ -177,6 +179,9 @@ public:
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
     void processIfNecessary(ContextRenderLock& r, size_t framesToProcess);
+    
+    // @TODO webkit change 1f083e8 and 2bd2dc2 adds support for different behaviors on mixing such as
+    // clamping the max number of channels, and mixing 5.1 down to mono
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
