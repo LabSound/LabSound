@@ -27,12 +27,13 @@
 
 #include "LabSound/extended/ExceptionCodes.h"
 
-#include <vector>
-#include <thread>
-#include <mutex>
-#include <memory>
 #include <algorithm>
+#include <atomic>
+#include <memory>
+#include <mutex>
 #include <set>
+#include <thread>
+#include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 
@@ -228,8 +229,8 @@ private:
     double m_lastNonSilentTime;
 
     // Ref-counting
-    volatile int m_normalRefCount;
-    volatile int m_connectionRefCount;
+    std::atomic<int> m_normalRefCount;
+    std::atomic<int> m_connectionRefCount;
     
     bool m_isMarkedForDeletion;
     

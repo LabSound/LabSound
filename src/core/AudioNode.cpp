@@ -33,8 +33,6 @@
 #include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
-#include <WTF/Atomics.h>
-
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>
 #include <map>
@@ -84,7 +82,7 @@ AudioNode::~AudioNode()
     
 #if DEBUG_AUDIONODE_REFERENCES
     --s_nodeCount[nodeType()];
-    fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d %d\n", this, nodeType(), m_normalRefCount, m_connectionRefCount);
+    fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d %d\n", this, nodeType(), m_normalRefCount.load(), m_connectionRefCount.load());
 #endif
 }
 

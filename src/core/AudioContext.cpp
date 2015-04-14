@@ -15,7 +15,6 @@
 #include "internal/HRTFDatabaseLoader.h"
 #include "internal/AudioDestination.h"
 
-#include <wtf/Atomics.h>
 #include <stdio.h>
 #include <queue>
 
@@ -141,7 +140,7 @@ bool AudioContext::isInitialized() const
 
 void AudioContext::incrementConnectionCount()
 {
-	atomicIncrement(&m_connectionCount); // running tally
+    ++m_connectionCount;
 }
 
 bool AudioContext::isRunnable() const
@@ -349,20 +348,20 @@ void AudioContext::update(ContextGraphLock& g)
 				AudioNodeInput::connect(g, i.to->input(0), i.from->output(0));
 				referenceSourceNode(g, i.from);
 				referenceSourceNode(g, i.to);
-				atomicIncrement(&i.from->m_connectionRefCount);
-				atomicIncrement(&i.to->m_connectionRefCount);
+				++i.from->m_connectionRefCount;
+				++i.to->m_connectionRefCount;
 			}
 			else
 			{
                 if (i.to && i.from) {
-                    atomicDecrement(&i.from->m_connectionRefCount);
-                    atomicDecrement(&i.to->m_connectionRefCount);
+                    --i.from->m_connectionRefCount;
+                    --i.to->m_connectionRefCount;
                     AudioNodeInput::disconnect(g, i.from->input(0), i.to->output(0));
                     dereferenceSourceNode(g, i.from);
                     dereferenceSourceNode(g, i.to);
                 }
 				else if (i.from) {
-					atomicDecrement(&i.from->m_connectionRefCount);
+					--i.from->m_connectionRefCount;
                     for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
                         auto output = i.from->output(out);
                         if (!output)
@@ -373,7 +372,7 @@ void AudioContext::update(ContextGraphLock& g)
                     }
 				}
                 else if (i.to) {
-                    atomicDecrement(&i.to->m_connectionRefCount);
+                    --i.to->m_connectionRefCount;
                     for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
                         auto output = i.to->output(out);
                         if (!output)
@@ -534,12 +533,12 @@ void AudioContext::startRendering()
 
 void AudioContext::incrementActiveSourceCount()
 {
-	atomicIncrement(&m_activeSourceCount);
+    ++m_activeSourceCount;
 }
 
 void AudioContext::decrementActiveSourceCount()
 {
-	atomicDecrement(&m_activeSourceCount);
+    --m_activeSourceCount;
 }
 
 } // End namespace WebCore
