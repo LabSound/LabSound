@@ -7,7 +7,6 @@
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/MediaStream.h"
-#include "LabSound/core/MediaStreamAudioDestinationNode.h"
 #include "LabSound/core/MediaStreamAudioSourceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"

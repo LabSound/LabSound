@@ -12,7 +12,6 @@
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/MediaStreamAudioSourceNode.h"
-#include "LabSound/core/MediaStreamAudioDestinationNode.h"
 #include "LabSound/core/GainNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/DelayNode.h"

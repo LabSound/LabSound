@@ -32,6 +32,6 @@ InfiniteFMApp g_infiniteFM;
 
 int main (int argc, char *argv[])
 {
-    g_convolutionReverbExample.PlayExample();
+    g_validation.PlayExample();
     return 0;
 }

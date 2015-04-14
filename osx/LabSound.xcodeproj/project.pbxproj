@@ -90,7 +90,6 @@
 		08650CE91AD6241A00D19E38 /* DelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCA1AD6241A00D19E38 /* DelayNode.cpp */; };
 		08650CEA1AD6241A00D19E38 /* DynamicsCompressorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */; };
 		08650CEB1AD6241A00D19E38 /* GainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCC1AD6241A00D19E38 /* GainNode.cpp */; };
-		08650CEC1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCD1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp */; };
 		08650CED1AD6241A00D19E38 /* MediaStreamAudioSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCE1AD6241A00D19E38 /* MediaStreamAudioSourceNode.cpp */; };
 		08650CEE1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */; };
 		08650CEF1AD6241A00D19E38 /* OscillatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */; };
@@ -268,7 +267,6 @@
 		08650CAB1AD623E300D19E38 /* FloatPoint3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FloatPoint3D.h; path = ../include/LabSound/core/FloatPoint3D.h; sourceTree = SOURCE_ROOT; };
 		08650CAC1AD623E300D19E38 /* GainNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GainNode.h; path = ../include/LabSound/core/GainNode.h; sourceTree = SOURCE_ROOT; };
 		08650CAD1AD623E300D19E38 /* MediaStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStream.h; path = ../include/LabSound/core/MediaStream.h; sourceTree = SOURCE_ROOT; };
-		08650CAE1AD623E300D19E38 /* MediaStreamAudioDestinationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioDestinationNode.h; path = ../include/LabSound/core/MediaStreamAudioDestinationNode.h; sourceTree = SOURCE_ROOT; };
 		08650CAF1AD623E300D19E38 /* MediaStreamAudioSourceNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MediaStreamAudioSourceNode.h; path = ../include/LabSound/core/MediaStreamAudioSourceNode.h; sourceTree = SOURCE_ROOT; };
 		08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineAudioDestinationNode.h; path = ../include/LabSound/core/OfflineAudioDestinationNode.h; sourceTree = SOURCE_ROOT; };
 		08650CB11AD623E300D19E38 /* OscillatorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscillatorNode.h; path = ../include/LabSound/core/OscillatorNode.h; sourceTree = SOURCE_ROOT; };
@@ -299,7 +297,6 @@
 		08650CCA1AD6241A00D19E38 /* DelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DelayNode.cpp; path = ../src/core/DelayNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicsCompressorNode.cpp; path = ../src/core/DynamicsCompressorNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CCC1AD6241A00D19E38 /* GainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GainNode.cpp; path = ../src/core/GainNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCD1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MediaStreamAudioDestinationNode.cpp; path = ../src/core/MediaStreamAudioDestinationNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CCE1AD6241A00D19E38 /* MediaStreamAudioSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MediaStreamAudioSourceNode.cpp; path = ../src/core/MediaStreamAudioSourceNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OfflineAudioDestinationNode.cpp; path = ../src/core/OfflineAudioDestinationNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OscillatorNode.cpp; path = ../src/core/OscillatorNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -429,7 +426,6 @@
 				08650CAB1AD623E300D19E38 /* FloatPoint3D.h */,
 				08650CAC1AD623E300D19E38 /* GainNode.h */,
 				08650CAD1AD623E300D19E38 /* MediaStream.h */,
-				08650CAE1AD623E300D19E38 /* MediaStreamAudioDestinationNode.h */,
 				08650CAF1AD623E300D19E38 /* MediaStreamAudioSourceNode.h */,
 				08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */,
 				08650CB11AD623E300D19E38 /* OscillatorNode.h */,
@@ -467,7 +463,6 @@
 				08650CCA1AD6241A00D19E38 /* DelayNode.cpp */,
 				08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */,
 				08650CCC1AD6241A00D19E38 /* GainNode.cpp */,
-				08650CCD1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp */,
 				08650CCE1AD6241A00D19E38 /* MediaStreamAudioSourceNode.cpp */,
 				08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */,
 				08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */,
@@ -818,7 +813,6 @@
 				08650C5B1AD6239000D19E38 /* PeakCompNode.cpp in Sources */,
 				08650CDB1AD6241A00D19E38 /* AudioDestinationNode.cpp in Sources */,
 				08650C631AD6239000D19E38 /* SpectralMonitorNode.cpp in Sources */,
-				08650CEC1AD6241A00D19E38 /* MediaStreamAudioDestinationNode.cpp in Sources */,
 				08650CDD1AD6241A00D19E38 /* AudioNode.cpp in Sources */,
 				08650BE51AD6225900D19E38 /* DynamicsCompressorKernel.cpp in Sources */,
 				08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */,
