@@ -25,9 +25,7 @@
 #ifndef AudioSummingJunction_h
 #define AudioSummingJunction_h
 
-#include <set>
 #include <vector>
-#include <array>
 #include <memory>
 
 namespace LabSound 
@@ -53,13 +51,19 @@ public:
     // This copies m_outputs to m_renderingOutputs. See comments for these lists below.
     void updateRenderingState(ContextRenderLock& r);
 
-#define SUMMING_JUNCTION_MAX_OUTPUTS 8
-
+    size_t numberOfConnections() const {
+        return m_connectedOutputs.size();   // will count expired pointers
+    }
+    
     // Rendering code accesses its version of the current connections here.
-    size_t numberOfRenderingConnections() const;
-    std::shared_ptr<AudioNodeOutput> renderingOutput(unsigned i) { return i < SUMMING_JUNCTION_MAX_OUTPUTS? m_renderingOutputs[i].lock() : nullptr; }
-    const std::shared_ptr<AudioNodeOutput> renderingOutput(unsigned i) const { return i < SUMMING_JUNCTION_MAX_OUTPUTS? m_renderingOutputs[i].lock() : nullptr; }
-    bool isConnected() const { return numberOfRenderingConnections() > 0; }
+    size_t numberOfRenderingConnections(ContextRenderLock&) const;
+    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, unsigned i) {
+        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
+    
+    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, unsigned i) const {
+        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
+    
+    bool isConnected() const { return numberOfConnections() > 0; }
 
     virtual bool canUpdateState() = 0;
     virtual void didUpdate(ContextRenderLock&) = 0;
@@ -76,13 +80,13 @@ public:
 private:
     // m_outputs contains the AudioNodeOutputs representing current connections.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
-    std::array<std::weak_ptr<AudioNodeOutput>, SUMMING_JUNCTION_MAX_OUTPUTS> m_connectedOutputs;
+    std::vector<std::weak_ptr<AudioNodeOutput>> m_connectedOutputs;
 
     // m_renderingOutputs is a copy of m_connectedOutputs which will never be modified during the graph rendering on the audio thread.
     // This is the list which is used by the rendering code.
     // Whenever m_outputs is modified, the context is told so it can later update m_renderingOutputs from m_outputs at a safe time.
     // Most of the time, m_renderingOutputs is identical to m_outputs.
-    std::array<std::weak_ptr<AudioNodeOutput>, SUMMING_JUNCTION_MAX_OUTPUTS> m_renderingOutputs;
+    std::vector<std::weak_ptr<AudioNodeOutput>> m_renderingOutputs;
 
     // m_renderingStateNeedUpdating indicates outputs were changed
     bool m_renderingStateNeedUpdating;

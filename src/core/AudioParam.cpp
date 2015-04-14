@@ -145,8 +145,8 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     AudioBus summingBus(1, numberOfValues, false);
     summingBus.setChannelMemory(0, values, numberOfValues);
 
-    for (size_t i = 0; i < numberOfRenderingConnections(); ++i) {
-        auto output = renderingOutput(i);
+    for (size_t i = 0; i < numberOfRenderingConnections(r); ++i) {
+        auto output = renderingOutput(r, i);
         if (!output)
             continue;
 

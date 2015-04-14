@@ -98,7 +98,7 @@ public:
     void setValueCurveAtTime(std::shared_ptr<std::vector<float>> curve, float time, float duration) { m_timeline.setValueCurveAtTime(curve, time, duration); }
     void cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); }
 
-    bool hasSampleAccurateValues() { return m_timeline.hasValues() || numberOfRenderingConnections(); }
+    bool hasSampleAccurateValues() { return m_timeline.hasValues() || numberOfConnections(); }
     
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.

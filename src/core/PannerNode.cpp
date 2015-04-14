@@ -345,8 +345,8 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
             auto input = node->input(i);
 
             // For each input, go through all of its connections, looking for AudioBufferSourceNodes.
-            for (unsigned j = 0; j < input->numberOfRenderingConnections(); ++j) {
-                auto connectedOutput = input->renderingOutput(j);
+            for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j) {
+                auto connectedOutput = input->renderingOutput(r, j);
                 AudioNode* connectedNode = connectedOutput->node();
                 notifyAudioSourcesConnectedToNode(r, connectedNode); // recurse
             }
