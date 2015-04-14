@@ -104,16 +104,6 @@ void AudioBuffer::releaseMemory()
     m_channels.clear();
 }
 
-std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex, ExceptionCode& ec)
-{
-    if (channelIndex >= m_channels.size()) {
-        ec = SYNTAX_ERR;
-        return 0;
-    }
-
-    return m_channels[channelIndex];
-}
-
 std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex)
 {
     if (channelIndex >= m_channels.size())

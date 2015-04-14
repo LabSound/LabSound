@@ -151,29 +151,12 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
     return 0;
 }
 
-void AudioNode::connect(AudioContext* context,
-                        AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
+void AudioNode::connect(AudioContext* context, AudioNode* destination, unsigned outputIndex, unsigned inputIndex)
 {
-    if (!context) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    if (!destination) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    // Sanity check input and output indices.
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
-    
-    if (destination && inputIndex >= destination->numberOfInputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (!context) throw std::invalid_argument("No context specified");
+    if (!destination) throw std::invalid_argument("No destination specified");
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
+    if (inputIndex >= destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
 
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
@@ -183,28 +166,17 @@ void AudioNode::connect(AudioContext* context,
 
 }
 
-void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
 {
-    if (!param) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (!param) throw std::invalid_argument("No parameter specified");
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
     AudioParam::connect(g, param, this->output(outputIndex));
 }
 
-void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::disconnect(unsigned outputIndex)
 {
-    // Sanity check input and output indices.
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
     // &&& can't do this, it's recursive
     // &&& context->disconnect(this->output(outputIndex));

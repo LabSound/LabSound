@@ -21,21 +21,9 @@ namespace LabSound {
         uninitialize();
     }
 
-    void NoiseNode::setType(NoiseType type, ExceptionCode& ec)
+    void NoiseNode::setType(NoiseType type)
     {
-        switch (type) 
-		{
-            case WHITE:
-            case PINK:
-            case BROWN:
-                break;
-            default:
-                // Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
-                // called explicitly.
-                ec = NOT_SUPPORTED_ERR;
-                return;
-        }
-
+        if (type > NOISE_TYPE_END) throw std::out_of_range("Noise argument exceeds known noise types");
         m_type = type;
     }
 

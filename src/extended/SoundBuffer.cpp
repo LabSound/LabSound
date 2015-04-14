@@ -98,8 +98,7 @@ namespace LabSound {
             sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the mixer.
-            ExceptionCode ec;
-            sourceBufferNode->connect(ac, ac->destination().get(), 0, 0, ec);
+            sourceBufferNode->connect(ac, ac->destination().get(), 0, 0);
             sourceBufferNode->startGrain(when, start, end - start);
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
 

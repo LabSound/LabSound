@@ -49,7 +49,7 @@ public:
     BiquadFilterNode(float sampleRate);
     
     unsigned short type();
-    void setType(unsigned short type, ExceptionCode&);
+    void setType(unsigned short type);
 
     std::shared_ptr<AudioParam> frequency();
     std::shared_ptr<AudioParam> q();

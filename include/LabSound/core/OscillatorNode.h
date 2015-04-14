@@ -56,7 +56,7 @@ public:
     virtual void reset(std::shared_ptr<AudioContext>) override;
 
     unsigned short type() const { return m_type; }
-    void setType(ContextRenderLock& r, unsigned short, ExceptionCode&);
+    void setType(ContextRenderLock& r, unsigned short);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }

@@ -223,7 +223,6 @@
 		08650C7B1AD623C400D19E38 /* AudioContextLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioContextLock.h; path = ../include/LabSound/extended/AudioContextLock.h; sourceTree = SOURCE_ROOT; };
 		08650C7C1AD623C400D19E38 /* ClipNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ClipNode.h; path = ../include/LabSound/extended/ClipNode.h; sourceTree = SOURCE_ROOT; };
 		08650C7D1AD623C400D19E38 /* DiodeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DiodeNode.h; path = ../include/LabSound/extended/DiodeNode.h; sourceTree = SOURCE_ROOT; };
-		08650C7E1AD623C400D19E38 /* ExceptionCodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExceptionCodes.h; path = ../include/LabSound/extended/ExceptionCodes.h; sourceTree = SOURCE_ROOT; };
 		08650C7F1AD623C400D19E38 /* LabSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LabSound.h; path = ../include/LabSound/extended/LabSound.h; sourceTree = SOURCE_ROOT; };
 		08650C801AD623C400D19E38 /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = ../include/LabSound/extended/Logging.h; sourceTree = SOURCE_ROOT; };
 		08650C811AD623C400D19E38 /* NoiseNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoiseNode.h; path = ../include/LabSound/extended/NoiseNode.h; sourceTree = SOURCE_ROOT; };
@@ -509,7 +508,6 @@
 				08650C7B1AD623C400D19E38 /* AudioContextLock.h */,
 				08650C7C1AD623C400D19E38 /* ClipNode.h */,
 				08650C7D1AD623C400D19E38 /* DiodeNode.h */,
-				08650C7E1AD623C400D19E38 /* ExceptionCodes.h */,
 				08650C7F1AD623C400D19E38 /* LabSound.h */,
 				08650C801AD623C400D19E38 /* Logging.h */,
 				08650C811AD623C400D19E38 /* NoiseNode.h */,

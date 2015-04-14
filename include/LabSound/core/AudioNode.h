@@ -25,8 +25,6 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include "LabSound/extended/ExceptionCodes.h"
-
 #include <algorithm>
 #include <atomic>
 #include <memory>
@@ -157,18 +155,16 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
-
     unsigned int numberOfInputs() const { return m_inputCount; }
     unsigned int numberOfOutputs() const { return m_outputCount; }
 
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
 
-    void connect(AudioContext*,
-                 AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
+    void connect(AudioContext*, AudioNode*, unsigned outputIndex, unsigned inputIndex);
+    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex);
     
-    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
-    void disconnect(unsigned outputIndex, ExceptionCode&);
+    void disconnect(unsigned outputIndex);
 
     virtual float sampleRate() const { return m_sampleRate; }
 

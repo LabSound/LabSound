@@ -5,7 +5,6 @@
 
 #include "LabSound/core/ConcurrentQueue.h"
 #include "labSound/core/AudioScheduledSourceNode.h"
-#include "LabSound/extended/ExceptionCodes.h"
 
 #include <set>
 #include <atomic>

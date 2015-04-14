@@ -6,7 +6,6 @@
 #include "LabSound/core/AudioBufferSourceNode.h"
 
 #include "LabSound/extended/ADSRNode.h"
-#include "LabSound/extended/ExceptionCodes.h"
 #include "LabSound/extended/SoundBuffer.h"
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -73,9 +72,7 @@ namespace LabSound {
 			// Connect the source node to the parsed audio data for playback
 			theSample->setBuffer(r, audioBuffer->audioBuffer);
 
-			// Bus the sound to the output destination .
-			ExceptionCode ec;
-			theSample->connect(ac, destinationNode.get(), 0, 0, ec);
+			theSample->connect(ac, destinationNode.get(), 0, 0);
 			theSample->start(0.0);
 
 			return theSample;
