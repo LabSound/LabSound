@@ -32,10 +32,11 @@
 
 namespace WebCore {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate) : AudioNode(sampleRate)
+AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate, int outputChannelCount)
+    : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outputChannelCount)));
     initialize();
 }
 
@@ -45,7 +46,7 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate) : AudioNode(s
 void AudioBasicInspectorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     // Render input stream - try to render directly into output bus for pass-through processing where process() doesn't need to do anything...
-    input(0)->pull(r, output(0)->bus(), framesToProcess);
+    input(0)->pull(r, output(0)->bus(r), framesToProcess);
 }
 
 void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
@@ -53,7 +54,7 @@ void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     if (input != this->input(0).get())
         return;
     
-    unsigned numberOfChannels = input->numberOfChannels();
+    unsigned numberOfChannels = input->numberOfChannels(r);
 
     if (numberOfChannels != output(0)->numberOfChannels()) {
         // This will propagate the channel count to any nodes connected further downstream in the graph.

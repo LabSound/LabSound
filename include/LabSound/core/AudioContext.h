@@ -8,6 +8,7 @@
 #include "LabSound/extended/ExceptionCodes.h"
 
 #include <set>
+#include <atomic>
 #include <vector>
 #include <memory>
 #include <thread>
@@ -153,8 +154,9 @@ private:
 	bool m_isDeletionScheduled = false;
 	bool m_automaticPullNodesNeedUpdating = false; 	// m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
 
-	int m_activeSourceCount = 0; // Number of AudioBufferSourceNodes that are active (playing).
-	int m_connectionCount = 0;
+    // Number of AudioBufferSourceNodes that are active (playing).
+    std::atomic<int> m_activeSourceCount;
+    std::atomic<int> m_connectionCount;
 
 	void startRendering();
 

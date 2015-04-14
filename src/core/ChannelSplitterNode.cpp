@@ -49,16 +49,16 @@ ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutp
     initialize();
 }
 
-void ChannelSplitterNode::process(ContextRenderLock&, size_t framesToProcess)
+void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* source = input(0)->bus();
+    AudioBus* source = input(0)->bus(r);
     ASSERT(source);
     ASSERT_UNUSED(framesToProcess, framesToProcess == source->length());
     
     unsigned numberOfSourceChannels = source->numberOfChannels();
     
     for (unsigned i = 0; i < numberOfOutputs(); ++i) {
-        AudioBus* destination = output(i)->bus();
+        AudioBus* destination = output(i)->bus(r);
         ASSERT(destination);
         
         if (i < numberOfSourceChannels) {

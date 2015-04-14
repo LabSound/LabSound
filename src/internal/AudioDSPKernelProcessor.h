@@ -62,15 +62,11 @@ public:
     virtual void uninitialize();
     virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
     virtual void reset() override;
-    virtual void setNumberOfChannels(unsigned numberOfChannels);
-
-    unsigned numberOfChannels() const { return m_numberOfChannels; }
 
     virtual double tailTime() const override;
     virtual double latencyTime() const override;
 
 protected:
-    unsigned m_numberOfChannels;
     std::vector<std::unique_ptr<AudioDSPKernel> > m_kernels;
     bool m_hasJustReset;
 };

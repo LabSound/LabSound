@@ -14,7 +14,8 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    PowerMonitorNode::PowerMonitorNode(float sampleRate) : AudioBasicInspectorNode(sampleRate) , _db(0), _windowSize(128)
+    PowerMonitorNode::PowerMonitorNode(float sampleRate)
+    : AudioBasicInspectorNode(sampleRate, 2), _db(0), _windowSize(128)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType((AudioNode::NodeType) NodeTypePowerMonitor);
@@ -26,12 +27,12 @@ namespace LabSound {
         uninitialize();
     }
     
-    void PowerMonitorNode::process(ContextRenderLock&, size_t framesToProcess)
+    void PowerMonitorNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.
         
-        AudioBus* outputBus = output(0)->bus();
+        AudioBus* outputBus = output(0)->bus(r);
         
         if (!isInitialized() || !input(0)->isConnected()) {
             if (outputBus)
@@ -39,7 +40,7 @@ namespace LabSound {
             return;
         }
         
-        AudioBus* bus = input(0)->bus();
+        AudioBus* bus = input(0)->bus(r);
         bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess;
         if (!isBusGood) {
             outputBus->zero();

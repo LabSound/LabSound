@@ -55,22 +55,22 @@ ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
     initialize();
 }
 
-void ChannelMergerNode::process(ContextRenderLock&, size_t framesToProcess)
+void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     auto output = this->output(0);
-    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus()->length());
+    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
     
     // Merge all the channels from all the inputs into one output.
     unsigned outputChannelIndex = 0;
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
         auto input = this->input(i);
         if (input->isConnected()) {
-            unsigned numberOfInputChannels = input->bus()->numberOfChannels();
+            unsigned numberOfInputChannels = input->bus(r)->numberOfChannels();
             
             // Merge channels from this particular input.
             for (unsigned j = 0; j < numberOfInputChannels; ++j) {
-                AudioChannel* inputChannel = input->bus()->channel(j);
-                AudioChannel* outputChannel = output->bus()->channel(outputChannelIndex);
+                AudioChannel* inputChannel = input->bus(r)->channel(j);
+                AudioChannel* outputChannel = output->bus(r)->channel(outputChannelIndex);
                 outputChannel->copyFrom(inputChannel);
                 
                 ++outputChannelIndex;
@@ -94,7 +94,7 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
         auto input = this->input(i);
         if (input->isConnected())
-            numberOfOutputChannels = std::max(input->bus()->numberOfChannels(), numberOfOutputChannels);
+            numberOfOutputChannels = std::max(input->bus(r)->numberOfChannels(), numberOfOutputChannels);
     }
 
     // Set the correct number of channels on the output

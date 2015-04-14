@@ -30,13 +30,11 @@
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode(sampleRate) , m_analyser(fftSize)
+AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
+    : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-    
+    // note: inputs and outputs added by AudioBasicInspectorNode, so need to create them here
     setNodeType(NodeTypeAnalyser);
-    
     initialize();
 }
 
@@ -47,14 +45,14 @@ AnalyserNode::~AnalyserNode()
 
 void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus();
+    AudioBus* outputBus = output(0)->bus(r);
 
     if (!isInitialized() || !input(0)->isConnected()) {
         outputBus->zero();
         return;
     }
 
-    AudioBus* inputBus = input(0)->bus();
+    AudioBus* inputBus = input(0)->bus(r);
     
     // Give the analyser the audio which is passing through this AudioNode.
     m_analyser.writeInput(r, inputBus, framesToProcess);

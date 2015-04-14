@@ -64,12 +64,12 @@ void AudioBasicProcessorNode::uninitialize()
 
 void AudioBasicProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* destinationBus = output(0)->bus();
+    AudioBus* destinationBus = output(0)->bus(r);
     
-    if (!isInitialized() || !processor())
+    if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
         destinationBus->zero();
     else {
-        AudioBus* sourceBus = input(0)->bus();
+        AudioBus* sourceBus = input(0)->bus(r);
 
         // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
         if (!input(0)->isConnected())
@@ -83,7 +83,7 @@ void AudioBasicProcessorNode::process(ContextRenderLock& r, size_t framesToProce
 void AudioBasicProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(), framesToProcess);
+    input(0)->pull(r, output(0)->bus(r), framesToProcess);
 }
 
 void AudioBasicProcessorNode::reset(std::shared_ptr<AudioContext>)
@@ -103,7 +103,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     if (!processor())
         return;
 
-    unsigned numberOfChannels = input->numberOfChannels();
+    unsigned numberOfChannels = input->numberOfChannels(r);
     
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels()) {
         uninitialize();

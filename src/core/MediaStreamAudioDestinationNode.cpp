@@ -32,7 +32,8 @@
 
 namespace WebCore {
 
-MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate) : AudioBasicInspectorNode(sampleRate)
+MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate)
+    : AudioBasicInspectorNode(sampleRate, numberOfChannels)
 {
 	m_mixBus = new AudioBus(numberOfChannels, ProcessingSizeInFrames);
     setNodeType(NodeTypeMediaStreamAudioDestination);
@@ -52,9 +53,9 @@ MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
 }
 
 //@tofix
-void MediaStreamAudioDestinationNode::process(ContextRenderLock&, size_t numberOfFrames)
+void MediaStreamAudioDestinationNode::process(ContextRenderLock& r, size_t numberOfFrames)
 {
-    m_mixBus->copyFrom(*input(0)->bus());
+    m_mixBus->copyFrom(*input(0)->bus(r));
     
     // m_source is supposed to be derived from AudioDestinationConsumer.h
     // --- it should be very easy to pipe the audio from LabSound to something else via that API

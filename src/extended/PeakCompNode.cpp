@@ -63,7 +63,7 @@ namespace LabSound
         
     public:
 
-        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1)
+        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
         {
             m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);
             m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);
@@ -93,7 +93,7 @@ namespace LabSound
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
         {
-            if (!numChannels)
+            if (!numberOfChannels())
                 return;
 
             std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
@@ -151,6 +151,7 @@ namespace LabSound
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];
+            unsigned numChannels = numberOfChannels();
             for (unsigned int i = 0; i < numChannels; ++i)
             {
                 if (sourceBus->numberOfChannels() == numChannels)
@@ -218,18 +219,8 @@ namespace LabSound
         // Resets filter state
         virtual void reset() { /* @tofix */ }
 
-        virtual void setNumberOfChannels(unsigned i)
-        {
-            if (i > 16)
-                numChannels = 16;
-            else
-                numChannels = i;
-        }
-
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
-        
-        unsigned int numChannels;
 
 		std::shared_ptr<AudioParam> m_threshold;
 		std::shared_ptr<AudioParam> m_ratio;
@@ -266,7 +257,6 @@ namespace LabSound
     
     PeakCompNode::~PeakCompNode()
     {
-        internalNode->numChannels = 0;
         uninitialize();
     }
     

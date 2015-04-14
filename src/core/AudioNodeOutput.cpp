@@ -48,14 +48,14 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
-    , m_actualDestinationBus(0)
+    , m_isInPlace(false)
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
+    , m_inPlaceBus(0)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
 
     m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
-    m_actualDestinationBus = m_internalBus.get();
 }
 
 AudioNodeOutput::~AudioNodeOutput()
@@ -65,11 +65,13 @@ AudioNodeOutput::~AudioNodeOutput()
 
 void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberOfChannels)
 {
-    if (m_numberOfChannels != numberOfChannels) {
-        ASSERT(r.context());
-        ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-        m_desiredNumberOfChannels = numberOfChannels;
-    }
+    if (m_numberOfChannels == numberOfChannels)
+        return;
+    
+    ASSERT(r.context());
+    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
+    m_numberOfChannels = numberOfChannels;
+    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
 }
 
 void AudioNodeOutput::updateInternalBus()
@@ -78,9 +80,6 @@ void AudioNodeOutput::updateInternalBus()
         return;
 
     m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
-
-    // This may later be changed in pull() to point to an in-place bus with the same number of channels.
-    m_actualDestinationBus = m_internalBus.get();
 }
 
 void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
@@ -123,19 +122,20 @@ AudioBus* AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size
     
     updateRenderingState(r);
     
-    bool isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() && (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
+    m_isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() &&
+                            (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
 
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
-    m_actualDestinationBus = isInPlace ? inPlaceBus : m_internalBus.get();
+    m_inPlaceBus = m_isInPlace ? inPlaceBus : 0;
     
     node()->processIfNecessary(r, framesToProcess);
-    return m_actualDestinationBus;
+    return bus(r);
 }
 
-AudioBus* AudioNodeOutput::bus() const
+AudioBus* AudioNodeOutput::bus(ContextRenderLock& r) const
 {
-    ASSERT(m_actualDestinationBus);
-    return m_actualDestinationBus;
+    ASSERT(r.context()); // only legal during rendering
+    return m_isInPlace ? m_inPlaceBus : m_internalBus.get();
 }
 
 unsigned AudioNodeOutput::fanOutCount()

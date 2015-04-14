@@ -26,7 +26,7 @@ namespace LabSound
         
     public:
 
-        ADSRNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
+        ADSRNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
         {
             m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
             m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);
@@ -44,7 +44,7 @@ namespace LabSound
         // Processes the source to destination bus. The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r, const WebCore::AudioBus * sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess) override
         {
-            if (!numChannels)
+            if (!numberOfChannels())
                 return;
             
             std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
@@ -121,6 +121,7 @@ namespace LabSound
                 }
             }
 
+            unsigned numChannels = numberOfChannels();
             for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
             {
                 if (sourceBus->numberOfChannels() == numChannels)
@@ -133,11 +134,6 @@ namespace LabSound
         }
 
         virtual void reset() override { }
-
-        virtual void setNumberOfChannels(unsigned i) override
-        {
-            numChannels = i;
-        }
 
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
@@ -176,7 +172,6 @@ namespace LabSound
 
         double m_noteOnTime;
         
-        unsigned int numChannels;
         double m_attackTimeTarget, m_decayTimeTarget, m_noteOffTime;
         
         float m_currentGain;
@@ -210,7 +205,6 @@ namespace LabSound
 
     ADSRNode::~ADSRNode()
     {
-        internalNode->numChannels = 0;
         uninitialize();
     }
 

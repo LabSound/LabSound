@@ -76,9 +76,12 @@ AudioBufferSourceNode::~AudioBufferSourceNode()
     uninitialize();
 }
 
+    // @TODO webkit change ef113b changes the logic of processing to test for non finite time values, change not reflected here.
+    // @TODO webkit change e369924 adds backward playback, change not incorporated yet
+    
 void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus();
+    AudioBus* outputBus = output(0)->bus(r);
     if (!buffer() || !isInitialized() || ! r.context()) {
         outputBus->zero();
         return;

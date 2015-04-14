@@ -98,7 +98,7 @@ void AudioNodeInput::didUpdate(ContextRenderLock& r)
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
-    unsigned numberOfInputChannels = numberOfChannels();
+    unsigned numberOfInputChannels = numberOfChannels(r);
 
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
@@ -107,39 +107,41 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-unsigned AudioNodeInput::numberOfChannels() const
+unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (int i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        auto output = renderingOutput(i);
+    int c = numberOfRenderingConnections(r);
+    for (int i = 0; i < c; ++i) {
+        auto output = renderingOutput(r, i);
         if (output)
-            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
     }
     
     return maxChannels;
 }
 
-unsigned AudioNodeInput::numberOfRenderingChannels()
+unsigned AudioNodeInput::numberOfRenderingChannels(ContextRenderLock& r)
 {
     // Find the number of channels of the rendering connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
-    for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        auto output = renderingOutput(i);
+    int c = numberOfRenderingConnections(r);
+    for (int i = 0; i < c; ++i) {
+        auto output = renderingOutput(r, i);
         if (output)
-            maxChannels = max(maxChannels, output->bus()->numberOfChannels());
+            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
     }
     
     return maxChannels;
 }
 
-AudioBus* AudioNodeInput::bus()
+AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
-    if (numberOfRenderingConnections() == 1)
-        return renderingOutput(0)->bus();
+    if (numberOfRenderingConnections(r) == 1)
+        return renderingOutput(r, 0)->bus(r);
 
     // Multiple connections case (or no connections).
     return internalSummingBus();
@@ -147,15 +149,14 @@ AudioBus* AudioNodeInput::bus()
 
 AudioBus* AudioNodeInput::internalSummingBus()
 {
-    ASSERT(numberOfRenderingChannels() == m_internalSummingBus->numberOfChannels());
-
     return m_internalSummingBus.get();
 }
 
 void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
 {
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
-    ASSERT(numberOfRenderingConnections() > 1);
+    int c = numberOfRenderingConnections(r);
+    ASSERT(c > 1);
 
     ASSERT(summingBus);
     if (!summingBus)
@@ -163,8 +164,8 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
         
     summingBus->zero();
 
-    for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-        auto output = renderingOutput(i);
+    for (int i = 0; i < c; ++i) {
+        auto output = renderingOutput(r, i);
         if (output) {
             // Render audio from this output.
             AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
@@ -179,12 +180,14 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
 {
     updateRenderingState(r);
     
+    int c = numberOfRenderingConnections(r);
+    
     // Handle single connection case.
-    if (numberOfRenderingConnections() == 1) {
+    if (c == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
         
-        for (unsigned i = 0; i < SUMMING_JUNCTION_MAX_OUTPUTS; ++i) {
-            auto output = renderingOutput(i);
+        for (int i = 0; i < c; ++i) {
+            auto output = renderingOutput(r, i);
             if (output)
                 return output->pull(r, inPlaceBus, framesToProcess);
         }
@@ -192,7 +195,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
 
     AudioBus* internalSummingBus = this->internalSummingBus();
 
-    if (!numberOfRenderingConnections()) {
+    if (!c) {
         // At least, generate silence if we're not connected to anything.
         // FIXME: if we wanted to get fancy, we could propagate a 'silent hint' here to optimize the downstream graph processing.
         internalSummingBus->zero();

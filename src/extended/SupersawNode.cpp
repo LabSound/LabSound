@@ -143,7 +143,7 @@ namespace LabSound
 	{
         internalNode->update(r.contextPtr());
 
-        AudioBus * outputBus = output(0)->bus();
+        AudioBus * outputBus = output(0)->bus(r);
 
         if (!isInitialized() || !outputBus->numberOfChannels()) 
 		{
@@ -151,7 +151,7 @@ namespace LabSound
             return;
         }
 
-        AudioBus * inputBus = input(0)->bus();
+        AudioBus * inputBus = input(0)->bus(r);
 
         outputBus->copyFrom(*inputBus);
         outputBus->clearSilentFlag();

@@ -28,7 +28,7 @@ namespace LabSound
     class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
     public:
 
-        ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate), numChannels(1), mode(ClipNode::CLIP)
+        ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), mode(ClipNode::CLIP)
         {
             auto fMax = std::numeric_limits<float>::max();
             aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
@@ -44,7 +44,7 @@ namespace LabSound
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
         {
-            if (!numChannels)
+            if (!numberOfChannels())
                 return;
 
             // We handle both the 1 -> N and N -> N case here.
@@ -55,6 +55,8 @@ namespace LabSound
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
+            unsigned numChannels = numberOfChannels();
+            
             if (mode == ClipNode::TANH)
             {
                 float outputGain = aVal->value(r.contextPtr());
@@ -102,15 +104,8 @@ namespace LabSound
 
         virtual void reset() { }
 
-        virtual void setNumberOfChannels(unsigned i)
-        {
-            numChannels = i;
-        }
-
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
-
-        unsigned int numChannels;
         
         ClipNode::Mode mode;
         
@@ -140,7 +135,6 @@ namespace LabSound
     
     ClipNode::~ClipNode()
     {
-        internalNode->numChannels = 0;
         uninitialize();
     }
 

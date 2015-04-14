@@ -638,7 +638,7 @@ namespace LabSound {
 
     void SfxrNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
-        AudioBus* outputBus = output(0)->bus();
+        AudioBus* outputBus = output(0)->bus(r);
 
         if (!isInitialized() || !outputBus->numberOfChannels()) {
             outputBus->zero();

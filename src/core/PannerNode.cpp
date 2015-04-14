@@ -99,14 +99,14 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 
 void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    AudioBus* destination = output(0)->bus();
+    AudioBus* destination = output(0)->bus(r);
 
     if (!isInitialized() || !input(0)->isConnected() || !m_panner.get()) {
         destination->zero();
         return;
     }
 
-    AudioBus* source = input(0)->bus();
+    AudioBus* source = input(0)->bus(r);
 
     if (!source) {
         destination->zero();
@@ -345,8 +345,8 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
             auto input = node->input(i);
 
             // For each input, go through all of its connections, looking for AudioBufferSourceNodes.
-            for (unsigned j = 0; j < input->numberOfRenderingConnections(); ++j) {
-                auto connectedOutput = input->renderingOutput(j);
+            for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j) {
+                auto connectedOutput = input->renderingOutput(r, j);
                 AudioNode* connectedNode = connectedOutput->node();
                 notifyAudioSourcesConnectedToNode(r, connectedNode); // recurse
             }

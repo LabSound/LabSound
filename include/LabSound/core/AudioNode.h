@@ -27,12 +27,13 @@
 
 #include "LabSound/extended/ExceptionCodes.h"
 
-#include <vector>
-#include <thread>
-#include <mutex>
-#include <memory>
 #include <algorithm>
+#include <atomic>
+#include <memory>
+#include <mutex>
 #include <set>
+#include <thread>
+#include <vector>
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 
@@ -198,9 +199,9 @@ public:
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
     virtual bool propagatesSilence(double now) const;
-    bool inputsAreSilent();
-    void silenceOutputs();
-    void unsilenceOutputs();
+    bool inputsAreSilent(ContextRenderLock&);
+    void silenceOutputs(ContextRenderLock&);
+    void unsilenceOutputs(ContextRenderLock&);
 
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
@@ -228,8 +229,8 @@ private:
     double m_lastNonSilentTime;
 
     // Ref-counting
-    volatile int m_normalRefCount;
-    volatile int m_connectionRefCount;
+    std::atomic<int> m_normalRefCount;
+    std::atomic<int> m_connectionRefCount;
     
     bool m_isMarkedForDeletion;
     

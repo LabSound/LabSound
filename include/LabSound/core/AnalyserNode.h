@@ -46,14 +46,14 @@ public:
 
     size_t frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
 
-    void setMinDecibels(float k) { m_analyser.setMinDecibels(k); }
-    float minDecibels() const { return m_analyser.minDecibels(); }
+    void setMinDecibels(double k) { m_analyser.setMinDecibels(k); }
+    double minDecibels() const { return m_analyser.minDecibels(); }
 
-    void setMaxDecibels(float k) { m_analyser.setMaxDecibels(k); }
-    float maxDecibels() const { return m_analyser.maxDecibels(); }
+    void setMaxDecibels(double k) { m_analyser.setMaxDecibels(k); }
+    double maxDecibels() const { return m_analyser.maxDecibels(); }
 
-    void setSmoothingTimeConstant(float k) { m_analyser.setSmoothingTimeConstant(k); }
-    float smoothingTimeConstant() const { return m_analyser.smoothingTimeConstant(); }
+    void setSmoothingTimeConstant(double k) { m_analyser.setSmoothingTimeConstant(k); }
+    double smoothingTimeConstant() const { return m_analyser.smoothingTimeConstant(); }
 
     void getFloatFrequencyData(std::vector<float>& array) { m_analyser.getFloatFrequencyData(array); }
     void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser.getByteFrequencyData(array); }
