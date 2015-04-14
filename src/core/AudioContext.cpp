@@ -108,6 +108,9 @@ void AudioContext::lazyInitialize()
 void AudioContext::clear()
 {
 	// Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
+    if (m_destinationNode)
+        m_destinationNode.reset();
+    
 	do
 	{
 		deleteMarkedNodes();
@@ -130,7 +133,6 @@ void AudioContext::uninitialize(ContextGraphLock& g)
 
 	m_referencedNodes.clear();
 	m_isInitialized = false;
-
 }
 
 bool AudioContext::isInitialized() const

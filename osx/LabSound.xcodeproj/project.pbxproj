@@ -348,7 +348,6 @@
 				082FDF2119C6004800046275 /* json11 */,
 				082FDF2019C6002C00046275 /* STK */,
 				08D67A061972E9860061116A /* kissfft */,
-				E2D5CF141A19B63E00B031C8 /* WTF */,
 			);
 			name = third_party;
 			sourceTree = "<group>";
@@ -626,13 +625,6 @@
 			);
 			name = include;
 			path = ../../include;
-			sourceTree = "<group>";
-		};
-		E2D5CF141A19B63E00B031C8 /* WTF */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = WTF;
 			sourceTree = "<group>";
 		};
 		E2FB873F183D20E100A5A764 /* LabSound */ = {
