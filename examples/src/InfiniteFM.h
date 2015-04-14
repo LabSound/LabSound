@@ -18,14 +18,14 @@ struct InfiniteFMApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Infinite FM");
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            modulator->setType(r, 0, ec);
+            modulator->setType(r, 0);
             modulator->start(0);
             
             modulatorGain = std::make_shared<GainNode>(context->sampleRate());
             modulatorGain ->gain()->setValue(4.0f);
             
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, 0, ec);
+            osc->setType(r, 0);
             osc->frequency()->setValue(220);
             osc->start(0);
             
@@ -33,9 +33,9 @@ struct InfiniteFMApp : public LabSoundExampleApp
             //trigger->set(10, 5, 30, 1, 20);
 
             // Set up processing chain
-            modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
-            modulatorGain->connect(g, osc->frequency(), 0, ec); // I don't think this works...
-            osc->connect(context.get(), context->destination().get(), 0, 0, ec);
+            modulator->connect(context.get(), modulatorGain.get(), 0, 0);
+            modulatorGain->connect(g, osc->frequency(), 0); // I don't think this works...
+            osc->connect(context.get(), context->destination().get(), 0, 0);
             
             // Shouldn't be needed... 
             context->addAutomaticPullNode(modulatorGain);

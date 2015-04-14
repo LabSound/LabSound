@@ -12,7 +12,7 @@ struct MicrophoneLoopbackApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Mic Loopback");
             
             input = context->createMediaStreamSource(g, r);
-            input->connect(context.get(), context->destination().get(), 0, 0, ec);
+            input->connect(context.get(), context->destination().get(), 0, 0);
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(10));

@@ -17,7 +17,6 @@
 
 struct LabSoundExampleApp
 {
-    ExceptionCode ec;
     virtual void PlayExample() = 0;
     
     float MidiToFrequency(int midiNote)

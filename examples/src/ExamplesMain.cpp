@@ -22,7 +22,7 @@ SimpleApp g_simpleExample;
 SimpleRecordingApp g_simpleRecordingExample;
 RhythmApp g_rhythm;
 RhythmAndFiltersApp g_rhythmAndFilters;
-PeakCompressorApp g_peakCompressor;
+PeakCompressorApp g_peakCompressor; // Broken
 MicrophoneDalekApp g_micrphoneDalek;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
@@ -32,6 +32,6 @@ InfiniteFMApp g_infiniteFM;
 
 int main (int argc, char *argv[])
 {
-    g_rhythm.PlayExample();
+    g_micrphoneDalek.PlayExample();
     return 0;
 }
