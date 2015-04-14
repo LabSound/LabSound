@@ -2,8 +2,6 @@
 #define _Internal_Config_Macros_
 
 #include <WTF/Platform.h>
-#include <WTF/ExportMacros.h>
-#include <WTF/PlatformExportMacros.h>
 
 #include "LabSound/extended/Logging.h"
 #include "internal/Assertions.h"

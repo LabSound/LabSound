@@ -106,6 +106,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		085F34DF1ADCD9B800FEADC5 /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../third_party/WTF/Compiler.h; sourceTree = "<group>"; };
+		085F34E01ADCD9B800FEADC5 /* CPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = ../third_party/WTF/CPU.h; sourceTree = "<group>"; };
+		085F34E11ADCD9B800FEADC5 /* MathExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
+		085F34E21ADCD9B800FEADC5 /* Platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../third_party/WTF/Platform.h; sourceTree = "<group>"; };
 		08650A221AD61FE800D19E38 /* Assertions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Assertions.h; path = ../src/internal/Assertions.h; sourceTree = "<group>"; };
 		08650A231AD61FE800D19E38 /* AudioBus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioBus.h; path = ../src/internal/AudioBus.h; sourceTree = "<group>"; };
 		08650A241AD61FE800D19E38 /* AudioChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioChannel.h; path = ../src/internal/AudioChannel.h; sourceTree = "<group>"; };
@@ -345,11 +349,23 @@
 		082FE01C19C6009400046275 /* third_party */ = {
 			isa = PBXGroup;
 			children = (
+				085F34DE1ADCD9AE00FEADC5 /* WTF */,
 				082FDF2119C6004800046275 /* json11 */,
 				082FDF2019C6002C00046275 /* STK */,
 				08D67A061972E9860061116A /* kissfft */,
 			);
 			name = third_party;
+			sourceTree = "<group>";
+		};
+		085F34DE1ADCD9AE00FEADC5 /* WTF */ = {
+			isa = PBXGroup;
+			children = (
+				085F34DF1ADCD9B800FEADC5 /* Compiler.h */,
+				085F34E01ADCD9B800FEADC5 /* CPU.h */,
+				085F34E11ADCD9B800FEADC5 /* MathExtras.h */,
+				085F34E21ADCD9B800FEADC5 /* Platform.h */,
+			);
+			name = WTF;
 			sourceTree = "<group>";
 		};
 		08650A001AD081DB00D19E38 /* Internal */ = {
