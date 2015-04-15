@@ -24,13 +24,23 @@ struct StereoPanningApp : public LabSoundExampleApp
             trainNode->setLooping(true);
             
             const int seconds = 8;
-            float halfTime = seconds * 0.5f;
-            for (float i = 0; i < seconds; i += 0.01f)
+            
+            std::thread controlThreadTest([&stereoPanner, seconds]()
             {
-                float x = (i - halfTime) / halfTime;
-                stereoPanner->pan()->setValue(x);
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
+
+                float halfTime = seconds * 0.5f;
+                for (float i = 0; i < seconds; i += 0.01f)
+                {
+                    float x = (i - halfTime) / halfTime;
+                    stereoPanner->pan()->setValue(x);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
+            });
+            
+            std::this_thread::sleep_for(std::chrono::seconds(seconds));
+            
+            controlThreadTest.join();
+
         }
         else
         {
