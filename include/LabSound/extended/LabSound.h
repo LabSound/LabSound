@@ -9,6 +9,7 @@
 // WebAudio Public API
 #include "LabSound/core/WaveShaperNode.h"
 #include "LabSound/core/PannerNode.h"
+#include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/AudioHardwareSourceNode.h"

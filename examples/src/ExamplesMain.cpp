@@ -16,6 +16,7 @@
 #include "Spatialization.h"
 #include "Validation.h"
 #include "InfiniteFM.h"
+#include "StereoPanning.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
 SimpleApp g_simpleExample;
@@ -29,9 +30,10 @@ MicrophoneReverbApp g_microphoneReverb;
 SpatializationApp g_spatialization;
 ValidationApp g_validation;
 InfiniteFMApp g_infiniteFM;
+StereoPanningApp g_stereoPanning;
 
 int main (int argc, char *argv[])
 {
-    g_spatialization.PlayExample();
+    g_stereoPanning.PlayExample();
     return 0;
 }

@@ -117,6 +117,7 @@ public:
         NodeTypeAudioBufferSource,
         NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
+        NodeTypeStereoPanner,
         NodeTypePanner,
         NodeTypeConvolver,
         NodeTypeDelay,
