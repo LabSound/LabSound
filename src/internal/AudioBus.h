@@ -68,8 +68,11 @@ public:
     unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
 
     AudioChannel* channel(unsigned channel) { return m_channels[channel].get(); }
+    
     const AudioChannel* channel(unsigned channel) const { return const_cast<AudioBus*>(this)->m_channels[channel].get(); }
+    
     AudioChannel* channelByType(unsigned type);
+    
     const AudioChannel* channelByType(unsigned type) const;
 
     // Number of sample-frames

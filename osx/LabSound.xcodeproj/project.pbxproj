@@ -101,6 +101,7 @@
 		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
 		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
 		08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFC1AD6249B00D19E38 /* fftsg.cpp */; };
+		08C25E841ADE1DB40097D572 /* StereoPannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -306,6 +307,8 @@
 		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
 		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
 		08650CFC1AD6249B00D19E38 /* fftsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fftsg.cpp; path = ../third_party/ooura/src/fftsg.cpp; sourceTree = "<group>"; };
+		08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StereoPannerNode.cpp; path = ../src/core/StereoPannerNode.cpp; sourceTree = SOURCE_ROOT; };
+		08C25E861ADE1DF50097D572 /* StereoPannerNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPannerNode.h; path = ../include/LabSound/core/StereoPannerNode.h; sourceTree = SOURCE_ROOT; };
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -426,6 +429,7 @@
 				08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */,
 				08650CB11AD623E300D19E38 /* OscillatorNode.h */,
 				08650CB21AD623E300D19E38 /* PannerNode.h */,
+				08C25E861ADE1DF50097D572 /* StereoPannerNode.h */,
 				08650CB31AD623E300D19E38 /* WaveShaperNode.h */,
 				08650CB41AD623E300D19E38 /* WaveTable.h */,
 				08650CB51AD623E300D19E38 /* WindowFunctions.h */,
@@ -464,6 +468,7 @@
 				08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */,
 				08650CD11AD6241A00D19E38 /* PannerNode.cpp */,
 				08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */,
+				08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */,
 				08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */,
 				08650CD41AD6241A00D19E38 /* WaveTable.cpp */,
 			);
@@ -759,6 +764,7 @@
 				08650C5E1AD6239000D19E38 /* RecorderNode.cpp in Sources */,
 				08650CEF1AD6241A00D19E38 /* OscillatorNode.cpp in Sources */,
 				08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */,
+				08C25E841ADE1DB40097D572 /* StereoPannerNode.cpp in Sources */,
 				08650BF51AD6225900D19E38 /* ReverbConvolverStage.cpp in Sources */,
 				08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */,
 				08650BF71AD6225900D19E38 /* SincResampler.cpp in Sources */,
