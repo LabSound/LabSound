@@ -32,6 +32,6 @@ InfiniteFMApp g_infiniteFM;
 
 int main (int argc, char *argv[])
 {
-    g_microphoneLoopback.PlayExample();
+    g_spatialization.PlayExample();
     return 0;
 }

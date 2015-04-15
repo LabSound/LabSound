@@ -48,7 +48,6 @@
 		08650BF91AD6225900D19E38 /* WaveShaperDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD01AD6225900D19E38 /* WaveShaperDSPKernel.cpp */; };
 		08650BFA1AD6225900D19E38 /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */; };
 		08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD21AD6225900D19E38 /* ZeroPole.cpp */; };
-		08650C011AD622A400D19E38 /* AudioBusMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFD1AD622A400D19E38 /* AudioBusMac.mm */; };
 		08650C021AD622A400D19E38 /* AudioDestinationMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */; };
 		08650C031AD622A400D19E38 /* AudioFileReaderMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFF1AD622A400D19E38 /* AudioFileReaderMac.cpp */; };
 		08650C041AD622A400D19E38 /* FFTFrameMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C001AD622A400D19E38 /* FFTFrameMac.cpp */; };
@@ -199,7 +198,6 @@
 		08650BD01AD6225900D19E38 /* WaveShaperDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperDSPKernel.cpp; path = ../src/internal/src/WaveShaperDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperProcessor.cpp; path = ../src/internal/src/WaveShaperProcessor.cpp; sourceTree = SOURCE_ROOT; };
 		08650BD21AD6225900D19E38 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZeroPole.cpp; path = ../src/internal/src/ZeroPole.cpp; sourceTree = SOURCE_ROOT; };
-		08650BFD1AD622A400D19E38 /* AudioBusMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioBusMac.mm; path = ../src/internal/src/mac/AudioBusMac.mm; sourceTree = SOURCE_ROOT; };
 		08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDestinationMac.cpp; path = ../src/internal/src/mac/AudioDestinationMac.cpp; sourceTree = SOURCE_ROOT; };
 		08650BFF1AD622A400D19E38 /* AudioFileReaderMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileReaderMac.cpp; path = ../src/internal/src/mac/AudioFileReaderMac.cpp; sourceTree = SOURCE_ROOT; };
 		08650C001AD622A400D19E38 /* FFTFrameMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameMac.cpp; path = ../src/internal/src/mac/FFTFrameMac.cpp; sourceTree = SOURCE_ROOT; };
@@ -531,7 +529,6 @@
 		08650BFC1AD6229B00D19E38 /* mac */ = {
 			isa = PBXGroup;
 			children = (
-				08650BFD1AD622A400D19E38 /* AudioBusMac.mm */,
 				08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */,
 				08650BFF1AD622A400D19E38 /* AudioFileReaderMac.cpp */,
 				08650C001AD622A400D19E38 /* FFTFrameMac.cpp */,
@@ -797,7 +794,6 @@
 				08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */,
 				08650BDC1AD6225900D19E38 /* Biquad.cpp in Sources */,
 				08650C571AD6239000D19E38 /* DiodeNode.cpp in Sources */,
-				08650C011AD622A400D19E38 /* AudioBusMac.mm in Sources */,
 				08650BE81AD6225900D19E38 /* FFTFrame.cpp in Sources */,
 				08650CF21AD6241A00D19E38 /* WaveShaperNode.cpp in Sources */,
 				08650CF01AD6241A00D19E38 /* PannerNode.cpp in Sources */,

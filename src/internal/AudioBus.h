@@ -29,6 +29,7 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
+#include "internal/ConfigMacros.h"
 #include "internal/AudioChannel.h"
 #include <vector>
 
@@ -98,7 +99,6 @@ public:
     // 0 may be returned if the range does not fit in the sourceBuffer
     static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame);
 
-
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
     // Note: sample-rate conversion is already handled in the file-reading code for the mac port, so we don't need this.
@@ -135,10 +135,9 @@ public:
     // Makes maximum absolute value == 1.0 (if possible).
     void normalize();
 
-    static std::unique_ptr<AudioBus> loadPlatformResource(const char* name, float sampleRate);
-
 protected:
-    AudioBus() { };
+    
+    AudioBus() {};
 
     size_t m_length;
     std::vector<std::unique_ptr<AudioChannel> > m_channels;
