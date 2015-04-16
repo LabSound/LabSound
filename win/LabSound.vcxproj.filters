@@ -318,12 +318,6 @@
     <ClInclude Include="..\include\LabSound\core\MediaStream.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\MediaStreamAudioDestinationNode.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\MediaStreamAudioSourceNode.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\core\OfflineAudioDestinationNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
@@ -378,11 +372,14 @@
     <ClInclude Include="..\include\LabSound\extended\Util.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioHardwareSourceNode.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\StereoPannerNode.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\internal\src\win\AudioBusWin.cpp">
-      <Filter>Internal\src\win</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
       <Filter>Internal\src\win</Filter>
     </ClCompile>
@@ -557,12 +554,6 @@
     <ClCompile Include="..\src\core\GainNode.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\core\MediaStreamAudioDestinationNode.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\MediaStreamAudioSourceNode.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\core\OfflineAudioDestinationNode.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
@@ -658,6 +649,12 @@
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp">
       <Filter>Internal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\AudioHardwareSourceNode.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\StereoPannerNode.cpp">
+      <Filter>LabSound\core\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
