@@ -38,11 +38,13 @@ using namespace std;
 
 namespace WebCore {
 
+const unsigned DefaultNumberOfOutputChannels = 1;
+
 ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
     : AudioNode(sampleRate)
+    , m_desiredNumberOfOutputChannels(DefaultNumberOfOutputChannels)
 {
-    if (numberOfInputs > AudioContext::maxNumberOfChannels)
-        numberOfInputs = AudioContext::maxNumberOfChannels;
+    numberOfInputs = std::max(1U, std::min(numberOfInputs, AudioContext::maxNumberOfChannels));
     
     // Create the requested number of inputs.
     for (unsigned i = 0; i < numberOfInputs; ++i)
@@ -59,6 +61,12 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     auto output = this->output(0);
     ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
+
+    // Output bus not updated yet, so just output silence. See Note * in checkNumberOfChannelsForInput
+    if (m_desiredNumberOfOutputChannels != output->numberOfChannels()) {
+        output->bus(r)->zero();
+        return;
+    }
     
     // Merge all the channels from all the inputs into one output.
     unsigned outputChannelIndex = 0;
@@ -101,6 +109,11 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     // Set the correct number of channels on the output
     auto output = this->output(0);
     output->setNumberOfChannels(r, numberOfOutputChannels);
+    // Note * There can in rare cases be a slight delay before the output bus is updated to the new number of
+    // channels because of tryLocks() in the context's updating system. So record the new number of
+    // output channels here.
+    m_desiredNumberOfOutputChannels = numberOfOutputChannels;
+
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 

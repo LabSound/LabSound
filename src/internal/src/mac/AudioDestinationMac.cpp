@@ -187,7 +187,7 @@ public:
 };
 //LabSound end
 
-AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, float sampleRate)
+AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, unsigned numberOfOutputChannels, float sampleRate)
 {
     return new AudioDestinationMac(callback, sampleRate);
 }
@@ -218,6 +218,15 @@ float AudioDestination::hardwareSampleRate()
     return narrowPrecisionToFloat(nominalSampleRate);
 }
 
+unsigned long AudioDestination::maxChannelCount()
+{
+    // FIXME: query the default audio hardware device to return the actual number
+    // of channels of the device. Also see corresponding FIXME in create().
+    // There is a small amount of code which assumes stereo in AudioDestinationMac which
+    // can be upgraded.
+    return 0;
+}
+    
 AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, float sampleRate)
     : m_outputUnit(0)
     , m_callback(callback)
@@ -269,12 +278,12 @@ void AudioDestinationMac::configure()
     AudioStreamBasicDescription streamFormat;
     streamFormat.mSampleRate = m_sampleRate;
     streamFormat.mFormatID = kAudioFormatLinearPCM;
-    streamFormat.mFormatFlags = kAudioFormatFlagsCanonical | kAudioFormatFlagIsNonInterleaved;
-    streamFormat.mBitsPerChannel = 8 * sizeof(AudioSampleType);
+    streamFormat.mFormatFlags = kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
+    streamFormat.mBitsPerChannel = 8 * sizeof(Float32);
     streamFormat.mChannelsPerFrame = 2;
     streamFormat.mFramesPerPacket = 1;
-    streamFormat.mBytesPerPacket = sizeof(AudioSampleType);
-    streamFormat.mBytesPerFrame = sizeof(AudioSampleType);
+    streamFormat.mBytesPerPacket = sizeof(Float32);
+    streamFormat.mBytesPerFrame = sizeof(Float32);
 
     result = AudioUnitSetProperty(m_outputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, (void*)&streamFormat, sizeof(AudioStreamBasicDescription));
     ASSERT(!result);

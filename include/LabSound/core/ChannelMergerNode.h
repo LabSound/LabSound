@@ -50,6 +50,8 @@ public:
 private:
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }
+    
+    unsigned m_desiredNumberOfOutputChannels;
 };
 
 } // namespace WebCore

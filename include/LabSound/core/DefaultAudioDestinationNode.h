@@ -36,6 +36,8 @@ class DefaultAudioDestinationNode : public AudioDestinationNode
 {
 	std::unique_ptr<AudioDestination> m_destination;
 
+    void createDestination();
+    
 public:
 
     explicit DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
@@ -44,6 +46,9 @@ public:
     virtual void initialize();
     virtual void uninitialize();
     virtual void startRendering();
+    
+    unsigned maxChannelCount() const;
+    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&) override;
 };
 
 } // namespace WebCore

@@ -206,7 +206,7 @@ public:
     void unsilenceOutputs(ContextRenderLock&);
 
     unsigned long channelCount();
-    void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&);
+    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec);

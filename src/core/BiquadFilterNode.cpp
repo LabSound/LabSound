@@ -83,8 +83,7 @@ std::shared_ptr<AudioParam> BiquadFilterNode::q()
 { 
 	return biquadProcessor()->parameter2(); 
 }
-std
-::shared_ptr<AudioParam> BiquadFilterNode::gain() 
+std::shared_ptr<AudioParam> BiquadFilterNode::gain() 
 { 
 	return biquadProcessor()->parameter3(); 
 }

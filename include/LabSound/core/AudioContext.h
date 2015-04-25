@@ -59,7 +59,7 @@ public:
 
 	// This is considering 32 is large enough for multiple channels audio.
 	// It is somewhat arbitrary and could be increased if necessary.
-	static const int maxNumberOfChannels = 32;
+	static const unsigned maxNumberOfChannels = 32;
 
 	const char * m_graphLocker;
 	const char * m_renderLocker;

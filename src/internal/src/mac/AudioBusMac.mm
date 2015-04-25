@@ -29,38 +29,40 @@
 
 namespace WebCore {
 
+    
 std::unique_ptr<AudioBus> AudioBus::loadPlatformResource(const char* name, float sampleRate)
 {
-
-    NSBundle *bundle = [NSBundle mainBundle];
-    /// @LabSound changed audio to HRTF
-    NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"hrtf"];
-
-    /// @LabSound added read from $(CWD)/HRTF directory if bundle asset not available
-    if (!audioFileURL) {
-        NSString *path = [NSString stringWithFormat:@"hrtf/%s.wav", name];
-        audioFileURL = [NSURL fileURLWithPath:path];
-    }
-    
-    if (!audioFileURL) {
+    @autoreleasepool {
+        NSBundle *bundle = [NSBundle mainBundle];
+        /// @LabSound changed audio to HRTF
+        NSURL *audioFileURL = [bundle URLForResource:[NSString stringWithUTF8String:name] withExtension:@"wav" subdirectory:@"hrtf"];
+        
+        /// @LabSound added read from $(CWD)/HRTF directory if bundle asset not available
+        if (!audioFileURL) {
+            NSString *path = [NSString stringWithFormat:@"hrtf/%s.wav", name];
+            audioFileURL = [NSURL fileURLWithPath:path];
+        }
+        
+        if (!audioFileURL) {
+            return nullptr;
+        }
+        
+        NSDataReadingOptions options = NSDataReadingMappedIfSafe;
+        NSData *audioData = 0;
+        
+        @try {  // @LabSound added try/catch
+            audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
+        }
+        @catch(NSException *exc) {
+            return nullptr;
+        }
+        
+        if (audioData) {
+            return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile([audioData bytes], [audioData length], false, sampleRate));
+        }
+        
         return nullptr;
     }
-    
-    NSDataReadingOptions options = NSDataReadingMappedIfSafe;
-    NSData *audioData = 0;
-
-    @try {  // @LabSound added try/catch
-        audioData = [NSData dataWithContentsOfURL:audioFileURL options:options error:nil];
-    }
-    @catch(NSException *exc) {
-        return nullptr;
-    }
-
-    if (audioData) {
-        return std::unique_ptr<AudioBus>(createBusFromInMemoryAudioFile([audioData bytes], [audioData length], false, sampleRate));
-    }
-
-    return nullptr;
 }
 
 } // namespace WebCore

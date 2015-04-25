@@ -39,11 +39,6 @@
 namespace WebCore 
 {
     
-    namespace 
-	{
-        std::mutex paramMutex;
-    }
-
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
@@ -177,8 +172,6 @@ void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param,
     if (!output)
         return;
     
-    std::lock_guard<std::mutex> lock(paramMutex);
-    
     if (param->isConnected(output))
         return;
     
@@ -190,8 +183,6 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
 {
     if (!output)
         return;
-    
-    std::lock_guard<std::mutex> lock(paramMutex);
     
     if (param->isConnected(output)) {
         param->junctionDisconnectOutput(output);

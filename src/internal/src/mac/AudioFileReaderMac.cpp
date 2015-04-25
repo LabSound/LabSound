@@ -158,12 +158,12 @@ std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixT
     m_clientDataFormat = m_fileDataFormat;
 
     m_clientDataFormat.mFormatID = kAudioFormatLinearPCM;
-    m_clientDataFormat.mFormatFlags = kAudioFormatFlagsCanonical;
-    m_clientDataFormat.mBitsPerChannel = 8 * sizeof(AudioSampleType);
+    m_clientDataFormat.mFormatFlags = kAudioFormatFlagsNativeFloatPacked;
+    m_clientDataFormat.mBitsPerChannel = 8 * sizeof(Float32);
     m_clientDataFormat.mChannelsPerFrame = numberOfChannels;
     m_clientDataFormat.mFramesPerPacket = 1;
-    m_clientDataFormat.mBytesPerPacket = sizeof(AudioSampleType);
-    m_clientDataFormat.mBytesPerFrame = sizeof(AudioSampleType);
+    m_clientDataFormat.mBytesPerPacket = sizeof(Float32);
+    m_clientDataFormat.mBytesPerFrame = sizeof(Float32);
     m_clientDataFormat.mFormatFlags |= kAudioFormatFlagIsNonInterleaved;
 
     if (sampleRate)

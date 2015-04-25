@@ -44,7 +44,7 @@ public:
     virtual void uninitialize();
 
     // Impulse responses
-    void setBuffer(std::shared_ptr<AudioBuffer>);
+    void setBuffer(ContextGraphLock&, std::shared_ptr<AudioBuffer>);
     std::shared_ptr<AudioBuffer> buffer();
 
     bool normalize() const { return m_normalize; }

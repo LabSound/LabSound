@@ -53,16 +53,15 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
                                                     size_t& quantumFrameOffset,
                                                     size_t& nonSilentFramesToProcess)
 {
-    ASSERT(outputBus);
     if (!outputBus)
         return;
 
-    ASSERT(quantumFrameSize == AudioNode::ProcessingSizeInFrames);
     if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
         return;
 
-    AudioContext* ac = r.context();
-    ASSERT(ac);
+    AudioContext* context = r.context();
+    if (!context)
+        return;
     
     double sampleRate = this->sampleRate();
     
@@ -70,7 +69,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
     // endFrame              : End frame for this source.
-    size_t quantumStartFrame = ac->currentSampleFrame();
+    size_t quantumStartFrame = context->currentSampleFrame();
     size_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
     size_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
     size_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
@@ -90,11 +89,11 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (m_playbackState == SCHEDULED_STATE) {
         // Increment the active source count only if we're transitioning from SCHEDULED_STATE to PLAYING_STATE.
         m_playbackState = PLAYING_STATE;
-        ac->incrementActiveSourceCount();
+        context->incrementActiveSourceCount();
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
-    quantumFrameOffset = min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
+    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
 
     if (!nonSilentFramesToProcess) {
@@ -144,7 +143,7 @@ void AudioScheduledSourceNode::start(double when)
     if (!std::isfinite(when) || (when < 0)) {
         return;
     }
-    
+
     m_startTime = when;
     m_playbackState = SCHEDULED_STATE;
 }
@@ -152,6 +151,9 @@ void AudioScheduledSourceNode::start(double when)
 void AudioScheduledSourceNode::stop(double when)
 {
     if (!(m_playbackState == SCHEDULED_STATE || m_playbackState == PLAYING_STATE))
+        return;
+    
+    if (!std::isfinite(when))
         return;
     
     when = max(0.0, when);

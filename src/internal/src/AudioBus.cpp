@@ -174,9 +174,8 @@ std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* source
     std::unique_ptr<AudioBus> audioBus(new AudioBus(numberOfChannels, rangeLength));
     audioBus->setSampleRate(sourceBuffer->sampleRate());
 
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
         audioBus->channel(i)->copyFromRange(sourceBuffer->channel(i), startFrame, endFrame);
-    }
 
     return audioBus;
 }
@@ -216,9 +215,8 @@ void AudioBus::copyFrom(const AudioBus& sourceBus, ChannelInterpretation channel
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) {
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i) {
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
             channel(i)->copyFrom(sourceBus.channel(i));
-        }
     } else {
         switch (channelInterpretation) {
             case ChannelInterpretation::Speakers:
@@ -235,13 +233,15 @@ void AudioBus::copyFrom(const AudioBus& sourceBus, ChannelInterpretation channel
 
 void AudioBus::sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation)
 {
+    if (&sourceBus == this)
+        return;
+    
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) {
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i) {
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
             channel(i)->sumFrom(sourceBus.channel(i));
-        }
     } else {
         switch (channelInterpretation) {
             case ChannelInterpretation::Speakers:
@@ -374,9 +374,8 @@ void AudioBus::discreteCopyFrom(const AudioBus& sourceBus)
     
     if (numberOfDestinationChannels < numberOfSourceChannels) {
         // Down-mix by copying channels and dropping the remaining.
-        for (unsigned i = 0; i < numberOfDestinationChannels; ++i) {
+        for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
             channel(i)->copyFrom(sourceBus.channel(i));
-        }
     } else if (numberOfDestinationChannels > numberOfSourceChannels) {
         // Up-mix by copying as many channels as we have, then zeroing remaining channels.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i)
@@ -390,7 +389,7 @@ void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
 {
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
-    
+
     if (numberOfDestinationChannels < numberOfSourceChannels) {
         // Down-mix by summing channels and dropping the remaining.
         for (unsigned i = 0; i < numberOfDestinationChannels; ++i) 

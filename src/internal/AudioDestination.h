@@ -38,7 +38,9 @@ class AudioIOCallback;
 // It optionally will pass in local/live audio input when it calls render().
 struct AudioDestination
 {
-    static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, float sampleRate);
+    /// @TODO - web audio puts the input initialization on the destination as well. I'm not sure that makes sense.
+    ///
+    static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, unsigned numberOfOutputChannels, float sampleRate);
 
     virtual ~AudioDestination() { }
 
@@ -49,6 +51,14 @@ struct AudioDestination
     // Sample-rate conversion may happen in AudioDestination to the hardware sample-rate
     virtual float sampleRate() const = 0;
     static float hardwareSampleRate();
+
+    // maxChannelCount() returns the total number of output channels of the audio hardware.
+    // A value of 0 indicates that the number of channels cannot be configured and
+    // that only stereo (2-channel) destinations can be created.
+    // The numberOfOutputChannels parameter of AudioDestination::create() is allowed to
+    // be a value: 1 <= numberOfOutputChannels <= maxChannelCount(),
+    // or if maxChannelCount() equals 0, then numberOfOutputChannels must be 2.
+    static unsigned long maxChannelCount();
 };
 
 } // namespace WebCore

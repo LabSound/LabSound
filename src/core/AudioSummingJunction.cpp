@@ -130,10 +130,10 @@ void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
                 m_renderingOutputs.push_back(*i);
                 i->lock()->updateRenderingState(r);
             }
+
+        didUpdate(r);
+        m_renderingStateNeedUpdating = false;
     }
-    
-    didUpdate(r);
-    m_renderingStateNeedUpdating = false;
 }
 
 } // namespace WebCore

@@ -28,6 +28,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBuffer.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioBus.h"
@@ -115,9 +116,9 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setBuffer(ContextGraphLock& g, std::shared_ptr<AudioBuffer> buffer)
 {
-    if (!buffer)
+    if (!buffer || !g.context())
         return;
 
     unsigned numberOfChannels = buffer->numberOfChannels();

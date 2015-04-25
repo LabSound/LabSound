@@ -112,11 +112,11 @@ public:
     void reset() { m_isFirstTime = true; } // for de-zippering
 
     // Assuming sourceBus has the same topology, copies sample data from each channel of sourceBus to our corresponding channel.
-    void copyFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation = ChannelInterpretation::Speakers);
+    void copyFrom(const AudioBus &sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
 
     // Sums the sourceBus into our bus with unity gain.
     // Our own internal gain m_busGain is ignored.
-    void sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation = ChannelInterpretation::Speakers);
+    void sumFrom(const AudioBus &sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
 
     // Copy each channel from sourceBus into our corresponding channel.
     // We scale by targetGain (and our own internal gain m_busGain), performing "de-zippering" to smoothly change from *lastMixGain to (targetGain*m_busGain).
