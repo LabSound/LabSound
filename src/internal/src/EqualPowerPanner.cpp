@@ -25,6 +25,7 @@
 #include "internal/EqualPowerPanner.h"
 #include "internal/AudioBus.h"
 #include "internal/AudioUtilities.h"
+#include "LabSound/core/Mixing.h"
 
 #include <algorithm>
 #include <wtf/MathExtras.h>
@@ -60,10 +61,10 @@ void EqualPowerPanner::pan(ContextRenderLock&,
     if (!isOutputSafe)
         return;
 
-    const float* sourceL = inputBus->channel(0)->data();                               
-    const float* sourceR = numberOfInputChannels > 1 ? inputBus->channel(1)->data() : sourceL;
-    float* destinationL = outputBus->channelByType(AudioBus::ChannelLeft)->mutableData();
-    float* destinationR = outputBus->channelByType(AudioBus::ChannelRight)->mutableData();
+    const float* sourceL = inputBus->channelByType(Channel::Left)->data();
+    const float* sourceR = numberOfInputChannels > 1 ? inputBus->channelByType(Channel::Right)->data() : sourceL;
+    float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+    float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
     
     if (!sourceL || !sourceR || !destinationL || !destinationR)
         return;

@@ -68,7 +68,8 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
 
     // For each channel of our input, process using the corresponding WaveShaperDSPKernel into the output channel.
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+        m_kernels[i]->process(r, source->channel(i)->data(),
+                                 destination->channel(i)->mutableData(), framesToProcess);
 }
 
 

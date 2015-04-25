@@ -59,15 +59,15 @@ namespace LabSound
                 else
                     m_zeroSteps = 0;
                 
-                m_attackTimeTarget = m_noteOnTime + m_attackTime->value(c);
+                m_attackTimeTarget = m_noteOnTime + m_attackTime->value(r);
                 
-                m_attackSteps = m_attackTime->value(c) * sampleRate();
-                m_attackStepSize = m_attackLevel->value(c) / m_attackSteps;
+                m_attackSteps = m_attackTime->value(r) * sampleRate();
+                m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
                 
-                m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(c);
+                m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
                 
-                m_decaySteps = m_decayTime->value(c) * sampleRate();
-                m_decayStepSize = (m_sustainLevel->value(c) - m_attackLevel->value(c)) / m_decaySteps;
+                m_decaySteps = m_decayTime->value(r) * sampleRate();
+                m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
                 
                 m_releaseSteps = 0;
                 
@@ -76,14 +76,14 @@ namespace LabSound
             }
             
             // We handle both the 1 -> N and N -> N case here.
-            const float* source = sourceBus->channel(0)->data();
+            const float* source = sourceBus->channelByType(Channel::First)->data();
 
             // this will only ever happen once, so if heap contention is an issue it should only ever cause one glitch
             // what would be better, alloca? What does webaudio do elsewhere for this sort of thing?
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
-            float s = m_sustainLevel->value(c);
+            float s = m_sustainLevel->value(r);
 
             for (size_t i = 0; i < framesToProcess; ++i)
             {
@@ -148,13 +148,11 @@ namespace LabSound
             // note off at any time except while a note is on, has no effect
             m_noteOnTime = -1.;
             
-            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
-            
             if (m_noteOffTime == std::numeric_limits<double>::max())
             {
-                m_noteOffTime = now + m_releaseTime->value(c);
-                m_releaseSteps = m_releaseTime->value(c) * sampleRate();
-                m_releaseStepSize = -m_sustainLevel->value(c) / m_releaseSteps;
+                m_noteOffTime = now + m_releaseTime->value(r);
+                m_releaseSteps = m_releaseTime->value(r) * sampleRate();
+                m_releaseStepSize = -m_sustainLevel->value(r) / m_releaseSteps;
             }
         }
 

@@ -29,32 +29,27 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
+#include "LabSound/core/Mixing.h"
 #include "internal/AudioChannel.h"
 #include <vector>
 
 namespace WebCore {
 
+    using LabSound::ChannelInterpretation;
+    using LabSound::Channel;
+    
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".
 // An AudioBus with one channel is mono, an AudioBus with two channels is stereo, etc.
 class AudioBus {
     AudioBus(const AudioBus&);  // noncopyable
 public:
-    enum {
-        ChannelLeft = 0,
-        ChannelRight = 1,
-        ChannelCenter = 2, // center and mono are the same
-        ChannelMono = 2,
-        ChannelLFE = 3,
-        ChannelSurroundLeft = 4,
-        ChannelSurroundRight = 5,
-    };
 
     enum {
         LayoutCanonical = 0
         // Can define non-standard layouts here
     };
-
+    
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
     // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
     // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
@@ -66,10 +61,14 @@ public:
     // Channels
     unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
 
-    AudioChannel* channel(unsigned channel) { return m_channels[channel].get(); }
-    const AudioChannel* channel(unsigned channel) const { return const_cast<AudioBus*>(this)->m_channels[channel].get(); }
-    AudioChannel* channelByType(unsigned type);
-    const AudioChannel* channelByType(unsigned type) const;
+    // Use this when looping over channels
+    AudioChannel* channel(int channel) { return m_channels[channel].get(); }
+    const AudioChannel* channel(int channel) const {
+        return const_cast<AudioBus*>(this)->m_channels[channel].get(); }
+    
+    // use this when accessing channels semantically
+    AudioChannel* channelByType(Channel type);
+    const AudioChannel* channelByType(Channel type) const;
 
     // Number of sample-frames
     size_t length() const { return m_length; }
@@ -98,7 +97,6 @@ public:
     // 0 may be returned if the range does not fit in the sourceBuffer
     static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame);
 
-
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
     // Note: sample-rate conversion is already handled in the file-reading code for the mac port, so we don't need this.
@@ -114,11 +112,11 @@ public:
     void reset() { m_isFirstTime = true; } // for de-zippering
 
     // Assuming sourceBus has the same topology, copies sample data from each channel of sourceBus to our corresponding channel.
-    void copyFrom(const AudioBus &sourceBus);
+    void copyFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation = ChannelInterpretation::Speakers);
 
     // Sums the sourceBus into our bus with unity gain.
     // Our own internal gain m_busGain is ignored.
-    void sumFrom(const AudioBus &sourceBus);
+    void sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation = ChannelInterpretation::Speakers);
 
     // Copy each channel from sourceBus into our corresponding channel.
     // We scale by targetGain (and our own internal gain m_busGain), performing "de-zippering" to smoothly change from *lastMixGain to (targetGain*m_busGain).
@@ -138,8 +136,14 @@ public:
     static std::unique_ptr<AudioBus> loadPlatformResource(const char* name, float sampleRate);
 
 protected:
-    AudioBus() { };
+    AudioBus() {}
 
+    void speakersCopyFrom(const AudioBus&);
+    void discreteCopyFrom(const AudioBus&);
+    void speakersSumFrom(const AudioBus&);
+    void discreteSumFrom(const AudioBus&);
+    void speakersSumFrom5_1_ToMono(const AudioBus&);
+    
     size_t m_length;
     std::vector<std::unique_ptr<AudioChannel> > m_channels;
     int m_layout;

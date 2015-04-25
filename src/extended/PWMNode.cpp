@@ -40,8 +40,8 @@ namespace LabSound {
             if (!numberOfChannels())
                 return;
             
-            const float* carrierP = source->channel(0)->data();
-            const float* modP = source->channel(1)->data();
+            const float* carrierP = source->channelByType(Channel::Left)->data();
+            const float* modP = source->channelByType(Channel::Right)->data();
 
             if (!modP && carrierP) 
 			{

@@ -67,6 +67,11 @@ PannerNode::PannerNode(float sampleRate)
     m_position = FloatPoint3D(0, 0, 0);
     m_orientation = FloatPoint3D(1, 0, 0);
     m_velocity = FloatPoint3D(0, 0, 0);
+
+    // Node-specific default mixing rules.
+    m_channelCount = 2;
+    m_channelCountMode = ChannelCountMode::ClampedMax;
+    m_channelInterpretation = ChannelInterpretation::Speakers;
     
     setNodeType(NodeTypePanner);
 
@@ -130,7 +135,7 @@ void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
     destination->copyWithGainFrom(*destination, &m_lastGain, totalGain);
 }
 
-void PannerNode::reset(std::shared_ptr<AudioContext>)
+void PannerNode::reset(ContextRenderLock&)
 {
     m_lastGain = -1.0; // force to snap to initial gain
     if (m_panner.get())

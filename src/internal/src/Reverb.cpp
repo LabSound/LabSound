@@ -149,8 +149,8 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         return;
     }
 
-    AudioChannel* destinationChannelL = destinationBus->channel(0);
-    const AudioChannel* sourceChannelL = sourceBus->channel(0);
+    AudioChannel* destinationChannelL = destinationBus->channelByType(Channel::Left);
+    const AudioChannel* sourceChannelL = sourceBus->channelByType(Channel::Left);
 
     // Handle input -> output matrixing...
     size_t numInputChannels = sourceBus->numberOfChannels();
@@ -159,16 +159,16 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
 
     if (numInputChannels == 2 && numReverbChannels == 2 && numOutputChannels == 2) {
         // 2 -> 2 -> 2
-        const AudioChannel* sourceChannelR = sourceBus->channel(1);
-        AudioChannel* destinationChannelR = destinationBus->channel(1);
+        const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
+        AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
         m_convolvers[1]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
     } else if (numInputChannels == 2 && numReverbChannels == 1 && numOutputChannels == 2) {
         // LabSound added this case, should submit it back to WebKit after it's known to work correctly
         // because the initialize method says that a mono-IR is expected to work with a stero in/out setup
         // 2 -> 1 -> 2
-        const AudioChannel* sourceChannelR = sourceBus->channel(1);
-        AudioChannel* destinationChannelR = destinationBus->channel(1);
+        const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
+        AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
         m_convolvers[0]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
     } else  if (numInputChannels == 1 && numOutputChannels == 2 && numReverbChannels == 2) {
@@ -182,7 +182,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
 
         // simply copy L -> R
-        AudioChannel* destinationChannelR = destinationBus->channel(1);
+        AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
         bool isCopySafe = destinationChannelL->data() && destinationChannelR->data() && destinationChannelL->length() >= framesToProcess && destinationChannelR->length() >= framesToProcess;
         ASSERT(isCopySafe);
         if (!isCopySafe)
@@ -193,11 +193,11 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
     } else if (numInputChannels == 2 && numReverbChannels == 4 && numOutputChannels == 2) {
         // 2 -> 4 -> 2 ("True" stereo)
-        const AudioChannel* sourceChannelR = sourceBus->channel(1);
-        AudioChannel* destinationChannelR = destinationBus->channel(1);
+        const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
+        AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
 
-        AudioChannel* tempChannelL = m_tempBuffer->channel(0);
-        AudioChannel* tempChannelR = m_tempBuffer->channel(1);
+        AudioChannel* tempChannelL = m_tempBuffer->channelByType(Channel::Left);
+        AudioChannel* tempChannelR = m_tempBuffer->channelByType(Channel::Right);
 
         // Process left virtual source
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
@@ -211,10 +211,10 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
     } else if (numInputChannels == 1 && numReverbChannels == 4 && numOutputChannels == 2) {
         // 1 -> 4 -> 2 (Processing mono with "True" stereo impulse response)
         // This is an inefficient use of a four-channel impulse response, but we should handle the case.
-        AudioChannel* destinationChannelR = destinationBus->channel(1);
+        AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
 
-        AudioChannel* tempChannelL = m_tempBuffer->channel(0);
-        AudioChannel* tempChannelR = m_tempBuffer->channel(1);
+        AudioChannel* tempChannelL = m_tempBuffer->channelByType(Channel::Left);
+        AudioChannel* tempChannelR = m_tempBuffer->channelByType(Channel::Right);
 
         // Process left virtual source
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);

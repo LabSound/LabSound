@@ -56,10 +56,10 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
             gain = biquadProcessor()->parameter3()->smoothedValue();
             detune = biquadProcessor()->parameter4()->smoothedValue();
         } else {
-            value1 = biquadProcessor()->parameter1()->value(r.contextPtr());
-            value2 = biquadProcessor()->parameter2()->value(r.contextPtr());
-            gain = biquadProcessor()->parameter3()->value(r.contextPtr());
-            detune = biquadProcessor()->parameter4()->value(r.contextPtr());
+            value1 = biquadProcessor()->parameter1()->value(r);
+            value2 = biquadProcessor()->parameter2()->value(r);
+            gain = biquadProcessor()->parameter3()->value(r);
+            detune = biquadProcessor()->parameter4()->value(r);
         }
 
         // Convert from Hertz to normalized frequency 0 -> 1.

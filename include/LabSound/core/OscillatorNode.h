@@ -53,7 +53,7 @@ public:
     
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(std::shared_ptr<AudioContext>) override;
+    virtual void reset(ContextRenderLock&) override;
 
     unsigned short type() const { return m_type; }
     void setType(ContextRenderLock& r, unsigned short, ExceptionCode&);
@@ -64,6 +64,8 @@ public:
     void setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable>);
 
 private:
+    void setType(bool isConstructor, unsigned short, ExceptionCode&);
+    void setWaveTable(bool isConstructor, std::shared_ptr<WaveTable>);
 
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&, size_t framesToProcess);

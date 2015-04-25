@@ -86,52 +86,52 @@ void AudioBus::zero()
         m_channels[i]->zero();
 }
 
-AudioChannel* AudioBus::channelByType(unsigned channelType)
+AudioChannel* AudioBus::channelByType(Channel channelType)
 {
     // For now we only support canonical channel layouts...
     if (m_layout != LayoutCanonical)
         return 0;
-
+    
     switch (numberOfChannels()) {
     case 1: // mono
-        if (channelType == ChannelMono || channelType == ChannelLeft)
-            return channel(0);
+        if (channelType == Channel::Mono || channelType == Channel::Left || channelType == Channel::First)
+            return channel(static_cast<int>(Channel::Left));
         return 0;
 
     case 2: // stereo
         switch (channelType) {
-        case ChannelLeft: return channel(0);
-        case ChannelRight: return channel(1);
+        case Channel::Left:
+        case Channel::Right: return channel(static_cast<int>(channelType));
         default: return 0;
         }
 
     case 4: // quad
         switch (channelType) {
-        case ChannelLeft: return channel(0);
-        case ChannelRight: return channel(1);
-        case ChannelSurroundLeft: return channel(2);
-        case ChannelSurroundRight: return channel(3);
+        case Channel::Left:
+        case Channel::Right:
+        case Channel::SurroundLeft:
+        case Channel::SurroundRight: return channel(static_cast<int>(channelType));
         default: return 0;
         }
 
     case 5: // 5.0
         switch (channelType) {
-        case ChannelLeft: return channel(0);
-        case ChannelRight: return channel(1);
-        case ChannelCenter: return channel(2);
-        case ChannelSurroundLeft: return channel(3);
-        case ChannelSurroundRight: return channel(4);
+        case Channel::Left:
+        case Channel::Right:
+        case Channel::Center:
+        case Channel::SurroundLeft:
+        case Channel::SurroundRight: return channel(static_cast<int>(channelType));
         default: return 0;
         }
 
     case 6: // 5.1
         switch (channelType) {
-        case ChannelLeft: return channel(0);
-        case ChannelRight: return channel(1);
-        case ChannelCenter: return channel(2);
-        case ChannelLFE: return channel(3);
-        case ChannelSurroundLeft: return channel(4);
-        case ChannelSurroundRight: return channel(5);
+        case Channel::Left:
+        case Channel::Right:
+        case Channel::Center:
+        case Channel::LFE:
+        case Channel::SurroundLeft:
+        case Channel::SurroundRight: return channel(static_cast<int>(channelType));
         default: return 0;
         }
     }
@@ -140,7 +140,7 @@ AudioChannel* AudioBus::channelByType(unsigned channelType)
     return 0;
 }
 
-const AudioChannel* AudioBus::channelByType(unsigned type) const
+const AudioChannel* AudioBus::channelByType(Channel type) const
 {
     return const_cast<AudioBus*>(this)->channelByType(type);
 }
@@ -174,8 +174,9 @@ std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* source
     std::unique_ptr<AudioBus> audioBus(new AudioBus(numberOfChannels, rangeLength));
     audioBus->setSampleRate(sourceBuffer->sampleRate());
 
-    for (unsigned i = 0; i < numberOfChannels; ++i)
+    for (unsigned i = 0; i < numberOfChannels; ++i) {
         audioBus->channel(i)->copyFromRange(sourceBuffer->channel(i), startFrame, endFrame);
+    }
 
     return audioBus;
 }
@@ -184,8 +185,7 @@ float AudioBus::maxAbsValue() const
 {
     float max = 0.0f;
     for (unsigned i = 0; i < numberOfChannels(); ++i) {
-        const AudioChannel* channel = this->channel(i);
-        max = std::max(max, channel->maxAbsValue());
+        max = std::max(max, channel(i)->maxAbsValue());
     }
 
     return max;
@@ -207,7 +207,7 @@ void AudioBus::scale(float scale)
 // Just copies the samples from the source bus to this one.
 // This is just a simple copy if the number of channels match, otherwise a mixup or mixdown is done.
 // For now, we just support mixup from mono -> stereo and mixdown from stereo -> mono.
-void AudioBus::copyFrom(const AudioBus& sourceBus)
+void AudioBus::copyFrom(const AudioBus& sourceBus, ChannelInterpretation channelInterpretation)
 {
     if (&sourceBus == this)
         return;
@@ -216,104 +216,189 @@ void AudioBus::copyFrom(const AudioBus& sourceBus)
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) {
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i) {
             channel(i)->copyFrom(sourceBus.channel(i));
-    } else if (numberOfDestinationChannels == 2 && numberOfSourceChannels == 1) {
-        // Handle mono -> stereo case (for now simply copy mono channel into both left and right)
-        // FIXME: Really we should apply an equal-power scaling factor here, since we're effectively panning center...
-        const AudioChannel* sourceChannel = sourceBus.channel(0);
-        channel(0)->copyFrom(sourceChannel);
-        channel(1)->copyFrom(sourceChannel);
-    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 2) {
-        // Handle stereo -> mono case. output = 0.5 * (input.L + input.R).
-        AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
-
-        const float* sourceL = sourceBusSafe.channelByType(ChannelLeft)->data();
-        const float* sourceR = sourceBusSafe.channelByType(ChannelRight)->data();
-
-        float* destination = channelByType(ChannelLeft)->mutableData();
-        vadd(sourceL, 1, sourceR, 1, destination, 1, length());
-        float scale = 0.5;
-        vsmul(destination, 1, &scale, destination, 1, length());
-    } else if (numberOfDestinationChannels == 6 && numberOfSourceChannels == 1) {
-        // Handle mono -> 5.1 case, copy mono channel to center. 
-        channel(2)->copyFrom(sourceBus.channel(0));
-        channel(0)->zero();
-        channel(1)->zero();
-        channel(3)->zero();
-        channel(4)->zero();
-        channel(5)->zero();
-    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 6) {
-        // Handle 5.1 -> mono case, copy center channel into mono.
-        // FIXME: We should have a better algorithm for this down mixing.
-        channel(0)->copyFrom(sourceBus.channel(2));
-    } else if (numberOfDestinationChannels < numberOfSourceChannels) {
-        // Default down mixing handling, just match the source channels with the first available destination channels. 
-        // 5.1 -> stereo case covered here. 
-        // FIXME: We should have a better algorithm for down mixing 5.1 to stereo.
-        // https://bugs.webkit.org/show_bug.cgi?id=79192
-        for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
-            channel(i)->copyFrom(sourceBus.channel(i));
-    } else if (numberOfDestinationChannels > numberOfSourceChannels) {
-        // Default up mixing handling, just match the destination channels with the first available source channels. 
-        // Stereo -> 5.1 case covered here. 
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i) 
-            channel(i)->copyFrom(sourceBus.channel(i));
-        for (unsigned i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
-            channel(i)->zero();
+        }
     } else {
-        // Case not handled
-        ASSERT_NOT_REACHED();
+        switch (channelInterpretation) {
+            case ChannelInterpretation::Speakers:
+                speakersCopyFrom(sourceBus);
+                break;
+            case ChannelInterpretation::Discrete:
+                discreteCopyFrom(sourceBus);
+                break;
+            default:
+                ASSERT_NOT_REACHED();
+        }
     }
 }
 
-void AudioBus::sumFrom(const AudioBus &sourceBus)
+void AudioBus::sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelInterpretation)
 {
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) {
-        for (unsigned i = 0; i < numberOfChannels(); ++i)
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i) {
             channel(i)->sumFrom(sourceBus.channel(i));
-    } else if (numberOfDestinationChannels == 2 && numberOfSourceChannels == 1) {
-        // Handle mono -> stereo case (for now simply sum mono channel into both left and right)
+        }
+    } else {
+        switch (channelInterpretation) {
+            case ChannelInterpretation::Speakers:
+                speakersSumFrom(sourceBus);
+                break;
+            case ChannelInterpretation::Discrete:
+                discreteSumFrom(sourceBus);
+                break;
+            default:
+                ASSERT_NOT_REACHED();
+        }
+    }
+}
+
+
+void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
+{
+    // FIXME: Implement down mixing 5.1 to stereo.
+    // https://bugs.webkit.org/show_bug.cgi?id=79192
+    
+    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
+    unsigned numberOfDestinationChannels = numberOfChannels();
+    
+    if (numberOfDestinationChannels == 2 && numberOfSourceChannels == 1) {
+        // Handle mono -> stereo case (for now simply copy mono channel into both left and right)
         // FIXME: Really we should apply an equal-power scaling factor here, since we're effectively panning center...
         const AudioChannel* sourceChannel = sourceBus.channel(0);
-        channel(0)->sumFrom(sourceChannel);
-        channel(1)->sumFrom(sourceChannel);
+        channelByType(Channel::Left)->copyFrom(sourceChannel);
+        channelByType(Channel::Right)->copyFrom(sourceChannel);
+    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 2) {
+        // Handle stereo -> mono case. output = 0.5 * (input.L + input.R).
+        AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
+        
+        const float* sourceL = sourceBusSafe.channelByType(Channel::Left)->data();
+        const float* sourceR = sourceBusSafe.channelByType(Channel::Right)->data();
+        
+        float* destination = channelByType(Channel::Left)->mutableData();
+        vadd(sourceL, 1, sourceR, 1, destination, 1, length());
+        float scale = 0.5;
+        vsmul(destination, 1, &scale, destination, 1, length());
+    } else if (numberOfDestinationChannels == 6 && numberOfSourceChannels == 1) {
+        // Handle mono -> 5.1 case, copy mono channel to center.
+        channelByType(Channel::Center)->copyFrom(sourceBus.channel(0));
+        channelByType(Channel::Left)->zero();
+        channelByType(Channel::Right)->zero();
+        channelByType(Channel::LFE)->zero();
+        channelByType(Channel::SurroundLeft)->zero();
+        channelByType(Channel::SurroundRight)->zero();
+    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 6) {
+        // Handle 5.1 -> mono case.
+        zero();
+        speakersSumFrom5_1_ToMono(sourceBus);
+    } else {
+        // Fallback for unknown combinations.
+        discreteCopyFrom(sourceBus);
+    }
+}
+
+void AudioBus::speakersSumFrom(const AudioBus& sourceBus)
+{
+    // FIXME: Implement down mixing 5.1 to stereo.
+    // https://bugs.webkit.org/show_bug.cgi?id=79192
+    
+    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
+    unsigned numberOfDestinationChannels = numberOfChannels();
+    
+    if (numberOfDestinationChannels == 2 && numberOfSourceChannels == 1) {
+        // Handle mono -> stereo case (summing mono channel into both left and right).
+        const AudioChannel* sourceChannel = sourceBus.channel(0);
+        channelByType(Channel::Left)->sumFrom(sourceChannel);
+        channelByType(Channel::Right)->sumFrom(sourceChannel);
     } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 2) {
         // Handle stereo -> mono case. output += 0.5 * (input.L + input.R).
         AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
-
-        const float* sourceL = sourceBusSafe.channelByType(ChannelLeft)->data();
-        const float* sourceR = sourceBusSafe.channelByType(ChannelRight)->data();
-
-        float* destination = channelByType(ChannelLeft)->mutableData();
+        
+        const float* sourceL = sourceBusSafe.channelByType(Channel::Left)->data();
+        const float* sourceR = sourceBusSafe.channelByType(Channel::Right)->data();
+        
+        float* destination = channelByType(Channel::Left)->mutableData();
         float scale = 0.5;
         vsma(sourceL, 1, &scale, destination, 1, length());
         vsma(sourceR, 1, &scale, destination, 1, length());
     } else if (numberOfDestinationChannels == 6 && numberOfSourceChannels == 1) {
         // Handle mono -> 5.1 case, sum mono channel into center.
-        channel(2)->sumFrom(sourceBus.channel(0));
+        channelByType(Channel::Center)->sumFrom(sourceBus.channel(0));
     } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 6) {
-        // Handle 5.1 -> mono case, sum center channel into mono.
-        // FIXME: We should have a better algorithm for this down mixing.
-        channel(0)->sumFrom(sourceBus.channel(2));
-    } else if (numberOfDestinationChannels < numberOfSourceChannels) {
-        // Default down mixing, just summing the first available destination channels. 
-        // 5.1 -> stereo case covered here.
-        // FIXME: We should have a better algorithm for down mixing 5.1 to stereo.
-        // https://bugs.webkit.org/show_bug.cgi?id=79192
+        // Handle 5.1 -> mono case.
+        speakersSumFrom5_1_ToMono(sourceBus);
+    } else {
+        // Fallback for unknown combinations.
+        discreteSumFrom(sourceBus);
+    }
+}
+
+void AudioBus::speakersSumFrom5_1_ToMono(const AudioBus& sourceBus)
+{
+    AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
+    
+    const float* sourceL = sourceBusSafe.channelByType(Channel::Left)->data();
+    const float* sourceR = sourceBusSafe.channelByType(Channel::Right)->data();
+    const float* sourceC = sourceBusSafe.channelByType(Channel::Center)->data();
+    const float* sourceSL = sourceBusSafe.channelByType(Channel::SurroundLeft)->data();
+    const float* sourceSR = sourceBusSafe.channelByType(Channel::SurroundRight)->data();
+    
+    float* destination = channelByType(Channel::Left)->mutableData();
+    
+    AudioFloatArray temp(length());
+    float* tempData = temp.data();
+    
+    // Sum in L and R.
+    vadd(sourceL, 1, sourceR, 1, tempData, 1, length());
+    float scale = 0.7071;
+    vsmul(tempData, 1, &scale, tempData, 1, length());
+    vadd(tempData, 1, destination, 1, destination, 1, length());
+    
+    // Sum in SL and SR.
+    vadd(sourceSL, 1, sourceSR, 1, tempData, 1, length());
+    scale = 0.5;
+    vsmul(tempData, 1, &scale, tempData, 1, length());
+    vadd(tempData, 1, destination, 1, destination, 1, length());
+    
+    // Sum in center.
+    vadd(sourceC, 1, destination, 1, destination, 1, length());
+}
+
+void AudioBus::discreteCopyFrom(const AudioBus& sourceBus)
+{
+    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
+    unsigned numberOfDestinationChannels = numberOfChannels();
+    
+    if (numberOfDestinationChannels < numberOfSourceChannels) {
+        // Down-mix by copying channels and dropping the remaining.
+        for (unsigned i = 0; i < numberOfDestinationChannels; ++i) {
+            channel(i)->copyFrom(sourceBus.channel(i));
+        }
+    } else if (numberOfDestinationChannels > numberOfSourceChannels) {
+        // Up-mix by copying as many channels as we have, then zeroing remaining channels.
+        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+            channel(i)->copyFrom(sourceBus.channel(i));
+        for (unsigned i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
+            channel(i)->zero();
+    }
+}
+
+void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
+{
+    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
+    unsigned numberOfDestinationChannels = numberOfChannels();
+    
+    if (numberOfDestinationChannels < numberOfSourceChannels) {
+        // Down-mix by summing channels and dropping the remaining.
         for (unsigned i = 0; i < numberOfDestinationChannels; ++i) 
             channel(i)->sumFrom(sourceBus.channel(i));
     } else if (numberOfDestinationChannels > numberOfSourceChannels) {
-        // Default up mixing, just summing the first available source channels. 
-        // stereo -> 5.1 case covered here.
+        // Up-mix by summing as many channels as we have.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i) 
             channel(i)->sumFrom(sourceBus.channel(i));
-    } else {
-        // Case not handled
-        ASSERT_NOT_REACHED();
     }
 }
 
@@ -508,8 +593,8 @@ std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceB
             unsigned n = sourceBus->length();
             std::unique_ptr<AudioBus> destinationBus(new AudioBus(1, n));
 
-            const float* sourceL = sourceBus->channel(0)->data();
-            const float* sourceR = sourceBus->channel(1)->data();
+            const float* sourceL = sourceBus->channelByType(Channel::Left)->data();
+            const float* sourceR = sourceBus->channelByType(Channel::Right)->data();
             float* destination = destinationBus->channel(0)->mutableData();
         
             // Do the mono mixdown.

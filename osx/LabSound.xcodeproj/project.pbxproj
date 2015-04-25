@@ -313,6 +313,7 @@
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		E2DA35631AE006480092A03D /* Mixing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mixing.h; path = ../../include/LabSound/core/Mixing.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,6 +417,7 @@
 				08650CAD1AD623E300D19E38 /* MediaStream.h */,
 				08650CAE1AD623E300D19E38 /* MediaStreamAudioDestinationNode.h */,
 				08650CAF1AD623E300D19E38 /* MediaStreamAudioSourceNode.h */,
+				E2DA35631AE006480092A03D /* Mixing.h */,
 				08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */,
 				08650CB11AD623E300D19E38 /* OscillatorNode.h */,
 				08650CB21AD623E300D19E38 /* PannerNode.h */,
@@ -900,7 +902,7 @@
 					USEAPI_DUMMY,
 					"BUILDING_WTF=1",
 				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = "";
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = YES;
@@ -924,7 +926,7 @@
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
 				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = "";
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 			};

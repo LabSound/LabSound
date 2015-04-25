@@ -58,7 +58,7 @@ public:
 
         // Get the data from the multi-channel provider when the first channel asks for it.
         // For subsequent channels, we can just dish out the channel data from that (stored in m_multiChannelBus).
-        if (!m_currentChannel) {
+        if (m_currentChannel != 0) {
             m_framesToProcess = framesToProcess;
             m_multiChannelBus = std::unique_ptr<AudioBus>(new AudioBus(m_numberOfChannels, framesToProcess));
             m_multiChannelProvider->provideInput(m_multiChannelBus.get(), framesToProcess);
@@ -71,9 +71,12 @@ public:
             return;
 
         // Copy the channel data from what we received from m_multiChannelProvider.
-        ASSERT(m_currentChannel <= m_numberOfChannels);
-        if (m_currentChannel < m_numberOfChannels) {
-            memcpy(bus->channel(0)->mutableData(), m_multiChannelBus->channel(m_currentChannel)->data(), sizeof(float) * framesToProcess);
+        ASSERT(static_cast<unsigned>(m_currentChannel) <= m_numberOfChannels);
+        if (static_cast<unsigned>(m_currentChannel) < m_numberOfChannels) {
+            memcpy(bus->channel(0)->mutableData(),
+                   m_multiChannelBus->channel(m_currentChannel)->data(), sizeof(float) * framesToProcess);
+            
+            // increment channel
             ++m_currentChannel;
         }
     }

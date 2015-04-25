@@ -45,7 +45,7 @@ public:
 
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(std::shared_ptr<AudioContext>) override;
+    virtual void reset(ContextRenderLock&) override;
 
     // AudioSourceProviderClient
     virtual void setFormat(ContextGraphLock& g, ContextRenderLock& r, size_t numberOfChannels, float sampleRate) override;

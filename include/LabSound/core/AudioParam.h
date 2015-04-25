@@ -64,7 +64,7 @@ public:
     virtual void didUpdate(ContextRenderLock&) override { }
 
     // Intrinsic value.
-    float value(std::shared_ptr<AudioContext>);
+    float value(ContextRenderLock&);
     void setValue(float);
 
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
@@ -85,7 +85,7 @@ public:
 
     // Smoothly exponentially approaches to (de-zippers) the desired value.
     // Returns true if smoothed value has already snapped exactly to value.
-    bool smooth(std::shared_ptr<AudioContext>);
+    bool smooth(ContextRenderLock&);
 
     void resetSmoothedValue() { m_smoothedValue = m_value; }
     void setSmoothingConstant(double k) { m_smoothingConstant = k; }

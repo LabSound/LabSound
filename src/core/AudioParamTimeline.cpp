@@ -23,6 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
 
@@ -39,6 +40,7 @@ using namespace std;
 namespace WebCore {
 
     namespace {
+        // @TODO to resolve - is there any reason this should be per object instead of static?
         std::mutex m_eventsMutex;
     }
 
@@ -117,12 +119,14 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     }
 }
 
-float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> context, float defaultValue, bool& hasValue)
+float AudioParamTimeline::valueForContextTime(ContextRenderLock& r, float defaultValue, bool& hasValue)
 {
-    ASSERT(context);
+    auto context = r.context();
+    if (!context)
+        return defaultValue;
 
     std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
-    if (!lock.owns_lock() || !context || !m_events.size() || context->currentTime() < m_events[0].time()) {
+    if (!lock.owns_lock() || !m_events.size() || context->currentTime() < m_events[0].time()) {
         hasValue = false;
         return defaultValue;
     }

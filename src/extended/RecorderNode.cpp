@@ -59,8 +59,9 @@ namespace LabSound
         if (m_recording) {
             std::vector<const float*> channels;
             unsigned numberOfChannels = bus->numberOfChannels();
-			for (unsigned int c = 0; c < numberOfChannels; ++c)
-                channels.push_back(bus->channel(c)->data());
+            for (unsigned int i = 0; i < numberOfChannels; ++i) {
+                channels.push_back(bus->channel(i)->data());
+            }
 
             // mix down the output, or interleave the output
             // use the tightest loop possible since this is part of the processing step
@@ -94,7 +95,7 @@ namespace LabSound
             outputBus->copyFrom(*bus);
     }
     
-    void RecorderNode::reset(std::shared_ptr<WebCore::AudioContext>)
+    void RecorderNode::reset(ContextRenderLock& r)
     {
         std::vector<float> clear;
         {

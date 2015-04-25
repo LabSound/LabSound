@@ -79,7 +79,7 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, ExceptionCode& ec)
+void OscillatorNode::setType(bool isConstructor, unsigned short type, ExceptionCode& ec)
 {
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
@@ -122,10 +122,15 @@ void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, Exceptio
 			return;
     }
 
-    setWaveTable(r, waveTable);
+    setWaveTable(true, waveTable);
     m_type = type;
 }
 
+void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, ExceptionCode& ec) {
+    setType(true, type, ec);
+}
+
+    
 bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
@@ -156,7 +161,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
         m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_frequency->smooth(c);
+        m_frequency->smooth(r);
         float frequency = m_frequency->smoothedValue();
         finalScale *= frequency;
     }
@@ -180,7 +185,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
         }
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_detune->smooth(c);
+        m_detune->smooth(r);
         float detune = m_detune->smoothedValue();
         float detuneScale = powf(2, detune / 1200);
         finalScale *= detuneScale;
@@ -306,9 +311,15 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::reset(std::shared_ptr<AudioContext>)
+void OscillatorNode::reset(ContextRenderLock&)
 {
     m_virtualReadIndex = 0;
+}
+
+void OscillatorNode::setWaveTable(bool isConstructor, std::shared_ptr<WaveTable> waveTable)
+{
+    m_waveTable = waveTable;
+    m_type = CUSTOM;
 }
 
 void OscillatorNode::setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable> waveTable)

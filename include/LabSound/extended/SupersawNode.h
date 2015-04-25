@@ -37,7 +37,7 @@ namespace LabSound
     private:
 
         virtual void process(ContextRenderLock&, size_t) override;
-        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override { /*m_currentSampleFrame = 0;*/ }
+        virtual void reset(ContextRenderLock&) override { /*m_currentSampleFrame = 0;*/ }
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
         virtual bool propagatesSilence(double now) const override;

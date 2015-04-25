@@ -1,3 +1,11 @@
+
+
+// LabSound AudioContext
+//
+// Copyright (c) 2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
+
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioListener.h"
@@ -366,7 +374,7 @@ void AudioContext::update(ContextGraphLock& g)
                 }
 				else if (i.from) {
 					--i.from->m_connectionRefCount;
-                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                    for (size_t out = 0; out < i.from->numberOfOutputs(); ++out) {
                         auto output = i.from->output(out);
                         if (!output)
                             continue;
@@ -377,7 +385,7 @@ void AudioContext::update(ContextGraphLock& g)
 				}
                 else if (i.to) {
                     --i.to->m_connectionRefCount;
-                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                    for (size_t out = 0; out < i.to->numberOfOutputs(); ++out) {
                         auto output = i.to->output(out);
                         if (!output)
                             continue;

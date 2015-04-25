@@ -1,5 +1,10 @@
 #pragma once
 
+// LabSound AudioContext
+//
+// Copyright (c) 2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
 #ifndef AudioContext_h
 #define AudioContext_h
 
@@ -38,7 +43,9 @@ class AudioNodeOutput;
 template<class Input, class Output>
 struct PendingConnection
 {
-	PendingConnection(std::shared_ptr<Input> from, std::shared_ptr<Output> to, bool connect) : from(from), to(to), connect(connect) {}
+	PendingConnection(std::shared_ptr<Input> from,
+                      std::shared_ptr<Output> to,
+                      bool connect) : from(from), to(to), connect(connect) {}
 	bool connect; // true: connect; false: disconnect
 	std::shared_ptr<Input> from;
 	std::shared_ptr<Output> to;

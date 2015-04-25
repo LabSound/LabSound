@@ -81,7 +81,7 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
-void ChannelMergerNode::reset(std::shared_ptr<AudioContext>)
+void ChannelMergerNode::reset(ContextRenderLock&)
 {
 }
 
@@ -93,8 +93,9 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     unsigned numberOfOutputChannels = 0;
     for (unsigned i = 0; i < numberOfInputs(); ++i) {
         auto input = this->input(i);
+        
         if (input->isConnected())
-            numberOfOutputChannels = std::max(input->bus(r)->numberOfChannels(), numberOfOutputChannels);
+            numberOfOutputChannels += input->bus(r)->numberOfChannels();
     }
 
     // Set the correct number of channels on the output

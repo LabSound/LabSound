@@ -174,8 +174,9 @@ public:
         OSStatus result = AudioUnitRender(input->m_inputUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, input->m_buffers);
         
         if (result != noErr)
-            for (uint32_t i = 0; i < input->m_buffers->mNumberBuffers; ++i)
+            for (uint32_t i = 0; i < input->m_buffers->mNumberBuffers; ++i) {
                 input->m_audioBus->channel(i)->zero();
+            }
         
         return noErr;
     }

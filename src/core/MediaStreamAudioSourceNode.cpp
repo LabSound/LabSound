@@ -97,7 +97,7 @@ void MediaStreamAudioSourceNode::process(ContextRenderLock& r, size_t numberOfFr
     }
 }
 
-void MediaStreamAudioSourceNode::reset(std::shared_ptr<AudioContext>)
+void MediaStreamAudioSourceNode::reset(ContextRenderLock&)
 {
 }
 

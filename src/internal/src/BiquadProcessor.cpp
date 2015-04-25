@@ -56,7 +56,7 @@ AudioDSPKernel* BiquadProcessor::createKernel()
     return new BiquadDSPKernel(this);
 }
 
-void BiquadProcessor::checkForDirtyCoefficients(std::shared_ptr<AudioContext> c)
+void BiquadProcessor::checkForDirtyCoefficients(ContextRenderLock& r)
 {
     // Deal with smoothing / de-zippering. Start out assuming filter parameters are not changing.
 
@@ -78,10 +78,10 @@ void BiquadProcessor::checkForDirtyCoefficients(std::shared_ptr<AudioContext> c)
             m_hasJustReset = false;
         } else {
             // Smooth all of the filter parameters. If they haven't yet converged to their target value then mark coefficients as dirty.
-            bool isStable1 = m_parameter1->smooth(c);
-            bool isStable2 = m_parameter2->smooth(c);
-            bool isStable3 = m_parameter3->smooth(c);
-            bool isStable4 = m_parameter4->smooth(c);
+            bool isStable1 = m_parameter1->smooth(r);
+            bool isStable2 = m_parameter2->smooth(r);
+            bool isStable3 = m_parameter3->smooth(r);
+            bool isStable4 = m_parameter4->smooth(r);
             if (!(isStable1 && isStable2 && isStable3 && isStable4))
                 m_filterCoefficientsDirty = true;
         }
@@ -95,11 +95,12 @@ void BiquadProcessor::process(ContextRenderLock& r, const AudioBus* source, Audi
         return;
     }
         
-    checkForDirtyCoefficients(r.contextPtr());
+    checkForDirtyCoefficients(r);
             
     // For each channel of our input, process using the corresponding BiquadDSPKernel into the output channel.
-    for (unsigned i = 0; i < m_kernels.size(); ++i)
+    for (unsigned i = 0; i < m_kernels.size(); ++i) {
         m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+    }
 }
 
 void BiquadProcessor::setType(FilterType type)

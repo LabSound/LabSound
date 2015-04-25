@@ -86,7 +86,7 @@ void AudioBasicProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToPr
     input(0)->pull(r, output(0)->bus(r), framesToProcess);
 }
 
-void AudioBasicProcessorNode::reset(std::shared_ptr<AudioContext>)
+void AudioBasicProcessorNode::reset(ContextRenderLock&)
 {
     if (processor())
         processor()->reset();
@@ -97,7 +97,7 @@ void AudioBasicProcessorNode::reset(std::shared_ptr<AudioContext>)
 // uninitialize and then re-initialize with the new channel count.
 void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
-    if (!input || input != this->input(0).get())
+    if (input != this->input(0).get())
         return;
 
     if (!processor())
@@ -105,19 +105,23 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
 
     unsigned numberOfChannels = input->numberOfChannels(r);
     
-    if (isInitialized() && numberOfChannels != output(0)->numberOfChannels()) {
-        uninitialize();
+    bool mustPropagate = false;
+    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
+        mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
     }
     
-    if (!isInitialized()) {
-        // This will propagate the channel count to any nodes connected further down the chain...
-        output(0)->setNumberOfChannels(r, numberOfChannels);
-
+    if (mustPropagate) {
         // Re-initialize the processor with the new channel count.
         processor()->setNumberOfChannels(numberOfChannels);
+        
+        uninitialize();
+        for (size_t i = 0; i < numberOfOutputs(); ++i) {
+            // This will propagate the channel count to any nodes connected further down the chain...
+            output(i)->setNumberOfChannels(r, numberOfChannels);
+        }
         initialize();
     }
-
+    
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 

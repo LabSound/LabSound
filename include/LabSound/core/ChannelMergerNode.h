@@ -42,7 +42,7 @@ public:
 
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(std::shared_ptr<AudioContext>) override;
+    virtual void reset(ContextRenderLock&) override;
 
     // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;

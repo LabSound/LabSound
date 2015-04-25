@@ -111,6 +111,13 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
         }
 }
     
+void AudioSummingJunction::changedOutputs(ContextGraphLock&)
+{
+    if (!m_renderingStateNeedUpdating && canUpdateState()) {
+        m_renderingStateNeedUpdating = true;
+    }
+}
+    
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
     if (r.context() && m_renderingStateNeedUpdating && canUpdateState()) {

@@ -64,7 +64,7 @@ void MediaStreamAudioDestinationNode::process(ContextRenderLock& r, size_t numbe
 	// m_source->consumeAudio(&m_mixBus, numberOfFrames);
 }
 
-void MediaStreamAudioDestinationNode::reset(std::shared_ptr<AudioContext>)
+void MediaStreamAudioDestinationNode::reset(ContextRenderLock&)
 {
 }
 

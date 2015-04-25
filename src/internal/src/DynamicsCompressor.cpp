@@ -142,10 +142,10 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
 
     switch (numberOfChannels) {
     case 2: // stereo
-        m_sourceChannels[0] = sourceBus->channel(0)->data();
+        m_sourceChannels[0] = sourceBus->channelByType(Channel::Left)->data();
 
         if (numberOfSourceChannels > 1)
-            m_sourceChannels[1] = sourceBus->channel(1)->data();
+            m_sourceChannels[1] = sourceBus->channelByType(Channel::Right)->data();
         else
             // Simply duplicate mono channel input data to right channel for stereo processing.
             m_sourceChannels[1] = m_sourceChannels[0];

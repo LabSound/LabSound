@@ -40,12 +40,7 @@ using namespace std;
 namespace WebCore 
 {
     
-namespace 
-{
-    std::mutex outputsMutex;
-}
-
-// Give Audiobus an 
+// Give Audiobus an
 
 AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction() , m_node(node)
 {
@@ -63,8 +58,6 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
     if (!junction || !toOutput || !junction->node())
         return;
     
-    std::lock_guard<std::mutex> lock(outputsMutex);
-
     // return if input is already connected to this output.
     if (junction->isConnected(toOutput))
         return;
@@ -83,8 +76,6 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeIn
     if (!junction || !junction->node() || !toOutput)
         return;
     
-    std::lock_guard<std::mutex> lock(outputsMutex);
-
     if (junction->isConnected(toOutput)) {
         junction->junctionDisconnectOutput(toOutput);
         toOutput->removeInput(g, junction);
@@ -103,12 +94,15 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
 
-    lock_guard<mutex> lock(outputsMutex);
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
 unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
+    ChannelCountMode mode = node()->channelCountMode();
+    if (mode == ChannelCountMode::Explicit)
+        return node()->channelCount();
+   
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
@@ -118,21 +112,9 @@ unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
         if (output)
             maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
     }
-    
-    return maxChannels;
-}
 
-unsigned AudioNodeInput::numberOfRenderingChannels(ContextRenderLock& r)
-{
-    // Find the number of channels of the rendering connection with the largest number of channels.
-    unsigned maxChannels = 1; // one channel is the minimum allowed
-
-    int c = numberOfRenderingConnections(r);
-    for (int i = 0; i < c; ++i) {
-        auto output = renderingOutput(r, i);
-        if (output)
-            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
-    }
+    if (mode == ChannelCountMode::ClampedMax)
+        maxChannels = min(maxChannels, static_cast<unsigned>(node()->channelCount()));
     
     return maxChannels;
 }
@@ -140,14 +122,16 @@ unsigned AudioNodeInput::numberOfRenderingChannels(ContextRenderLock& r)
 AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
-    if (numberOfRenderingConnections(r) == 1)
+    // note: The webkit sources check for max, but I can't see how that's correct
+    /// @TODO did I miss part of the merge?
+    if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
         return renderingOutput(r, 0)->bus(r);
 
     // Multiple connections case (or no connections).
-    return internalSummingBus();
+    return internalSummingBus(r);
 }
 
-AudioBus* AudioNodeInput::internalSummingBus()
+AudioBus* AudioNodeInput::internalSummingBus(ContextRenderLock& r)
 {
     return m_internalSummingBus.get();
 }
@@ -185,15 +169,14 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // Handle single connection case.
     if (c == 1) {
         // The output will optimize processing using inPlaceBus if it's able.
+        auto output = renderingOutput(r, 0);
+        if (output)
+            return output->pull(r, inPlaceBus, framesToProcess);
         
-        for (int i = 0; i < c; ++i) {
-            auto output = renderingOutput(r, i);
-            if (output)
-                return output->pull(r, inPlaceBus, framesToProcess);
-        }
+        c = 0; // invoke the silence case
     }
 
-    AudioBus* internalSummingBus = this->internalSummingBus();
+    AudioBus* internalSummingBus = this->internalSummingBus(r);
 
     if (!c) {
         // At least, generate silence if we're not connected to anything.

@@ -105,7 +105,7 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void NoiseNode::reset(std::shared_ptr<WebCore::AudioContext>)
+    void NoiseNode::reset(ContextRenderLock&)
     {
     }
     

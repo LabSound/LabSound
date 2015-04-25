@@ -30,6 +30,7 @@
 
 namespace LabSound 
 {
+    class ContextGraphLock;
     class ContextRenderLock;
 }
 
@@ -48,6 +49,9 @@ public:
     explicit AudioSummingJunction();
     virtual ~AudioSummingJunction();
 
+    // This must be called whenever we modify m_outputs.
+    void changedOutputs(ContextGraphLock&);
+    
     // This copies m_outputs to m_renderingOutputs. See comments for these lists below.
     void updateRenderingState(ContextRenderLock& r);
 

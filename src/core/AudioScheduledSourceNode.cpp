@@ -121,7 +121,11 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         ASSERT(isSafe);
 
         if (isSafe) {
-            nonSilentFramesToProcess -= framesToZero;
+            if (framesToZero > nonSilentFramesToProcess)
+                nonSilentFramesToProcess = 0;
+            else
+                nonSilentFramesToProcess -= framesToZero;
+
             for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
                 memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
         }
@@ -137,6 +141,10 @@ void AudioScheduledSourceNode::start(double when)
     if (m_playbackState != UNSCHEDULED_STATE)
         return;
 
+    if (!std::isfinite(when) || (when < 0)) {
+        return;
+    }
+    
     m_startTime = when;
     m_playbackState = SCHEDULED_STATE;
 }

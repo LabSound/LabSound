@@ -118,8 +118,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     if (!isBusGood)
         return false;
     
-    AudioChannel* leftEarImpulseResponse = impulseResponse->channelByType(AudioBus::ChannelLeft);
-    AudioChannel* rightEarImpulseResponse = impulseResponse->channelByType(AudioBus::ChannelRight);
+    AudioChannel* leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
+    AudioChannel* rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
 
     // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
     const size_t fftSize = HRTFPanner::fftSizeForSampleRate(sampleRate);

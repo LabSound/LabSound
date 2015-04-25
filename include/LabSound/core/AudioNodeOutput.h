@@ -36,8 +36,6 @@ class AudioContext;
 class AudioNodeInput;
 class AudioBus;
 
-#define AUDIONODEOUTPUT_MAXINPUTS 8
-
 // AudioNodeOutput represents a single output for an AudioNode.
 // It may be connected to one or more AudioNodeInputs.
 class AudioNodeOutput 
@@ -124,9 +122,7 @@ private:
     // it is only valid for a single render quantum, so probably no.
     AudioBus* m_inPlaceBus;
     
-public:
-
-    std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODEOUTPUT_MAXINPUTS];
+    std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     
 private:
     
