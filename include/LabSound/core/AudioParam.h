@@ -45,19 +45,8 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
-    : AudioSummingJunction()
-    , m_name(name)
-    , m_value(defaultValue)
-    , m_defaultValue(defaultValue)
-    , m_minValue(minValue)
-    , m_maxValue(maxValue)
-    , m_units(units)
-    , m_smoothedValue(defaultValue)
-    , m_smoothingConstant(DefaultSmoothingConstant)
-    {}
-    
-    //virtual ~AudioParam() {}
+    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    virtual ~AudioParam();
     
     // AudioSummingJunction
     virtual bool canUpdateState() override { return true; }
@@ -125,6 +114,9 @@ private:
     double m_smoothingConstant;
     
     AudioParamTimeline m_timeline;
+    
+    class Data;
+    std::unique_ptr<Data> m_data;
 };
 
 } // namespace WebCore

@@ -1,6 +1,6 @@
 #include "ExampleBaseApp.h"
 
-struct InfiniteFMApp : public LabSoundExampleApp
+struct TremoloApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
@@ -14,25 +14,25 @@ struct InfiniteFMApp : public LabSoundExampleApp
         std::shared_ptr<ADSRNode> trigger;
         
         {
-            ContextGraphLock g(context, "Infinite FM");
-            ContextRenderLock r(context, "Infinite FM");
+            ContextGraphLock g(context, "Tremolo");
+            ContextRenderLock r(context, "Tremolo");
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             modulator->setType(r, 0, ec);
             modulator->start(0);
-            modulator->frequency()->setValue(2.0f);
+            modulator->frequency()->setValue(8.0f);
             
             modulatorGain = std::make_shared<GainNode>(context->sampleRate());
-            modulatorGain->gain()->setValue(50.0f);
+            modulatorGain->gain()->setValue(10);
             
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
             osc->setType(r, 0, ec);
-            osc->frequency()->setValue(220);
+            osc->frequency()->setValue(440);
             osc->start(0);
             
             //trigger = std::make_shared<ADSRNode>(context->sampleRate());
             //trigger->set(10, 5, 30, 1, 20);
-
+            
             // Set up processing chain
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
@@ -42,27 +42,12 @@ struct InfiniteFMApp : public LabSoundExampleApp
         }
         
         int now = 0.0;
-        while(true)
+        while(now < 5000)
         {
-            
-            // Debugging cruft --
-            float frequency = (float) std::uniform_int_distribution<int>(20, 110)(randomgenerator);
-            modulator->frequency()->setValue(frequency);
-            //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
-            //modulator->frequency()->setValue(carrier->frequency()->value(context))
-            //trigger->noteOn(now);
-            //trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 2.5, 30, 1.0, (std::uniform_int_distribution<int>(1, 10)(randomgenerator)));
-            // --
-            
-            std::cout << "Modulator Frequency: " << frequency << std::endl;
-            
-            auto nextDelay = std::uniform_int_distribution<int>(256, 1024)(randomgenerator);
-            now += nextDelay;
-        
-            std::this_thread::sleep_for(std::chrono::milliseconds(nextDelay));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            now += 1000;
         }
-
-        LabSound::finish(context);
         
+        LabSound::finish(context);
     }
 };
