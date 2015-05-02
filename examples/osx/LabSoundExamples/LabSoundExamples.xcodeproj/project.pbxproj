@@ -51,6 +51,7 @@
 		E23015F11860235E00FEC991 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		E241A7A61A45496700FE269D /* ExamplesMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExamplesMain.cpp; path = ../../src/ExamplesMain.cpp; sourceTree = "<group>"; };
 		E2D4FE4E1AF4944C001B7E6C /* Tremolo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Tremolo.h; path = ../../src/Tremolo.h; sourceTree = "<group>"; };
+		E2D4FE4F1AF54A6B001B7E6C /* RedAlert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RedAlert.h; path = ../../src/RedAlert.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +80,7 @@
 				08650A0F1AD23A6400D19E38 /* MicrophoneLoopback.h */,
 				08650A101AD23A6400D19E38 /* MicrophoneReverb.h */,
 				08650A111AD23A6400D19E38 /* PeakCompressor.h */,
+				E2D4FE4F1AF54A6B001B7E6C /* RedAlert.h */,
 				08650A121AD23A6400D19E38 /* Rhythm.h */,
 				08650A131AD23A6400D19E38 /* RhythmAndFilters.h */,
 				08650A141AD23A6400D19E38 /* Simple.h */,

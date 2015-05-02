@@ -1,6 +1,6 @@
 
 
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // This files contains portions of sfxr. The original code contained the following notes:
 
 /*

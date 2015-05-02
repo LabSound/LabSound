@@ -108,12 +108,6 @@ public:
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
 
-	// Called periodically at the end of each render quantum to dereference finished source nodes.
-	void derefFinishedSourceNodes(LabSound::ContextGraphLock& r);
-
-	// When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
-	void notifyNodeFinishedProcessing(LabSound::ContextRenderLock &, AudioNode *);
-
 	void handlePreRenderTasks(LabSound::ContextRenderLock &); 	// Called at the START of each render quantum.
 	void handlePostRenderTasks(LabSound::ContextRenderLock &); 	// Called at the END of each render quantum.
 
@@ -184,8 +178,6 @@ private:
 	std::shared_ptr<AudioListener> m_listener;
 	std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
 	std::shared_ptr<AudioBuffer> m_renderTarget;
-
-	std::vector<std::shared_ptr<AudioNode>> m_finishedNodes;
 
 	std::vector<std::shared_ptr<AudioNode>> m_referencedNodes;
 

@@ -103,6 +103,7 @@
 		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
 		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
 		08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFC1AD6249B00D19E38 /* fftsg.cpp */; };
+		E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -313,6 +314,9 @@
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		E2D4FE501AF55198001B7E6C /* FunctionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FunctionNode.h; path = ../../include/LabSound/extended/FunctionNode.h; sourceTree = "<group>"; };
+		E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FunctionNode.cpp; path = ../extended/FunctionNode.cpp; sourceTree = "<group>"; };
+		E2D4FE531AF55DFA001B7E6C /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synthesis.h; path = ../../include/LabSound/core/Synthesis.h; sourceTree = "<group>"; };
 		E2DA35631AE006480092A03D /* Mixing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mixing.h; path = ../../include/LabSound/core/Mixing.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -421,6 +425,7 @@
 				08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */,
 				08650CB11AD623E300D19E38 /* OscillatorNode.h */,
 				08650CB21AD623E300D19E38 /* PannerNode.h */,
+				E2D4FE531AF55DFA001B7E6C /* Synthesis.h */,
 				08650CB31AD623E300D19E38 /* WaveShaperNode.h */,
 				08650CB41AD623E300D19E38 /* WaveTable.h */,
 				08650CB51AD623E300D19E38 /* WindowFunctions.h */,
@@ -472,6 +477,7 @@
 				08650C451AD6239000D19E38 /* ADSRNode.cpp */,
 				08650C461AD6239000D19E38 /* ClipNode.cpp */,
 				08650C471AD6239000D19E38 /* DiodeNode.cpp */,
+				E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */,
 				08650C481AD6239000D19E38 /* LabSound.cpp */,
 				08650C491AD6239000D19E38 /* NoiseNode.cpp */,
 				08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */,
@@ -496,6 +502,7 @@
 				08650C7C1AD623C400D19E38 /* ClipNode.h */,
 				08650C7D1AD623C400D19E38 /* DiodeNode.h */,
 				08650C7E1AD623C400D19E38 /* ExceptionCodes.h */,
+				E2D4FE501AF55198001B7E6C /* FunctionNode.h */,
 				08650C7F1AD623C400D19E38 /* LabSound.h */,
 				08650C801AD623C400D19E38 /* Logging.h */,
 				08650C811AD623C400D19E38 /* NoiseNode.h */,
@@ -818,6 +825,7 @@
 				08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */,
 				08650CE21AD6241A00D19E38 /* AudioScheduledSourceNode.cpp in Sources */,
 				08650CD51AD6241A00D19E38 /* AnalyserNode.cpp in Sources */,
+				E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */,
 				08650CEE1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp in Sources */,
 				08650CDE1AD6241A00D19E38 /* AudioNodeInput.cpp in Sources */,
 				08650CE11AD6241A00D19E38 /* AudioParamTimeline.cpp in Sources */,

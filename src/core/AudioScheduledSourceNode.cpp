@@ -37,7 +37,7 @@ using namespace std;
 
 namespace WebCore {
 
-const double AudioScheduledSourceNode::UnknownTime = -1;
+const double UnknownTime = -1;
 
 AudioScheduledSourceNode::AudioScheduledSourceNode(float sampleRate)
     : AudioSourceNode(sampleRate)
@@ -162,16 +162,7 @@ void AudioScheduledSourceNode::stop(double when)
 
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
-    clearPannerNode();
-    auto ac = r.context();
-    ASSERT(ac);
-    
-    if (m_playbackState != FINISHED_STATE) {
-        // Let the context dereference this AudioNode.
-        ac->notifyNodeFinishedProcessing(r, this);
-        m_playbackState = FINISHED_STATE;
-        ac->decrementActiveSourceCount();
-    }
+    m_playbackState = FINISHED_STATE;
 }
 
 } // namespace WebCore

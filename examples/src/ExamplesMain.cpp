@@ -4,36 +4,38 @@
 
 #include "ExampleBaseApp.h"
 
-#include "Simple.h"
-#include "SimpleRecording.h"
 #include "ConvolutionReverb.h"
-#include "Rhythm.h"
-#include "RhythmAndFilters.h"
-#include "PeakCompressor.h"
+#include "InfiniteFM.h"
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
+#include "PeakCompressor.h"
+#include "RedAlert.h"
+#include "Rhythm.h"
+#include "RhythmAndFilters.h"
+#include "Simple.h"
+#include "SimpleRecording.h"
 #include "Spatialization.h"
-#include "Validation.h"
-#include "InfiniteFM.h"
 #include "Tremolo.h"
+#include "Validation.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
-SimpleApp g_simpleExample;
-SimpleRecordingApp g_simpleRecordingExample;
-RhythmApp g_rhythm;
-RhythmAndFiltersApp g_rhythmAndFilters;
-PeakCompressorApp g_peakCompressor;
+InfiniteFMApp g_infiniteFM;
 MicrophoneDalekApp g_micrphoneDalek;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
+PeakCompressorApp g_peakCompressor;
+RedAlertApp g_redAlert;
+RhythmApp g_rhythm;
+RhythmAndFiltersApp g_rhythmAndFilters;
+SimpleApp g_simpleExample;
+SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
-ValidationApp g_validation;
-InfiniteFMApp g_infiniteFM;
 TremoloApp g_tremolo;
+ValidationApp g_validation;
 
 int main (int argc, char *argv[])
 {
-    g_infiniteFM.PlayExample();
+    g_redAlert.PlayExample();
     return 0;
 }

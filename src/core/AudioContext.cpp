@@ -81,7 +81,6 @@ AudioContext::~AudioContext()
 	ASSERT(m_isStopScheduled);
 	ASSERT(!m_nodesToDelete.size());
 	ASSERT(!m_referencedNodes.size());
-	ASSERT(!m_finishedNodes.size());
 	ASSERT(!m_automaticPullNodes.size());
 	ASSERT(!m_renderingAutomaticPullNodes.size());
 }
@@ -201,30 +200,6 @@ std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSourc
 
 	m_referencedNodes.push_back(node); // context keeps reference until node is disconnected
 	return node;
-}
-
-void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode* node)
-{
-	ASSERT(r.context());
-
-	for (auto i : m_referencedNodes)
-	{
-		if (i.get() == node)
-		{
-			m_finishedNodes.push_back(i);
-			return;
-		}
-	}
-	ASSERT(0 == "node to finish not referenced");
-}
-
-void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g)
-{
-	ASSERT(g.context());
-	for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-		dereferenceSourceNode(g, m_finishedNodes[i]);
-
-	m_finishedNodes.clear();
 }
 
 void AudioContext::referenceSourceNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
@@ -403,9 +378,6 @@ void AudioContext::update(ContextGraphLock& g)
         
 		//pendingNodeConnections.clear();
 	}
-
-	// Dynamically clean up nodes which are no longer needed.
-	derefFinishedSourceNodes(g);
 }
 
 void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)

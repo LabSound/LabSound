@@ -50,7 +50,7 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
 OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
     : AudioScheduledSourceNode(sampleRate)
-    , m_type(SINE)
+    , m_type(OscillatorType::SINE)
     , m_firstRender(true)
     , m_virtualReadIndex(0)
     , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
@@ -79,42 +79,42 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-void OscillatorNode::setType(bool isConstructor, unsigned short type, ExceptionCode& ec)
+void OscillatorNode::setType(bool isConstructor, OscillatorType type, ExceptionCode& ec)
 {
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
 
     switch (type) 
 	{
-		case SINE:
+		case OscillatorType::SINE:
 			if (!s_waveTableSine)
 			{
-				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SINE);
+				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorType::SINE);
 			}
 			waveTable = s_waveTableSine;
 			break;
-		case SQUARE:
+		case OscillatorType::SQUARE:
 			if (!s_waveTableSquare)
 			{
-				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SQUARE);
+				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorType::SQUARE);
 			}
 			waveTable = s_waveTableSquare;
 			break;
-		case SAWTOOTH:
+		case OscillatorType::SAWTOOTH:
 			if (!s_waveTableSawtooth)
 			{
-				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SAWTOOTH);
+				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorType::SAWTOOTH);
 			}
 			waveTable = s_waveTableSawtooth;
 			break;
-		case TRIANGLE:
+		case OscillatorType::TRIANGLE:
 			if (!s_waveTableTriangle)
 			{           
-				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorNode::TRIANGLE);
+				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
 			}
 			waveTable = s_waveTableTriangle;
 			break;
-		case CUSTOM:
+		case OscillatorType::CUSTOM:
 		default:
 			// Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
 			// called explicitly.
@@ -126,7 +126,7 @@ void OscillatorNode::setType(bool isConstructor, unsigned short type, ExceptionC
     m_type = type;
 }
 
-void OscillatorNode::setType(ContextRenderLock& r, unsigned short type, ExceptionCode& ec) {
+void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type, ExceptionCode& ec) {
     setType(true, type, ec);
 }
 
@@ -319,13 +319,13 @@ void OscillatorNode::reset(ContextRenderLock&)
 void OscillatorNode::setWaveTable(bool isConstructor, std::shared_ptr<WaveTable> waveTable)
 {
     m_waveTable = waveTable;
-    m_type = CUSTOM;
+    m_type = OscillatorType::CUSTOM;
 }
 
 void OscillatorNode::setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable> waveTable)
 {
     m_waveTable = waveTable;
-    m_type = CUSTOM;
+    m_type = OscillatorType::CUSTOM;
 }
 
 bool OscillatorNode::propagatesSilence(double now) const

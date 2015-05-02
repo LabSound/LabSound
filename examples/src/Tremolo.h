@@ -18,7 +18,7 @@ struct TremoloApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Tremolo");
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            modulator->setType(r, 0, ec);
+            modulator->setType(r, OscillatorType::SINE, ec);
             modulator->start(0);
             modulator->frequency()->setValue(8.0f);
             
@@ -26,18 +26,15 @@ struct TremoloApp : public LabSoundExampleApp
             modulatorGain->gain()->setValue(10);
             
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, 0, ec);
+            osc->setType(r, OscillatorType::TRIANGLE, ec);
             osc->frequency()->setValue(440);
             osc->start(0);
-            
-            //trigger = std::make_shared<ADSRNode>(context->sampleRate());
-            //trigger->set(10, 5, 30, 1, 20);
             
             // Set up processing chain
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
             modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
-            modulatorGain->connect(g, osc->frequency(), 0, ec); // I don't think this works...
+            modulatorGain->connect(g, osc->frequency(), 0, ec);
             osc->connect(context.get(), context->destination().get(), 0, 0, ec);
         }
         

@@ -1,3 +1,7 @@
+
+// Copyright (c) 2014 Dimitri Diakopolous, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
 #pragma once
 
 #include "LabSound/core/AudioContext.h"

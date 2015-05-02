@@ -4,6 +4,7 @@
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/Synthesis.h"
 
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/ADSRNode.h"
@@ -90,7 +91,7 @@ namespace LabSound
                 auto c = r.context();
                 for (auto i : sawStorage) 
 				{
-                    i->setType(r, OscillatorNode::SAWTOOTH, ec);
+                    i->setType(r, OscillatorType::SAWTOOTH, ec);
                     c->connect(i, gainNode);
                     i->start(0);
                 }

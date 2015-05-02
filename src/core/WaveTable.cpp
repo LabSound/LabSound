@@ -47,7 +47,7 @@ namespace WebCore
     
 using namespace VectorMath;
 
-WaveTable::WaveTable(float sampleRate, int basicWaveform) : 
+WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform) :
 	m_sampleRate(sampleRate), 
 	m_waveTableSize(WaveTableSize), 
 	m_numberOfRanges(NumberOfRanges),
@@ -60,7 +60,7 @@ WaveTable::WaveTable(float sampleRate, int basicWaveform) :
 	generateBasicWaveform(basicWaveform);
 }
 
-WaveTable::WaveTable(float sampleRate, int basicWaveform, std::vector<float> & real, std::vector<float> & imag) 
+WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
 	: m_sampleRate(sampleRate),
 	m_waveTableSize(WaveTableSize), 
 	m_numberOfRanges(NumberOfRanges), 
@@ -218,7 +218,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
     }
 }
 
-void WaveTable::generateBasicWaveform(int shape)
+void WaveTable::generateBasicWaveform(OscillatorType shape)
 {
     unsigned fftSize = waveTableSize();
     unsigned halfSize = fftSize / 2;
@@ -251,11 +251,11 @@ void WaveTable::generateBasicWaveform(int shape)
         // Calculate Fourier coefficients depending on the shape. Note that the overall scaling
         // (magnitude) of the waveforms is normalized in createBandLimitedTables().
         switch (shape) {
-        case OscillatorNode::SINE:
+        case OscillatorType::SINE:
             // Standard sine wave function.
             b = (n == 1) ? 1 : 0;
             break;
-        case OscillatorNode::SQUARE:
+        case OscillatorType::SQUARE:
             // Square-shaped waveform with the first half its maximum value and the second half its
             // minimum value.
             //
@@ -266,7 +266,7 @@ void WaveTable::generateBasicWaveform(int shape)
             //      = 2*(2/(n*pi)) for n odd
             b = (n & 1) ? 2 * piFactor : 0;
             break;
-        case OscillatorNode::SAWTOOTH:
+        case OscillatorType::SAWTOOTH:
             // Sawtooth-shaped waveform with the first half ramping from zero to maximum and the
             // second half from minimum to zero.
             //
@@ -274,7 +274,7 @@ void WaveTable::generateBasicWaveform(int shape)
             //      = (2/(n*pi))*(-1)^(n+1)
             b = piFactor * ((n & 1) ? 1 : -1);
             break;
-        case OscillatorNode::TRIANGLE:
+        case OscillatorType::TRIANGLE:
             // Triangle-shaped waveform going from 0 at time 0 to 1 at time pi/2 and back to 0 at
             // time pi.
             //

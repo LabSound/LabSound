@@ -28,6 +28,7 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/WaveTable.h"
+#include "LabSound/core/Synthesis.h"
 
 namespace WebCore {
 
@@ -38,16 +39,6 @@ class OscillatorNode : public AudioScheduledSourceNode
 {
     
 public:
-
-    enum OscillatorType
-    {
-        SINE = 0,
-        SQUARE = 1,
-        SAWTOOTH = 2,
-        TRIANGLE = 3,
-        CUSTOM = 4
-    };
-
     OscillatorNode(ContextRenderLock& r, float sampleRate);
     virtual ~OscillatorNode();
     
@@ -55,8 +46,8 @@ public:
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
 
-    unsigned short type() const { return m_type; }
-    void setType(ContextRenderLock& r, unsigned short, ExceptionCode&);
+    OscillatorType type() const { return m_type; }
+    void setType(ContextRenderLock& r, OscillatorType, ExceptionCode&);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
@@ -64,7 +55,7 @@ public:
     void setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable>);
 
 private:
-    void setType(bool isConstructor, unsigned short, ExceptionCode&);
+    void setType(bool isConstructor, OscillatorType, ExceptionCode&);
     void setWaveTable(bool isConstructor, std::shared_ptr<WaveTable>);
 
     // Returns true if there are sample-accurate timeline parameter changes.
@@ -73,7 +64,7 @@ private:
     virtual bool propagatesSilence(double now) const override;
 
     // One of the waveform types defined in the enum.
-    unsigned short m_type;
+    OscillatorType m_type;
     
     // Frequency value in Hertz.
     std::shared_ptr<AudioParam> m_frequency;

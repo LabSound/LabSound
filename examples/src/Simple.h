@@ -18,7 +18,7 @@ struct SimpleApp : public LabSoundExampleApp
             oscillator->connect(ac, context->destination().get(), 0, 0, ec);
             oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
-            oscillator->setType(r, 1, ec);
+            oscillator->setType(r, OscillatorType::SQUARE, ec);
             tonbiSound = tonbi.play(r, 0.0f);
         }
         
