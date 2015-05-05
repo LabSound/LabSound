@@ -55,8 +55,10 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::Contex
 
 class AudioContext
 {
+    
 	friend class LabSound::ContextGraphLock;
 	friend class LabSound::ContextRenderLock;
+    
 public:
 
 	// This is considering 32 is large enough for multiple channels audio.

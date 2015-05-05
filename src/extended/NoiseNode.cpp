@@ -92,6 +92,8 @@ namespace LabSound {
                     lastBrown = brown;
                 }
                 break;
+            default:
+                throw std::invalid_argument("Invalid type specified");
         }
         outputBus->clearSilentFlag();
     }

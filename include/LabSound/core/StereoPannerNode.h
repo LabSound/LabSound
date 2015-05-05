@@ -28,8 +28,8 @@ public:
 private:
     
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(std::shared_ptr<AudioContext>) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
     
     virtual void initialize();
     virtual void uninitialize();

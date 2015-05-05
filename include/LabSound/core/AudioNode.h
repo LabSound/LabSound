@@ -25,12 +25,8 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-<<<<<<< HEAD
-=======
-#include "LabSound/extended/ExceptionCodes.h"
 #include "LabSound/core/Mixing.h"
 
->>>>>>> 3829f133286d039c97c226a786060a425c69457d
 #include <algorithm>
 #include <atomic>
 #include <memory>
@@ -159,13 +155,8 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
-<<<<<<< HEAD
-    unsigned int numberOfInputs() const { return m_inputCount; }
-    unsigned int numberOfOutputs() const { return m_outputCount; }
-=======
     unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
     unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
->>>>>>> 3829f133286d039c97c226a786060a425c69457d
 
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
@@ -212,15 +203,16 @@ public:
     void unsilenceOutputs(ContextRenderLock&);
 
     unsigned long channelCount();
-    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&);
+    virtual void setChannelCount(ContextGraphLock&, unsigned long);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec);
+    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
 
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelCountMode);
 
 protected:
+    
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput>);

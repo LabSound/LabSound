@@ -57,7 +57,7 @@ public:
 
 private:
 
-    void setType(bool isConstructor, OscillatorType, ExceptionCode&);
+    void setType(bool isConstructor, OscillatorType);
     void setWaveTable(bool isConstructor, std::shared_ptr<WaveTable>);
 
     // Returns true if there are sample-accurate timeline parameter changes.

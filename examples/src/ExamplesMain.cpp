@@ -18,7 +18,6 @@
 #include "Spatialization.h"
 #include "Tremolo.h"
 #include "Validation.h"
-#include "InfiniteFM.h"
 #include "StereoPanning.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;

@@ -58,10 +58,10 @@ struct ValidationApp : public LabSoundExampleApp
             
             //megaSuperSaw->noteOn(0);
             
-            sinOsc->setType(r, 0);
+            sinOsc->setType(r, OscillatorType::SINE);
             sinOsc->start(0);
             
-            triOsc->setType(r, 1);
+            triOsc->setType(r, OscillatorType::TRIANGLE);
             triOsc->start(0);
             
             

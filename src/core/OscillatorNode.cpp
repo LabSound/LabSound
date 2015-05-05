@@ -65,8 +65,7 @@ OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
     m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
 
     // Sets up default wavetable.
-    ExceptionCode ec;
-    setType(r, m_type, ec);
+    setType(r, m_type);
     
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -79,7 +78,7 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-void OscillatorNode::setType(bool isConstructor, OscillatorType type, ExceptionCode& ec)
+void OscillatorNode::setType(bool isConstructor, OscillatorType type)
 {
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
@@ -116,18 +115,16 @@ void OscillatorNode::setType(bool isConstructor, OscillatorType type, ExceptionC
 			break;
 		case OscillatorType::CUSTOM:
 		default:
-			// Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
-			// called explicitly.
-			ec = NOT_SUPPORTED_ERR;
-			return;
+            throw std::invalid_argument("Cannot set wavtable for custom type");
     }
 
     setWaveTable(true, waveTable);
     m_type = type;
 }
 
-void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type, ExceptionCode& ec) {
-    setType(true, type, ec);
+void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type)
+{
+    setType(true, type);
 }
 
     

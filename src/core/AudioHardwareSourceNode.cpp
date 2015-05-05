@@ -97,7 +97,7 @@ void AudioHardwareSourceNode::process(ContextRenderLock& r, size_t numberOfFrame
     }
 }
 
-void AudioHardwareSourceNode::reset(std::shared_ptr<AudioContext>)
+void AudioHardwareSourceNode::reset(ContextRenderLock&)
 {
     
 }

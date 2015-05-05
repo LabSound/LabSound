@@ -3,6 +3,7 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/Mixing.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -57,10 +58,12 @@ public:
         const float* sourceL = inputBus->channel(0)->data();
         const float* sourceR = numberOfInputChannels > 1 ? inputBus->channel(1)->data() : sourceL;
         
-        float* destinationL = outputBus->channelByType(AudioBus::ChannelLeft)->mutableData();
-        float* destinationR = outputBus->channelByType(AudioBus::ChannelRight)->mutableData();
+        float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+        float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
+        
         if (!sourceL || !sourceR || !destinationL || !destinationR)
             return;
+        
         double gainL, gainR, panRadian;
         int n = framesToProcess;
         
@@ -136,8 +139,8 @@ public:
         const float* sourceL = inputBus->channel(0)->data();
         const float* sourceR = numberOfInputChannels > 1 ? inputBus->channel(1)->data() : sourceL;
         
-        float* destinationL = outputBus->channelByType(AudioBus::ChannelLeft)->mutableData();
-        float* destinationR = outputBus->channelByType(AudioBus::ChannelRight)->mutableData();
+        float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+        float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
         
         if (!sourceL || !sourceR || !destinationL || !destinationR)
             return;
@@ -295,12 +298,12 @@ void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
     }
     else
     {
-        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r.contextPtr()), framesToProcess);
+        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r), framesToProcess);
     }
     
 }
 
-void StereoPannerNode::reset(std::shared_ptr<AudioContext>)
+void StereoPannerNode::reset(ContextRenderLock &)
 {
     // No-op
 }

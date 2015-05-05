@@ -48,7 +48,7 @@ public:
     virtual void startRendering();
     
     unsigned maxChannelCount() const;
-    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&) override;
+    virtual void setChannelCount(ContextGraphLock&, unsigned long) override;
 };
 
 } // namespace WebCore
