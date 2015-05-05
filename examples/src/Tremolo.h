@@ -1,0 +1,50 @@
+#include "ExampleBaseApp.h"
+
+struct TremoloApp : public LabSoundExampleApp
+{
+    void PlayExample()
+    {
+        auto context = LabSound::init();
+        
+        std::shared_ptr<OscillatorNode> modulator;
+        std::shared_ptr<GainNode> modulatorGain;
+        
+        std::shared_ptr<OscillatorNode> osc;
+        
+        std::shared_ptr<ADSRNode> trigger;
+        
+        {
+            ContextGraphLock g(context, "Tremolo");
+            ContextRenderLock r(context, "Tremolo");
+            
+            modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            modulator->setType(r, OscillatorType::SINE, ec);
+            modulator->start(0);
+            modulator->frequency()->setValue(8.0f);
+            
+            modulatorGain = std::make_shared<GainNode>(context->sampleRate());
+            modulatorGain->gain()->setValue(10);
+            
+            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            osc->setType(r, OscillatorType::TRIANGLE, ec);
+            osc->frequency()->setValue(440);
+            osc->start(0);
+            
+            // Set up processing chain
+            // modulator > modulatorGain ---> osc frequency
+            //                                osc > context
+            modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
+            modulatorGain->connect(g, osc->frequency(), 0, ec);
+            osc->connect(context.get(), context->destination().get(), 0, 0, ec);
+        }
+        
+        int now = 0.0;
+        while(now < 5000)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            now += 1000;
+        }
+        
+        LabSound::finish(context);
+    }
+};

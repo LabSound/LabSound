@@ -95,11 +95,9 @@ namespace LabSound
         {
             if (!numberOfChannels())
                 return;
-
-            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
             
             // copy attributes to run time variables
-            float v = m_threshold->value(c);
+            float v = m_threshold->value(r);
             if (v <= 0) {
                 // dB to linear (could use the function from m_pd.h)
                 threshold = powf(10, (v*0.05f));
@@ -107,32 +105,32 @@ namespace LabSound
             else
                 threshold = 0;
 
-            v = m_ratio->value(c);
+            v = m_ratio->value(r);
             if (v >= 1) {
                 ratio = 1.f/v;
             }
             else
                 ratio = 1;
 
-            v = m_attack->value(c);
+            v = m_attack->value(r);
             if (v >= 0.001) {
                 attack = v * 0.001f;
             }
             else
                 attack = 0.000001f;
 
-            v = m_release->value(c);
+            v = m_release->value(r);
             if (v >= 0.001) {
                 release = v * 0.001f;
             }
             else
                 release = 0.000001f;
 
-            v = m_makeup->value(c);
+            v = m_makeup->value(r);
             // dB to linear (could use the function from m_pd.h)
             makeupGain = pow(10, (v * 0.05));
 
-            v = m_knee->value(c);
+            v = m_knee->value(r);
             if (v >= 0 && v <= 1)
             {
                 // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.

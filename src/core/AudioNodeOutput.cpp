@@ -101,11 +101,10 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
         ASSERT(r.context());
         
         // Announce to any nodes we're connected to that we changed our channel count for its input.
-        for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-            if (auto in = m_inputs[i]) {
-                auto connectionNode = in->node();
-                connectionNode->checkNumberOfChannelsForInput(r, in.get());
-            }
+        for (auto &in : m_inputs) {
+            auto connectionNode = in->node();
+            connectionNode->checkNumberOfChannelsForInput(r, in.get());
+        }
     }
 }
 
@@ -140,10 +139,7 @@ AudioBus* AudioNodeOutput::bus(ContextRenderLock& r) const
 
 unsigned AudioNodeOutput::fanOutCount()
 {
-    unsigned count = 0;
-    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-        count += m_inputs[i]? 1:0;
-    return count;
+    return m_inputs.size();
 }
 
 unsigned AudioNodeOutput::paramFanOutCount()
@@ -166,14 +162,8 @@ void AudioNodeOutput::addInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInp
     if (!input)
         return;
     
-    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-        if (!m_inputs[i]) {
-            m_inputs[i] = input;
-            m_inputs[i]->setDirty();
-            return;
-        }
-    
-    ASSERT(0 == "couldn't add input to AudioNodeOutput");
+    m_inputs.emplace_back(input);
+    input->setDirty();
 }
 
 void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> input)
@@ -181,22 +171,23 @@ void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNode
     if (!input)
         return;
     
-    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-        if (m_inputs[i] == input) {
-            m_inputs[i]->setDirty();
-            m_inputs[i].reset();
-            return;
+    for (std::vector<std::shared_ptr<AudioNodeInput>>::iterator i = m_inputs.begin(); i != m_inputs.end(); ++i) {
+        if (input == *i) {
+            input->setDirty();
+            i = m_inputs.erase(i);
         }
+    }
 }
 
 void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<AudioNodeOutput> self)
 {
+    ASSERT(g.context());
+    
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
-    for (int i = 0; i < AUDIONODEOUTPUT_MAXINPUTS; ++i)
-        if (auto ptr = self->m_inputs[i]) {
-            AudioNodeInput::disconnect(g, ptr, self);
-            self->m_inputs[i].reset();
-        }
+    while (self->m_inputs.size()) {
+        auto ptr = self->m_inputs.rbegin();
+        AudioNodeInput::disconnect(g, *ptr, self);
+    }
 }
 
 void AudioNodeOutput::addParam(ContextGraphLock& g, std::shared_ptr<AudioParam> param)

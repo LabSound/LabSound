@@ -15,10 +15,10 @@ struct SimpleApp : public LabSoundExampleApp
             ContextGraphLock g(context, "tone and sample");
             ContextRenderLock r(context, "tone and sample");
             oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            oscillator->connect(ac, context->destination().get(), 0, 0);
+            oscillator->connect(ac, context->destination().get(), 0, 0, ec);
             oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
-            oscillator->setType(r, 1);
+            oscillator->setType(r, OscillatorType::SQUARE, ec);
             tonbiSound = tonbi.play(r, 0.0f);
         }
         

@@ -45,26 +45,15 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0)
-    : AudioSummingJunction()
-    , m_name(name)
-    , m_value(defaultValue)
-    , m_defaultValue(defaultValue)
-    , m_minValue(minValue)
-    , m_maxValue(maxValue)
-    , m_units(units)
-    , m_smoothedValue(defaultValue)
-    , m_smoothingConstant(DefaultSmoothingConstant)
-    {}
-    
-    //virtual ~AudioParam() {}
+    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    virtual ~AudioParam();
     
     // AudioSummingJunction
     virtual bool canUpdateState() override { return true; }
     virtual void didUpdate(ContextRenderLock&) override { }
 
     // Intrinsic value.
-    float value(std::shared_ptr<AudioContext>);
+    float value(ContextRenderLock&);
     void setValue(float);
 
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
@@ -85,7 +74,7 @@ public:
 
     // Smoothly exponentially approaches to (de-zippers) the desired value.
     // Returns true if smoothed value has already snapped exactly to value.
-    bool smooth(std::shared_ptr<AudioContext>);
+    bool smooth(ContextRenderLock&);
 
     void resetSmoothedValue() { m_smoothedValue = m_value; }
     void setSmoothingConstant(double k) { m_smoothingConstant = k; }
@@ -125,6 +114,9 @@ private:
     double m_smoothingConstant;
     
     AudioParamTimeline m_timeline;
+    
+    class Data;
+    std::unique_ptr<Data> m_data;
 };
 
 } // namespace WebCore

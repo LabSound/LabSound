@@ -63,9 +63,11 @@ void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
         outputBus->copyFrom(*inputBus);
 }
 
-void AnalyserNode::reset(std::shared_ptr<AudioContext>)
+void AnalyserNode::reset(ContextRenderLock&)
 {
     m_analyser.reset();
 }
+    
+    
 
 } // namespace WebCore

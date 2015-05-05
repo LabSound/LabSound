@@ -90,7 +90,7 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
     // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
     // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
     // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
-    if (numberOfChannels() != buffer()->numberOfChannels()) {
+    if (numberOfChannels(r) != buffer()->numberOfChannels()) {
         outputBus->zero();
         return;
     }
@@ -138,8 +138,9 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
         return;
     }
 
-    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
+    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i) {
         m_destinationChannels[i] = outputBus->channel(i)->mutableData();
+    }
 
     // Render by reading directly from the buffer.
     if (!renderFromBuffer(r, outputBus, quantumFrameOffset, bufferFramesToProcess)) {
@@ -148,7 +149,7 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
     }
 
     // Apply the gain (in-place) to the output bus.
-    float totalGain = gain()->value(r.contextPtr()) * m_buffer->gain();
+    float totalGain = gain()->value(r) * m_buffer->gain();
     outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
     outputBus->clearSilentFlag();
 }
@@ -162,7 +163,7 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock
         if (framesToProcess > 0) {
             // We're not looping and we've reached the end of the sample data, but we still need to provide more output,
             // so generate silence for the remaining.
-            for (unsigned i = 0; i < numberOfChannels(); ++i)
+            for (unsigned i = 0; i < numberOfChannels(r); ++i)
                 memset(m_destinationChannels[i] + index, 0, sizeof(float) * framesToProcess);
         }
 
@@ -183,10 +184,10 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
     if (!bus || !buffer())
         return false;
 
-    unsigned numberOfChannels = this->numberOfChannels();
+    unsigned numChannels = numberOfChannels(r);
     unsigned busNumberOfChannels = bus->numberOfChannels();
 
-    bool channelCountGood = numberOfChannels && numberOfChannels == busNumberOfChannels;
+    bool channelCountGood = numChannels && numChannels == busNumberOfChannels;
     ASSERT(channelCountGood);
     if (!channelCountGood)
         return false;
@@ -206,7 +207,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
 
     // Potentially zero out initial frames leading up to the offset.
     if (destinationFrameOffset) {
-        for (unsigned i = 0; i < numberOfChannels; ++i) 
+        for (unsigned i = 0; i < numChannels; ++i) 
             memset(m_destinationChannels[i], 0, sizeof(float) * destinationFrameOffset);
     }
 
@@ -250,7 +251,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
     double pitchRate = totalPitchRate(r);
 
     // Sanity check that our playback rate isn't larger than the loop size.
-    if (pitchRate >= virtualDeltaFrames)
+    if (fabs(pitchRate) >= virtualDeltaFrames)
         return false;
 
     // Get local copy.
@@ -275,7 +276,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
             int framesThisTime = std::min(framesToProcess, framesToEnd);
             framesThisTime = std::max(0, framesThisTime);
 
-            for (unsigned i = 0; i < numberOfChannels; ++i) 
+            for (unsigned i = 0; i < numChannels; ++i) 
                 memcpy(destinationChannels[i] + writeIndex, sourceChannels[i] + readIndex, sizeof(float) * framesThisTime);
 
             writeIndex += framesThisTime;
@@ -311,7 +312,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
                 break;
 
             // Linear interpolation.
-            for (unsigned i = 0; i < numberOfChannels; ++i) {
+            for (unsigned i = 0; i < numChannels; ++i) {
                 float* destination = destinationChannels[i];
                 const float* source = sourceChannels[i];
 
@@ -342,10 +343,10 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
 }
 
 
-void AudioBufferSourceNode::reset(std::shared_ptr<AudioContext> c)
+void AudioBufferSourceNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
-    m_lastGain = gain()->value(c);
+    m_lastGain = gain()->value(r);
 }
 
 bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
@@ -373,7 +374,7 @@ bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<Audi
     return true;
 }
 
-unsigned AudioBufferSourceNode::numberOfChannels()
+unsigned AudioBufferSourceNode::numberOfChannels(ContextRenderLock& r)
 {
     return output(0)->numberOfChannels();
 }
@@ -409,7 +410,7 @@ double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
     if (buffer())
         sampleRateFactor = buffer()->sampleRate() / sampleRate();
     
-    double basePitchRate = playbackRate()->value(r.contextPtr());
+    double basePitchRate = playbackRate()->value(r);
 
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
 

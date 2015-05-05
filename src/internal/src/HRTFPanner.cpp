@@ -149,14 +149,14 @@ void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevati
 
     // Normally, we'll just be dealing with mono sources.
     // If we have a stereo input, implement stereo panning with left source processed by left HRTF, and right source by right HRTF.
-    const AudioChannel* inputChannelL = inputBus->channelByType(AudioBus::ChannelLeft);
-    const AudioChannel* inputChannelR = numInputChannels > 1 ? inputBus->channelByType(AudioBus::ChannelRight) : 0;
+    const AudioChannel* inputChannelL = inputBus->channelByType(Channel::Left);
+    const AudioChannel* inputChannelR = numInputChannels > 1 ? inputBus->channelByType(Channel::Right) : 0;
 
     // Get source and destination pointers.
     const float* sourceL = inputChannelL->data();
     const float* sourceR = numInputChannels > 1 ? inputChannelR->data() : sourceL;
-    float* destinationL = outputBus->channelByType(AudioBus::ChannelLeft)->mutableData();
-    float* destinationR = outputBus->channelByType(AudioBus::ChannelRight)->mutableData();
+    float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+    float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
 
     double azimuthBlend;
     int desiredAzimuthIndex = calculateDesiredAzimuthIndexAndBlend(azimuth, azimuthBlend);

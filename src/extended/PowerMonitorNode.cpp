@@ -51,8 +51,9 @@ namespace LabSound {
         {
             std::vector<const float*> channels;
             unsigned numberOfChannels = bus->numberOfChannels();
-            for (unsigned c = 0; c < numberOfChannels; ++ c)
-                channels.push_back(bus->channel(c)->data());
+            for (unsigned i = 0; i < numberOfChannels; ++i) {
+                channels.push_back(bus->channel(i)->data());
+            }
 
             int start = framesToProcess - _windowSize;
             int end = framesToProcess;
@@ -85,7 +86,7 @@ namespace LabSound {
             outputBus->copyFrom(*bus);
     }
     
-    void PowerMonitorNode::reset(std::shared_ptr<WebCore::AudioContext>)
+    void PowerMonitorNode::reset(ContextRenderLock&)
     {
         _db = 0;
     }

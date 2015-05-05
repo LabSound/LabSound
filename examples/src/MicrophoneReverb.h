@@ -20,7 +20,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             ContextRenderLock r(context, "live reverb recording");
             input = MakeHardwareSourceNode(r);
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
-            convolve->setBuffer(ir.audioBuffer);
+            convolve->setBuffer(g, ir.audioBuffer);
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(2.f);
             dryGain = std::make_shared<GainNode>(context->sampleRate());

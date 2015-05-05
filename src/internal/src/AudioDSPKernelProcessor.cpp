@@ -83,7 +83,8 @@ void AudioDSPKernelProcessor::process(ContextRenderLock& r, const AudioBus* sour
         return;
         
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+        m_kernels[i]->process(r, source->channel(i)->data(),
+                                 destination->channel(i)->mutableData(), framesToProcess);
 }
 
 // Resets filter state

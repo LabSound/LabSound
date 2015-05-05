@@ -4,10 +4,12 @@
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/Synthesis.h"
 
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/ExceptionCodes.h"
 
 #include "internal/AudioBus.h"
 
@@ -39,11 +41,11 @@ namespace LabSound
 
 		}
 
-        void update(std::shared_ptr<AudioContext> c) 
+        void update(ContextRenderLock& r)
 		{
-            if (cachedFrequency != frequency->value(c)) 
+            if (cachedFrequency != frequency->value(r))
 			{
-                cachedFrequency = frequency->value(c);
+                cachedFrequency = frequency->value(r);
                 for (auto i : saws)
 				{
                     i->frequency()->setValue(cachedFrequency);
@@ -51,9 +53,9 @@ namespace LabSound
                 }
             }
             
-            if (cachedDetune != detune->value(c)) 
+            if (cachedDetune != detune->value(r))
 			{
-                cachedDetune = detune->value(c);
+                cachedDetune = detune->value(r);
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
                 for (size_t i = 0; i < saws.size(); ++i) 
 				{
@@ -64,18 +66,16 @@ namespace LabSound
         
         void update(ContextRenderLock& r, bool okayToReallocate) 
 		{
-
-            std::shared_ptr<AudioContext> c = r.contextPtr();
-            
             int currentN = saws.size();
-            int n = int(sawCount->value(c) + 0.5f);
+            int n = int(sawCount->value(r) + 0.5f);
 
             if (okayToReallocate && (n != currentN)) 
 			{
+                ExceptionCode ec;
 
                 for (auto i : sawStorage) 
 				{
-                    c->disconnect(i);
+                    r.context()->disconnect(i);
                 }
 
                 sawStorage.clear();
@@ -87,9 +87,11 @@ namespace LabSound
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
+                
+                auto c = r.context();
                 for (auto i : sawStorage) 
 				{
-                    i->setType(r, OscillatorNode::SAWTOOTH);
+                    i->setType(r, OscillatorType::SAWTOOTH, ec);
                     c->connect(i, gainNode);
                     i->start(0);
                 }
@@ -98,7 +100,7 @@ namespace LabSound
                 cachedDetune = FLT_MAX;
             }
             
-            update(r.contextPtr());
+            update(r);
         }
 		
 		std::shared_ptr<ADSRNode> gainNode;
@@ -139,7 +141,7 @@ namespace LabSound
 
     void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess) 
 	{
-        internalNode->update(r.contextPtr());
+        internalNode->update(r);
 
         AudioBus * outputBus = output(0)->bus(r);
 

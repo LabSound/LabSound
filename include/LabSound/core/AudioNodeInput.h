@@ -54,7 +54,7 @@ public:
     // Can be called from any thread.
     AudioNode* node() const { return m_node; }
 
-    // Must be called with the context's graph lock. Why static? 
+    // Must be called with the context's graph lock. Static because a shared pointer to this is required
     static void connect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
     static void disconnect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
@@ -62,29 +62,26 @@ public:
     // In the case of multiple connections it sums the result into an internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    AudioBus* pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
-    AudioBus* bus(ContextRenderLock& r);
+    AudioBus* bus(ContextRenderLock&);
     
     // updateInternalBus() updates m_internalSummingBus appropriately for the number of channels.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
-    void updateInternalBus(ContextRenderLock& r);
+    void updateInternalBus(ContextRenderLock&);
 
     // The number of channels of the connection with the largest number of channels.
     // Only valid during render quantum because it is dependent on the active bus
-    unsigned numberOfChannels(ContextRenderLock& r) const;
+    unsigned numberOfChannels(ContextRenderLock&) const;
     
 private:
 
     AudioNode* m_node;
 
-    // The number of channels of the rendering connection with the largest number of channels.
-    unsigned numberOfRenderingChannels(ContextRenderLock& r);
-
     // Called from context's audio thread.
-    AudioBus * internalSummingBus();
-    void sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess);
+    AudioBus * internalSummingBus(ContextRenderLock&);
+    void sumAllConnections(ContextRenderLock&, AudioBus* summingBus, size_t framesToProcess);
 
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };

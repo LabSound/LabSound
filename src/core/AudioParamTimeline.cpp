@@ -23,6 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
 
@@ -38,7 +39,10 @@ using namespace std;
 
 namespace WebCore {
 
-// &&& Threading / Locking
+    namespace {
+        // @TODO to resolve - is there any reason this should be per object instead of static?
+        std::mutex m_eventsMutex;
+    }
 
 void AudioParamTimeline::setValueAtTime(float value, float time)
 {
@@ -67,7 +71,7 @@ void AudioParamTimeline::setValueCurveAtTime(std::shared_ptr<std::vector<float>>
 
 static bool isValidNumber(float x)
 {
-    return !isnan(x) && !isinf(x);
+    return !std::isnan(x) && !std::isinf(x);
 }
 
 void AudioParamTimeline::insertEvent(const ParamEvent& event)
@@ -83,7 +87,9 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
     ASSERT(isValid);
     if (!isValid)
         return;
-        
+
+    std::lock_guard<std::mutex> lock(m_eventsMutex);
+
     unsigned i = 0;
     float insertTime = event.time();
     for (i = 0; i < m_events.size(); ++i) {
@@ -102,6 +108,8 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
 
 void AudioParamTimeline::cancelScheduledValues(float startTime)
 {
+    std::lock_guard<std::mutex> lock(m_eventsMutex);
+
     // Remove all events starting at startTime.
     for (unsigned i = 0; i < m_events.size(); ++i) {
         if (m_events[i].time() >= startTime) {
@@ -111,11 +119,14 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     }
 }
 
-float AudioParamTimeline::valueForContextTime(std::shared_ptr<AudioContext> context, float defaultValue, bool& hasValue)
+float AudioParamTimeline::valueForContextTime(ContextRenderLock& r, float defaultValue, bool& hasValue)
 {
-    ASSERT(context);
+    auto context = r.context();
+    if (!context)
+        return defaultValue;
 
-    if (!context || !m_events.size() || context->currentTime() < m_events[0].time()) {
+    std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
+    if (!lock.owns_lock() || !m_events.size() || context->currentTime() < m_events[0].time()) {
         hasValue = false;
         return defaultValue;
     }
@@ -157,7 +168,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         return defaultValue;
 
     // Return default value if there are no events matching the desired time range.
-    if (!m_events.size() || endTime <= m_events[0].time()) {
+    std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
+    if (!lock.owns_lock() || !m_events.size() || endTime <= m_events[0].time()) {
         for (unsigned i = 0; i < numberOfValues; ++i)
             values[i] = defaultValue;
         return defaultValue;
@@ -171,9 +183,9 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     // until we reach the first event time.
     double firstEventTime = m_events[0].time();
     if (firstEventTime > startTime) {
-        double fillToTime = min(endTime, firstEventTime);
+        double fillToTime = std::min(endTime, firstEventTime);
         unsigned fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
-        fillToFrame = min(fillToFrame, numberOfValues);
+        fillToFrame = std::min(fillToFrame, numberOfValues);
         for (; writeIndex < fillToFrame; ++writeIndex)
             values[writeIndex] = defaultValue;
 
@@ -204,9 +216,9 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         float k = deltaTime > 0 ? 1 / deltaTime : 0;
         double sampleFrameTimeIncr = 1 / sampleRate;
 
-        double fillToTime = min(endTime, time2);
+        double fillToTime = std::min(endTime, time2);
         unsigned fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
-        fillToFrame = min(fillToFrame, numberOfValues);
+        fillToFrame = std::min(fillToFrame, numberOfValues);
 
         ParamEvent::Type nextEventType = nextEvent ? static_cast<ParamEvent::Type>(nextEvent->type()) : ParamEvent::LastType /* unknown */;
 
@@ -298,9 +310,9 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     // instead of the next event time.
                     unsigned nextEventFillToFrame = fillToFrame;
                     float nextEventFillToTime = fillToTime;
-                    fillToTime = min(endTime, time1 + duration);
+                    fillToTime = std::min(endTime, time1 + duration);
                     fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
-                    fillToFrame = min(fillToFrame, numberOfValues);
+                    fillToFrame = std::min(fillToFrame, numberOfValues);
 
                     // Index into the curve data using a floating-point value.
                     // We're scaling the number of curve points by the duration (see curvePointsPerFrame).

@@ -1,5 +1,10 @@
 #pragma once
 
+// LabSound AudioContext
+//
+// Copyright (c) 2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
 #ifndef AudioContext_h
 #define AudioContext_h
 
@@ -37,7 +42,9 @@ class AudioNodeOutput;
 template<class Input, class Output>
 struct PendingConnection
 {
-	PendingConnection(std::shared_ptr<Input> from, std::shared_ptr<Output> to, bool connect) : from(from), to(to), connect(connect) {}
+	PendingConnection(std::shared_ptr<Input> from,
+                      std::shared_ptr<Output> to,
+                      bool connect) : from(from), to(to), connect(connect) {}
 	bool connect; // true: connect; false: disconnect
 	std::shared_ptr<Input> from;
 	std::shared_ptr<Output> to;
@@ -54,7 +61,7 @@ public:
 
 	// This is considering 32 is large enough for multiple channels audio.
 	// It is somewhat arbitrary and could be increased if necessary.
-	static const int maxNumberOfChannels = 32;
+	static const unsigned maxNumberOfChannels = 32;
 
 	const char * m_graphLocker;
 	const char * m_renderLocker;
@@ -100,12 +107,6 @@ public:
 
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
-
-	// Called periodically at the end of each render quantum to dereference finished source nodes.
-	void derefFinishedSourceNodes(LabSound::ContextGraphLock& r);
-
-	// When a source node has no more processing to do (has finished playing), then it tells the context to dereference it.
-	void notifyNodeFinishedProcessing(LabSound::ContextRenderLock &, AudioNode *);
 
 	void handlePreRenderTasks(LabSound::ContextRenderLock &); 	// Called at the START of each render quantum.
 	void handlePostRenderTasks(LabSound::ContextRenderLock &); 	// Called at the END of each render quantum.
@@ -177,8 +178,6 @@ private:
 	std::shared_ptr<AudioListener> m_listener;
 	std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
 	std::shared_ptr<AudioBuffer> m_renderTarget;
-
-	std::vector<std::shared_ptr<AudioNode>> m_finishedNodes;
 
 	std::vector<std::shared_ptr<AudioNode>> m_referencedNodes;
 

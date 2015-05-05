@@ -18,7 +18,7 @@ namespace LabSound {
         virtual ~PowerMonitorNode();
         
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
+        virtual void reset(ContextRenderLock&) override;
 
         // instantaneous estimation of power
         float db() const { return _db; }

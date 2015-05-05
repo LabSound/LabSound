@@ -66,11 +66,11 @@ void DynamicsCompressorNode::process(ContextRenderLock& r, size_t framesToProces
     AudioBus* outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
-    float threshold = m_threshold->value(r.contextPtr());
-    float knee = m_knee->value(r.contextPtr());
-    float ratio = m_ratio->value(r.contextPtr());
-    float attack = m_attack->value(r.contextPtr());
-    float release = m_release->value(r.contextPtr());
+    float threshold = m_threshold->value(r);
+    float knee = m_knee->value(r);
+    float ratio = m_ratio->value(r);
+    float attack = m_attack->value(r);
+    float release = m_release->value(r);
 
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamThreshold, threshold);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamKnee, knee);
@@ -84,7 +84,7 @@ void DynamicsCompressorNode::process(ContextRenderLock& r, size_t framesToProces
     m_reduction->setValue(reduction);
 }
 
-void DynamicsCompressorNode::reset(std::shared_ptr<AudioContext>)
+void DynamicsCompressorNode::reset(ContextRenderLock&)
 {
     m_dynamicsCompressor->reset();
 }

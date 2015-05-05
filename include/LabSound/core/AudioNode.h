@@ -25,6 +25,12 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
+<<<<<<< HEAD
+=======
+#include "LabSound/extended/ExceptionCodes.h"
+#include "LabSound/core/Mixing.h"
+
+>>>>>>> 3829f133286d039c97c226a786060a425c69457d
 #include <algorithm>
 #include <atomic>
 #include <memory>
@@ -59,7 +65,6 @@ namespace LabSound
         NodeTypeAnalyser,
         NodeTypeDynamicsCompressor,
         NodeTypeWaveShaper,
-        NodeTypeEnd,
 
         // Labsound Extensions
         NodeTypeADSR,
@@ -76,6 +81,9 @@ namespace LabSound
         NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
 		NodeTypeSTK, 
+
+        // enumeration terminator
+        NodeTypeEnd,
     };
 
 }
@@ -103,9 +111,6 @@ public:
 		ProcessingSizeInFrames = 128
 	};
     
-    #define AUDIONODE_MAXINPUTS 4
-    #define AUDIONODE_MAXOUTPUTS 4
-
     AudioNode(float sampleRate);
     virtual ~AudioNode();
 
@@ -129,7 +134,7 @@ public:
         NodeTypeWaveShaper,
         NodeTypeEnd
     };
-
+    
     NodeType nodeType() const { return m_nodeType; }
     void setNodeType(NodeType);
 
@@ -144,7 +149,7 @@ public:
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
-    virtual void reset(std::shared_ptr<AudioContext>) = 0;
+    virtual void reset(ContextRenderLock&) = 0;
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
@@ -154,8 +159,13 @@ public:
     bool isInitialized() const { return m_isInitialized; }
     void lazyInitialize();
 
+<<<<<<< HEAD
     unsigned int numberOfInputs() const { return m_inputCount; }
     unsigned int numberOfOutputs() const { return m_outputCount; }
+=======
+    unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
+    unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
+>>>>>>> 3829f133286d039c97c226a786060a425c69457d
 
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
@@ -172,6 +182,9 @@ public:
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
     void processIfNecessary(ContextRenderLock& r, size_t framesToProcess);
+    
+    // @TODO webkit change 1f083e8 and 2bd2dc2 adds support for different behaviors on mixing such as
+    // clamping the max number of channels, and mixing 5.1 down to mono
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
@@ -198,16 +211,29 @@ public:
     void silenceOutputs(ContextRenderLock&);
     void unsilenceOutputs(ContextRenderLock&);
 
+    unsigned long channelCount();
+    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&);
+
+    ChannelCountMode channelCountMode() const { return m_channelCountMode; }
+    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec);
+
+    ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
+    void setChannelInterpretation(ChannelCountMode);
+
 protected:
     // Inputs and outputs must be created before the AudioNode is initialized.
-    void addInput(std::shared_ptr<AudioNodeInput>);
-    void addOutput(std::shared_ptr<AudioNodeOutput>);
+    // It is only legal to call this during a constructor.
+    void addInput(std::unique_ptr<AudioNodeInput>);
+    void addOutput(std::unique_ptr<AudioNodeOutput>);
     
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess);
-
+    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess);
+    
+    // Force all inputs to take any channel interpretation changes into account.
+    void updateChannelsForInputs(ContextGraphLock&);
+    
 private:
     friend class AudioContext;
     
@@ -215,10 +241,8 @@ private:
     NodeType m_nodeType;
     float m_sampleRate;
 
-    std::shared_ptr<AudioNodeInput> m_inputs[AUDIONODE_MAXINPUTS];
-    std::shared_ptr<AudioNodeOutput> m_outputs[AUDIONODE_MAXOUTPUTS];
-    int m_inputCount;
-    int m_outputCount;
+    std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
+    std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
     double m_lastProcessingTime;
     double m_lastNonSilentTime;
@@ -234,6 +258,10 @@ private:
     static int s_nodeCount[NodeTypeEnd];
 #endif
     
+protected:
+    unsigned m_channelCount;
+    ChannelCountMode m_channelCountMode;
+    ChannelInterpretation m_channelInterpretation;
 };
 
 } // namespace WebCore

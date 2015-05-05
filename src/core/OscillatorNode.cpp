@@ -50,7 +50,7 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
 OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
     : AudioScheduledSourceNode(sampleRate)
-    , m_type(SINE)
+    , m_type(OscillatorType::SINE)
     , m_firstRender(true)
     , m_virtualReadIndex(0)
     , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
@@ -64,7 +64,9 @@ OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
     // Default to no detuning.
     m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
 
-    setType(r, m_type);
+    // Sets up default wavetable.
+    ExceptionCode ec;
+    setType(r, m_type, ec);
     
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -77,52 +79,58 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-void OscillatorNode::setType(ContextRenderLock& r, unsigned short type)
+void OscillatorNode::setType(bool isConstructor, OscillatorType type, ExceptionCode& ec)
 {
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
 
     switch (type) 
 	{
-		case SINE:
+		case OscillatorType::SINE:
 			if (!s_waveTableSine)
 			{
-				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SINE);
+				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorType::SINE);
 			}
 			waveTable = s_waveTableSine;
 			break;
-		case SQUARE:
+		case OscillatorType::SQUARE:
 			if (!s_waveTableSquare)
 			{
-				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SQUARE);
+				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorType::SQUARE);
 			}
 			waveTable = s_waveTableSquare;
 			break;
-		case SAWTOOTH:
+		case OscillatorType::SAWTOOTH:
 			if (!s_waveTableSawtooth)
 			{
-				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorNode::SAWTOOTH);
+				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorType::SAWTOOTH);
 			}
 			waveTable = s_waveTableSawtooth;
 			break;
-		case TRIANGLE:
+		case OscillatorType::TRIANGLE:
 			if (!s_waveTableTriangle)
 			{           
-				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorNode::TRIANGLE);
+				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
 			}
 			waveTable = s_waveTableTriangle;
 			break;
-		case CUSTOM:
+		case OscillatorType::CUSTOM:
 		default:
-            throw std::invalid_argument("setType cannot be used on custom oscillator nodes");
-            break;
-
+			// Throw exception for invalid types, including CUSTOM since setWaveTable() method must be
+			// called explicitly.
+			ec = NOT_SUPPORTED_ERR;
+			return;
     }
 
-    setWaveTable(r, waveTable);
+    setWaveTable(true, waveTable);
     m_type = type;
 }
 
+void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type, ExceptionCode& ec) {
+    setType(true, type, ec);
+}
+
+    
 bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
@@ -153,7 +161,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
         m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_frequency->smooth(c);
+        m_frequency->smooth(r);
         float frequency = m_frequency->smoothedValue();
         finalScale *= frequency;
     }
@@ -177,7 +185,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
         }
     } else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_detune->smooth(c);
+        m_detune->smooth(r);
         float detune = m_detune->smoothedValue();
         float detuneScale = powf(2, detune / 1200);
         finalScale *= detuneScale;
@@ -303,15 +311,21 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::reset(std::shared_ptr<AudioContext>)
+void OscillatorNode::reset(ContextRenderLock&)
 {
     m_virtualReadIndex = 0;
+}
+
+void OscillatorNode::setWaveTable(bool isConstructor, std::shared_ptr<WaveTable> waveTable)
+{
+    m_waveTable = waveTable;
+    m_type = OscillatorType::CUSTOM;
 }
 
 void OscillatorNode::setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable> waveTable)
 {
     m_waveTable = waveTable;
-    m_type = CUSTOM;
+    m_type = OscillatorType::CUSTOM;
 }
 
 bool OscillatorNode::propagatesSilence(double now) const

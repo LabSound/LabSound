@@ -28,6 +28,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBuffer.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioBus.h"
@@ -51,7 +52,12 @@ ConvolverNode::ConvolverNode(float sampleRate)
     , m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    
+    // Node-specific default mixing rules.
+    m_channelCount = 1;
+    m_channelCountMode = ChannelCountMode::ClampedMax;
+    m_channelInterpretation = ChannelInterpretation::Speakers;
     
     setNodeType(NodeTypeConvolver);
     
@@ -87,7 +93,7 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
     m_reverb->process(r, input(0)->bus(r), outputBus, framesToProcess);
 }
 
-void ConvolverNode::reset(std::shared_ptr<AudioContext>)
+void ConvolverNode::reset(ContextRenderLock&)
 {
     m_newReverb.reset();
     m_swapOnRender = true;
@@ -110,9 +116,9 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setBuffer(ContextGraphLock& g, std::shared_ptr<AudioBuffer> buffer)
 {
-    if (!buffer)
+    if (!buffer || !g.context())
         return;
 
     unsigned numberOfChannels = buffer->numberOfChannels();

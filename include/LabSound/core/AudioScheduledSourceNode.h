@@ -44,10 +44,7 @@ public:
     // UNSCHEDULED_STATE - Initial playback state. Created, but not yet scheduled.
     // SCHEDULED_STATE - Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing.
     // PLAYING_STATE - Generating sound.
-    // FINISHED_STATE - Finished generating sound.
-    // The state can only transition to the next state, except for the FINISHED_STATE which can
-    // never be changed.
-    enum PlaybackState 
+    enum PlaybackState
 	{
         UNSCHEDULED_STATE = 0,
         SCHEDULED_STATE = 1,
@@ -104,8 +101,6 @@ protected:
 
     // this is the base declaration
     virtual void clearPannerNode() {}
-    
-    static const double UnknownTime; // why static? 
 };
 
 } // namespace WebCore

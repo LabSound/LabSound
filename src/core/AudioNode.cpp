@@ -41,6 +41,7 @@
 using namespace std;
 
 namespace WebCore {
+    
 
 AudioNode::AudioNode(float sampleRate)
     : m_isInitialized(false)
@@ -51,9 +52,10 @@ AudioNode::AudioNode(float sampleRate)
     , m_normalRefCount(1) // start out with normal refCount == 1 (like WTF::RefCounted class)
     , m_connectionRefCount(0)
     , m_isMarkedForDeletion(false)
-    , m_inputCount(0)
-    , m_outputCount(0)
-{
+    , m_channelCount(2)
+    , m_channelCountMode(ChannelCountMode::Max)
+    , m_channelInterpretation(ChannelInterpretation::Speakers)
+    {
 #if DEBUG_AUDIONODE_REFERENCES
     if (!s_isNodeCountInitialized) {
         s_isNodeCountInitialized = true;
@@ -64,22 +66,6 @@ AudioNode::AudioNode(float sampleRate)
 
 AudioNode::~AudioNode()
 {
-    /// @TODO the problem is that the AudioNodeOutput retains a pointer to AudioNode even though AudioNode is dead.
-    /// AudioNode should disconnect all here, but it can't because it needs context locks.
-    /// it can't get context locks because it's a destructor.
-    /// This needs an architectural revision
-    /// because setting initialized false only works if the memory is not reclaimed before the processing loop is called again.
-    /// BAD.
-    
-    m_isInitialized = false;    // mark in case a dead pointer was retained somewhere so it can be seen while debugging
-#if 0
-    ContextRenderLock r;
-    ContextGraphLock g;
-    for (int i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
-        if (auto ptr = m_outputs[i])
-            AudioNodeOutput::disconnectAll(g, r, ptr);
-#endif
-    
 #if DEBUG_AUDIONODE_REFERENCES
     --s_nodeCount[nodeType()];
     fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d %d\n", this, nodeType(), m_normalRefCount.load(), m_connectionRefCount.load());
@@ -111,42 +97,28 @@ void AudioNode::lazyInitialize()
         initialize();
 }
 
-void AudioNode::addInput(std::shared_ptr<AudioNodeInput> input)
+void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
-    static mutex inputLock;
-    lock_guard<mutex> lock(inputLock);
-    if (m_inputCount < AUDIONODE_MAXINPUTS) {
-        m_inputs[m_inputCount] = input;
-        ++m_inputCount;
-    }
-    else {
-        ASSERT(0 == "Too many inputs");
-    }
+    m_inputs.emplace_back(std::move(input));
 }
 
-void AudioNode::addOutput(std::shared_ptr<AudioNodeOutput> output)
+void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
-    static mutex outputLock;
-    lock_guard<mutex> lock(outputLock);
-    if (m_outputCount < AUDIONODE_MAXOUTPUTS) {
-        m_outputs[m_outputCount] = output;
-        ++m_outputCount;
-    }
-    else {
-        ASSERT(0 == "Too many outputs");
-    }
+    m_outputs.emplace_back(std::move(output));
 }
 
+// safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
 {
-    if (i < AUDIONODE_MAXINPUTS)
+    if (i < m_inputs.size())
         return m_inputs[i];
     return 0;
 }
 
+    // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
-    if (i < AUDIONODE_MAXOUTPUTS)
+    if (i < m_outputs.size())
         return m_outputs[i];
     return 0;
 }
@@ -178,11 +150,50 @@ void AudioNode::disconnect(unsigned outputIndex)
 {
     if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
+    /// @TODO FIXME
     // &&& can't do this, it's recursive
     // &&& context->disconnect(this->output(outputIndex));
 }
 
+unsigned long AudioNode::channelCount()
+{
+    return m_channelCount;
+}
+
+void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount, ExceptionCode& ec)
+{
+    if (!g.context()) {
+        ec = INVALID_STATE_ERR;
+        return;
+    }
     
+    if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels) {
+        if (m_channelCount != channelCount) {
+            m_channelCount = channelCount;
+            if (m_channelCountMode != ChannelCountMode::Max)
+                updateChannelsForInputs(g);
+        }
+    } else
+        ec = INVALID_STATE_ERR;
+}
+
+void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec)
+{
+    if (mode >= ChannelCountMode::End || !g.context())
+        ec = INVALID_STATE_ERR;
+    else {
+        if (m_channelCountMode != mode) {
+            m_channelCountMode = mode;
+            updateChannelsForInputs(g);
+        }
+    }
+}
+
+void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
+{
+    for (auto input : m_inputs)
+        input->changedOutputs(g);
+}
     
 void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 {
@@ -220,12 +231,11 @@ void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     ASSERT(r.context());
-    for (int i = 0; i < AUDIONODE_MAXINPUTS; ++i) {
-        if (m_inputs[i].get() == input) {
+    for (auto in : m_inputs)
+        if (in.get() == input) {
             input->updateInternalBus(r);
             break;
         }
-    }
 }
 
 bool AudioNode::propagatesSilence(double now) const
@@ -236,34 +246,30 @@ bool AudioNode::propagatesSilence(double now) const
 void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     ASSERT(r.context());
+    
     // Process all of the AudioNodes connected to our inputs.
-    for (unsigned i = 0; i < AUDIONODE_MAXINPUTS; ++i)
-        if (auto in = input(i))
-            in->pull(r, 0, framesToProcess);
+    for (auto in : m_inputs)
+        in->pull(r, 0, framesToProcess);
 }
 
 bool AudioNode::inputsAreSilent(ContextRenderLock& r)
 {
-    for (unsigned i = 0; i < AUDIONODE_MAXINPUTS; ++i) {
-        if (auto in = input(i))
-            if (!in->bus(r)->isSilent())
-                return false;
-    }
+    for (auto in : m_inputs)
+        if (!in->bus(r)->isSilent())
+            return false;
     return true;
 }
 
 void AudioNode::silenceOutputs(ContextRenderLock& r)
 {
-    for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
-        if (auto out = output(i))
-            out->bus(r)->zero();
+    for (auto out : m_outputs)
+        out->bus(r)->zero();
 }
 
 void AudioNode::unsilenceOutputs(ContextRenderLock& r)
 {
-    for (unsigned i = 0; i < AUDIONODE_MAXOUTPUTS; ++i)
-        if (auto out = output(i))
-            out->bus(r)->clearSilentFlag();
+    for (auto out : m_outputs)
+        out->bus(r)->clearSilentFlag();
 }
 
 #if DEBUG_AUDIONODE_REFERENCES

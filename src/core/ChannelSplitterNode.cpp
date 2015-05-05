@@ -72,7 +72,7 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
     }
 }
 
-void ChannelSplitterNode::reset(std::shared_ptr<AudioContext>)
+void ChannelSplitterNode::reset(ContextRenderLock&)
 {
 }
 

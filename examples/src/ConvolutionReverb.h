@@ -16,9 +16,10 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
         std::shared_ptr<AudioNode> voice;
         
         {
-            ContextRenderLock r(context, "reverb");
+            ContextGraphLock g(context, "reverb app");
+            ContextRenderLock r(context, "reverb app");
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
-            convolve->setBuffer(impulseResponse.audioBuffer);
+            convolve->setBuffer(g, impulseResponse.audioBuffer);
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(2.f);
             dryGain = std::make_shared<GainNode>(context->sampleRate());

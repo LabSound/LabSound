@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #include "LabSound/core/AudioNodeInput.h"
@@ -40,8 +40,8 @@ namespace LabSound {
             if (!numberOfChannels())
                 return;
             
-            const float* carrierP = source->channel(0)->data();
-            const float* modP = source->channel(1)->data();
+            const float* carrierP = source->channelByType(Channel::Left)->data();
+            const float* modP = source->channelByType(Channel::Right)->data();
 
             if (!modP && carrierP) 
 			{

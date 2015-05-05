@@ -111,6 +111,13 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
         }
 }
     
+void AudioSummingJunction::changedOutputs(ContextGraphLock&)
+{
+    if (!m_renderingStateNeedUpdating && canUpdateState()) {
+        m_renderingStateNeedUpdating = true;
+    }
+}
+    
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
     if (r.context() && m_renderingStateNeedUpdating && canUpdateState()) {
@@ -123,10 +130,10 @@ void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
                 m_renderingOutputs.push_back(*i);
                 i->lock()->updateRenderingState(r);
             }
+
+        didUpdate(r);
+        m_renderingStateNeedUpdating = false;
     }
-    
-    didUpdate(r);
-    m_renderingStateNeedUpdating = false;
 }
 
 } // namespace WebCore

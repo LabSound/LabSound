@@ -1,3 +1,11 @@
+
+
+// LabSound AudioContext
+//
+// Copyright (c) 2013 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
+
+
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioListener.h"
@@ -6,7 +14,9 @@
 #include "LabSound/core/DefaultAudioDestinationNode.h"
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/OscillatorNode.h"
-#include "LabSound/core/AudioHardwareSourceNode.h"
+#include "LabSound/core/MediaStream.h"
+#include "LabSound/core/MediaStreamAudioDestinationNode.h"
+#include "LabSound/core/MediaStreamAudioSourceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -21,24 +31,8 @@ using namespace std;
 namespace WebCore
 {
 
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r)
-{
-    AudioSourceProvider * provider = nullptr;
-    
-    provider = r.contextPtr()->destination()->localAudioInputProvider();
-    
-    auto sampleRate = r.contextPtr()->sampleRate();
-    
-    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider, sampleRate));
-    
-    // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-    inputNode->setFormat(r, 2, sampleRate);
-    
-    //m_referencedNodes.push_back(inputNode); // context keeps reference until node is disconnected
-    
-    return inputNode;
-}
 
+    
 // Constructor for realtime rendering
 AudioContext::AudioContext()
 {
@@ -87,7 +81,6 @@ AudioContext::~AudioContext()
 	ASSERT(m_isStopScheduled);
 	ASSERT(!m_nodesToDelete.size());
 	ASSERT(!m_referencedNodes.size());
-	ASSERT(!m_finishedNodes.size());
 	ASSERT(!m_automaticPullNodes.size());
 	ASSERT(!m_renderingAutomaticPullNodes.size());
 }
@@ -159,6 +152,8 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
+// @TODO webkit change c6e1946 removes isRunnable and simplifies HRTF database loading to be on demand
+// not during audio context start
 bool AudioContext::isRunnable() const
 {
 	if (!isInitialized())
@@ -181,28 +176,30 @@ void AudioContext::stop(ContextGraphLock& g)
 	clear();
 }
 
-void AudioContext::notifyNodeFinishedProcessing(ContextRenderLock& r, AudioNode* node)
+std::shared_ptr<MediaStreamAudioSourceNode> AudioContext::createMediaStreamSource(LabSound::ContextGraphLock & g, LabSound::ContextRenderLock & r)
 {
-	ASSERT(r.context());
+	std::shared_ptr<MediaStream> mediaStream = std::make_shared<MediaStream>();
 
-	for (auto i : m_referencedNodes)
+	AudioSourceProvider* provider = 0;
+
+	if (mediaStream->isLocal() && mediaStream->audioTracks()->length())
 	{
-		if (i.get() == node)
-		{
-			m_finishedNodes.push_back(i);
-			return;
-		}
+		provider = destination()->localAudioInputProvider();
 	}
-	ASSERT(0 == "node to finish not referenced");
-}
 
-void AudioContext::derefFinishedSourceNodes(ContextGraphLock& g)
-{
-	ASSERT(g.context());
-	for (unsigned i = 0; i < m_finishedNodes.size(); i++)
-		dereferenceSourceNode(g, m_finishedNodes[i]);
+	else
+	{
+		// FIXME: get a provider for non-local MediaStreams (like from a remote peer).
+		provider = 0;
+	}
 
-	m_finishedNodes.clear();
+	std::shared_ptr<MediaStreamAudioSourceNode> node(new MediaStreamAudioSourceNode(mediaStream, provider, sampleRate()));
+
+	// FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
+	node->setFormat(g, r, 2, sampleRate());
+
+	m_referencedNodes.push_back(node); // context keeps reference until node is disconnected
+	return node;
 }
 
 void AudioContext::referenceSourceNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
@@ -352,7 +349,7 @@ void AudioContext::update(ContextGraphLock& g)
                 }
 				else if (i.from) {
 					--i.from->m_connectionRefCount;
-                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                    for (size_t out = 0; out < i.from->numberOfOutputs(); ++out) {
                         auto output = i.from->output(out);
                         if (!output)
                             continue;
@@ -363,7 +360,7 @@ void AudioContext::update(ContextGraphLock& g)
 				}
                 else if (i.to) {
                     --i.to->m_connectionRefCount;
-                    for (int out = 0; out < AUDIONODE_MAXOUTPUTS; ++out) {
+                    for (size_t out = 0; out < i.to->numberOfOutputs(); ++out) {
                         auto output = i.to->output(out);
                         if (!output)
                             continue;
@@ -381,9 +378,6 @@ void AudioContext::update(ContextGraphLock& g)
         
 		//pendingNodeConnections.clear();
 	}
-
-	// Dynamically clean up nodes which are no longer needed.
-	derefFinishedSourceNodes(g);
 }
 
 void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)

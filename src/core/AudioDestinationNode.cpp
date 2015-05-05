@@ -80,6 +80,12 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     setNodeType(NodeTypeDestination);
 
+    
+    // Node-specific default mixing rules.
+    m_channelCount = 2;
+    m_channelCountMode = ChannelCountMode::Explicit;
+    m_channelInterpretation = ChannelInterpretation::Speakers;
+    
     // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
 	// initialize();
 }

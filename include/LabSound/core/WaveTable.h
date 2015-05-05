@@ -30,6 +30,7 @@
 #define WaveTable_h
 
 #include "LabSound/core/AudioArray.h"
+#include "LabSound/core/Synthesis.h"
 
 #include <vector>
 #include <memory>
@@ -42,8 +43,8 @@ class WaveTable
 
 public:
 
-	WaveTable(float sampleRate, int basicWaveform);
-	WaveTable(float sampleRate, int basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+	WaveTable(float sampleRate, OscillatorType basicWaveform);
+	WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
 	~WaveTable();
 
@@ -63,7 +64,7 @@ public:
 
 private:
 
-    void generateBasicWaveform(int);
+    void generateBasicWaveform(OscillatorType);
 
     float m_sampleRate;
     unsigned m_waveTableSize;

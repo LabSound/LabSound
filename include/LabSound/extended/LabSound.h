@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
@@ -38,6 +38,7 @@
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/DiodeNode.h"
+#include "LabSound/extended/FunctionNode.h"
 #include "LabSound/extended/NoiseNode.h"
 #include "LabSound/extended/PdNode.h"
 #include "LabSound/extended/PeakCompNode.h"

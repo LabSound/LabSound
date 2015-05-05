@@ -1,6 +1,6 @@
 
 
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // This files contains portions of sfxr. The original code contained the following notes:
 
 /*
@@ -662,7 +662,7 @@ namespace LabSound {
         int n = nonSilentFramesToProcess;
 
 #define UPDATE(typ, cur, val) \
-{ typ v = val->value(r.contextPtr()); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
+{ typ v = val->value(r); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
 
         bool needUpdate = false;
         UPDATE(int, wave_type, _waveType)
@@ -714,7 +714,7 @@ namespace LabSound {
         outputBus->clearSilentFlag();
     }
 
-    void SfxrNode::reset(std::shared_ptr<WebCore::AudioContext>)
+    void SfxrNode::reset(ContextRenderLock&)
     {
     }
 
@@ -791,10 +791,12 @@ namespace LabSound {
         }
     }
 
-    void SfxrNode::laser(std::shared_ptr<WebCore::AudioContext> c) {
+    /// @TODO this should be queued up for the next processing call to avoid the context lock requirement
+    /// or we need a variation of value that is threadsafe
+    void SfxrNode::laser(ContextRenderLock& r) {
         setDefaultBeep();
         _waveType->setValue(rnd(2));
-        if(_waveType->value(c) == SINE && rnd(1))
+        if(_waveType->value(r) == SINE && rnd(1))
             _waveType->setValue(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3 + frnd(0.6));
@@ -802,11 +804,11 @@ namespace LabSound {
             _slide->setValue(-0.35 - frnd(0.3));
         } else {
             _startFrequency->setValue(0.5 + frnd(0.5));
-            _minFrequency->setValue(_startFrequency->value(c) - 0.2 - frnd(0.6));
-            if (_minFrequency->value(c) < 0.2) _minFrequency->setValue(0.2);
+            _minFrequency->setValue(_startFrequency->value(r) - 0.2 - frnd(0.6));
+            if (_minFrequency->value(r) < 0.2) _minFrequency->setValue(0.2);
             _slide->setValue(-0.15 - frnd(0.2));
         }
-        if (_waveType->value(c) == SAWTOOTH)
+        if (_waveType->value(r) == SAWTOOTH)
             _squareDuty->setValue(1);
         if (rnd(1)) {
             _squareDuty->setValue(frnd(0.5));
@@ -885,14 +887,15 @@ namespace LabSound {
         _decayTime->setValue(0.1 + frnd(0.4));
     }
 
-    void SfxrNode::hit(std::shared_ptr<WebCore::AudioContext> c) {
+    /// @TODO remove need for context lock see above
+    void SfxrNode::hit(ContextRenderLock& r) {
         setDefaultBeep();
         _waveType->setValue(rnd(2));
-        if (_waveType->value(c) == SINE)
+        if (_waveType->value(r) == SINE)
             _waveType->setValue(NOISE);
-        if (_waveType->value(c) == SQUARE)
+        if (_waveType->value(r) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
-        if (_waveType->value(c) == SAWTOOTH)
+        if (_waveType->value(r) == SAWTOOTH)
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2 + frnd(0.6));
         _slide->setValue(-0.3 - frnd(0.4));
@@ -918,10 +921,11 @@ namespace LabSound {
             _lpFilterCutoff->setValue(1 - frnd(0.6));
     }
 
-    void SfxrNode::select(std::shared_ptr<WebCore::AudioContext> c) {
+    /// @TODO remove need for context lock see above
+    void SfxrNode::select(ContextRenderLock& r) {
         setDefaultBeep();
         _waveType->setValue(rnd(1));
-        if (_waveType->value(c) == SQUARE)
+        if (_waveType->value(r) == SQUARE)
             _squareDuty->setValue(frnd(0.6));
         else
             _squareDuty->setValue(1);
@@ -932,7 +936,8 @@ namespace LabSound {
         _hpFilterCutoff->setValue(0.1);
     }
 
-    void SfxrNode::mutate(std::shared_ptr<WebCore::AudioContext> r) {
+    /// @TODO remove need for context lock see above
+    void SfxrNode::mutate(ContextRenderLock& r) {
         if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
         if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
@@ -956,7 +961,8 @@ namespace LabSound {
         if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
     }
 
-    void SfxrNode::randomize(std::shared_ptr<WebCore::AudioContext> r) {
+    /// @TODO remove need for context lock see above
+    void SfxrNode::randomize(ContextRenderLock& r) {
         if (rnd(1))
             _startFrequency->setValue(cube(frnd(2) - 1) + 0.5);
         else

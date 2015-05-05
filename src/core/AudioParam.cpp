@@ -38,21 +38,37 @@
 
 namespace WebCore 
 {
+    // LabSound:: Data exists because AudioBus is not exposed in the public API
+    class AudioParam::Data {
+    public:
+        std::unique_ptr<AudioBus> m_internalSummingBus;
+    };
     
-    namespace 
-	{
-        std::mutex paramMutex;
-    }
-
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-float AudioParam::value(std::shared_ptr<AudioContext> c)
+    AudioParam::AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units)
+    : AudioSummingJunction()
+    , m_name(name)
+    , m_value(defaultValue)
+    , m_defaultValue(defaultValue)
+    , m_minValue(minValue)
+    , m_maxValue(maxValue)
+    , m_units(units)
+    , m_smoothedValue(defaultValue)
+    , m_smoothingConstant(DefaultSmoothingConstant)
+    , m_data(new Data())
+    {}
+    
+    AudioParam::~AudioParam() {}
+
+    
+float AudioParam::value(ContextRenderLock& r)
 {
     // Update value for timeline.
-    if (c) {
+    if (r.context()) {
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(c, narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), hasValue);
         
         if (hasValue)
             m_value = timelineValue;
@@ -72,14 +88,13 @@ float AudioParam::smoothedValue()
     return narrowPrecisionToFloat(m_smoothedValue);
 }
 
-bool AudioParam::smooth(std::shared_ptr<AudioContext> c)
+bool AudioParam::smooth(ContextRenderLock& r)
 {
     // If values have been explicitly scheduled on the timeline, then use the exact value.
     // Smoothing effectively is performed by the timeline.
     bool useTimelineValue = false;
-    if (c) {
-        m_value = m_timeline.valueForContextTime(c, narrowPrecisionToFloat(m_value), useTimelineValue);
-    }
+    if (r.context())
+        m_value = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), useTimelineValue);
     
     if (m_smoothedValue == m_value) {
         // Smoothed value has already approached and snapped to value.
@@ -131,21 +146,37 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     else {
         // Calculate control-rate (k-rate) intrinsic value.
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r.contextPtr(), narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), hasValue);
 
         if (hasValue)
             m_value = timelineValue;
 
         values[0] = narrowPrecisionToFloat(m_value);
     }
+    
+    // if there are rendering connections, be sure they are ready
+    updateRenderingState(r);
+    
+    size_t connectionCount = numberOfRenderingConnections(r);
+    if (!connectionCount)
+        return;
 
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
+    
+    // LabSound: For some reason a bus was temporarily created here and the results discarded.
+    // Bug still exists in WebKit top of tree.
     //
-    AudioBus summingBus(1, numberOfValues, false);
-    summingBus.setChannelMemory(0, values, numberOfValues);
+    if (m_data->m_internalSummingBus && m_data->m_internalSummingBus->length() < numberOfValues)
+        m_data->m_internalSummingBus.reset();
+    
+    if (!m_data->m_internalSummingBus)
+        m_data->m_internalSummingBus.reset(new AudioBus(1, numberOfValues));
 
-    for (size_t i = 0; i < numberOfRenderingConnections(r); ++i) {
+    // point the summing bus at the values array
+    m_data->m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
+
+    for (size_t i = 0; i < connectionCount; ++i) {
         auto output = renderingOutput(r, i);
         if (!output)
             continue;
@@ -154,7 +185,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
         AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
-        summingBus.sumFrom(*connectionBus);
+        m_data->m_internalSummingBus->sumFrom(*connectionBus);
     }
 }
 
@@ -177,8 +208,6 @@ void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param,
     if (!output)
         return;
     
-    std::lock_guard<std::mutex> lock(paramMutex);
-    
     if (param->isConnected(output))
         return;
     
@@ -190,8 +219,6 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
 {
     if (!output)
         return;
-    
-    std::lock_guard<std::mutex> lock(paramMutex);
     
     if (param->isConnected(output)) {
         param->junctionDisconnectOutput(output);

@@ -18,14 +18,15 @@ struct InfiniteFMApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Infinite FM");
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            modulator->setType(r, 0);
+            modulator->setType(r, OscillatorType::SINE, ec);
             modulator->start(0);
+            modulator->frequency()->setValue(2.0f);
             
             modulatorGain = std::make_shared<GainNode>(context->sampleRate());
-            modulatorGain ->gain()->setValue(4.0f);
+            modulatorGain->gain()->setValue(50.0f);
             
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, 0);
+            osc->setType(r, OscillatorType::SINE, ec);
             osc->frequency()->setValue(220);
             osc->start(0);
             
@@ -33,13 +34,11 @@ struct InfiniteFMApp : public LabSoundExampleApp
             //trigger->set(10, 5, 30, 1, 20);
 
             // Set up processing chain
-            modulator->connect(context.get(), modulatorGain.get(), 0, 0);
-            modulatorGain->connect(g, osc->frequency(), 0); // I don't think this works...
-            osc->connect(context.get(), context->destination().get(), 0, 0);
-            
-            // Shouldn't be needed... 
-            context->addAutomaticPullNode(modulatorGain);
-            
+            // modulator > modulatorGain ---> osc frequency
+            //                                osc > context
+            modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
+            modulatorGain->connect(g, osc->frequency(), 0, ec);
+            osc->connect(context.get(), context->destination().get(), 0, 0, ec);
         }
         
         int now = 0.0;
@@ -47,14 +46,15 @@ struct InfiniteFMApp : public LabSoundExampleApp
         {
             
             // Debugging cruft --
-            modulator->frequency()->setValue(std::uniform_int_distribution<int>(20, 110)(randomgenerator));
+            float frequency = (float) std::uniform_int_distribution<int>(20, 110)(randomgenerator);
+            modulator->frequency()->setValue(frequency);
             //carrierGain->gain()->setValue(std::uniform_int_distribution<int>(2, 4)(randomgenerator));
             //modulator->frequency()->setValue(carrier->frequency()->value(context))
             //trigger->noteOn(now);
             //trigger->set((std::uniform_int_distribution<int>(1, 40)(randomgenerator)), 2.5, 30, 1.0, (std::uniform_int_distribution<int>(1, 10)(randomgenerator)));
             // --
             
-            std::cout << modulator->frequency()->value(context) << std::endl;
+            std::cout << "Modulator Frequency: " << frequency << std::endl;
             
             auto nextDelay = std::uniform_int_distribution<int>(256, 1024)(randomgenerator);
             now += nextDelay;

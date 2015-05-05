@@ -1,5 +1,5 @@
 
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
@@ -18,7 +18,7 @@ namespace LabSound {
 
         // AudioNode
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
+        virtual void reset(ContextRenderLock&) override;
 
         // SfxrNode - values in sfxr units
         std::shared_ptr<AudioParam> waveType() { return _waveType; }
@@ -72,16 +72,16 @@ namespace LabSound {
         // some presets
         void setDefaultBeep();
         void coin();
-        void laser(std::shared_ptr<WebCore::AudioContext>);
+        void laser(ContextRenderLock&);
         void explosion();
         void powerUp();
-        void hit(std::shared_ptr<WebCore::AudioContext>);
+        void hit(ContextRenderLock&);
         void jump();
-        void select(std::shared_ptr<WebCore::AudioContext>);
+        void select(ContextRenderLock&);
 
         // mutate the current sound
-        void mutate(std::shared_ptr<WebCore::AudioContext>);
-        void randomize(std::shared_ptr<WebCore::AudioContext>);
+        void mutate(ContextRenderLock&);
+        void randomize(ContextRenderLock&);
 
     private:
         virtual bool propagatesSilence(double now) const override;

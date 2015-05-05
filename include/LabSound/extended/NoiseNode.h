@@ -1,4 +1,4 @@
-// Copyright (c) 2003-2013 Nick Porcino, All rights reserved.
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
@@ -27,7 +27,7 @@ namespace LabSound
         virtual ~NoiseNode();
 
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(std::shared_ptr<WebCore::AudioContext>) override;
+        virtual void reset(ContextRenderLock&) override;
 
         unsigned short type() const { return m_type; }
 

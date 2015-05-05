@@ -53,13 +53,13 @@ class AudioProcessor {
 public:
     
     AudioProcessor(float sampleRate, unsigned numberOfChannels)
-    : m_initialized(false), m_sampleRate(sampleRate), m_numberOfChannels(numberOfChannels)
+        : m_initialized(false)
+        , m_numberOfChannels(numberOfChannels)
+        , m_sampleRate(sampleRate)
     {
     }
 
-    virtual ~AudioProcessor()
-    {
-    }
+    virtual ~AudioProcessor() { }
 
     // Full initialization can be done here instead of in the constructor.
     virtual void initialize() = 0;
@@ -82,10 +82,9 @@ public:
     virtual double latencyTime() const = 0;
 
 protected:
-    
     bool m_initialized;
-    float m_sampleRate;
     unsigned m_numberOfChannels;
+    float m_sampleRate;
 };
 
 } // namespace WebCore

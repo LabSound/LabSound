@@ -48,8 +48,8 @@ public:
     virtual ~AudioBufferSourceNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock& r, size_t framesToProcess) override;
-    virtual void reset(std::shared_ptr<AudioContext>) override;
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&) override;
 
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
@@ -59,7 +59,7 @@ public:
 
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
-    unsigned numberOfChannels();
+    unsigned numberOfChannels(ContextRenderLock&);
 
     // Play-state
     void startGrain(double when, double grainOffset);
