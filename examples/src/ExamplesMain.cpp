@@ -19,6 +19,7 @@
 #include "Tremolo.h"
 #include "Validation.h"
 #include "StereoPanning.h"
+#include "Groove.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_micrphoneDalek;
@@ -35,9 +36,10 @@ TremoloApp g_tremolo;
 ValidationApp g_validation;
 InfiniteFMApp g_infiniteFM;
 StereoPanningApp g_stereoPanning;
+GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_redAlert.PlayExample();
+    g_grooveExample.PlayExample();
     return 0;
 }
