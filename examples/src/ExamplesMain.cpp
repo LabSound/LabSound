@@ -26,9 +26,9 @@ MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
-RhythmApp g_rhythm;
-RhythmAndFiltersApp g_rhythmAndFilters;
-SimpleApp g_simpleExample;
+RhythmApp g_rhythm; // Regression -- audio node input removal via shared_ptr destruction
+RhythmAndFiltersApp g_rhythmAndFilters; // ditto rhythmApp
+SimpleApp g_simpleExample; //@todo fix gain
 SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
