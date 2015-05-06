@@ -53,6 +53,8 @@ struct FastHighpass
     }
 };
 
+// http://www.musicdsp.org/showone.php?id=24
+// A Moog-style 24db resonant lowpass
 struct MoogFilter
 {
     float y1 = 0;
@@ -74,10 +76,10 @@ struct MoogFilter
         cutoff = 2.0 * cutoff / sampleRate;
         
         p = cutoff * (1.8 - (0.8 * cutoff));
-        k = 2.0 * std::sin(cutoff * M_PI * 0.5) - 1.0;
+        k = 2.0 * std::sin(cutoff * (M_PI * 0.5)) - 1.0;
         t1 = (1.0 - p) * 1.386249;
         t2 = 12.0 + t1 * t1;
-        r = resonance * float((t2 + 6.0 * t1)) / float((t2 - 6.0 * t1));
+        r = resonance * (t2 + 6.0 * t1) / (t2 - 6.0 * t1);
         
         x = sample - r * y4;
         
@@ -132,11 +134,7 @@ float perc_b(float wave, float decay, float o, float t)
 
 float hardClip(float n, float x)
 {
-    return x > n
-    ? n
-    : x < -n
-    ? -n
-    : x;
+    return x > n ? n : x < -n ? -n : x;
 }
 
 MoogFilter lp_a;
@@ -183,21 +181,21 @@ struct GrooveApp : public LabSoundExampleApp
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
                     float lfo_a = quickSin(2.0f, now);
-                    float lfo_b = quickSin(1.0f/32.0f, now);
-                    float lfo_c = quickSin(1.0f/128.0f, now);
+                    float lfo_b = quickSin(1.0f / 32.0f, now);
+                    float lfo_c = quickSin(1.0f / 128.0f, now);
                     
                     float cutoff = 300 + (lfo_a * 60) + (lfo_b * 300) + (lfo_c * 250);
                     
-                    float bass_osc = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
+                    float bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
                     
                     // This filter isn't quite working. Perc is fine, the lfos are fine. What's up with the distortion on the Moog?
-                    float percSample = perc(bass_osc / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
-                    float bassSample = lp_a.process(1050.f + (lfo_b * 140.f), 0 + (quickSin(0.5f, now + 0.75f) * 0.2f), percSample);
+                    float percSample = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
+                    float bassSample = lp_a.process(880, 0.15, percSample);
                     
                     //float testSamp = quickSqr(220, now);
                     //float testSampFilered = lp_b.process(300, 0.15, testSamp);
                     
-                    samples[i] = hardClip(0.64f, percSample);
+                    samples[i] = bassSample; //hardClip(0.64f, bassSample);
                     
                     now += dt;
                 }
