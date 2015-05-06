@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-// Unexpected Token from Wavepot
+// Unexpected Token from Wavepot. Shows the utility of LabSound as an experimental playground for DSP.
 
 int transpose = 0;
 
@@ -149,6 +149,40 @@ struct GrooveApp : public LabSoundExampleApp
     {
         auto context = LabSound::init();
         
+        std::shared_ptr<FunctionNode> grooveBox;
+        
+        std::shared_ptr<GainNode> masterGain;
+        
+        {
+            ContextGraphLock g(context, "GrooveApp");
+            ContextRenderLock r(context, "GrooveApp");
+            
+            grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
+            grooveBox->setFunction([](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
+            {
+                double dt = 1.0 / self->sampleRate();
+                
+                double now = fmod(self->now(), 1.2);
+                
+                for (size_t i = 0; i < framesToProcess; ++i)
+                {
+                    samples[i] = quickSin(220, now);
+                    //std::cout << samples[i] << std::endl;
+                    now += dt;
+                }
+            });
+            grooveBox->start(0);
+            
+            masterGain = std::make_shared<GainNode>(context->sampleRate());
+            masterGain->gain()->setValue(0.5f);
+            
+            grooveBox->connect(context.get(), masterGain.get(), 0, 0);
+            
+            masterGain->connect(context.get(), context->destination().get(), 0, 0);
+            
+        }
+        
+            
         /*
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;
