@@ -67,17 +67,17 @@ struct MoogFilter
     
     float p, k, t1, t2, r, x;
     
-    const float sampleRate = 44100;
+    const float sampleRate = 44100.f;
     
-    float process(float cutoff, float resonance, float sample)
+    float process(double cutoff, double resonance, double sample)
     {
-        cutoff = 2 * cutoff / sampleRate;
+        cutoff = 2.0 * cutoff / sampleRate;
         
         p = cutoff * (1.8 - (0.8 * cutoff));
-        k = 2 * std::sin(cutoff * M_PI * 0.5) - 1;
-        t1 = (1 - p) * 1.386249;
-        t2 = 12 + t1 * t1;
-        r = resonance * (t2 + 6 * t1) / (t2 - 6 * t1);
+        k = 2.0 * std::sin(cutoff * M_PI * 0.5) - 1.0;
+        t1 = (1.0 - p) * 1.386249;
+        t2 = 12.0 + t1 * t1;
+        r = resonance * float((t2 + 6.0 * t1)) / float((t2 - 6.0 * t1));
         
         x = sample - r * y4;
         
@@ -88,9 +88,12 @@ struct MoogFilter
         y4 = y3 * p + oldy3 * p - k * y4;
         
         // clipper band limited sigmoid
-        y4 -= (y4 * y4 * y4) / 6;
+        y4 -= (y4 * y4 * y4) / 6.0;
         
-        oldx = x; oldy1 = y1; oldy2 = y2; oldy3 = y3;
+        oldx = x;
+        oldy1 = y1;
+        oldy2 = y2;
+        oldy3 = y3;
         
         return y4;
     }
@@ -113,8 +116,9 @@ float quickSqr(float x, float t)
 
 float perc(float wave, float decay, float o, float t)
 {
-    float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1));
-    return wave * env;
+    float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
+    auto ret = wave * env;
+    return ret;
 }
 
 float perc_b(float wave, float decay, float o, float t)
@@ -157,24 +161,52 @@ struct GrooveApp : public LabSoundExampleApp
             ContextGraphLock g(context, "GrooveApp");
             ContextRenderLock r(context, "GrooveApp");
             
+            float elapsedTime = 0.0f;
+            
             grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            grooveBox->setFunction([](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
+            grooveBox->setFunction([&elapsedTime](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
-                double dt = 1.0 / self->sampleRate();
+                double dt = 1.0 / self->sampleRate(); // time duration of one sample
                 
-                double now = fmod(self->now(), 1.2);
+                double now = self->now(); //fmod(self->now(), 1.2);
+                
+                // bass
+                int selection = int((now / 2)) % bassline.size();
+                auto bm = bassline[selection];
+                
+                int selection2 =  int((now * 4)) % bm.size();
+                float bn = note(bm[selection2], 0);
                 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
-                    samples[i] = quickSin(220, now);
-                    //std::cout << samples[i] << std::endl;
+                    
+                    float lfo_a = quickSin(2.0f, now);
+                    float lfo_b = quickSin(1.0f/32.0f, now);
+                    float lfo_c = quickSin(1.0f/128.0f, now);
+                    
+                    float cutoff = 300 + (lfo_a * 60) + (lfo_b * 300) + (lfo_c * 250);
+                    
+                    float bass_osc = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
+                    
+                    // This filter isn't quite working. Perc is fine, the lfos are fine. What's up with the distortion on the Moog?
+                    float bassSample = lp_a.process(1050.f + (lfo_b * 140.f), 0 + (quickSin(0.5f, now + 0.75f) * 0.2f), perc(bass_osc / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f);
+                    
+                    //float testSamp = quickSqr(220, now);
+                    //float testSampFilered = lp_b.process(300, 0.15, testSamp);
+                    
+                    samples[i] = hardClip(1.0f, testSampFilered); //quickSin(220, now);
+                    
                     now += dt;
+  
                 }
+                
+                elapsedTime += now;
+                
             });
             grooveBox->start(0);
             
             masterGain = std::make_shared<GainNode>(context->sampleRate());
-            masterGain->gain()->setValue(0.5f);
+            masterGain->gain()->setValue(1.0f);
             
             grooveBox->connect(context.get(), masterGain.get(), 0, 0);
             
@@ -182,147 +214,11 @@ struct GrooveApp : public LabSoundExampleApp
             
         }
         
-            
-        /*
-        std::shared_ptr<FunctionNode> sweep;
-        std::shared_ptr<FunctionNode> outputGainFunction;
-        
-        std::shared_ptr<OscillatorNode> osc;
-        std::shared_ptr<GainNode> oscGain;
-        std::shared_ptr<OscillatorNode> resonator;
-        std::shared_ptr<GainNode> resonatorGain;
-        std::shared_ptr<GainNode> resonanceSum;
-        
-        std::shared_ptr<DelayNode> delay[5];
-        
-        std::shared_ptr<GainNode> delaySum;
-        std::shared_ptr<GainNode> filterSum;
-        
-        std::shared_ptr<BiquadFilterNode> filter[5];
-        
+        int now = 0;
+        while(now < 10)
         {
-            ContextGraphLock g(context, "Red Alert");
-            ContextRenderLock r(context, "Red Alert");
-            
-            sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            sweep->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) {
-                double dt = 1.0 / self->sampleRate();
-                double now = fmod(self->now(), 1.2);
-                
-                for (size_t i = 0; i < framesToProcess; ++i) {
-                    //0 to 1 in 900 ms with a 1200ms gap in between
-                    if (now > 0.9)
-                        values[i] = 487. + 360.;
-                    else {
-                        values[i] = sqrt(now * 1.f/0.9f) * 487. + 360.;
-                    }
-                    
-                    now += dt;
-                }
-            });
-            sweep->start(0);
-            
-            outputGainFunction = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) {
-                double dt = 1.0 / self->sampleRate();
-                double now = fmod(self->now(), 1.2);
-                
-                for (size_t i = 0; i < framesToProcess; ++i) {
-                    //0 to 1 in 900 ms with a 1200ms gap in between
-                    if (now > 0.9)
-                        values[i] = 0;
-                    else {
-                        values[i] = 0.2f;
-                    }
-                    
-                    now += dt;
-                }
-            });
-            outputGainFunction->start(0);
-
-            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, OscillatorType::SAWTOOTH);
-            osc->frequency()->setValue(220);
-            osc->start(0);
-            oscGain = std::make_shared<GainNode>(context->sampleRate());
-            oscGain->gain()->setValue(0.5f);
-            
-            resonator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            resonator->setType(r, OscillatorType::SINE);
-            resonator->frequency()->setValue(220);
-            resonator->start(0);
-            
-            resonatorGain = std::make_shared<GainNode>(context->sampleRate());
-            resonatorGain->gain()->setValue(0.0f);
-
-            resonanceSum = std::make_shared<GainNode>(context->sampleRate());
-            resonanceSum->gain()->setValue(0.5f);
-            
-            // sweep drives oscillator frequency
-            sweep->connect(g, osc->frequency(), 0);
-            
-            // oscillator drives resonator frequency
-            osc->connect(g, resonator->frequency(), 0);
-
-            // osc --> oscGain -------------+
-            // resonator -> resonatorGain --+--> resonanceSum
-            //
-            osc->connect(context.get(), oscGain.get(), 0, 0);
-            oscGain->connect(context.get(), resonanceSum.get(), 0, 0);
-            resonator->connect(context.get(), resonatorGain.get(), 0, 0);
-            resonatorGain->connect(context.get(), resonanceSum.get(), 0, 0);
-            
-            delaySum = std::make_shared<GainNode>(context->sampleRate());
-            delaySum->gain()->setValue(0.2f);
-            
-            // resonanceSum --+--> delay0 --+
-            //                +--> delay1 --+
-            //                + ...    .. --+
-            //                +--> delay4 --+---> delaySum
-            //
-            float delays[5] = {0.015, 0.022, 0.035, 0.024, 0.011};
-            for (int i = 0; i < 5; ++i) {
-                delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
-                delay[i]->delayTime()->setValue(delays[i]);
-                resonanceSum->connect(context.get(), delay[i].get(), 0, 0);
-                delay[i]->connect(context.get(), delaySum.get(), 0, 0);
-            }
-            
-            filterSum = std::make_shared<GainNode>(context->sampleRate());
-            filterSum->gain()->setValue(0.2f);
-            
-            // delaySum --+--> filter0 --+
-            //            +--> filter1 --+
-            //            +--> filter2 --+
-            //            +--> filter3 --+
-            //            +--------------+----> filterSum
-            //
-            delaySum->connect(context.get(), filterSum.get(), 0, 0);
-
-            float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
-            for (int i = 0; i < 4; ++i) {
-                filter[i] = std::make_shared<BiquadFilterNode>(context->sampleRate());
-                filter[i]->frequency()->setValue(centerFrequencies[i]);
-                filter[i]->q()->setValue(12.f);
-                delaySum->connect(context.get(), filter[i].get(), 0, 0);
-                filter[i]->connect(context.get(), filterSum.get(), 0, 0);
-            }
-            
-            // filterSum --> destination
-            //
-            outputGainFunction->connect(g, filterSum->gain(), 0);
-            filterSum->connect(context.get(), context->destination().get(), 0, 0);
-        }
-        
-
-        
-         */
-        
-        int now = 0.0;
-        while(now < 10000)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            now += 1000;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            now += 1;
         }
         
         LabSound::finish(context);
