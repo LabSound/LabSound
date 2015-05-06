@@ -10,7 +10,7 @@ int transpose = 0;
 float note(int n, int octave = 0)
 {
     n += transpose;
-    return std::pow(2, (n - 33 + (12 * octave)) / 12) * 440;
+    return std::pow(2.0f, (n - 33.f + (12.f * octave)) / 12.0f) * 440.f;
 }
 
 std::vector<std::vector<int>> bassline =
@@ -114,6 +114,8 @@ float quickSqr(float x, float t)
     return quickSin(x, t) > 0 ? 1.f : -1.f;
 }
 
+// perc family of functions implement a simple attack/decay, creating
+// a short & percussive envelope for the signal
 float perc(float wave, float decay, float o, float t)
 {
     float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
@@ -123,8 +125,9 @@ float perc(float wave, float decay, float o, float t)
 
 float perc_b(float wave, float decay, float o, float t)
 {
-    float env = std::min(0.f, 0.950f - (o * decay) / ((o * decay) + 1));
-    return wave * env;
+    float env = std::min(0.f, 0.950f - (o * decay) / ((o * decay) + 1.f));
+    auto ret = wave * env;
+    return ret;
 }
 
 float hardClip(float n, float x)
@@ -168,7 +171,7 @@ struct GrooveApp : public LabSoundExampleApp
             {
                 double dt = 1.0 / self->sampleRate(); // time duration of one sample
                 
-                double now = self->now(); //fmod(self->now(), 1.2);
+                double now = self->now();
                 
                 // bass
                 int selection = int((now / 2)) % bassline.size();
@@ -179,7 +182,6 @@ struct GrooveApp : public LabSoundExampleApp
                 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
-                    
                     float lfo_a = quickSin(2.0f, now);
                     float lfo_b = quickSin(1.0f/32.0f, now);
                     float lfo_c = quickSin(1.0f/128.0f, now);
@@ -189,15 +191,15 @@ struct GrooveApp : public LabSoundExampleApp
                     float bass_osc = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
                     
                     // This filter isn't quite working. Perc is fine, the lfos are fine. What's up with the distortion on the Moog?
-                    float bassSample = lp_a.process(1050.f + (lfo_b * 140.f), 0 + (quickSin(0.5f, now + 0.75f) * 0.2f), perc(bass_osc / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f);
+                    float percSample = perc(bass_osc / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
+                    float bassSample = lp_a.process(1050.f + (lfo_b * 140.f), 0 + (quickSin(0.5f, now + 0.75f) * 0.2f), percSample);
                     
                     //float testSamp = quickSqr(220, now);
                     //float testSampFilered = lp_b.process(300, 0.15, testSamp);
                     
-                    samples[i] = hardClip(1.0f, testSampFilered); //quickSin(220, now);
+                    samples[i] = hardClip(0.64f, percSample);
                     
                     now += dt;
-  
                 }
                 
                 elapsedTime += now;
@@ -206,7 +208,7 @@ struct GrooveApp : public LabSoundExampleApp
             grooveBox->start(0);
             
             masterGain = std::make_shared<GainNode>(context->sampleRate());
-            masterGain->gain()->setValue(1.0f);
+            masterGain->gain()->setValue(0.5f);
             
             grooveBox->connect(context.get(), masterGain.get(), 0, 0);
             
