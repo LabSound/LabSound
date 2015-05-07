@@ -34,9 +34,7 @@ std::vector<std::vector<int>> chords = { {7, 12, 17, 10}, {10, 15, 19, 24} };
 struct FastLowpass
 {
     float v = 0;
-    float n;
-    FastLowpass(float n) : n(n) {}
-    float process(float input)
+    float operator() (float n, float input)
     {
         return v += (input - v) / n;
     }
@@ -45,9 +43,7 @@ struct FastLowpass
 struct FastHighpass
 {
     float v = 0;
-    float n;
-    FastHighpass(float n) : n(n) {}
-    float process(float input)
+    float operator() (float n, float input)
     {
       return v += input - v * n;
     }
@@ -69,27 +65,27 @@ struct MoogFilter
     
     float p, k, t1, t2, r, x;
     
-    const float sampleRate = 44100.f;
+    const float sampleRate = 44100.00f;
     
     float process(double cutoff, double resonance, double sample)
     {
         cutoff = 2.0 * cutoff / sampleRate;
         
-        p = cutoff * (1.8 - (0.8 * cutoff));
-        k = 2.0 * std::sin(cutoff * (M_PI * 0.5)) - 1.0;
+        p = cutoff * (1.8 - 0.8 * cutoff);
+        k = 2.0 * std::sin(cutoff * M_PI * 0.5) - 1.0;
         t1 = (1.0 - p) * 1.386249;
         t2 = 12.0 + t1 * t1;
         r = resonance * (t2 + 6.0 * t1) / (t2 - 6.0 * t1);
         
         x = sample - r * y4;
         
-        // four cascaded one-pole filters (bilinear transform)
+        // Four cascaded one-pole filters (bilinear transform)
         y1 =  x * p + oldx  * p - k * y1;
         y2 = y1 * p + oldy1 * p - k * y2;
         y3 = y2 * p + oldy2 * p - k * y3;
         y4 = y3 * p + oldy3 * p - k * y4;
         
-        // clipper band limited sigmoid
+        // Clipping band-limited sigmoid
         y4 -= (y4 * y4 * y4) / 6.0;
         
         oldx = x;
@@ -141,12 +137,11 @@ MoogFilter lp_a;
 MoogFilter lp_b;
 MoogFilter lp_c;
 
-FastLowpass fastlp_a(240.0f);
-FastLowpass fastlp_b(30.0f);
-
-FastHighpass fasthp_a(1.7f);
-FastHighpass fasthp_b(1.5f);
-FastHighpass fasthp_c(0.5f);
+//FastLowpass fastlp_a = {240.0f};
+//FastLowpass fastlp_b(30.0f);
+//FastHighpass fasthp_a(1.7f);
+//FastHighpass fasthp_b(1.5f);
+//FastHighpass fasthp_c(0.5f);
 
 struct GrooveApp : public LabSoundExampleApp
 {
@@ -164,38 +159,45 @@ struct GrooveApp : public LabSoundExampleApp
             
             float elapsedTime = 0.0f;
             
+            //@todo/tofix: Channels in FunctionNode does nothing; by default it's stereo
             grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
             grooveBox->setFunction([&elapsedTime](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
-                double dt = 1.0 / self->sampleRate(); // time duration of one sample
+                // Called twice, once for each channel
+                if (channel == 1) return;
                 
-                double now = self->now();
+                float dt = 1.0f / self->sampleRate(); // time duration of one sample
                 
-                // bass
-                int selection = int((now / 2)) % bassline.size();
-                auto bm = bassline[selection];
+                double now = self->now(); // typical DSP issue: double vs float
                 
-                int selection2 =  int((now * 4)) % bm.size();
-                float bn = note(bm[selection2], 0);
+                int nextMeasure = int((now / 2)) % bassline.size();
+                auto bm = bassline[nextMeasure]; // measure
+                
+                int nextNote =  int((now * 4)) % bm.size();
+                float bn = note(bm[nextNote], 0); // note
+                
+                float lfo_a;
+                float lfo_b;
+                float lfo_c;
+                
+                float bassWaveform;
+                float percussiveWaveform;
+                float bassSample;
                 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
-                    float lfo_a = quickSin(2.0f, now);
-                    float lfo_b = quickSin(1.0f / 32.0f, now);
-                    float lfo_c = quickSin(1.0f / 128.0f, now);
+                    lfo_a = quickSin(2.0f, now);
+                    lfo_b = quickSin(1.0f / 32.0f, now);
+                    lfo_c = quickSin(1.0f / 128.0f, now);
                     
-                    float cutoff = 300 + (lfo_a * 60) + (lfo_b * 300) + (lfo_c * 250);
+                    // float cutoff = 300 + (lfo_a * 60) + (lfo_b * 300) + (lfo_c * 250);
                     
-                    float bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
+                    bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
                     
-                    // This filter isn't quite working. Perc is fine, the lfos are fine. What's up with the distortion on the Moog?
-                    float percSample = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
-                    float bassSample = lp_a.process(880, 0.15, percSample);
+                    percussiveWaveform = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
                     
-                    //float testSamp = quickSqr(220, now);
-                    //float testSampFilered = lp_b.process(300, 0.15, testSamp);
-                    
-                    samples[i] = bassSample; //hardClip(0.64f, bassSample);
+                    bassSample = lp_a.process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform);
+                    samples[i] = hardClip(0.80f, bassSample);
                     
                     now += dt;
                 }
