@@ -141,7 +141,8 @@ MoogFilter lp_c;
 //FastLowpass fastlp_b(30.0f);
 //FastHighpass fasthp_a(1.7f);
 //FastHighpass fasthp_b(1.5f);
-//FastHighpass fasthp_c(0.5f);
+
+FastHighpass fasthp_c;
 
 struct GrooveApp : public LabSoundExampleApp
 {
@@ -176,6 +177,8 @@ struct GrooveApp : public LabSoundExampleApp
                 int nextNote =  int((now * 4)) % bm.size();
                 float bn = note(bm[nextNote], 0); // note
                 
+                auto p = chords[int(now / 4) % chords.size()];
+                
                 float lfo_a;
                 float lfo_b;
                 float lfo_c;
@@ -183,6 +186,11 @@ struct GrooveApp : public LabSoundExampleApp
                 float bassWaveform;
                 float percussiveWaveform;
                 float bassSample;
+                
+                float padWaveform;
+                float padSample;
+                
+                // pad
                 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
@@ -193,12 +201,14 @@ struct GrooveApp : public LabSoundExampleApp
                     // float cutoff = 300 + (lfo_a * 60) + (lfo_b * 300) + (lfo_c * 250);
                     
                     bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
-                    
                     percussiveWaveform = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
-                    
                     bassSample = lp_a.process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform);
-                    samples[i] = hardClip(0.80f, bassSample);
+                   
+                    padWaveform = 5.1f * quickSaw(note(p[0], 1.f), now) + 3.9f * quickSaw(note(p[1], 2.f), now) + 4.0f * quickSaw(note(p[2], 1.f), now) + 3.0f * quickSqr(note(p[3], 0.0f), now);
+                    padSample = 1.0f - ((quickSin(2.0f, now) * 0.28f) + 0.5f) * fasthp_c(0.5f, lp_c.process(1100.f + (lfo_a * 150.f), 0.05f, padWaveform * 0.03f));
                     
+                    samples[i] = hardClip(0.80f, bassSample) + (0.33 * padSample);
+                                                                                         
                     now += dt;
                 }
                 
