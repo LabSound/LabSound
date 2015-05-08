@@ -1,3 +1,8 @@
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES
+#include <math.h>
+#endif
+
 #include "ExampleBaseApp.h"
 #include <cmath>
 #include <algorithm>
@@ -166,13 +171,12 @@ struct GrooveApp : public LabSoundExampleApp
             envelope = std::make_shared<ADSRNode>(context->sampleRate());
             envelope->set(2.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
             
-            //@todo/tofix: Channels in FunctionNode does nothing; by default it's stereo
+            //@todo/tofix: Channels in FunctionNode is only half the equation (sets output node correctly); node itself by default is stereo
+			// and you need to pass in a graphlock to change it 
             grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
+			grooveBox->setChannelCount(g, 1);
             grooveBox->setFunction([&elapsedTime](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
-                // Called twice, once for each channel
-                if (channel == 1) return;
-                
                 float dt = 1.0f / self->sampleRate(); // time duration of one sample
                 
                 double now = self->now(); // typical DSP issue: double vs float
@@ -227,12 +231,12 @@ struct GrooveApp : public LabSoundExampleApp
                     
                     // Synth
                     synthWaveform = quickSaw(mn, now + 1.0f) + quickSqr(mn * 2.02f, now) * 0.4f + quickSqr(mn * 3.f, now + 2.f);
-                    synthPercussive = lp_b.process(1800.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f) * 1.8f;
+                    synthPercussive = lp_b.process(3200.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f) * 1.8f;
                     synthDegradedWaveform = synthPercussive * quickSin(note(5.0f, 2.0f), now);
                     synthSample = 0.4f * synthPercussive + 0.05f * synthDegradedWaveform;
                     
                     // Mixer
-                    samples[i] = hardClip(0.80f, bassSample) + (0.33 * padSample) + (0.66 * synthSample) + (3.25 * kickSample);
+                    samples[i] = (0.66 * hardClip(0.65f, bassSample)) + (0.50 * padSample) + (0.66 * synthSample) + (3.25 * kickSample);
                                                                                          
                     now += dt;
                 }
@@ -245,9 +249,7 @@ struct GrooveApp : public LabSoundExampleApp
             envelope->noteOn(0.0);
             
             grooveBox->connect(context.get(), envelope.get(), 0, 0);
-            
             envelope->connect(context.get(), context->destination().get(), 0, 0);
-            
         }
         
         int now = 0;
@@ -258,6 +260,5 @@ struct GrooveApp : public LabSoundExampleApp
         }
         
         LabSound::finish(context);
-        
     }
 };

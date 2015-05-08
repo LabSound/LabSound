@@ -62,6 +62,7 @@
     <ClInclude Include="..\include\LabSound\extended\ClipNode.h" />
     <ClInclude Include="..\include\LabSound\extended\DiodeNode.h" />
     <ClInclude Include="..\include\LabSound\extended\ExceptionCodes.h" />
+    <ClInclude Include="..\include\LabSound\extended\FunctionNode.h" />
     <ClInclude Include="..\include\LabSound\extended\LabSound.h" />
     <ClInclude Include="..\include\LabSound\extended\Logging.h" />
     <ClInclude Include="..\include\LabSound\extended\NoiseNode.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="..\src\extended\ADSRNode.cpp" />
     <ClCompile Include="..\src\extended\ClipNode.cpp" />
     <ClCompile Include="..\src\extended\DiodeNode.cpp" />
+    <ClCompile Include="..\src\extended\FunctionNode.cpp" />
     <ClCompile Include="..\src\extended\LabSound.cpp" />
     <ClCompile Include="..\src\extended\NoiseNode.cpp" />
     <ClCompile Include="..\src\extended\PeakCompNode.cpp" />

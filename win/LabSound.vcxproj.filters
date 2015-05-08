@@ -378,6 +378,9 @@
     <ClInclude Include="..\include\LabSound\core\StereoPannerNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\FunctionNode.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -655,6 +658,9 @@
     </ClCompile>
     <ClCompile Include="..\src\core\StereoPannerNode.cpp">
       <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\FunctionNode.cpp">
+      <Filter>LabSound\extended\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

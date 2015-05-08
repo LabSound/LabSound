@@ -16,7 +16,7 @@ namespace LabSound
         
     public:
         
-        FunctionNode(float sampleRate, int channels); // empty constructor == bad
+        FunctionNode(float sampleRate, int channels);
         virtual ~FunctionNode();
         
         void setFunction(std::function<void(ContextRenderLock&, FunctionNode*, int, float*, size_t)> fn)
@@ -35,7 +35,7 @@ namespace LabSound
         
         std::function<void(ContextRenderLock& r, FunctionNode *self,
                            int channel, float* values, size_t framesToProcess)> _function;
-        double _now;
+        double _now = 0.0;
     };
     
 } // end namespace LabSound
