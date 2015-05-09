@@ -98,12 +98,15 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     int positiveElevation = elevation < 0 ? elevation + 360 : elevation;
 
     char tempStr[16];
+    
+    // Located in $(CWD) / hrtf / [format] .wav
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
-    std::string resourceName = "IRC_" + subjectName + "_C_R0195_T" + tempStr;
-    std::unique_ptr<AudioBus> impulseResponse(AudioBus::loadPlatformResource(resourceName.c_str(), sampleRate));
+    std::string resourceName = "hrtf/IRC_" + subjectName + "_C_R0195_T" + tempStr + ".wav";
+    
+    std::unique_ptr<AudioBus> impulseResponse = WebCore::MakeBusFromFile(resourceName.c_str(), false, sampleRate);
 
-    // @Lab removed ASSERT(impulseResponse.get());
-    if (!impulseResponse.get()) {
+    if (!impulseResponse.get())
+    {
         std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
         return false;
     }

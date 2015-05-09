@@ -42,6 +42,8 @@
 		08650A171AD23AF300D19E38 /* ExampleBaseApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExampleBaseApp.h; path = ../../src/ExampleBaseApp.h; sourceTree = "<group>"; };
 		08650A181AD2E6E600D19E38 /* Validation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Validation.h; path = ../../src/Validation.h; sourceTree = "<group>"; };
 		08650A191AD38AD700D19E38 /* InfiniteFM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InfiniteFM.h; path = ../../src/InfiniteFM.h; sourceTree = "<group>"; };
+		08C25E871ADE29520097D572 /* StereoPanning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPanning.h; path = ../../src/StereoPanning.h; sourceTree = "<group>"; };
+		08CC50E61AF9217400F0B81F /* Groove.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Groove.h; path = ../../src/Groove.h; sourceTree = "<group>"; };
 		E23015DC185F611A00FEC991 /* LabSoundExamples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LabSoundExamples; sourceTree = BUILT_PRODUCTS_DIR; };
 		E23015EC1860235E00FEC991 /* libLabSound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLabSound.a; path = ../../../osx/build/Debug/libLabSound.a; sourceTree = "<group>"; };
 		E23015ED1860235E00FEC991 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -80,7 +82,9 @@
 				08650A0F1AD23A6400D19E38 /* MicrophoneLoopback.h */,
 				08650A101AD23A6400D19E38 /* MicrophoneReverb.h */,
 				08650A111AD23A6400D19E38 /* PeakCompressor.h */,
+				08C25E871ADE29520097D572 /* StereoPanning.h */,
 				E2D4FE4F1AF54A6B001B7E6C /* RedAlert.h */,
+				08CC50E61AF9217400F0B81F /* Groove.h */,
 				08650A121AD23A6400D19E38 /* Rhythm.h */,
 				08650A131AD23A6400D19E38 /* RhythmAndFilters.h */,
 				08650A141AD23A6400D19E38 /* Simple.h */,
@@ -257,15 +261,9 @@
 					"$(inherited)",
 					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../include/third_party",
-					"$(PROJECT_DIR)/../../../include/internal",
-					"$(PROJECT_DIR)/../../../include/nodes",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/osx/build/Debug,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = LabSoundExamples;
 			};
 			name = Debug;
@@ -277,15 +275,9 @@
 					"$(inherited)",
 					"/Applications/Xcode6-Beta3.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
 					"$(PROJECT_DIR)/../../../include",
-					"$(PROJECT_DIR)/../../../include/third_party",
-					"$(PROJECT_DIR)/../../../include/internal",
-					"$(PROJECT_DIR)/../../../include/nodes",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/dp/Code/LabSound/osx/build/Debug,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = LabSoundExamples;
 			};
 			name = Release;

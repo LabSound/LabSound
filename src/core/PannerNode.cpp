@@ -170,26 +170,19 @@ AudioListener* PannerNode::listener(ContextRenderLock& r)
     return r.context()->listener();
 }
 
-void PannerNode::setPanningModel(unsigned short model, ExceptionCode& ec)
+void PannerNode::setPanningModel(unsigned short model)
 {
-    switch (model) {
-    case EQUALPOWER:
-    case HRTF:
-        if (!m_panner.get() || model != m_panningModel) {
-            m_panner = Panner::create(model, sampleRate());
-            m_panningModel = model;
-        }
-        break;
-    case SOUNDFIELD:
-        // FIXME: Implement sound field model. See // https://bugs.webkit.org/show_bug.cgi?id=77367.
-        // For now, fall through to throw an exception.
-    default:
-        ec = NOT_SUPPORTED_ERR;
-        break;
+    if (model != PanningMode::EQUALPOWER || model != PanningMode::HRTF) throw std::invalid_argument("Unknown panning model specified");
+    
+    if (!m_panner.get() || model != m_panningModel)
+    {
+        m_panner = Panner::create(model, sampleRate());
+        m_panningModel = model;
     }
+
 }
 
-void PannerNode::setDistanceModel(unsigned short model, ExceptionCode& ec)
+void PannerNode::setDistanceModel(unsigned short model)
 {
     switch (model) 
 	{
@@ -199,7 +192,7 @@ void PannerNode::setDistanceModel(unsigned short model, ExceptionCode& ec)
 			m_distanceEffect->setModel(static_cast<DistanceEffect::ModelType>(model), true);
 			break;
 		default:
-			ec = NOT_SUPPORTED_ERR;
+			throw std::invalid_argument("Unknown distance model specified");
 			break;
     }
 }

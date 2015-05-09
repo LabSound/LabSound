@@ -10,10 +10,9 @@ using namespace WebCore;
 
 namespace LabSound {
     
-    FunctionNode::FunctionNode(float sampleRate, int channels)
-    : AudioScheduledSourceNode(sampleRate)
-    , _now(0)
+    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
     {
+		//@tofix, channels needs to be set on THIS. quick fix is to setChannelCount at the app layer for this node
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
         initialize();
     }
@@ -27,7 +26,8 @@ namespace LabSound {
     {
         AudioBus* outputBus = output(0)->bus(r);
         
-        if (!isInitialized() || !outputBus->numberOfChannels() || !_function) {
+        if (!isInitialized() || !outputBus->numberOfChannels() || !_function) 
+        {
             outputBus->zero();
             return;
         }
@@ -37,13 +37,15 @@ namespace LabSound {
         
         updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
         
-        if (!nonSilentFramesToProcess) {
+        if (!nonSilentFramesToProcess) 
+        {
             outputBus->zero();
             return;
         }
-        
-        for (size_t i = 0; i < channelCount(); ++i) {
-            float* destP = outputBus->channel(0)->mutableData();
+
+        for (size_t i = 0; i < channelCount(); ++i) 
+        {
+            float * destP = outputBus->channel(i)->mutableData();
             
             // Start rendering at the correct offset.
             destP += quantumFrameOffset;
@@ -53,11 +55,13 @@ namespace LabSound {
         }
 
         _now += double(framesToProcess) / sampleRate();
+
         outputBus->clearSilentFlag();
     }
     
-    void FunctionNode::reset(ContextRenderLock&)
+    void FunctionNode::reset(ContextRenderLock  & r)
     {
+        // No-op
     }
     
     bool FunctionNode::propagatesSilence(double now) const

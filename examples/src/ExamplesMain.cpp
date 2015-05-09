@@ -18,24 +18,28 @@
 #include "Spatialization.h"
 #include "Tremolo.h"
 #include "Validation.h"
+#include "StereoPanning.h"
+#include "Groove.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
-InfiniteFMApp g_infiniteFM;
 MicrophoneDalekApp g_micrphoneDalek;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
-RhythmApp g_rhythm;
-RhythmAndFiltersApp g_rhythmAndFilters;
-SimpleApp g_simpleExample;
+RhythmApp g_rhythm; // Regression -- audio node input removal via shared_ptr destruction
+RhythmAndFiltersApp g_rhythmAndFilters; // ditto rhythmApp
+SimpleApp g_simpleExample; //@todo fix gain
 SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
 ValidationApp g_validation;
+InfiniteFMApp g_infiniteFM;
+StereoPanningApp g_stereoPanning;
+GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_redAlert.PlayExample();
+    g_grooveExample.PlayExample();
     return 0;
 }

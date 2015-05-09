@@ -25,7 +25,6 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
-#include "LabSound/extended/ExceptionCodes.h"
 #include "LabSound/core/Mixing.h"
 
 #include <algorithm>
@@ -50,9 +49,8 @@ namespace LabSound
         NodeTypeDestination,
         NodeTypeOscillator,
         NodeTypeAudioBufferSource,
-        NodeTypeMediaElementAudioSource,
-        NodeTypeMediaStreamAudioDestination,
-        NodeTypeMediaStreamAudioSource,
+        NodeTypeAudio,
+        NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
         NodeTypePanner,
         NodeTypeConvolver,
@@ -112,15 +110,15 @@ public:
     AudioNode(float sampleRate);
     virtual ~AudioNode();
 
+    //@tofix these are defined in multiple namespaces (labsound vs webcore)
     enum NodeType {
         NodeTypeUnknown,
         NodeTypeDestination,
         NodeTypeOscillator,
         NodeTypeAudioBufferSource,
-        NodeTypeMediaElementAudioSource,
-        NodeTypeMediaStreamAudioDestination,
-        NodeTypeMediaStreamAudioSource,
+        NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
+        NodeTypeStereoPanner,
         NodeTypePanner,
         NodeTypeConvolver,
         NodeTypeDelay,
@@ -163,11 +161,10 @@ public:
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
 
-    void connect(AudioContext*,
-                 AudioNode*, unsigned outputIndex, unsigned inputIndex, ExceptionCode&);
+    void connect(AudioContext*, AudioNode*, unsigned outputIndex, unsigned inputIndex);
+    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex);
     
-    void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, unsigned outputIndex, ExceptionCode&);
-    void disconnect(unsigned outputIndex, ExceptionCode&);
+    void disconnect(unsigned outputIndex);
 
     virtual float sampleRate() const { return m_sampleRate; }
 
@@ -206,15 +203,16 @@ public:
     void unsilenceOutputs(ContextRenderLock&);
 
     unsigned long channelCount();
-    virtual void setChannelCount(ContextGraphLock&, unsigned long, ExceptionCode&);
+    virtual void setChannelCount(ContextGraphLock&, unsigned long);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec);
+    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
 
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelCountMode);
 
 protected:
+    
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput>);

@@ -9,7 +9,6 @@
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-#include "LabSound/extended/ExceptionCodes.h"
 
 #include "internal/AudioBus.h"
 
@@ -71,8 +70,6 @@ namespace LabSound
 
             if (okayToReallocate && (n != currentN)) 
 			{
-                ExceptionCode ec;
-
                 for (auto i : sawStorage) 
 				{
                     r.context()->disconnect(i);
@@ -91,7 +88,7 @@ namespace LabSound
                 auto c = r.context();
                 for (auto i : sawStorage) 
 				{
-                    i->setType(r, OscillatorType::SAWTOOTH, ec);
+                    i->setType(r, OscillatorType::SAWTOOTH);
                     c->connect(i, gainNode);
                     i->start(0);
                 }

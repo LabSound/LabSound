@@ -175,16 +175,20 @@
   <ItemGroup>
     <ClInclude Include="..\src\ConvolutionReverb.h" />
     <ClInclude Include="..\src\ExampleBaseApp.h" />
+    <ClInclude Include="..\src\Groove.h" />
     <ClInclude Include="..\src\InfiniteFM.h" />
     <ClInclude Include="..\src\MicrophoneDalek.h" />
     <ClInclude Include="..\src\MicrophoneLoopback.h" />
     <ClInclude Include="..\src\MicrophoneReverb.h" />
     <ClInclude Include="..\src\PeakCompressor.h" />
+    <ClInclude Include="..\src\RedAlert.h" />
     <ClInclude Include="..\src\Rhythm.h" />
     <ClInclude Include="..\src\RhythmAndFilters.h" />
     <ClInclude Include="..\src\Simple.h" />
     <ClInclude Include="..\src\SimpleRecording.h" />
     <ClInclude Include="..\src\Spatialization.h" />
+    <ClInclude Include="..\src\StereoPanning.h" />
+    <ClInclude Include="..\src\Tremolo.h" />
     <ClInclude Include="..\src\Validation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

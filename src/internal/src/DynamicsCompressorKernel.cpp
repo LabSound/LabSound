@@ -30,6 +30,7 @@
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
 
+#include <memory>
 #include <algorithm>
 #include <wtf/MathExtras.h>
 
@@ -74,7 +75,8 @@ void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 
     m_preDelayBuffers.clear();
     for (unsigned i = 0; i < numberOfChannels; ++i)
-		m_preDelayBuffers.push_back(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(MaxPreDelayFrames)));
+        m_preDelayBuffers.push_back(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(MaxPreDelayFrames)));
+
 }
 
 void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime)

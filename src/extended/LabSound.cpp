@@ -5,7 +5,6 @@
 #include "LabSound/core/DefaultAudioDestinationNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
-#include "LabSound/extended/ExceptionCodes.h"
 #include "LabSound/extended/Logging.h"
 
 #include <chrono>

@@ -22,50 +22,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "LabSound/core/MediaStreamAudioDestinationNode.h"
+#ifndef AudioHardwareSourceNode_h
+#define AudioHardwareSourceNode_h
 
-#include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/MediaStream.h"
-
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioSourceNode.h"
+#include "LabSound/core/AudioSourceProvider.h"
 
 namespace WebCore {
 
-MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(size_t numberOfChannels, float sampleRate)
-    : AudioBasicInspectorNode(sampleRate, numberOfChannels)
-{
-	m_mixBus = new AudioBus(numberOfChannels, ProcessingSizeInFrames);
-    setNodeType(NodeTypeMediaStreamAudioDestination);
-
-    initialize();
-}
-
-MediaStreamSource* MediaStreamAudioDestinationNode::mediaStreamSource()
-{
-    return m_source.get();
-}
-
-MediaStreamAudioDestinationNode::~MediaStreamAudioDestinationNode()
-{
-    uninitialize();
-	delete m_mixBus; // Dimitri
-}
-
-//@tofix
-void MediaStreamAudioDestinationNode::process(ContextRenderLock& r, size_t numberOfFrames)
-{
-    m_mixBus->copyFrom(*input(0)->bus(r));
+class AudioContext;
     
-    // m_source is supposed to be derived from AudioDestinationConsumer.h
-    // --- it should be very easy to pipe the audio from LabSound to something else via that API
-    
-	// LabSound commented - will need to revisit later
-	// m_source->consumeAudio(&m_mixBus, numberOfFrames);
-}
-
-void MediaStreamAudioDestinationNode::reset(ContextRenderLock&)
+class AudioHardwareSourceNode : public AudioSourceNode, public AudioSourceProviderClient
 {
-}
+
+public:
+
+    AudioHardwareSourceNode(AudioSourceProvider*, float sampleRate);
+    virtual ~AudioHardwareSourceNode();
+
+    // AudioNode
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&) override;
+
+    // AudioSourceProviderClient
+    virtual void setFormat(ContextRenderLock & r, size_t numberOfChannels, float sampleRate) override;
+
+    AudioSourceProvider * audioSourceProvider() const { return m_audioSourceProvider; }
+
+private:
+
+    // As an audio source, we will never propagate silence.
+    virtual bool propagatesSilence(double now) const override { return false; }
+
+    AudioSourceProvider * m_audioSourceProvider;
+
+    unsigned m_sourceNumberOfChannels;
+};
 
 } // namespace WebCore
+
+#endif

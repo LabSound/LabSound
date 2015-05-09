@@ -20,12 +20,12 @@ struct PeakCompressorApp : public LabSoundExampleApp
             ContextRenderLock r(context, "peak comp");
             
             filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
-            filter->setType(BiquadFilterNode::LOWPASS, ec);
+            filter->setType(BiquadFilterNode::LOWPASS);
             filter->frequency()->setValue(4000.0f);
             
             peakComp = std::make_shared<PeakCompNode>(context->sampleRate());
-            filter->connect(context.get(), peakComp.get(), 0, 0, ec);
-            peakComp->connect(context.get(), context->destination().get(), 0, 0, ec);
+            filter->connect(context.get(), peakComp.get(), 0, 0);
+            peakComp->connect(context.get(), context->destination().get(), 0, 0);
             
             float startTime = 0;
             float eighthNoteTime = 1.0f / 4.0f;

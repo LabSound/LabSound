@@ -1,4 +1,4 @@
-#define USE_LIVE
+//#define USE_LIVE
 
 #include "ExampleBaseApp.h"
 
@@ -16,7 +16,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         SoundBuffer sample("samples/voice.mp4", sampleRate);
 #endif
         
-        std::shared_ptr<MediaStreamAudioSourceNode> input;
+        std::shared_ptr<AudioHardwareSourceNode> input;
         
         std::shared_ptr<OscillatorNode> vIn;
         std::shared_ptr<GainNode> vInGain;
@@ -87,36 +87,36 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             AudioContext* ac = context.get();
             
 #ifdef USE_LIVE
-            input = ac->createMediaStreamSource(g, r);
-            input->connect(ac, vcInverter1.get(), 0, 0, ec);
-            input->connect(ac, vcDiode4->node().get(), 0, 0, ec);
+            input = MakeHardwareSourceNode(r);
+            input->connect(ac, vcInverter1.get(), 0, 0);
+            input->connect(ac, vcDiode4->node().get(), 0, 0);
 #else
-            player->connect(ac, vcInverter1.get(), 0, 0, ec);
-            player->connect(ac, vcDiode4->node().get(), 0, 0, ec);
+            player->connect(ac, vcInverter1.get(), 0, 0);
+            player->connect(ac, vcDiode4->node().get(), 0, 0);
 #endif
             
-            vcInverter1->connect(ac, vcDiode3->node().get(), 0, 0, ec);
+            vcInverter1->connect(ac, vcDiode3->node().get(), 0, 0);
             
             // Then the Vin side
-            vIn->connect(ac, vInGain.get(), 0, 0, ec);
-            vInGain->connect(ac, vInInverter1.get(), 0, 0, ec);
-            vInGain->connect(ac, vcInverter1.get(), 0, 0, ec);
-            vInGain->connect(ac, vcDiode4->node().get(), 0, 0, ec);
+            vIn->connect(ac, vInGain.get(), 0, 0);
+            vInGain->connect(ac, vInInverter1.get(), 0, 0);
+            vInGain->connect(ac, vcInverter1.get(), 0, 0);
+            vInGain->connect(ac, vcDiode4->node().get(), 0, 0);
             
-            vInInverter1->connect(ac, vInInverter2.get(), 0, 0, ec);
-            vInInverter1->connect(ac, vInDiode2->node().get(), 0, 0, ec);
-            vInInverter2->connect(ac, vInDiode1->node().get(), 0, 0, ec);
+            vInInverter1->connect(ac, vInInverter2.get(), 0, 0);
+            vInInverter1->connect(ac, vInDiode2->node().get(), 0, 0);
+            vInInverter2->connect(ac, vInDiode1->node().get(), 0, 0);
             
             // Finally connect the four diodes to the destination via the output-stage compressor and master gain node
-            vInDiode1->node()->connect(ac, vInInverter3.get(), 0, 0, ec);
-            vInDiode2->node()->connect(ac, vInInverter3.get(), 0, 0, ec);
+            vInDiode1->node()->connect(ac, vInInverter3.get(), 0, 0);
+            vInDiode2->node()->connect(ac, vInInverter3.get(), 0, 0);
             
-            vInInverter3->connect(ac, compressor.get(), 0, 0, ec);
-            vcDiode3->node()->connect(ac, compressor.get(), 0, 0, ec);
-            vcDiode4->node()->connect(ac, compressor.get(), 0, 0, ec);
+            vInInverter3->connect(ac, compressor.get(), 0, 0);
+            vcDiode3->node()->connect(ac, compressor.get(), 0, 0);
+            vcDiode4->node()->connect(ac, compressor.get(), 0, 0);
             
-            compressor->connect(ac, outGain.get(), 0, 0, ec);
-            outGain->connect(ac, context->destination().get(), 0, 0, ec);
+            compressor->connect(ac, outGain.get(), 0, 0);
+            outGain->connect(ac, context->destination().get(), 0, 0);
             
 #ifndef USE_LIVE
             player->start(0);

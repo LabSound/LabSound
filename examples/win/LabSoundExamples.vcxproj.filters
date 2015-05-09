@@ -54,5 +54,17 @@
     <ClInclude Include="..\src\InfiniteFM.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Groove.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Tremolo.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RedAlert.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StereoPanning.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -25,10 +25,10 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
             dryGain = std::make_shared<GainNode>(context->sampleRate());
             dryGain->gain()->setValue(1.f);
             
-            convolve->connect(context.get(), wetGain.get(), 0, 0, ec);
-            wetGain->connect(context.get(), context->destination().get(), 0, 0, ec);
-            dryGain->connect(context.get(), context->destination().get(), 0, 0, ec);
-            dryGain->connect(context.get(), convolve.get(), 0, 0, ec);
+            convolve->connect(context.get(), wetGain.get(), 0, 0);
+            wetGain->connect(context.get(), context->destination().get(), 0, 0);
+            dryGain->connect(context.get(), context->destination().get(), 0, 0);
+            dryGain->connect(context.get(), convolve.get(), 0, 0);
             
             voice = sample.play(r, dryGain, 0);
         }

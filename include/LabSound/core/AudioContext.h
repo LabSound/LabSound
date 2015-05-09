@@ -10,7 +10,6 @@
 
 #include "LabSound/core/ConcurrentQueue.h"
 #include "labSound/core/AudioScheduledSourceNode.h"
-#include "LabSound/extended/ExceptionCodes.h"
 
 #include <set>
 #include <atomic>
@@ -36,7 +35,7 @@ class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
 class HRTFDatabaseLoader;
-class MediaStreamAudioSourceNode;
+class AudioHardwareSourceNode;
 class AudioNodeInput;
 class AudioNodeOutput;
 
@@ -51,10 +50,15 @@ struct PendingConnection
 	std::shared_ptr<Output> to;
 };
 
+//@tofix: refactor such that this factory function doesn't need to exist
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r);
+
 class AudioContext
 {
+    
 	friend class LabSound::ContextGraphLock;
 	friend class LabSound::ContextRenderLock;
+    
 public:
 
 	// This is considering 32 is large enough for multiple channels audio.
@@ -71,8 +75,6 @@ public:
 	AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
 
 	~AudioContext();
-
-	std::shared_ptr<MediaStreamAudioSourceNode> createMediaStreamSource(LabSound::ContextGraphLock & g, LabSound::ContextRenderLock & r);
 
 	void initHRTFDatabase();
 
@@ -139,7 +141,7 @@ public:
 
 	void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
 
-	std::function<void()> renderingCompletedEvent;
+	std::function<void()> offlineRenderCompleteCallback;
 
 private:
 

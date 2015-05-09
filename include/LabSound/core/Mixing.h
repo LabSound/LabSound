@@ -1,14 +1,21 @@
+// LabSound Mixing.h
+// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
+// License is MIT: http://opensource.org/licenses/MIT
 
-#pragma once
+#ifndef Mixing_h
+#define Mixing_h
 
-namespace LabSound {
+namespace LabSound
+{
     
-    enum class ChannelInterpretation {
+    enum class ChannelInterpretation
+    {
         Speakers,
         Discrete,
     };
     
-    enum class Channel {
+    enum class Channel
+    {
         First = 0,
         Left = 0,
         Right = 1,
@@ -19,7 +26,8 @@ namespace LabSound {
         SurroundRight = 5,
     };
     
-    enum class ChannelCountMode {
+    enum class ChannelCountMode
+    {
         Max,
         ClampedMax,
         Explicit,
@@ -28,3 +36,4 @@ namespace LabSound {
 
 }
 
+#endif
