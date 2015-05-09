@@ -29,7 +29,7 @@ PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
 RhythmApp g_rhythm;
 RhythmAndFiltersApp g_rhythmAndFilters;
-SimpleApp g_simpleExample; //@todo fix gain
+SimpleApp g_simpleExample;
 SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_simpleExample.PlayExample();
+    g_grooveExample.PlayExample();
     return 0;
 }
