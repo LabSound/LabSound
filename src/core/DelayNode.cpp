@@ -34,13 +34,10 @@ namespace WebCore
 
 const double maximumAllowedDelayTime = 180;
 
-DelayNode::DelayNode(float sampleRate, double maxDelayTime, ExceptionCode& ec) : AudioBasicProcessorNode(sampleRate)
+DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode(sampleRate)
 {
-    if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime) 
-	{
-        ec = NOT_SUPPORTED_ERR;
-        return;
-    }
+    if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime)
+        throw std::out_of_range("Delay time exceeds nominal limits");
 
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);

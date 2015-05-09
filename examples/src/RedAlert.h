@@ -63,14 +63,14 @@ struct RedAlertApp : public LabSoundExampleApp
             outputGainFunction->start(0);
 
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, OscillatorType::SAWTOOTH, ec);
+            osc->setType(r, OscillatorType::SAWTOOTH);
             osc->frequency()->setValue(220);
             osc->start(0);
             oscGain = std::make_shared<GainNode>(context->sampleRate());
             oscGain->gain()->setValue(0.5f);
             
             resonator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            resonator->setType(r, OscillatorType::SINE, ec);
+            resonator->setType(r, OscillatorType::SINE);
             resonator->frequency()->setValue(220);
             resonator->start(0);
             
@@ -81,18 +81,18 @@ struct RedAlertApp : public LabSoundExampleApp
             resonanceSum->gain()->setValue(0.5f);
             
             // sweep drives oscillator frequency
-            sweep->connect(g, osc->frequency(), 0, ec);
+            sweep->connect(g, osc->frequency(), 0);
             
             // oscillator drives resonator frequency
-            osc->connect(g, resonator->frequency(), 0, ec);
+            osc->connect(g, resonator->frequency(), 0);
 
             // osc --> oscGain -------------+
             // resonator -> resonatorGain --+--> resonanceSum
             //
-            osc->connect(context.get(), oscGain.get(), 0, 0, ec);
-            oscGain->connect(context.get(), resonanceSum.get(), 0, 0, ec);
-            resonator->connect(context.get(), resonatorGain.get(), 0, 0, ec);
-            resonatorGain->connect(context.get(), resonanceSum.get(), 0, 0, ec);
+            osc->connect(context.get(), oscGain.get(), 0, 0);
+            oscGain->connect(context.get(), resonanceSum.get(), 0, 0);
+            resonator->connect(context.get(), resonatorGain.get(), 0, 0);
+            resonatorGain->connect(context.get(), resonanceSum.get(), 0, 0);
             
             delaySum = std::make_shared<GainNode>(context->sampleRate());
             delaySum->gain()->setValue(0.2f);
@@ -104,10 +104,10 @@ struct RedAlertApp : public LabSoundExampleApp
             //
             float delays[5] = {0.015, 0.022, 0.035, 0.024, 0.011};
             for (int i = 0; i < 5; ++i) {
-                delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f, ec);
+                delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
                 delay[i]->delayTime()->setValue(delays[i]);
-                resonanceSum->connect(context.get(), delay[i].get(), 0, 0, ec);
-                delay[i]->connect(context.get(), delaySum.get(), 0, 0, ec);
+                resonanceSum->connect(context.get(), delay[i].get(), 0, 0);
+                delay[i]->connect(context.get(), delaySum.get(), 0, 0);
             }
             
             filterSum = std::make_shared<GainNode>(context->sampleRate());
@@ -119,21 +119,21 @@ struct RedAlertApp : public LabSoundExampleApp
             //            +--> filter3 --+
             //            +--------------+----> filterSum
             //
-            delaySum->connect(context.get(), filterSum.get(), 0, 0, ec);
+            delaySum->connect(context.get(), filterSum.get(), 0, 0);
 
             float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
             for (int i = 0; i < 4; ++i) {
                 filter[i] = std::make_shared<BiquadFilterNode>(context->sampleRate());
                 filter[i]->frequency()->setValue(centerFrequencies[i]);
                 filter[i]->q()->setValue(12.f);
-                delaySum->connect(context.get(), filter[i].get(), 0, 0, ec);
-                filter[i]->connect(context.get(), filterSum.get(), 0, 0, ec);
+                delaySum->connect(context.get(), filter[i].get(), 0, 0);
+                filter[i]->connect(context.get(), filterSum.get(), 0, 0);
             }
             
             // filterSum --> destination
             //
-            outputGainFunction->connect(g, filterSum->gain(), 0, ec);
-            filterSum->connect(context.get(), context->destination().get(), 0, 0, ec);
+            outputGainFunction->connect(g, filterSum->gain(), 0);
+            filterSum->connect(context.get(), context->destination().get(), 0, 0);
         }
         
         int now = 0.0;

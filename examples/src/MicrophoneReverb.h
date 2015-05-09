@@ -9,7 +9,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         
         SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
         
-        std::shared_ptr<MediaStreamAudioSourceNode> input;
+        std::shared_ptr<AudioHardwareSourceNode> input;
         std::shared_ptr<ConvolverNode> convolve;
         std::shared_ptr<GainNode> wetGain;
         std::shared_ptr<GainNode> dryGain;
@@ -18,21 +18,21 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         {
             ContextGraphLock g(context, "live reverb recording");
             ContextRenderLock r(context, "live reverb recording");
-            input = context->createMediaStreamSource(g, r);
+            input = MakeHardwareSourceNode(r);
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
             convolve->setBuffer(g, ir.audioBuffer);
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(2.f);
             dryGain = std::make_shared<GainNode>(context->sampleRate());
             dryGain->gain()->setValue(1.f);
-            input->connect(ac, convolve.get(), 0, 0, ec);
-            convolve->connect(ac, wetGain.get(), 0, 0, ec);
-            wetGain->connect(ac, context->destination().get(), 0, 0, ec);
-            dryGain->connect(ac, context->destination().get(), 0, 0, ec);
+            input->connect(ac, convolve.get(), 0, 0);
+            convolve->connect(ac, wetGain.get(), 0, 0);
+            wetGain->connect(ac, context->destination().get(), 0, 0);
+            dryGain->connect(ac, context->destination().get(), 0, 0);
             recorder = std::make_shared<RecorderNode>(context->sampleRate());
             recorder->startRecording();
-            dryGain->connect(ac, recorder.get(), 0, 0, ec);
-            wetGain->connect(ac, recorder.get(), 0, 0, ec);
+            dryGain->connect(ac, recorder.get(), 0, 0);
+            wetGain->connect(ac, recorder.get(), 0, 0);
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(10));

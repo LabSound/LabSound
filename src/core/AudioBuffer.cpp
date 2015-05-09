@@ -41,12 +41,12 @@ namespace WebCore
 
 std::shared_ptr<AudioBuffer> MakeAudioBufferFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
-    std::unique_ptr<AudioBus> bus = createBusFromInMemoryAudioFile(data, dataSize, mixToMono, sampleRate);
+    std::unique_ptr<AudioBus> bus = WebCore::MakeBusFromMemory(data, dataSize, mixToMono, sampleRate);
     
 	if (bus.get())
         return std::make_shared<AudioBuffer>(bus.get());
 
-    throw std::runtime_error("Could not create AudioBus from file");
+    throw std::runtime_error("Could not create AudioBus!");
 }
 
 AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
@@ -56,7 +56,7 @@ AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float
 {
 
 	if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
-		throw std::runtime_error("Invalid constructor parameters");
+		throw std::invalid_argument("Invalid parameters");
 
     m_channels.reserve(numberOfChannels);
 
@@ -102,16 +102,6 @@ AudioBuffer::~AudioBuffer()
 void AudioBuffer::releaseMemory()
 {
     m_channels.clear();
-}
-
-std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex, ExceptionCode& ec)
-{
-    if (channelIndex >= m_channels.size()) {
-        ec = SYNTAX_ERR;
-        return nullptr;
-    }
-
-    return m_channels[channelIndex];
 }
 
 std::shared_ptr<std::vector<float>> AudioBuffer::getChannelData(unsigned channelIndex)

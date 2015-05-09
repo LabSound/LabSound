@@ -49,19 +49,19 @@ struct ValidationApp : public LabSoundExampleApp
             panner = std::make_shared<PannerNode>(context->sampleRate());
             
             limiter->gain()->setValue(0.5f);
-            sinOsc->connect(context.get(), limiter.get(), 0, 0, ec); // Connect sinOsc to gain
-            triOsc->connect(context.get(), limiter.get(), 0, 0, ec); // Connect triOsc to gain
-            //megaSuperSaw->connect(context.get(), limiter.get(), 0, 0, ec); // Connect megaSuperSaw to gain
+            sinOsc->connect(context.get(), limiter.get(), 0, 0); // Connect sinOsc to gain
+            triOsc->connect(context.get(), limiter.get(), 0, 0); // Connect triOsc to gain
+            //megaSuperSaw->connect(context.get(), limiter.get(), 0, 0); // Connect megaSuperSaw to gain
             
-            limiter->connect(context.get(), context->destination().get(), 0, 0, ec); // connect gain to DAC
-            panner->connect(context.get(), context->destination().get(), 0, 0, ec);  // connect panner to DAC
+            limiter->connect(context.get(), context->destination().get(), 0, 0); // connect gain to DAC
+            panner->connect(context.get(), context->destination().get(), 0, 0);  // connect panner to DAC
             
             //megaSuperSaw->noteOn(0);
             
-            sinOsc->setType(r, OscillatorType::SINE, ec);
+            sinOsc->setType(r, OscillatorType::SINE);
             sinOsc->start(0);
             
-            triOsc->setType(r, OscillatorType::TRIANGLE, ec);
+            triOsc->setType(r, OscillatorType::TRIANGLE);
             triOsc->start(0);
             
             

@@ -39,6 +39,7 @@ class OscillatorNode : public AudioScheduledSourceNode
 {
     
 public:
+    
     OscillatorNode(ContextRenderLock& r, float sampleRate);
     virtual ~OscillatorNode();
     
@@ -47,7 +48,7 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
     OscillatorType type() const { return m_type; }
-    void setType(ContextRenderLock& r, OscillatorType, ExceptionCode&);
+    void setType(ContextRenderLock& r, OscillatorType);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
@@ -55,7 +56,8 @@ public:
     void setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable>);
 
 private:
-    void setType(bool isConstructor, OscillatorType, ExceptionCode&);
+
+    void setType(bool isConstructor, OscillatorType);
     void setWaveTable(bool isConstructor, std::shared_ptr<WaveTable>);
 
     // Returns true if there are sample-accurate timeline parameter changes.

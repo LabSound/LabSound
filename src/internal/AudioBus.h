@@ -29,6 +29,7 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
+#include "internal/ConfigMacros.h"
 #include "LabSound/core/Mixing.h"
 #include "internal/AudioChannel.h"
 #include <vector>
@@ -41,11 +42,14 @@ namespace WebCore {
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".
 // An AudioBus with one channel is mono, an AudioBus with two channels is stereo, etc.
-class AudioBus {
+class AudioBus 
+{
     AudioBus(const AudioBus&);  // noncopyable
+    
 public:
 
-    enum {
+    enum 
+    {
         LayoutCanonical = 0
         // Can define non-standard layouts here
     };
@@ -63,8 +67,11 @@ public:
 
     // Use this when looping over channels
     AudioChannel* channel(int channel) { return m_channels[channel].get(); }
-    const AudioChannel* channel(int channel) const {
-        return const_cast<AudioBus*>(this)->m_channels[channel].get(); }
+
+    const AudioChannel* channel(int channel) const 
+    {
+        return const_cast<AudioBus*>(this)->m_channels[channel].get(); 
+    }
     
     // use this when accessing channels semantically
     AudioChannel* channelByType(Channel type);
@@ -133,22 +140,26 @@ public:
     // Makes maximum absolute value == 1.0 (if possible).
     void normalize();
 
-    static std::unique_ptr<AudioBus> loadPlatformResource(const char* name, float sampleRate);
-
 protected:
-    AudioBus() {}
+
+    AudioBus() {};
 
     void speakersCopyFrom(const AudioBus&);
     void discreteCopyFrom(const AudioBus&);
     void speakersSumFrom(const AudioBus&);
     void discreteSumFrom(const AudioBus&);
     void speakersSumFrom5_1_ToMono(const AudioBus&);
-    
+
     size_t m_length;
+
     std::vector<std::unique_ptr<AudioChannel> > m_channels;
+
     int m_layout;
+
     float m_busGain;
+
     std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
+
     bool m_isFirstTime;
     float m_sampleRate; // 0.0 if unknown or N/A
 

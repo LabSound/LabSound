@@ -123,29 +123,12 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
     return 0;
 }
 
-void AudioNode::connect(AudioContext* context,
-                        AudioNode* destination, unsigned outputIndex, unsigned inputIndex, ExceptionCode& ec)
+void AudioNode::connect(AudioContext* context, AudioNode* destination, unsigned outputIndex, unsigned inputIndex)
 {
-    if (!context) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    if (!destination) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    // Sanity check input and output indices.
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
-    
-    if (destination && inputIndex >= destination->numberOfInputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (!context) throw std::invalid_argument("No context specified");
+    if (!destination) throw std::invalid_argument("No destination specified");
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
+    if (inputIndex >= destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
 
     auto input = destination->input(inputIndex);
     auto output = this->output(outputIndex);
@@ -155,28 +138,17 @@ void AudioNode::connect(AudioContext* context,
 
 }
 
-void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
 {
-    if (!param) {
-        ec = SYNTAX_ERR;
-        return;
-    }
-
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (!param) throw std::invalid_argument("No parameter specified");
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
     AudioParam::connect(g, param, this->output(outputIndex));
 }
 
-void AudioNode::disconnect(unsigned outputIndex, ExceptionCode& ec)
+void AudioNode::disconnect(unsigned outputIndex)
 {
-    // Sanity check input and output indices.
-    if (outputIndex >= numberOfOutputs()) {
-        ec = INDEX_SIZE_ERR;
-        return;
-    }
+    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
     /// @TODO FIXME
     // &&& can't do this, it's recursive
@@ -188,29 +160,37 @@ unsigned long AudioNode::channelCount()
     return m_channelCount;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount, ExceptionCode& ec)
+void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount)
 {
-    if (!g.context()) {
-        ec = INVALID_STATE_ERR;
-        return;
+    if (!g.context())
+    {
+        throw std::invalid_argument("No context specified");
     }
     
-    if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels) {
+    if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels)
+    {
         if (m_channelCount != channelCount) {
             m_channelCount = channelCount;
             if (m_channelCountMode != ChannelCountMode::Max)
                 updateChannelsForInputs(g);
         }
-    } else
-        ec = INVALID_STATE_ERR;
+        return;
+    }
+    
+    throw std::logic_error("Should not be reached");
 }
 
-void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, ExceptionCode& ec)
+void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode)
 {
     if (mode >= ChannelCountMode::End || !g.context())
-        ec = INVALID_STATE_ERR;
-    else {
-        if (m_channelCountMode != mode) {
+    {
+        throw std::invalid_argument("No context specified");
+    }
+    
+    else
+    {
+        if (m_channelCountMode != mode)
+        {
             m_channelCountMode = mode;
             updateChannelsForInputs(g);
         }
@@ -220,7 +200,9 @@ void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode, 
 void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
 {
     for (auto input : m_inputs)
+    {
         input->changedOutputs(g);
+    }
 }
     
 void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
@@ -314,9 +296,7 @@ void AudioNode::printNodeCounts()
         { NodeTypeDestination, "NodeTypeDestination" },
         { NodeTypeOscillator, "NodeTypeOscillator" },
         { NodeTypeAudioBufferSource, "NodeTypeAudioBufferSource" },
-        { NodeTypeMediaElementAudioSource, "NodeTypeMediaElementAudioSource" },
-        { NodeTypeMediaStreamAudioDestination, "NodeTypeMediaStreamAudioDestination" },
-        { NodeTypeMediaStreamAudioSource, "NodeTypeMediaStreamAudioSource" },
+        { NodeTypeHardwareSource, "NodeTypeHardwareSource" },
         { NodeTypeBiquadFilter, "NodeTypeBiquadFilter" },
         { NodeTypePanner, "NodeTypePanner" },
         { NodeTypeConvolver, "NodeTypeConvolver" },

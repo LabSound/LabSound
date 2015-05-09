@@ -18,7 +18,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Infinite FM");
             
             modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            modulator->setType(r, OscillatorType::SINE, ec);
+            modulator->setType(r, OscillatorType::SINE);
             modulator->start(0);
             modulator->frequency()->setValue(2.0f);
             
@@ -26,7 +26,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
             modulatorGain->gain()->setValue(50.0f);
             
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, OscillatorType::SINE, ec);
+            osc->setType(r, OscillatorType::SINE);
             osc->frequency()->setValue(220);
             osc->start(0);
             
@@ -36,9 +36,9 @@ struct InfiniteFMApp : public LabSoundExampleApp
             // Set up processing chain
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
-            modulator->connect(context.get(), modulatorGain.get(), 0, 0, ec);
-            modulatorGain->connect(g, osc->frequency(), 0, ec);
-            osc->connect(context.get(), context->destination().get(), 0, 0, ec);
+            modulator->connect(context.get(), modulatorGain.get(), 0, 0);
+            modulatorGain->connect(g, osc->frequency(), 0);
+            osc->connect(context.get(), context->destination().get(), 0, 0);
         }
         
         int now = 0.0;

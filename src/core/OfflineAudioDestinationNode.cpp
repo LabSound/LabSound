@@ -84,6 +84,12 @@ void OfflineAudioDestinationNode::startRendering()
         m_startedRendering = true;
 		//@todo: proper notification when thread is completed with condition variable
         m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
+        
+        // @tofix: ability to update main thread from here. Currently blocks until complete
+        m_renderThread.join();
+
+        if (m_context->offlineRenderCompleteCallback)
+            m_context->offlineRenderCompleteCallback();
     }
 }
 
@@ -118,7 +124,8 @@ void OfflineAudioDestinationNode::offlineRender()
     unsigned numberOfChannels = m_renderTarget->numberOfChannels();
 
     unsigned n = 0;
-    while (framesToProcess > 0) {
+    while (framesToProcess > 0)
+    {
         // Render one render quantum.
         render(0, m_renderBus.get(), renderQuantumSize);
         
@@ -133,26 +140,9 @@ void OfflineAudioDestinationNode::offlineRender()
         n += framesAvailableToCopy;
         framesToProcess -= framesAvailableToCopy;
     }
-    
-    // Our work is done. Let the AudioContext know.
-   //notifyCompleteDispatch(this); // Dimitri sez: super epic danger here. Refactor to use condition_variable
 
 }
 
-void OfflineAudioDestinationNode::notifyCompleteDispatch(void* userData)
-{
-    OfflineAudioDestinationNode* destinationNode = static_cast<OfflineAudioDestinationNode*>(userData);
-    ASSERT(destinationNode);
-    if (!destinationNode)
-        return;
-
-    destinationNode->notifyComplete();
-}
-
-void OfflineAudioDestinationNode::notifyComplete()
-{
-	if (m_context->renderingCompletedEvent) m_context->renderingCompletedEvent(); 
-}
 
 } // namespace WebCore
 

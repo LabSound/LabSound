@@ -236,17 +236,19 @@ std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixT
 
     return audioBus;
 }
-
-std::unique_ptr<AudioBus> createBusFromAudioFile(const char* filePath, bool mixToMono, float sampleRate)
-{
-    AudioFileReader reader(filePath);
-    return reader.createBus(sampleRate, mixToMono);
-}
-
-std::unique_ptr<AudioBus> createBusFromInMemoryAudioFile(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
+    
+std::unique_ptr<AudioBus> MakeBusFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
 {
     AudioFileReader reader(data, dataSize);
     return reader.createBus(sampleRate, mixToMono);
 }
+
+std::unique_ptr<AudioBus> MakeBusFromFile(const char* filePath, bool mixToMono, float sampleRate)
+{
+    AudioFileReader reader(filePath);
+    return reader.createBus(sampleRate, mixToMono);
+}
+    
+
 
 } // WebCore

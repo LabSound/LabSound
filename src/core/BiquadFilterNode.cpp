@@ -37,12 +37,9 @@ BiquadFilterNode::BiquadFilterNode(float sampleRate) : AudioBasicProcessorNode(s
     initialize();
 }
 
-void BiquadFilterNode::setType(unsigned short type, ExceptionCode& ec)
+void BiquadFilterNode::setType(unsigned short type)
 {
-    if (type > BiquadProcessor::Allpass) {
-        ec = NOT_SUPPORTED_ERR;
-        return;
-    }
+    if (type > BiquadProcessor::Allpass) throw std::out_of_range("Filter type exceeds index of known types");
     
     biquadProcessor()->setType(static_cast<BiquadProcessor::FilterType>(type));
 }

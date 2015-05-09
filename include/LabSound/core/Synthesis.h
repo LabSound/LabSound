@@ -1,12 +1,13 @@
-
 // LabSound Synthesis.h
 // Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#pragma once
+#ifndef Synthesis_h
+#define Synthesis_h
 
-namespace LabSound {
- 
+namespace LabSound
+{
+    //@todo: add nonwavetable oscillators :)
     enum class OscillatorType
     {
         SINE = 0,
@@ -15,6 +16,6 @@ namespace LabSound {
         TRIANGLE = 3,
         CUSTOM = 4
     };
-    
 }
 
+#endif

@@ -14,7 +14,7 @@ struct SpatializationApp : public LabSoundExampleApp
         {
             ContextGraphLock g(context, "spatialization");
             ContextRenderLock r(context, "spatialization");
-            panner->connect(ac, context->destination().get(), 0, 0, ec);
+            panner->connect(ac, context->destination().get(), 0, 0);
             trainNode = train.play(r, panner, 0.0f);
         }
         

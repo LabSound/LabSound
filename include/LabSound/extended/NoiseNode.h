@@ -7,8 +7,6 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-#include "LabSound/extended/ExceptionCodes.h"
-
 namespace LabSound 
 {
 
@@ -21,7 +19,8 @@ namespace LabSound
 		{
             WHITE,
             PINK,
-            BROWN
+            BROWN,
+            NOISE_TYPE_END,
         };
 
         NoiseNode(float sampleRate);
@@ -32,7 +31,7 @@ namespace LabSound
 
         unsigned short type() const { return m_type; }
 
-        void setType(NoiseType newType, ExceptionCode&);
+        void setType(NoiseType newType);
 
     private:
 

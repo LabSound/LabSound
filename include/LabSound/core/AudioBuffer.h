@@ -29,15 +29,11 @@
 #ifndef AudioBuffer_h
 #define AudioBuffer_h
 
-#include "LabSound/extended/ExceptionCodes.h"
-
 #include <vector>
 #include <memory>
 
 namespace WebCore
 {
-
-    using namespace LabSound;
 
     class AudioBus;
 	class AudioBuffer;
@@ -62,7 +58,6 @@ public:
 
     // Channel data access
     unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
-    std::shared_ptr<std::vector<float>> getChannelData(unsigned channelIndex, ExceptionCode&);
     std::shared_ptr<std::vector<float>> getChannelData(unsigned channelIndex);
     void zero();
 

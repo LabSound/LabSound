@@ -9,7 +9,6 @@
 class FloatPoint3D;
 
 namespace LabSound {
-    
 
     struct Occluder 
 	{

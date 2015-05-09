@@ -49,11 +49,10 @@ class PannerNode : public AudioNode
 
 public:
 
-    enum 
+    enum PanningMode
 	{
         EQUALPOWER = 0,
         HRTF = 1,
-        SOUNDFIELD = 2,
     };
 
     enum 
@@ -78,7 +77,7 @@ public:
 
     // Panning model
     unsigned short panningModel() const { return m_panningModel; }
-    void setPanningModel(unsigned short, ExceptionCode&);
+    void setPanningModel(unsigned short);
 
     // Position
     FloatPoint3D position() const { return m_position; }
@@ -94,7 +93,7 @@ public:
 
     // Distance parameters
     unsigned short distanceModel();
-    void setDistanceModel(unsigned short, ExceptionCode&);
+    void setDistanceModel(unsigned short);
 
     float refDistance();
     void setRefDistance(float refDistance);
