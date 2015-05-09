@@ -27,8 +27,8 @@ MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
-RhythmApp g_rhythm; // Regression -- audio node input removal via shared_ptr destruction
-RhythmAndFiltersApp g_rhythmAndFilters; // ditto rhythmApp
+RhythmApp g_rhythm;
+RhythmAndFiltersApp g_rhythmAndFilters;
 SimpleApp g_simpleExample; //@todo fix gain
 SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_grooveExample.PlayExample();
+    g_simpleExample.PlayExample();
     return 0;
 }

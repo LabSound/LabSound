@@ -284,7 +284,7 @@ Appendix :
 #include "ooura/fftsg.h"
 #include <math.h>
 
-namespace cinder {
+namespace {
 
     template<typename T>
     struct math
@@ -367,10 +367,10 @@ namespace cinder {
         static float clamp(float x, float min=0, float max=1)	{return ( x < min ) ? min : ( ( x > max ) ? max : x );}
     };
 
-} // cinder
+} // anon
 
 
-namespace cinder { namespace audio2 { namespace dsp { namespace ooura {
+namespace ooura {
 
 template <typename T> void cftfsub(int n, T *a, int *ip, int nw, T *w);
 template <typename T> void makewt(int nw, int *ip, T *w);
@@ -3355,4 +3355,4 @@ template void ddst<double>(int n, int isgn, double *a, int *ip, double *w);
 template void dfct<double>(int n, double *a, double *t, int *ip, double *w);
 template void dfst<double>(int n, double *a, double *t, int *ip, double *w);
 
-} } } } // namespace cinder::audio2::dsp::ooura
+} // namespace ooura

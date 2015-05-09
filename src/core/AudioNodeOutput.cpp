@@ -175,6 +175,8 @@ void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNode
         if (input == *i) {
             input->setDirty();
             i = m_inputs.erase(i);
+            if (i == m_inputs.end())
+                break;
         }
     }
 }
