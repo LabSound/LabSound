@@ -54,7 +54,7 @@ struct RedAlertApp : public LabSoundExampleApp
                     if (now > 0.9)
                         values[i] = 0;
                     else {
-                        values[i] = 0.2f;
+                        values[i] = 0.333f;
                     }
                     
                     now += dt;
