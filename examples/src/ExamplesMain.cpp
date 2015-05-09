@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_grooveExample.PlayExample();
+    g_infiniteFM.PlayExample();
     return 0;
 }
