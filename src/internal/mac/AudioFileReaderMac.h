@@ -33,39 +33,24 @@
 #include <AudioToolbox/ExtendedAudioFile.h>
 #include <memory>
 
-namespace WebCore {
+namespace WebCore
+{
 
 class AudioBus;
-    
-// Wrapper class for AudioFile and ExtAudioFile CoreAudio APIs for reading files and in-memory versions of them...
 
-class AudioFileReader {
+class AudioFileReader
+{
+    
 public:
-    AudioFileReader(const char* filePath);
-    AudioFileReader(const void* data, size_t dataSize);
+    
+    AudioFileReader(const char * filePath);
+    AudioFileReader(const void * data, size_t dataSize);
+    
     ~AudioFileReader();
 
-    // Returns 0 if error
+    // Returns nullptr if error
     std::unique_ptr<AudioBus> createBus(float sampleRate, bool mixToMono);
 
-    const void* data() const { return m_data; }
-    size_t dataSize() const { return m_dataSize; }
-
-private:
-    static OSStatus readProc(void* clientData, SInt64 position, UInt32 requestCount, void* buffer, UInt32* actualCount);
-    static SInt64 getSizeProc(void* clientData);
-
-    const void* m_data;
-    size_t m_dataSize;
-
-    AudioFileID m_audioFileID;
-    ExtAudioFileRef m_extAudioFileRef;
-
-    AudioStreamBasicDescription m_fileDataFormat;
-    AudioStreamBasicDescription m_clientDataFormat;
-
-    CFURLRef m_urlRef;
-    CFStringRef m_filePathStringRef;
 };
 
 } // namespace WebCore
