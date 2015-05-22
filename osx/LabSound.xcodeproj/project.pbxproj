@@ -160,7 +160,6 @@
 		08650A511AD61FFB00D19E38 /* AudioDestinationMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestinationMac.h; path = ../src/internal/mac/AudioDestinationMac.h; sourceTree = "<group>"; };
 		08650A521AD61FFB00D19E38 /* AudioFileReaderMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioFileReaderMac.h; path = ../src/internal/mac/AudioFileReaderMac.h; sourceTree = "<group>"; };
 		08650BA81AD6222500D19E38 /* AudioBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioBus.cpp; path = ../src/internal/src/AudioBus.cpp; sourceTree = SOURCE_ROOT; };
-		08650BAA1AD6225900D19E38 /* AudioBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioBus.cpp; path = ../src/internal/src/AudioBus.cpp; sourceTree = SOURCE_ROOT; };
 		08650BAB1AD6225900D19E38 /* AudioChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioChannel.cpp; path = ../src/internal/src/AudioChannel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernel.cpp; path = ../src/internal/src/AudioDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernelProcessor.cpp; path = ../src/internal/src/AudioDSPKernelProcessor.cpp; sourceTree = SOURCE_ROOT; };
@@ -664,7 +663,6 @@
 			children = (
 				08650BFC1AD6229B00D19E38 /* mac */,
 				08650BA81AD6222500D19E38 /* AudioBus.cpp */,
-				08650BAA1AD6225900D19E38 /* AudioBus.cpp */,
 				08650BAB1AD6225900D19E38 /* AudioChannel.cpp */,
 				08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */,
 				08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */,
