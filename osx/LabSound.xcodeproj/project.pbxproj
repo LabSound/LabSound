@@ -101,6 +101,7 @@
 		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
 		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
 		08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFC1AD6249B00D19E38 /* fftsg.cpp */; };
+		0899CAA71B0EEAAC00F67BD2 /* libnyquist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0899CAA61B0EEAAC00F67BD2 /* libnyquist.a */; };
 		08C25E841ADE1DB40097D572 /* StereoPannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */; };
 		E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */; };
 /* End PBXBuildFile section */
@@ -308,6 +309,7 @@
 		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
 		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
 		08650CFC1AD6249B00D19E38 /* fftsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fftsg.cpp; path = ../third_party/ooura/src/fftsg.cpp; sourceTree = "<group>"; };
+		0899CAA61B0EEAAC00F67BD2 /* libnyquist.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnyquist.a; path = ../third_party/libnyquist/bin/osx/libnyquist.a; sourceTree = "<group>"; };
 		08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StereoPannerNode.cpp; path = ../src/core/StereoPannerNode.cpp; sourceTree = SOURCE_ROOT; };
 		08C25E861ADE1DF50097D572 /* StereoPannerNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPannerNode.h; path = ../include/LabSound/core/StereoPannerNode.h; sourceTree = SOURCE_ROOT; };
 		5E7C563C0F0D44784695726E /* libLabSound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLabSound.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -325,6 +327,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0899CAA71B0EEAAC00F67BD2 /* libnyquist.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -571,6 +574,7 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
+				0899CAA61B0EEAAC00F67BD2 /* libnyquist.a */,
 				E2FB873F183D20E100A5A764 /* LabSound */,
 				08650A001AD081DB00D19E38 /* Internal */,
 				082FE01C19C6009400046275 /* third_party */,
@@ -880,8 +884,12 @@
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
 					"$(PROJECT_DIR)/../third_party/STK",
+					"$(PROJECT_DIR)/../third_party/libnyquist/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/ddiakopoulos/Desktop/LabSound/third_party/libnyquist/bin/osx,
+				);
 			};
 			name = Release;
 		};
@@ -898,8 +906,12 @@
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
 					"$(PROJECT_DIR)/../third_party/STK",
+					"$(PROJECT_DIR)/../third_party/libnyquist/include",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/ddiakopoulos/Desktop/LabSound/third_party/libnyquist/bin/osx,
+				);
 			};
 			name = Debug;
 		};
