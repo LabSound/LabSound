@@ -884,7 +884,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/ddiakopoulos/Desktop/LabSound/third_party/libnyquist/bin/osx,
+					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx"
 				);
 			};
 			name = Release;
@@ -906,7 +906,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/ddiakopoulos/Desktop/LabSound/third_party/libnyquist/bin/osx,
+					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx",
 				);
 			};
 			name = Debug;
