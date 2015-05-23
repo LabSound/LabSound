@@ -5,96 +5,86 @@
 #include "internal/AudioFileReader.h"
 #include "internal/FloatConversion.h"
 
-//#include "libnyquist headers here"
+#include "libnyquist/AudioDecoder.h"
 
-namespace WebCore {
-
-AudioFileReader::AudioFileReader(const char * filePath)
-{
-   // Read Internal
-}
-
-AudioFileReader::AudioFileReader(const void * data, size_t dataSize)
-{
-    // Read Internal
-}
-
-AudioFileReader::~AudioFileReader()
+namespace WebCore
 {
 
-}
-
-std::unique_ptr<AudioBus> AudioFileReader::createBus(float sampleRate, bool mixToMono)
+nqr::NyquistIO nyquistFileIO;
+std::mutex g_fileIOMutex;
+    
+std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float sampleRate)
 {
+    std::lock_guard<std::mutex> lock(g_fileIOMutex);
+    
+    nqr::AudioData * audioData = new nqr::AudioData();
+    
+    // Perform audio decode
+    int result = nyquistFileIO.Load(audioData, std::string(filePath));
+    
+    // Check OK
+    if (result == nqr::IOError::NoError)
+    {
+        
+        size_t numSamples = audioData->samples.size();
+        size_t numberOfFrames = int(numSamples / audioData->channelCount);
+        size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
+        
+        std::vector<float> planarSamples(numSamples);
+        
+        // Deinterleave into LabSound/WebAudio planar channel layout
+        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
+        
+        // Create AudioBus where we'll put the PCM audio data
+        std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
+        audioBus->setSampleRate(audioData->sampleRate);
+        
+        for (size_t i = 0; i < busChannelCount; ++i)
+        {
+            memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + ( (i) * numberOfFrames), numberOfFrames * sizeof(float));
+        }
+        
+        delete audioData;
+        
+        return audioBus;
+    }
+    else
+    {
+        throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
+    }
+    
+    
     // Todo: the following should be moved into ReadInternal.
     // Then, copy data into the audio bus and perform any mixing/normalization operations that we
     // didn't do when we read the file or memory into LabSound-friendly internal formats
     
     /*
-    // Number of channels
-    size_t numberOfChannels = m_fileDataFormat.mChannelsPerFrame;
+
+     // De-interleave libnyquist output => channelData
+     
+     
+     //
+     // Only allocated if mono
+     AudioFloatArray monoMix;
+     
+     if (mixToMono && numberOfChannels == 2)
+     {
+     monoMix.allocate(numberOfFrames);
+     }
+     else
+     {
+     ASSERT(!mixToMono || numberOfChannels == 1);
+     
+     // for True-stereo (numberOfChannels == 4)
+
+     }
+     
+     if (mixToMono && numberOfChannels == 2)
+     {
+     // Mix stereo down to mono
+     }
+     */
     
-    // Sample-rate
-    double fileSampleRate = m_fileDataFormat.mSampleRate;
-
-    // Samples per channel
-    size_t numberOfFrames = static_cast<size_t>(numberOfFrames);
-
-    size_t busChannelCount = mixToMono ? 1 : numberOfChannels;
-
-    // Create AudioBus where we'll put the PCM audio data
-    std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
-    audioBus->setSampleRate(narrowPrecisionToFloat(fileSampleRate));
-
-    // De-interleave libnyquist output => channelData
-    
-    // Planar
-    for (int c = 0; c < numberOfChannels; ++c)
-    {
-        AudioFloatArray channelData; // .data()
-        channelData.allocate(numberOfFrames);
-        
-    }
-
-    
-    //
-    // Only allocated if mono
-    AudioFloatArray monoMix;
-
-    if (mixToMono && numberOfChannels == 2)
-    {
-            monoMix.allocate(numberOfFrames);
-    }
-    else
-    {
-        ASSERT(!mixToMono || numberOfChannels == 1);
-
-        // for True-stereo (numberOfChannels == 4)
-        for (size_t i = 0; i < numberOfChannels; ++i)
-        {
-            audioBus->channel(i)->mutableData();
-        }
-    }
-
-    if (mixToMono && numberOfChannels == 2)
-    {
-        // Mix stereo down to mono
-    }
-    */
-    
-    return audioBus;
 }
     
-std::unique_ptr<AudioBus> MakeBusFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
-{
-    AudioFileReader reader(data, dataSize);
-    return reader.createBus(sampleRate, mixToMono);
-}
-
-std::unique_ptr<AudioBus> MakeBusFromFile(const char* filePath, bool mixToMono, float sampleRate)
-{
-    AudioFileReader reader(filePath);
-    return reader.createBus(sampleRate, mixToMono);
-}
-
-} // WebCore
+} // end namespace WebCore

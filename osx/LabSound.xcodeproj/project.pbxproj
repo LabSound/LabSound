@@ -351,6 +351,7 @@
 		082FE01C19C6009400046275 /* third_party */ = {
 			isa = PBXGroup;
 			children = (
+				0899CAA61B0EEAAC00F67BD2 /* libnyquist.a */,
 				085F34DE1ADCD9AE00FEADC5 /* WTF */,
 				082FDF2119C6004800046275 /* json11 */,
 				082FDF2019C6002C00046275 /* STK */,
@@ -570,7 +571,6 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
-				0899CAA61B0EEAAC00F67BD2 /* libnyquist.a */,
 				E2FB873F183D20E100A5A764 /* LabSound */,
 				08650A001AD081DB00D19E38 /* Internal */,
 				082FE01C19C6009400046275 /* third_party */,

@@ -39,16 +39,6 @@
 namespace WebCore 
 {
 
-std::shared_ptr<AudioBuffer> MakeAudioBufferFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate)
-{
-    std::unique_ptr<AudioBus> bus = WebCore::MakeBusFromMemory(data, dataSize, mixToMono, sampleRate);
-    
-	if (bus.get())
-        return std::make_shared<AudioBuffer>(bus.get());
-
-    throw std::runtime_error("Could not create AudioBus!");
-}
-
 AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
     : m_gain(1.0)
     , m_sampleRate(sampleRate)

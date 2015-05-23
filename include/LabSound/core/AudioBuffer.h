@@ -37,8 +37,6 @@ namespace WebCore
 
     class AudioBus;
 	class AudioBuffer;
-	
-std::shared_ptr<AudioBuffer> MakeAudioBufferFromMemory(const void* data, size_t dataSize, bool mixToMono, float sampleRate);
 
 class AudioBuffer 
 {
