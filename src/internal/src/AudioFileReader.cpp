@@ -28,20 +28,38 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         
         size_t numSamples = audioData->samples.size();
         size_t numberOfFrames = int(numSamples / audioData->channelCount);
-        size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
+        const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
         
         std::vector<float> planarSamples(numSamples);
-        
-        // Deinterleave into LabSound/WebAudio planar channel layout
-        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
-        
+
         // Create AudioBus where we'll put the PCM audio data
         std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
         audioBus->setSampleRate(audioData->sampleRate);
         
+        // Straight memcpy
+        if (audioData->channelCount == 1)
+        {
+            memcpy(audioData->samples.data(), planarSamples.data(), numSamples * sizeof(float));
+        }
+        
+        // Mix to mono if stereo
+        //else if (audioData->channelCount == 2 && mixToMono)
+        //{
+         //   numberOfFrames = numSamples / 2;
+         //   planarSamples.resize(numSamples / 2);
+         //   nqr::StereoToMono(audioData->samples.data(), planarSamples.data(), numSamples); // Mono data is by definition noninterleaved, so we're fine
+        //}
+        
+        // All other cases
+        else if (audioData->channelCount >= 2)
+        {
+            // Deinterleave stereo into LabSound/WebAudio planar channel layout
+            nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
+        }
+
         for (size_t i = 0; i < busChannelCount; ++i)
         {
-            memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + ( (i) * numberOfFrames), numberOfFrames * sizeof(float));
+            memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * numberOfFrames), numberOfFrames * sizeof(float));
         }
         
         delete audioData;
