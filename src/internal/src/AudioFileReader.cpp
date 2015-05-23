@@ -39,7 +39,8 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
         nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
         
-        // Mix to mono if stereo
+        // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
+        // because we've already deinterleaved
         if (audioData->channelCount == 2 && mixToMono)
         {
             float * destinationMono = audioBus->channel(0)->mutableData();
@@ -65,39 +66,6 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
     {
         throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
     }
-    
-    
-    // Todo: the following should be moved into ReadInternal.
-    // Then, copy data into the audio bus and perform any mixing/normalization operations that we
-    // didn't do when we read the file or memory into LabSound-friendly internal formats
-    
-    /*
-
-     // De-interleave libnyquist output => channelData
-     
-     
-     //
-     // Only allocated if mono
-     AudioFloatArray monoMix;
-     
-     if (mixToMono && numberOfChannels == 2)
-     {
-     monoMix.allocate(numberOfFrames);
-     }
-     else
-     {
-     ASSERT(!mixToMono || numberOfChannels == 1);
-     
-     // for True-stereo (numberOfChannels == 4)
-
-     }
-     
-     if (mixToMono && numberOfChannels == 2)
-     {
-     // Mix stereo down to mono
-     }
-     */
-    
 }
     
 } // end namespace WebCore
