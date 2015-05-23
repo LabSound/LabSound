@@ -64,7 +64,7 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
 {
     // Copy audio data from the bus to the vector<float>s we manage.
     unsigned numberOfChannels = bus->numberOfChannels();
-
+    
     m_channels.reserve(numberOfChannels);
     for (unsigned i = 0; i < numberOfChannels; ++i)
 	{

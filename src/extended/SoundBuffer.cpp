@@ -16,7 +16,8 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    //@tofix: Sound Buffers are mono for now...?
+    //@tofix investigate mixing to mono here and why it breaks if
+    // we don't
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
         std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);

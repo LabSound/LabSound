@@ -36,30 +36,25 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
         audioBus->setSampleRate(audioData->sampleRate);
         
-        // Straight memcpy
-        if (audioData->channelCount == 1)
-        {
-            memcpy(audioData->samples.data(), planarSamples.data(), numSamples * sizeof(float));
-        }
+        // Deinterleave stereo into LabSound/WebAudio planar channel layout
+        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
         
         // Mix to mono if stereo
-        //else if (audioData->channelCount == 2 && mixToMono)
-        //{
-         //   numberOfFrames = numSamples / 2;
-         //   planarSamples.resize(numSamples / 2);
-         //   nqr::StereoToMono(audioData->samples.data(), planarSamples.data(), numSamples); // Mono data is by definition noninterleaved, so we're fine
-        //}
-        
-        // All other cases
-        else if (audioData->channelCount >= 2)
+        if (audioData->channelCount == 2 && mixToMono)
         {
-            // Deinterleave stereo into LabSound/WebAudio planar channel layout
-            nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
+            float * destinationMono = audioBus->channel(0)->mutableData();
+            float * leftSamples = planarSamples.data();
+            float * rightSamples = planarSamples.data() + numberOfFrames;
+            
+            for (size_t i = 0; i < numberOfFrames; i++)
+                destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
         }
-
-        for (size_t i = 0; i < busChannelCount; ++i)
+        else
         {
-            memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * numberOfFrames), numberOfFrames * sizeof(float));
+            for (size_t i = 0; i < busChannelCount; ++i)
+            {
+                memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * numberOfFrames), numberOfFrames * sizeof(float));
+            }
         }
         
         delete audioData;
