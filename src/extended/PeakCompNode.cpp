@@ -74,14 +74,14 @@ namespace LabSound
             
             for (int i = 0; i < 2; i++)
             {
-                kneeRecursive[i] = 0.f;
-                attackRecursive[i] = 0.f;
-                releaseRecursive[i] = 0.f;
+                kneeRecursive[i] = 0.;
+                attackRecursive[i] = 0.;
+                releaseRecursive[i] = 0.;
             }
 
             // Get sample rate
             internalSampleRate = sampleRate;
-            oneOverSampleRate = 1.0f / sampleRate;
+            oneOverSampleRate = 1.0 / sampleRate;
         }
 
         virtual ~PeakCompNodeInternal() { }
@@ -100,31 +100,31 @@ namespace LabSound
             float v = m_threshold->value(r);
             if (v <= 0) {
                 // dB to linear (could use the function from m_pd.h)
-                threshold = powf(10, (v*0.05f));
+                threshold = powf(10, (v*0.05));
             }
             else
                 threshold = 0;
 
             v = m_ratio->value(r);
             if (v >= 1) {
-                ratio = 1.f/v;
+                ratio = 1./v;
             }
             else
                 ratio = 1;
 
             v = m_attack->value(r);
             if (v >= 0.001) {
-                attack = v * 0.001f;
+                attack = v * 0.001;
             }
             else
-                attack = 0.000001f;
+                attack = 0.000001;
 
             v = m_release->value(r);
             if (v >= 0.001) {
-                release = v * 0.001f;
+                release = v * 0.001;
             }
             else
-                release = 0.000001f;
+                release = 0.000001;
 
             v = m_makeup->value(r);
             // dB to linear (could use the function from m_pd.h)
@@ -138,14 +138,14 @@ namespace LabSound
             }
 
             // calc coefficients from run time vars
-            kneeCoeffs = expf(0.f - (oneOverSampleRate / knee));
-            kneeCoeffsMinus = 1.f - kneeCoeffs;
+            kneeCoeffs = expf(0. - (oneOverSampleRate / knee));
+            kneeCoeffsMinus = 1. - kneeCoeffs;
             
-            attackCoeffs = expf(0.f - (oneOverSampleRate / attack));
-            attackCoeffsMinus = 1.f - attackCoeffs;
+            attackCoeffs = expf(0. - (oneOverSampleRate / attack));
+            attackCoeffsMinus = 1. - attackCoeffs;
             
-            releaseCoeff = expf(0.f - (oneOverSampleRate / release));
-            releaseCoeffMinus = 1.f - releaseCoeff;
+            releaseCoeff = expf(0. - (oneOverSampleRate / release));
+            releaseCoeffMinus = 1. - releaseCoeff;
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];
@@ -170,13 +170,13 @@ namespace LabSound
                     peakEnv += source[j][i];
                 }
                 // Release recursive
-                releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, releaseRecursive[1]));
+                releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, float(releaseRecursive[1])));
                 
                 // Attack recursive
                 attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
                 
                 // Knee smoothening and gain reduction
-                kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.f), 0.f)) + (kneeCoeffs * kneeRecursive[1]);
+                kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);
 
                 for (unsigned int j = 0; j < numChannels; ++j)
                 {
@@ -190,29 +190,29 @@ namespace LabSound
         }
 
         float internalSampleRate;
-        float oneOverSampleRate;
+        double oneOverSampleRate;
         
         // Arrays for delay lines
-        float kneeRecursive[2];
-        float attackRecursive[2];
-        float releaseRecursive[2];
+        double kneeRecursive[2];
+        double attackRecursive[2];
+        double releaseRecursive[2];
 
-        float attack;
-        float release;
-        float ratio;
-        float threshold;
+        double attack;
+        double release;
+        double ratio;
+        double threshold;
         
-        float knee;
-        float kneeCoeffs;
-        float kneeCoeffsMinus;
+        double knee;
+        double kneeCoeffs;
+        double kneeCoeffsMinus;
         
-        float attackCoeffs;
-        float attackCoeffsMinus;
+        double attackCoeffs;
+        double attackCoeffsMinus;
         
-        float releaseCoeff;
-        float releaseCoeffMinus;
+        double releaseCoeff;
+        double releaseCoeffMinus;
 
-        float makeupGain;
+        double makeupGain;
 
         // Resets filter state
         virtual void reset() { /* @tofix */ }
