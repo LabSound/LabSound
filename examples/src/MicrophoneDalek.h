@@ -13,7 +13,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         float sampleRate = context->sampleRate();
         
 #ifndef USE_LIVE
-        SoundBuffer sample("samples/voice.mp4", sampleRate);
+        SoundBuffer sample("samples/voice.ogg", sampleRate);
 #endif
         
         std::shared_ptr<AudioHardwareSourceNode> input;

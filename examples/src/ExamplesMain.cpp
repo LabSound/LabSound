@@ -22,7 +22,7 @@
 #include "Groove.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
-MicrophoneDalekApp g_micrphoneDalek;
+MicrophoneDalekApp g_micrphoneDalek; // Doh. Brokem?
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 PeakCompressorApp g_peakCompressor;
@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_rhythm.PlayExample();
+    g_convolutionReverbExample.PlayExample();
     return 0;
 }

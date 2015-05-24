@@ -21,7 +21,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
             
             filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
             filter->setType(BiquadFilterNode::LOWPASS);
-            filter->frequency()->setValue(4000.0f);
+            filter->frequency()->setValue(2800.0f);
             
             peakComp = std::make_shared<PeakCompNode>(context->sampleRate());
             filter->connect(context.get(), peakComp.get(), 0, 0);
@@ -47,6 +47,8 @@ struct PeakCompressorApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(4));
+        
         LabSound::finish(context);
+        
     }
 };
