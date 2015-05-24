@@ -27,7 +27,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<DiodeNode> vInDiode2;
         std::shared_ptr<GainNode> vcInverter1;
         std::shared_ptr<DiodeNode> vcDiode3;
-        std::shared_ptr<DiodeNode> vcDiode4;
+        std::shared_ptr<DiodeNode> vcDiode4; 
         std::shared_ptr<GainNode> outGain;
         std::shared_ptr<DynamicsCompressorNode> compressor;
         std::shared_ptr<AudioBufferSourceNode> player;
@@ -58,7 +58,8 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // Now we create the objects on the Vc side of the graph
 #ifndef USE_LIVE
             player = sample.create(r, sampleRate);
-            if (!player) {
+            if (!player)
+            {
                 std::cerr << "Sample buffer wasn't loaded" << std::endl;
                 return;
             }
