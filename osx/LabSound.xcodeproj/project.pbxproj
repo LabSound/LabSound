@@ -315,7 +315,7 @@
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		E2D4FE501AF55198001B7E6C /* FunctionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FunctionNode.h; path = ../include/LabSound/extended/FunctionNode.h; sourceTree = SOURCE_ROOT; };
-		E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FunctionNode.cpp; path = ../extended/FunctionNode.cpp; sourceTree = "<group>"; };
+		E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FunctionNode.cpp; path = ../src/extended/FunctionNode.cpp; sourceTree = SOURCE_ROOT; };
 		E2D4FE531AF55DFA001B7E6C /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synthesis.h; path = ../include/LabSound/core/Synthesis.h; sourceTree = SOURCE_ROOT; };
 		E2DA35631AE006480092A03D /* Mixing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mixing.h; path = ../include/LabSound/core/Mixing.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -884,7 +884,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx"
+					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx",
 				);
 			};
 			name = Release;

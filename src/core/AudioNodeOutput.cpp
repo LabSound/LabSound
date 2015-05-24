@@ -54,8 +54,8 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     , m_inPlaceBus(0)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-
-    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
+    
+    m_internalBus.reset(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
 }
 
 AudioNodeOutput::~AudioNodeOutput()
@@ -65,13 +65,14 @@ AudioNodeOutput::~AudioNodeOutput()
 
 void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberOfChannels)
 {
+    ASSERT(r.context());
+    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
+    
     if (m_numberOfChannels == numberOfChannels)
         return;
     
-    ASSERT(r.context());
-    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-    m_numberOfChannels = numberOfChannels;
-    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
+    m_desiredNumberOfChannels = numberOfChannels;
+    m_internalBus.reset(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
 }
 
 void AudioNodeOutput::updateInternalBus()
@@ -79,14 +80,14 @@ void AudioNodeOutput::updateInternalBus()
     if (numberOfChannels() == m_internalBus->numberOfChannels())
         return;
 
-    m_internalBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
+    m_internalBus.reset(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
 }
 
 void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
 {
-    if (m_numberOfChannels != m_desiredNumberOfChannels) {
+    if (m_numberOfChannels != m_desiredNumberOfChannels)
+    {
         ASSERT(r.context());
-        
         m_numberOfChannels = m_desiredNumberOfChannels;
         updateInternalBus();
         propagateChannelCount(r);
@@ -97,11 +98,13 @@ void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
 
 void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
 {
-    if (isChannelCountKnown()) {
+    if (isChannelCountKnown())
+    {
         ASSERT(r.context());
         
         // Announce to any nodes we're connected to that we changed our channel count for its input.
-        for (auto &in : m_inputs) {
+        for (auto in : m_inputs)
+        {
             auto connectionNode = in->node();
             connectionNode->checkNumberOfChannelsForInput(r, in.get());
         }
@@ -118,12 +121,11 @@ AudioBus* AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size
     // but we can't process in-place if we're connected to more than one input (fan-out > 1).
     // In this case pull() is called multiple times per rendering quantum, and the processIfNecessary() call below will
     // cause our node to process() only the first time, caching the output in m_internalOutputBus for subsequent calls.    
-    
+
     updateRenderingState(r);
     
-    m_isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() &&
-                            (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
-
+    m_isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() && (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
+    
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_inPlaceBus = m_isInPlace ? inPlaceBus : 0;
     

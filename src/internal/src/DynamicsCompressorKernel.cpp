@@ -70,6 +70,7 @@ DynamicsCompressorKernel::DynamicsCompressorKernel(float sampleRate, unsigned nu
 
 void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 {
+    
     if (m_preDelayBuffers.size() == numberOfChannels)
         return;
 
@@ -200,8 +201,8 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
 }
 
 void DynamicsCompressorKernel::process(ContextRenderLock&,
-                                       float* sourceChannels[],
-                                       float* destinationChannels[],
+                                       float * sourceChannels[],
+                                       float * destinationChannels[],
                                        unsigned numberOfChannels,
                                        unsigned framesToProcess,
 

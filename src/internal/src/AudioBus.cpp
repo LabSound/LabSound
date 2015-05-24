@@ -88,6 +88,7 @@ void AudioBus::zero()
 
 AudioChannel* AudioBus::channelByType(Channel channelType)
 {
+    
     // For now we only support canonical channel layouts...
     if (m_layout != LayoutCanonical)
         return 0;

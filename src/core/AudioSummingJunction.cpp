@@ -38,11 +38,10 @@ namespace WebCore
     
 LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
 
-    namespace 
-	{
-        std::mutex junctionMutex;
-    }
-    
+namespace
+{
+    std::mutex junctionMutex;
+}
 
 void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
 {
@@ -52,10 +51,15 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r
         asj->updateRenderingState(r);
 }
 
-AudioSummingJunction::AudioSummingJunction()
-: m_renderingStateNeedUpdating(false) {}
+AudioSummingJunction::AudioSummingJunction() : m_renderingStateNeedUpdating(false)
+{
+    
+}
 
-AudioSummingJunction::~AudioSummingJunction() {}
+AudioSummingJunction::~AudioSummingJunction()
+{
+    
+}
     
 bool AudioSummingJunction::isConnected(std::shared_ptr<AudioNodeOutput> o) const
 {
@@ -113,7 +117,8 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
     
 void AudioSummingJunction::changedOutputs(ContextGraphLock&)
 {
-    if (!m_renderingStateNeedUpdating && canUpdateState()) {
+    if (!m_renderingStateNeedUpdating && canUpdateState())
+    {
         m_renderingStateNeedUpdating = true;
     }
 }

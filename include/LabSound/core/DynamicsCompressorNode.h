@@ -32,8 +32,11 @@ namespace WebCore {
 
 class DynamicsCompressor;
 
-class DynamicsCompressorNode : public AudioNode {
+class DynamicsCompressorNode : public AudioNode
+{
+    
 public:
+    
     DynamicsCompressorNode(float sampleRate);
     virtual ~DynamicsCompressorNode();
 

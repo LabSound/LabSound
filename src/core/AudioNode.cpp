@@ -241,11 +241,14 @@ void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     ASSERT(r.context());
-    for (auto in : m_inputs)
-        if (in.get() == input) {
+    for (auto & in : m_inputs)
+    {
+        if (in.get() == input)
+        {
             input->updateInternalBus(r);
             break;
         }
+    }
 }
 
 bool AudioNode::propagatesSilence(double now) const
@@ -258,15 +261,21 @@ void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     ASSERT(r.context());
     
     // Process all of the AudioNodes connected to our inputs.
-    for (auto in : m_inputs)
+    for (auto & in : m_inputs)
+    {
         in->pull(r, 0, framesToProcess);
+    }
 }
 
 bool AudioNode::inputsAreSilent(ContextRenderLock& r)
 {
-    for (auto in : m_inputs)
+    for (auto & in : m_inputs)
+    {
         if (!in->bus(r)->isSilent())
+        {
             return false;
+        }
+    }
     return true;
 }
 

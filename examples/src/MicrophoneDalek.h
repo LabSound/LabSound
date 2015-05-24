@@ -73,7 +73,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             
             // A gain node to control master output levels
             outGain = std::make_shared<GainNode>(sampleRate);
-            outGain->gain()->setValue(4.0f);
+            outGain->gain()->setValue(1.0f);
             
             // A small addition to the graph given in Parker's paper is a compressor node
             // immediately before the output. This ensures that the user's volume remains

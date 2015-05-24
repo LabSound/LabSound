@@ -40,7 +40,7 @@ GainNode::GainNode(float sampleRate)
     , m_lastGain(1.0)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
 {
-    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0); // Semi-danger, gain can exceed 1
+    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0);
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -107,13 +107,15 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
         return;
         
     unsigned numberOfChannels = input->numberOfChannels(r);
-
-    if (isInitialized() && numberOfChannels != output(0)->numberOfChannels()) {
+    
+    if (isInitialized() && numberOfChannels != output(0)->numberOfChannels())
+    {
         // We're already initialized but the channel count has changed.
         uninitialize();
     }
 
-    if (!isInitialized()) {
+    if (!isInitialized())
+    {
         // This will propagate the channel count to any nodes connected further downstream in the graph.
         output(0)->setNumberOfChannels(r, numberOfChannels);
         initialize();
