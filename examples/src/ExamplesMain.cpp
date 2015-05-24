@@ -22,7 +22,7 @@
 #include "Groove.h"
 
 ConvolutionReverbApp g_convolutionReverbExample;
-MicrophoneDalekApp g_microphoneDalekApp; // Doh. Broken?
+MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 PeakCompressorApp g_peakCompressor;

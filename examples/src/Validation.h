@@ -74,7 +74,6 @@ struct ValidationApp : public LabSoundExampleApp
             
         }
         
-        
         float elapsedTime = 0;
         for (int s = 0; s < 48; s++)
         {
@@ -105,58 +104,5 @@ struct ValidationApp : public LabSoundExampleApp
         LabSound::finish(context);
         
     }
-    
-    /*
-    void PlayExample()
-    {
-        auto context = LabSound::init();
-        float sampleRate = context->sampleRate();
-    
-        SoundBuffer sample("samples/voice.ogg", sampleRate);
-        
-        std::shared_ptr<GainNode> outGain;
-        std::shared_ptr<DynamicsCompressorNode> compressor;
-        std::shared_ptr<AudioBufferSourceNode> player;
-        std::shared_ptr<StereoPannerNode> stereoPanner;
-        std::shared_ptr<OscillatorNode> osc;
-
-        {
-            ContextGraphLock g(context, "dalek voice");
-            ContextRenderLock r(context, "dalek voice");
-            AudioContext * ac = context.get();
-            
-            stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
-            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            
-            player = sample.create(r, sampleRate);
-            if (!player)
-            {
-                std::cerr << "Sample buffer wasn't loaded" << std::endl;
-                return;
-            }
-            
-            outGain = std::make_shared<GainNode>(sampleRate);
-            outGain->gain()->setValue(1.0f);
-
-            compressor = std::make_shared<DynamicsCompressorNode>(sampleRate);
-            compressor->threshold()->setValue(-12.0f);
-
-            //player->connect(ac, compressor.get(), 0, 0);
-            
-            osc->connect(ac, compressor.get(), 0, 0);
-            
-            compressor->connect(ac, outGain.get(), 0, 0);
-            
-            outGain->connect(ac, context->destination().get(), 0, 0);
-            
-            osc->start(0);
-            player->start(0);
-        }
-        
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        LabSound::finish(context);
-        
-    }
-     */
 
 };
