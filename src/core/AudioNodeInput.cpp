@@ -146,9 +146,11 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
         
     summingBus->zero();
 
-    for (int i = 0; i < c; ++i) {
+    for (int i = 0; i < c; ++i)
+    {
         auto output = renderingOutput(r, i);
-        if (output) {
+        if (output)
+        {
             // Render audio from this output.
             AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
             
