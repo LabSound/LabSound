@@ -10,8 +10,10 @@ struct SimpleRecordingApp : public LabSoundExampleApp
         std::shared_ptr<OscillatorNode> oscillator;
         SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
         std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+        
         auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
         context->addAutomaticPullNode(recorder);
+        
         recorder->startRecording();
         {
             ContextGraphLock g(context, "tone and sample");
@@ -34,8 +36,10 @@ struct SimpleRecordingApp : public LabSoundExampleApp
         
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
+        
         std::vector<float> data;
         recorder->getData(data);
+        
         FILE* f = fopen("labsound_example_tone_and_sample.raw", "wb");
         if (f)
         {

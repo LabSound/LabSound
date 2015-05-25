@@ -9,10 +9,13 @@
 #include <vector>
 #include <mutex>
 
-namespace LabSound {
+namespace LabSound
+{
     
-    class RecorderNode : public WebCore::AudioBasicInspectorNode {
+    class RecorderNode : public WebCore::AudioBasicInspectorNode
+    {
     public:
+        
         RecorderNode(float sampleRate);
         virtual ~RecorderNode();
         
@@ -30,15 +33,18 @@ namespace LabSound {
         void getData(std::vector<float>& result);
         
     private:
+        
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
 
         bool m_mixToMono;
         bool m_recording;
+
         std::vector<float> m_data;  // interleaved
         mutable std::recursive_mutex m_mutex;
+
     };
     
-} // LabSound
+} // end namespace LabSound
 
 #endif

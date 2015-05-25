@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_microphoneDalekApp.PlayExample();
+    g_simpleRecordingExample.PlayExample();
     return 0;
 }
