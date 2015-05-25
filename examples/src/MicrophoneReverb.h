@@ -36,6 +36,8 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             dryGain->connect(ac, context->destination().get(), 0, 0);
             
             recorder = std::make_shared<RecorderNode>(context->sampleRate());
+            // input->connect(ac, recorder.get(), 0, 0); Debugging
+            
             context->addAutomaticPullNode(recorder);
             recorder->startRecording();
             
