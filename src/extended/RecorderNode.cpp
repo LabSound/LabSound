@@ -8,6 +8,8 @@
 
 #include "internal/AudioBus.h"
 
+#include "libnyquist/WavEncoder.h"
+
 namespace LabSound 
 {
     
@@ -84,7 +86,6 @@ namespace LabSound
                     }
                 }
                 
-                
                 else
                 {
                     for (size_t i = 0; i < framesToProcess; ++i)
@@ -111,7 +112,6 @@ namespace LabSound
                 }
             }
 
-            
         }
         // <====== to here
         
@@ -122,6 +122,32 @@ namespace LabSound
         {
            outputBus->copyFrom(*bus);
         }
+    }
+    
+    void RecorderNode::writeRecordingToWav(int channels, const std::string & filenameWithWavExtension)
+    {
+        // Represents structure of underlying data
+        std::unique_ptr<nqr::AudioData> fileData(new nqr::AudioData());
+        
+        {
+            std::lock_guard<std::recursive_mutex> lock(m_mutex);
+            fileData->samples.swap(m_data);
+        }
+        
+        fileData->channelCount = channels;
+        fileData->sourceFormat = nqr::PCM_FLT;
+        fileData->sampleRate = 44100; // @tofix hardcoded sample rate
+        // fileData->... other file data not needed
+        
+        // Represents target encoding (wav only)
+        // Libnyquist bug with things other than PCM_FLT?
+        nqr::EncoderParams params = {2, nqr::PCM_FLT, nqr::DITHER_NONE};
+        
+        nqr::WavEncoder encoder;
+        
+        int encoderStatus = encoder.WriteFile(params, fileData.get(), filenameWithWavExtension);
+        
+        std::cout << "[WavEncoder - Debug Status: " << encoderStatus << " ] \n";
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

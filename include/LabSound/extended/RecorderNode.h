@@ -1,8 +1,8 @@
 // Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef LabSound_src_RecorderNode_h
-#define LabSound_src_RecorderNode_h
+#ifndef RecorderNode_h
+#define RecorderNode_h
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioContext.h"
@@ -14,6 +14,7 @@ namespace LabSound
     
     class RecorderNode : public WebCore::AudioBasicInspectorNode
     {
+        
     public:
         
         RecorderNode(float sampleRate);
@@ -31,6 +32,8 @@ namespace LabSound
         // replaces result with the currently recorded data.
         // saved data is cleared.
         void getData(std::vector<float>& result);
+        
+        void writeRecordingToWav(int channels, const std::string & filenameWithWavExtension);
         
     private:
         

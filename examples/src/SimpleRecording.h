@@ -16,16 +16,20 @@ struct SimpleRecordingApp : public LabSoundExampleApp
         
         recorder->startRecording();
         {
-            ContextGraphLock g(context, "tone and sample");
-            ContextRenderLock r(context, "tone and sample");
+            ContextGraphLock g(context, "SimpleRecordingApp");
+            ContextRenderLock r(context, "SimpleRecordingApp");
+            
             oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             oscillator->connect(ac, context->destination().get(), 0, 0);
             oscillator->connect(ac, recorder.get(), 0, 0);
-            oscillator->start(0);
+
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);
+            
             tonbiSound = tonbi.play(r, recorder, 0.0f);
             tonbiSound = tonbi.play(r, 0.0f);
+            oscillator->start(0);
+            
         }
         
         const int seconds = 4;
@@ -37,15 +41,7 @@ struct SimpleRecordingApp : public LabSoundExampleApp
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
         
-        std::vector<float> data;
-        recorder->getData(data);
-        
-        FILE* f = fopen("labsound_example_tone_and_sample.raw", "wb");
-        if (f)
-        {
-            fwrite(&data[0], 1, data.size(), f);
-            fclose(f);
-        }
+        recorder->writeRecordingToWav(1, "SimpleRecordingApp.wav");
         
         LabSound::finish(context);
     }
