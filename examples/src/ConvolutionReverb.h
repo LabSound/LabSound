@@ -16,8 +16,8 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
         std::shared_ptr<AudioNode> voice;
         
         {
-            ContextGraphLock g(context, "reverb app");
-            ContextRenderLock r(context, "reverb app");
+            ContextGraphLock g(context, "ConvolutionReverbApp");
+            ContextRenderLock r(context, "ConvolutionReverbApp");
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
             convolve->setBuffer(g, impulseResponse.audioBuffer);
             wetGain = std::make_shared<GainNode>(context->sampleRate());
@@ -33,7 +33,7 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
             voice = sample.play(r, dryGain, 0);
         }
         
-        const int seconds = 20;
+        const int seconds = 10;
         for (int t = 0; t < seconds; ++t)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));

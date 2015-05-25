@@ -12,7 +12,6 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         std::shared_ptr<AudioHardwareSourceNode> input;
         std::shared_ptr<ConvolverNode> convolve;
         std::shared_ptr<GainNode> wetGain;
-        std::shared_ptr<GainNode> dryGain;
         std::shared_ptr<RecorderNode> recorder;
         
         {
@@ -21,27 +20,21 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             
             input = MakeHardwareSourceNode(r);
             
+            recorder = std::make_shared<RecorderNode>(context->sampleRate());
+            // input->connect(ac, recorder.get(), 0, 0); Debugging -- this works
+            context->addAutomaticPullNode(recorder);
+            recorder->startRecording();
+            
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
             convolve->setBuffer(g, ir.audioBuffer);
             
             wetGain = std::make_shared<GainNode>(context->sampleRate());
-            wetGain->gain()->setValue(2.f);
-            
-            dryGain = std::make_shared<GainNode>(context->sampleRate());
-            dryGain->gain()->setValue(1.f);
+            wetGain->gain()->setValue(1.f);
             
             input->connect(ac, convolve.get(), 0, 0);
             convolve->connect(ac, wetGain.get(), 0, 0);
             wetGain->connect(ac, context->destination().get(), 0, 0);
-            dryGain->connect(ac, context->destination().get(), 0, 0);
             
-            recorder = std::make_shared<RecorderNode>(context->sampleRate());
-            // input->connect(ac, recorder.get(), 0, 0); Debugging
-            
-            context->addAutomaticPullNode(recorder);
-            recorder->startRecording();
-            
-            dryGain->connect(ac, recorder.get(), 0, 0);
             wetGain->connect(ac, recorder.get(), 0, 0);
         }
         
