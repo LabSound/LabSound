@@ -16,38 +16,39 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         std::shared_ptr<RecorderNode> recorder;
         
         {
-            ContextGraphLock g(context, "live reverb recording");
-            ContextRenderLock r(context, "live reverb recording");
+            ContextGraphLock g(context, "MicrophoneReverbApp");
+            ContextRenderLock r(context, "MicrophoneReverbApp");
+            
             input = MakeHardwareSourceNode(r);
+            
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
             convolve->setBuffer(g, ir.audioBuffer);
+            
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(2.f);
+            
             dryGain = std::make_shared<GainNode>(context->sampleRate());
             dryGain->gain()->setValue(1.f);
+            
             input->connect(ac, convolve.get(), 0, 0);
             convolve->connect(ac, wetGain.get(), 0, 0);
             wetGain->connect(ac, context->destination().get(), 0, 0);
             dryGain->connect(ac, context->destination().get(), 0, 0);
+            
             recorder = std::make_shared<RecorderNode>(context->sampleRate());
+            context->addAutomaticPullNode(recorder);
             recorder->startRecording();
+            
             dryGain->connect(ac, recorder.get(), 0, 0);
             wetGain->connect(ac, recorder.get(), 0, 0);
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-        
-        std::cout << "Done" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(5));
         
         recorder->stopRecording();
+        context->removeAutomaticPullNode(recorder);
         
-        std::vector<float> data;
-        recorder->getData(data);
-        FILE* f = fopen("labsound_example_livereverbapp.raw", "wb");
-        if (f) {
-            fwrite(&data[0], 1, data.size(), f);
-            fclose(f);
-        }
+        recorder->writeRecordingToWav(1, "MicrophoneReverbApp.wav");
         
         LabSound::finish(context);
     }
