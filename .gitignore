@@ -96,6 +96,6 @@ xcuserdata
 *.sublime-workspace
 
 # Whitelist libnyquist
-!third_party/libnyquist/bin/*.a
-
+!third_party/libnyquist/bin/osx/*.a
+!third_party/libnyquist/bin/win/*.lib
 
