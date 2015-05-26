@@ -147,7 +147,8 @@ namespace LabSound
         
         int encoderStatus = encoder.WriteFile(params, fileData.get(), filenameWithWavExtension);
         
-        std::cout << "[WavEncoder - Debug Status: " << encoderStatus << "] \n";
+        LOG("[WavEncoder - Debug Status: %i]", encoderStatus);
+        
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

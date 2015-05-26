@@ -40,7 +40,7 @@ class DefaultAudioDestinationNode : public AudioDestinationNode
     
 public:
 
-    explicit DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
+    DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
     virtual ~DefaultAudioDestinationNode();
     
     virtual void initialize();
@@ -53,4 +53,4 @@ public:
 
 } // namespace WebCore
 
-#endif // DefaultAudioDestinationNode_h
+#endif

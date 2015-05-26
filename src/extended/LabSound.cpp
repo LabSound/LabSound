@@ -6,6 +6,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/LabSound.h"
 
 #include <chrono>
 #include <thread>
@@ -49,7 +50,6 @@ namespace LabSound
     {
         LOG("Initialize Context");
         
-        // Create an audio context object with the default audio destination
         mainContext = std::make_shared<WebCore::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<WebCore::DefaultAudioDestinationNode>(mainContext));
         mainContext->initHRTFDatabase();
@@ -60,6 +60,25 @@ namespace LabSound
         return mainContext;
     }
     
+    std::shared_ptr<WebCore::AudioContext> initOffline(int millisecondsToRun)
+    {
+        LOG("Initialize Offline Context");
+        
+        const int sampleRate = 44100;
+        
+        auto framesPerMillisecond = sampleRate / 1000;
+        auto totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
+        
+        mainContext = std::make_shared<WebCore::AudioContext>(2, totalFramesToRecord, sampleRate);
+        auto renderTarget = mainContext->getOfflineRenderTarget();
+        mainContext->setDestinationNode(std::make_shared<WebCore::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
+        mainContext->initHRTFDatabase();
+        mainContext->lazyInitialize();
+        
+        g_GraphUpdateThread = std::thread(UpdateGraph);
+        
+        return mainContext;
+    }
     
     void finish(std::shared_ptr<WebCore::AudioContext> context)
     {
@@ -69,9 +88,10 @@ namespace LabSound
         mainContext.reset();
         
         // Join update thread
-        if (g_GraphUpdateThread.joinable()) g_GraphUpdateThread.join();
+        if (g_GraphUpdateThread.joinable())
+            g_GraphUpdateThread.join();
         
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 8; ++i)
         {
             ContextGraphLock g(context, "LabSound::finish");
             
@@ -90,5 +110,4 @@ namespace LabSound
         LOG("Could not acquire lock for shutdown");
     }
     
-} // LabSound
-
+} // end namespace LabSound

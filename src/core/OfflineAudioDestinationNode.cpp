@@ -75,19 +75,25 @@ void OfflineAudioDestinationNode::uninitialize()
 
 void OfflineAudioDestinationNode::startRendering()
 {
-    ASSERT(m_renderTarget.get());
-    if (!m_renderTarget.get())
+    ASSERT(m_renderTarget);
+    
+    if (!m_renderTarget)
         return;
     
     if (!m_startedRendering) 
 	{
         m_startedRendering = true;
-		//@todo: proper notification when thread is completed with condition variable
+        
+        LOG("Starting Offline Rendering");
+        
         m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
         
         // @tofix: ability to update main thread from here. Currently blocks until complete
-        m_renderThread.join();
-
+        if (m_renderThread.joinable())
+            m_renderThread.join();
+        
+        LOG("Stopping Offline Rendering");
+        
         if (m_context->offlineRenderCompleteCallback)
             m_context->offlineRenderCompleteCallback();
     }
@@ -131,9 +137,10 @@ void OfflineAudioDestinationNode::offlineRender()
         
         size_t framesAvailableToCopy = min(framesToProcess, renderQuantumSize);
         
-        for (unsigned channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex) {
-            const float* source = m_renderBus->channel(channelIndex)->data();
-            float* destination = m_renderTarget->getChannelData(channelIndex)->data();
+        for (unsigned channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex)
+        {
+            const float * source = m_renderBus->channel(channelIndex)->data();
+            float * destination = m_renderTarget->getChannelData(channelIndex)->data();
             memcpy(destination + n, source, sizeof(float) * framesAvailableToCopy);
         }
         

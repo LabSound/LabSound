@@ -4,23 +4,25 @@
 
 #include "ExampleBaseApp.h"
 
+#include "Simple.h"
+#include "OfflineRender.h"
 #include "ConvolutionReverb.h"
-#include "InfiniteFM.h"
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
-#include "PeakCompressor.h"
-#include "RedAlert.h"
 #include "Rhythm.h"
 #include "RhythmAndFilters.h"
-#include "Simple.h"
-#include "SimpleRecording.h"
+#include "PeakCompressor.h"
+#include "StereoPanning.h"
 #include "Spatialization.h"
 #include "Tremolo.h"
-#include "Validation.h"
-#include "StereoPanning.h"
+#include "RedAlert.h"
+#include "InfiniteFM.h"
 #include "Groove.h"
+#include "Validation.h"
 
+SimpleApp g_simpleExample;
+OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
@@ -29,8 +31,6 @@ PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
 RhythmApp g_rhythm;
 RhythmAndFiltersApp g_rhythmAndFilters;
-SimpleApp g_simpleExample;
-SimpleRecordingApp g_simpleRecordingExample;
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
 ValidationApp g_validation;
@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_microphoneReverb.PlayExample();
+    g_offlineRenderApp.PlayExample();
     return 0;
 }

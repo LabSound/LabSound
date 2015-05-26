@@ -54,25 +54,11 @@ AudioContext::AudioContext()
 AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
 {
 	m_isOfflineContext = true;
-
 	FFTFrame::initialize();
 	m_listener = std::make_shared<AudioListener>();
 
-	// FIXME: the passed in sampleRate MUST match the hardware sample-rate since HRTFDatabaseLoader is a singleton.
-	m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate);
-
 	// Create a new destination for offline rendering.
 	m_renderTarget = std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
-
-	/*
-	// FIXME: offline contexts have limitations on supported sample-rates.
-	// Currently all AudioContexts must have the same sample-rate.
-	auto loader = HRTFDatabaseLoader::loader();
-	if (numberOfChannels > 10 || !isSampleRateRangeGood(sampleRate) || (loader && loader->databaseSampleRate() != sampleRate)) {
-		ec = SYNTAX_ERR;
-		return 0;
-	}
-	*/
 }
 
 void AudioContext::initHRTFDatabase()
@@ -110,8 +96,6 @@ void AudioContext::lazyInitialize()
 				{
 					// This starts the audio thread. The destination node's provideInput() method will now be called repeatedly to render audio.
 					// Each time provideInput() is called, a portion of the audio stream is rendered. Let's call this time period a "render quantum".
-					// NOTE: for now default AudioContext does not need an explicit startRendering() call from JavaScript.
-					// We may want to consider requiring it for symmetry with OfflineAudioContext.
 					m_destinationNode->startRendering();
 				}
 
@@ -124,7 +108,7 @@ void AudioContext::lazyInitialize()
 void AudioContext::clear()
 {
 	// Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    if (m_destinationNode)
+    if (m_destinationNode.get())
         m_destinationNode.reset();
     
 	do

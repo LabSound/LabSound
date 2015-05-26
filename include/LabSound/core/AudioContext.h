@@ -61,10 +61,10 @@ class AudioContext
     
 public:
 
-	// This is considering 32 is large enough for multiple channels audio.
 	// It is somewhat arbitrary and could be increased if necessary.
 	static const unsigned maxNumberOfChannels = 32;
 
+    // Debugging/Sanity Checking
 	const char * m_graphLocker;
 	const char * m_renderLocker;
 
@@ -110,8 +110,8 @@ public:
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
 
-	void handlePreRenderTasks(LabSound::ContextRenderLock &); 	// Called at the START of each render quantum.
-	void handlePostRenderTasks(LabSound::ContextRenderLock &); 	// Called at the END of each render quantum.
+	void handlePreRenderTasks(LabSound::ContextRenderLock &); // Called at the START of each render quantum.
+	void handlePostRenderTasks(LabSound::ContextRenderLock &); // Called at the END of each render quantum.
 
 	// We schedule deletion of all marked nodes at the end of each realtime render quantum.
 	void markForDeletion(LabSound::ContextRenderLock & r, AudioNode *);
@@ -140,7 +140,11 @@ public:
 	void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
 
 	void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
-
+    
+    // Necessary to call when using an OfflineAudioDestinationNode
+    void startRendering();
+    
+    std::shared_ptr<AudioBuffer> getOfflineRenderTarget() { return m_renderTarget; }
 	std::function<void()> offlineRenderCompleteCallback;
 
 private:
@@ -160,8 +164,6 @@ private:
     // Number of AudioBufferSourceNodes that are active (playing).
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
-
-	void startRendering();
 
 	void uninitialize(LabSound::ContextGraphLock &);
 
@@ -186,25 +188,23 @@ private:
 	std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
 	std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
-	std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;				// queue for added pull nodes
-	std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; 	// vector of known pull nodes
+	std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
+	std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
 	std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 
 	std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
     
-    
     typedef PendingConnection<AudioNode, AudioNode> PendingNodeConnection;
     
-    class CompareScheduledTime {
-    public:
-        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2) {
-            if (!p2.from->isScheduledNode())
-                return true;
-            if (!p1.from->isScheduledNode())
-                return false;
-            AudioScheduledSourceNode *ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
-            AudioScheduledSourceNode *ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
+    struct CompareScheduledTime
+    {
+        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2)
+        {
+            if (!p2.from->isScheduledNode()) return true;
+            if (!p1.from->isScheduledNode()) return false;
+            AudioScheduledSourceNode * ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
+            AudioScheduledSourceNode * ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
             return ap2->startTime() < ap1->startTime();
         }
     };

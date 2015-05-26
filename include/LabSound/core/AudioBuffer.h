@@ -35,8 +35,8 @@
 namespace WebCore
 {
 
-    class AudioBus;
-	class AudioBuffer;
+class AudioBus;
+class AudioBuffer;
 
 class AudioBuffer 
 {

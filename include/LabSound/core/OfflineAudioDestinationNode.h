@@ -33,12 +33,14 @@ namespace WebCore {
 class AudioBus;
 class AudioContext;
     
-class OfflineAudioDestinationNode : public AudioDestinationNode {
+class OfflineAudioDestinationNode : public AudioDestinationNode
+{
+    
 public:
-    OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget);
+    
+    OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer * renderTarget);
     virtual ~OfflineAudioDestinationNode();
     
-    // AudioNode   
     virtual void initialize();
     virtual void uninitialize();
     virtual float sampleRate() const { return m_renderTarget->sampleRate(); }
@@ -46,14 +48,16 @@ public:
     void startRendering();
     
 private:
+    
     // This AudioNode renders into this AudioBuffer.
-    std::shared_ptr<AudioBuffer> m_renderTarget;
+    AudioBuffer * m_renderTarget;
     
     // Temporary AudioBus for each render quantum.
     std::unique_ptr<AudioBus> m_renderBus;
     
     // Rendering thread.
 	std::thread m_renderThread;
+    
     bool m_startedRendering;
     void offlineRender();
     
@@ -61,4 +65,4 @@ private:
 
 } // namespace WebCore
 
-#endif // OfflineAudioDestinationNode_h
+#endif

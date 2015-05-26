@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef LabSound_H
-#define LabSound_H
+#ifndef LabSound_h
+#define LabSound_h
 
 // WebAudio Public API
 #include "LabSound/core/WaveShaperNode.h"
@@ -33,7 +33,7 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"
 
-// LabSound Extended API 
+// LabSound Extended Public API
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/ClipNode.h"
@@ -53,11 +53,9 @@
 
 namespace LabSound 
 {
-
     std::shared_ptr<WebCore::AudioContext> init();
-
+    std::shared_ptr<WebCore::AudioContext> initOffline(int millisecondsToRun);
     void finish(std::shared_ptr<WebCore::AudioContext> context);
-
 }
 
 #endif

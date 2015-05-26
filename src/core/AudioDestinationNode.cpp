@@ -108,9 +108,10 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     
     ContextRenderLock renderLock(m_context, "AudioDestinationNode::render");
     if (!renderLock.context())
-        return;                     // return if couldn't acquire lock
+        return; // return if couldn't acquire lock
     
-    if (!m_context->isRunnable()) {
+    if (!m_context->isRunnable())
+    {
         destinationBus->zero();
         return;
     }
