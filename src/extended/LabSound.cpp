@@ -17,8 +17,6 @@
 
 namespace LabSound
 {
-    
-    std::timed_mutex g_TimedMutex;
     std::thread g_GraphUpdateThread;
     
     std::shared_ptr<WebCore::AudioContext> mainContext;
@@ -27,23 +25,22 @@ namespace LabSound
 
     static void UpdateGraph()
 	{
+        LOG("Create GraphUpdateThread");
         while (true)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
             if (mainContext)
             {
                 ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
-                // test both because the mainContext might have been destructed during the acquisition of the main context,
-                // particularly during app shutdown. No point in continuing to process.
-                if (g.context() && mainContext)
+                if (mainContext && g.context())
                     g.context()->update(g);
-            }
+        }
             else
             {
                 break;
             }
         }
-        LOG("LabSound GraphUpdateThread thread finished");
+        LOG("Destroy GraphUpdateThread");
     }
     
     std::shared_ptr<WebCore::AudioContext> init()
@@ -74,8 +71,6 @@ namespace LabSound
         mainContext->setDestinationNode(std::make_shared<WebCore::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
         mainContext->initHRTFDatabase();
         mainContext->lazyInitialize();
-        
-        g_GraphUpdateThread = std::thread(UpdateGraph);
         
         return mainContext;
     }

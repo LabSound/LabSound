@@ -7,15 +7,15 @@
 #include <cmath>
 
 #ifndef PI
-	#define PI       3.14159265358979323846
+	#define PI 3.14159265358979323846
 #endif
 
 #ifndef TWO_PI
-	#define TWO_PI   6.28318530717958647693
+	#define TWO_PI 6.28318530717958647693
 #endif
 
 #ifndef M_TWO_PI
-	#define M_TWO_PI   6.28318530717958647693
+	#define M_TWO_PI 6.28318530717958647693
 #endif
 
 namespace LabSound {

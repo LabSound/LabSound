@@ -17,6 +17,7 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <string>
 
 namespace LabSound
 {
@@ -65,8 +66,8 @@ public:
 	static const unsigned maxNumberOfChannels = 32;
 
     // Debugging/Sanity Checking
-	const char * m_graphLocker;
-	const char * m_renderLocker;
+    std::string m_graphLocker;
+    std::string m_renderLocker;
 
 	// Realtime Context
 	AudioContext();
@@ -122,9 +123,10 @@ public:
 	void addAutomaticPullNode(std::shared_ptr<AudioNode>);
 	void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
-	// Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-	void processAutomaticPullNodes(LabSound::ContextRenderLock &, size_t framesToProcess);
-
+    // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
+    // Only an AudioDestinationNode should call this. 
+    void processAutomaticPullNodes(LabSound::ContextRenderLock &, size_t framesToProcess);
+    
 	// Keeps track of the number of connections made.
 	void incrementConnectionCount();
 	unsigned connectionCount() const 
@@ -159,7 +161,7 @@ private:
 	bool m_isAudioThreadFinished = false;
 	bool m_isOfflineContext = false;
 	bool m_isDeletionScheduled = false;
-	bool m_automaticPullNodesNeedUpdating = false; 	// m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
+	bool m_automaticPullNodesNeedUpdating = false; 	// keeps track if m_automaticPullNodes is modified.
 
     // Number of AudioBufferSourceNodes that are active (playing).
     std::atomic<int> m_activeSourceCount;
@@ -174,7 +176,7 @@ private:
 
 	void referenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
 	void dereferenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
-
+    
 	void handleAutomaticSources();
 	void updateAutomaticPullNodes();
 

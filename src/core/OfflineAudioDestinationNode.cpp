@@ -123,16 +123,15 @@ void OfflineAudioDestinationNode::offlineRender()
         return;
     
     loader->waitForLoaderThreadCompletion();
-        
+    
     // Break up the render target into smaller "render quantize" sized pieces.
-    // Render until we're finished.
     size_t framesToProcess = m_renderTarget->length();
     unsigned numberOfChannels = m_renderTarget->numberOfChannels();
 
     unsigned n = 0;
     while (framesToProcess > 0)
     {
-        // Render one render quantum.
+        // Render one quantum (nominally 128 frames)
         render(0, m_renderBus.get(), renderQuantumSize);
         
         size_t framesAvailableToCopy = min(framesToProcess, renderQuantumSize);
@@ -147,9 +146,6 @@ void OfflineAudioDestinationNode::offlineRender()
         n += framesAvailableToCopy;
         framesToProcess -= framesAvailableToCopy;
     }
-
 }
 
-
 } // namespace WebCore
-

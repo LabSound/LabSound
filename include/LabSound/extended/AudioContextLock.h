@@ -3,7 +3,7 @@
 
 #pragma once
 
-//#define DEBUG_LOCKS
+#define DEBUG_LOCKS
 
 #ifndef AudioContextLock_h
 #define AudioContextLock_h
@@ -22,21 +22,21 @@ namespace LabSound
         
     public:
         
-        ContextGraphLock(std::shared_ptr<WebCore::AudioContext> context, const char * locker)
+        ContextGraphLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
         {
             if (context && context->m_graphLock.try_lock())
             {
                 m_context = context;
-                m_context->m_graphLocker = locker;
+                m_context->m_graphLocker = lockSuitor;
             }
 #if defined(DEBUG_LOCKS)
-            else if (context->m_graphLocker)
+            else if (context && context->m_graphLocker.size())
             {
-              LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s ", locker, m_context->m_graphLocker);
+                LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
             }
             else
             {
-               LOG("%s failed to acquire [GRAPH] lock.", locker);
+                LOG("%s failed to acquire [GRAPH] lock.", lockSuitor.c_str());
             }
 #endif
         }
@@ -44,7 +44,10 @@ namespace LabSound
         ~ContextGraphLock()
         {
             if (m_context)
+            {
                 m_context->m_graphLock.unlock();
+            }
+            
         }
         
         WebCore::AudioContext* context() { return m_context.get(); }
@@ -59,21 +62,21 @@ namespace LabSound
         
     public:
         
-        ContextRenderLock(std::shared_ptr<WebCore::AudioContext> context, const char * locker)
+        ContextRenderLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
         {
             if (context && context->m_renderLock.try_lock())
             {
                 m_context = context;
-                m_context->m_renderLocker = locker;
+                m_context->m_renderLocker = lockSuitor;
             }
 #if defined(DEBUG_LOCKS)
-            else if (context->m_renderLocker)
+            else if (context && context->m_renderLocker.size())
             {
-                LOG("%s failed to acquire [RENDER] lock. Currently held by: %s ", locker, m_context->m_renderLocker);
+                LOG("%s failed to acquire [RENDER] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_renderLocker.c_str());
             }
             else
             {
-                LOG("%s failed to acquire [RENDER] lock.", locker);
+                LOG("%s failed to acquire [RENDER] lock.", lockSuitor.c_str());
             }
 #endif
         }

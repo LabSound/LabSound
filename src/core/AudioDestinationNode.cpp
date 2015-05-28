@@ -91,7 +91,6 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
 
 AudioDestinationNode::~AudioDestinationNode()
 {
-    LOG("Destruct %p", this);
     uninitialize();
 }
 
@@ -128,8 +127,11 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     AudioBus* renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
+    {
         destinationBus->zero();
-    else if (renderedBus != destinationBus) {
+    }
+    else if (renderedBus != destinationBus)
+    {
         // in-place processing was not possible - so copy
         destinationBus->copyFrom(*renderedBus);
     }

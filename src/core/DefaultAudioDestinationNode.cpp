@@ -43,7 +43,6 @@ DefaultAudioDestinationNode::DefaultAudioDestinationNode(std::shared_ptr<AudioCo
 
 DefaultAudioDestinationNode::~DefaultAudioDestinationNode()
 {
-    LOG("Destruct %p", this);
     uninitialize();
 }
 
@@ -69,7 +68,7 @@ void DefaultAudioDestinationNode::uninitialize()
 void DefaultAudioDestinationNode::createDestination()
 {
     float hardwareSampleRate = AudioDestination::hardwareSampleRate();
-    LOG("Hardware Samplerate: %f\n", hardwareSampleRate);
+    LOG("Hardware Samplerate: %f", hardwareSampleRate);
     m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, channelCount(), hardwareSampleRate));
 }
 
