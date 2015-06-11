@@ -17,6 +17,7 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <string>
 
 namespace LabSound
 {
@@ -61,12 +62,12 @@ class AudioContext
     
 public:
 
-	// This is considering 32 is large enough for multiple channels audio.
 	// It is somewhat arbitrary and could be increased if necessary.
 	static const unsigned maxNumberOfChannels = 32;
 
-	const char * m_graphLocker;
-	const char * m_renderLocker;
+    // Debugging/Sanity Checking
+    std::string m_graphLocker;
+    std::string m_renderLocker;
 
 	// Realtime Context
 	AudioContext();
@@ -110,8 +111,8 @@ public:
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
 
-	void handlePreRenderTasks(LabSound::ContextRenderLock &); 	// Called at the START of each render quantum.
-	void handlePostRenderTasks(LabSound::ContextRenderLock &); 	// Called at the END of each render quantum.
+	void handlePreRenderTasks(LabSound::ContextRenderLock &); // Called at the START of each render quantum.
+	void handlePostRenderTasks(LabSound::ContextRenderLock &); // Called at the END of each render quantum.
 
 	// We schedule deletion of all marked nodes at the end of each realtime render quantum.
 	void markForDeletion(LabSound::ContextRenderLock & r, AudioNode *);
@@ -122,9 +123,10 @@ public:
 	void addAutomaticPullNode(std::shared_ptr<AudioNode>);
 	void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
-	// Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-	void processAutomaticPullNodes(LabSound::ContextRenderLock &, size_t framesToProcess);
-
+    // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
+    // Only an AudioDestinationNode should call this. 
+    void processAutomaticPullNodes(LabSound::ContextRenderLock &, size_t framesToProcess);
+    
 	// Keeps track of the number of connections made.
 	void incrementConnectionCount();
 	unsigned connectionCount() const 
@@ -140,7 +142,11 @@ public:
 	void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
 
 	void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
-
+    
+    // Necessary to call when using an OfflineAudioDestinationNode
+    void startRendering();
+    
+    std::shared_ptr<AudioBuffer> getOfflineRenderTarget() { return m_renderTarget; }
 	std::function<void()> offlineRenderCompleteCallback;
 
 private:
@@ -155,13 +161,11 @@ private:
 	bool m_isAudioThreadFinished = false;
 	bool m_isOfflineContext = false;
 	bool m_isDeletionScheduled = false;
-	bool m_automaticPullNodesNeedUpdating = false; 	// m_automaticPullNodesNeedUpdating keeps track if m_automaticPullNodes is modified.
+	bool m_automaticPullNodesNeedUpdating = false; 	// keeps track if m_automaticPullNodes is modified.
 
     // Number of AudioBufferSourceNodes that are active (playing).
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
-
-	void startRendering();
 
 	void uninitialize(LabSound::ContextGraphLock &);
 
@@ -172,7 +176,7 @@ private:
 
 	void referenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
 	void dereferenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
-
+    
 	void handleAutomaticSources();
 	void updateAutomaticPullNodes();
 
@@ -186,25 +190,23 @@ private:
 	std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
 	std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
-	std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;				// queue for added pull nodes
-	std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; 	// vector of known pull nodes
+	std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
+	std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
 	std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 
 	std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
     
-    
     typedef PendingConnection<AudioNode, AudioNode> PendingNodeConnection;
     
-    class CompareScheduledTime {
-    public:
-        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2) {
-            if (!p2.from->isScheduledNode())
-                return true;
-            if (!p1.from->isScheduledNode())
-                return false;
-            AudioScheduledSourceNode *ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
-            AudioScheduledSourceNode *ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
+    struct CompareScheduledTime
+    {
+        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2)
+        {
+            if (!p2.from->isScheduledNode()) return true;
+            if (!p1.from->isScheduledNode()) return false;
+            AudioScheduledSourceNode * ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
+            AudioScheduledSourceNode * ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
             return ap2->startTime() < ap1->startTime();
         }
     };

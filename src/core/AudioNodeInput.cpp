@@ -39,10 +39,8 @@ using namespace std;
  
 namespace WebCore 
 {
-    
-// Give Audiobus an
 
-AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction() , m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
@@ -148,9 +146,11 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
         
     summingBus->zero();
 
-    for (int i = 0; i < c; ++i) {
+    for (int i = 0; i < c; ++i)
+    {
         auto output = renderingOutput(r, i);
-        if (output) {
+        if (output)
+        {
             // Render audio from this output.
             AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
             
@@ -162,30 +162,34 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
 
 AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
+    
     updateRenderingState(r);
     
     int c = numberOfRenderingConnections(r);
     
     // Handle single connection case.
-    if (c == 1) {
+    if (c == 1)
+    {
         // The output will optimize processing using inPlaceBus if it's able.
         auto output = renderingOutput(r, 0);
         if (output)
-            return output->pull(r, inPlaceBus, framesToProcess);
-        
+        {
+             return output->pull(r, inPlaceBus, framesToProcess);
+        }
         c = 0; // invoke the silence case
     }
 
     AudioBus* internalSummingBus = this->internalSummingBus(r);
 
-    if (!c) {
+    if (c == 0)
+    {
         // At least, generate silence if we're not connected to anything.
         // FIXME: if we wanted to get fancy, we could propagate a 'silent hint' here to optimize the downstream graph processing.
         internalSummingBus->zero();
         return internalSummingBus;
     }
     
-    // Handle multiple connections case.
+    // Handle multiple connections case
     sumAllConnections(r, internalSummingBus, framesToProcess);
     
     return internalSummingBus;

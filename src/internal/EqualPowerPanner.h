@@ -27,16 +27,17 @@
 
 #include "internal/Panner.h"
 
-namespace WebCore {
+namespace WebCore
+{
 
 // Common type of stereo panner as found in normal audio mixing equipment.
+class EqualPowerPanner : public Panner 
+{
 
-class EqualPowerPanner : public Panner {
 public:
     EqualPowerPanner(float sampleRate);
 
-    virtual void pan(ContextRenderLock&,
-                     double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBuf, size_t framesToProcess);
+    virtual void pan(ContextRenderLock&, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBuf, size_t framesToProcess);
 
     virtual void reset() override { m_isFirstRender = true; }
 
@@ -44,6 +45,7 @@ public:
     virtual double latencyTime() const override { return 0; }
 
 private:
+
     // For smoothing / de-zippering
     bool m_isFirstRender;
     double m_smoothingConstant;
@@ -54,4 +56,4 @@ private:
 
 } // namespace WebCore
 
-#endif // EqualPowerPanner_h
+#endif

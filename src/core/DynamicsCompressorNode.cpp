@@ -32,17 +32,15 @@
 #include "internal/DynamicsCompressor.h"
 #include "internal/Assertions.h"
 
-// Set output to stereo by default.
-static const unsigned defaultNumberOfOutputChannels = 2;
-
 using namespace std;
 
-namespace WebCore {
+namespace WebCore
+{
 
 DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sampleRate)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, defaultNumberOfOutputChannels)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
     setNodeType(NodeTypeDynamicsCompressor);
 
@@ -94,7 +92,7 @@ void DynamicsCompressorNode::initialize()
     if (isInitialized())
         return;
 
-    m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), defaultNumberOfOutputChannels));
+    m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), 2));
     
     AudioNode::initialize();
 }
@@ -119,4 +117,4 @@ double DynamicsCompressorNode::latencyTime() const
     return m_dynamicsCompressor->latencyTime();
 }
 
-} // namespace WebCore
+} // end namespace WebCore

@@ -6,6 +6,9 @@
 #include "LabSound/extended/SoundBuffer.h"
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/AudioBus.h"
+#include "internal/AudioFileReader.h"
+
 #include <stdio.h>
 #include <iostream>
 
@@ -13,26 +16,15 @@ namespace LabSound {
     
     using namespace WebCore;
     
-    SoundBuffer::SoundBuffer(const char* path, float sampleRate)
+    //@tofix investigate mixing to mono here and why it breaks if
+    // we don't
+    SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
-        FILE* f = fopen(path, "rb");
-        if (f) {
-            fseek(f, 0, SEEK_END);
-            int l = ftell(f);
-            fseek(f, 0, SEEK_SET);
-            uint8_t* data = new uint8_t[l];
-            fread(data, 1, l, f);
-            fclose(f);
-            
-            bool mixToMono = true;
-            
-            // create an audio buffer from the file data. The file data will be
-            // parsed, and does not need to be retained.
-            audioBuffer = WebCore::MakeAudioBufferFromMemory(data, l, mixToMono, sampleRate);
-            delete [] data;
+        std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
+        if (auto f = busForFile.get())
+        {
+             audioBuffer = std::make_shared<AudioBuffer>(f);
         }
-        else
-            std::cerr << "File not found " << path << std::endl;
     }
     
     SoundBuffer::~SoundBuffer()

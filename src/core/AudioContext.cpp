@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include <queue>
 
-using namespace std;
-
 namespace WebCore
 {
 
@@ -54,25 +52,11 @@ AudioContext::AudioContext()
 AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
 {
 	m_isOfflineContext = true;
-
 	FFTFrame::initialize();
 	m_listener = std::make_shared<AudioListener>();
 
-	// FIXME: the passed in sampleRate MUST match the hardware sample-rate since HRTFDatabaseLoader is a singleton.
-	m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate);
-
 	// Create a new destination for offline rendering.
 	m_renderTarget = std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
-
-	/*
-	// FIXME: offline contexts have limitations on supported sample-rates.
-	// Currently all AudioContexts must have the same sample-rate.
-	auto loader = HRTFDatabaseLoader::loader();
-	if (numberOfChannels > 10 || !isSampleRateRangeGood(sampleRate) || (loader && loader->databaseSampleRate() != sampleRate)) {
-		ec = SYNTAX_ERR;
-		return 0;
-	}
-	*/
 }
 
 void AudioContext::initHRTFDatabase()
@@ -110,8 +94,6 @@ void AudioContext::lazyInitialize()
 				{
 					// This starts the audio thread. The destination node's provideInput() method will now be called repeatedly to render audio.
 					// Each time provideInput() is called, a portion of the audio stream is rendered. Let's call this time period a "render quantum".
-					// NOTE: for now default AudioContext does not need an explicit startRendering() call from JavaScript.
-					// We may want to consider requiring it for symmetry with OfflineAudioContext.
 					m_destinationNode->startRendering();
 				}
 
@@ -124,7 +106,7 @@ void AudioContext::lazyInitialize()
 void AudioContext::clear()
 {
 	// Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    if (m_destinationNode)
+    if (m_destinationNode.get())
         m_destinationNode.reset();
     
 	do
@@ -146,6 +128,8 @@ void AudioContext::uninitialize(ContextGraphLock& g)
 
 	// Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
 	m_isAudioThreadFinished = true;
+    
+    updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
 
 	m_referencedNodes.clear();
 	m_isInitialized = false;
@@ -206,13 +190,13 @@ void AudioContext::dereferenceSourceNode(ContextGraphLock& g, std::shared_ptr<Au
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> sn)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	automaticSources.push_back(sn);
 }
 
 void AudioContext::handleAutomaticSources()
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	for (auto i = automaticSources.begin(); i != automaticSources.end(); ++i)
 	{
 		if ((*i)->hasFinished())
@@ -249,41 +233,42 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 
 void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	//pendingNodeConnections.emplace_back(from, to, true);
     pendingNodeConnections.emplace(from, to, true);
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(fromInput, toOutput, true));
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	//pendingNodeConnections.emplace_back(from, to, false);
     pendingNodeConnections.emplace(from, to, false);
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> from)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	//pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
     pendingNodeConnections.emplace(from, std::shared_ptr<AudioNode>(), false);
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(std::shared_ptr<AudioNodeInput>(), toOutput, false));
 }
 
 void AudioContext::update(ContextGraphLock& g)
 {
 	{
-		lock_guard<mutex> lock(automaticSourcesMutex);
+        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+        
 		for (auto i : pendingConnections)
 		{
 			if (i.connect)
@@ -358,7 +343,6 @@ void AudioContext::update(ContextGraphLock& g)
         //auto d = destination();
         //auto in = d->input(0);
         //printf("%d\n", (int) in->numberOfRenderingConnections());
-        
 		//pendingNodeConnections.clear();
 	}
 }
@@ -378,6 +362,7 @@ void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
 
 void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 {
+    //@fixme
 	// &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
 	// then this routine sould go away completely
 	// node->deref is the only caller, it should simply add itself to the scheduled deletion queue
@@ -401,7 +386,7 @@ void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
 
 void AudioContext::deleteMarkedNodes()
 {
-	// Fixme: thread safety
+	//@fixme thread safety
 	m_nodesToDelete.clear();
 	m_isDeletionScheduled = false;
 }
@@ -409,7 +394,7 @@ void AudioContext::deleteMarkedNodes()
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end())
 	{
 		m_automaticPullNodes.insert(node);
@@ -419,7 +404,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 
 void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-	lock_guard<mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	auto it = m_automaticPullNodes.find(node);
 	if (it != m_automaticPullNodes.end())
 	{
@@ -432,7 +417,7 @@ void AudioContext::updateAutomaticPullNodes()
 {
 	if (m_automaticPullNodesNeedUpdating)
 	{
-		lock_guard<mutex> lock(automaticSourcesMutex);
+        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 
 		// Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
 		m_renderingAutomaticPullNodes.resize(m_automaticPullNodes.size());

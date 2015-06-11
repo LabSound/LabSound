@@ -80,7 +80,6 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     setNodeType(NodeTypeDestination);
 
-    
     // Node-specific default mixing rules.
     m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::Explicit;
@@ -92,7 +91,6 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
 
 AudioDestinationNode::~AudioDestinationNode()
 {
-    LOG("Destruct %p", this);
     uninitialize();
 }
 
@@ -109,9 +107,10 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     
     ContextRenderLock renderLock(m_context, "AudioDestinationNode::render");
     if (!renderLock.context())
-        return;                     // return if couldn't acquire lock
+        return; // return if couldn't acquire lock
     
-    if (!m_context->isRunnable()) {
+    if (!m_context->isRunnable())
+    {
         destinationBus->zero();
         return;
     }
@@ -128,8 +127,11 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     AudioBus* renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
+    {
         destinationBus->zero();
-    else if (renderedBus != destinationBus) {
+    }
+    else if (renderedBus != destinationBus)
+    {
         // in-place processing was not possible - so copy
         destinationBus->copyFrom(*renderedBus);
     }

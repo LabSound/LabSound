@@ -177,9 +177,6 @@
     <ClInclude Include="..\src\internal\win\AudioDestinationWin.h">
       <Filter>Internal\include\win</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\win\AudioFileReaderWin.h">
-      <Filter>Internal\include\win</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
@@ -384,9 +381,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
-      <Filter>Internal\src\win</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\win\AudioFileReaderWin.cpp">
       <Filter>Internal\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp">
@@ -661,6 +655,9 @@
     </ClCompile>
     <ClCompile Include="..\src\extended\FunctionNode.cpp">
       <Filter>LabSound\extended\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internal\src\AudioFileReader.cpp">
+      <Filter>Internal\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

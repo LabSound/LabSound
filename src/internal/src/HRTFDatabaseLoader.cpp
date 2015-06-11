@@ -31,7 +31,8 @@
 
 #include <iostream>
 
-namespace WebCore {
+namespace WebCore
+{
 
 // Singleton
 std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
@@ -82,7 +83,7 @@ void HRTFDatabaseLoader::load()
     
     if (!m_hrtfDatabase.get())
     {
-        std::cerr << "HRTF database not loaded..." << std::endl;
+        LOG("HRTF database not loaded");
     }
 }
 
@@ -108,10 +109,10 @@ void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
         m_loadingCondition.wait(locker);
 }
 
-HRTFDatabase* HRTFDatabaseLoader::defaultHRTFDatabase()
+HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()
 {
     if (!s_loader)
-        return 0;
+        return nullptr;
     
     return s_loader->database();
 }

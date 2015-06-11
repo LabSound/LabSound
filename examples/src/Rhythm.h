@@ -12,7 +12,8 @@ struct RhythmApp : public LabSoundExampleApp
         SoundBuffer hihat("samples/hihat.wav", sampleRate);
         SoundBuffer snare("samples/snare.wav", sampleRate);
         
-        std::vector<std::shared_ptr<AudioNode>> notes;    // store the notes to keep them around long enough to play
+        // store the notes to keep them around long enough to play
+        std::vector<std::shared_ptr<AudioNode>> notes;
         {
             ContextGraphLock g(context, "RhythmApp");
             ContextRenderLock r(context, "RhythmApp");
@@ -22,6 +23,7 @@ struct RhythmApp : public LabSoundExampleApp
             for (int bar = 0; bar < 2; bar++)
             {
                 float time = startTime + bar * 8 * eighthNoteTime;
+                
                 // Play the bass (kick) drum on beats 1, 5
                 notes.emplace_back(kick.play(r, time));
                 notes.emplace_back(kick.play(r, time + 4 * eighthNoteTime));

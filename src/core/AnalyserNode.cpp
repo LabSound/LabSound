@@ -30,10 +30,9 @@
 
 namespace WebCore {
 
-AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize)
-    : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
+AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
 {
-    // note: inputs and outputs added by AudioBasicInspectorNode, so need to create them here
+    //N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
     setNodeType(NodeTypeAnalyser);
     initialize();
 }
@@ -47,7 +46,8 @@ void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected()) {
+    if (!isInitialized() || !input(0)->isConnected())
+    {
         outputBus->zero();
         return;
     }
@@ -60,7 +60,9 @@ void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
     // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
     // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
     if (inputBus != outputBus)
+    {
         outputBus->copyFrom(*inputBus);
+    }
 }
 
 void AnalyserNode::reset(ContextRenderLock&)
@@ -68,6 +70,4 @@ void AnalyserNode::reset(ContextRenderLock&)
     m_analyser.reset();
 }
     
-    
-
 } // namespace WebCore

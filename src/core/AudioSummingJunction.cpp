@@ -38,11 +38,10 @@ namespace WebCore
     
 LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
 
-    namespace 
-	{
-        std::mutex junctionMutex;
-    }
-    
+namespace
+{
+    std::mutex junctionMutex;
+}
 
 void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r)
 {
@@ -52,10 +51,15 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r
         asj->updateRenderingState(r);
 }
 
-AudioSummingJunction::AudioSummingJunction()
-: m_renderingStateNeedUpdating(false) {}
+AudioSummingJunction::AudioSummingJunction() : m_renderingStateNeedUpdating(false)
+{
+    
+}
 
-AudioSummingJunction::~AudioSummingJunction() {}
+AudioSummingJunction::~AudioSummingJunction()
+{
+    
+}
     
 bool AudioSummingJunction::isConnected(std::shared_ptr<AudioNodeOutput> o) const
 {
@@ -113,20 +117,23 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
     
 void AudioSummingJunction::changedOutputs(ContextGraphLock&)
 {
-    if (!m_renderingStateNeedUpdating && canUpdateState()) {
+    if (!m_renderingStateNeedUpdating && canUpdateState())
+    {
         m_renderingStateNeedUpdating = true;
     }
 }
     
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
-    if (r.context() && m_renderingStateNeedUpdating && canUpdateState()) {
+    if (r.context() && m_renderingStateNeedUpdating && canUpdateState())
+    {
         std::lock_guard<std::mutex> lock(junctionMutex);
         
         // Copy from m_outputs to m_renderingOutputs.
         m_renderingOutputs.clear();
         for (std::vector<std::weak_ptr<AudioNodeOutput>>::iterator i = m_connectedOutputs.begin(); i != m_connectedOutputs.end(); ++i)
-            if (!i->expired()) {
+            if (!i->expired())
+            {
                 m_renderingOutputs.push_back(*i);
                 i->lock()->updateRenderingState(r);
             }

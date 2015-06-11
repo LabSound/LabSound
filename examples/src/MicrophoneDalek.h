@@ -13,7 +13,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         float sampleRate = context->sampleRate();
         
 #ifndef USE_LIVE
-        SoundBuffer sample("samples/voice.mp4", sampleRate);
+        SoundBuffer sample("samples/voice.ogg", sampleRate);
 #endif
         
         std::shared_ptr<AudioHardwareSourceNode> input;
@@ -27,7 +27,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<DiodeNode> vInDiode2;
         std::shared_ptr<GainNode> vcInverter1;
         std::shared_ptr<DiodeNode> vcDiode3;
-        std::shared_ptr<DiodeNode> vcDiode4;
+        std::shared_ptr<DiodeNode> vcDiode4; 
         std::shared_ptr<GainNode> outGain;
         std::shared_ptr<DynamicsCompressorNode> compressor;
         std::shared_ptr<AudioBufferSourceNode> player;
@@ -58,7 +58,8 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // Now we create the objects on the Vc side of the graph
 #ifndef USE_LIVE
             player = sample.create(r, sampleRate);
-            if (!player) {
+            if (!player)
+            {
                 std::cerr << "Sample buffer wasn't loaded" << std::endl;
                 return;
             }
@@ -72,7 +73,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             
             // A gain node to control master output levels
             outGain = std::make_shared<GainNode>(sampleRate);
-            outGain->gain()->setValue(4.0f);
+            outGain->gain()->setValue(1.0f);
             
             // A small addition to the graph given in Parker's paper is a compressor node
             // immediately before the output. This ensures that the user's volume remains

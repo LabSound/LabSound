@@ -7,10 +7,6 @@
 #include <cmath>
 #include <algorithm>
 
-// Unexpected Token from Wavepot. Shows the utility of LabSound as an experimental playground for DSP.
-// Original: http://wavepot.com/stagas/unexpected-token
-
-// gets note 'n' frequency of 'octave'
 float note(int n, int octave = 0)
 {
     return std::pow(2.0f, (n - 33.f + (12.f * octave)) / 12.0f) * 440.f;
@@ -33,6 +29,42 @@ std::vector<int> melody =
 };
 
 std::vector<std::vector<int>> chords = { {7, 12, 17, 10}, {10, 15, 19, 24} };
+
+float quickSin(float x, float t)
+{
+    return std::sin(2.0f * M_PI * t * x);
+}
+
+float quickSaw(float x, float t)
+{
+    return 1.0f - 2.0f * fmod(t, (1.f / x)) * x;
+}
+
+float quickSqr(float x, float t)
+{
+    return quickSin(x, t) > 0 ? 1.f : -1.f;
+}
+
+// perc family of functions implement a simple attack/decay, creating
+// a short & percussive envelope for the signal
+float perc(float wave, float decay, float o, float t)
+{
+    float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
+    auto ret = wave * env;
+    return ret;
+}
+
+float perc_b(float wave, float decay, float o, float t)
+{
+    float env = std::min(0.f, 0.950f - (o * decay) / ((o * decay) + 1.f));
+    auto ret = wave * env;
+    return ret;
+}
+
+float hardClip(float n, float x)
+{
+    return x > n ? n : x < -n ? -n : x;
+}
 
 struct FastLowpass
 {
@@ -100,54 +132,15 @@ struct MoogFilter
     }
 };
 
-float quickSin(float x, float t)
-{
-    return std::sin(2.0f * M_PI * t * x);
-}
-
-float quickSaw(float x, float t)
-{
-    return 1.0f - 2.0f * fmod(t, (1.f / x)) * x;
-}
-
-float quickSqr(float x, float t)
-{
-    return quickSin(x, t) > 0 ? 1.f : -1.f;
-}
-
-// perc family of functions implement a simple attack/decay, creating
-// a short & percussive envelope for the signal
-float perc(float wave, float decay, float o, float t)
-{
-    float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
-    auto ret = wave * env;
-    return ret;
-}
-
-float perc_b(float wave, float decay, float o, float t)
-{
-    float env = std::min(0.f, 0.950f - (o * decay) / ((o * decay) + 1.f));
-    auto ret = wave * env;
-    return ret;
-}
-
-float hardClip(float n, float x)
-{
-    return x > n ? n : x < -n ? -n : x;
-}
-
 MoogFilter lp_a;
 MoogFilter lp_b;
 MoogFilter lp_c;
 
 FastLowpass fastlp_a;
-
-//FastLowpass fastlp_b(30.0f);
-//FastHighpass fasthp_a(1.7f);
-//FastHighpass fasthp_b(1.5f);
-
 FastHighpass fasthp_c;
 
+// Unexpected Token from Wavepot. Shows the utility of LabSound as an experimental playground for DSP.
+// Original by Stagas: http://wavepot.com/stagas/unexpected-token (MIT License)
 struct GrooveApp : public LabSoundExampleApp
 {
     void PlayExample()
@@ -155,9 +148,7 @@ struct GrooveApp : public LabSoundExampleApp
         auto context = LabSound::init();
         
         std::shared_ptr<FunctionNode> grooveBox;
-        
         std::shared_ptr<GainNode> masterGain;
-        
         std::shared_ptr<ADSRNode> envelope;
         
         float songLenSeconds = 16.0f;
@@ -169,13 +160,19 @@ struct GrooveApp : public LabSoundExampleApp
             float elapsedTime = 0.0f;
             
             envelope = std::make_shared<ADSRNode>(context->sampleRate());
-            envelope->set(2.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
+            envelope->set(6.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
+        
+            float lfo_a, lfo_b, lfo_c;
+            float bassWaveform, percussiveWaveform, bassSample;
+            float padWaveform, padSample;
+            float kickWaveform, kickSample;
+            float synthWaveform, synthPercussive, synthDegradedWaveform, synthSample;
             
             //@todo/tofix: Channels in FunctionNode is only half the equation (sets output node correctly); node itself by default is stereo
-			// and you need to pass in a graphlock to change it 
+			// and you need to pass in a graphlock to change it
             grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
 			grooveBox->setChannelCount(g, 1);
-            grooveBox->setFunction([&elapsedTime](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
+            grooveBox->setFunction([&](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
                 float dt = 1.0f / self->sampleRate(); // time duration of one sample
                 
@@ -185,30 +182,11 @@ struct GrooveApp : public LabSoundExampleApp
                 auto bm = bassline[nextMeasure]; // measure
                 
                 int nextNote =  int((now * 4)) % bm.size();
-                float bn = note(bm[nextNote], 0); // note
+                float bn = note(bm[nextNote], 0);
                 
                 auto p = chords[int(now / 4) % chords.size()];
                 
                 auto mn = note(melody[int(now * 3) % melody.size()], int(2 - (now * 3)) % 4);
-                
-                float lfo_a;
-                float lfo_b;
-                float lfo_c;
-                
-                float bassWaveform;
-                float percussiveWaveform;
-                float bassSample;
-                
-                float padWaveform;
-                float padSample;
-                
-                float kickWaveform;
-                float kickSample;
-                
-                float synthWaveform;
-                float synthPercussive;
-                float synthDegradedWaveform;
-                float synthSample;
 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
@@ -244,8 +222,8 @@ struct GrooveApp : public LabSoundExampleApp
                 elapsedTime += now;
                 
             });
-            grooveBox->start(0);
             
+            grooveBox->start(0);
             envelope->noteOn(0.0);
             
             grooveBox->connect(context.get(), envelope.get(), 0, 0);

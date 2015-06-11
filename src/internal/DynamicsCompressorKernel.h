@@ -42,7 +42,7 @@ namespace LabSound
 namespace WebCore 
 {
 
-    using namespace LabSound;
+using namespace LabSound;
     
 class DynamicsCompressorKernel 
 {
@@ -55,8 +55,8 @@ public:
 
     // Performs stereo-linked compression.
     void process(ContextRenderLock&,
-                 float* sourceChannels[],
-                 float* destinationChannels[],
+                 float * sourceChannels[],
+                 float * destinationChannels[],
                  unsigned numberOfChannels,
                  unsigned framesToProcess,
 
@@ -84,6 +84,7 @@ public:
     float meteringGain() const { return m_meteringGain; }
 
 protected:
+    
     float m_sampleRate;
 
     float m_detectorAverage;

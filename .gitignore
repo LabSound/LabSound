@@ -15,8 +15,6 @@
 *.def
 *.exp
 
-!libsndfile-1.lib
-
 # XCode stuff
 *.hmap
 *.xcuserstate
@@ -29,14 +27,9 @@
 # Build results
 [Dd]ebug/
 [Rr]elease/
+[Oo]bj/
 x64/
 build/
-[Bb]in/
-[Oo]bj/
-
-# MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
 
 *_i.c
 *_p.c
@@ -55,7 +48,7 @@ build/
 *.tmp
 *.tmp_proj
 *.log
-*.vspscc
+*.vspsccs
 *.vssscc
 .builds
 *.pidb
@@ -74,15 +67,6 @@ ipch/
 *.psess
 *.vsp
 *.vspx
-
-_UpgradeReport_Files/
-Backup*/
-UpgradeLog*.XML
-UpgradeLog*.htm
-
-# SQL Server files
-App_Data/*.mdf
-App_Data/*.ldf
 
 # Windows image file caches
 Thumbs.db
@@ -108,10 +92,10 @@ xcuserdata
 !default.mode2v3
 !default.perspectivev3
 
-# Windows Specific Libraries that should be pulled in separately
-examples/*.dll
-examples/*.def
-
 # Sublime Edit
 *.sublime-workspace
+
+# Whitelist libnyquist
+!third_party/libnyquist/bin/osx/*.a
+!third_party/libnyquist/bin/win/*.lib
 

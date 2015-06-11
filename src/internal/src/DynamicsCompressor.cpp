@@ -132,23 +132,24 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
 
     unsigned numberOfChannels = destinationBus->numberOfChannels();
     unsigned numberOfSourceChannels = sourceBus->numberOfChannels();
-
+    
     ASSERT(numberOfChannels == m_numberOfChannels && numberOfSourceChannels);
 
-    if (numberOfChannels != m_numberOfChannels || !numberOfSourceChannels) {
+    if (numberOfChannels != m_numberOfChannels || !numberOfSourceChannels)
+    {
         destinationBus->zero();
         return;
     }
 
-    switch (numberOfChannels) {
-    case 2: // stereo
+    switch (numberOfChannels)
+    {
+    case 2:
         m_sourceChannels[0] = sourceBus->channelByType(Channel::Left)->data();
 
         if (numberOfSourceChannels > 1)
             m_sourceChannels[1] = sourceBus->channelByType(Channel::Right)->data();
         else
-            // Simply duplicate mono channel input data to right channel for stereo processing.
-            m_sourceChannels[1] = m_sourceChannels[0];
+            m_sourceChannels[1] = m_sourceChannels[0]; // (left) mono duplicate to right channel
 
         break;
     default:
@@ -159,13 +160,16 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
     }
 
     for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
         m_destinationChannels[i] = destinationBus->channel(i)->mutableData();
+    }
 
     float filterStageGain = parameterValue(ParamFilterStageGain);
     float filterStageRatio = parameterValue(ParamFilterStageRatio);
     float anchor = parameterValue(ParamFilterAnchor);
 
-    if (filterStageGain != m_lastFilterStageGain || filterStageRatio != m_lastFilterStageRatio || anchor != m_lastAnchor) {
+    if (filterStageGain != m_lastFilterStageGain || filterStageRatio != m_lastFilterStageRatio || anchor != m_lastAnchor)
+    {
         m_lastFilterStageGain = filterStageGain;
         m_lastFilterStageRatio = filterStageRatio;
         m_lastAnchor = anchor;
@@ -175,7 +179,8 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
 
     // Apply pre-emphasis filter.
     // Note that the final three stages are computed in-place in the destination buffer.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
         const float* sourceData = m_sourceChannels[i];
         float* destinationData = m_destinationChannels[i];
         ZeroPole* preFilters = m_preFilterPacks[i]->filters;
@@ -208,6 +213,7 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
 
     // Apply compression to the pre-filtered signal.
     // The processing is performed in place.
+    // Dimitri... broken?
     m_compressor.process(r,
                          m_destinationChannels.get(),
                          m_destinationChannels.get(),
@@ -233,7 +239,8 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
     setParameterValue(ParamReduction, m_compressor.meteringGain());
 
     // Apply de-emphasis filter.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
         float* destinationData = m_destinationChannels[i];
         ZeroPole* postFilters = m_postFilterPacks[i]->filters;
 
@@ -267,7 +274,8 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
 
     m_preFilterPacks.clear();
     m_postFilterPacks.clear();
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
         m_preFilterPacks.push_back(std::unique_ptr<ZeroPoleFilterPack4>(new ZeroPoleFilterPack4()));
         m_postFilterPacks.push_back(std::unique_ptr<ZeroPoleFilterPack4>(new ZeroPoleFilterPack4()));
     }

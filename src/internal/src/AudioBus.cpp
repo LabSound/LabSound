@@ -88,6 +88,7 @@ void AudioBus::zero()
 
 AudioChannel* AudioBus::channelByType(Channel channelType)
 {
+    
     // For now we only support canonical channel layouts...
     if (m_layout != LayoutCanonical)
         return 0;
@@ -353,7 +354,7 @@ void AudioBus::speakersSumFrom5_1_ToMono(const AudioBus& sourceBus)
     
     // Sum in L and R.
     vadd(sourceL, 1, sourceR, 1, tempData, 1, length());
-    float scale = 0.7071;
+    float scale = 0.7071f;
     vsmul(tempData, 1, &scale, tempData, 1, length());
     vadd(tempData, 1, destination, 1, destination, 1, length());
     

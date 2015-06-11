@@ -6,6 +6,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/LabSound.h"
 
 #include <chrono>
 #include <thread>
@@ -16,8 +17,6 @@
 
 namespace LabSound
 {
-    
-    std::timed_mutex g_TimedMutex;
     std::thread g_GraphUpdateThread;
     
     std::shared_ptr<WebCore::AudioContext> mainContext;
@@ -26,30 +25,28 @@ namespace LabSound
 
     static void UpdateGraph()
 	{
+        LOG("Create GraphUpdateThread");
         while (true)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
             if (mainContext)
             {
                 ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
-                // test both because the mainContext might have been destructed during the acquisition of the main context,
-                // particularly during app shutdown. No point in continuing to process.
-                if (g.context() && mainContext)
+                if (mainContext && g.context())
                     g.context()->update(g);
-            }
+        }
             else
             {
                 break;
             }
         }
-        LOG("LabSound GraphUpdateThread thread finished");
+        LOG("Destroy GraphUpdateThread");
     }
     
     std::shared_ptr<WebCore::AudioContext> init()
     {
         LOG("Initialize Context");
         
-        // Create an audio context object with the default audio destination
         mainContext = std::make_shared<WebCore::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<WebCore::DefaultAudioDestinationNode>(mainContext));
         mainContext->initHRTFDatabase();
@@ -60,6 +57,23 @@ namespace LabSound
         return mainContext;
     }
     
+    std::shared_ptr<WebCore::AudioContext> initOffline(int millisecondsToRun)
+    {
+        LOG("Initialize Offline Context");
+        
+        const int sampleRate = 44100;
+        
+        auto framesPerMillisecond = sampleRate / 1000;
+        auto totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
+        
+        mainContext = std::make_shared<WebCore::AudioContext>(2, totalFramesToRecord, sampleRate);
+        auto renderTarget = mainContext->getOfflineRenderTarget();
+        mainContext->setDestinationNode(std::make_shared<WebCore::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
+        mainContext->initHRTFDatabase();
+        mainContext->lazyInitialize();
+        
+        return mainContext;
+    }
     
     void finish(std::shared_ptr<WebCore::AudioContext> context)
     {
@@ -69,9 +83,10 @@ namespace LabSound
         mainContext.reset();
         
         // Join update thread
-        if (g_GraphUpdateThread.joinable()) g_GraphUpdateThread.join();
+        if (g_GraphUpdateThread.joinable())
+            g_GraphUpdateThread.join();
         
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < 8; ++i)
         {
             ContextGraphLock g(context, "LabSound::finish");
             
@@ -90,5 +105,4 @@ namespace LabSound
         LOG("Could not acquire lock for shutdown");
     }
     
-} // LabSound
-
+} // end namespace LabSound

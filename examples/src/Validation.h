@@ -13,6 +13,7 @@ std::string PrintCurrentDirectory()
 // An example with a bunch of nodes to verify api + functionality changes/improvements/regressions
 struct ValidationApp : public LabSoundExampleApp
 {
+
     void PlayExample()
     {
         
@@ -73,7 +74,6 @@ struct ValidationApp : public LabSoundExampleApp
             
         }
         
-        
         float elapsedTime = 0;
         for (int s = 0; s < 48; s++)
         {
@@ -90,20 +90,19 @@ struct ValidationApp : public LabSoundExampleApp
             
             elapsedTime = delayTime;
         }
-        
-        /*
-        const int seconds = 2;
-        float halfTime = seconds * 0.5f;
-        for (float i = 0; i < seconds; i += 0.01f)
-        {
-            float x = (i - halfTime) / halfTime;
-            panner->setPosition(x, 0.1f, 0.1f);
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }
-        */
+     
+        //const int seconds = 2;
+        //float halfTime = seconds * 0.5f;
+        //for (float i = 0; i < seconds; i += 0.01f)
+        //{
+        //    float x = (i - halfTime) / halfTime;
+        //    panner->setPosition(x, 0.1f, 0.1f);
+        //    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        //}
         
         std::this_thread::sleep_for(std::chrono::seconds((int)elapsedTime));
         LabSound::finish(context);
         
     }
+
 };

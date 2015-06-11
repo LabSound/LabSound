@@ -29,7 +29,8 @@
 #ifndef FloatConversion_h
 #define FloatConversion_h
 
-namespace WebCore {
+namespace WebCore
+{
 
     template<typename T>
     float narrowPrecisionToFloat(T);

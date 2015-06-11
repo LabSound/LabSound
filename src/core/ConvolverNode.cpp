@@ -46,16 +46,13 @@ const size_t MaxFFTSize = 32768;
 
 namespace WebCore {
 
-ConvolverNode::ConvolverNode(float sampleRate)
-    : AudioNode(sampleRate)
-    , m_swapOnRender(false)
-    , m_normalize(true)
+ConvolverNode::ConvolverNode(float sampleRate) : AudioNode(sampleRate), m_swapOnRender(false), m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
     // Node-specific default mixing rules.
-    m_channelCount = 1;
+    m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
     
@@ -71,7 +68,8 @@ ConvolverNode::~ConvolverNode()
 
 void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
-    if (m_swapOnRender) {
+    if (m_swapOnRender)
+    {
         m_reverb = std::move(m_newReverb);
         m_buffer = m_newBuffer;
         m_newBuffer.reset();
@@ -80,7 +78,8 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
     
     AudioBus* outputBus = output(0)->bus(r);
     
-    if (!isInitialized() || !m_reverb) {
+    if (!isInitialized() || !m_reverb)
+    {
         if (outputBus)
             outputBus->zero();
         return;
