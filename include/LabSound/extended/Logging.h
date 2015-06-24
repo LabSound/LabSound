@@ -6,6 +6,10 @@
 #include <string>
 #include <iostream>
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #define LOG(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__);
 
 inline void LabSoundLog(const char* file, int line, const char* fmt, ...)

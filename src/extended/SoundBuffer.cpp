@@ -15,17 +15,26 @@
 namespace LabSound {
     
     using namespace WebCore;
-    
-    //@tofix investigate mixing to mono here and why it breaks if
-    // we don't
+
+
+	SoundBuffer::SoundBuffer()
+	{
+
+	}
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
-        std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
+        initialize(path, sampleRate);
+    }
+
+	void SoundBuffer::initialize(const char * path, float sampleRate)
+	{
+		//@tofix investigate mixing to mono here and why it breaks if we don't
+		std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
         if (auto f = busForFile.get())
         {
              audioBuffer = std::make_shared<AudioBuffer>(f);
         }
-    }
+	}
     
     SoundBuffer::~SoundBuffer()
     {
