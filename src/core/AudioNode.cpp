@@ -49,7 +49,6 @@ AudioNode::AudioNode(float sampleRate)
     , m_sampleRate(sampleRate)
     , m_lastProcessingTime(-1)
     , m_lastNonSilentTime(-1)
-    , m_normalRefCount(1) // start out with normal refCount == 1 (like WTF::RefCounted class)
     , m_connectionRefCount(0)
     , m_isMarkedForDeletion(false)
     , m_channelCount(2)
@@ -68,7 +67,7 @@ AudioNode::~AudioNode()
 {
 #if DEBUG_AUDIONODE_REFERENCES
     --s_nodeCount[nodeType()];
-    fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d %d\n", this, nodeType(), m_normalRefCount.load(), m_connectionRefCount.load());
+    fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d\n", this, nodeType(), m_connectionRefCount.load());
 #endif
 }
 
