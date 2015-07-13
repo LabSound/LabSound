@@ -15,6 +15,32 @@
 #include <mutex>
 #include <memory>
 
+///////////////////////
+// Logging Utilities //
+///////////////////////
+
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+void LabSoundLog(const char* file, int line, const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+
+	char tmp[256] = { 0 };
+	sprintf(tmp, "[%s @ %i]\n\t%s\n", file, line, fmt);
+	vprintf(tmp, args);
+
+	va_end(args);
+}
+
+void LabSoundAssertLog(const char* file, int line, const char * function, const char * assertion)
+{
+	if (assertion) printf("[%s @ %i] ASSERTION FAILED: %s\n", file, line, assertion);
+	else printf("[%s @ %i] SHOULD NEVER BE REACHED\n", file, line);
+}
+
 namespace LabSound
 {
 	std::thread g_GraphUpdateThread;
@@ -105,26 +131,6 @@ namespace LabSound
 		}
 		
 		LOG("Could not acquire lock for shutdown");
-	}
-
-	void LabSoundLog(const char* file, int line, const char* fmt, ...)
-	{
-		va_list args;
-		va_start(args, fmt);
-
-		char tmp[256] = { 0 };
-		sprintf(tmp, "[%s @ %i]\n\t%s\n", file, line, fmt);
-		vprintf(tmp, args);
-
-		va_end(args);
-	}
-
-	void LabSoundAssertLog(const char* file, int line, const char * function, const char * assertion)
-	{
-		if (assertion)
-			printf("[%s @ %i] ASSERTION FAILED: %s\n", file, line, assertion);
-		else
-			printf("[%s @ %i] SHOULD NEVER BE REACHED\n", file, line);
 	}
 
 } // LabSound
