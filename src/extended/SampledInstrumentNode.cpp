@@ -18,6 +18,49 @@ namespace LabSound
 	using namespace json11;
 	using namespace WebCore;
 
+	// Ex: F#6. Assumes uppercase note names, hash symbol for sharp, and octave. 
+	uint8_t MakeMIDINoteFromString(std::string noteName) 
+	{
+		const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+		// Ocatve is always last character, as an integer 
+		std::string octaveString = noteName.substr(noteName.length() - 1, 1);
+		int octave = std::stoi(octaveString);
+
+		std::string noteString = noteName.erase(noteName.length() - 1, 1); 
+
+		std::transform(noteString.begin(), noteString.end(), noteString.begin(), ::toupper);
+
+		// IF we don't use # notation, convert S to #
+		std::replace(noteString.begin(), noteString.end(), 'S', '#');
+
+		// Note name is now the first or second character 
+		int notePos = -1;
+		for (int i = 0; i < 12; ++i) 
+		{
+			if (noteString == midiTranslationArray[i])
+			{
+				notePos = i;
+				break;
+			}
+		}
+
+		return uint8_t((octave * 12.0) + notePos);
+	}
+
+	std::string MakeStringFromMIDINote(uint8_t note)
+	{
+		const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+		int octave = int(note / 12) - 1;
+		int positionInOctave = note % 12;
+
+		std::string originalNote = midiTranslationArray[positionInOctave];
+		std::replace(originalNote.begin(), originalNote.end(), '#', 'S');
+
+		return  (originalNote + std::to_string(octave));
+	}
+
 	struct SamplerSound 
 	{
 
@@ -67,49 +110,6 @@ namespace LabSound
 		{
 			//@tofix
 			// disconnect? 
-		}
-
-		// Ex: F#6. Assumes uppercase note names, hash symbol for sharp, and octave. 
-		uint8_t MakeMIDINoteFromString(std::string noteName) 
-		{
-			const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-			// Ocatve is always last character, as an integer 
-			std::string octaveString = noteName.substr(noteName.length() - 1, 1);
-			int octave = std::stoi(octaveString);
-
-			std::string noteString = noteName.erase(noteName.length() - 1, 1); 
-
-			std::transform(noteString.begin(), noteString.end(), noteString.begin(), ::toupper);
-
-			// IF we don't use # notation, convert S to #
-			std::replace(noteString.begin(), noteString.end(), 'S', '#');
-
-			// Note name is now the first or second character 
-			int notePos = -1;
-			for (int i = 0; i < 12; ++i) 
-			{
-				if (noteString == midiTranslationArray[i])
-				{
-					notePos = i;
-					break;
-				}
-			}
-
-			return uint8_t((octave * 12.0) + notePos);
-		}
-
-		std::string MakeStringFromMIDINote(uint8_t note)
-		{
-			const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-			int octave = int(note / 12) - 1;
-			int positionInOctave = note % 12;
-
-			std::string originalNote = midiTranslationArray[positionInOctave];
-			std::replace(originalNote.begin(), originalNote.end(), '#', 'S');
-
-			return  (originalNote + std::to_string(octave));
 		}
 
         std::shared_ptr<GainNode> destinationNode;
