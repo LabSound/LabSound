@@ -75,14 +75,14 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
     }
 }
 
-std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono, float sampleRate)
+std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono, float sampleRate)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     
     nqr::AudioData * audioData = new nqr::AudioData();
     
     // Perform audio decode
-    int result = nyquistFileIO.Load(audioData, buffer);
+    int result = nyquistFileIO.Load(audioData, extension, buffer);
     
     // Check OK
     if (result == nqr::IOError::NoError)

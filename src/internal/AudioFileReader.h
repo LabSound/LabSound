@@ -2,6 +2,8 @@
 #define AudioFileReader_H
 
 #include <memory>
+#include <vector>
+#include <stdint.h>
 
 namespace WebCore
 {
