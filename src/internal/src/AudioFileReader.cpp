@@ -7,25 +7,10 @@
 
 #include "libnyquist/AudioDecoder.h"
 
-namespace WebCore
+namespace detail
 {
-
-nqr::NyquistIO nyquistFileIO;
-std::mutex g_fileIOMutex;
-    
-std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float sampleRate)
-{
-    std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    
-    nqr::AudioData * audioData = new nqr::AudioData();
-    
-    // Perform audio decode
-    int result = nyquistFileIO.Load(audioData, std::string(filePath));
-    
-    // Check OK
-    if (result == nqr::IOError::NoError)
-    {
-        
+	std::unique_ptr<WebCore::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
+	{
         size_t numSamples = audioData->samples.size();
         size_t numberOfFrames = int(numSamples / audioData->channelCount);
         const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
@@ -33,7 +18,7 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         std::vector<float> planarSamples(numSamples);
 
         // Create AudioBus where we'll put the PCM audio data
-        std::unique_ptr<AudioBus> audioBus(new AudioBus(busChannelCount, numberOfFrames));
+        std::unique_ptr<WebCore::AudioBus> audioBus(new WebCore::AudioBus(busChannelCount, numberOfFrames));
         audioBus->setSampleRate(audioData->sampleRate);
         
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
@@ -61,11 +46,54 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         delete audioData;
         
         return audioBus;
+	}
+}
+
+namespace WebCore
+{
+
+nqr::NyquistIO nyquistFileIO;
+std::mutex g_fileIOMutex;
+    
+std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float sampleRate)
+{
+    std::lock_guard<std::mutex> lock(g_fileIOMutex);
+    
+    nqr::AudioData * audioData = new nqr::AudioData();
+    
+    // Perform audio decode
+    int result = nyquistFileIO.Load(audioData, std::string(filePath));
+    
+    // Check OK
+    if (result == nqr::IOError::NoError)
+    {
+		return detail::LoadInternal(audioData, mixToMono, sampleRate);
     }
     else
     {
         throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
     }
 }
+
+std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono, float sampleRate)
+{
+    std::lock_guard<std::mutex> lock(g_fileIOMutex);
+    
+    nqr::AudioData * audioData = new nqr::AudioData();
+    
+    // Perform audio decode
+    int result = nyquistFileIO.Load(audioData, buffer);
+    
+    // Check OK
+    if (result == nqr::IOError::NoError)
+    {
+		return detail::LoadInternal(audioData, mixToMono, sampleRate);
+    }
+    else
+    {
+        throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
+    }
+}
+    
     
 } // end namespace WebCore

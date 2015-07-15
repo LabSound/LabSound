@@ -108,8 +108,7 @@ namespace LabSound
 
 		void Stop(ContextRenderLock & r, int midiNoteNumber, float amplitude = 0.0)
 		{
-			//@tofix
-			// disconnect? 
+			//@tofix -- disconnect? 
 		}
 
         std::shared_ptr<GainNode> destinationNode;
@@ -157,26 +156,11 @@ namespace LabSound
 			}
 		}
 	}
-
-	void SampledInstrumentNode::LoadInstrumentFromJSON(const std::vector<uint8_t> & jsonFile) 
+	
+	void SampledInstrumentNode::LoadInstrumentFromJSON(const std::string & jsonStr) 
 	{
-		std::ifstream fileStream((char*)jsonFile.data());
-
-        if (!fileStream.is_open()) 
-		{
-            LOG_ERROR("JSON file failed to open");
-            return;
-        }
-        
-		std::string jsonString;
-		fileStream.seekg(0, std::ios::end);
-		jsonString.reserve(fileStream.tellg());
-		fileStream.seekg(0, std::ios::beg);
-
-		jsonString.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-
 		std::string jsonParseErr;
-		auto jsonConfig = Json::parse(jsonString, jsonParseErr);
+		auto jsonConfig = Json::parse(jsonStr, jsonParseErr);
 
 		if (jsonParseErr.empty()) 
 		{
@@ -187,8 +171,8 @@ namespace LabSound
 				auto min = samp["lowNote"].string_value();
 				auto max = samp["highNote"].string_value();
 
-				// std::cout << "Loading Sample: " << samp.dump() << "\n";
-				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
+				std::cout << "Loading Sample: " << samp.dump() << "\n";
+				std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
                 samples.emplace_back(std::make_shared<SamplerSound>(gainNode, path, root, min, max));
 			}
 		}

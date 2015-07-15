@@ -20,7 +20,7 @@
 
 namespace LabSound 
 {
-	class SamplerSound;
+	struct SamplerSound;
 
 	// This class is a little but subversive of the typical LabSound node pattern. 
 	// Instead of inheriting from a node and injecting samples into an audio buffer,
@@ -34,14 +34,14 @@ namespace LabSound
         SampledInstrumentNode(float sampleRate);
         ~SampledInstrumentNode();
 
-		void LoadInstrumentFromJSON(const std::vector<uint8_t> & jsonFile);
+		void LoadInstrumentFromJSON(const std::string & jsonStr);
 
 		void NoteOn(ContextRenderLock & r, const int midiNoteNumber, const float amplitude);
 		void NoteOff(ContextRenderLock & r, const int midiNoteNumber, const float amplitude);
 
 		void KillAllNotes(); 
 
-		WebCore::GainNode * GetGain() { return gainNode.get(); }
+		WebCore::GainNode * GetOutputNode() { return gainNode.get(); }
 	};
 
 } // LabSound
