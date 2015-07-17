@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08B800C01B58B5A700732E8B /* libnyquist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 08B800BF1B58B5A700732E8B /* libnyquist.a */; };
 		E23015F21860235E00FEC991 /* libLabSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015EC1860235E00FEC991 /* libLabSound.a */; };
 		E23015F31860235E00FEC991 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015ED1860235E00FEC991 /* Accelerate.framework */; };
 		E23015F41860235E00FEC991 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E23015EE1860235E00FEC991 /* AudioToolbox.framework */; };
@@ -42,6 +43,7 @@
 		08650A171AD23AF300D19E38 /* ExampleBaseApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExampleBaseApp.h; path = ../../src/ExampleBaseApp.h; sourceTree = "<group>"; };
 		08650A181AD2E6E600D19E38 /* Validation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Validation.h; path = ../../src/Validation.h; sourceTree = "<group>"; };
 		08650A191AD38AD700D19E38 /* InfiniteFM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InfiniteFM.h; path = ../../src/InfiniteFM.h; sourceTree = "<group>"; };
+		08B800BF1B58B5A700732E8B /* libnyquist.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnyquist.a; path = ../../../../../Library/Developer/Xcode/DerivedData/bin/Debug/libnyquist.a; sourceTree = "<group>"; };
 		08C25E871ADE29520097D572 /* StereoPanning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPanning.h; path = ../../src/StereoPanning.h; sourceTree = "<group>"; };
 		08CC50E61AF9217400F0B81F /* Groove.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Groove.h; path = ../../src/Groove.h; sourceTree = "<group>"; };
 		E23015DC185F611A00FEC991 /* LabSoundExamples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LabSoundExamples; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08B800C01B58B5A700732E8B /* libnyquist.a in Frameworks */,
 				E23015F21860235E00FEC991 /* libLabSound.a in Frameworks */,
 				E23015F31860235E00FEC991 /* Accelerate.framework in Frameworks */,
 				E23015F41860235E00FEC991 /* AudioToolbox.framework in Frameworks */,
@@ -99,6 +102,7 @@
 		08791A011A50AC610059774F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				08B800BF1B58B5A700732E8B /* libnyquist.a */,
 				E23015EC1860235E00FEC991 /* libLabSound.a */,
 				E23015ED1860235E00FEC991 /* Accelerate.framework */,
 				E23015EE1860235E00FEC991 /* AudioToolbox.framework */,
@@ -263,7 +267,10 @@
 					"$(PROJECT_DIR)/../../../include",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/bin/Debug",
+				);
 				PRODUCT_NAME = LabSoundExamples;
 			};
 			name = Debug;
@@ -277,7 +284,10 @@
 					"$(PROJECT_DIR)/../../../include",
 					"$(PROJECT_DIR)/../../../examples/**",
 				);
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/bin/Debug",
+				);
 				PRODUCT_NAME = LabSoundExamples;
 			};
 			name = Release;

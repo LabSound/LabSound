@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../../third_party/libnyquist/libnyquist.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:../../osx/LabSound.xcodeproj">
    </FileRef>
    <FileRef
