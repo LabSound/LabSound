@@ -40,6 +40,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_stereoPanning.PlayExample();
+    g_spatialization.PlayExample();
     return 0;
 }
