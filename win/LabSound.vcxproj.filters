@@ -210,9 +210,6 @@
     <ClInclude Include="..\include\LabSound\extended\ExceptionCodes.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\LabSound.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\Logging.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
@@ -378,6 +375,9 @@
     <ClInclude Include="..\include\LabSound\extended\FunctionNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\LabSound.h">
+      <Filter>LabSound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -458,9 +458,6 @@
     <ClCompile Include="..\src\internal\src\MultiChannelResampler.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\internal\src\Panner.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\internal\src\Reverb.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
@@ -501,9 +498,6 @@
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\AudioListener.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioNode.cpp">
@@ -576,9 +570,6 @@
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\extended\DiodeNode.cpp">
-      <Filter>LabSound\extended\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\extended\LabSound.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\extended\NoiseNode.cpp">
@@ -658,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioFileReader.cpp">
       <Filter>Internal\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\LabSound.cpp">
+      <Filter>LabSound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

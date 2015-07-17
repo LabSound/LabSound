@@ -136,7 +136,6 @@
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
     <ClCompile Include="..\src\core\AudioHardwareSourceNode.cpp" />
-    <ClCompile Include="..\src\core\AudioListener.cpp" />
     <ClCompile Include="..\src\core\AudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioNodeInput.cpp" />
     <ClCompile Include="..\src\core\AudioNodeOutput.cpp" />
@@ -204,7 +203,6 @@
     <ClCompile Include="..\src\internal\src\HRTFKernel.cpp" />
     <ClCompile Include="..\src\internal\src\HRTFPanner.cpp" />
     <ClCompile Include="..\src\internal\src\MultiChannelResampler.cpp" />
-    <ClCompile Include="..\src\internal\src\Panner.cpp" />
     <ClCompile Include="..\src\internal\src\Reverb.cpp" />
     <ClCompile Include="..\src\internal\src\ReverbAccumulationBuffer.cpp" />
     <ClCompile Include="..\src\internal\src\ReverbConvolver.cpp" />
