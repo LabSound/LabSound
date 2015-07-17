@@ -133,7 +133,7 @@ protected:
     PanningMode m_panningModel;
 
     FloatPoint3D m_position;
-    FloatPoint3D m_orientation; // in angles
+    FloatPoint3D m_orientation;
     FloatPoint3D m_velocity;
 
     std::shared_ptr<AudioParam> m_distanceGain;

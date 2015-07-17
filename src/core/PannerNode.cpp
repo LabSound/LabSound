@@ -52,7 +52,6 @@ static void fixNANs(double &x)
 
 PannerNode::PannerNode(float sampleRate) : AudioNode(sampleRate), m_panningModel(PanningMode::HRTF)
 {
-
 	m_distanceEffect.reset(new DistanceEffect());
 	m_coneEffect.reset(new ConeEffect());
 
@@ -103,11 +102,11 @@ void PannerNode::initialize()
 
 void PannerNode::uninitialize()
 {
-
     if (!isInitialized())
         return;
         
     m_panner.reset();
+
     AudioNode::uninitialize();
 }
 
@@ -122,10 +121,11 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     
     if (m_connectionCount != ac->connectionCount()) 
 	{
-        m_connectionCount = ac->connectionCount();
-        // Recursively go through all nodes connected to us.
-        // notifyAudioSourcesConnectedToNode(r, this); //@tofix dimitri commented out 
+		m_connectionCount = ac->connectionCount();
+		// Recursively go through all nodes connected to us.
+		// notifyAudioSourcesConnectedToNode(r, this); //@tofix dimitri commented out 
     }
+
     AudioNode::pullInputs(r, framesToProcess);
 }
 

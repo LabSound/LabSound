@@ -44,8 +44,8 @@ namespace LabSound
 
 	enum PanningMode
 	{
-        EQUALPOWER = 0,
-        HRTF = 1,
+        EQUALPOWER = 10,
+        HRTF = 20,
     };
 
 	enum NodeType 
@@ -93,19 +93,21 @@ namespace LabSound
 namespace WebCore 
 {
   
-    using namespace LabSound;
+using namespace LabSound;
 
-    class AudioContext;
-    class AudioNodeInput;
-    class AudioNodeOutput;
-    class AudioParam;
+class AudioContext;
+class AudioNodeInput;
+class AudioNodeOutput;
+class AudioParam;
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.
 // An AudioDestinationNode has one input and no outputs and represents the final destination to the audio hardware.
 // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
-class AudioNode {
+class AudioNode 
+{
+
 public:
 
     enum 
@@ -117,7 +119,8 @@ public:
     virtual ~AudioNode();
 
     //@tofix these are defined in multiple namespaces (labsound vs webcore)
-    enum NodeType {
+    enum NodeType 
+	{
         NodeTypeUnknown,
         NodeTypeDestination,
         NodeTypeOscillator,
