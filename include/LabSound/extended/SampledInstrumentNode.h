@@ -22,6 +22,15 @@ namespace LabSound
 {
 	struct SamplerSound;
 
+	struct SampledInstrumentDefinition
+	{
+		std::vector<uint8_t> audio;
+		std::string extension;
+		std::string root;
+		std::string min;
+		std::string max;
+	};
+
 	// This class is a little but subversive of the typical LabSound node pattern. 
 	// Instead of inheriting from a node and injecting samples into an audio buffer,
 	// it internally creates ad-hoc AudioBufferSourceNode(s) and keeps them around
@@ -30,11 +39,12 @@ namespace LabSound
 	{
 		std::vector<std::shared_ptr<SamplerSound>> samples;
 		std::shared_ptr<WebCore::GainNode> gainNode;
+		std::vector<std::shared_ptr<WebCore::AudioBufferSourceNode>> voices;
 	public:
         SampledInstrumentNode(float sampleRate);
         ~SampledInstrumentNode();
 
-		void LoadInstrumentFromJSON(const std::string & jsonStr);
+		void LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds);
 
 		void NoteOn(ContextRenderLock & r, const int midiNoteNumber, const float amplitude);
 		void NoteOff(ContextRenderLock & r, const int midiNoteNumber, const float amplitude);

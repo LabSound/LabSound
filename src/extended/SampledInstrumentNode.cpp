@@ -5,8 +5,6 @@
 
 #include "internal/ConfigMacros.h"
 
-#include <json11/json11.hpp>
-
 #include <string>
 #include <fstream>
 #include <streambuf>
@@ -15,7 +13,6 @@
 namespace LabSound 
 {
 
-	using namespace json11;
 	using namespace WebCore;
 
 	// Ex: F#6. Assumes uppercase note names, hash symbol for sharp, and octave. 
@@ -64,12 +61,12 @@ namespace LabSound
 	struct SamplerSound 
 	{
 
-		SamplerSound(std::shared_ptr<GainNode> d, std::string path, std::string root, std::string min, std::string max) : destinationNode(d)
+		SamplerSound(std::shared_ptr<GainNode> d, SampledInstrumentDefinition & def) : destinationNode(d)
 		{
-			audioBuffer = new SoundBuffer(path.c_str(), d->sampleRate());
-			this->baseMidiNote = MakeMIDINoteFromString(root);
-			this->midiNoteLow = MakeMIDINoteFromString(min);
-			this->midiNoteHigh = MakeMIDINoteFromString(max);
+			audioBuffer = new SoundBuffer(def.audio, def.extension, d->sampleRate());
+			this->baseMidiNote = MakeMIDINoteFromString(def.root);
+			this->midiNoteLow = MakeMIDINoteFromString(def.min);
+			this->midiNoteHigh = MakeMIDINoteFromString(def.max);
 		}
 
 		bool AppliesToNote(uint8_t note) 
@@ -135,12 +132,27 @@ namespace LabSound
 	void SampledInstrumentNode::NoteOn(ContextRenderLock & r, const int midiNoteNumber, const float amplitude)
     {
         if (!r.context()) return;
+
+		std::cout << "Size: " << voices.size() << std::endl;
+
 		for (const auto & sample : samples)
         {
 			// Find note in sample map
 			if (sample->AppliesToNote(midiNoteNumber))
             {
-				sample->Start(r, midiNoteNumber, amplitude);
+				for (auto & v : voices)
+				{	
+					if (v->hasFinished())
+					{
+						v = sample->Start(r, midiNoteNumber, amplitude); // this voice is free -> destruct
+						return;
+					}
+				}
+
+				// create new voice
+				voices.push_back(sample->Start(r, midiNoteNumber, amplitude));
+				return; 
+
 			}
 		}
 	}
@@ -148,6 +160,8 @@ namespace LabSound
 	void SampledInstrumentNode::NoteOff(ContextRenderLock & r, const int midiNoteNumber, const float amplitude)
 	{
 		if (!r.context()) return;
+		 
+		// This logic is wrong. Find in voices... 
 		for (const auto & sample : samples)
         {
 			if (sample->AppliesToNote(midiNoteNumber))
@@ -157,29 +171,11 @@ namespace LabSound
 		}
 	}
 	
-	void SampledInstrumentNode::LoadInstrumentFromJSON(const std::string & jsonStr) 
+	void SampledInstrumentNode::LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds) 
 	{
-		std::string jsonParseErr;
-		auto jsonConfig = Json::parse(jsonStr, jsonParseErr);
-
-		if (jsonParseErr.empty()) 
+		for (auto & samp : sounds) 
 		{
-			for (const auto & samp : jsonConfig["samples"].array_items()) 
-			{
-				auto path = samp["sample"].string_value();
-				auto root = samp["baseNote"].string_value();
-				auto min = samp["lowNote"].string_value();
-				auto max = samp["highNote"].string_value();
-
-				std::cout << "Loading Sample: " << samp.dump() << "\n";
-				std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
-                samples.emplace_back(std::make_shared<SamplerSound>(gainNode, path, root, min, max));
-			}
-		}
-		
-		else 
-		{
-			LOG_ERROR("JSON Parse Error: %s", jsonParseErr.c_str());
+            samples.push_back(std::make_shared<SamplerSound>(gainNode, samp));
 		}
 
 	}

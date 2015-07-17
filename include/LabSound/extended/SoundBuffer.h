@@ -20,10 +20,12 @@ public:
     std::shared_ptr<WebCore::AudioBuffer> audioBuffer;
     
     SoundBuffer(const char * path, float sampleRate);
+	SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
 
 	SoundBuffer();
 
 	void initialize(const char * path, float sampleRate);
+	void initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
 
     ~SoundBuffer();
     

@@ -43,7 +43,7 @@ const int UninitializedAzimuth = -1;
 const unsigned RenderingQuantum = 128;
 
 HRTFPanner::HRTFPanner(float sampleRate)
-    : Panner(PanningModelHRTF)
+    : Panner(PanningMode::HRTF)
     , m_sampleRate(sampleRate)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)

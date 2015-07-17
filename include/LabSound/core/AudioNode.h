@@ -42,6 +42,12 @@ namespace LabSound
     class ContextGraphLock;
     class ContextRenderLock;
 
+	enum PanningMode
+	{
+        EQUALPOWER = 0,
+        HRTF = 1,
+    };
+
 	enum NodeType 
 	{
         // Core Webaudio Nodes

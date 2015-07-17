@@ -3,7 +3,7 @@
 
 #pragma once
 
-#define DEBUG_LOCKS
+//#define DEBUG_LOCKS
 
 #ifndef AudioContextLock_h
 #define AudioContextLock_h

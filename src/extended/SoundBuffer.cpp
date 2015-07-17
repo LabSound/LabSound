@@ -21,10 +21,16 @@ namespace LabSound {
 	{
 
 	}
+
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
         initialize(path, sampleRate);
     }
+
+	SoundBuffer::SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
+	{
+		initialize(buffer, extension, sampleRate);
+	}
 
 	void SoundBuffer::initialize(const char * path, float sampleRate)
 	{
@@ -36,15 +42,26 @@ namespace LabSound {
         }
 	}
     
+	void SoundBuffer::initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
+	{
+		std::shared_ptr<AudioBus> busForFile = MakeBusFromMemory(buffer, extension, true, sampleRate);
+        if (auto f = busForFile.get())
+        {
+             audioBuffer = std::make_shared<AudioBuffer>(f);
+        }
+	}
+    
+
     SoundBuffer::~SoundBuffer()
     {
+
     }
   
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
-        if (audioBuffer) {
+        if (audioBuffer) 
+		{
             std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(sampleRate));
-            
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(r, audioBuffer);
             return sourceBuffer;
@@ -55,7 +72,8 @@ namespace LabSound {
 	// Output to the default context output 
 	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float when)
 	{
-		if (audioBuffer && r.context()) {
+		if (audioBuffer && r.context())
+		{
 			return play(r, r.context()->destination(), when);
 		}
         return nullptr;

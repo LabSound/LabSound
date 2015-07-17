@@ -11,7 +11,7 @@ namespace WebCore
 class AudioBus;
 
 std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float sampleRate);
-std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono, float sampleRate);
+std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono, float sampleRate);
 
 } // end namespace WebCore
 
