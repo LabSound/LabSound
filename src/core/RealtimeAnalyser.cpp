@@ -58,7 +58,6 @@ uint32_t RoundNextPow2(uint32_t v)
     v |= v >> 4;
     v |= v >> 8;
     v |= v >> 16;
-    v |= v >> 32;
     v++;
     return v;
 }

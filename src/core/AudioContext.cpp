@@ -44,7 +44,6 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::Contex
 AudioContext::AudioContext()
 {
 	m_isOfflineContext = false;
-	FFTFrame::initialize();
 	m_listener = std::make_shared<AudioListener>();
 }
 
@@ -52,7 +51,6 @@ AudioContext::AudioContext()
 AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
 {
 	m_isOfflineContext = true;
-	FFTFrame::initialize();
 	m_listener = std::make_shared<AudioListener>();
 
 	// Create a new destination for offline rendering.

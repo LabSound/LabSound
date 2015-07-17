@@ -230,11 +230,11 @@ struct GrooveApp : public LabSoundExampleApp
             envelope->connect(context.get(), context->destination().get(), 0, 0);
         }
         
-        int now = 0;
-        while(now < songLenSeconds)
+        int nowInSeconds = 0;
+        while(nowInSeconds < songLenSeconds)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
-            now += 1;
+            nowInSeconds += 1;
         }
         
         LabSound::finish(context);

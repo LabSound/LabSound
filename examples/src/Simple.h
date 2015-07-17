@@ -26,11 +26,11 @@ struct SimpleApp : public LabSoundExampleApp
             gain->connect(ac, context->destination().get(), 0, 0);
             oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
-            oscillator->setType(r, OscillatorType::SQUARE);
+            oscillator->setType(r, OscillatorType::SINE);
             tonbiSound = tonbi.play(r, 0.0f);
         }
         
-        const int seconds = 3;
+        const int seconds = 12;
         for (int t = 0; t < seconds; ++t)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));

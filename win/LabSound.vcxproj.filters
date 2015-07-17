@@ -437,9 +437,6 @@
     <ClCompile Include="..\src\internal\src\FFTFrame.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\internal\src\FFTFrameKissFFT.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\internal\src\HRTFDatabase.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
@@ -652,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\src\extended\LabSound.cpp">
       <Filter>LabSound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\internal\src\FFTFrameKissFFT.cpp">
+      <Filter>Internal\src\win</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

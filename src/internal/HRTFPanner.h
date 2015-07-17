@@ -29,19 +29,23 @@
 #include "internal/FFTConvolver.h"
 #include "internal/Panner.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
-class HRTFPanner : public Panner {
+class HRTFPanner : public Panner
+{
+
 public:
-    explicit HRTFPanner(float sampleRate);
+
+    HRTFPanner(float sampleRate);
     virtual ~HRTFPanner();
 
     // Panner
     virtual void pan(ContextRenderLock&, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) override;
     virtual void reset() override;
 
-    size_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
-    static size_t fftSizeForSampleRate(float sampleRate);
+    uint32_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
+    static uint32_t fftSizeForSampleRate(float sampleRate);
 
     float sampleRate() const { return m_sampleRate; }
 
@@ -49,6 +53,7 @@ public:
     virtual double latencyTime() const override;
 
 private:
+
     // Given an azimuth angle in the range -180 -> +180, returns the corresponding azimuth index for the database,
     // and azimuthBlend which is an interpolation value from 0 -> 1.
     int calculateDesiredAzimuthIndexAndBlend(double azimuth, double& azimuthBlend);
@@ -66,7 +71,8 @@ private:
     // initiating a new transition.
 
     // Selects either the convolver set (m_convolverL1, m_convolverR1) or (m_convolverL2, m_convolverR2).
-    enum CrossfadeSelection {
+    enum CrossfadeSelection 
+	{
         CrossfadeSelection1,
         CrossfadeSelection2
     };

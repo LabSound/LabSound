@@ -29,7 +29,8 @@
 #include "internal/ZeroPole.h"
 #include "internal/DenormalDisabler.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
 void ZeroPole::process(const float *source, float *destination, unsigned framesToProcess)
 {
@@ -44,7 +45,8 @@ void ZeroPole::process(const float *source, float *destination, unsigned framesT
     float lastX = m_lastX;
     float lastY = m_lastY;
 
-    while (framesToProcess--) {
+    while (framesToProcess--) 
+	{
         float input = *source++;
 
         // Zero
@@ -64,4 +66,4 @@ void ZeroPole::process(const float *source, float *destination, unsigned framesT
     m_lastY = DenormalDisabler::flushDenormalFloatToZero(lastY);
 }
 
-} // namespace WebCore
+} // WebCore

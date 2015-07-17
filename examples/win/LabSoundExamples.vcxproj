@@ -188,7 +188,6 @@
     <ClInclude Include="..\src\Rhythm.h" />
     <ClInclude Include="..\src\RhythmAndFilters.h" />
     <ClInclude Include="..\src\Simple.h" />
-    <ClInclude Include="..\src\SimpleRecording.h" />
     <ClInclude Include="..\src\Spatialization.h" />
     <ClInclude Include="..\src\StereoPanning.h" />
     <ClInclude Include="..\src\Tremolo.h" />

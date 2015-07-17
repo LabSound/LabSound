@@ -41,11 +41,6 @@ namespace WebCore {
     
 typedef std::complex<double> Complex;
 
-inline Complex complexFromMagnitudePhase(double magnitude, double phase)
-{
-    return Complex(magnitude * cos(phase), magnitude * sin(phase));
-}
-
 void FFTFrame::doPaddedFFT(const float* data, size_t dataSize)
 {
     // Zero-pad the impulse response
@@ -120,10 +115,12 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
         // Empirical tweak to retain higher-frequency zeroes
         double threshold =  (i > 16) ? 5.0 : 2.0;
 
-        if (magdbdiff < -threshold && mag1db < 0.0) {
+        if (magdbdiff < -threshold && mag1db < 0.0) 
+		{
             s1 = pow(s1, 0.75);
             s2 = 1.0 - s1;
-        } else if (magdbdiff > threshold && mag2db < 0.0) {
+        } else if (magdbdiff > threshold && mag2db < 0.0)
+		{
             s2 = pow(s2, 0.75);
             s1 = 1.0 - s2;
         }
@@ -169,7 +166,7 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
         if (phaseAccum < -piDouble)
             phaseAccum += 2.0 * piDouble;
 
-        Complex c = complexFromMagnitudePhase(mag, phaseAccum);
+        Complex c = std::polar(mag, phaseAccum);
 
         realP[i] = static_cast<float>(c.real());
         imagP[i] = static_cast<float>(c.imag());
@@ -190,7 +187,8 @@ double FFTFrame::extractAverageGroupDelay()
     const double kSamplePhaseDelay = (2.0 * piDouble) / double(fftSize());
 
     // Calculate weighted average group delay
-    for (int i = 0; i < halfSize; i++) {
+    for (int i = 0; i < halfSize; i++) 
+	{
         Complex c(realP[i], imagP[i]);
         double mag = abs(c);
         double phase = arg(c);
@@ -244,7 +242,7 @@ void FFTFrame::addConstantGroupDelay(double sampleFrameDelay)
 
         phase += i * phaseAdj;
 
-        Complex c2 = complexFromMagnitudePhase(mag, phase);
+        Complex c2 = std::polar(mag, phase);
 
         realP[i] = static_cast<float>(c2.real());
         imagP[i] = static_cast<float>(c2.imag());

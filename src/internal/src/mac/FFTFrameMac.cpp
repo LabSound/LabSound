@@ -92,6 +92,16 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 
 FFTFrame::~FFTFrame()
 {
+    if (fftSetups)
+    {
+        for (int i = 0; i < kMaxFFTPow2Size; ++i) 
+        {
+            if (fftSetups[i])
+                vDSP_destroy_fftsetup(fftSetups[i]);
+        }
+        free(fftSetups);
+        fftSetups = 0; 
+    }
 }
 
 void FFTFrame::multiply(const FFTFrame& frame)
@@ -154,22 +164,9 @@ FFTSetup FFTFrame::fftSetupForSize(unsigned fftSize)
     return fftSetups[pow2size];
 }
 
-void FFTFrame::initialize()
-{
-}
-
 void FFTFrame::cleanup()
 {
-    if (!fftSetups)
-        return;
 
-    for (int i = 0; i < kMaxFFTPow2Size; ++i) {
-        if (fftSetups[i])
-            vDSP_destroy_fftsetup(fftSetups[i]);
-    }
-
-    free(fftSetups);
-    fftSetups = 0;
 }
 
 float* FFTFrame::realData() const

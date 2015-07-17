@@ -27,16 +27,22 @@ struct RedAlertApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Red Alert");
             
             sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            sweep->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) {
+            sweep->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) 
+			{
+
                 double dt = 1.0 / self->sampleRate();
                 double now = fmod(self->now(), 1.2);
                 
-                for (size_t i = 0; i < framesToProcess; ++i) {
+                for (size_t i = 0; i < framesToProcess; ++i) 
+				{
                     //0 to 1 in 900 ms with a 1200ms gap in between
                     if (now > 0.9)
-                        values[i] = 487. + 360.;
-                    else {
-                        values[i] = sqrt(now * 1.f/0.9f) * 487. + 360.;
+					{
+						values[i] = 487.f + 360.f;
+					}
+                    else 
+					{
+                        values[i] = sqrt(now * 1.f / 0.9f) * 487.f + 360.f;
                     }
                     
                     now += dt;
@@ -45,7 +51,8 @@ struct RedAlertApp : public LabSoundExampleApp
             sweep->start(0);
             
             outputGainFunction = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) {
+            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) 
+			{
                 double dt = 1.0 / self->sampleRate();
                 double now = fmod(self->now(), 1.2);
                 

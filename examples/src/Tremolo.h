@@ -38,13 +38,13 @@ struct TremoloApp : public LabSoundExampleApp
             osc->connect(context.get(), context->destination().get(), 0, 0);
         }
         
-        int now = 0.0;
-        while(now < 5000)
+		int nowInSeconds = 0;
+        while(nowInSeconds < 5)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            now += 1000;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            nowInSeconds += 1;
         }
-        
+
         LabSound::finish(context);
     }
 };

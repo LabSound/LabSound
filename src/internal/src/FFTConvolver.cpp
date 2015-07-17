@@ -42,21 +42,23 @@ FFTConvolver::FFTConvolver(size_t fftSize)
 {
 }
 
-void FFTConvolver::process(FFTFrame* fftKernel, const float* sourceP, float* destP, size_t framesToProcess)
+void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * destP, size_t framesToProcess)
 {
-    size_t halfSize = fftSize() / 2;
+    uint32_t halfSize = fftSize() / 2;
 
     // framesToProcess must be an exact multiple of halfSize,
     // or halfSize is a multiple of framesToProcess when halfSize > framesToProcess.
     bool isGood = !(halfSize % framesToProcess && framesToProcess % halfSize);
     ASSERT(isGood);
+
     if (!isGood)
         return;
 
-    size_t numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
-    size_t divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
+    uint32_t numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
+    uint32_t divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
 
-    for (size_t i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize) {
+    for (uint32_t i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize) 
+	{
         // Copy samples to input buffer (note contraint above!)
         float* inputP = m_inputBuffer.data();
 
@@ -81,7 +83,9 @@ void FFTConvolver::process(FFTFrame* fftKernel, const float* sourceP, float* des
         m_readWriteIndex += divisionSize;
 
         // Check if it's time to perform the next FFT
-        if (m_readWriteIndex == halfSize) {
+        if (m_readWriteIndex == halfSize) 
+		{
+
             // The input buffer is now filled (get frequency-domain version)
             m_frame.doFFT(m_inputBuffer.data());
             m_frame.multiply(*fftKernel);
