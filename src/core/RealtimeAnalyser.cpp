@@ -45,35 +45,49 @@ const double RealtimeAnalyser::DefaultMinDecibels = -100;
 const double RealtimeAnalyser::DefaultMaxDecibels = -30;
 
 // All FFT implementations are expected to handle power-of-two sizes MinFFTSize <= size <= MaxFFTSize.
-const size_t RealtimeAnalyser::DefaultFFTSize = 2048;
-const size_t RealtimeAnalyser::MinFFTSize = 32;
-const size_t RealtimeAnalyser::MaxFFTSize = 2048;
-const size_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
+const uint32_t RealtimeAnalyser::DefaultFFTSize = 2048;
+const uint32_t RealtimeAnalyser::MinFFTSize = 32;
+const uint32_t RealtimeAnalyser::MaxFFTSize = 2048;
+const uint32_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-namespace 
+uint32_t RoundNextPow2(uint32_t v) 
 {
-    size_t roundNextPowerOfTwo(size_t v) 
-	{
-        v--;
-        v |= v >> 1;
-        v |= v >> 2;
-        v |= v >> 4;
-        v |= v >> 8;
-        v |= v >> 16;
-        v |= v >> 32;
-        v++;
-        return v;
-    }
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v |= v >> 32;
+    v++;
+    return v;
 }
     
-RealtimeAnalyser::RealtimeAnalyser(size_t fftSize)
+void ApplyBlackmanWindow(float * p, uint32_t n)
+{
+    // Blackman window
+    double alpha = 0.16;
+    double a0 = 0.5 * (1 - alpha);
+    double a1 = 0.5;
+    double a2 = 0.5 * alpha;
+    
+    for (uint32_t i = 0; i < n; ++i) 
+	{
+        double x = static_cast<double>(i) / static_cast<double>(n);
+        double window = a0 - a1 * cos(2 * piDouble * x) + a2 * cos(4 * piDouble * x);
+        p[i] *= float(window);
+    }
+
+}
+
+RealtimeAnalyser::RealtimeAnalyser(uint32_t fftSize)
     : m_inputBuffer(InputBufferSize)
     , m_writeIndex(0)
     , m_smoothingTimeConstant(DefaultSmoothingTimeConstant)
     , m_minDecibels(DefaultMinDecibels)
     , m_maxDecibels(DefaultMaxDecibels)
 {
-    size_t size = max(min(roundNextPowerOfTwo(fftSize), MaxFFTSize), MinFFTSize);
+    uint32_t size = max(min(RoundNextPow2(fftSize), MaxFFTSize), MinFFTSize);
     m_fftSize = size;
     
     m_analysisFrame = std::unique_ptr<FFTFrame>(new FFTFrame(size));
@@ -84,6 +98,7 @@ RealtimeAnalyser::RealtimeAnalyser(size_t fftSize)
 
 RealtimeAnalyser::~RealtimeAnalyser()
 {
+
 }
 
 void RealtimeAnalyser::reset()
@@ -128,29 +143,10 @@ void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus, size_t fr
         m_writeIndex = 0;
 }
 
-namespace {
-
-void applyWindow(float* p, size_t n)
-{
-    // Blackman window
-    double alpha = 0.16;
-    double a0 = 0.5 * (1 - alpha);
-    double a1 = 0.5;
-    double a2 = 0.5 * alpha;
-    
-    for (unsigned i = 0; i < n; ++i) {
-        double x = static_cast<double>(i) / static_cast<double>(n);
-        double window = a0 - a1 * cos(2 * piDouble * x) + a2 * cos(4 * piDouble * x);
-        p[i] *= float(window);
-    }
-}
-
-} // namespace
-
 void RealtimeAnalyser::doFFTAnalysis()
 {    
     // Unroll the input buffer into a temporary buffer, where we'll apply an analysis window followed by an FFT.
-    size_t fftSize = this->fftSize();
+    uint32_t fftSize = this->fftSize();
     
     AudioFloatArray temporaryBuffer(fftSize);
     float* inputBuffer = m_inputBuffer.data();
@@ -158,15 +154,18 @@ void RealtimeAnalyser::doFFTAnalysis()
 
     // Take the previous fftSize values from the input buffer and copy into the temporary buffer.
     unsigned writeIndex = m_writeIndex;
-    if (writeIndex < fftSize) {
+    if (writeIndex < fftSize) 
+	{
         memcpy(tempP, inputBuffer + writeIndex - fftSize + InputBufferSize, sizeof(*tempP) * (fftSize - writeIndex));
         memcpy(tempP + fftSize - writeIndex, inputBuffer, sizeof(*tempP) * writeIndex);
     }
     else
-        memcpy(tempP, inputBuffer + writeIndex - fftSize, sizeof(*tempP) * fftSize);
+	{
+		memcpy(tempP, inputBuffer + writeIndex - fftSize, sizeof(*tempP) * fftSize);
+	}
 
     // Window the input samples.
-    applyWindow(tempP, fftSize);
+    ApplyBlackmanWindow(tempP, fftSize);
     
     // Do the analysis.
     m_analysisFrame->doFFT(tempP);
