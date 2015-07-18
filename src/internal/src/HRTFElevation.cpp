@@ -41,103 +41,13 @@
 
 using namespace std;
  
-namespace WebCore {
-
-const unsigned HRTFElevation::AzimuthSpacing = 15;
-const unsigned HRTFElevation::NumberOfRawAzimuths = 360 / AzimuthSpacing;
-const unsigned HRTFElevation::InterpolationFactor = 8;
-const unsigned HRTFElevation::NumberOfTotalAzimuths = NumberOfRawAzimuths * InterpolationFactor;
-
-// Takes advantage of the symmetry and creates a composite version of the two measured versions.  For example, we have both azimuth 30 and -30 degrees
-// where the roles of left and right ears are reversed with respect to each other.
-bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
-                                                                 std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR)
+namespace WebCore 
 {
-    std::shared_ptr<HRTFKernel> kernelL1;
-    std::shared_ptr<HRTFKernel> kernelR1;
-    bool success = calculateKernelsForAzimuthElevation(azimuth, elevation, sampleRate, subjectName, kernelL1, kernelR1);
-    if (!success)
-        return false;
-        
-    // And symmetric version
-    int symmetricAzimuth = !azimuth ? 0 : 360 - azimuth;
-                                                              
-    std::shared_ptr<HRTFKernel> kernelL2;
-    std::shared_ptr<HRTFKernel> kernelR2;
-    success = calculateKernelsForAzimuthElevation(symmetricAzimuth, elevation, sampleRate, subjectName, kernelL2, kernelR2);
-    if (!success)
-        return false;
-        
-    // Notice L/R reversal in symmetric version.
-    kernelL = HRTFKernel::createInterpolatedKernel(kernelL1.get(), kernelR2.get(), 0.5f);
-    kernelR = HRTFKernel::createInterpolatedKernel(kernelR1.get(), kernelL2.get(), 0.5f);
-    
-    return true;
-}
-
-bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
-                                                        std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR)
-{
-    // Valid values for azimuth are 0 -> 345 in 15 degree increments.
-    // Valid values for elevation are -45 -> +90 in 15 degree increments.
-
-    bool isAzimuthGood = azimuth >= 0 && azimuth <= 345 && (azimuth / 15) * 15 == azimuth;
-    ASSERT(isAzimuthGood);
-    if (!isAzimuthGood)
-        return false;
-
-    bool isElevationGood = elevation >= -45 && elevation <= 90 && (elevation / 15) * 15 == elevation;
-    ASSERT(isElevationGood);
-    if (!isElevationGood)
-        return false;
-    
-    // Construct the resource name from the subject name, azimuth, and elevation, for example:
-    // "IRC_Composite_C_R0195_T015_P000"
-    // Note: the passed in subjectName is not a string passed in via JavaScript or the web.
-    // It's passed in as an internal ASCII identifier and is an implementation detail.
-    int positiveElevation = elevation < 0 ? elevation + 360 : elevation;
-
-    char tempStr[16];
-    
-    // Located in $(CWD) / hrtf / [format] .wav
-    sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
-    std::string resourceName = "hrtf/IRC_" + subjectName + "_C_R0195_T" + tempStr + ".wav";
-    
-    std::unique_ptr<AudioBus> impulseResponse = WebCore::MakeBusFromFile(resourceName.c_str(), false, sampleRate);
-
-    if (!impulseResponse.get())
-    {
-        std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
-        return false;
-    }
-    
-    size_t responseLength = impulseResponse->length();
-    size_t expectedLength = static_cast<size_t>(256 * (sampleRate / 44100.0));
-
-    // Check number of channels and length.  For now these are fixed and known.
-    bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == 2;
-
-    ASSERT(isBusGood);
-    if (!isBusGood)
-        return false;
-    
-    AudioChannel* leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
-    AudioChannel* rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
-
-    // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
-    const size_t fftSize = HRTFPanner::fftSizeForSampleRate(sampleRate);
-    kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, sampleRate);
-    kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, sampleRate);
-    
-    return true;
-}
 
 // The range of elevations for the IRCAM impulse responses varies depending on azimuth, but the minimum elevation appears to always be -45.
-//
-// Here's how it goes:
-static int maxElevations[] = {
+static int maxElevations[] =
+{
         //  Azimuth
-        //
     90, // 0  
     45, // 15 
     60, // 30 
@@ -164,10 +74,104 @@ static int maxElevations[] = {
     45 //  345 
 };
 
-std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string& subjectName, int elevation, float sampleRate)
+const uint32_t HRTFElevation::AzimuthSpacing = 15;
+const uint32_t HRTFElevation::NumberOfRawAzimuths = 360 / AzimuthSpacing;
+const uint32_t HRTFElevation::InterpolationFactor = 8;
+const uint32_t HRTFElevation::NumberOfTotalAzimuths = NumberOfRawAzimuths * InterpolationFactor;
+
+// Takes advantage of the symmetry and creates a composite version of the two measured versions.  For example, we have both azimuth 30 and -30 degrees
+// where the roles of left and right ears are reversed with respect to each other.
+bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string & subjectName,
+                                                                 std::shared_ptr<HRTFKernel> & kernelL, std::shared_ptr<HRTFKernel> & kernelR)
+{
+    std::shared_ptr<HRTFKernel> kernelL1;
+    std::shared_ptr<HRTFKernel> kernelR1;
+
+    bool success = calculateKernelsForAzimuthElevation(azimuth, elevation, sampleRate, subjectName, kernelL1, kernelR1);
+
+    if (!success)
+        return false;
+        
+    // And symmetric version
+    int symmetricAzimuth = !azimuth ? 0 : 360 - azimuth;
+                                                              
+    std::shared_ptr<HRTFKernel> kernelL2;
+    std::shared_ptr<HRTFKernel> kernelR2;
+
+    success = calculateKernelsForAzimuthElevation(symmetricAzimuth, elevation, sampleRate, subjectName, kernelL2, kernelR2);
+
+    if (!success)
+        return false;
+        
+    // Notice L/R reversal in symmetric version.
+    kernelL = MakeInterpolatedKernel(kernelL1.get(), kernelR2.get(), 0.5f);
+    kernelR = MakeInterpolatedKernel(kernelR1.get(), kernelL2.get(), 0.5f);
+    
+    return true;
+}
+
+bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevation, float sampleRate, const std::string& subjectName,
+                                                        std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR)
+{
+    // Valid values for azimuth are 0 -> 345 in 15 degree increments.
+    // Valid values for elevation are -45 -> +90 in 15 degree increments.
+
+    bool isAzimuthGood = azimuth >= 0 && azimuth <= 345 && (azimuth / 15) * 15 == azimuth;
+    ASSERT(isAzimuthGood);
+    if (!isAzimuthGood)
+        return false;
+
+    bool isElevationGood = elevation >= -45 && elevation <= 90 && (elevation / 15) * 15 == elevation;
+    ASSERT(isElevationGood);
+    if (!isElevationGood)
+        return false;
+    
+    // Construct the resource name from the subject name, azimuth, and elevation, for example:
+    // "IRC_Composite_C_R0195_T015_P000"
+    int positiveElevation = elevation < 0 ? elevation + 360 : elevation;
+
+    char tempStr[16];
+    
+    // Located in $(CWD) / hrtf / [format] .wav
+	// @tofix - this assumes we want to open this path and read via libnyquist fopen.
+	// ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
+    sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
+    std::string resourceName = "hrtf/IRC_" + subjectName + "_C_R0195_T" + tempStr + ".wav";
+    
+    std::unique_ptr<AudioBus> impulseResponse = WebCore::MakeBusFromFile(resourceName.c_str(), false, sampleRate);
+
+    if (!impulseResponse.get())
+    {
+        std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
+        return false;
+    }
+    
+    uint32_t responseLength = impulseResponse->length();
+    uint32_t expectedLength = static_cast<uint32_t>(256 * (sampleRate / 44100.0));
+
+    // Check number of channels and length.  For now these are fixed and known.
+    bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == 2;
+
+    ASSERT(isBusGood);
+    if (!isBusGood)
+        return false;
+    
+    AudioChannel* leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
+    AudioChannel* rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
+
+    // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
+    const uint32_t fftSize = HRTFPanner::fftSizeForSampleRate(sampleRate);
+    kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, sampleRate);
+    kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, sampleRate);
+    
+    return true;
+}
+
+std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string & subjectName, int elevation, float sampleRate)
 {
     bool isElevationGood = elevation >= -45 && elevation <= 90 && (elevation / 15) * 15 == elevation;
     ASSERT(isElevationGood);
+
     if (!isElevationGood)
         return nullptr;
         
@@ -176,7 +180,8 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string
 
     // Load convolution kernels from HRTF files.
     int interpolatedIndex = 0;
-    for (unsigned rawIndex = 0; rawIndex < NumberOfRawAzimuths; ++rawIndex) {
+    for (uint32_t rawIndex = 0; rawIndex < NumberOfRawAzimuths; ++rawIndex) 
+	{
         // Don't let elevation exceed maximum for this azimuth.
         int maxElevation = maxElevations[rawIndex];
         int actualElevation = min(elevation, maxElevation);
@@ -189,15 +194,17 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string
     }
 
     // Now go back and interpolate intermediate azimuth values.
-    for (unsigned i = 0; i < NumberOfTotalAzimuths; i += InterpolationFactor) {
+    for (uint32_t i = 0; i < NumberOfTotalAzimuths; i += InterpolationFactor) 
+	{
         int j = (i + InterpolationFactor) % NumberOfTotalAzimuths;
 
         // Create the interpolated convolution kernels and delays.
-        for (unsigned jj = 1; jj < InterpolationFactor; ++jj) {
+        for (uint32_t jj = 1; jj < InterpolationFactor; ++jj) 
+		{
             float x = float(jj) / float(InterpolationFactor); // interpolate from 0 -> 1
 
-            (*kernelListL)[i + jj] = HRTFKernel::createInterpolatedKernel(kernelListL->at(i).get(), kernelListL->at(j).get(), x);
-            (*kernelListR)[i + jj] = HRTFKernel::createInterpolatedKernel(kernelListR->at(i).get(), kernelListR->at(j).get(), x);
+            (*kernelListL)[i + jj] = MakeInterpolatedKernel(kernelListL->at(i).get(), kernelListL->at(j).get(), x);
+            (*kernelListR)[i + jj] = MakeInterpolatedKernel(kernelListR->at(i).get(), kernelListR->at(j).get(), x);
         }
     }
     
@@ -221,9 +228,10 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createByInterpolatingSlices(HRTFEl
     HRTFKernelList* kernelListR2 = hrtfElevation2->kernelListR();
     
     // Interpolate kernels of corresponding azimuths of the two elevations.
-    for (unsigned i = 0; i < NumberOfTotalAzimuths; ++i) {
-        (*kernelListL)[i] = HRTFKernel::createInterpolatedKernel(kernelListL1->at(i).get(), kernelListL2->at(i).get(), x);
-        (*kernelListR)[i] = HRTFKernel::createInterpolatedKernel(kernelListR1->at(i).get(), kernelListR2->at(i).get(), x);
+    for (uint32_t i = 0; i < NumberOfTotalAzimuths; ++i) 
+	{
+        (*kernelListL)[i] = MakeInterpolatedKernel(kernelListL1->at(i).get(), kernelListL2->at(i).get(), x);
+        (*kernelListR)[i] = MakeInterpolatedKernel(kernelListR1->at(i).get(), kernelListR2->at(i).get(), x);
     }
 
     // Interpolate elevation angle.

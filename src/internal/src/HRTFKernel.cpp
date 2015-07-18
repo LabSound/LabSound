@@ -36,13 +36,14 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace WebCore 
+{
 
 // Takes the input AudioChannel as an input impulse response and calculates the average group delay.
 // This represents the initial delay before the most energetic part of the impulse response.
 // The sample-frame delay is removed from the impulseP impulse response, and this value  is returned.
 // the length of the passed in AudioChannel must be a power of 2.
-static float extractAverageGroupDelay(AudioChannel* channel, size_t analysisFFTSize)
+inline float ExtractAverageGroupDelay(AudioChannel * channel, uint32_t analysisFFTSize)
 {
     ASSERT(channel);
         
@@ -65,26 +66,27 @@ static float extractAverageGroupDelay(AudioChannel* channel, size_t analysisFFTS
     return frameDelay;
 }
 
-HRTFKernel::HRTFKernel(AudioChannel* channel, size_t fftSize, float sampleRate)
-    : m_frameDelay(0)
-    , m_sampleRate(sampleRate)
+HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
 {
     ASSERT(channel);
 
     // Determine the leading delay (average group delay) for the response.
-    m_frameDelay = extractAverageGroupDelay(channel, fftSize / 2);
+    m_frameDelay = ExtractAverageGroupDelay(channel, fftSize / 2);
 
     float* impulseResponse = channel->mutableData();
-    size_t responseLength = channel->length();
+    uint32_t responseLength = channel->length();
 
     // We need to truncate to fit into 1/2 the FFT size (with zero padding) in order to do proper convolution.
-    size_t truncatedResponseLength = min(responseLength, fftSize / 2); // truncate if necessary to max impulse response length allowed by FFT
+    uint32_t truncatedResponseLength = min(responseLength, fftSize / 2); // truncate if necessary to max impulse response length allowed by FFT
 
     // Quick fade-out (apply window) at truncation point
     unsigned numberOfFadeOutFrames = static_cast<unsigned>(sampleRate / 4410); // 10 sample-frames @44.1KHz sample-rate
     ASSERT(numberOfFadeOutFrames < truncatedResponseLength);
-    if (numberOfFadeOutFrames < truncatedResponseLength) {
-        for (unsigned i = truncatedResponseLength - numberOfFadeOutFrames; i < truncatedResponseLength; ++i) {
+
+    if (numberOfFadeOutFrames < truncatedResponseLength) 
+	{
+        for (uint32_t i = truncatedResponseLength - numberOfFadeOutFrames; i < truncatedResponseLength; ++i) 
+		{
             float x = 1.0f - static_cast<float>(i - (truncatedResponseLength - numberOfFadeOutFrames)) / numberOfFadeOutFrames;
             impulseResponse[i] *= x;
         }
@@ -107,7 +109,7 @@ std::unique_ptr<AudioChannel> HRTFKernel::createImpulseResponse()
 }
 
 // Interpolates two kernels with x: 0 -> 1 and returns the result.
-std::unique_ptr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* kernel1, HRTFKernel* kernel2, float x)
+std::unique_ptr<HRTFKernel> MakeInterpolatedKernel(HRTFKernel* kernel1, HRTFKernel* kernel2, float x)
 {
     ASSERT(kernel1 && kernel2);
     if (!kernel1 || !kernel2)
@@ -118,6 +120,7 @@ std::unique_ptr<HRTFKernel> HRTFKernel::createInterpolatedKernel(HRTFKernel* ker
     
     float sampleRate1 = kernel1->sampleRate();
     float sampleRate2 = kernel2->sampleRate();
+
     ASSERT(sampleRate1 == sampleRate2);
     if (sampleRate1 != sampleRate2)
         return 0;
