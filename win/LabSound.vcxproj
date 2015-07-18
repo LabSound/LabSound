@@ -85,9 +85,7 @@
     <ClInclude Include="..\src\internal\AudioDestinationConsumer.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
-    <ClInclude Include="..\src\internal\AudioFIFO.h" />
     <ClInclude Include="..\src\internal\AudioFileReader.h" />
-    <ClInclude Include="..\src\internal\AudioPullFIFO.h" />
     <ClInclude Include="..\src\internal\AudioResampler.h" />
     <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
     <ClInclude Include="..\src\internal\AudioUtilities.h" />
@@ -177,9 +175,7 @@
     <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioFIFO.cpp" />
     <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioPullFIFO.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResampler.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResamplerKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioUtilities.cpp" />

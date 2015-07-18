@@ -32,12 +32,13 @@
 #include "internal/HRTFKernel.h"
 #include <string>
 
-namespace WebCore {
+namespace WebCore
+{
 
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
+class HRTFElevation 
+{
 
-class HRTFElevation {
-    HRTFElevation(const HRTFElevation&); // noncopyable
 public:
     // Loads and returns an HRTFElevation with the given HRTF database subject name and elevation from browser (or WebKit.framework) resources.
     // Normally, there will only be a single HRTF database set, but this API supports the possibility of multiple ones with different names.
@@ -86,6 +87,7 @@ public:
                                                              std::shared_ptr<HRTFKernel>& kernelL, std::shared_ptr<HRTFKernel>& kernelR);
 
 private:
+
     HRTFElevation(std::unique_ptr<HRTFKernelList> kernelListL, std::unique_ptr<HRTFKernelList> kernelListR, int elevation, float sampleRate)
     : m_kernelListL(std::move(kernelListL))
     , m_kernelListR(std::move(kernelListR))

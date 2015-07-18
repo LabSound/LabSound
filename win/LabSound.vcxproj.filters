@@ -90,13 +90,7 @@
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\AudioFIFO.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\AudioFileReader.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\AudioPullFIFO.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\AudioResampler.h">
@@ -393,12 +387,6 @@
       <Filter>Internal\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioFIFO.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioPullFIFO.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioResampler.cpp">
