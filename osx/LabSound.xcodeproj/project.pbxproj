@@ -11,8 +11,6 @@
 		08650BD41AD6225900D19E38 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAB1AD6225900D19E38 /* AudioChannel.cpp */; };
 		08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */; };
 		08650BD61AD6225900D19E38 /* AudioDSPKernelProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */; };
-		08650BD71AD6225900D19E38 /* AudioFIFO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAE1AD6225900D19E38 /* AudioFIFO.cpp */; };
-		08650BD81AD6225900D19E38 /* AudioPullFIFO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAF1AD6225900D19E38 /* AudioPullFIFO.cpp */; };
 		08650BD91AD6225900D19E38 /* AudioResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB01AD6225900D19E38 /* AudioResampler.cpp */; };
 		08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */; };
 		08650BDB1AD6225900D19E38 /* AudioUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB21AD6225900D19E38 /* AudioUtilities.cpp */; };
@@ -115,9 +113,7 @@
 		08650A261AD61FE800D19E38 /* AudioDestinationConsumer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestinationConsumer.h; path = ../src/internal/AudioDestinationConsumer.h; sourceTree = "<group>"; };
 		08650A271AD61FE800D19E38 /* AudioDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernel.h; path = ../src/internal/AudioDSPKernel.h; sourceTree = "<group>"; };
 		08650A281AD61FE800D19E38 /* AudioDSPKernelProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernelProcessor.h; path = ../src/internal/AudioDSPKernelProcessor.h; sourceTree = "<group>"; };
-		08650A291AD61FE800D19E38 /* AudioFIFO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioFIFO.h; path = ../src/internal/AudioFIFO.h; sourceTree = "<group>"; };
 		08650A2A1AD61FE800D19E38 /* AudioFileReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioFileReader.h; path = ../src/internal/AudioFileReader.h; sourceTree = "<group>"; };
-		08650A2B1AD61FE800D19E38 /* AudioPullFIFO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPullFIFO.h; path = ../src/internal/AudioPullFIFO.h; sourceTree = "<group>"; };
 		08650A2C1AD61FE800D19E38 /* AudioResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResampler.h; path = ../src/internal/AudioResampler.h; sourceTree = "<group>"; };
 		08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResamplerKernel.h; path = ../src/internal/AudioResamplerKernel.h; sourceTree = "<group>"; };
 		08650A2E1AD61FE800D19E38 /* AudioUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioUtilities.h; path = ../src/internal/AudioUtilities.h; sourceTree = "<group>"; };
@@ -159,8 +155,6 @@
 		08650BAB1AD6225900D19E38 /* AudioChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioChannel.cpp; path = ../src/internal/src/AudioChannel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernel.cpp; path = ../src/internal/src/AudioDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernelProcessor.cpp; path = ../src/internal/src/AudioDSPKernelProcessor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BAE1AD6225900D19E38 /* AudioFIFO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFIFO.cpp; path = ../src/internal/src/AudioFIFO.cpp; sourceTree = SOURCE_ROOT; };
-		08650BAF1AD6225900D19E38 /* AudioPullFIFO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioPullFIFO.cpp; path = ../src/internal/src/AudioPullFIFO.cpp; sourceTree = SOURCE_ROOT; };
 		08650BB01AD6225900D19E38 /* AudioResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioResampler.cpp; path = ../src/internal/src/AudioResampler.cpp; sourceTree = SOURCE_ROOT; };
 		08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioResamplerKernel.cpp; path = ../src/internal/src/AudioResamplerKernel.cpp; sourceTree = SOURCE_ROOT; };
 		08650BB21AD6225900D19E38 /* AudioUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioUtilities.cpp; path = ../src/internal/src/AudioUtilities.cpp; sourceTree = SOURCE_ROOT; };
@@ -592,8 +586,6 @@
 				08650A261AD61FE800D19E38 /* AudioDestinationConsumer.h */,
 				08650A271AD61FE800D19E38 /* AudioDSPKernel.h */,
 				08650A281AD61FE800D19E38 /* AudioDSPKernelProcessor.h */,
-				08650A291AD61FE800D19E38 /* AudioFIFO.h */,
-				08650A2B1AD61FE800D19E38 /* AudioPullFIFO.h */,
 				08650A2C1AD61FE800D19E38 /* AudioResampler.h */,
 				08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */,
 				08650A2E1AD61FE800D19E38 /* AudioUtilities.h */,
@@ -654,8 +646,6 @@
 				08650BAB1AD6225900D19E38 /* AudioChannel.cpp */,
 				08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */,
 				08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */,
-				08650BAE1AD6225900D19E38 /* AudioFIFO.cpp */,
-				08650BAF1AD6225900D19E38 /* AudioPullFIFO.cpp */,
 				08650BB01AD6225900D19E38 /* AudioResampler.cpp */,
 				08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */,
 				08650BB21AD6225900D19E38 /* AudioUtilities.cpp */,
@@ -772,11 +762,9 @@
 				08650BE21AD6225900D19E38 /* DirectConvolver.cpp in Sources */,
 				08650CE01AD6241A00D19E38 /* AudioParam.cpp in Sources */,
 				08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */,
-				08650BD81AD6225900D19E38 /* AudioPullFIFO.cpp in Sources */,
 				08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */,
 				08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */,
 				08650BEF1AD6225900D19E38 /* HRTFPanner.cpp in Sources */,
-				08650BD71AD6225900D19E38 /* AudioFIFO.cpp in Sources */,
 				08650CE81AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp in Sources */,
 				08650BF21AD6225900D19E38 /* Reverb.cpp in Sources */,
 				08650C5C1AD6239000D19E38 /* PowerMonitorNode.cpp in Sources */,
