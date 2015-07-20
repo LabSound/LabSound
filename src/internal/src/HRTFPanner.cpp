@@ -69,7 +69,7 @@ HRTFPanner::~HRTFPanner()
 {
 }
 
-size_t HRTFPanner::fftSizeForSampleRate(float sampleRate)
+uint32_t HRTFPanner::fftSizeForSampleRate(float sampleRate)
 {
     // The HRTF impulse responses (loaded as audio resources) are 512 sample-frames @44.1KHz.
     // Currently, we truncate the impulse responses to half this size, but an FFT-size of twice impulse response size is needed (for convolution).

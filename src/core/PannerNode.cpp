@@ -184,7 +184,7 @@ AudioListener * PannerNode::listener(ContextRenderLock& r)
 
 void PannerNode::setPanningModel(PanningMode model)
 {
-    if (model != PanningMode::EQUALPOWER || model != PanningMode::HRTF) 
+    if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF) 
 		throw std::invalid_argument("Unknown panning model specified");
     
     if (!m_panner.get() || model != m_panningModel)
