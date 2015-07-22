@@ -37,11 +37,7 @@ using namespace std;
 
 namespace WebCore {
 
-EqualPowerPanner::EqualPowerPanner(float sampleRate)
-    : Panner(PanningModelEqualPower)
-    , m_isFirstRender(true)
-    , m_gainL(0.0)
-    , m_gainR(0.0)
+EqualPowerPanner::EqualPowerPanner(float sampleRate) : Panner(PanningMode::EQUALPOWER)
 {
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
 }

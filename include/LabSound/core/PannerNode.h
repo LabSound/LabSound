@@ -49,12 +49,6 @@ class PannerNode : public AudioNode
 
 public:
 
-    enum PanningMode
-	{
-        EQUALPOWER = 0,
-        HRTF = 1,
-    };
-
     enum 
 	{
         LINEAR_DISTANCE = 0,
@@ -76,8 +70,8 @@ public:
     AudioListener* listener(ContextRenderLock&);
 
     // Panning model
-    unsigned short panningModel() const { return m_panningModel; }
-    void setPanningModel(unsigned short);
+    PanningMode panningModel() const { return m_panningModel; }
+    void setPanningModel(PanningMode m);
 
     // Position
     FloatPoint3D position() const { return m_position; }
@@ -131,24 +125,25 @@ protected:
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
+	// @tofix dimitri kinda proken 
     void notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode*);
 
     std::unique_ptr<Panner> m_panner;
-    unsigned m_panningModel;
+
+    PanningMode m_panningModel;
 
     FloatPoint3D m_position;
     FloatPoint3D m_orientation;
     FloatPoint3D m_velocity;
 
-    // Gain
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
 
 	std::unique_ptr<DistanceEffect> m_distanceEffect;
 	std::unique_ptr<ConeEffect> m_coneEffect;
-    float m_lastGain;
 
-    unsigned m_connectionCount;
+    float m_lastGain = -1.0f;
+    unsigned m_connectionCount = 0;
 };
 
 } // namespace WebCore

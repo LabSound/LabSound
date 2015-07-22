@@ -7,17 +7,26 @@
 #include "LabSound/core/AudioBufferSourceNode.h"
 #include "LabSound/core/AudioContext.h"
 
-namespace LabSound {
+namespace LabSound
+{
 
 /// @dp rewrite as a node, deprecate audio buffer source node
-    
-class SoundBuffer {
+ 
+class SoundBuffer 
+{
 
 public:
 
     std::shared_ptr<WebCore::AudioBuffer> audioBuffer;
     
-    SoundBuffer(const char* path, float sampleRate);
+    SoundBuffer(const char * path, float sampleRate);
+	SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
+
+	SoundBuffer();
+
+	void initialize(const char * path, float sampleRate);
+	void initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
+
     ~SoundBuffer();
     
     // play a sound on the context directly, starting after a certain delay

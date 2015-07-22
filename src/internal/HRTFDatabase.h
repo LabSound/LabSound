@@ -38,11 +38,10 @@ namespace WebCore {
 
 class HRTFKernel;
 
-class HRTFDatabase {
-
+class HRTFDatabase 
+{
+	NO_MOVE(HRTFDatabase);
 public:
-
-	DISALLOW_COPY_AND_ASSIGN(HRTFDatabase);
 
 	HRTFDatabase(float sampleRate);
 

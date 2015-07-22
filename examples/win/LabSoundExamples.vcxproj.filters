@@ -39,9 +39,6 @@
     <ClInclude Include="..\src\Simple.h">
       <Filter>Examples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\SimpleRecording.h">
-      <Filter>Examples</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Spatialization.h">
       <Filter>Examples</Filter>
     </ClInclude>

@@ -9,11 +9,18 @@ struct SpatializationApp : public LabSoundExampleApp
         auto ac = context.get();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
+		std::shared_ptr<OscillatorNode> osc; 
+
         auto panner = std::make_shared<PannerNode>(context->sampleRate());
         std::shared_ptr<AudioBufferSourceNode> trainNode;
         {
             ContextGraphLock g(context, "spatialization");
             ContextRenderLock r(context, "spatialization");
+			
+			//osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
+			//osc->connect(ac, panner.get(), 0, 0);
+			//osc->start(0);
+
             panner->connect(ac, context->destination().get(), 0, 0);
             trainNode = train.play(r, panner, 0.0f);
         }
@@ -22,9 +29,9 @@ struct SpatializationApp : public LabSoundExampleApp
         {
             trainNode->setLooping(true);
             context->listener()->setPosition(0, 0, 0);
-            panner->setVelocity(15, 0, 0);
+            panner->setVelocity(5, 0, 0);
             
-            const int seconds = 5;
+            const int seconds = 10;
             float halfTime = seconds * 0.5f;
             for (float i = 0; i < seconds; i += 0.01f)
             {

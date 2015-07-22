@@ -50,22 +50,23 @@
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-namespace WebCore {
+namespace WebCore 
+{
 
 // Defines the interface for an "FFT frame", an object which is able to perform a forward
 // and reverse FFT, internally storing the resultant frequency-domain data.
+class FFTFrame 
+{
 
-class FFTFrame {
 public:
-    // The constructors, destructor, and methods up to the CROSS-PLATFORM section have platform-dependent implementations.
 
-    FFTFrame(unsigned fftSize);
-    FFTFrame(); // creates a blank/empty frame for later use with createInterpolatedFrame()
+	FFTFrame();	// creates a blank/empty frame for later use with createInterpolatedFrame()
+	FFTFrame(uint32_t fftSize);
+
+	 // Copy
     FFTFrame(const FFTFrame& frame);
     ~FFTFrame();
 
-    static void initialize();
-    static void cleanup();
     void doFFT(const float* data);
     void doInverseFFT(float* data);
     void multiply(const FFTFrame& frame); // multiplies ourself with frame : effectively operator*=()
@@ -75,7 +76,6 @@ public:
 
     void print(); // for debugging
 
-    // CROSS-PLATFORM
     // The remaining public methods have cross-platform implementations:
 
     // Interpolates from frame1 -> frame2 as x goes from 0.0 -> 1.0
@@ -89,6 +89,7 @@ public:
     unsigned log2FFTSize() const { return m_log2FFTSize; }
 
 private:
+
     unsigned m_FFTSize;
     unsigned m_log2FFTSize;
 
@@ -110,7 +111,6 @@ private:
 #else // !USE_ACCELERATE_FFT
     
 #if USE(WEBAUDIO_KISSFFT)
-    
     kiss_fftr_cfg mFFT;
     kiss_fftr_cfg mIFFT;
 
@@ -121,7 +121,6 @@ private:
 
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;
-    
 #endif
 
 #endif // !USE_ACCELERATE_FFT

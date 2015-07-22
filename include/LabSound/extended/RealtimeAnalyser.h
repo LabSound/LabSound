@@ -29,22 +29,26 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include <vector>
 
-namespace WebCore {
+namespace WebCore 
+{
 
 class AudioBus;
 class FFTFrame;
 
-class RealtimeAnalyser {
+class RealtimeAnalyser
+{
+
     RealtimeAnalyser(const RealtimeAnalyser&); // noncopyable
+
 public:
-    RealtimeAnalyser(size_t fftSize);
+    RealtimeAnalyser(uint32_t fftSize);
     virtual ~RealtimeAnalyser();
     
     void reset();
 
-    size_t fftSize() const { return m_fftSize; }
+    uint32_t fftSize() const { return m_fftSize; }
 
-    size_t frequencyBinCount() const { return m_fftSize / 2; }
+    uint32_t frequencyBinCount() const { return m_fftSize / 2; }
 
     void setMinDecibels(double k) { m_minDecibels = k; }
     double minDecibels() const { return m_minDecibels; }
@@ -66,10 +70,10 @@ public:
     static const double DefaultMinDecibels;
     static const double DefaultMaxDecibels;
 
-    static const size_t DefaultFFTSize;
-    static const size_t MinFFTSize;
-    static const size_t MaxFFTSize;
-    static const size_t InputBufferSize;
+    static const uint32_t DefaultFFTSize;
+    static const uint32_t MinFFTSize;
+    static const uint32_t MaxFFTSize;
+    static const uint32_t InputBufferSize;
 
 private:
 
@@ -77,7 +81,7 @@ private:
     AudioFloatArray m_inputBuffer;
     unsigned m_writeIndex;
     
-    size_t m_fftSize;
+    uint32_t m_fftSize;
     std::unique_ptr<FFTFrame> m_analysisFrame;
     void doFFTAnalysis();
     

@@ -30,48 +30,44 @@
 #define Panner_h
 
 #include <memory>
+#include <LabSound/core/AudioNode.h>
 
-namespace LabSound {
+namespace LabSound
+{
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace WebCore 
+{
     
-    using namespace LabSound;
-
+using namespace LabSound;
 class AudioBus;
 
-// Abstract base class for panning a mono or stereo source.
-
-class Panner {
+class Panner
+{
 public:
-    enum {
-        PanningModelEqualPower = 0,
-        PanningModelHRTF = 1,
-        PanningModelSoundField = 2
-    };
-    
-    typedef unsigned PanningModel;
 
-    static std::unique_ptr<Panner> create(PanningModel, float sampleRate);
+	Panner(PanningMode mode) : m_panningModel(mode) 
+	{ 
+	}
 
-    virtual ~Panner() { };
+    virtual ~Panner() 
+	{ 
+	};
 
-    PanningModel panningModel() const { return m_panningModel; }
+    PanningMode panningModel() const { return m_panningModel; }
 
     virtual void pan(ContextRenderLock& r, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) = 0;
 
     virtual void reset() = 0;
-
     virtual double tailTime() const = 0;
     virtual double latencyTime() const = 0;
 
 protected:
-    Panner(PanningModel model) : m_panningModel(model) { }
 
-    PanningModel m_panningModel;
+    PanningMode m_panningModel;
 };
 
-} // namespace WebCore
+} // WebCore
 
-#endif // Panner_h
+#endif 

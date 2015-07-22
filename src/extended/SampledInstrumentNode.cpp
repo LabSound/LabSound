@@ -1,4 +1,3 @@
-
 // Copyright (c) 2014 Dimitri Diakopolous, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
@@ -6,97 +5,134 @@
 
 #include "internal/ConfigMacros.h"
 
-#include <json11/json11.hpp>
-
 #include <string>
 #include <fstream>
 #include <streambuf>
 #include <stdlib.h>
 
-#if OS(WINDOWS)
-	#include <direct.h>
-	#define getcwd _getcwd
-	#define MAX_PATH _MAX_PATH
-#endif
+namespace LabSound 
+{
 
-#if OS(DARWIN)
-	#include <limits.h>
-	#include <unistd.h>
-	#define MAX_PATH PATH_MAX
-#endif
+	using namespace WebCore;
 
-namespace LabSound {
+	struct SamplerSound 
+	{
 
-	using namespace json11;
+		SamplerSound(std::shared_ptr<GainNode> d, SampledInstrumentDefinition & def) : destinationNode(d)
+		{
+			audioBuffer = new SoundBuffer(def.audio, def.extension, d->sampleRate());
+			this->baseMidiNote = def.root;
+			this->midiNoteLow = def.min;
+			this->midiNoteHigh = def.max;
+		}
 
-    SampledInstrumentNode::SampledInstrumentNode(float sampleRate) {
+		bool AppliesToNote(uint8_t note) 
+		{
+			// Debugging: 
+			//std::cout << "Note: " << int(note) << std::endl;
+			//std::cout << "Base: " << int(baseMidiNote) << std::endl;
+			//std::cout << "Low: " << int(midiNoteLow) << std::endl;
+			//std::cout << "High: " << int(midiNoteHigh) << std::endl;
+			//std::cout << std::endl << std::endl;
+			if (baseMidiNote == note || (note >= midiNoteLow && note <= midiNoteHigh)) 
+				return true; 
+			else 
+				return false; 
+		}
 
-		// All samples bus their output to this node... 
+		std::shared_ptr<AudioBufferSourceNode> Start(ContextRenderLock & r, int midiNoteNumber, float amplitude = 1.0) 
+		{
+            if (!r.context()) throw std::runtime_error("cannot get context");
+            
+			double pitchRatio = pow(2.0, (midiNoteNumber - baseMidiNote) / 12.0);
+
+			std::shared_ptr<AudioBufferSourceNode> theSample(audioBuffer->create(r, r.context()->sampleRate()));
+
+			theSample->playbackRate()->setValue(pitchRatio); 
+			theSample->gain()->setValue(amplitude); 
+
+			// Connect the source node to the parsed audio data for playback
+			theSample->setBuffer(r, audioBuffer->audioBuffer);
+
+			theSample->connect(r.context(), destinationNode.get(), 0, 0);
+			theSample->start(0.0);
+
+			return theSample;
+		}
+
+		void Stop(ContextRenderLock & r, int midiNoteNumber, float amplitude = 0.0)
+		{
+			//@tofix -- disconnect? 
+		}
+
+        std::shared_ptr<GainNode> destinationNode;
+
+		SoundBuffer * audioBuffer;
+
+		uint8_t baseMidiNote;
+		uint8_t midiNoteLow;
+		uint8_t midiNoteHigh; 
+	};
+
+    SampledInstrumentNode::SampledInstrumentNode(float sampleRate) 
+	{ 
         gainNode = std::make_shared<GainNode>(sampleRate);
-		gainNode->gain()->setValue(4.0);
-        //initialize(); note - not subclassed from AudioNode
+		gainNode->gain()->setValue(1.0);
 	}
 
-	// Definitely have ADSR... 
-	void SampledInstrumentNode::noteOn(ContextRenderLock& r, float midiNoteNumber, float amplitude)
+	SampledInstrumentNode::~SampledInstrumentNode()
+	{
+
+	}
+
+	//@tofix: add adsr
+	void SampledInstrumentNode::NoteOn(ContextRenderLock & r, const int midiNoteNumber, const float amplitude)
     {
-        auto ac = r.context();
-        if (!ac) return;
-        
-		for (auto &sample : samples)
+        if (!r.context()) return;
+
+		std::cout << "Size: " << voices.size() << std::endl;
+
+		for (const auto & sample : samples)
         {
 			// Find note in sample map
-			if (sample->appliesToNote(midiNoteNumber))
+			if (sample->AppliesToNote(midiNoteNumber))
             {
-				sample->startNote(r, midiNoteNumber, amplitude);
+				for (auto & v : voices)
+				{	
+					if (v->hasFinished())
+					{
+						v = sample->Start(r, midiNoteNumber, amplitude); // this voice is free -> destruct
+						return;
+					}
+				}
+
+				// create new voice
+				voices.push_back(sample->Start(r, midiNoteNumber, amplitude));
+				return; 
+
 			}
 		}
 	}
 
-	void SampledInstrumentNode::loadInstrumentConfiguration(std::string path) {
-
-		char cwd[MAX_PATH];
-		getcwd(cwd, MAX_PATH);
-
-		std::string swdString(cwd);
-
-		std::ifstream fileStream(path);
-		std::string jsonString;
-        
-        if ( !fileStream.is_open() ) {
-            LOG_ERROR("Instrument JSON failed to open with path %s: ", path.c_str());
-            return;
-        }
-        
-		fileStream.seekg(0, std::ios::end);
-		jsonString.reserve(fileStream.tellg());
-		fileStream.seekg(0, std::ios::beg);
-
-		jsonString.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-
-		std::string err;
-		auto jsonConfig = Json::parse(jsonString, err);
-
-		if (err.empty()) {
-
-			for (auto &samp : jsonConfig["samples"].array_items()) {
-				// std::cout << "Loading Sample: " << samp.dump() << "\n";
-				// std::cout << "Sample Name: " << samp["sample"].string_value() << std::endl;
-                samples.emplace_back(std::make_shared<SamplerSound>(
-					gainNode,
-					samp["sample"].string_value(),
-					samp["baseNote"].string_value(),
-					samp["lowNote"].string_value(),
-					samp["highNote"].string_value(),
-                    44100
-					));
+	void SampledInstrumentNode::NoteOff(ContextRenderLock & r, const int midiNoteNumber, const float amplitude)
+	{
+		if (!r.context()) return;
+		 
+		// This logic is wrong. Find in voices... 
+		for (const auto & sample : samples)
+        {
+			if (sample->AppliesToNote(midiNoteNumber))
+            {
+				sample->Stop(r, midiNoteNumber, amplitude);
 			}
-
 		}
-		
-		else 
+	}
+	
+	void SampledInstrumentNode::LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds) 
+	{
+		for (auto & samp : sounds) 
 		{
-			LOG_ERROR("JSON Parse Error: %s", err.c_str());
+            samples.push_back(std::make_shared<SamplerSound>(gainNode, samp));
 		}
 
 	}

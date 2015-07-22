@@ -39,12 +39,15 @@ class AudioListener
 {
 public:
 
-    AudioListener();
+    AudioListener()
+	{
+
+	}
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
     void setPosition(const FloatPoint3D &position) { m_position = position; }
-    const FloatPoint3D& position() const { return m_position; }
+    const FloatPoint3D & position() const { return m_position; }
 
     // Orientation
     void setOrientation(float x, float y, float z, float upX, float upY, float upZ)

@@ -85,9 +85,7 @@
     <ClInclude Include="..\src\internal\AudioDestinationConsumer.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
-    <ClInclude Include="..\src\internal\AudioFIFO.h" />
     <ClInclude Include="..\src\internal\AudioFileReader.h" />
-    <ClInclude Include="..\src\internal\AudioPullFIFO.h" />
     <ClInclude Include="..\src\internal\AudioResampler.h" />
     <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
     <ClInclude Include="..\src\internal\AudioUtilities.h" />
@@ -136,7 +134,6 @@
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
     <ClCompile Include="..\src\core\AudioHardwareSourceNode.cpp" />
-    <ClCompile Include="..\src\core\AudioListener.cpp" />
     <ClCompile Include="..\src\core\AudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioNodeInput.cpp" />
     <ClCompile Include="..\src\core\AudioNodeOutput.cpp" />
@@ -178,9 +175,7 @@
     <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioFIFO.cpp" />
     <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioPullFIFO.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResampler.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResamplerKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioUtilities.cpp" />
@@ -204,7 +199,6 @@
     <ClCompile Include="..\src\internal\src\HRTFKernel.cpp" />
     <ClCompile Include="..\src\internal\src\HRTFPanner.cpp" />
     <ClCompile Include="..\src\internal\src\MultiChannelResampler.cpp" />
-    <ClCompile Include="..\src\internal\src\Panner.cpp" />
     <ClCompile Include="..\src\internal\src\Reverb.cpp" />
     <ClCompile Include="..\src\internal\src\ReverbAccumulationBuffer.cpp" />
     <ClCompile Include="..\src\internal\src\ReverbConvolver.cpp" />
@@ -221,6 +215,16 @@
     <ClCompile Include="..\third_party\kissfft\src\kiss_fftr.cpp" />
     <ClCompile Include="..\third_party\rtaudio\src\RtAudio.cpp" />
     <ClCompile Include="..\third_party\STK\src\STKInlineCompile.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\third_party\libnyquist\libnyquist.vcxproj\libnyquist.vcxproj">
+      <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2C11853-81F3-C348-8C6E-8DA318E0C84E}</ProjectGuid>

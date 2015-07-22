@@ -5,6 +5,8 @@
 #ifndef Mixing_h
 #define Mixing_h
 
+#include <stdint.h>
+
 namespace LabSound
 {
     
@@ -14,7 +16,7 @@ namespace LabSound
         Discrete,
     };
     
-    enum class Channel
+    enum class Channel : int
     {
         First = 0,
         Left = 0,

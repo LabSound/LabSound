@@ -47,11 +47,11 @@ public:
 private:
 
     // For smoothing / de-zippering
-    bool m_isFirstRender;
+    bool m_isFirstRender = true;
     double m_smoothingConstant;
     
-    double m_gainL;
-    double m_gainR;
+    double m_gainL = 0.0;
+    double m_gainR = 0.0;
 };
 
 } // namespace WebCore

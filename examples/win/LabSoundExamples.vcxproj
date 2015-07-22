@@ -86,7 +86,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;..\..\third_party\libnyquist\bin\win\libnyquist32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -105,7 +105,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\build\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;..\..\third_party\libnyquist\bin\win\libnyquist32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -127,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;..\..\third_party\libnyquist\bin\win\libnyquist32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\build\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -150,7 +150,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>LabSound.lib;dsound.lib;dxguid.lib;winmm.lib;..\..\third_party\libnyquist\bin\win\libnyquist32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dsound.lib;dxguid.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\build\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -160,6 +160,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\third_party\libnyquist\libnyquist.vcxproj\libnyquist.vcxproj">
+      <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\win\LabSound.vcxproj">
       <Project>{c2c11853-81f3-c348-8c6e-8da318e0c84e}</Project>
       <Private>false</Private>
@@ -185,7 +188,6 @@
     <ClInclude Include="..\src\Rhythm.h" />
     <ClInclude Include="..\src\RhythmAndFilters.h" />
     <ClInclude Include="..\src\Simple.h" />
-    <ClInclude Include="..\src\SimpleRecording.h" />
     <ClInclude Include="..\src\Spatialization.h" />
     <ClInclude Include="..\src\StereoPanning.h" />
     <ClInclude Include="..\src\Tremolo.h" />
