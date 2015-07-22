@@ -90,6 +90,9 @@ public:
 
 private:
 
+    void cleanup();
+
+    
     unsigned m_FFTSize;
     unsigned m_log2FFTSize;
 
