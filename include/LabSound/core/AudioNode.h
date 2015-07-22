@@ -83,6 +83,7 @@ namespace LabSound
         NodeTypeSpectralMonitor,
         NodeTypeSupersaw,
 		NodeTypeSTK, 
+		NodeTypeBPMDelay,
 
         // enumeration terminator
         NodeTypeEnd,

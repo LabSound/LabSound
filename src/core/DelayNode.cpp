@@ -32,13 +32,17 @@
 namespace WebCore
 {
 
-const double maximumAllowedDelayTime = 180;
+// WebAudio: 
+// "The maxDelayTime parameter is optional and specifies the 
+//  maximum delay time in seconds allowed for the delay line."
+const double maximumAllowedDelayTime = 128;
 
 DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode(sampleRate)
 {
     if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime)
-        throw std::out_of_range("Delay time exceeds nominal limits");
-
+	{
+		 throw std::out_of_range("Delay time exceeds limit of 128 seconds");
+	}
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);
     initialize();
@@ -54,4 +58,4 @@ DelayProcessor * DelayNode::delayProcessor()
 	return static_cast<DelayProcessor*>(processor()); 
 }
 
-} // namespace WebCore
+} // WebCore

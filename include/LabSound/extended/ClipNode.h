@@ -24,7 +24,7 @@ namespace LabSound
         ClipNode(float sampleRate);
         virtual ~ClipNode();
 
-        void setMode(Mode);
+        void setMode(Mode m);
 
         // in CLIP mode, a is the min value, and b is the max value.
         // in TANH mode, a is the overall gain, and b is the input gain.

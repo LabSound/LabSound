@@ -29,11 +29,11 @@ namespace LabSound
 		bool AppliesToNote(uint8_t note) 
 		{
 			// Debugging: 
-			//std::cout << "Note: " << int(note) << std::endl;
-			//std::cout << "Base: " << int(baseMidiNote) << std::endl;
-			//std::cout << "Low: " << int(midiNoteLow) << std::endl;
-			//std::cout << "High: " << int(midiNoteHigh) << std::endl;
-			//std::cout << std::endl << std::endl;
+			std::cout << "Note: " << int(note) << std::endl;
+			std::cout << "Base: " << int(baseMidiNote) << std::endl;
+			std::cout << "Low: " << int(midiNoteLow) << std::endl;
+			std::cout << "High: " << int(midiNoteHigh) << std::endl;
+			std::cout << std::endl << std::endl;
 			if (baseMidiNote == note || (note >= midiNoteLow && note <= midiNoteHigh)) 
 				return true; 
 			else 
