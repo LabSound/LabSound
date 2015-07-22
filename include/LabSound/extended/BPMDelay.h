@@ -45,25 +45,26 @@ namespace LabSound
 
 		const std::vector<float> times = 
 		{
-			1 / 8,
-			(1 / 4) * 2 / 3,
-			(1 / 8) * 3 / 2,
-			1 / 4,
-			(1 / 2) * 2 / 3, 
-			(1 / 4) * 3 / 2,
-			1 / 2, 
-			1 * 2 / 3,
-			(1 / 2) * 3 / 2, 
-			1, 
-			2 * 2 / 3, 
-			1 * 3 / 2, 
-			2, 
-			3
+			1.f / 8.f,
+			(1.f / 4.f) * 2.f / 3.f,
+			(1.f / 8.f) * 3,f / 2.f,
+			1.f / 4.f,
+			(1.f / 2.f) * 2.f / 3.f, 
+			(1.f / 4.f) * 3.f / 2.f,
+			1.f / 2.f, 
+			1.f * 2.f / 3.f,
+			(1.f / 2.f) * 3.f / 2.f, 
+			1.0f, 
+			2.f * 2.f / 3.f, 
+			1.f * 3.f / 2.f, 
+			2.f, 
+			3.f
 		};
 			
 	public:
 
         BPMDelay(float sampleRate);
+
 		virtual ~BPMDelay();
 
 		void UpdateTempo(float newTempo)
