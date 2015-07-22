@@ -32,7 +32,7 @@ namespace LabSound
 		TS_2D = 13,
 	};
 
-	class BPMDelay : public DelayNode 
+	class BPMDelay : public WebCore::DelayNode 
 	{
 		float tempo;
 		int noteDivision; 
@@ -43,23 +43,7 @@ namespace LabSound
 			delayTime()->setValue(dT);
 		}
 
-		const std::vector<float> times = 
-		{
-			1.f / 8.f,
-			(1.f / 4.f) * 2.f / 3.f,
-			(1.f / 8.f) * 3,f / 2.f,
-			1.f / 4.f,
-			(1.f / 2.f) * 2.f / 3.f, 
-			(1.f / 4.f) * 3.f / 2.f,
-			1.f / 2.f, 
-			1.f * 2.f / 3.f,
-			(1.f / 2.f) * 3.f / 2.f, 
-			1.0f, 
-			2.f * 2.f / 3.f, 
-			1.f * 3.f / 2.f, 
-			2.f, 
-			3.f
-		};
+		std::vector<float> times;
 			
 	public:
 
