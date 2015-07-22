@@ -89,8 +89,7 @@ public:
     unsigned log2FFTSize() const { return m_log2FFTSize; }
     
 #if USE_ACCELERATE_FFT
-    // Needed to init Accelerate FFT lib on OSX
-    //static void initialize();
+    static void cleanup();
 #endif
     
 private:

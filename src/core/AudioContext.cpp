@@ -68,6 +68,10 @@ AudioContext::~AudioContext()
 	fprintf(stderr, "%p: AudioContext::~AudioContext()\n", this);
 #endif
     
+#if USE_ACCELERATE_FFT
+    FFTFrame::cleanup();
+#endif
+    
 	ASSERT(!m_isInitialized);
 	ASSERT(m_isStopScheduled);
 	ASSERT(!m_nodesToDelete.size());

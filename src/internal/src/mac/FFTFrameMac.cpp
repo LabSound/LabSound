@@ -38,7 +38,7 @@ namespace WebCore {
 
 const int kMaxFFTPow2Size = 24;
 
-FFTSetup* FFTFrame::fftSetups = 0;
+FFTSetup * FFTFrame::fftSetups = 0;
 
 // Normal constructor: allocates for a given fftSize
 FFTFrame::FFTFrame(unsigned fftSize)
@@ -92,9 +92,23 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 
 FFTFrame::~FFTFrame()
 {
-    
+
 }
- 
+    
+void FFTFrame::cleanup()
+{
+    if (!fftSetups)
+        return;
+    
+    for (int i = 0; i < kMaxFFTPow2Size; ++i) {
+        if (fftSetups[i])
+            vDSP_destroy_fftsetup(fftSetups[i]);
+    }
+    
+    free(fftSetups);
+    fftSetups = 0;
+}
+    
 void FFTFrame::multiply(const FFTFrame& frame)
 {
     FFTFrame& frame1 = *this;
