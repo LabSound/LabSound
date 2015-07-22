@@ -94,27 +94,7 @@ FFTFrame::~FFTFrame()
 {
     
 }
-
-void FFTFrame::initialize()
-{
-    
-}
-
-void FFTFrame::cleanup()
-{
-
-    if (!fftSetups)
-        return;
-    
-    for (int i = 0; i < kMaxFFTPow2Size; ++i) {
-        if (fftSetups[i])
-            vDSP_destroy_fftsetup(fftSetups[i]);
-    }
-    
-    free(fftSetups);
-    fftSetups = 0;
-}
-    
+ 
 void FFTFrame::multiply(const FFTFrame& frame)
 {
     FFTFrame& frame1 = *this;

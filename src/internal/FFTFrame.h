@@ -90,8 +90,7 @@ public:
     
 #if USE_ACCELERATE_FFT
     // Needed to init Accelerate FFT lib on OSX
-    static void initialize();
-    static void cleanup();
+    //static void initialize();
 #endif
     
 private:
