@@ -66,7 +66,7 @@ public:
 	 // Copy
     FFTFrame(const FFTFrame& frame);
     ~FFTFrame();
-
+    
     void doFFT(const float* data);
     void doInverseFFT(float* data);
     void multiply(const FFTFrame& frame); // multiplies ourself with frame : effectively operator*=()
@@ -87,11 +87,12 @@ public:
 
     unsigned fftSize() const { return m_FFTSize; }
     unsigned log2FFTSize() const { return m_log2FFTSize; }
-
+    
+#if USE_ACCELERATE_FFT
+    static void cleanup();
+#endif
+    
 private:
-
-    void cleanup();
-
     
     unsigned m_FFTSize;
     unsigned m_log2FFTSize;
