@@ -80,8 +80,7 @@ namespace LabSound {
 	}
 
 	// Output to a specific note 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r,
-                                                             std::shared_ptr<AudioNode> outputNode, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
     {
         auto ac = r.context();
         if (audioBuffer && ac) {

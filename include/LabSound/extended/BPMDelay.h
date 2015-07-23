@@ -11,43 +11,44 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/DelayNode.h"
 
+// Debug
+#include <iostream>
+
 namespace LabSound 
 {
-
-	enum class TempoSync : int
+	enum TempoSync
 	{
-		TS_32 = 0,
-		TS_16T = 1,
-		TS_32D = 2,
-		TS_16 = 3,
-		TS_8T = 4,
-		TS_16D = 5,
-		TS_8 = 6,
-		TS_4T = 7,
-		TS_8D = 8,
-		TS_4 = 9,
-		TS_2T = 10,
-		TS_4D = 11,
-		TS_2 = 12,
-		TS_2D = 13,
+		TS_32,
+		TS_16T,
+		TS_32D,
+		TS_16,
+		TS_8T,
+		TS_16D,
+		TS_8,
+		TS_4T,
+		TS_8D,
+		TS_4,
+		TS_2T,
+		TS_4D,
+		TS_2,
+		TS_2D,
 	};
 
 	class BPMDelay : public WebCore::DelayNode 
 	{
 		float tempo;
 		int noteDivision; 
+		std::vector<float> times;
 
 		void recomputeDelay()
 		{
 			float dT = float(60.0f * noteDivision) / tempo;
 			delayTime()->setValue(dT);
 		}
-
-		std::vector<float> times;
 			
 	public:
 
-        BPMDelay(float sampleRate);
+        BPMDelay(float sampleRate, float tempo);
 
 		virtual ~BPMDelay();
 
@@ -57,18 +58,9 @@ namespace LabSound
 			recomputeDelay();
 		}
 
-		void SetDelayIndex(TempoSync value)
-		{
-			if (value <= TempoSync::TS_32 && value >= TempoSync::TS_2D)
-			{
-				noteDivision = times[static_cast<int>(value)];
-				recomputeDelay(); 
-			}
-			else 
-				throw std::invalid_argument("Delay index out of bounds");
-		}
-	};
+		void SetDelayIndex(TempoSync value);
 
+	};
 }
 
 #endif

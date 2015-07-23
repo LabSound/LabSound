@@ -33,9 +33,14 @@ namespace WebCore {
 
 class AudioDSPKernel;
     
-class DelayProcessor : public AudioDSPKernelProcessor {
+class DelayProcessor : public AudioDSPKernelProcessor 
+{
+	std::shared_ptr<AudioParam> m_delayTime;
+    double m_maxDelayTime;
 public:
+
     DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime);
+
     virtual ~DelayProcessor();
     
     virtual AudioDSPKernel* createKernel();
@@ -43,10 +48,6 @@ public:
     std::shared_ptr<AudioParam> delayTime() const { return m_delayTime; }
 
     double maxDelayTime() { return m_maxDelayTime; }
-
-private:
-    std::shared_ptr<AudioParam> m_delayTime;
-    double m_maxDelayTime;
 };
 
 } // namespace WebCore
