@@ -67,6 +67,7 @@
     <ClInclude Include="..\include\LabSound\extended\Logging.h" />
     <ClInclude Include="..\include\LabSound\extended\NoiseNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PeakCompNode.h" />
+    <ClInclude Include="..\include\LabSound\extended\PingPongDelayNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PowerMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\PWMNode.h" />
     <ClInclude Include="..\include\LabSound\extended\RealtimeAnalyser.h" />
@@ -163,6 +164,7 @@
     <ClCompile Include="..\src\extended\LabSound.cpp" />
     <ClCompile Include="..\src\extended\NoiseNode.cpp" />
     <ClCompile Include="..\src\extended\PeakCompNode.cpp" />
+    <ClCompile Include="..\src\extended\PingPongDelayNode.cpp" />
     <ClCompile Include="..\src\extended\PowerMonitorNode.cpp" />
     <ClCompile Include="..\src\extended\PWMNode.cpp" />
     <ClCompile Include="..\src\extended\RecorderNode.cpp" />

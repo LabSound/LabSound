@@ -40,9 +40,6 @@ namespace LabSound
     {
         setNodeType((AudioNode::NodeType) LabSound::NodeType::NodeTypeBPMDelay);
 
-        //addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        //addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));
-
 		times = 
 		{
 			1.f / 8.f,
@@ -62,13 +59,11 @@ namespace LabSound
 		};
 
 		SetDelayIndex(TempoSync::TS_8);
-
-        //initialize();
     }
     
     BPMDelay::~BPMDelay()
     {
-        //uninitialize();
+
     }
 
 	void BPMDelay::SetDelayIndex(TempoSync value)
@@ -82,6 +77,4 @@ namespace LabSound
 			throw std::invalid_argument("Delay index out of bounds");
 	}
 
-
-} // end namespace LabSound
-
+} // LabSound

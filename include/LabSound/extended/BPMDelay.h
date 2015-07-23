@@ -11,29 +11,8 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/DelayNode.h"
 
-// Debug
-#include <iostream>
-
 namespace LabSound 
 {
-	enum TempoSync
-	{
-		TS_32,
-		TS_16T,
-		TS_32D,
-		TS_16,
-		TS_8T,
-		TS_16D,
-		TS_8,
-		TS_4T,
-		TS_8D,
-		TS_4,
-		TS_2T,
-		TS_4D,
-		TS_2,
-		TS_2D,
-	};
-
 	class BPMDelay : public WebCore::DelayNode 
 	{
 		float tempo;
@@ -47,19 +26,16 @@ namespace LabSound
 		}
 			
 	public:
-
         BPMDelay(float sampleRate, float tempo);
-
 		virtual ~BPMDelay();
 
-		void UpdateTempo(float newTempo)
+		void SetTempo(float newTempo)
 		{
 			tempo = newTempo;	
 			recomputeDelay();
 		}
 
-		void SetDelayIndex(TempoSync value);
-
+		void SetDelayIndex(WebCore::TempoSync value);
 	};
 }
 

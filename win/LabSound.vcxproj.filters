@@ -369,6 +369,9 @@
     <ClInclude Include="..\include\LabSound\extended\BPMDelay.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\PingPongDelayNode.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -639,6 +642,9 @@
       <Filter>Internal\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\extended\BPMDelay.cpp">
+      <Filter>LabSound\extended\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\PingPongDelayNode.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
   </ItemGroup>

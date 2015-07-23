@@ -10,6 +10,7 @@ std::string PrintCurrentDirectory()
 
 #include "ExampleBaseApp.h"
 #include "LabSound/extended/BPMDelay.h"
+#include "LabSound/extended/PingPongDelayNode.h"
 
 // An example with a bunch of nodes to verify api + functionality changes/improvements/regressions
 struct ValidationApp : public LabSoundExampleApp
@@ -34,17 +35,21 @@ struct ValidationApp : public LabSoundExampleApp
         auto ac = context.get();
 
         std::shared_ptr<AudioBufferSourceNode> beatNode;
-        std::shared_ptr<BPMDelay> bpmDelay;
+        std::shared_ptr<PingPongDelayNode> pingping;
 
         {
             ContextGraphLock g(context, "Validator");
             ContextRenderLock r(context, "Validator");
             
-			bpmDelay = std::make_shared<BPMDelay>(context->sampleRate(), 120.0f);
-			bpmDelay->connect(ac, context->destination().get(), 0, 0);
+			pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
+			pingping->BuildSubgraph(g);
+			pingping->SetFeedback(0.5);
+			pingping->SetDelayIndex(WebCore::TempoSync::TS_16T);
+
+			pingping->output->connect(ac, context->destination().get(), 0, 0);
 
             SoundBuffer beat("samples/kick.wav", context->sampleRate());
-            beatNode = beat.play(r, bpmDelay, 0.0f);
+            beatNode = beat.play(r, pingping->input, 0.0f);
         }
      
         const int seconds = 10;
