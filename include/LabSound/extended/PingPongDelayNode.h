@@ -33,6 +33,7 @@ namespace LabSound
 		std::shared_ptr<WebCore::GainNode> output;
 		std::shared_ptr<WebCore::GainNode> input;
 		virtual void BuildSubgraph(ContextGraphLock & lock) = 0;
+        virtual ~SubgraphNode() { }
 	};
 
 	class PingPongDelayNode : public SubgraphNode
