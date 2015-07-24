@@ -36,21 +36,20 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace WebCore
+{
 
-const unsigned DefaultNumberOfOutputChannels = 1;
-
-ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs)
-    : AudioNode(sampleRate)
-    , m_desiredNumberOfOutputChannels(DefaultNumberOfOutputChannels)
+ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs) : AudioNode(sampleRate)
 {
     numberOfInputs = std::max(1U, std::min(numberOfInputs, AudioContext::maxNumberOfChannels));
     
     // Create the requested number of inputs.
-    for (unsigned i = 0; i < numberOfInputs; ++i)
-        addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    for (uint32_t i = 0; i < numberOfInputs; ++i)
+    {
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    }
 
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     
     setNodeType(NodeTypeChannelMerger);
     
@@ -63,24 +62,29 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
     ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
 
     // Output bus not updated yet, so just output silence. See Note * in checkNumberOfChannelsForInput
-    if (m_desiredNumberOfOutputChannels != output->numberOfChannels()) {
+    if (m_desiredNumberOfOutputChannels != output->numberOfChannels())
+    {
         output->bus(r)->zero();
         return;
     }
     
     // Merge all the channels from all the inputs into one output.
-    unsigned outputChannelIndex = 0;
-    for (unsigned i = 0; i < numberOfInputs(); ++i) {
+    uint32_t outputChannelIndex = 0;
+    for (uint32_t i = 0; i < numberOfInputs(); ++i)
+    {
         auto input = this->input(i);
-        if (input->isConnected()) {
-            unsigned numberOfInputChannels = input->bus(r)->numberOfChannels();
+        
+        if (input->isConnected())
+        {
+            uint32_t numberOfInputChannels = input->bus(r)->numberOfChannels();
             
             // Merge channels from this particular input.
-            for (unsigned j = 0; j < numberOfInputChannels; ++j) {
+            for (uint32_t j = 0; j < numberOfInputChannels; ++j)
+            {
                 AudioChannel* inputChannel = input->bus(r)->channel(j);
                 AudioChannel* outputChannel = output->bus(r)->channel(outputChannelIndex);
-                outputChannel->copyFrom(inputChannel);
                 
+                outputChannel->copyFrom(inputChannel);
                 ++outputChannelIndex;
             }
         }
@@ -91,6 +95,7 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
 
 void ChannelMergerNode::reset(ContextRenderLock&)
 {
+    
 }
 
 // Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
@@ -98,17 +103,22 @@ void ChannelMergerNode::reset(ContextRenderLock&)
 void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     // Count how many channels we have all together from all of the inputs.
-    unsigned numberOfOutputChannels = 0;
-    for (unsigned i = 0; i < numberOfInputs(); ++i) {
+    uint32_t numberOfOutputChannels = 0;
+    
+    for (uint32_t i = 0; i < numberOfInputs(); ++i)
+    {
         auto input = this->input(i);
         
         if (input->isConnected())
-            numberOfOutputChannels += input->bus(r)->numberOfChannels();
+        {
+           numberOfOutputChannels += input->bus(r)->numberOfChannels();
+        }
     }
 
     // Set the correct number of channels on the output
     auto output = this->output(0);
     output->setNumberOfChannels(r, numberOfOutputChannels);
+    
     // Note * There can in rare cases be a slight delay before the output bus is updated to the new number of
     // channels because of tryLocks() in the context's updating system. So record the new number of
     // output channels here.

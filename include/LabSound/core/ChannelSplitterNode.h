@@ -27,11 +27,14 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore {
+namespace WebCore
+{
 
 class AudioContext;
     
-class ChannelSplitterNode : public AudioNode {
+class ChannelSplitterNode : public AudioNode
+    {
+        
 public:
     ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs);
     virtual ~ChannelSplitterNode() {}

@@ -38,12 +38,17 @@ ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutp
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
     if (numberOfOutputs > AudioContext::maxNumberOfChannels)
+    {
+        // Notify user we were clamped to max?
         numberOfOutputs = AudioContext::maxNumberOfChannels;
+    }
     
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
-    for (unsigned i = 0; i < numberOfOutputs; ++i)
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    
+    for (uint32_t i = 0; i < numberOfOutputs; ++i)
+    {
+       addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    }
+
     setNodeType(NodeTypeChannelSplitter);
     
     initialize();
@@ -57,15 +62,19 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
     
     unsigned numberOfSourceChannels = source->numberOfChannels();
     
-    for (unsigned i = 0; i < numberOfOutputs(); ++i) {
+    for (uint32_t i = 0; i < numberOfOutputs(); ++i)
+    {
         AudioBus* destination = output(i)->bus(r);
         ASSERT(destination);
         
-        if (i < numberOfSourceChannels) {
+        if (i < numberOfSourceChannels)
+        {
             // Split the channel out if it exists in the source.
             // It would be nice to avoid the copy and simply pass along pointers, but this becomes extremely difficult with fanout and fanin.
             destination->channel(0)->copyFrom(source->channel(i));
-        } else if (output(i)->renderingFanOutCount() > 0) {
+        }
+        else if (output(i)->renderingFanOutCount() > 0)
+        {
             // Only bother zeroing out the destination if it's connected to anything
             destination->zero();
         }
@@ -74,6 +83,7 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
 
 void ChannelSplitterNode::reset(ContextRenderLock&)
 {
+    
 }
 
 } // namespace WebCore
