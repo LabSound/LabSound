@@ -67,6 +67,8 @@ public:
 
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
 
+	void reset() { m_playbackState = UNSCHEDULED_STATE; }
+
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const override { return true; }
@@ -80,11 +82,7 @@ protected:
     // Each frame time is relative to the context's currentSampleFrame().
     // quantumFrameOffset    : Offset frame in this time quantum to start rendering.
     // nonSilentFramesToProcess : Number of frames rendering non-silence (will be <= quantumFrameSize).
-    void updateSchedulingInfo(ContextRenderLock&,
-                              size_t quantumFrameSize,
-                              AudioBus* outputBus,
-                              size_t& quantumFrameOffset,
-                              size_t& nonSilentFramesToProcess);
+    void updateSchedulingInfo(ContextRenderLock &, size_t quantumFrameSize, AudioBus * outputBus, size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess);
 
     // Called when we have no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock&);

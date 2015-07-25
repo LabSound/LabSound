@@ -78,7 +78,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)
         finish(r);
 
-    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) {
+    if (m_playbackState == UNSCHEDULED_STATE || startFrame >= quantumEndFrame) {
         // Output silence.
         outputBus->zero();
         nonSilentFramesToProcess = 0;
@@ -86,17 +86,20 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     }
 
     // Check if it's time to start playing.
-    if (m_playbackState == SCHEDULED_STATE) {
+    if (m_playbackState == SCHEDULED_STATE) 
+	{
         // Increment the active source count only if we're transitioning from SCHEDULED_STATE to PLAYING_STATE.
         m_playbackState = PLAYING_STATE;
         context->incrementActiveSourceCount();
     }
 
+
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
     quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
 
-    if (!nonSilentFramesToProcess) {
+    if (!nonSilentFramesToProcess)
+	{
         // Output silence.
         outputBus->zero();
         return;
@@ -104,7 +107,8 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
 
     // Handle silence before we start playing.
     // Zero any initial frames representing silence leading up to a rendering start time in the middle of the quantum.
-    if (quantumFrameOffset) {
+    if (quantumFrameOffset)
+	{
         for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
             memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
     }
@@ -163,6 +167,7 @@ void AudioScheduledSourceNode::stop(double when)
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
     m_playbackState = FINISHED_STATE;
+	r.context()->decrementActiveSourceCount();
 }
 
 } // namespace WebCore

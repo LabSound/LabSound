@@ -127,23 +127,22 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
     size_t quantumFrameOffset;
     size_t bufferFramesToProcess;
 
-    updateSchedulingInfo(r,
-                         framesToProcess,
-                         outputBus,
-                         quantumFrameOffset,
-                         bufferFramesToProcess);
+    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, bufferFramesToProcess);
                          
-    if (!bufferFramesToProcess) {
+    if (!bufferFramesToProcess) 
+	{
         outputBus->zero();
         return;
     }
 
-    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i) {
+    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
+	{
         m_destinationChannels[i] = outputBus->channel(i)->mutableData();
     }
 
     // Render by reading directly from the buffer.
-    if (!renderFromBuffer(r, outputBus, quantumFrameOffset, bufferFramesToProcess)) {
+    if (!renderFromBuffer(r, outputBus, quantumFrameOffset, bufferFramesToProcess))
+	{
         outputBus->zero();
         return;
     }
@@ -347,6 +346,7 @@ void AudioBufferSourceNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
     m_lastGain = gain()->value(r);
+	AudioScheduledSourceNode::reset();
 }
 
 bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
