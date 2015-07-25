@@ -41,30 +41,24 @@ using namespace VectorMath;
 
 const unsigned MaxBusChannels = 32;
 
-AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate)
-    : m_length(length)
-    , m_busGain(1)
-    , m_isFirstTime(true)
-    , m_sampleRate(0)
+AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_length(length)
 {
     ASSERT(numberOfChannels <= MaxBusChannels);
     if (numberOfChannels > MaxBusChannels)
         return;
 
-    m_channels.reserve(numberOfChannels);
-
-    for (uint32_t i = 0; i < numberOfChannels; ++i) {
-        m_channels.push_back(std::unique_ptr<AudioChannel>(allocate ?
-                                                           new AudioChannel(length) :
-                                                           new AudioChannel(0, length) ));
+    for (uint32_t i = 0; i < numberOfChannels; ++i) 
+	{
+		// Formerly push_back, which ~10% of the time would freak out and crash when
+		// trying to access a ptr returned from AudioBus::channel(idx) on Windows
+        m_channels.emplace_back(std::unique_ptr<AudioChannel>(allocate ? new AudioChannel(length) : new AudioChannel(0, length)));
     }
-
-    m_layout = LayoutCanonical; // for now this is the only layout we define
 }
 
 void AudioBus::setChannelMemory(unsigned channelIndex, float* storage, size_t length)
 {
-    if (channelIndex < m_channels.size()) {
+    if (channelIndex < m_channels.size()) 
+	{
         channel(channelIndex)->set(storage, length);
         m_length = length; // FIXME: verify that this length matches all the other channel lengths
     }
@@ -240,11 +234,17 @@ void AudioBus::sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelI
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
 
-    if (numberOfDestinationChannels == numberOfSourceChannels) {
+    if (numberOfDestinationChannels == numberOfSourceChannels) 
+	{
         for (unsigned i = 0; i < numberOfSourceChannels; ++i)
-            channel(i)->sumFrom(sourceBus.channel(i));
-    } else {
-        switch (channelInterpretation) {
+		{
+			 channel(i)->sumFrom(sourceBus.channel(i));
+		}
+    }
+	else 
+	{
+        switch (channelInterpretation)
+		{
             case ChannelInterpretation::Speakers:
                 speakersSumFrom(sourceBus);
                 break;
@@ -373,16 +373,26 @@ void AudioBus::discreteCopyFrom(const AudioBus& sourceBus)
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
     
-    if (numberOfDestinationChannels < numberOfSourceChannels) {
+    if (numberOfDestinationChannels < numberOfSourceChannels) 
+	{
         // Down-mix by copying channels and dropping the remaining.
         for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
+		{
             channel(i)->copyFrom(sourceBus.channel(i));
-    } else if (numberOfDestinationChannels > numberOfSourceChannels) {
+		}
+    }
+	else if (numberOfDestinationChannels > numberOfSourceChannels)
+	{
         // Up-mix by copying as many channels as we have, then zeroing remaining channels.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i)
-            channel(i)->copyFrom(sourceBus.channel(i));
+		{
+			channel(i)->copyFrom(sourceBus.channel(i));
+		}
+
         for (unsigned i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
-            channel(i)->zero();
+		{
+			channel(i)->zero();
+		}
     }
 }
 
@@ -391,14 +401,21 @@ void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
 
-    if (numberOfDestinationChannels < numberOfSourceChannels) {
+    if (numberOfDestinationChannels < numberOfSourceChannels) 
+	{
         // Down-mix by summing channels and dropping the remaining.
-        for (unsigned i = 0; i < numberOfDestinationChannels; ++i) 
+        for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
+		{
             channel(i)->sumFrom(sourceBus.channel(i));
-    } else if (numberOfDestinationChannels > numberOfSourceChannels) {
+		}
+    } 
+	else if (numberOfDestinationChannels > numberOfSourceChannels)
+	{
         // Up-mix by summing as many channels as we have.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i) 
-            channel(i)->sumFrom(sourceBus.channel(i));
+		{
+			channel(i)->sumFrom(sourceBus.channel(i));
+		}
     }
 }
 

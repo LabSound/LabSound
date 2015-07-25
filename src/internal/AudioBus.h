@@ -66,7 +66,7 @@ public:
     unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
 
     // Use this when looping over channels
-    AudioChannel* channel(int channel) { return m_channels[channel].get(); }
+    AudioChannel * channel(int channel) { return m_channels[channel].get(); }
 
     const AudioChannel* channel(int channel) const 
     {
@@ -154,14 +154,14 @@ protected:
 
     std::vector<std::unique_ptr<AudioChannel> > m_channels;
 
-    int m_layout;
+    int m_layout = LayoutCanonical;
 
-    float m_busGain;
+    float m_busGain = 1.0f;
 
     std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
 
-    bool m_isFirstTime;
-    float m_sampleRate; // 0.0 if unknown or N/A
+    bool m_isFirstTime = true;
+    float m_sampleRate = 0.0f;
 
 };
 
