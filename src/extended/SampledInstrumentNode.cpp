@@ -100,7 +100,7 @@ namespace LabSound
             {
 				for (auto & v : voices)
 				{	
-					if (v->hasFinished())
+					if (!v->isPlayingOrScheduled())
 					{
 						v = sample->Start(r, midiNoteNumber, amplitude); // this voice is free -> destruct
 						return;
