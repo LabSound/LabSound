@@ -134,8 +134,11 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
 	float *myOutputBufferOfFloats = (float*) outputBuffer;
 
 	// Tells the given channel to use an externally allocated buffer (rtAudio's)
-	m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
-	m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+	if (m_renderBus.isFirstTime())
+	{
+		m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
+		m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+	}
 
 	// Source Bus :: Destination Bus (no source/input)
 	m_callback.render(0, &m_renderBus, numberOfFrames);

@@ -49,13 +49,17 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_
 
     for (uint32_t i = 0; i < numberOfChannels; ++i) 
 	{
-		// Formerly push_back, which ~10% of the time would freak out and crash when
-		// trying to access a ptr returned from AudioBus::channel(idx) on Windows
-        m_channels.emplace_back(std::unique_ptr<AudioChannel>(allocate ? new AudioChannel(length) : new AudioChannel(0, length)));
+		AudioChannel * newChannel;
+		if (allocate)
+			newChannel = new AudioChannel(length);
+		else
+			newChannel = new AudioChannel(nullptr, length);
+
+        m_channels.emplace_back(std::unique_ptr<AudioChannel>(newChannel));
     }
 }
 
-void AudioBus::setChannelMemory(unsigned channelIndex, float* storage, size_t length)
+void AudioBus::setChannelMemory(unsigned channelIndex, float * storage, size_t length)
 {
     if (channelIndex < m_channels.size()) 
 	{
