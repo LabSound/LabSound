@@ -145,6 +145,12 @@ void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, 
     AudioParam::connect(g, param, this->output(outputIndex));
 }
 
+ void AudioNode::disconnect(AudioContext* ctx)
+ {
+	 std::cout << "--> Disconnect \n";
+	 ctx->disconnect(this->output(0));
+ }
+
 void AudioNode::disconnect(unsigned outputIndex)
 {
     if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
@@ -168,7 +174,8 @@ void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount)
     
     if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels)
     {
-        if (m_channelCount != channelCount) {
+        if (m_channelCount != channelCount) 
+		{
             m_channelCount = channelCount;
             if (m_channelCountMode != ChannelCountMode::Max)
                 updateChannelsForInputs(g);

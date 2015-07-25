@@ -89,7 +89,7 @@ namespace LabSound
                 m_context->m_renderLock.unlock();
         }
         
-        WebCore::AudioContext* context() { return m_context.get(); }
+        WebCore::AudioContext * context() { return m_context.get(); }
         std::shared_ptr<WebCore::AudioContext> contextPtr() { return m_context; }
         
     private:

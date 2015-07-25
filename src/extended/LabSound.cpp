@@ -54,7 +54,6 @@ namespace LabSound
 		LOG("Create GraphUpdateThread");
 		while (true)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
 			if (mainContext)
 			{
 				ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
@@ -67,6 +66,7 @@ namespace LabSound
 			{
 				break;
 			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
 		}
 		LOG("Destroy GraphUpdateThread");
 	}
@@ -77,11 +77,13 @@ namespace LabSound
 		
 		mainContext = std::make_shared<WebCore::AudioContext>();
 		mainContext->setDestinationNode(std::make_shared<WebCore::DefaultAudioDestinationNode>(mainContext));
-		mainContext->initHRTFDatabase();
+		
 		mainContext->lazyInitialize();
 		
 		g_GraphUpdateThread = std::thread(UpdateGraph);
-		
+
+		mainContext->initHRTFDatabase();
+
 		return mainContext;
 	}
 	
