@@ -78,7 +78,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)
         finish(r);
 
-    if (m_playbackState == UNSCHEDULED_STATE || startFrame >= quantumEndFrame) {
+    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) {
         // Output silence.
         outputBus->zero();
         nonSilentFramesToProcess = 0;
