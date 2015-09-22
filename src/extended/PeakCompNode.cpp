@@ -86,12 +86,14 @@ namespace LabSound
 
         virtual ~PeakCompNodeInternal() { }
         
-        virtual void initialize() { }
+        virtual void initialize() override { }
 
-        virtual void uninitialize() { }
+        virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r, const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus, size_t framesToProcess)
+        virtual void process(ContextRenderLock& r,
+                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus,
+                             size_t framesToProcess) override
         {
             if (!numberOfChannels())
                 return;
@@ -215,7 +217,7 @@ namespace LabSound
         double makeupGain;
 
         // Resets filter state
-        virtual void reset() { /* @tofix */ }
+        virtual void reset() override { /* @tofix */ }
 
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }

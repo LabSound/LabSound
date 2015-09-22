@@ -43,9 +43,9 @@ public:
     DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
     virtual ~DefaultAudioDestinationNode();
     
-    virtual void initialize();
-    virtual void uninitialize();
-    virtual void startRendering();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
+    virtual void startRendering() override;
     
     unsigned maxChannelCount() const;
     virtual void setChannelCount(ContextGraphLock&, unsigned long) override;

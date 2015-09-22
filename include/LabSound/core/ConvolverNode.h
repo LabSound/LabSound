@@ -40,8 +40,8 @@ public:
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
-    virtual void initialize();
-    virtual void uninitialize();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     // Impulse responses
     void setBuffer(ContextGraphLock&, std::shared_ptr<AudioBuffer>);

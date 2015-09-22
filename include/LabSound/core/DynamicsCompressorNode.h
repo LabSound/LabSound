@@ -43,8 +43,8 @@ public:
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
-    virtual void initialize();
-    virtual void uninitialize();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     // Static compression curve parameters.
     std::shared_ptr<AudioParam> threshold() { return m_threshold; }

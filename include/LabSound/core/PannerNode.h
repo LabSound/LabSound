@@ -63,8 +63,8 @@ public:
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
-    virtual void initialize();
-    virtual void uninitialize();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     // Listener
     AudioListener* listener(ContextRenderLock&);

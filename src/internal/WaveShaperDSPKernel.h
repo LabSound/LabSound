@@ -42,7 +42,8 @@ public:
     }
     
     // AudioDSPKernel
-    virtual void process(ContextRenderLock&, const float* source, float* dest, size_t framesToProcess);
+    virtual void process(ContextRenderLock&,
+                         const float* source, float* dest, size_t framesToProcess) override;
     virtual void reset() override { }
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }

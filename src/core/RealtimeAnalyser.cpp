@@ -50,7 +50,7 @@ const uint32_t RealtimeAnalyser::MinFFTSize = 32;
 const uint32_t RealtimeAnalyser::MaxFFTSize = 2048;
 const uint32_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-uint32_t RoundNextPow2(uint32_t v) 
+inline uint32_t RoundNextPow2(uint32_t v)
 {
     v--;
     v |= v >> 1;
@@ -62,7 +62,7 @@ uint32_t RoundNextPow2(uint32_t v)
     return v;
 }
     
-void ApplyBlackmanWindow(float * p, uint32_t n)
+inline void ApplyBlackmanWindow(float * p, uint32_t n)
 {
     // Blackman window
     double alpha = 0.16;

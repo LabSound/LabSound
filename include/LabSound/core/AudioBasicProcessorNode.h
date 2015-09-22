@@ -47,8 +47,8 @@ public:
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
-    virtual void initialize();
-    virtual void uninitialize();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     // Called in the main thread when the number of channels for the input may have changed.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;

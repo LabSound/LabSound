@@ -30,12 +30,14 @@ namespace LabSound {
 
         virtual ~PWMNodeInternal() { }
 
-        virtual void initialize() { }
+        virtual void initialize() override { }
 
-        virtual void uninitialize() { }
+        virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock&, const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) 
+        virtual void process(ContextRenderLock&,
+                             const WebCore::AudioBus* source, WebCore::AudioBus* destination,
+                             size_t framesToProcess) override
 		{
             if (!numberOfChannels())
                 return;
@@ -60,7 +62,7 @@ namespace LabSound {
             }
         }
 
-        virtual void reset() { }
+        virtual void reset() override { }
 
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
