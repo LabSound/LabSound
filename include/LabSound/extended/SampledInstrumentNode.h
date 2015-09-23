@@ -83,8 +83,10 @@ namespace LabSound
 		std::vector<std::shared_ptr<SamplerSound>> samples;
 		std::shared_ptr<WebCore::GainNode> gainNode;
 		std::vector<std::shared_ptr<WebCore::AudioBufferSourceNode>> voices;
+		const float maxVoiceCount = 24;
+		float sampleRate;
 	public:
-        SampledInstrumentNode(float sampleRate);
+        SampledInstrumentNode(WebCore::AudioContext * ctx, float sampleRate);
         ~SampledInstrumentNode();
 
 		void LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds);

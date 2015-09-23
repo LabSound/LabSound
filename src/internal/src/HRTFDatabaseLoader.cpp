@@ -70,8 +70,9 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
 void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
 {
     std::lock_guard<std::mutex> locker(threadData->m_threadLock);
-    HRTFDatabaseLoader* loader = reinterpret_cast<HRTFDatabaseLoader*>(threadData);
+    HRTFDatabaseLoader * loader = reinterpret_cast<HRTFDatabaseLoader*>(threadData);
     ASSERT(loader);
+
     threadData->m_loading = true;
     loader->load();
     threadData->m_loadingCondition.notify_one();
@@ -83,13 +84,13 @@ void HRTFDatabaseLoader::load()
     
     if (!m_hrtfDatabase.get())
     {
-        LOG("HRTF database not loaded");
+        LOG_ERROR("HRTF database not loaded");
     }
 }
 
 void HRTFDatabaseLoader::loadAsynchronously()
 {
-    std::unique_lock<std::mutex> lock(m_threadLock);
+    std::lock_guard<std::mutex> lock(m_threadLock);
     
     if (!m_hrtfDatabase.get() && !m_loading)
     {
@@ -99,14 +100,16 @@ void HRTFDatabaseLoader::loadAsynchronously()
 
 bool HRTFDatabaseLoader::isLoaded() const
 {
-    return !!m_hrtfDatabase.get();
+    return (m_hrtfDatabase.get() != nullptr);
 }
 
 void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
 {
     std::unique_lock<std::mutex> locker(m_threadLock);
     while (!m_hrtfDatabase.get())
-        m_loadingCondition.wait(locker);
+	{
+		m_loadingCondition.wait(locker);
+	}
 }
 
 HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()

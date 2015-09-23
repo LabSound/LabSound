@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08567C291B61D09D00EB6C0D /* BPMDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08567C271B61D09D00EB6C0D /* BPMDelay.cpp */; };
+		08567C2A1B61D09D00EB6C0D /* PingPongDelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */; };
 		08650BA91AD6222500D19E38 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BA81AD6222500D19E38 /* AudioBus.cpp */; };
 		08650BD41AD6225900D19E38 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAB1AD6225900D19E38 /* AudioChannel.cpp */; };
 		08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */; };
@@ -102,6 +104,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		08567C241B61D04F00EB6C0D /* BPMDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BPMDelay.h; path = ../include/LabSound/extended/BPMDelay.h; sourceTree = SOURCE_ROOT; };
+		08567C251B61D04F00EB6C0D /* PingPongDelayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PingPongDelayNode.h; path = ../include/LabSound/extended/PingPongDelayNode.h; sourceTree = SOURCE_ROOT; };
+		08567C261B61D06400EB6C0D /* Util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Util.h; path = ../include/LabSound/extended/Util.h; sourceTree = SOURCE_ROOT; };
+		08567C271B61D09D00EB6C0D /* BPMDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BPMDelay.cpp; path = ../src/extended/BPMDelay.cpp; sourceTree = SOURCE_ROOT; };
+		08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PingPongDelayNode.cpp; path = ../src/extended/PingPongDelayNode.cpp; sourceTree = SOURCE_ROOT; };
 		085F34DF1ADCD9B800FEADC5 /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../third_party/WTF/Compiler.h; sourceTree = "<group>"; };
 		085F34E01ADCD9B800FEADC5 /* CPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = ../third_party/WTF/CPU.h; sourceTree = "<group>"; };
 		085F34E11ADCD9B800FEADC5 /* MathExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
@@ -475,6 +482,8 @@
 				08650C451AD6239000D19E38 /* ADSRNode.cpp */,
 				08650C461AD6239000D19E38 /* ClipNode.cpp */,
 				08650C471AD6239000D19E38 /* DiodeNode.cpp */,
+				08567C271B61D09D00EB6C0D /* BPMDelay.cpp */,
+				08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */,
 				E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */,
 				08650C481AD6239000D19E38 /* LabSound.cpp */,
 				08650C491AD6239000D19E38 /* NoiseNode.cpp */,
@@ -495,10 +504,13 @@
 		08650A211AD61F9100D19E38 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				08567C241B61D04F00EB6C0D /* BPMDelay.h */,
+				08567C251B61D04F00EB6C0D /* PingPongDelayNode.h */,
 				08650C7A1AD623C400D19E38 /* ADSRNode.h */,
 				08650C7B1AD623C400D19E38 /* AudioContextLock.h */,
 				08650C7C1AD623C400D19E38 /* ClipNode.h */,
 				08650C7D1AD623C400D19E38 /* DiodeNode.h */,
+				08567C261B61D06400EB6C0D /* Util.h */,
 				E2D4FE501AF55198001B7E6C /* FunctionNode.h */,
 				08650C7F1AD623C400D19E38 /* LabSound.h */,
 				08650C801AD623C400D19E38 /* Logging.h */,
@@ -771,6 +783,7 @@
 				08650BF41AD6225900D19E38 /* ReverbConvolver.cpp in Sources */,
 				08650C641AD6239000D19E38 /* SupersawNode.cpp in Sources */,
 				08650C021AD622A400D19E38 /* AudioDestinationMac.cpp in Sources */,
+				08567C291B61D09D00EB6C0D /* BPMDelay.cpp in Sources */,
 				08650C041AD622A400D19E38 /* FFTFrameMac.cpp in Sources */,
 				08650CD91AD6241A00D19E38 /* AudioBufferSourceNode.cpp in Sources */,
 				08650BE91AD6225900D19E38 /* FFTFrameKissFFT.cpp in Sources */,
@@ -807,6 +820,7 @@
 				08650C031AD622A400D19E38 /* AudioFileReader.cpp in Sources */,
 				08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */,
 				08650BE01AD6225900D19E38 /* DelayDSPKernel.cpp in Sources */,
+				08567C2A1B61D09D00EB6C0D /* PingPongDelayNode.cpp in Sources */,
 				08650BD61AD6225900D19E38 /* AudioDSPKernelProcessor.cpp in Sources */,
 				08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */,
 				08650CE21AD6241A00D19E38 /* AudioScheduledSourceNode.cpp in Sources */,

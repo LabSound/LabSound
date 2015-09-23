@@ -53,7 +53,6 @@ public:
     // Manage storage for us.
     explicit AudioChannel(size_t length)
         : m_length(length)
-        , m_rawPointer(0)
         , m_silent(true)
     {
         m_memBuffer.reset(new AudioFloatArray(length));
@@ -62,7 +61,6 @@ public:
     // A "blank" audio channel -- must call set() before it's useful...
     AudioChannel()
         : m_length(0)
-        , m_rawPointer(0)
         , m_silent(true)
     {
     }
@@ -85,7 +83,7 @@ public:
     void resizeSmaller(size_t newLength);
 
     // Direct access to PCM sample data. Non-const accessor clears silent flag.
-    float* mutableData()
+    float * mutableData()
     {
         clearSilentFlag();
         return m_rawPointer ? m_rawPointer : m_memBuffer->data(); 
@@ -128,9 +126,9 @@ public:
     float maxAbsValue() const;
 
 private:
-    size_t m_length;
 
-    float* m_rawPointer;
+    size_t m_length;
+    float * m_rawPointer = nullptr;
     std::unique_ptr<AudioFloatArray> m_memBuffer;
     bool m_silent;
 };

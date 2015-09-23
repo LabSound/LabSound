@@ -63,7 +63,7 @@ class AudioContext
 public:
 
 	// It is somewhat arbitrary and could be increased if necessary.
-	static const unsigned maxNumberOfChannels = 32;
+    static const uint32_t maxNumberOfChannels;
 
     // Debugging/Sanity Checking
     std::string m_graphLocker;

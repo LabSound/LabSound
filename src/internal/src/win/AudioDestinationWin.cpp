@@ -35,6 +35,7 @@
 
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/extended/Logging.h"
 
 namespace WebCore
 {
@@ -76,7 +77,7 @@ void AudioDestinationWin::configure()
 {
 	if (dac.getDeviceCount() < 1)
 	{
-		std::cout << "\nNo audio devices found!\n";
+		LOG_ERROR("No audio devices available");
 	}
 
 	dac.showWarnings(true);
@@ -133,9 +134,12 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
 {
 	float *myOutputBufferOfFloats = (float*) outputBuffer;
 
-	// Tells the given channel to use an externally allocated buffer (rtAudio's)
-	m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
-	m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+	// Inform bus to use an externally allocated buffer from rtaudio
+	if (m_renderBus.isFirstTime())
+	{
+		m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
+		m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+	}
 
 	// Source Bus :: Destination Bus (no source/input)
 	m_callback.render(0, &m_renderBus, numberOfFrames);

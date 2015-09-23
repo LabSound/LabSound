@@ -24,8 +24,9 @@ namespace LabSound
         
         ContextGraphLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
         {
-            if (context && context->m_graphLock.try_lock())
+            if (context)
             {
+				context->m_graphLock.lock();
                 m_context = context;
                 m_context->m_graphLocker = lockSuitor;
             }
@@ -64,8 +65,9 @@ namespace LabSound
         
         ContextRenderLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
         {
-            if (context && context->m_renderLock.try_lock())
+            if (context)
             {
+				context->m_renderLock.lock();
                 m_context = context;
                 m_context->m_renderLocker = lockSuitor;
             }
@@ -87,7 +89,7 @@ namespace LabSound
                 m_context->m_renderLock.unlock();
         }
         
-        WebCore::AudioContext* context() { return m_context.get(); }
+        WebCore::AudioContext * context() { return m_context.get(); }
         std::shared_ptr<WebCore::AudioContext> contextPtr() { return m_context; }
         
     private:

@@ -201,9 +201,6 @@
     <ClInclude Include="..\include\LabSound\extended\DiodeNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\ExceptionCodes.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\Logging.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
@@ -235,9 +232,6 @@
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\STKNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h">
@@ -371,6 +365,12 @@
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\LabSound.h">
       <Filter>LabSound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\BPMDelay.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\PingPongDelayNode.h">
+      <Filter>LabSound\extended\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -640,6 +640,12 @@
     </ClCompile>
     <ClCompile Include="..\src\internal\src\FFTFrameKissFFT.cpp">
       <Filter>Internal\src\win</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\BPMDelay.cpp">
+      <Filter>LabSound\extended\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\PingPongDelayNode.cpp">
+      <Filter>LabSound\extended\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

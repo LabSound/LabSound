@@ -27,28 +27,36 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace WebCore {
+namespace WebCore 
+{
 
 class AudioParam;
 class DelayProcessor;
 
-enum DelayValues 
+enum TempoSync
 {
-	D_32 = 0,
-	D_16T = 1,
-	D_32D = 2,
-	D_16 = 3,
-	D_8T = 4
+	TS_32,
+	TS_16T,
+	TS_32D,
+	TS_16,
+	TS_8T,
+	TS_16D,
+	TS_8,
+	TS_4T,
+	TS_8D,
+	TS_4,
+	TS_2T,
+	TS_4D,
+	TS_2,
+	TS_2D,
 };
 
-class DelayNode : public AudioBasicProcessorNode {
-
+class DelayNode : public AudioBasicProcessorNode
+{
+    DelayProcessor * delayProcessor();
 public:
     DelayNode(float sampleRate, double maxDelayTime);
     std::shared_ptr<AudioParam> delayTime();
-
-private:
-    DelayProcessor * delayProcessor();
 };
 
 } // namespace WebCore

@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <queue>
 
+const uint32_t WebCore::AudioContext::maxNumberOfChannels = 32;
+
 namespace WebCore
 {
 

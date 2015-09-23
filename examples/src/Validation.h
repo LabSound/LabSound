@@ -9,6 +9,8 @@ std::string PrintCurrentDirectory()
 #endif
 
 #include "ExampleBaseApp.h"
+#include "LabSound/extended/BPMDelay.h"
+#include "LabSound/extended/PingPongDelayNode.h"
 
 // An example with a bunch of nodes to verify api + functionality changes/improvements/regressions
 struct ValidationApp : public LabSoundExampleApp
@@ -30,77 +32,32 @@ struct ValidationApp : public LabSoundExampleApp
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
         
         auto context = LabSound::init();
-        
-        std::shared_ptr<OscillatorNode> sinOsc;
-        std::shared_ptr<OscillatorNode> triOsc;
-        std::shared_ptr<GainNode> limiter;
-        std::shared_ptr<AudioBufferSourceNode> tonbiSound;
-        std::shared_ptr<PannerNode> panner;
-        std::shared_ptr<SupersawNode> megaSuperSaw;
-        
+        auto ac = context.get();
+
+        std::shared_ptr<AudioBufferSourceNode> beatNode;
+        std::shared_ptr<PingPongDelayNode> pingping;
+
         {
             ContextGraphLock g(context, "Validator");
             ContextRenderLock r(context, "Validator");
             
-            sinOsc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            triOsc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            megaSuperSaw = std::make_shared<SupersawNode>(r, context->sampleRate());
-            
-            limiter = std::make_shared<GainNode>(context->sampleRate());
-            panner = std::make_shared<PannerNode>(context->sampleRate());
-            
-            limiter->gain()->setValue(0.5f);
-            sinOsc->connect(context.get(), limiter.get(), 0, 0); // Connect sinOsc to gain
-            triOsc->connect(context.get(), limiter.get(), 0, 0); // Connect triOsc to gain
-            //megaSuperSaw->connect(context.get(), limiter.get(), 0, 0); // Connect megaSuperSaw to gain
-            
-            limiter->connect(context.get(), context->destination().get(), 0, 0); // connect gain to DAC
-            panner->connect(context.get(), context->destination().get(), 0, 0);  // connect panner to DAC
-            
-            //megaSuperSaw->noteOn(0);
-            
-            sinOsc->setType(r, OscillatorType::SINE);
-            sinOsc->start(0);
-            
-            triOsc->setType(r, OscillatorType::TRIANGLE);
-            triOsc->start(0);
-            
-            
-            context->listener()->setPosition(0, 1, 0);
-            panner->setVelocity(15, 3, 2);
-            
-            //SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
-            //tonbiSound = tonbi.play(r, 0.0f);
-            
-        }
-        
-        float elapsedTime = 0;
-        for (int s = 0; s < 48; s++)
-        {
-            int octaveOffset = 52;
-            float a = MidiToFrequency(pentatonicMajor[randomScaleDegree(randomgenerator)] + octaveOffset);
-            float b = MidiToFrequency(pentatonicMajor[randomScaleDegree(randomgenerator)] + octaveOffset);
-            
-            float delayTime = elapsedTime + (delayTimes[randomTimeIndex(randomgenerator)] / 1000.f);
-            
-            std::cout << delayTime << std::endl;
-            
-            sinOsc->frequency()->setValueAtTime(a, delayTime * 2);
-            triOsc->frequency()->setValueAtTime(b, delayTime);
-            
-            elapsedTime = delayTime;
+			pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
+			pingping->BuildSubgraph(g);
+			pingping->SetFeedback(0.5);
+			pingping->SetDelayIndex(WebCore::TempoSync::TS_16T);
+
+			pingping->output->connect(ac, context->destination().get(), 0, 0);
+
+            SoundBuffer beat("samples/kick.wav", context->sampleRate());
+            beatNode = beat.play(r, pingping->input, 0.0f);
         }
      
-        //const int seconds = 2;
-        //float halfTime = seconds * 0.5f;
-        //for (float i = 0; i < seconds; i += 0.01f)
-        //{
-        //    float x = (i - halfTime) / halfTime;
-        //    panner->setPosition(x, 0.1f, 0.1f);
-        //    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        //}
-        
-        std::this_thread::sleep_for(std::chrono::seconds((int)elapsedTime));
+        const int seconds = 10;
+        for (int i = 0; i < seconds; i++)
+        {
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+       
         LabSound::finish(context);
         
     }
