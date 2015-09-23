@@ -346,7 +346,7 @@ void AudioBufferSourceNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
     m_lastGain = gain()->value(r);
-	AudioScheduledSourceNode::reset();
+	AudioScheduledSourceNode::reset(r);
 }
 
 bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
