@@ -34,9 +34,6 @@
 #if COMPILER(MSVC)
 #include "internal/Assertions.h"
 #include <stdint.h>
-#endif
-
-#if COMPILER(MSVC) && (_MSC_VER <= 1800)
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
@@ -46,7 +43,6 @@
 #include <math.h>
 #include <cmath>
 #endif
-
 
 const double piDouble = M_PI;
 const float piFloat = static_cast<float>(M_PI);

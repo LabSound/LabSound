@@ -208,7 +208,7 @@ void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevati
     }
 
     // This algorithm currently requires that we process in power-of-two size chunks at least RenderingQuantum.
-    ASSERT(1UL << static_cast<int>(log2(framesToProcess)) == framesToProcess);
+    ASSERT(sizeof(uint64_t) << static_cast<int>(log2(framesToProcess)) == framesToProcess);
     ASSERT(framesToProcess >= RenderingQuantum);
 
     const uint32_t framesPerSegment = RenderingQuantum;
