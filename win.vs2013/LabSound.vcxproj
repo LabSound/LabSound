@@ -219,7 +219,7 @@
     <ClCompile Include="..\third_party\STK\src\STKInlineCompile.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\third_party\libnyquist\libnyquist.vcxproj\libnyquist.vcxproj">
+    <ProjectReference Include="..\third_party\libnyquist\libnyquist.vcxproj\v120\libnyquist.vcxproj">
       <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
       <Private>false</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>

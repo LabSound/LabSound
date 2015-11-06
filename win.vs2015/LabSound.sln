@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSound", "LabSound.vcxpro
 		{0EEC3739-F60A-4B90-8B75-9E1AFF28106A} = {0EEC3739-F60A-4B90-8B75-9E1AFF28106A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\third_party\libnyquist\libnyquist.vcxproj\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
