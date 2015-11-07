@@ -201,12 +201,12 @@ private:
     
     struct CompareScheduledTime
     {
-        bool operator()(const PendingNodeConnection& p1, const PendingNodeConnection& p2)
+        bool operator()(const PendingNodeConnection & p1, const PendingNodeConnection & p2)
         {
             if (!p2.from->isScheduledNode()) return true;
             if (!p1.from->isScheduledNode()) return false;
-            AudioScheduledSourceNode * ap1 = dynamic_cast<AudioScheduledSourceNode*>(p1.from.get());
-            AudioScheduledSourceNode * ap2 = dynamic_cast<AudioScheduledSourceNode*>(p2.from.get());
+            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.from.get());
+            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.from.get());
             return ap2->startTime() < ap1->startTime();
         }
     };
