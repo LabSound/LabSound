@@ -295,8 +295,10 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
                     // Curve events have duration, so don't just use next event time.
                     float duration = event.duration();
-                    float durationFrames = duration * sampleRate;
-                    float curvePointsPerFrame = static_cast<float>(numberOfCurvePoints) / durationFrames;
+                    
+                    // How much to step the curve index for each frame.  This is basically the term
+                    // (N - 1)/Td in the specification.
+                    double curvePointsPerFrame = (numberOfCurvePoints - 1) / duration / sampleRate;
 
                     if (!curve || !curveData || !numberOfCurvePoints || duration <= 0 || sampleRate <= 0) {
                         // Error condition - simply propagate previous value.
