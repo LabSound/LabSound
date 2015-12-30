@@ -61,18 +61,16 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
     
     nqr::AudioData * audioData = new nqr::AudioData();
     
-    // Perform audio decode
-    int result = nyquistFileIO.Load(audioData, std::string(filePath));
+    try
+    {
+        nyquistFileIO.Load(audioData, std::string(filePath));
+    }
+    catch (...)
+    {
+        throw;
+    }
     
-    // Check OK
-    if (result == nqr::IOError::NoError)
-    {
-		return detail::LoadInternal(audioData, mixToMono, sampleRate);
-    }
-    else
-    {
-        throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
-    }
+    return detail::LoadInternal(audioData, mixToMono, sampleRate);
 }
 
 std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono, float sampleRate)
@@ -81,19 +79,17 @@ std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer,
     
     nqr::AudioData * audioData = new nqr::AudioData();
     
-    // Perform audio decode
-    int result = nyquistFileIO.Load(audioData, extension, buffer);
+    try
+    {
+        nyquistFileIO.Load(audioData, extension, buffer);
+    }
+    catch (...)
+    {
+        throw;
+    }
     
-    // Check OK
-    if (result == nqr::IOError::NoError)
-    {
-		return detail::LoadInternal(audioData, mixToMono, sampleRate);
-    }
-    else
-    {
-        throw std::runtime_error("Nyquist File IO Error: " + std::to_string(result));
-    }
+    return detail::LoadInternal(audioData, mixToMono, sampleRate);
+    
 }
-    
     
 } // end namespace WebCore
