@@ -235,37 +235,41 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 	handleAutomaticSources();
 }
 
+// ---
+    
 void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-	//pendingNodeConnections.emplace_back(from, to, true);
     pendingNodeConnections.emplace(from, to, true);
 }
 
+void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
+{
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    pendingNodeConnections.emplace(from, to, false);
+}
+
+// --- 
+    
 void AudioContext::connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
 	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(fromInput, toOutput, true));
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
-{
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-	//pendingNodeConnections.emplace_back(from, to, false);
-    pendingNodeConnections.emplace(from, to, false);
-}
-
-void AudioContext::disconnect(std::shared_ptr<AudioNode> from)
-{
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-	//pendingNodeConnections.emplace_back(from, std::shared_ptr<AudioNode>(), false);
-    pendingNodeConnections.emplace(from, std::shared_ptr<AudioNode>(), false);
-}
-
 void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> toOutput)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-	pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(std::shared_ptr<AudioNodeInput>(), toOutput, false));
+    auto nullSource = std::shared_ptr<AudioNodeInput>(nullptr);
+    pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(nullSource, toOutput, false));
+}
+    
+// ---
+    
+void AudioContext::disconnect(std::shared_ptr<AudioNode> from)
+{
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    pendingNodeConnections.emplace(from, std::shared_ptr<AudioNode>(), false);
 }
 
 void AudioContext::update(ContextGraphLock& g)
@@ -277,11 +281,15 @@ void AudioContext::update(ContextGraphLock& g)
 		{
 			if (i.connect)
 			{
+                LOG("Connect from: %p", i.from.get());
+                LOG("Connect to: %p", i.to.get());
 				AudioNodeInput::connect(g, i.from, i.to);
 			}
 			else
 			{
-				AudioNodeOutput::disconnectAll(g, i.to);
+                LOG("Disconnect from: %p", i.from.get());
+                LOG("Disconnect to: %p", i.to.get());
+				AudioNodeOutput::disconnectAll(g, i.to); // Params + Inputs
 			}
 		}
 		pendingConnections.clear();
@@ -312,16 +320,19 @@ void AudioContext::update(ContextGraphLock& g)
 			}
 			else
 			{
-                if (i.to && i.from) {
+                if (i.to && i.from)
+                {
                     --i.from->m_connectionRefCount;
                     --i.to->m_connectionRefCount;
                     AudioNodeInput::disconnect(g, i.from->input(0), i.to->output(0));
                     dereferenceSourceNode(g, i.from);
                     dereferenceSourceNode(g, i.to);
                 }
-				else if (i.from) {
+				else if (i.from)
+                {
 					--i.from->m_connectionRefCount;
-                    for (size_t out = 0; out < i.from->numberOfOutputs(); ++out) {
+                    for (size_t out = 0; out < i.from->numberOfOutputs(); ++out)
+                    {
                         auto output = i.from->output(out);
                         if (!output)
                             continue;
@@ -330,9 +341,11 @@ void AudioContext::update(ContextGraphLock& g)
                         AudioNodeOutput::disconnectAllParams(g, output);
                     }
 				}
-                else if (i.to) {
+                else if (i.to)
+                {
                     --i.to->m_connectionRefCount;
-                    for (size_t out = 0; out < i.to->numberOfOutputs(); ++out) {
+                    for (size_t out = 0; out < i.to->numberOfOutputs(); ++out)
+                    {
                         auto output = i.to->output(out);
                         if (!output)
                             continue;

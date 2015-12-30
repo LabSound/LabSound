@@ -175,7 +175,7 @@ public:
     void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, unsigned outputIndex);
 
     void disconnect(AudioContext* ctx);
-    void disconnect(unsigned outputIndex);
+    void disconnect(AudioContext * ctx, unsigned outputIndex);
 
     virtual float sampleRate() const { return m_sampleRate; }
 

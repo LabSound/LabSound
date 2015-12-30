@@ -114,7 +114,7 @@ std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
     return 0;
 }
 
-    // safe without a Render lock because vector is immutable
+// safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
     if (i < m_outputs.size())
@@ -122,7 +122,7 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
     return 0;
 }
 
-void AudioNode::connect(AudioContext* context, AudioNode* destination, unsigned outputIndex, unsigned inputIndex)
+void AudioNode::connect(AudioContext * context, AudioNode * destination, unsigned outputIndex, unsigned inputIndex)
 {
     if (!context) throw std::invalid_argument("No context specified");
     if (!destination) throw std::invalid_argument("No destination specified");
@@ -137,7 +137,7 @@ void AudioNode::connect(AudioContext* context, AudioNode* destination, unsigned 
 
 }
 
-void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
+void AudioNode::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
 {
     if (!param) throw std::invalid_argument("No parameter specified");
     if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
@@ -145,19 +145,19 @@ void AudioNode::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, 
     AudioParam::connect(g, param, this->output(outputIndex));
 }
 
- void AudioNode::disconnect(AudioContext* ctx)
- {
-	 std::cout << "--> Disconnect \n";
-	 ctx->disconnect(this->output(0));
- }
+// Disconnect all outputs
+void AudioNode::disconnect(AudioContext * ctx)
+{
+    for (auto & output : m_outputs)
+        ctx->disconnect(output);
+}
 
-void AudioNode::disconnect(unsigned outputIndex)
+// Disconnect specific output
+void AudioNode::disconnect(AudioContext * ctx, unsigned outputIndex)
 {
     if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     
-    /// @TODO FIXME
-    // &&& can't do this, it's recursive
-    // &&& context->disconnect(this->output(outputIndex));
+    ctx->disconnect(this->output(outputIndex));
 }
 
 unsigned long AudioNode::channelCount()

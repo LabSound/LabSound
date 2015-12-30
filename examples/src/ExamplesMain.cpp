@@ -5,6 +5,7 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
+#include "ConnectDisconnect.h"
 #include "OfflineRender.h"
 #include "ConvolutionReverb.h"
 #include "MicrophoneDalek.h"
@@ -22,6 +23,7 @@
 #include "Validation.h"
 
 SimpleApp g_simpleExample;
+ConnectDisconnectApp g_connectApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
@@ -40,6 +42,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_rhythm.PlayExample();
+    g_connectApp.PlayExample();
     return 0;
 }
