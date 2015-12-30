@@ -38,7 +38,7 @@ namespace LabSound
 
     BPMDelay::BPMDelay(float sampleRate, float tempo) : WebCore::DelayNode(sampleRate, 8.0f), tempo(tempo)
     {
-        setNodeType((AudioNode::NodeType) LabSound::NodeType::NodeTypeBPMDelay);
+        setNodeType(LabSound::NodeType::NodeTypeBPMDelay);
 
 		times = 
 		{

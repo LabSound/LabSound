@@ -12,7 +12,7 @@ namespace LabSound {
 
     NoiseNode::NoiseNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)
     {
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeNoise);
+        setNodeType(LabSound::NodeType::NodeTypeNoise);
 
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 

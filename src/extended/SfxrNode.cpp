@@ -588,7 +588,7 @@ namespace LabSound {
     : AudioScheduledSourceNode(sampleRate)
     , sfxr(new SfxrNode::Sfxr())
     {
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeSfxr);
+        setNodeType(LabSound::NodeType::NodeTypeSfxr);
 
         // Output is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

@@ -45,7 +45,7 @@ namespace WebCore {
 
 AudioNode::AudioNode(float sampleRate)
     : m_isInitialized(false)
-    , m_nodeType(NodeTypeUnknown)
+    , m_nodeType(NodeTypeDefault)
     , m_sampleRate(sampleRate)
     , m_lastProcessingTime(-1)
     , m_lastNonSilentTime(-1)
@@ -304,16 +304,16 @@ int AudioNode::s_nodeCount[NodeTypeEnd];
 
 void AudioNode::printNodeCounts()
 {
-    
     std::map<int, std::string> NodeLookupTable =
     {
-        { NodeTypeUnknown, "NodeTypeUnknown" },
+        { NodeTypeDefault, "NodeTypeDefault" },
         { NodeTypeDestination, "NodeTypeDestination" },
         { NodeTypeOscillator, "NodeTypeOscillator" },
         { NodeTypeAudioBufferSource, "NodeTypeAudioBufferSource" },
         { NodeTypeHardwareSource, "NodeTypeHardwareSource" },
         { NodeTypeBiquadFilter, "NodeTypeBiquadFilter" },
         { NodeTypePanner, "NodeTypePanner" },
+        { NodeTypeStereoPanner, "NodeTypeStereoPanner" },
         { NodeTypeConvolver, "NodeTypeConvolver" },
         { NodeTypeDelay, "NodeTypeDelay" },
         { NodeTypeGain, "NodeTypeGain" },
@@ -322,9 +322,25 @@ void AudioNode::printNodeCounts()
         { NodeTypeAnalyser, "NodeTypeAnalyser" },
         { NodeTypeDynamicsCompressor, "NodeTypeDynamicsCompressor" },
         { NodeTypeWaveShaper, "NodeTypeWaveShaper" },
+        
+        { NodeTypeADSR, "NodeTypeADSR" },
+        { NodeTypeClip, "NodeTypeClip" },
+        { NodeTypeDiode, "NodeTypeDiode" },
+        { NodeTypeNoise, "NodeTypeNoise" },
+        { NodeTypePd, "NodeTypePd" },
+        { NodeTypePeakComp, "NodeTypePeakComp" },
+        { NodeTypePowerMonitor, "NodeTypePowerMonitor" },
+        { NodeTypePWM, "NodeTypePWM" },
+        { NodeTypeRecorder, "NodeTypeRecorder" },
+        { NodeTypeSfxr, "NodeTypeSfxr" },
+        { NodeTypeSpatialization, "NodeTypeSpatialization" },
+        { NodeTypeSpectralMonitor, "NodeTypeSpectralMonitor" },
+        { NodeTypeSupersaw, "NodeTypeSupersaw" },
+        { NodeTypeSTK, "NodeTypeSTK" },
+        { NodeTypeBPMDelay, "NodeTypeBPMDelay" },
+
         { NodeTypeEnd, "NodeTypeEnd" },
     };
-
     
     fprintf(stderr, "\n\n");
     fprintf(stderr, "===========================\n");
@@ -332,7 +348,7 @@ void AudioNode::printNodeCounts()
     fprintf(stderr, "===========================\n");
 
     for (unsigned i = 0; i < NodeTypeEnd; ++i)
-        fprintf(stderr, "%d\tof \t%s \n", s_nodeCount[i], NodeLookupTable[i].c_str());
+        fprintf(stderr, "%d\t// %s \n", s_nodeCount[i], NodeLookupTable[i].c_str());
 
     fprintf(stderr, "===========================\n\n\n");
 }

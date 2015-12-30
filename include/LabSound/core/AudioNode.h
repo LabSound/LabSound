@@ -50,15 +50,15 @@ namespace LabSound
 
 	enum NodeType 
 	{
-        // Core Webaudio Nodes
-        NodeTypeUnknown,
+        // Core API Nodes
+        NodeTypeDefault,
         NodeTypeDestination,
         NodeTypeOscillator,
         NodeTypeAudioBufferSource,
-        NodeTypeAudio,
         NodeTypeHardwareSource,
         NodeTypeBiquadFilter,
         NodeTypePanner,
+        NodeTypeStereoPanner,
         NodeTypeConvolver,
         NodeTypeDelay,
         NodeTypeGain,
@@ -85,7 +85,6 @@ namespace LabSound
 		NodeTypeSTK, 
 		NodeTypeBPMDelay,
 
-        // enumeration terminator
         NodeTypeEnd,
     };
 
@@ -118,28 +117,6 @@ public:
     
     AudioNode(float sampleRate);
     virtual ~AudioNode();
-
-    //@tofix these are defined in multiple namespaces (labsound vs webcore)
-    enum NodeType 
-	{
-        NodeTypeUnknown,
-        NodeTypeDestination,
-        NodeTypeOscillator,
-        NodeTypeAudioBufferSource,
-        NodeTypeHardwareSource,
-        NodeTypeBiquadFilter,
-        NodeTypeStereoPanner,
-        NodeTypePanner,
-        NodeTypeConvolver,
-        NodeTypeDelay,
-        NodeTypeGain,
-        NodeTypeChannelSplitter,
-        NodeTypeChannelMerger,
-        NodeTypeAnalyser,
-        NodeTypeDynamicsCompressor,
-        NodeTypeWaveShaper,
-        NodeTypeEnd
-    };
     
     NodeType nodeType() const { return m_nodeType; }
     void setNodeType(NodeType);

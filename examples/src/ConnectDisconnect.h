@@ -26,9 +26,11 @@ struct ConnectDisconnectApp : public LabSoundExampleApp
             oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);
-            
-            oscillator->disconnect(ac);
         }
+        
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        oscillator->disconnect(ac);
         
         const int seconds = 6;
         for (int t = 0; t < seconds; ++t)

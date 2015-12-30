@@ -127,7 +127,7 @@ namespace LabSound
         
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
         
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeClip);
+        setNodeType(LabSound::NodeType::NodeTypeClip);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));

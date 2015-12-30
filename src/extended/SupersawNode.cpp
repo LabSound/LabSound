@@ -126,7 +126,7 @@ namespace LabSound
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeSupersaw);
+        setNodeType(LabSound::NodeType::NodeTypeSupersaw);
 
         initialize();
     }

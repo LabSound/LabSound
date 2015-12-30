@@ -195,7 +195,7 @@ namespace LabSound
         
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeADSR);
+        setNodeType(LabSound::NodeTypeADSR);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));

@@ -20,7 +20,7 @@ namespace LabSound
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
         
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypeRecorder);
+        setNodeType(LabSound::NodeType::NodeTypeRecorder);
         
         initialize();
     }

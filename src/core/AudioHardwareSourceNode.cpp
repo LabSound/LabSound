@@ -42,7 +42,7 @@ AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSour
     //@tofix: Default to stereo.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    setNodeType(NodeTypeHardwareSource);
+    setNodeType(LabSound::NodeType::NodeTypeHardwareSource);
 
     initialize();
 }

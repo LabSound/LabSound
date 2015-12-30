@@ -78,7 +78,7 @@ namespace LabSound {
 
 		internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
 
-        setNodeType((AudioNode::NodeType) LabSound::NodeTypePWM);
+        setNodeType(LabSound::NodeType::NodeTypePWM);
 
         addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); 
