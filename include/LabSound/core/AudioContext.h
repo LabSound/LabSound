@@ -21,14 +21,6 @@
 
 namespace lab
 {
-	class ContextGraphLock;
-	class ContextRenderLock;
-}
-
-using namespace lab;
-
-namespace lab
-{
 
 class AudioBuffer;
 class AudioDestinationNode;
@@ -39,7 +31,9 @@ class HRTFDatabaseLoader;
 class AudioHardwareSourceNode;
 class AudioNodeInput;
 class AudioNodeOutput;
-
+class ContextGraphLock;
+class ContextRenderLock;
+    
 template<class Input, class Output>
 struct PendingConnection
 {

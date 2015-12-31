@@ -15,6 +15,8 @@
 // In the future, this class could do all kinds of clever things, like setting up the context,
 // handling recording functionality, etc.
 
+using namespace lab;
+
 struct LabSoundExampleApp
 {
     virtual void PlayExample() = 0;

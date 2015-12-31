@@ -32,17 +32,12 @@
 #include <memory>
 #include <LabSound/core/AudioNode.h>
 
-namespace lab
-{
-    class ContextRenderLock;
-}
-
 namespace lab 
 {
-    
-using namespace lab;
-class AudioBus;
 
+class AudioBus;
+class ContextRenderLock;
+    
 class Panner
 {
 public:

@@ -33,8 +33,6 @@
 #include <memory>
 
 namespace lab {
-    
-    using namespace lab;
 
 class AudioContext;
 class AudioBus;

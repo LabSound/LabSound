@@ -35,16 +35,10 @@
 
 namespace lab 
 {
-    class ContextRenderLock;
-}
-
-namespace lab 
-{
-
-    using namespace lab;
     
 class AudioBus;
-
+class ContextRenderLock;
+    
 // AudioProcessor is an abstract base class representing an audio signal processing object with a single input and a single output,
 // where the number of input channels equals the number of output channels. It can be used as one part of a complex DSP algorithm,
 // or as the processor for a basic (one input - one output) AudioNode.
@@ -52,10 +46,7 @@ class AudioProcessor {
     
 public:
     
-    AudioProcessor(float sampleRate, unsigned numberOfChannels)
-        : m_initialized(false)
-        , m_numberOfChannels(numberOfChannels)
-        , m_sampleRate(sampleRate)
+    AudioProcessor(float sampleRate, unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels), m_sampleRate(sampleRate)
     {
     }
 
@@ -82,7 +73,7 @@ public:
     virtual double latencyTime() const = 0;
 
 protected:
-    bool m_initialized;
+    bool m_initialized = false;
     unsigned m_numberOfChannels;
     float m_sampleRate;
 };

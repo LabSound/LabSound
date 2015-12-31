@@ -44,17 +44,14 @@
 #include <atomic>
 
 namespace lab {
-    class ContextRenderLock;
-}
 
-namespace lab {
-
-    using namespace lab;
-    
+class ContextRenderLock;
 class AudioChannel;
 
 class ReverbConvolver {
+    
 public:
+    
     // maxFFTSize can be adjusted (from say 2048 to 32768) depending on how much precision is necessary.
     // For certain tweaky de-convolving applications the phase errors add up quickly and lead to non-sensical results with
     // larger FFT sizes and single-precision floats.  In these cases 2048 is a good size.

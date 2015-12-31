@@ -35,14 +35,9 @@
 #include <memory>
 
 namespace lab {
-    class ContextRenderLock;
-}
-
-namespace lab {
-
-    using namespace lab;
     
 class AudioBus;
+class ContextRenderLock;
     
 class MultiChannelResampler {
 public:   

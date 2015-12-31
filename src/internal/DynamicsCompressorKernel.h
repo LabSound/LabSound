@@ -36,13 +36,8 @@
 
 namespace lab 
 {
-    class ContextRenderLock;
-}
 
-namespace lab 
-{
-
-using namespace lab;
+class ContextRenderLock;
     
 class DynamicsCompressorKernel 
 {

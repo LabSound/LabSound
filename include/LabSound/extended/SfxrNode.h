@@ -8,8 +8,6 @@
 
 namespace lab {
 
-    using namespace lab;
-
     class SfxrNode : public lab::AudioScheduledSourceNode {
     public:
 
@@ -113,6 +111,5 @@ namespace lab {
         class Sfxr;
         Sfxr *sfxr;
     };
-    
     
 }

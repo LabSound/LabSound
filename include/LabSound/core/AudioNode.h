@@ -39,67 +39,60 @@
 
 namespace lab 
 {
-    class ContextGraphLock;
-    class ContextRenderLock;
-
-	enum PanningMode
-	{
-        EQUALPOWER = 10,
-        HRTF = 20,
-    };
-
-	enum NodeType 
-	{
-        // Core API Nodes
-        NodeTypeDefault,
-        NodeTypeDestination,
-        NodeTypeOscillator,
-        NodeTypeAudioBufferSource,
-        NodeTypeHardwareSource,
-        NodeTypeBiquadFilter,
-        NodeTypePanner,
-        NodeTypeStereoPanner,
-        NodeTypeConvolver,
-        NodeTypeDelay,
-        NodeTypeGain,
-        NodeTypeChannelSplitter,
-        NodeTypeChannelMerger,
-        NodeTypeAnalyser,
-        NodeTypeDynamicsCompressor,
-        NodeTypeWaveShaper,
-
-        // Labsound Extensions
-        NodeTypeADSR,
-        NodeTypeClip,
-        NodeTypeDiode,
-        NodeTypeNoise,
-        NodeTypePd,
-        NodeTypePeakComp,
-        NodeTypePowerMonitor,
-        NodeTypePWM,
-        NodeTypeRecorder,
-        NodeTypeSfxr,
-        NodeTypeSpatialization,
-        NodeTypeSpectralMonitor,
-        NodeTypeSupersaw,
-		NodeTypeSTK, 
-		NodeTypeBPMDelay,
-
-        NodeTypeEnd,
-    };
-
-}
-
-namespace lab 
+    
+enum PanningMode
 {
-  
-using namespace lab;
+    EQUALPOWER = 10,
+    HRTF = 20,
+};
 
+enum NodeType
+{
+    // Core API Nodes
+    NodeTypeDefault,
+    NodeTypeDestination,
+    NodeTypeOscillator,
+    NodeTypeAudioBufferSource,
+    NodeTypeHardwareSource,
+    NodeTypeBiquadFilter,
+    NodeTypePanner,
+    NodeTypeStereoPanner,
+    NodeTypeConvolver,
+    NodeTypeDelay,
+    NodeTypeGain,
+    NodeTypeChannelSplitter,
+    NodeTypeChannelMerger,
+    NodeTypeAnalyser,
+    NodeTypeDynamicsCompressor,
+    NodeTypeWaveShaper,
+    
+    // Labsound Extensions
+    NodeTypeADSR,
+    NodeTypeClip,
+    NodeTypeDiode,
+    NodeTypeNoise,
+    NodeTypePd,
+    NodeTypePeakComp,
+    NodeTypePowerMonitor,
+    NodeTypePWM,
+    NodeTypeRecorder,
+    NodeTypeSfxr,
+    NodeTypeSpatialization,
+    NodeTypeSpectralMonitor,
+    NodeTypeSupersaw,
+    NodeTypeSTK,
+    NodeTypeBPMDelay,
+    
+    NodeTypeEnd,
+};
+    
 class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
-
+class ContextGraphLock;
+class ContextRenderLock;
+    
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.

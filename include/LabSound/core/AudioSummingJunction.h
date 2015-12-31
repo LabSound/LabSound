@@ -28,24 +28,20 @@
 #include <vector>
 #include <memory>
 
-namespace lab 
-{
-    class ContextGraphLock;
-    class ContextRenderLock;
-}
-
 namespace lab {
 
-    class AudioContext;
-    class AudioNodeOutput;
-	class AudioBus;
-    
-    using namespace lab;
+class AudioContext;
+class AudioNodeOutput;
+class AudioBus;
+class ContextGraphLock;
+class ContextRenderLock;
 
 // An AudioSummingJunction represents a point where zero, one, or more AudioNodeOutputs connect.
 
 class AudioSummingJunction {
+    
 public:
+    
     explicit AudioSummingJunction();
     virtual ~AudioSummingJunction();
 
@@ -55,9 +51,8 @@ public:
     // This copies m_outputs to m_renderingOutputs. See comments for these lists below.
     void updateRenderingState(ContextRenderLock& r);
 
-    size_t numberOfConnections() const {
-        return m_connectedOutputs.size();   // will count expired pointers
-    }
+    // will count expired pointers
+    size_t numberOfConnections() const { return m_connectedOutputs.size(); }
     
     // Rendering code accesses its version of the current connections here.
     size_t numberOfRenderingConnections(ContextRenderLock&) const;
@@ -80,8 +75,8 @@ public:
 
     bool isConnected(std::shared_ptr<AudioNodeOutput> o) const;
 
-    
 private:
+    
     // m_outputs contains the AudioNodeOutputs representing current connections.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
     std::vector<std::weak_ptr<AudioNodeOutput>> m_connectedOutputs;

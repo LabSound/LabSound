@@ -28,15 +28,10 @@
 #include "LabSound/core/AudioArray.h"
 
 namespace lab {
-    class ContextRenderLock;
-}
 
-namespace lab {
-
-    using namespace lab;
-    
 class AudioResampler;
-
+class ContextRenderLock;
+    
 // AudioResamplerKernel does resampling on a single mono channel.
 // It uses a simple linear interpolation for good performance.
 
