@@ -36,33 +36,34 @@
 #include <wtf/MathExtras.h>
 #include <algorithm>
 
-namespace lab 
+using namespace lab;
+
+// AudioBus is not exposed in the public API
+struct AudioParam::Data
 {
-    // lab:: Data exists because AudioBus is not exposed in the public API
-    class AudioParam::Data {
-    public:
-        std::unique_ptr<AudioBus> m_internalSummingBus;
-    };
-    
+    std::unique_ptr<AudioBus> m_internalSummingBus;
+};
+
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-    AudioParam::AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units)
-    : AudioSummingJunction()
-    , m_name(name)
-    , m_value(defaultValue)
-    , m_defaultValue(defaultValue)
-    , m_minValue(minValue)
-    , m_maxValue(maxValue)
-    , m_units(units)
-    , m_smoothedValue(defaultValue)
-    , m_smoothingConstant(DefaultSmoothingConstant)
-    , m_data(new Data())
-    {}
-    
-    AudioParam::~AudioParam() {}
+AudioParam::AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units)
+: AudioSummingJunction()
+, m_name(name)
+, m_value(defaultValue)
+, m_defaultValue(defaultValue)
+, m_minValue(minValue)
+, m_maxValue(maxValue)
+, m_units(units)
+, m_smoothedValue(defaultValue)
+, m_smoothingConstant(DefaultSmoothingConstant)
+, m_data(new Data())
+{
 
-    
+}
+
+AudioParam::~AudioParam() {}
+
 float AudioParam::value(ContextRenderLock& r)
 {
     // Update value for timeline.
@@ -166,7 +167,6 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     
     // LabSound: For some reason a bus was temporarily created here and the results discarded.
     // Bug still exists in WebKit top of tree.
-    //
     if (m_data->m_internalSummingBus && m_data->m_internalSummingBus->length() < numberOfValues)
         m_data->m_internalSummingBus.reset();
     
@@ -202,7 +202,6 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, un
     // Pass in the current value as default value.
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, narrowPrecisionToFloat(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
-
     
 void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
@@ -226,5 +225,3 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
     }
     output->removeParam(g, param);
 }
-
-} // namespace lab
