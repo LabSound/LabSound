@@ -1,4 +1,10 @@
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #pragma once
+
+#ifndef LABSOUND_EXAMPLE_BASE_APP_H
+#define LABSOUND_EXAMPLE_BASE_APP_H
 
 #include "LabSound/extended/LabSound.h"
 
@@ -28,3 +34,5 @@ struct LabSoundExampleApp
     
     std::mt19937 randomgenerator;
 };
+
+#endif

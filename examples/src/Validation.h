@@ -1,3 +1,6 @@
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #ifdef _MSC_VER
 #include <windows.h>
 std::string PrintCurrentDirectory()
