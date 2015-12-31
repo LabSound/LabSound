@@ -47,7 +47,7 @@
 namespace lab
 {
     
-class PeakCompNode : public lab::AudioBasicProcessorNode {
+class PeakCompNode : public AudioBasicProcessorNode {
     
     class PeakCompNodeInternal;
     PeakCompNodeInternal * internalNode; // We do not own this!

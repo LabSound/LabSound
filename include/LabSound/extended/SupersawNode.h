@@ -10,7 +10,7 @@
 
 namespace lab 
 {
-    class SupersawNode : public lab::AudioNode 
+    class SupersawNode : public AudioNode 
 	{
         class SupersawNodeInternal;
 		std::unique_ptr<SupersawNodeInternal> internalNode;
@@ -20,14 +20,14 @@ namespace lab
         SupersawNode(ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode();
         
-		std::shared_ptr<lab::AudioParam> attack() const;
-		std::shared_ptr<lab::AudioParam> decay() const;
-		std::shared_ptr<lab::AudioParam> sustain() const;
-		std::shared_ptr<lab::AudioParam> release() const;
+		std::shared_ptr<AudioParam> attack() const;
+		std::shared_ptr<AudioParam> decay() const;
+		std::shared_ptr<AudioParam> sustain() const;
+		std::shared_ptr<AudioParam> release() const;
 
-        std::shared_ptr<lab::AudioParam> sawCount() const;
-        std::shared_ptr<lab::AudioParam> frequency() const;
-        std::shared_ptr<lab::AudioParam> detune() const;
+        std::shared_ptr<AudioParam> sawCount() const;
+        std::shared_ptr<AudioParam> frequency() const;
+        std::shared_ptr<AudioParam> detune() const;
 
 		void noteOn(double when);
 		void noteOff(ContextRenderLock&, double when);

@@ -88,7 +88,7 @@ private:
     // Creates tables based on numberOfComponents Fourier coefficients.
     void createBandLimitedTables(const float* real, const float* imag, unsigned numberOfComponents);
 
-    std::vector<std::unique_ptr<lab::AudioFloatArray> > m_bandLimitedTables;
+    std::vector<std::unique_ptr<AudioFloatArray> > m_bandLimitedTables;
 };
 
 } // namespace lab

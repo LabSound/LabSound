@@ -14,7 +14,7 @@ namespace lab
     // Expects two inputs.
     // input 0 is the carrier, and input 1 is the modulator.
     // If there is no modulator, then the node is a pass-through.
-    class PWMNode : public lab::AudioBasicProcessorNode
+    class PWMNode : public AudioBasicProcessorNode
     {
 		class PWMNodeInternal;
         PWMNodeInternal * internalNode;

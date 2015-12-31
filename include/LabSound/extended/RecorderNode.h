@@ -12,7 +12,7 @@
 namespace lab
 {
     
-    class RecorderNode : public lab::AudioBasicInspectorNode
+    class RecorderNode : public AudioBasicInspectorNode
     {
         
     public:

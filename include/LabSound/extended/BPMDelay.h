@@ -13,7 +13,7 @@
 
 namespace lab 
 {
-	class BPMDelay : public lab::DelayNode 
+	class BPMDelay : public DelayNode 
 	{
 		float tempo;
 		int noteDivision; 
@@ -35,7 +35,7 @@ namespace lab
 			recomputeDelay();
 		}
 
-		void SetDelayIndex(lab::TempoSync value);
+		void SetDelayIndex(TempoSync value);
 	};
 }
 

@@ -9,7 +9,7 @@
 
 namespace lab {
     
-    class PowerMonitorNode : public lab::AudioBasicInspectorNode 
+    class PowerMonitorNode : public AudioBasicInspectorNode 
 	{
     public:
 

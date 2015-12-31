@@ -14,7 +14,7 @@
 namespace lab
 {
 
-    class ADSRNode : public lab::AudioBasicProcessorNode
+    class ADSRNode : public AudioBasicProcessorNode
     {
         class ADSRNodeInternal;
         ADSRNodeInternal * internalNode;
@@ -33,11 +33,11 @@ namespace lab
 
 		void set(float aT, float aL, float d, float s, float r);
 
-        std::shared_ptr<lab::AudioParam> attackTime() const; // Duration in ms
-        std::shared_ptr<lab::AudioParam> attackLevel() const; // Duration in ms
-        std::shared_ptr<lab::AudioParam> decayTime() const; // Duration in ms
-        std::shared_ptr<lab::AudioParam> sustainLevel() const; // Level 0-10
-        std::shared_ptr<lab::AudioParam> releaseTime() const; // Duration in ms
+        std::shared_ptr<AudioParam> attackTime() const; // Duration in ms
+        std::shared_ptr<AudioParam> attackLevel() const; // Duration in ms
+        std::shared_ptr<AudioParam> decayTime() const; // Duration in ms
+        std::shared_ptr<AudioParam> sustainLevel() const; // Level 0-10
+        std::shared_ptr<AudioParam> releaseTime() const; // Duration in ms
     };
     
 }

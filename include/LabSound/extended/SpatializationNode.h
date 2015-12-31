@@ -55,7 +55,7 @@ namespace lab {
     
     typedef std::shared_ptr<Occluders> OccludersPtr;
 
-    class SpatializationNode : public lab::PannerNode 
+    class SpatializationNode : public PannerNode 
 	{
 
     public:

@@ -10,7 +10,7 @@
 namespace lab 
 {
 
-    class NoiseNode : public lab::AudioScheduledSourceNode 
+    class NoiseNode : public AudioScheduledSourceNode 
 	{
 
     public:

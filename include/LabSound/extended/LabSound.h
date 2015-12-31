@@ -53,9 +53,9 @@
 
 namespace lab 
 {
-    std::shared_ptr<lab::AudioContext> init();
-    std::shared_ptr<lab::AudioContext> initOffline(int millisecondsToRun);
-    void finish(std::shared_ptr<lab::AudioContext> context);
+    std::shared_ptr<AudioContext> init();
+    std::shared_ptr<AudioContext> initOffline(int millisecondsToRun);
+    void finish(std::shared_ptr<AudioContext> context);
 }
 
 #endif

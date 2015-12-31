@@ -22,7 +22,7 @@ namespace lab
         
     public:
         
-        ContextGraphLock(std::shared_ptr<lab::AudioContext> context, const std::string & lockSuitor)
+        ContextGraphLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -51,11 +51,11 @@ namespace lab
             
         }
         
-        lab::AudioContext* context() { return m_context.get(); }
-        std::shared_ptr<lab::AudioContext> contextPtr() { return m_context; }
+        AudioContext* context() { return m_context.get(); }
+        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
         
     private:
-        std::shared_ptr<lab::AudioContext> m_context;
+        std::shared_ptr<AudioContext> m_context;
     };
     
     class ContextRenderLock
@@ -63,7 +63,7 @@ namespace lab
         
     public:
         
-        ContextRenderLock(std::shared_ptr<lab::AudioContext> context, const std::string & lockSuitor)
+        ContextRenderLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -89,11 +89,11 @@ namespace lab
                 m_context->m_renderLock.unlock();
         }
         
-        lab::AudioContext * context() { return m_context.get(); }
-        std::shared_ptr<lab::AudioContext> contextPtr() { return m_context; }
+        AudioContext * context() { return m_context.get(); }
+        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
         
     private:
-        std::shared_ptr<lab::AudioContext> m_context;
+        std::shared_ptr<AudioContext> m_context;
     };
 
 } // end namespace lab

@@ -46,13 +46,13 @@ struct PendingConnection
 };
 
 //@tofix: refactor such that this factory function doesn't need to exist
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r);
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
 
 class AudioContext
 {
     
-	friend class lab::ContextGraphLock;
-	friend class lab::ContextRenderLock;
+	friend class ContextGraphLock;
+	friend class ContextRenderLock;
     
 public:
 
@@ -82,9 +82,9 @@ public:
 	// It *is* harmless to call it though, it's just not necessary.
 	void lazyInitialize();
 
-	void update(lab::ContextGraphLock &);
+	void update(ContextGraphLock &);
 
-	void stop(lab::ContextGraphLock &);
+	void stop(ContextGraphLock &);
 
 	void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 
@@ -105,11 +105,11 @@ public:
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
 
-	void handlePreRenderTasks(lab::ContextRenderLock &); // Called at the START of each render quantum.
-	void handlePostRenderTasks(lab::ContextRenderLock &); // Called at the END of each render quantum.
+	void handlePreRenderTasks(ContextRenderLock &); // Called at the START of each render quantum.
+	void handlePostRenderTasks(ContextRenderLock &); // Called at the END of each render quantum.
 
 	// We schedule deletion of all marked nodes at the end of each realtime render quantum.
-	void markForDeletion(lab::ContextRenderLock & r, AudioNode *);
+	void markForDeletion(ContextRenderLock & r, AudioNode *);
 	void deleteMarkedNodes();
 
 	// AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
@@ -119,7 +119,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioDestinationNode should call this. 
-    void processAutomaticPullNodes(lab::ContextRenderLock &, size_t framesToProcess);
+    void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
     
 	// Keeps track of the number of connections made.
 	void incrementConnectionCount();
@@ -161,15 +161,15 @@ private:
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
 
-	void uninitialize(lab::ContextGraphLock &);
+	void uninitialize(ContextGraphLock &);
 
 	// Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
 	void clear();
 
-	void scheduleNodeDeletion(lab::ContextRenderLock & g);
+	void scheduleNodeDeletion(ContextRenderLock & g);
 
-	void referenceSourceNode(lab::ContextGraphLock&, std::shared_ptr<AudioNode>);
-	void dereferenceSourceNode(lab::ContextGraphLock&, std::shared_ptr<AudioNode>);
+	void referenceSourceNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
+	void dereferenceSourceNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
     
 	void handleAutomaticSources();
 	void updateAutomaticPullNodes();

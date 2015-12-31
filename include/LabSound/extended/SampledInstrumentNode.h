@@ -81,12 +81,12 @@ namespace lab
 	class SampledInstrumentNode 
 	{
 		std::vector<std::shared_ptr<SamplerSound>> samples;
-		std::shared_ptr<lab::GainNode> gainNode;
-		std::vector<std::shared_ptr<lab::AudioBufferSourceNode>> voices;
+		std::shared_ptr<GainNode> gainNode;
+		std::vector<std::shared_ptr<AudioBufferSourceNode>> voices;
 		const float maxVoiceCount = 24;
 		float sampleRate;
 	public:
-        SampledInstrumentNode(lab::AudioContext * ctx, float sampleRate);
+        SampledInstrumentNode(AudioContext * ctx, float sampleRate);
         ~SampledInstrumentNode();
 
 		void LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds);
@@ -96,7 +96,7 @@ namespace lab
 
 		void KillAllNotes(); 
 
-		lab::GainNode * GetOutputNode() { return gainNode.get(); }
+		GainNode * GetOutputNode() { return gainNode.get(); }
 	};
 
 } // LabSound

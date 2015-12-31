@@ -8,7 +8,7 @@
 
 namespace lab {
 
-    class SfxrNode : public lab::AudioScheduledSourceNode {
+    class SfxrNode : public AudioScheduledSourceNode {
     public:
 
         SfxrNode(float sampleRate);

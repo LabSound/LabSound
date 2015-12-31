@@ -19,12 +19,12 @@ namespace pd
 namespace lab
 {
 
-class PureDataNode : public lab::AudioBasicProcessorNode
+class PureDataNode : public AudioBasicProcessorNode
 {
     
 public:
     
-    PureDataNode(lab::AudioContext *, float sampleRate);
+    PureDataNode(AudioContext *, float sampleRate);
     virtual ~PureDataNode();
     
     pd::PdBase & pd() const;

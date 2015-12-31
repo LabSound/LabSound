@@ -11,7 +11,7 @@
 namespace lab
 {
     
-    class FunctionNode : public lab::AudioScheduledSourceNode
+    class FunctionNode : public AudioScheduledSourceNode
     {
         
     public:
