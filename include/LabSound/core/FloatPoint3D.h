@@ -6,72 +6,33 @@
 #include <float.h>
 #include <math.h>
 
-class FloatPoint3D;
-::FloatPoint3D operator-(const ::FloatPoint3D& v1, const ::FloatPoint3D& v2);
-
-class FloatPoint3D {
-public:
-    FloatPoint3D() { }
-
-    FloatPoint3D(float x, float y, float z)
-    : x(x), y(y), z(z) { }
-
+struct float3
+{
     float x, y, z;
-
-    bool isZero() const {
-        return fabsf(x) < FLT_EPSILON && fabsf(y) < FLT_EPSILON && fabsf(z) < FLT_EPSILON;
-    }
-
-    void normalize() {
-        if (!isZero()) {
-            float l = 1.0f / sqrtf(x * x + y * y + z * z);
-            x *= l;
-            y *= l;
-            z *= l;
-        }
-    }
-
-    float length() const {
-        return sqrtf(x * x + y * y + z * z);
-    }
-
-    float dot(const FloatPoint3D& rhs) const {
-        return x * rhs.x + y * rhs.y + z * rhs.z;
-    }
-
-    FloatPoint3D cross(const FloatPoint3D& point) const {
-        FloatPoint3D result;
-        result.cross(*this, point);
-        return result;
-    }
-
-    inline void cross(const FloatPoint3D& v1, const FloatPoint3D& v2) {
-        float x_ = v1.y * v2.z - v1.z * v2.y;
-        float y_ = v1.z * v2.x - v1.x * v2.z;
-        z = v1.x * v2.y - v1.y * v2.x;
-        x = x_;
-        y = y_;
-    }
-
-    FloatPoint3D& operator-(const FloatPoint3D& rhs) {
-        x -= rhs.x;
-        y -= rhs.y;
-        z -= rhs.z;
-        return *this;
-    }
-
-    float distanceTo(const FloatPoint3D& rhs) const
-    {
-        return (*this - rhs).length();
-    }
+    float3(float x, float y, float z) :x(x), y(y), z(z){}
+    float3() :x(0), y(0), z(0){}
+    float & operator[](int i){ return (&x)[i]; }
+    const float & operator[](int i)const { return (&x)[i]; }
 };
 
-inline ::FloatPoint3D operator-(const ::FloatPoint3D& v1, const ::FloatPoint3D& v2) {
-    return ::FloatPoint3D(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
-}
+inline bool   operator==(const float3 &a, const float3 &b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
+inline bool   operator!=(const float3 &a, const float3 &b) { return !(a==b); }
+inline float3 operator+(const float3 &a, const float3 &b)  { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
+inline float3 operator-(const float3 &v)                   { return { -v.x , -v.y, -v.z }; }
+inline float3 operator-(const float3 &a, const float3 &b)  { return {a.x-b.x,a.y-b.y,a.z-b.z}; }
+inline float3 operator*(const float3 &v, float s)          { return { v.x*s, v.y*s, v.z*s }; }
+inline float3 operator*(float s,const float3 &v)           { return v*s;}
+inline float3 operator/(const float3 &v,float s)           { return v * (1.0f/s) ;}
+inline float3 operator+=(float3 &a, const float3 &b)       { return a = a + b; }
+inline float3 operator-=(float3 &a, const float3 &b)       { return a = a - b; }
+inline float3 operator*=(float3 &v, const float &s )       { return v = v * s; }
+inline float3 operator/=(float3 &v, const float &s )       { return v = v / s; }
+inline float  dot(const float3 &a, const float3 &b)        { return a.x*b.x + a.y*b.y + a.z*b.z; }
+inline float3 cross(const float3 &a, const float3 &b)      { return {a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x}; }
+inline float  magnitude(const float3 &v)                   { return sqrtf(dot(v, v)); }
+inline float3 normalize(const float3 &v)                   { return v / magnitude(v); }
+inline bool   is_zero(const float3 &v)                     { return fabsf(v.x) < FLT_EPSILON && fabsf(v.y) < FLT_EPSILON && fabsf(v.z) < FLT_EPSILON; }
 
-inline ::FloatPoint3D operator*(float scale, const ::FloatPoint3D& rhs) {
-    return ::FloatPoint3D(scale * rhs.x, scale * rhs.y, scale * rhs.z);
-}
+typedef float3 FloatPoint3D;
 
 #endif

@@ -9,8 +9,6 @@
 #include "LabSound/core/PannerNode.h"
 #include <map>
 
-class FloatPoint3D;
-
 namespace lab {
 
     struct Occluder 

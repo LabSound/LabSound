@@ -42,6 +42,6 @@ GrooveApp g_grooveExample;
 
 int main (int argc, char *argv[])
 {
-    g_connectApp.PlayExample();
+    g_spatialization.PlayExample();
     return 0;
 }

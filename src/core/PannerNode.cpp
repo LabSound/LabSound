@@ -212,7 +212,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     FloatPoint3D listenerPosition = listener(r)->position();
     FloatPoint3D sourceListener = m_position - listenerPosition;
 
-    if (sourceListener.isZero()) 
+    if (is_zero(sourceListener))
 	{
         // degenerate case if source and listener are at the same point
         *outAzimuth = 0.0;
@@ -220,29 +220,29 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
         return;
     }
 
-    sourceListener.normalize();
+    sourceListener = normalize(sourceListener);
 
     // Align axes
     FloatPoint3D listenerFront = listener(r)->orientation();
     FloatPoint3D listenerUp = listener(r)->upVector();
-    FloatPoint3D listenerRight = listenerFront.cross(listenerUp);
-    listenerRight.normalize();
+    FloatPoint3D listenerRight = cross(listenerFront, listenerUp);
+    listenerRight = normalize(listenerRight);
 
     FloatPoint3D listenerFrontNorm = listenerFront;
-    listenerFrontNorm.normalize();
+    listenerFrontNorm = normalize(listenerFrontNorm);
 
-    FloatPoint3D up = listenerRight.cross(listenerFrontNorm);
+    FloatPoint3D up = cross(listenerRight, listenerFrontNorm);
 
-    float upProjection = sourceListener.dot(up);
+    float upProjection = dot(sourceListener, up);
 
     FloatPoint3D projectedSource = sourceListener - upProjection * up;
-    projectedSource.normalize();
+    projectedSource = normalize(projectedSource);
 
-    azimuth = 180.0 * acos(projectedSource.dot(listenerRight)) / piDouble;
+    azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / piDouble;
     fixNANs(azimuth); // avoid illegal values
 
     // Source  in front or behind the listener
-    double frontBack = projectedSource.dot(listenerFrontNorm);
+    double frontBack = dot(projectedSource, listenerFrontNorm);
     if (frontBack < 0.0)
         azimuth = 360.0 - azimuth;
 
@@ -253,7 +253,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
         azimuth = 450.0 - azimuth;
 
     // Elevation
-    double elevation = 90.0 - 180.0 * acos(sourceListener.dot(up)) / piDouble;
+    double elevation = 90.0 - 180.0 * acos(dot(sourceListener, up)) / piDouble;
     fixNANs(elevation); // avoid illegal values
 
     if (elevation > 90.0)
@@ -282,8 +282,8 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
         const FloatPoint3D &listenerVelocity = listener(r)->velocity();
 
         // Don't bother if both source and listener have no velocity
-        bool sourceHasVelocity = !sourceVelocity.isZero();
-        bool listenerHasVelocity = !listenerVelocity.isZero();
+        bool sourceHasVelocity = !is_zero(sourceVelocity);
+        bool listenerHasVelocity = !is_zero(listenerVelocity);
 
         if (sourceHasVelocity || listenerHasVelocity) 
 		{
@@ -291,10 +291,10 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
             FloatPoint3D listenerPosition = listener(r)->position();
             FloatPoint3D sourceToListener = m_position - listenerPosition;
 
-            double sourceListenerMagnitude = sourceToListener.length();
+            double sourceListenerMagnitude = magnitude(sourceToListener);
 
-            double listenerProjection = sourceToListener.dot(listenerVelocity) / sourceListenerMagnitude;
-            double sourceProjection = sourceToListener.dot(sourceVelocity) / sourceListenerMagnitude;
+            double listenerProjection = dot(sourceToListener, listenerVelocity) / sourceListenerMagnitude;
+            double sourceProjection = dot(sourceToListener, sourceVelocity) / sourceListenerMagnitude;
 
             listenerProjection = -listenerProjection;
             sourceProjection = -sourceProjection;
@@ -321,7 +321,7 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
 {
     FloatPoint3D listenerPosition = listener(r)->position();
 
-    double listenerDistance = m_position.distanceTo(listenerPosition);
+    double listenerDistance = magnitude(m_position - listenerPosition); // "distanceTo"
 
     double distanceGain = m_distanceEffect->gain(listenerDistance);
     
