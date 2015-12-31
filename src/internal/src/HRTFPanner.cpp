@@ -104,7 +104,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     ASSERT(isOutputGood);
 
     if (!isInputGood || !isOutputGood)
-	{
+    {
         if (outputBus)
             outputBus->zero();
         return;
@@ -115,7 +115,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     ASSERT(database);
 
     if (!database) 
-	{
+    {
         outputBus->zero();
         return;
     }
@@ -126,7 +126,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     bool isAzimuthGood = azimuth >= -180.0 && azimuth <= 180.0;
     ASSERT(isAzimuthGood);
     if (!isAzimuthGood) 
-	{
+    {
         outputBus->zero();
         return;
     }
@@ -148,13 +148,13 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
 
     // Initially snap azimuth and elevation values to first values encountered.
     if (m_azimuthIndex1 == UninitializedAzimuth)
-	{
+    {
         m_azimuthIndex1 = desiredAzimuthIndex;
         m_elevation1 = elevation;
     }
 
     if (m_azimuthIndex2 == UninitializedAzimuth) 
-	{
+    {
         m_azimuthIndex2 = desiredAzimuthIndex;
         m_elevation2 = elevation;
     }
@@ -166,9 +166,9 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
 
     // Check for azimuth and elevation changes, initiating a cross-fade if needed.
     if (!m_crossfadeX && m_crossfadeSelection == CrossfadeSelection1)
-	{
+    {
         if (desiredAzimuthIndex != m_azimuthIndex1 || elevation != m_elevation1) 
-		{
+        {
             // Cross-fade from 1 -> 2
             m_crossfadeIncr = 1 / fadeFrames;
             m_azimuthIndex2 = desiredAzimuthIndex;
@@ -177,9 +177,9 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     }
 
     if (m_crossfadeX == 1 && m_crossfadeSelection == CrossfadeSelection2)
-	{
+    {
         if (desiredAzimuthIndex != m_azimuthIndex2 || elevation != m_elevation2) 
-		{
+        {
             // Cross-fade from 2 -> 1
             m_crossfadeIncr = -1 / fadeFrames;
             m_azimuthIndex1 = desiredAzimuthIndex;
@@ -195,7 +195,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     const uint32_t numberOfSegments = framesToProcess / framesPerSegment;
 
     for (uint32_t segment = 0; segment < numberOfSegments; ++segment) 
-	{
+    {
         // Get the HRTFKernels and interpolated delays.
         HRTFKernel * kernelL1;
         HRTFKernel * kernelR1;
@@ -212,11 +212,11 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
 
         bool areKernelsGood = kernelL1 && kernelR1 && kernelL2 && kernelR2;
         
-		// @LabSound removed ASSERT(areKernelsGood);
-		ASSERT(areKernelsGood);
+        // @LabSound removed ASSERT(areKernelsGood);
+        ASSERT(areKernelsGood);
 
         if (!areKernelsGood)
-		{
+        {
             outputBus->zero();
             return;
         }
@@ -252,25 +252,25 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         // Now do the convolutions.
         // Note that we avoid doing convolutions on both sets of convolvers if we're not currently cross-fading.
         if (m_crossfadeSelection == CrossfadeSelection1 || needsCrossfading) 
-		{
+        {
             m_convolverL1.process(kernelL1->fftFrame(), segmentDestinationL, convolutionDestinationL1, framesPerSegment);
             m_convolverR1.process(kernelR1->fftFrame(), segmentDestinationR, convolutionDestinationR1, framesPerSegment);
         }
 
         if (m_crossfadeSelection == CrossfadeSelection2 || needsCrossfading) 
-		{
+        {
             m_convolverL2.process(kernelL2->fftFrame(), segmentDestinationL, convolutionDestinationL2, framesPerSegment);
             m_convolverR2.process(kernelR2->fftFrame(), segmentDestinationR, convolutionDestinationR2, framesPerSegment);
         }
         
         if (needsCrossfading) 
-		{
+        {
             // Apply linear cross-fade.
             float x = m_crossfadeX;
             float incr = m_crossfadeIncr;
 
             for (uint32_t i = 0; i < framesPerSegment; ++i) 
-			{
+            {
                 segmentDestinationL[i] = (1 - x) * convolutionDestinationL1[i] + x * convolutionDestinationL2[i];
                 segmentDestinationR[i] = (1 - x) * convolutionDestinationR1[i] + x * convolutionDestinationR2[i];
                 x += incr;
@@ -280,14 +280,14 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
             m_crossfadeX = x;
 
             if (m_crossfadeIncr > 0 && fabs(m_crossfadeX - 1) < m_crossfadeIncr) 
-			{
+            {
                 // We've fully made the crossfade transition from 1 -> 2.
                 m_crossfadeSelection = CrossfadeSelection2;
                 m_crossfadeX = 1;
                 m_crossfadeIncr = 0;
             }
-			else if (m_crossfadeIncr < 0 && fabs(m_crossfadeX) < -m_crossfadeIncr)
-			{
+            else if (m_crossfadeIncr < 0 && fabs(m_crossfadeX) < -m_crossfadeIncr)
+            {
                 // We've fully made the crossfade transition from 2 -> 1.
                 m_crossfadeSelection = CrossfadeSelection1;
                 m_crossfadeX = 0;

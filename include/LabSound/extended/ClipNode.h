@@ -27,7 +27,7 @@ namespace lab
         // in TANH mode, a is the overall gain, and b is the input gain.
         // The higher the input gain the more severe the distortion.
         std::shared_ptr<AudioParam> aVal();
-		std::shared_ptr<AudioParam> bVal();
+        std::shared_ptr<AudioParam> bVal();
     };
     
 }

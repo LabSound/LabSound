@@ -92,11 +92,11 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
         double threshold =  (i > 16) ? 5.0 : 2.0;
 
         if (magdbdiff < -threshold && mag1db < 0.0) 
-		{
+        {
             s1 = pow(s1, 0.75);
             s2 = 1.0 - s1;
         } else if (magdbdiff > threshold && mag2db < 0.0)
-		{
+        {
             s2 = pow(s2, 0.75);
             s1 = 1.0 - s2;
         }
@@ -164,7 +164,7 @@ double FFTFrame::extractAverageGroupDelay()
 
     // Calculate weighted average group delay
     for (int i = 0; i < halfSize; i++) 
-	{
+    {
         Complex c(realP[i], imagP[i]);
         double mag = abs(c);
         double phase = arg(c);

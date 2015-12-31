@@ -35,7 +35,7 @@ CRASH() ;                                                       \
 
 #define ASSERT_WITH_MESSAGE(assertion, ...) do                  \
 if (!(assertion)) {                                             \
-LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion); 	\
+LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion);     \
 CRASH() ;                                                       \
 } while (0)
 

@@ -19,22 +19,22 @@ namespace lab
 
     using namespace lab;
 
-	//////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
     // Prviate FFT + SpectralMonitorNode Implementation //
     //////////////////////////////////////////////////////
 
     // FFT class directly inspired by that in Cinder Audio 2.
     struct FFT 
-	{
+    {
     public:
         FFT(size_t size) : size(size)
-		{
+        {
             oouraIp = (int *)calloc( 2 + (int)sqrt( size/2 ), sizeof( int ) );
             oouraW = (float *)calloc( size/2, sizeof( float ) );
         }
 
         ~FFT()
-		{
+        {
             free(oouraIp);
             free(oouraW);
         }
@@ -52,28 +52,28 @@ namespace lab
     };
 
     class SpectralMonitorNode::SpectralMonitorNodeInternal 
-	{
+    {
     public:
 
         SpectralMonitorNodeInternal() : fft(0) 
-		{
+        {
             setWindowSize(512);
         }
 
         ~SpectralMonitorNodeInternal() 
-		{
+        {
             delete fft;
         }
 
         void setWindowSize(int s) 
-		{
+        {
             cursor = 0;
             windowSize = s;
 
             buffer.resize(windowSize);
 
             for (size_t i = 0; i < windowSize; ++i) 
-			{
+            {
                 buffer[i] = 0;
             }
 
@@ -92,14 +92,14 @@ namespace lab
         FFT * fft;
     };
 
-	////////////////////////////////
+    ////////////////////////////////
     // Public SpectralMonitorNode //
     ////////////////////////////////
 
     SpectralMonitorNode::SpectralMonitorNode(float sampleRate)
     : AudioBasicInspectorNode(sampleRate, 2)
     {
-		internalNode.reset(new SpectralMonitorNodeInternal());
+        internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType(lab::NodeType::NodeTypeSpectralMonitor);
         initialize();
@@ -139,7 +139,7 @@ namespace lab
 
             // if the fft is smaller than the quantum, just grab a chunk
             if (internalNode->windowSize < framesToProcess) 
-			{
+            {
                 internalNode->cursor = 0;
                 framesToProcess = internalNode->windowSize;
             }
@@ -154,18 +154,18 @@ namespace lab
                 internalNode->buffer.resize(internalNode->windowSize);
 
                 for (size_t i = 0; i < framesToProcess; ++i) 
-				{
+                {
                     internalNode->buffer[i + internalNode->cursor] = 0;
                 }
 
                 for (unsigned c = 0; c < numberOfChannels; ++c)
-				{
-					for (size_t i = 0; i < framesToProcess; ++i) 
-					{
+                {
+                    for (size_t i = 0; i < framesToProcess; ++i) 
+                    {
                         float p = channels[c][i];
                         internalNode->buffer[i + internalNode->cursor] += p;
                     }
-				}
+                }
 
             }
 
@@ -190,7 +190,7 @@ namespace lab
     }
 
     void SpectralMonitorNode::spectralMag(std::vector<float>& result) 
-	{
+    {
         std::vector<float> window;
 
         {
@@ -220,12 +220,12 @@ namespace lab
     }
 
     void SpectralMonitorNode::windowSize(size_t ws) 
-	{
+    {
         internalNode->setWindowSize(ws);
     }
 
     size_t SpectralMonitorNode::windowSize() const 
-	{
+    {
         return internalNode->windowSize;
     }
 

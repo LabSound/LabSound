@@ -24,12 +24,12 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_
         return;
 
     for (uint32_t i = 0; i < numberOfChannels; ++i) 
-	{
-		AudioChannel * newChannel;
-		if (allocate)
-			newChannel = new AudioChannel(length);
-		else
-			newChannel = new AudioChannel(nullptr, length);
+    {
+        AudioChannel * newChannel;
+        if (allocate)
+            newChannel = new AudioChannel(length);
+        else
+            newChannel = new AudioChannel(nullptr, length);
 
         m_channels.emplace_back(std::unique_ptr<AudioChannel>(newChannel));
     }
@@ -38,7 +38,7 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_
 void AudioBus::setChannelMemory(unsigned channelIndex, float * storage, size_t length)
 {
     if (channelIndex < m_channels.size()) 
-	{
+    {
         channel(channelIndex)->set(storage, length);
         m_length = length; // FIXME: verify that this length matches all the other channel lengths
     }
@@ -215,16 +215,16 @@ void AudioBus::sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelI
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) 
-	{
+    {
         for (unsigned i = 0; i < numberOfSourceChannels; ++i)
-		{
-			 channel(i)->sumFrom(sourceBus.channel(i));
-		}
+        {
+             channel(i)->sumFrom(sourceBus.channel(i));
+        }
     }
-	else 
-	{
+    else 
+    {
         switch (channelInterpretation)
-		{
+        {
             case ChannelInterpretation::Speakers:
                 speakersSumFrom(sourceBus);
                 break;
@@ -354,25 +354,25 @@ void AudioBus::discreteCopyFrom(const AudioBus& sourceBus)
     unsigned numberOfDestinationChannels = numberOfChannels();
     
     if (numberOfDestinationChannels < numberOfSourceChannels) 
-	{
+    {
         // Down-mix by copying channels and dropping the remaining.
         for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
-		{
+        {
             channel(i)->copyFrom(sourceBus.channel(i));
-		}
+        }
     }
-	else if (numberOfDestinationChannels > numberOfSourceChannels)
-	{
+    else if (numberOfDestinationChannels > numberOfSourceChannels)
+    {
         // Up-mix by copying as many channels as we have, then zeroing remaining channels.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i)
-		{
-			channel(i)->copyFrom(sourceBus.channel(i));
-		}
+        {
+            channel(i)->copyFrom(sourceBus.channel(i));
+        }
 
         for (unsigned i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
-		{
-			channel(i)->zero();
-		}
+        {
+            channel(i)->zero();
+        }
     }
 }
 
@@ -382,20 +382,20 @@ void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
     unsigned numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels < numberOfSourceChannels) 
-	{
+    {
         // Down-mix by summing channels and dropping the remaining.
         for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
-		{
+        {
             channel(i)->sumFrom(sourceBus.channel(i));
-		}
+        }
     } 
-	else if (numberOfDestinationChannels > numberOfSourceChannels)
-	{
+    else if (numberOfDestinationChannels > numberOfSourceChannels)
+    {
         // Up-mix by summing as many channels as we have.
         for (unsigned i = 0; i < numberOfSourceChannels; ++i) 
-		{
-			channel(i)->sumFrom(sourceBus.channel(i));
-		}
+        {
+            channel(i)->sumFrom(sourceBus.channel(i));
+        }
     }
 }
 
@@ -403,14 +403,14 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
 {
 
     if (!topologyMatches(sourceBus))
-	{
+    {
         // happens if a connection has been made, but the channel count has yet to be propagated.
         zero();
         return;
     }
 
     if (sourceBus.isSilent()) 
-	{
+    {
         zero();
         return;
     }
@@ -430,7 +430,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     float* destinations[MaxBusChannels];
 
     for (uint32_t i = 0; i < numberOfChannels; ++i) 
-	{
+    {
         sources[i] = sourceBusSafe.channel(i)->data();
         destinations[i] = channel(i)->mutableData();
     }
@@ -458,16 +458,16 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     size_t framesToDezipper = (gainDiff < epsilon) ? 0 : framesToProcess; 
 
     if (framesToDezipper) 
-	{
+    {
         if (!m_dezipperGainValues.get() || m_dezipperGainValues->size() < framesToDezipper)
-		{
-			m_dezipperGainValues = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(framesToDezipper));
-		}
+        {
+            m_dezipperGainValues = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(framesToDezipper));
+        }
            
         float * gainValues = m_dezipperGainValues->data();
 
         for (uint32_t i = 0; i < framesToDezipper; ++i) 
-		{
+        {
             gain += (totalDesiredGain - gain) * DezipperRate;
         
             // FIXME: If we are clever enough in calculating the framesToDezipper value, we can probably get
@@ -477,26 +477,26 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
         }
 
         for (uint32_t channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex) 
-		{
+        {
             vmul(sources[channelIndex], 1, m_dezipperGainValues->data(), 1, destinations[channelIndex], 1, framesToDezipper);
             sources[channelIndex] += framesToDezipper;
             destinations[channelIndex] += framesToDezipper;
         }
     } 
-	else
-	{
-		gain = totalDesiredGain;
-	}
+    else
+    {
+        gain = totalDesiredGain;
+    }
         
 
     // Apply constant gain after de-zippering has converged on target gain.
     if (framesToDezipper < framesToProcess) 
-	{
+    {
         for (unsigned channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex)
-		{
-			vsmul(sources[channelIndex], 1, &gain, destinations[channelIndex], 1, framesToProcess - framesToDezipper);
-		}        
-	}
+        {
+            vsmul(sources[channelIndex], 1, &gain, destinations[channelIndex], 1, framesToProcess - framesToDezipper);
+        }        
+    }
 
     // Save the target gain as the starting point for next time around.
     *lastMixGain = gain;

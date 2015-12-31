@@ -36,7 +36,7 @@ private:
     std::unique_ptr<AudioBus> m_renderBus;
     
     // Rendering thread.
-	std::thread m_renderThread;
+    std::thread m_renderThread;
     
     bool m_startedRendering;
     void offlineRender();

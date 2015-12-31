@@ -38,7 +38,7 @@ struct TremoloApp : public LabSoundExampleApp
             osc->connect(context.get(), context->destination().get(), 0, 0);
         }
         
-		int nowInSeconds = 0;
+        int nowInSeconds = 0;
         while(nowInSeconds < 5)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -16,10 +16,10 @@ class HRTFKernel;
 
 class HRTFDatabase 
 {
-	NO_MOVE(HRTFDatabase);
+    NO_MOVE(HRTFDatabase);
 public:
 
-	HRTFDatabase(float sampleRate);
+    HRTFDatabase(float sampleRate);
 
     // getKernelsFromAzimuthElevation() returns a left and right ear kernel, and an interpolated left and right frame delay for the given azimuth and elevation.
     // azimuthBlend must be in the range 0 -> 1.

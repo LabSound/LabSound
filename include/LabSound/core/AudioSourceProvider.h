@@ -13,10 +13,10 @@ class AudioBus;
 
 class AudioSourceProviderClient 
 {
-	public:
-		virtual void setFormat(ContextRenderLock& r, size_t numberOfChannels, float sampleRate) = 0;
-	protected:
-		virtual ~AudioSourceProviderClient() { }
+    public:
+        virtual void setFormat(ContextRenderLock& r, size_t numberOfChannels, float sampleRate) = 0;
+    protected:
+        virtual ~AudioSourceProviderClient() { }
 };
 
 // Abstract base-class for a pull-model client.

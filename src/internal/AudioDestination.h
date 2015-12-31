@@ -7,7 +7,7 @@
 
 namespace lab {
 
-class AudioIOCallback;
+struct AudioIOCallback;
 
 // AudioDestination is an abstraction for audio hardware I/O.
 // The audio hardware periodically calls the AudioIOCallback render() method asking it to render/output the next render quantum of audio.

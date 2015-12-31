@@ -11,7 +11,7 @@ namespace lab
 {
     
     namespace 
-	{
+    {
         // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         float distanceFromPointToLine(const ::FloatPoint3D& x0, const ::FloatPoint3D& x1, const ::FloatPoint3D& x2, float& t)
         {

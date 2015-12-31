@@ -13,7 +13,7 @@
 namespace lab {
     
     class PowerMonitorNode : public AudioBasicInspectorNode 
-	{
+    {
     public:
 
         PowerMonitorNode(float sampleRate);

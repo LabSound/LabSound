@@ -116,7 +116,7 @@ public:
     // Makes maximum absolute value == 1.0 (if possible).
     void normalize();
 
-	bool isFirstTime() { return m_isFirstTime; }
+    bool isFirstTime() { return m_isFirstTime; }
 
 protected:
 

@@ -19,10 +19,10 @@ class WaveTable
 
 public:
 
-	WaveTable(float sampleRate, OscillatorType basicWaveform);
-	WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+    WaveTable(float sampleRate, OscillatorType basicWaveform);
+    WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
-	~WaveTable();
+    ~WaveTable();
 
     // Returns pointers to the lower and higher wavetable data for the pitch range containing
     // the given fundamental frequency. These two tables are in adjacent "pitch" ranges

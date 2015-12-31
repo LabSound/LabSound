@@ -169,9 +169,9 @@ struct GrooveApp : public LabSoundExampleApp
             float synthWaveform, synthPercussive, synthDegradedWaveform, synthSample;
             
             //@todo/tofix: Channels in FunctionNode is only half the equation (sets output node correctly); node itself by default is stereo
-			// and you need to pass in a graphlock to change it
+            // and you need to pass in a graphlock to change it
             grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-			grooveBox->setChannelCount(g, 1);
+            grooveBox->setChannelCount(g, 1);
             grooveBox->setFunction([&](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
                 float dt = 1.0f / self->sampleRate(); // time duration of one sample

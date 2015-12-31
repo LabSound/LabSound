@@ -14,12 +14,12 @@ namespace lab
 {
 
     class NoiseNode : public AudioScheduledSourceNode 
-	{
+    {
 
     public:
 
         enum NoiseType
-		{
+        {
             WHITE,
             PINK,
             BROWN,
@@ -47,12 +47,12 @@ namespace lab
         float lastBrown = 0;
 
         float pink0 = 0; 
-		float pink1 = 0;
-		float pink2 = 0;
-		float pink3 = 0;
-		float pink4 = 0;
-		float pink5 = 0;
-		float pink6 = 0;
+        float pink1 = 0;
+        float pink2 = 0;
+        float pink3 = 0;
+        float pink4 = 0;
+        float pink5 = 0;
+        float pink6 = 0;
 
     };
 

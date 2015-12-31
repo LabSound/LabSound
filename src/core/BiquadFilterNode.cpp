@@ -43,31 +43,31 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
 
 BiquadProcessor * BiquadFilterNode::biquadProcessor() 
 { 
-	return static_cast<BiquadProcessor*>(processor()); 
+    return static_cast<BiquadProcessor*>(processor()); 
 }
 
 unsigned short BiquadFilterNode::type() 
 { 
-	return biquadProcessor()->type(); 
+    return biquadProcessor()->type(); 
 }
 
 std::shared_ptr<AudioParam> BiquadFilterNode::frequency() 
 { 
-	return biquadProcessor()->parameter1(); 
+    return biquadProcessor()->parameter1(); 
 }
 
 std::shared_ptr<AudioParam> BiquadFilterNode::q() 
 { 
-	return biquadProcessor()->parameter2(); 
+    return biquadProcessor()->parameter2(); 
 }
 std::shared_ptr<AudioParam> BiquadFilterNode::gain() 
 { 
-	return biquadProcessor()->parameter3(); 
+    return biquadProcessor()->parameter3(); 
 }
 
 std::shared_ptr<AudioParam> BiquadFilterNode::detune() 
 { 
-	return biquadProcessor()->parameter4(); 
+    return biquadProcessor()->parameter4(); 
 }
 
 } // namespace lab

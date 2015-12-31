@@ -36,10 +36,10 @@ class FFTFrame
 
 public:
 
-	FFTFrame();	// creates a blank/empty frame for later use with createInterpolatedFrame()
-	FFTFrame(uint32_t fftSize);
+    FFTFrame();    // creates a blank/empty frame for later use with createInterpolatedFrame()
+    FFTFrame(uint32_t fftSize);
 
-	 // Copy
+     // Copy
     FFTFrame(const FFTFrame& frame);
     ~FFTFrame();
     
@@ -97,7 +97,7 @@ private:
     kiss_fft_cpx* m_cpxInputData;
     kiss_fft_cpx* m_cpxOutputData;
 
-	std::vector<kiss_fft_cpx> mOutputBuffer; 
+    std::vector<kiss_fft_cpx> mOutputBuffer; 
 
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;

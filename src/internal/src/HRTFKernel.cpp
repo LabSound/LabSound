@@ -60,9 +60,9 @@ HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate
     ASSERT(numberOfFadeOutFrames < truncatedResponseLength);
 
     if (numberOfFadeOutFrames < truncatedResponseLength) 
-	{
+    {
         for (uint32_t i = truncatedResponseLength - numberOfFadeOutFrames; i < truncatedResponseLength; ++i) 
-		{
+        {
             float x = 1.0f - static_cast<float>(i - (truncatedResponseLength - numberOfFadeOutFrames)) / numberOfFadeOutFrames;
             impulseResponse[i] *= x;
         }

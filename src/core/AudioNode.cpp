@@ -155,7 +155,7 @@ void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount)
     if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels)
     {
         if (m_channelCount != channelCount) 
-		{
+        {
             m_channelCount = channelCount;
             if (m_channelCountMode != ChannelCountMode::Max)
                 updateChannelsForInputs(g);

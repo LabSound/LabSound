@@ -17,39 +17,39 @@ namespace lab {
     using namespace lab;
 
 
-	SoundBuffer::SoundBuffer()
-	{
+    SoundBuffer::SoundBuffer()
+    {
 
-	}
+    }
 
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
         initialize(path, sampleRate);
     }
 
-	SoundBuffer::SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
-	{
-		initialize(buffer, extension, sampleRate);
-	}
+    SoundBuffer::SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
+    {
+        initialize(buffer, extension, sampleRate);
+    }
 
-	void SoundBuffer::initialize(const char * path, float sampleRate)
-	{
-		//@tofix investigate mixing to mono here and why it breaks if we don't
-		std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
+    void SoundBuffer::initialize(const char * path, float sampleRate)
+    {
+        //@tofix investigate mixing to mono here and why it breaks if we don't
+        std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
         if (auto f = busForFile.get())
         {
              audioBuffer = std::make_shared<AudioBuffer>(f);
         }
-	}
+    }
     
-	void SoundBuffer::initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
-	{
-		std::shared_ptr<AudioBus> busForFile = MakeBusFromMemory(buffer, extension, true, sampleRate);
+    void SoundBuffer::initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate)
+    {
+        std::shared_ptr<AudioBus> busForFile = MakeBusFromMemory(buffer, extension, true, sampleRate);
         if (auto f = busForFile.get())
         {
              audioBuffer = std::make_shared<AudioBuffer>(f);
         }
-	}
+    }
     
 
     SoundBuffer::~SoundBuffer()
@@ -60,7 +60,7 @@ namespace lab {
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
         if (audioBuffer) 
-		{
+        {
             std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(sampleRate));
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(r, audioBuffer);
@@ -69,17 +69,17 @@ namespace lab {
         return nullptr;
     }
     
-	// Output to the default context output 
-	std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float when)
-	{
-		if (audioBuffer && r.context())
-		{
-			return play(r, r.context()->destination(), when);
-		}
+    // Output to the default context output 
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float when)
+    {
+        if (audioBuffer && r.context())
+        {
+            return play(r, r.context()->destination(), when);
+        }
         return nullptr;
-	}
+    }
 
-	// Output to a specific note 
+    // Output to a specific note 
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
     {
         auto ac = r.context();

@@ -84,9 +84,9 @@ class AudioNode
 public:
 
     enum 
-	{ 
-		ProcessingSizeInFrames = 128
-	};
+    { 
+        ProcessingSizeInFrames = 128
+    };
     
     AudioNode(float sampleRate);
     virtual ~AudioNode();

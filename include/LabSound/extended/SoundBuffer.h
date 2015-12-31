@@ -22,17 +22,17 @@ public:
     std::shared_ptr<AudioBuffer> audioBuffer;
     
     SoundBuffer(const char * path, float sampleRate);
-	SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
+    SoundBuffer(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
 
-	SoundBuffer();
+    SoundBuffer();
 
-	void initialize(const char * path, float sampleRate);
-	void initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
+    void initialize(const char * path, float sampleRate);
+    void initialize(const std::vector<uint8_t> & buffer, std::string extension, float sampleRate);
 
     ~SoundBuffer();
     
     // play a sound on the context directly, starting after a certain delay
-	std::shared_ptr<AudioBufferSourceNode> play(ContextRenderLock&, float when = 0.0f);
+    std::shared_ptr<AudioBufferSourceNode> play(ContextRenderLock&, float when = 0.0f);
 
     // play a sound on a particular node, starting after a certain delay
     std::shared_ptr<AudioBufferSourceNode> play(ContextRenderLock&, std::shared_ptr<AudioNode> outputNode, float when = 0.0f);

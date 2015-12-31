@@ -15,12 +15,12 @@ using namespace lab;
 
 namespace lab {
 
-	////////////////////////////////////
+    ////////////////////////////////////
     // Private PWMNode Implementation //
     ////////////////////////////////////
 
     class PWMNode::PWMNodeInternal : public lab::AudioProcessor
-	{
+    {
 
     public:
 
@@ -38,7 +38,7 @@ namespace lab {
         virtual void process(ContextRenderLock&,
                              const lab::AudioBus* source, lab::AudioBus* destination,
                              size_t framesToProcess) override
-		{
+        {
             if (!numberOfChannels())
                 return;
             
@@ -46,15 +46,15 @@ namespace lab {
             const float* modP = source->channelByType(Channel::Right)->data();
 
             if (!modP && carrierP) 
-			{
+            {
                 destination->copyFrom(*source);
             }
             else 
-			{
+            {
                 float* destP = destination->channel(0)->mutableData();
                 size_t n = framesToProcess;
                 while (n--)
-				{
+                {
                     float carrier = *carrierP++;
                     float mod = *modP++;
                     *destP++ = (carrier > mod) ? 1.0f : -1.0f;
@@ -68,7 +68,7 @@ namespace lab {
         virtual double latencyTime() const override { return 0; }
     };
 
-	////////////////////
+    ////////////////////
     // Public PWMNode //
     ////////////////////
 
@@ -76,7 +76,7 @@ namespace lab {
     {
         m_processor.reset(new PWMNodeInternal(sampleRate));
 
-		internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
+        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
 
         setNodeType(lab::NodeType::NodeTypePWM);
 

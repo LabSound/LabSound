@@ -660,61 +660,61 @@ void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, c
 #endif // OS(DARWIN)
 
 void vintlve(const float* realSrcP, const float* imagSrcP, float* destP, size_t framesToProcess) {
-	int i = 0;
+    int i = 0;
 #if HAVE(ARM_NEON_INTRINSICS)
-	int j = 0;
-	int endSize = framesToProcess - framesToProcess % 4;
-	int len = endSize / 2;
+    int j = 0;
+    int endSize = framesToProcess - framesToProcess % 4;
+    int len = endSize / 2;
 
-	while (i < len) {
-		float32x4_t source1 = vld1q_f32(realSrcP);
-		float32x4_t source2 = vld1q_f32(imagSrcP);
-		float32x4x2_t source = vzipq_f32(source1, source2);
+    while (i < len) {
+        float32x4_t source1 = vld1q_f32(realSrcP);
+        float32x4_t source2 = vld1q_f32(imagSrcP);
+        float32x4x2_t source = vzipq_f32(source1, source2);
 
-		vst1q_f32(destP + j, source.val[0]);
-		vst1q_f32(destP + j + 4, source.val[1]);
-		realSrcP += 4;
-		imagSrcP += 4;
+        vst1q_f32(destP + j, source.val[0]);
+        vst1q_f32(destP + j + 4, source.val[1]);
+        realSrcP += 4;
+        imagSrcP += 4;
 
-		i += 4;
-		j += 8;
-	}
+        i += 4;
+        j += 8;
+    }
 #endif
-	int lenTail = framesToProcess / 2;
-	for (; i < lenTail; ++i) {
-		int baseIndex = 2 * i;
-		destP[baseIndex] = realSrcP[i];
-		destP[baseIndex + 1] = imagSrcP[i];
-	}
+    int lenTail = framesToProcess / 2;
+    for (; i < lenTail; ++i) {
+        int baseIndex = 2 * i;
+        destP[baseIndex] = realSrcP[i];
+        destP[baseIndex + 1] = imagSrcP[i];
+    }
 }
 
 void vdeintlve(const float* sourceP, float* realDestP, float* imagDestP, size_t framesToProcess) {
-	int i = 0;
+    int i = 0;
 #if HAVE(ARM_NEON_INTRINSICS)
-	int j = 0;
-	int endSize = framesToProcess - framesToProcess % 4;
+    int j = 0;
+    int endSize = framesToProcess - framesToProcess % 4;
 
-	while (i < endSize) {
-		float32x4_t source1 = vld1q_f32(sourceP);
-		float32x4_t source2 = vld1q_f32(sourceP + 4);
+    while (i < endSize) {
+        float32x4_t source1 = vld1q_f32(sourceP);
+        float32x4_t source2 = vld1q_f32(sourceP + 4);
 
-		float32x4x2_t source = vuzpq_f32(source1, source2);
+        float32x4x2_t source = vuzpq_f32(source1, source2);
 
-		vst1q_f32(realDestP + j, source.val[0]);
-		vst1q_f32(imagDestP + j, source.val[1]);
+        vst1q_f32(realDestP + j, source.val[0]);
+        vst1q_f32(imagDestP + j, source.val[1]);
 
-		sourceP += 8;
+        sourceP += 8;
 
-		i += 8;
-		j += 4;
-	}
+        i += 8;
+        j += 4;
+    }
 #endif
-	int lenTail = framesToProcess / 2;
-	for (; i < lenTail; ++i) {
-		int baseIndex = 2 * i;
-		realDestP[i] = sourceP[baseIndex];
-		imagDestP[i] = sourceP[baseIndex + 1];
-	}
+    int lenTail = framesToProcess / 2;
+    for (; i < lenTail; ++i) {
+        int baseIndex = 2 * i;
+        realDestP[i] = sourceP[baseIndex];
+        imagDestP[i] = sourceP[baseIndex + 1];
+    }
 }
 
 

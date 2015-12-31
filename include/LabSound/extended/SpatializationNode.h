@@ -12,7 +12,7 @@
 namespace lab {
 
     struct Occluder 
-	{
+    {
         float x, y, z;
         float innerRadius;
         float outerRadius;
@@ -39,7 +39,7 @@ namespace lab {
     };
     
     class Occluders 
-	{
+    {
 
     public:
         void setOccluder(int id, float x, float y, float z, float radius);
@@ -57,7 +57,7 @@ namespace lab {
     typedef std::shared_ptr<Occluders> OccludersPtr;
 
     class SpatializationNode : public PannerNode 
-	{
+    {
 
     public:
         SpatializationNode(float sampleRate);

@@ -18,7 +18,7 @@ namespace lab {
 // A distance effect will attenuate the gain as the position moves away from the listener.
 // A cone effect will attenuate the gain as the orientation moves away from the listener.
 // All of these effects follow the OpenAL specification very closely.
-	
+    
 class DistanceEffect;
 class ConeEffect;
 class AudioBus;
@@ -30,7 +30,7 @@ class PannerNode : public AudioNode
 public:
 
     enum 
-	{
+    {
         LINEAR_DISTANCE = 0,
         INVERSE_DISTANCE = 1,
         EXPONENTIAL_DISTANCE = 2,
@@ -105,7 +105,7 @@ protected:
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
-	// @tofix dimitri kinda proken 
+    // @tofix dimitri kinda proken 
     void notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode*);
 
     std::unique_ptr<Panner> m_panner;
@@ -119,8 +119,8 @@ protected:
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
 
-	std::unique_ptr<DistanceEffect> m_distanceEffect;
-	std::unique_ptr<ConeEffect> m_coneEffect;
+    std::unique_ptr<DistanceEffect> m_distanceEffect;
+    std::unique_ptr<ConeEffect> m_coneEffect;
 
     float m_lastGain = -1.0f;
     unsigned m_connectionCount = 0;

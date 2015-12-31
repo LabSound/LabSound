@@ -53,19 +53,19 @@ public:
     bool isPlaying() override { return m_isPlaying; }
     float sampleRate() const override { return m_sampleRate; }
 
-	void render(int numberOfFrames, void *outputBuffer, void *inputBuffer); 
+    void render(int numberOfFrames, void *outputBuffer, void *inputBuffer); 
 
 private:
 
     void configure();
 
     AudioIOCallback & m_callback;
-	AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
+    AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
     bool m_isPlaying = false;;
 
-	RtAudio dac;
+    RtAudio dac;
 
 };
 

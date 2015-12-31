@@ -16,9 +16,9 @@ class AudioListener
 public:
 
     AudioListener()
-	{
+    {
 
-	}
+    }
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
@@ -54,11 +54,11 @@ public:
 private:
 
     // Position / Orientation
-	FloatPoint3D m_position = {0, 0, 0};
-	FloatPoint3D m_orientation {0, 0, -1};
-	FloatPoint3D m_upVector = {0, 1, 0};
+    FloatPoint3D m_position = {0, 0, 0};
+    FloatPoint3D m_orientation {0, 0, -1};
+    FloatPoint3D m_upVector = {0, 1, 0};
 
-	FloatPoint3D m_velocity = {0, 0, 0};
+    FloatPoint3D m_velocity = {0, 0, 0};
 
     double m_dopplerFactor = 1.0;
     double m_speedOfSound = 343.3;

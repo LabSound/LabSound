@@ -46,7 +46,7 @@ void OfflineAudioDestinationNode::uninitialize()
         return;
 
     if (m_renderThread.joinable())
-	{
+    {
        m_renderThread.join();
     }
 
@@ -61,7 +61,7 @@ void OfflineAudioDestinationNode::startRendering()
         return;
     
     if (!m_startedRendering) 
-	{
+    {
         m_startedRendering = true;
         
         LOG("Starting Offline Rendering");

@@ -58,7 +58,7 @@ namespace lab
     std::shared_ptr<AudioContext> MakeAudioContext();
     std::shared_ptr<AudioContext> MakeOfflineAudioContext(const int millisecondsToRun);
     void CleanupAudioContext(std::shared_ptr<AudioContext> context);
-	void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
+    void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
 }
 
 #endif

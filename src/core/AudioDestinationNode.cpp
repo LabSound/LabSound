@@ -18,10 +18,10 @@
 namespace lab 
 {
 
-	// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
+    // LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
     // If there is local/live audio input, we call set() with the audio input data every render quantum.
     class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider 
-	{
+    {
     public:
         LocalAudioInputProvider() : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
         {
@@ -29,9 +29,9 @@ namespace lab
         }
         
         virtual ~LocalAudioInputProvider() 
-		{
-		
-		}
+        {
+        
+        }
 
         void set(AudioBus* bus)
         {
@@ -55,7 +55,7 @@ namespace lab
     
 AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate) : AudioNode(sampleRate) , m_currentSampleFrame(0), m_context(c)
 {
-	m_localAudioInputProvider = new LocalAudioInputProvider();
+    m_localAudioInputProvider = new LocalAudioInputProvider();
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     setNodeType(NodeTypeDestination);
@@ -66,7 +66,7 @@ AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, floa
     m_channelInterpretation = ChannelInterpretation::Speakers;
     
     // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
-	// initialize();
+    // initialize();
 }
 
 AudioDestinationNode::~AudioDestinationNode()
@@ -128,7 +128,7 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
 
 AudioSourceProvider * AudioDestinationNode::localAudioInputProvider() 
 { 
-	return static_cast<AudioSourceProvider*>(m_localAudioInputProvider); 
+    return static_cast<AudioSourceProvider*>(m_localAudioInputProvider); 
 }
 
 } // namespace lab

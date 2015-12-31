@@ -16,44 +16,44 @@
 
 namespace lab 
 {
-	class ContextGraphLock;
+    class ContextGraphLock;
 
-	class SubgraphNode
-	{
-	public:
-		std::shared_ptr<GainNode> output;
-		std::shared_ptr<GainNode> input;
-		virtual void BuildSubgraph(ContextGraphLock & lock) = 0;
+    class SubgraphNode
+    {
+    public:
+        std::shared_ptr<GainNode> output;
+        std::shared_ptr<GainNode> input;
+        virtual void BuildSubgraph(ContextGraphLock & lock) = 0;
         virtual ~SubgraphNode() { }
-	};
+    };
 
-	class PingPongDelayNode : public SubgraphNode
-	{
-		float tempo;
-		int noteDivision;
+    class PingPongDelayNode : public SubgraphNode
+    {
+        float tempo;
+        int noteDivision;
 
-		std::shared_ptr<BPMDelay> leftDelay;
-		std::shared_ptr<BPMDelay> rightDelay;
+        std::shared_ptr<BPMDelay> leftDelay;
+        std::shared_ptr<BPMDelay> rightDelay;
 
-		std::shared_ptr<GainNode> splitterGain;
-		std::shared_ptr<GainNode> wetGain;
-		std::shared_ptr<GainNode> feedbackGain;
+        std::shared_ptr<GainNode> splitterGain;
+        std::shared_ptr<GainNode> wetGain;
+        std::shared_ptr<GainNode> feedbackGain;
 
-		std::shared_ptr<ChannelMergerNode> merger;
-		std::shared_ptr<ChannelSplitterNode> splitter;
+        std::shared_ptr<ChannelMergerNode> merger;
+        std::shared_ptr<ChannelSplitterNode> splitter;
 
-	public:
+    public:
 
         PingPongDelayNode(float sampleRate, float tempo);
-		virtual ~PingPongDelayNode();
+        virtual ~PingPongDelayNode();
 
-		void SetTempo(float t);
-		void SetFeedback(float f);
-		void SetLevel(float f);
-		void SetDelayIndex(TempoSync value);
+        void SetTempo(float t);
+        void SetFeedback(float f);
+        void SetLevel(float f);
+        void SetDelayIndex(TempoSync value);
 
-		virtual void BuildSubgraph(ContextGraphLock & lock) override;
-	};
+        virtual void BuildSubgraph(ContextGraphLock & lock) override;
+    };
 }
 
 #endif

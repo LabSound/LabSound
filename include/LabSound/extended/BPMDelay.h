@@ -13,30 +13,30 @@
 
 namespace lab 
 {
-	class BPMDelay : public DelayNode 
-	{
-		float tempo;
-		int noteDivision; 
-		std::vector<float> times;
+    class BPMDelay : public DelayNode 
+    {
+        float tempo;
+        int noteDivision; 
+        std::vector<float> times;
 
-		void recomputeDelay()
-		{
-			float dT = float(60.0f * noteDivision) / tempo;
-			delayTime()->setValue(dT);
-		}
-			
-	public:
+        void recomputeDelay()
+        {
+            float dT = float(60.0f * noteDivision) / tempo;
+            delayTime()->setValue(dT);
+        }
+            
+    public:
         BPMDelay(float sampleRate, float tempo);
-		virtual ~BPMDelay();
+        virtual ~BPMDelay();
 
-		void SetTempo(float newTempo)
-		{
-			tempo = newTempo;	
-			recomputeDelay();
-		}
+        void SetTempo(float newTempo)
+        {
+            tempo = newTempo;    
+            recomputeDelay();
+        }
 
-		void SetDelayIndex(TempoSync value);
-	};
+        void SetDelayIndex(TempoSync value);
+    };
 }
 
 #endif

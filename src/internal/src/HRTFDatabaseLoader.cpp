@@ -83,9 +83,9 @@ void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
 {
     std::unique_lock<std::mutex> locker(m_threadLock);
     while (!m_hrtfDatabase.get())
-	{
-		m_loadingCondition.wait(locker);
-	}
+    {
+        m_loadingCondition.wait(locker);
+    }
 }
 
 HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()

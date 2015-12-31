@@ -18,7 +18,7 @@ namespace lab
     // If there is no modulator, then the node is a pass-through.
     class PWMNode : public AudioBasicProcessorNode
     {
-		class PWMNodeInternal;
+        class PWMNodeInternal;
         PWMNodeInternal * internalNode;
     public:
         PWMNode(float sampleRate);

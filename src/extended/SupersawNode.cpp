@@ -19,59 +19,59 @@ using namespace lab;
 namespace lab 
 {
 
-	//////////////////////////////////////////
+    //////////////////////////////////////////
     // Private Supersaw Node Implementation //
     //////////////////////////////////////////
 
     class SupersawNode::SupersawNodeInternal
-	{
+    {
     public:
 
         SupersawNodeInternal(float sampleRate) : sampleRate(sampleRate), cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
         {
-			gainNode = std::make_shared<ADSRNode>(sampleRate);
-			sawCount = std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f);
-			detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
-			frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
+            gainNode = std::make_shared<ADSRNode>(sampleRate);
+            sawCount = std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f);
+            detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
+            frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
         }
 
-		~SupersawNodeInternal()
-		{
+        ~SupersawNodeInternal()
+        {
 
-		}
+        }
 
         void update(ContextRenderLock& r)
-		{
+        {
             if (cachedFrequency != frequency->value(r))
-			{
+            {
                 cachedFrequency = frequency->value(r);
                 for (auto i : saws)
-				{
+                {
                     i->frequency()->setValue(cachedFrequency);
                     i->frequency()->resetSmoothedValue();
                 }
             }
             
             if (cachedDetune != detune->value(r))
-			{
+            {
                 cachedDetune = detune->value(r);
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
                 for (size_t i = 0; i < saws.size(); ++i) 
-				{
+                {
                     saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
                 }
             }
         }
         
         void update(ContextRenderLock& r, bool okayToReallocate) 
-		{
+        {
             int currentN = saws.size();
             int n = int(sawCount->value(r) + 0.5f);
 
             if (okayToReallocate && (n != currentN)) 
-			{
+            {
                 for (auto i : sawStorage) 
-				{
+                {
                     r.context()->disconnect(i);
                 }
 
@@ -87,7 +87,7 @@ namespace lab
                 
                 auto c = r.context();
                 for (auto i : sawStorage) 
-				{
+                {
                     i->setType(r, OscillatorType::SAWTOOTH);
                     c->connect(i, gainNode);
                     i->start(0);
@@ -99,13 +99,13 @@ namespace lab
             
             update(r);
         }
-		
-		std::shared_ptr<ADSRNode> gainNode;
+        
+        std::shared_ptr<ADSRNode> gainNode;
         std::shared_ptr<AudioParam> detune;
         std::shared_ptr<AudioParam> frequency;
         std::shared_ptr<AudioParam> sawCount;
 
-	private:
+    private:
 
         float sampleRate;
         float cachedDetune;
@@ -115,13 +115,13 @@ namespace lab
         std::vector<OscillatorNode * > saws;
     };
 
-	//////////////////////////
+    //////////////////////////
     // Public Supersaw Node //
     //////////////////////////
 
     SupersawNode::SupersawNode(ContextRenderLock & r, float sampleRate) : AudioNode(sampleRate)
     {
-		internalNode.reset(new SupersawNodeInternal(sampleRate));
+        internalNode.reset(new SupersawNodeInternal(sampleRate));
 
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -131,19 +131,19 @@ namespace lab
         initialize();
     }
 
-	SupersawNode::~SupersawNode()
-	{
-		uninitialize();
-	}
+    SupersawNode::~SupersawNode()
+    {
+        uninitialize();
+    }
 
     void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess) 
-	{
+    {
         internalNode->update(r);
 
         AudioBus * outputBus = output(0)->bus(r);
 
         if (!isInitialized() || !outputBus->numberOfChannels()) 
-		{
+        {
             outputBus->zero();
             return;
         }
@@ -155,7 +155,7 @@ namespace lab
     }
 
     void SupersawNode::update(ContextRenderLock & r)
-	{
+    {
         internalNode->update(r, true);
     }
 
@@ -168,12 +168,12 @@ namespace lab
     std::shared_ptr<AudioParam> SupersawNode::sawCount() const { return internalNode->sawCount; }
 
     void SupersawNode::noteOn(double when)  
-	{
+    {
         internalNode->gainNode->noteOn(when);
     }
 
     void SupersawNode::noteOff(ContextRenderLock& r, double when)
-	{
+    {
         internalNode->gainNode->noteOff(r, when);
     }
 

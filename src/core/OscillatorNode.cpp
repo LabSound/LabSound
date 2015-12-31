@@ -64,37 +64,37 @@ void OscillatorNode::setType(bool isConstructor, OscillatorType type)
     float sampleRate = this->sampleRate();
 
     switch (type) 
-	{
-		case OscillatorType::SINE:
-			if (!s_waveTableSine)
-			{
-				s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorType::SINE);
-			}
-			waveTable = s_waveTableSine;
-			break;
-		case OscillatorType::SQUARE:
-			if (!s_waveTableSquare)
-			{
-				s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorType::SQUARE);
-			}
-			waveTable = s_waveTableSquare;
-			break;
-		case OscillatorType::SAWTOOTH:
-			if (!s_waveTableSawtooth)
-			{
-				s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorType::SAWTOOTH);
-			}
-			waveTable = s_waveTableSawtooth;
-			break;
-		case OscillatorType::TRIANGLE:
-			if (!s_waveTableTriangle)
-			{           
-				s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
-			}
-			waveTable = s_waveTableTriangle;
-			break;
-		case OscillatorType::CUSTOM:
-		default:
+    {
+        case OscillatorType::SINE:
+            if (!s_waveTableSine)
+            {
+                s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorType::SINE);
+            }
+            waveTable = s_waveTableSine;
+            break;
+        case OscillatorType::SQUARE:
+            if (!s_waveTableSquare)
+            {
+                s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorType::SQUARE);
+            }
+            waveTable = s_waveTableSquare;
+            break;
+        case OscillatorType::SAWTOOTH:
+            if (!s_waveTableSawtooth)
+            {
+                s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorType::SAWTOOTH);
+            }
+            waveTable = s_waveTableSawtooth;
+            break;
+        case OscillatorType::TRIANGLE:
+            if (!s_waveTableTriangle)
+            {           
+                s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
+            }
+            waveTable = s_waveTableTriangle;
+            break;
+        case OscillatorType::CUSTOM:
+        default:
             throw std::invalid_argument("Cannot set wavtable for custom type");
     }
 

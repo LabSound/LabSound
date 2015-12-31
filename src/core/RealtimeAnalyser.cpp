@@ -51,7 +51,7 @@ inline void ApplyBlackmanWindow(float * p, uint32_t n)
     double a2 = 0.5 * alpha;
     
     for (uint32_t i = 0; i < n; ++i) 
-	{
+    {
         double x = static_cast<double>(i) / static_cast<double>(n);
         double window = a0 - a1 * cos(2 * piDouble * x) + a2 * cos(4 * piDouble * x);
         p[i] *= float(window);
@@ -134,14 +134,14 @@ void RealtimeAnalyser::doFFTAnalysis()
     // Take the previous fftSize values from the input buffer and copy into the temporary buffer.
     unsigned writeIndex = m_writeIndex;
     if (writeIndex < fftSize) 
-	{
+    {
         memcpy(tempP, inputBuffer + writeIndex - fftSize + InputBufferSize, sizeof(*tempP) * (fftSize - writeIndex));
         memcpy(tempP + fftSize - writeIndex, inputBuffer, sizeof(*tempP) * writeIndex);
     }
     else
-	{
-		memcpy(tempP, inputBuffer + writeIndex - fftSize, sizeof(*tempP) * fftSize);
-	}
+    {
+        memcpy(tempP, inputBuffer + writeIndex - fftSize, sizeof(*tempP) * fftSize);
+    }
 
     // Window the input samples.
     ApplyBlackmanWindow(tempP, fftSize);

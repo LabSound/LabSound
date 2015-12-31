@@ -111,8 +111,8 @@ namespace lab
         
         ClipNode::Mode mode;
         
-		std::shared_ptr<AudioParam> aVal;
-		std::shared_ptr<AudioParam> bVal;
+        std::shared_ptr<AudioParam> aVal;
+        std::shared_ptr<AudioParam> bVal;
         
         std::vector<float> gainValues;
     };

@@ -21,7 +21,7 @@ public:
     // SCHEDULED_STATE - Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing.
     // PLAYING_STATE - Generating sound.
     enum PlaybackState
-	{
+    {
         UNSCHEDULED_STATE = 0,
         SCHEDULED_STATE = 1,
         PLAYING_STATE = 2,
@@ -44,7 +44,7 @@ public:
 
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
 
-	virtual void reset(ContextRenderLock&) override { m_playbackState = UNSCHEDULED_STATE; }
+    virtual void reset(ContextRenderLock&) override { m_playbackState = UNSCHEDULED_STATE; }
 
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.

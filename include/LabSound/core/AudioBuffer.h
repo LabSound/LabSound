@@ -23,7 +23,7 @@ public:
 
     explicit AudioBuffer(AudioBus*);
 
-	~AudioBuffer();
+    ~AudioBuffer();
 
     // Format
     size_t length() const { return m_length; }

@@ -22,7 +22,7 @@ void ZeroPole::process(const float *source, float *destination, unsigned framesT
     float lastY = m_lastY;
 
     while (framesToProcess--) 
-	{
+    {
         float input = *source++;
 
         // Zero

@@ -189,12 +189,12 @@ namespace lab
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
 
-		std::shared_ptr<AudioParam> m_threshold;
-		std::shared_ptr<AudioParam> m_ratio;
-		std::shared_ptr<AudioParam> m_attack;
-		std::shared_ptr<AudioParam> m_release;
-		std::shared_ptr<AudioParam> m_makeup;
-		std::shared_ptr<AudioParam> m_knee;
+        std::shared_ptr<AudioParam> m_threshold;
+        std::shared_ptr<AudioParam> m_ratio;
+        std::shared_ptr<AudioParam> m_attack;
+        std::shared_ptr<AudioParam> m_release;
+        std::shared_ptr<AudioParam> m_makeup;
+        std::shared_ptr<AudioParam> m_knee;
     };
 
     std::shared_ptr<AudioParam> PeakCompNode::threshold() const { return internalNode->m_threshold; }

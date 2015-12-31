@@ -18,7 +18,7 @@ class Panner
 {
 public:
 
-	Panner(PanningMode mode) : m_panningModel(mode) { }
+    Panner(PanningMode mode) : m_panningModel(mode) { }
     virtual ~Panner() { };
 
     PanningMode panningModel() const { return m_panningModel; }

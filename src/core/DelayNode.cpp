@@ -20,9 +20,9 @@ const double maximumAllowedDelayTime = 128;
 DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode(sampleRate)
 {
     if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime)
-	{
-		 throw std::out_of_range("Delay time exceeds limit of 128 seconds");
-	}
+    {
+         throw std::out_of_range("Delay time exceeds limit of 128 seconds");
+    }
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);
     initialize();
@@ -35,7 +35,7 @@ std::shared_ptr<AudioParam> DelayNode::delayTime()
 
 DelayProcessor * DelayNode::delayProcessor() 
 { 
-	return static_cast<DelayProcessor*>(processor()); 
+    return static_cast<DelayProcessor*>(processor()); 
 }
 
 } // lab

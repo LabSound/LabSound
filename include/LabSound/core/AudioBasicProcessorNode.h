@@ -43,7 +43,7 @@ protected:
 
     AudioProcessor * processor();
 
-	std::unique_ptr<AudioProcessor> m_processor;
+    std::unique_ptr<AudioProcessor> m_processor;
 
 };
 

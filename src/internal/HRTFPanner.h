@@ -52,7 +52,7 @@ private:
 
     // Selects either the convolver set (m_convolverL1, m_convolverR1) or (m_convolverL2, m_convolverR2).
     enum CrossfadeSelection 
-	{
+    {
         CrossfadeSelection1,
         CrossfadeSelection2
     };

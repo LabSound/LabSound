@@ -97,10 +97,10 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
     }
 
     if (this->useBackgroundThreads() && m_backgroundStages.size() > 0)
-	{
-		//@todo: proper notification when thread is completed with condition variable
-		m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
-	}
+    {
+        //@todo: proper notification when thread is completed with condition variable
+        m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
+    }
 
 }
 
@@ -108,7 +108,7 @@ ReverbConvolver::~ReverbConvolver()
 {
     // Wait for background thread to stop
     if (useBackgroundThreads()) 
-	{
+    {
         m_wantsToExit = true;
 
         // Wake up thread so it can return
@@ -118,7 +118,7 @@ ReverbConvolver::~ReverbConvolver()
             m_backgroundThreadCondition.notify_one();
         }
 
-		if (m_backgroundThread.joinable()) m_backgroundThread.join();
+        if (m_backgroundThread.joinable()) m_backgroundThread.join();
     }
 }
 

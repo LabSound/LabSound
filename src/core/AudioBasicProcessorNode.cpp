@@ -122,7 +122,7 @@ double AudioBasicProcessorNode::latencyTime() const
 
 AudioProcessor * AudioBasicProcessorNode::processor() 
 { 
-	return m_processor.get(); 
+    return m_processor.get(); 
 }
 
 } // namespace lab

@@ -29,8 +29,8 @@ namespace lab
 using namespace VectorMath;
 
 WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform) :
-	m_sampleRate(sampleRate),
-	m_centsPerRange(CentsPerRange)
+    m_sampleRate(sampleRate),
+    m_centsPerRange(CentsPerRange)
 {
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -40,12 +40,12 @@ WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform) :
     // kNumberOfOctaveBands per octave.
     m_numberOfRanges = 0.5 + kNumberOfOctaveBands * log2f(periodicWaveSize());
     
-	generateBasicWaveform(basicWaveform);
+    generateBasicWaveform(basicWaveform);
 }
 
 WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
-	: m_sampleRate(sampleRate),
-	m_centsPerRange(CentsPerRange)
+    : m_sampleRate(sampleRate),
+    m_centsPerRange(CentsPerRange)
 {
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -55,16 +55,16 @@ WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector
     // kNumberOfOctaveBands per octave.
     m_numberOfRanges = 0.5 + kNumberOfOctaveBands * log2f(periodicWaveSize());
     
-	bool isGood = real.size() == imag.size() && real.size() > 0;
+    bool isGood = real.size() == imag.size() && real.size() > 0;
 
     if (isGood) 
-	{
+    {
         createBandLimitedTables(&real[0], &imag[0], real.size());
     }
-	else
-	{
-		throw std::runtime_error("Bad FFT data");
-	}
+    else
+    {
+        throw std::runtime_error("Bad FFT data");
+    }
 }
 
 WaveTable::~WaveTable()
@@ -213,12 +213,12 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
 
     // Clear DC and Nyquist.
     realP[0] = 0;
-	imagP[0] = 0;
+    imagP[0] = 0;
     
     const float piFloat = float(3.14159265358979323846);
 
     for (unsigned n = 1; n < halfSize; ++n) 
-	{
+    {
         float piFactor = 2 / (n * piFloat);
 
         // All waveforms are odd functions with a positive slope at time 0. Hence the coefficients

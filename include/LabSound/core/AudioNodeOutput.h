@@ -24,7 +24,7 @@ public:
 
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
     AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
-	virtual ~AudioNodeOutput();
+    virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
     AudioNode * node() const { return m_node; }
@@ -50,7 +50,7 @@ public:
     bool isChannelCountKnown() const { return numberOfChannels() > 0; }
 
     bool isConnected() { return fanOutCount() > 0 || paramFanOutCount() > 0; }
-	
+    
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock&);
 

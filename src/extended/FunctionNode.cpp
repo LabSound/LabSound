@@ -12,7 +12,7 @@ namespace lab {
     
     FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
     {
-		//@tofix, channels needs to be set on THIS. quick fix is to setChannelCount at the app layer for this node
+        //@tofix, channels needs to be set on THIS. quick fix is to setChannelCount at the app layer for this node
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
         initialize();
     }

@@ -11,26 +11,26 @@
 namespace lab 
 {
     class SupersawNode : public AudioNode 
-	{
+    {
         class SupersawNodeInternal;
-		std::unique_ptr<SupersawNodeInternal> internalNode;
+        std::unique_ptr<SupersawNodeInternal> internalNode;
 
     public:
 
         SupersawNode(ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode();
         
-		std::shared_ptr<AudioParam> attack() const;
-		std::shared_ptr<AudioParam> decay() const;
-		std::shared_ptr<AudioParam> sustain() const;
-		std::shared_ptr<AudioParam> release() const;
+        std::shared_ptr<AudioParam> attack() const;
+        std::shared_ptr<AudioParam> decay() const;
+        std::shared_ptr<AudioParam> sustain() const;
+        std::shared_ptr<AudioParam> release() const;
 
         std::shared_ptr<AudioParam> sawCount() const;
         std::shared_ptr<AudioParam> frequency() const;
         std::shared_ptr<AudioParam> detune() const;
 
-		void noteOn(double when);
-		void noteOff(ContextRenderLock&, double when);
+        void noteOn(double when);
+        void noteOff(ContextRenderLock&, double when);
 
         void update(ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
 

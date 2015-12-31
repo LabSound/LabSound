@@ -21,8 +21,8 @@ AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float
     , m_length(numberOfFrames)
 {
 
-	if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
-		throw std::invalid_argument("Invalid parameters");
+    if (sampleRate < 22050 || sampleRate > 96000 || numberOfChannels > AudioContext::maxNumberOfChannels || !numberOfFrames)
+        throw std::invalid_argument("Invalid parameters");
 
     m_channels.reserve(numberOfChannels);
 
@@ -43,7 +43,7 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
     
     m_channels.reserve(numberOfChannels);
     for (unsigned i = 0; i < numberOfChannels; ++i)
-	{
+    {
         std::shared_ptr<std::vector<float>> channelDataArray(new std::vector<float>());
 
         channelDataArray->resize(m_length);
@@ -53,16 +53,16 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
         std::vector<float>& vec = *(channelDataArray.get());
 
         for (size_t j = 0; j < m_length; ++j)
-		{
-			vec[j] = busData[j];
-		}
+        {
+            vec[j] = busData[j];
+        }
         m_channels.push_back(channelDataArray);
     }
 }
 
 AudioBuffer::~AudioBuffer()
 {
-	releaseMemory();
+    releaseMemory();
 }
 
 void AudioBuffer::releaseMemory()

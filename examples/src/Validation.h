@@ -19,11 +19,11 @@ struct ValidationApp : public LabSoundExampleApp
     void PlayExample()
     {
         
-		std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
-		std::array<int, 8> naturalMinorScale = {0, 2, 3, 5, 7, 9, 11, 12};
-		std::array<int, 6> pentatonicMajor = { 0, 2, 4, 7, 9, 12 };
-		std::array<int, 8> pentatonicMinor = { 0, 3, 5, 7, 10, 12 };
-		std::array<int, 8> delayTimes = { 266, 533, 399 };
+        std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
+        std::array<int, 8> naturalMinorScale = {0, 2, 3, 5, 7, 9, 11, 12};
+        std::array<int, 6> pentatonicMajor = { 0, 2, 4, 7, 9, 12 };
+        std::array<int, 8> pentatonicMinor = { 0, 3, 5, 7, 10, 12 };
+        std::array<int, 8> delayTimes = { 266, 533, 399 };
     
         auto randomFloat = std::uniform_real_distribution<float>(0, 1);
         auto randomScaleDegree = std::uniform_int_distribution<int>(0, pentatonicMajor.size() - 1);
@@ -41,12 +41,12 @@ struct ValidationApp : public LabSoundExampleApp
             ContextGraphLock g(context, "Validator");
             ContextRenderLock r(context, "Validator");
             
-			pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
-			pingping->BuildSubgraph(g);
-			pingping->SetFeedback(0.5);
-			pingping->SetDelayIndex(lab::TempoSync::TS_16T);
+            pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
+            pingping->BuildSubgraph(g);
+            pingping->SetFeedback(0.5);
+            pingping->SetDelayIndex(lab::TempoSync::TS_16T);
 
-			pingping->output->connect(ac, context->destination().get(), 0, 0);
+            pingping->output->connect(ac, context->destination().get(), 0, 0);
 
             SoundBuffer beat("samples/kick.wav", context->sampleRate());
             beatNode = beat.play(r, pingping->input, 0.0f);

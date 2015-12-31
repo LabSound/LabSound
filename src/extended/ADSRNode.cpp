@@ -177,11 +177,11 @@ namespace lab
         
         std::vector<float> gainValues;
         
-		std::shared_ptr<AudioParam> m_attackTime;
-		std::shared_ptr<AudioParam> m_attackLevel;
-		std::shared_ptr<AudioParam> m_decayTime;
-		std::shared_ptr<AudioParam> m_sustainLevel;
-		std::shared_ptr<AudioParam> m_releaseTime;
+        std::shared_ptr<AudioParam> m_attackTime;
+        std::shared_ptr<AudioParam> m_attackLevel;
+        std::shared_ptr<AudioParam> m_decayTime;
+        std::shared_ptr<AudioParam> m_sustainLevel;
+        std::shared_ptr<AudioParam> m_releaseTime;
     };
 
     /////////////////////

@@ -15,7 +15,7 @@ class DistanceEffect
 public:
 
     enum ModelType 
-	{
+    {
         ModelLinear = 0,
         ModelInverse = 1,
         ModelExponential = 2

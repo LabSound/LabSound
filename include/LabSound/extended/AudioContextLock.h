@@ -26,7 +26,7 @@ namespace lab
         {
             if (context)
             {
-				context->m_graphLock.lock();
+                context->m_graphLock.lock();
                 m_context = context;
                 m_context->m_graphLocker = lockSuitor;
             }
@@ -67,7 +67,7 @@ namespace lab
         {
             if (context)
             {
-				context->m_renderLock.lock();
+                context->m_renderLock.lock();
                 m_context = context;
                 m_context->m_renderLocker = lockSuitor;
             }

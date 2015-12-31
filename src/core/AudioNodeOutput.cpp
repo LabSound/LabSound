@@ -169,7 +169,7 @@ void AudioNodeOutput::disconnectAllInputs(ContextGraphLock& g, std::shared_ptr<A
     
     // AudioNodeInput::disconnect() changes m_inputs by calling removeInput().
     while (self->m_inputs.size()) 
-	{
+    {
         auto ptr = self->m_inputs.rbegin();
         AudioNodeInput::disconnect(g, *ptr, self);
     }

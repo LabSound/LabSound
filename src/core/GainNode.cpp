@@ -32,7 +32,7 @@ GainNode::GainNode(float sampleRate)
     
 GainNode::~GainNode() 
 {
-	uninitialize();
+    uninitialize();
 }
 
 void GainNode::process(ContextRenderLock& r, size_t framesToProcess)

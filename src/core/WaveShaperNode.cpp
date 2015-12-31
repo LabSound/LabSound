@@ -27,7 +27,7 @@ std::shared_ptr<std::vector<float>> WaveShaperNode::curve()
 
  WaveShaperProcessor * WaveShaperNode::waveShaperProcessor() 
  {
-	 return static_cast<WaveShaperProcessor *>(m_processor.get());
+     return static_cast<WaveShaperProcessor *>(m_processor.get());
  }
 
 } // namespace lab

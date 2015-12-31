@@ -109,8 +109,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     char tempStr[16];
     
     // Located in $(CWD) / hrtf / [format] .wav
-	// @tofix - this assumes we want to open this path and read via libnyquist fopen.
-	// ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
+    // @tofix - this assumes we want to open this path and read via libnyquist fopen.
+    // ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = "hrtf/IRC_" + subjectName + "_C_R0195_T" + tempStr + ".wav";
     
@@ -157,7 +157,7 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string
     // Load convolution kernels from HRTF files.
     int interpolatedIndex = 0;
     for (uint32_t rawIndex = 0; rawIndex < NumberOfRawAzimuths; ++rawIndex) 
-	{
+    {
         // Don't let elevation exceed maximum for this azimuth.
         int maxElevation = maxElevations[rawIndex];
         int actualElevation = min(elevation, maxElevation);
@@ -171,12 +171,12 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(const std::string
 
     // Now go back and interpolate intermediate azimuth values.
     for (uint32_t i = 0; i < NumberOfTotalAzimuths; i += InterpolationFactor) 
-	{
+    {
         int j = (i + InterpolationFactor) % NumberOfTotalAzimuths;
 
         // Create the interpolated convolution kernels and delays.
         for (uint32_t jj = 1; jj < InterpolationFactor; ++jj) 
-		{
+        {
             float x = float(jj) / float(InterpolationFactor); // interpolate from 0 -> 1
 
             (*kernelListL)[i + jj] = MakeInterpolatedKernel(kernelListL->at(i).get(), kernelListL->at(j).get(), x);
@@ -205,7 +205,7 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createByInterpolatingSlices(HRTFEl
     
     // Interpolate kernels of corresponding azimuths of the two elevations.
     for (uint32_t i = 0; i < NumberOfTotalAzimuths; ++i) 
-	{
+    {
         (*kernelListL)[i] = MakeInterpolatedKernel(kernelListL1->at(i).get(), kernelListL2->at(i).get(), x);
         (*kernelListR)[i] = MakeInterpolatedKernel(kernelListR1->at(i).get(), kernelListR2->at(i).get(), x);
     }

@@ -12,8 +12,8 @@
 
 namespace detail
 {
-	std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
-	{
+    std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
+    {
         size_t numSamples = audioData->samples.size();
         size_t numberOfFrames = int(numSamples / audioData->channelCount);
         const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
@@ -49,7 +49,7 @@ namespace detail
         delete audioData;
         
         return audioBus;
-	}
+    }
 }
 
 namespace lab
