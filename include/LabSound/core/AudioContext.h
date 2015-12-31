@@ -123,16 +123,14 @@ public:
     
 	// Keeps track of the number of connections made.
 	void incrementConnectionCount();
-	unsigned connectionCount() const 
-	{ 
-		return m_connectionCount; 
-	}
+    
+	unsigned connectionCount() const { return m_connectionCount;}
 
 	void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
 	void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
 	void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-	void disconnect(std::shared_ptr<AudioNode>);
+	void disconnect(std::shared_ptr<AudioNode> from);
 	void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
 
 	void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
@@ -189,8 +187,6 @@ private:
 
 	std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 
-	std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
-    
     typedef PendingConnection<AudioNode, AudioNode> PendingNodeConnection;
     
     struct CompareScheduledTime
@@ -205,8 +201,8 @@ private:
         }
     };
     
+    std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
     std::priority_queue<PendingNodeConnection, std::deque<PendingNodeConnection>, CompareScheduledTime> pendingNodeConnections;
-	//std::vector<PendingConnection<AudioNode, AudioNode>> pendingNodeConnections;
 };
 
 } // End namespace lab
