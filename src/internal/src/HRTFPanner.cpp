@@ -93,7 +93,7 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double& azi
     return desiredAzimuthIndex;
 }
 
-void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus* outputBus, size_t framesToProcess)
+void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess)
 {
     unsigned numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
 
@@ -188,15 +188,14 @@ void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevati
     }
 
     // This algorithm currently requires that we process in power-of-two size chunks at least RenderingQuantum.
-    ASSERT(sizeof(uint64_t) << static_cast<int>(log2(framesToProcess)) == framesToProcess);
+    ASSERT(uint64_t(1) << static_cast<int>(log2(framesToProcess)) == framesToProcess);
     ASSERT(framesToProcess >= RenderingQuantum);
-
+    
     const uint32_t framesPerSegment = RenderingQuantum;
     const uint32_t numberOfSegments = framesToProcess / framesPerSegment;
 
     for (uint32_t segment = 0; segment < numberOfSegments; ++segment) 
 	{
-
         // Get the HRTFKernels and interpolated delays.
         HRTFKernel * kernelL1;
         HRTFKernel * kernelR1;
@@ -252,7 +251,6 @@ void HRTFPanner::pan(ContextRenderLock& r, double desiredAzimuth, double elevati
 
         // Now do the convolutions.
         // Note that we avoid doing convolutions on both sets of convolvers if we're not currently cross-fading.
-        
         if (m_crossfadeSelection == CrossfadeSelection1 || needsCrossfading) 
 		{
             m_convolverL1.process(kernelL1->fftFrame(), segmentDestinationL, convolutionDestinationL1, framesPerSegment);
