@@ -1,3 +1,6 @@
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #ifndef _Internal_Config_Macros_
 #define _Internal_Config_Macros_
 

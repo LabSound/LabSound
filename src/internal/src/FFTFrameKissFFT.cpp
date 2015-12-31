@@ -1,3 +1,6 @@
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #include "internal/ConfigMacros.h"
 
 #if USE(WEBAUDIO_KISSFFT)
