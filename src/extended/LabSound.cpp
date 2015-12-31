@@ -103,6 +103,12 @@ namespace lab
 		LOG("Could not acquire lock for shutdown");
 	}
 
+	void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback)
+	{
+		ContextGraphLock g(ctx, id);
+		ContextRenderLock r(ctx, id);
+		callback(g, r);
+	}
 }
 
 ///////////////////////
