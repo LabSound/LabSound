@@ -63,5 +63,11 @@
     <ClInclude Include="..\src\StereoPanning.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\connectdisconnect.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\offlinerender.h">
+      <Filter>Examples</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
