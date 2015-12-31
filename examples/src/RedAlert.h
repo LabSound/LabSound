@@ -4,7 +4,7 @@ struct RedAlertApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;
@@ -150,6 +150,6 @@ struct RedAlertApp : public LabSoundExampleApp
             now += 1000;
         }
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };

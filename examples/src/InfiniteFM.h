@@ -28,7 +28,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -100,7 +100,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::milliseconds(nextDelay));
         }
 
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
         
     }
 };

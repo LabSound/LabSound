@@ -5,7 +5,7 @@ struct SpatializationApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         auto ac = context.get();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
@@ -47,6 +47,6 @@ struct SpatializationApp : public LabSoundExampleApp
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };

@@ -4,7 +4,7 @@ struct SimpleApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         
         auto ac = context.get();
         
@@ -36,6 +36,6 @@ struct SimpleApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };

@@ -4,7 +4,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         float sampleRate = context->sampleRate();
         
         SoundBuffer kick("samples/kick.wav", sampleRate);
@@ -48,6 +48,6 @@ struct PeakCompressorApp : public LabSoundExampleApp
         
         std::this_thread::sleep_for(std::chrono::seconds(4));
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };

@@ -5,7 +5,7 @@ struct OfflineRenderApp : public LabSoundExampleApp
     void PlayExample()
     {
         // Run for 3 seconds
-        auto context = lab::initOffline(3000);
+        auto context = lab::MakeOfflineAudioContext(3000);
         auto ac = context.get();
         
         std::shared_ptr<OscillatorNode> oscillator;
@@ -50,6 +50,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
         
         //std::this_thread::sleep_for(std::chrono::seconds(1));
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };

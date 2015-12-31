@@ -4,7 +4,7 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::init();
+        auto context = lab::MakeAudioContext();
         
         SoundBuffer impulseResponse("impulse/cardiod-rear-levelled.wav", context->sampleRate());
         //SoundBuffer impulseResponse("impulse/filter-telephone.wav", context->sampleRate()); // alternate
@@ -39,6 +39,6 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         
-        lab::finish(context);
+        lab::CleanupAudioContext(context);
     }
 };
