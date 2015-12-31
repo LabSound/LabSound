@@ -31,7 +31,7 @@
 
 #include <stddef.h>
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 
@@ -45,6 +45,6 @@ public:
     virtual ~AudioIOCallback() { }
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioIOCallback_h

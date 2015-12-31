@@ -28,7 +28,7 @@
 #include "LabSound/core/AudioSourceNode.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
     
@@ -59,6 +59,6 @@ private:
     unsigned m_sourceNumberOfChannels;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif

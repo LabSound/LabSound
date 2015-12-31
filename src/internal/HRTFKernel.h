@@ -32,7 +32,7 @@
 #include "internal/FFTFrame.h"
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class AudioChannel;
    
@@ -78,6 +78,6 @@ typedef std::vector<std::shared_ptr<HRTFKernel> > HRTFKernelList;
 // Given two HRTFKernels, and an interpolation factor x: 0 -> 1, returns an interpolated HRTFKernel.
 std::unique_ptr<HRTFKernel> MakeInterpolatedKernel(HRTFKernel * kernel1, HRTFKernel * kernel2, float x);
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // HRTFKernel_h

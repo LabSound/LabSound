@@ -13,15 +13,15 @@
 
 #include <limits>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound
+namespace lab
 {
     /////////////////////////////////////
     // Private ADSRNode Implementation //
     /////////////////////////////////////
     
-    class ADSRNode::ADSRNodeInternal : public WebCore::AudioProcessor
+    class ADSRNode::ADSRNodeInternal : public lab::AudioProcessor
     {
         
     public:
@@ -43,13 +43,13 @@ namespace LabSound
 
         // Processes the source to destination bus. The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r,
-                             const WebCore::AudioBus * sourceBus, WebCore::AudioBus* destinationBus,
+                             const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus,
                              size_t framesToProcess) override
         {
             if (!numberOfChannels())
                 return;
             
-            std::shared_ptr<WebCore::AudioContext> c = r.contextPtr();
+            std::shared_ptr<lab::AudioContext> c = r.contextPtr();
 
             if (m_noteOnTime >= 0)
             {
@@ -189,16 +189,16 @@ namespace LabSound
     // Public ADSRNode //
     /////////////////////
     
-    ADSRNode::ADSRNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
+    ADSRNode::ADSRNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new ADSRNodeInternal(sampleRate));
         
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 
-        setNodeType(LabSound::NodeTypeADSR);
+        setNodeType(lab::NodeTypeADSR);
 
-        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));
+        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
 
         initialize();
     }
@@ -268,4 +268,4 @@ namespace LabSound
         return now > internalNode->m_noteOffTime;
     }
 
-} // End namespace LabSound
+} // End namespace lab

@@ -4,7 +4,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         auto ac = context.get();
         
         SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
@@ -45,6 +45,6 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         
         recorder->writeRecordingToWav(1, "MicrophoneReverbApp.wav");
         
-        LabSound::finish(context);
+        lab::finish(context);
     }
 };

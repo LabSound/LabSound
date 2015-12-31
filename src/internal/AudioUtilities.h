@@ -27,7 +27,7 @@
 
 #include <sys/types.h>
 
-namespace WebCore {
+namespace lab {
 
 namespace AudioUtilities {
 
@@ -44,6 +44,6 @@ double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
 size_t timeToSampleFrame(double time, double sampleRate);
 } // AudioUtilites
 
-} // WebCore
+} // lab
 
 #endif // AudioUtilities_h

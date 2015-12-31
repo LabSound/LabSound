@@ -36,7 +36,7 @@
 
 #include <memory>
 
-namespace WebCore 
+namespace lab 
 {
 
 AudioBuffer::AudioBuffer(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
@@ -115,4 +115,4 @@ void AudioBuffer::zero()
     }
 }
 
-} // namespace WebCore
+} // namespace lab

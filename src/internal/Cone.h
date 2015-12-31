@@ -31,7 +31,7 @@
 
 #include "LabSound/core/FloatPoint3D.h"
 
-namespace WebCore {
+namespace lab {
 
 // Cone gain is defined according to the OpenAL specification
 
@@ -58,6 +58,6 @@ protected:
     double m_outerGain;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // Cone_h

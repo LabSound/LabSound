@@ -16,16 +16,16 @@
 #include <iostream>
 #include <vector>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound 
+namespace lab 
 {
 
     /////////////////////////////////////
     // Prviate ClipNode Implementation //
     /////////////////////////////////////
     
-    class ClipNode::ClipNodeInternal : public WebCore::AudioProcessor {
+    class ClipNode::ClipNodeInternal : public lab::AudioProcessor {
     public:
 
         ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), mode(ClipNode::CLIP)
@@ -43,7 +43,7 @@ namespace LabSound
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r,
-                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus,
+                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
                              size_t framesToProcess) override
         {
             if (!numberOfChannels())
@@ -121,16 +121,16 @@ namespace LabSound
     // Public ClipNode //
     /////////////////////
     
-    ClipNode::ClipNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
+    ClipNode::ClipNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new ClipNodeInternal(sampleRate));
         
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
         
-        setNodeType(LabSound::NodeType::NodeTypeClip);
+        setNodeType(lab::NodeType::NodeTypeClip);
 
-        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2)));
+        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
 
         initialize();
     }
@@ -148,5 +148,5 @@ namespace LabSound
     std::shared_ptr<AudioParam> ClipNode::aVal() { return internalNode->aVal; }
     std::shared_ptr<AudioParam> ClipNode::bVal() { return internalNode->bVal; }
 
-} // end namespace LabSound
+} // end namespace lab
 

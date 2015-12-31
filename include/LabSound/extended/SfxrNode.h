@@ -6,11 +6,11 @@
 
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
-namespace LabSound {
+namespace lab {
 
-    using namespace WebCore;
+    using namespace lab;
 
-    class SfxrNode : public WebCore::AudioScheduledSourceNode {
+    class SfxrNode : public lab::AudioScheduledSourceNode {
     public:
 
         SfxrNode(float sampleRate);

@@ -9,9 +9,9 @@
 #include <vector>
 #include <mutex>
 
-namespace LabSound 
+namespace lab 
 {
-    class SpectralMonitorNode : public WebCore::AudioBasicInspectorNode 
+    class SpectralMonitorNode : public lab::AudioBasicInspectorNode 
 	{
 		class SpectralMonitorNodeInternal;
         std::unique_ptr<SpectralMonitorNodeInternal> internalNode;

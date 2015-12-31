@@ -18,7 +18,7 @@
 #include <string>
 #include <algorithm>
 
-namespace LabSound 
+namespace lab 
 {
 	struct SamplerSound;
 
@@ -81,12 +81,12 @@ namespace LabSound
 	class SampledInstrumentNode 
 	{
 		std::vector<std::shared_ptr<SamplerSound>> samples;
-		std::shared_ptr<WebCore::GainNode> gainNode;
-		std::vector<std::shared_ptr<WebCore::AudioBufferSourceNode>> voices;
+		std::shared_ptr<lab::GainNode> gainNode;
+		std::vector<std::shared_ptr<lab::AudioBufferSourceNode>> voices;
 		const float maxVoiceCount = 24;
 		float sampleRate;
 	public:
-        SampledInstrumentNode(WebCore::AudioContext * ctx, float sampleRate);
+        SampledInstrumentNode(lab::AudioContext * ctx, float sampleRate);
         ~SampledInstrumentNode();
 
 		void LoadInstrument(std::vector<SampledInstrumentDefinition> & sounds);
@@ -96,7 +96,7 @@ namespace LabSound
 
 		void KillAllNotes(); 
 
-		WebCore::GainNode * GetOutputNode() { return gainNode.get(); }
+		lab::GainNode * GetOutputNode() { return gainNode.get(); }
 	};
 
 } // LabSound

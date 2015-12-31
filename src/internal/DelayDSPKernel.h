@@ -30,7 +30,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
 
-namespace WebCore {
+namespace lab {
 
 class DelayProcessor;
     
@@ -65,6 +65,6 @@ private:
     size_t bufferLengthForDelay(double delayTime, double sampleRate) const;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DelayDSPKernel_h

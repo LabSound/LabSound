@@ -31,7 +31,7 @@
 
 #include "LabSound/core/FloatPoint3D.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
@@ -88,7 +88,7 @@ private:
     double m_speedOfSound = 343.3;
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioListener_h
 

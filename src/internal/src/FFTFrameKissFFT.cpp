@@ -10,7 +10,7 @@
 #include <iostream>
 
 // To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines
-namespace WebCore 
+namespace lab 
 {
     
 	const int kMaxFFTPow2Size = 24;
@@ -129,6 +129,6 @@ namespace WebCore
 		return const_cast<float*>(m_imagData.data());
 	}
  
-} // namespace WebCore
+} // namespace lab
 
 #endif // USE KISS FFT

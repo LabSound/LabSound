@@ -30,7 +30,7 @@
 #include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 AudioBasicProcessorNode::AudioBasicProcessorNode(float sampleRate) : AudioNode(sampleRate)
 {
@@ -145,4 +145,4 @@ AudioProcessor * AudioBasicProcessorNode::processor()
 	return m_processor.get(); 
 }
 
-} // namespace WebCore
+} // namespace lab

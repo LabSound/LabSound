@@ -30,7 +30,7 @@
 #include "internal/Assertions.h"
 #include "internal/AudioBus.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs) : AudioNode(sampleRate)
@@ -86,4 +86,4 @@ void ChannelSplitterNode::reset(ContextRenderLock&)
     
 }
 
-} // namespace WebCore
+} // namespace lab

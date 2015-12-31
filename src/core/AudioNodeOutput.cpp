@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace WebCore 
+namespace lab 
 {
     
 namespace 
@@ -228,4 +228,4 @@ void AudioNodeOutput::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioNo
     self->disconnectAllParams(g, self);
 }
 
-} // namespace WebCore
+} // namespace lab

@@ -51,11 +51,11 @@
 #include "LabSound/extended/SampledInstrumentNode.h"
 #include "LabSound/extended/RecorderNode.h"
 
-namespace LabSound 
+namespace lab 
 {
-    std::shared_ptr<WebCore::AudioContext> init();
-    std::shared_ptr<WebCore::AudioContext> initOffline(int millisecondsToRun);
-    void finish(std::shared_ptr<WebCore::AudioContext> context);
+    std::shared_ptr<lab::AudioContext> init();
+    std::shared_ptr<lab::AudioContext> initOffline(int millisecondsToRun);
+    void finish(std::shared_ptr<lab::AudioContext> context);
 }
 
 #endif

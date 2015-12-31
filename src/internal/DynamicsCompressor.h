@@ -36,7 +36,7 @@
 
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 
@@ -114,6 +114,6 @@ protected:
     DynamicsCompressorKernel m_compressor;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DynamicsCompressor_h

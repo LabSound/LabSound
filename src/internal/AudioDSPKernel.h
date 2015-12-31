@@ -33,7 +33,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-namespace WebCore {
+namespace lab {
 
     class AudioDSPKernelProcessor;
     
@@ -63,6 +63,6 @@ protected:
     float m_sampleRate;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDSPKernel_h

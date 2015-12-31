@@ -38,7 +38,7 @@
 #include <iostream>
 #include <cstdlib>
 
-namespace WebCore {
+namespace lab {
 
 class AudioDestinationWin : public AudioDestination { 
 
@@ -71,7 +71,7 @@ private:
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDestinationWin_h
 

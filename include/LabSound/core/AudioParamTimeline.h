@@ -33,7 +33,7 @@
 #include <mutex>
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class AudioParamTimeline 
 {
@@ -132,6 +132,6 @@ private:
     std::vector<ParamEvent> m_events;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioParamTimeline_h

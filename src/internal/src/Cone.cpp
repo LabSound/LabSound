@@ -29,7 +29,7 @@
 #include "internal/Cone.h"
 #include <wtf/MathExtras.h>
 
-namespace WebCore {
+namespace lab {
 
 ConeEffect::ConeEffect()
     : m_innerAngle(360.0)
@@ -76,4 +76,4 @@ double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientat
     return gain;
 }
 
-} // namespace WebCore
+} // namespace lab

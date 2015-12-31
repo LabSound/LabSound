@@ -41,11 +41,11 @@ void LabSoundAssertLog(const char* file, int line, const char * function, const 
 	else printf("[%s @ %i] SHOULD NEVER BE REACHED\n", file, line);
 }
 
-namespace LabSound
+namespace lab
 {
 	std::thread g_GraphUpdateThread;
 	
-	std::shared_ptr<WebCore::AudioContext> mainContext;
+	std::shared_ptr<lab::AudioContext> mainContext;
 	
 	const int update_rate_ms = 10;
 
@@ -56,7 +56,7 @@ namespace LabSound
 		{
 			if (mainContext)
 			{
-				ContextGraphLock g(mainContext, "LabSound::GraphUpdateThread");
+				ContextGraphLock g(mainContext, "lab::GraphUpdateThread");
 				if (mainContext && g.context())
 				{
 					g.context()->update(g);
@@ -71,12 +71,12 @@ namespace LabSound
 		LOG("Destroy GraphUpdateThread");
 	}
 	
-	std::shared_ptr<WebCore::AudioContext> init()
+	std::shared_ptr<lab::AudioContext> init()
 	{
 		LOG("Initialize Context");
 		
-		mainContext = std::make_shared<WebCore::AudioContext>();
-		mainContext->setDestinationNode(std::make_shared<WebCore::DefaultAudioDestinationNode>(mainContext));
+		mainContext = std::make_shared<lab::AudioContext>();
+		mainContext->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(mainContext));
 		
 		mainContext->lazyInitialize();
 		
@@ -87,7 +87,7 @@ namespace LabSound
 		return mainContext;
 	}
 	
-	std::shared_ptr<WebCore::AudioContext> initOffline(int millisecondsToRun)
+	std::shared_ptr<lab::AudioContext> initOffline(int millisecondsToRun)
 	{
 		LOG("Initialize Offline Context");
 		
@@ -96,16 +96,16 @@ namespace LabSound
 		auto framesPerMillisecond = sampleRate / 1000;
 		auto totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
 		
-		mainContext = std::make_shared<WebCore::AudioContext>(2, totalFramesToRecord, sampleRate);
+		mainContext = std::make_shared<lab::AudioContext>(2, totalFramesToRecord, sampleRate);
 		auto renderTarget = mainContext->getOfflineRenderTarget();
-		mainContext->setDestinationNode(std::make_shared<WebCore::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
+		mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
 		mainContext->initHRTFDatabase();
 		mainContext->lazyInitialize();
 		
 		return mainContext;
 	}
 	
-	void finish(std::shared_ptr<WebCore::AudioContext> context)
+	void finish(std::shared_ptr<lab::AudioContext> context)
 	{
 		LOG("Finish Context");
 		
@@ -118,7 +118,7 @@ namespace LabSound
 		
 		for (int i = 0; i < 8; ++i)
 		{
-			ContextGraphLock g(context, "LabSound::finish");
+			ContextGraphLock g(context, "lab::finish");
 			
 			if (!g.context())
 			{

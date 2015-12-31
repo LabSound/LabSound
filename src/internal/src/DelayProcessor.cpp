@@ -28,7 +28,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime) : 
 AudioDSPKernelProcessor(sampleRate, numberOfChannels), m_maxDelayTime(maxDelayTime)
@@ -47,4 +47,4 @@ AudioDSPKernel * DelayProcessor::createKernel()
     return new DelayDSPKernel(this);
 }
 
-} // namespace WebCore
+} // namespace lab

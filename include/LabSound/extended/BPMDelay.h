@@ -11,9 +11,9 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/DelayNode.h"
 
-namespace LabSound 
+namespace lab 
 {
-	class BPMDelay : public WebCore::DelayNode 
+	class BPMDelay : public lab::DelayNode 
 	{
 		float tempo;
 		int noteDivision; 
@@ -35,7 +35,7 @@ namespace LabSound
 			recomputeDelay();
 		}
 
-		void SetDelayIndex(WebCore::TempoSync value);
+		void SetDelayIndex(lab::TempoSync value);
 	};
 }
 

@@ -28,19 +28,19 @@
 #include <vector>
 #include <memory>
 
-namespace LabSound 
+namespace lab 
 {
     class ContextGraphLock;
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace lab {
 
     class AudioContext;
     class AudioNodeOutput;
 	class AudioBus;
     
-    using namespace LabSound;
+    using namespace lab;
 
 // An AudioSummingJunction represents a point where zero, one, or more AudioNodeOutputs connect.
 
@@ -96,6 +96,6 @@ private:
     bool m_renderingStateNeedUpdating;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioSummingJunction_h

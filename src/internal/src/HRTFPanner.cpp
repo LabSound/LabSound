@@ -33,7 +33,7 @@
 
 using namespace std;
 
-namespace WebCore 
+namespace lab 
 {
 
 // The value of 2 milliseconds is larger than the largest delay which exists in any HRTFKernel from the default HRTFDatabase (0.0136 seconds).
@@ -335,4 +335,4 @@ double HRTFPanner::latencyTime() const
     return (fftSize() / 2) / static_cast<double>(sampleRate());
 }
 
-} // namespace WebCore
+} // namespace lab

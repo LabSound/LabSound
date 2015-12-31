@@ -5,7 +5,7 @@
 #ifndef Synthesis_h
 #define Synthesis_h
 
-namespace LabSound
+namespace lab
 {
     //@todo: add nonwavetable oscillators :)
     enum class OscillatorType

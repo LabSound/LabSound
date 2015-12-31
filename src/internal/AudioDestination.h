@@ -29,7 +29,7 @@
 #ifndef AudioDestination_h
 #define AudioDestination_h
 
-namespace WebCore {
+namespace lab {
 
 class AudioIOCallback;
 
@@ -60,6 +60,6 @@ struct AudioDestination
     static unsigned long maxChannelCount();
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDestination_h

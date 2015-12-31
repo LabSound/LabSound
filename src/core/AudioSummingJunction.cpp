@@ -33,10 +33,10 @@
 #include <algorithm>
 #include <iostream>
 
-namespace WebCore 
+namespace lab 
 {
     
-LabSound::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
+lab::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
 
 namespace
 {
@@ -143,4 +143,4 @@ void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
     }
 }
 
-} // namespace WebCore
+} // namespace lab

@@ -32,9 +32,9 @@
 
 #include <memory>
 
-namespace WebCore {
+namespace lab {
     
-    using namespace LabSound;
+    using namespace lab;
 
 class AudioContext;
 class AudioBus;
@@ -145,6 +145,6 @@ private:
     PannerNode* m_pannerNode;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioBufferSourceNode_h

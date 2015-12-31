@@ -40,7 +40,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const int kBufferSize = 1024;
 
@@ -552,4 +552,4 @@ void Biquad::getFrequencyResponse(int nFrequencies,
     }
 }
 
-} // namespace WebCore
+} // namespace lab

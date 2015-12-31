@@ -8,7 +8,7 @@
 
 class FloatPoint3D;
 
-namespace LabSound {
+namespace lab {
 
     struct Occluder 
 	{
@@ -55,7 +55,7 @@ namespace LabSound {
     
     typedef std::shared_ptr<Occluders> OccludersPtr;
 
-    class SpatializationNode : public WebCore::PannerNode 
+    class SpatializationNode : public lab::PannerNode 
 	{
 
     public:

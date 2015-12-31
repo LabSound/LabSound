@@ -145,7 +145,7 @@ struct GrooveApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<GainNode> masterGain;
@@ -237,6 +237,6 @@ struct GrooveApp : public LabSoundExampleApp
             nowInSeconds += 1;
         }
         
-        LabSound::finish(context);
+        lab::finish(context);
     }
 };

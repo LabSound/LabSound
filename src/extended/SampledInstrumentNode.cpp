@@ -10,10 +10,10 @@
 #include <streambuf>
 #include <stdlib.h>
 
-namespace LabSound 
+namespace lab 
 {
 
-	using namespace WebCore;
+	using namespace lab;
 
 	struct SamplerSound 
 	{

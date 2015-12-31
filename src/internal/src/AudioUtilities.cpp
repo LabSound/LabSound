@@ -26,7 +26,7 @@
 
 #include <wtf/MathExtras.h>
 
-namespace WebCore { namespace AudioUtilities {
+namespace lab { namespace AudioUtilities {
 
 float decibelsToLinear(float decibels)
 {
@@ -53,5 +53,5 @@ size_t timeToSampleFrame(double time, double sampleRate)
     return static_cast<size_t>(round(time * sampleRate));
 }
     
-} } // end AudioUtilites & WebCore
+} } // end AudioUtilites & lab
 

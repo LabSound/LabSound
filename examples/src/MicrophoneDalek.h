@@ -9,7 +9,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
     // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         float sampleRate = context->sampleRate();
         
 #ifndef USE_LIVE
@@ -125,7 +125,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(30));
-        LabSound::finish(context);
+        lab::finish(context);
         
     }
 };

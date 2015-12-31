@@ -38,7 +38,7 @@
 
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 class AudioProcessor;
@@ -71,6 +71,6 @@ protected:
     bool m_hasJustReset;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDSPKernelProcessor_h

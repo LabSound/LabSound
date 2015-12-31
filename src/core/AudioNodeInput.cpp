@@ -37,7 +37,7 @@
 
 using namespace std;
  
-namespace WebCore 
+namespace lab 
 {
 
 AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction(), m_node(node)
@@ -195,4 +195,4 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     return internalSummingBus;
 }
 
-} // namespace WebCore
+} // namespace lab

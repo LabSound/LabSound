@@ -30,7 +30,7 @@
 #include "LabSound/core/AudioIOCallback.h"
 
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 class AudioContext;
@@ -77,6 +77,6 @@ protected:
 
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDestinationNode_h

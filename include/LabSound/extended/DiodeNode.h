@@ -7,7 +7,7 @@
 
 #include "LabSound/core/WaveShaperNode.h"
 
-namespace LabSound {
+namespace lab {
 
     /// @TODO DiodeNode should subclass waveShaper, then the create method will work
     
@@ -16,12 +16,12 @@ namespace LabSound {
     public:
         DiodeNode(ContextRenderLock& r, float sampleRate);
         void setDistortion(ContextRenderLock& r, float distortion);
-        std::shared_ptr<WebCore::WaveShaperNode> node() const { return waveShaper; }
+        std::shared_ptr<lab::WaveShaperNode> node() const { return waveShaper; }
 
     private:
         void setCurve(ContextRenderLock&);
 
-        std::shared_ptr<WebCore::WaveShaperNode> waveShaper;
+        std::shared_ptr<lab::WaveShaperNode> waveShaper;
         
         // parameters controlling the shape of the curve
         float vb;

@@ -30,7 +30,7 @@
 #include "internal/Assertions.h"
 #include "internal/AudioDestination.h"
 
-namespace WebCore {
+namespace lab {
     
 DefaultAudioDestinationNode::DefaultAudioDestinationNode(std::shared_ptr<AudioContext> c)
     : AudioDestinationNode(c, AudioDestination::hardwareSampleRate())
@@ -109,4 +109,4 @@ void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, unsigned 
     }
 }
     
-} // namespace WebCore
+} // namespace lab

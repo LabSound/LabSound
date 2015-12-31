@@ -32,15 +32,15 @@
 #include <memory>
 #include <LabSound/core/AudioNode.h>
 
-namespace LabSound
+namespace lab
 {
     class ContextRenderLock;
 }
 
-namespace WebCore 
+namespace lab 
 {
     
-using namespace LabSound;
+using namespace lab;
 class AudioBus;
 
 class Panner
@@ -68,6 +68,6 @@ protected:
     PanningMode m_panningModel;
 };
 
-} // WebCore
+} // lab
 
 #endif 

@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <math.h>
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -124,4 +124,4 @@ float AudioChannel::maxAbsValue() const
     return max;
 }
 
-} // WebCore
+} // lab

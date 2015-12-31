@@ -27,7 +27,7 @@
 
 // Defines the interface for several vector math functions whose implementation will ideally be optimized.
 
-namespace WebCore {
+namespace lab {
 
 namespace VectorMath {
 
@@ -56,6 +56,6 @@ void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, c
 
 } // namespace VectorMath
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // VectorMath_h

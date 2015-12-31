@@ -37,7 +37,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
     namespace {
         // @TODO to resolve - is there any reason this should be per object instead of static?
@@ -364,4 +364,4 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     return value;
 }
 
-} // namespace WebCore
+} // namespace lab

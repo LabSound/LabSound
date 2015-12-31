@@ -35,7 +35,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const double UnknownTime = -1;
 
@@ -170,4 +170,4 @@ void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 	r.context()->decrementActiveSourceCount();
 }
 
-} // namespace WebCore
+} // namespace lab

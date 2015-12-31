@@ -6,9 +6,9 @@
 #include "internal/AudioBus.h"
 
 using namespace std;
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound {
+namespace lab {
     
     FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
     {
@@ -69,5 +69,5 @@ namespace LabSound {
         return !isPlayingOrScheduled() || hasFinished();
     }
     
-} // namespace LabSound
+} // namespace lab
 

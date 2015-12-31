@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
     
@@ -54,6 +54,6 @@ private:
     uint32_t m_desiredNumberOfOutputChannels = 1; // default
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ChannelMergerNode_h

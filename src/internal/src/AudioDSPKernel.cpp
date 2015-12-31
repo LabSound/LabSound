@@ -7,7 +7,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
 
-namespace WebCore {
+namespace lab {
     
     AudioDSPKernel::AudioDSPKernel(AudioDSPKernelProcessor* kernelProcessor) : m_kernelProcessor(kernelProcessor) , m_sampleRate(kernelProcessor->sampleRate())
     {

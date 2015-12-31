@@ -29,7 +29,7 @@
 
 #include <WTF/MathExtras.h>
 
-namespace WebCore {
+namespace lab {
 
 // Deal with denormals. They can very seriously impact performance on x86.
 
@@ -119,7 +119,7 @@ public:
 
 #endif
 
-} // WebCore
+} // lab
 
 #undef HAVE_DENORMAL
 #endif // DenormalDisabler_h

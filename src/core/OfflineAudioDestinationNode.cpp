@@ -35,7 +35,7 @@
 
 using namespace std;
  
-namespace WebCore {
+namespace lab {
     
 const size_t renderQuantumSize = 128;    
 
@@ -148,4 +148,4 @@ void OfflineAudioDestinationNode::offlineRender()
     }
 }
 
-} // namespace WebCore
+} // namespace lab

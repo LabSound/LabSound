@@ -39,7 +39,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -330,4 +330,4 @@ bool OscillatorNode::propagatesSilence(double now) const
     return !isPlayingOrScheduled() || hasFinished() || !m_waveTable.get();
 }
 
-} // namespace WebCore
+} // namespace lab

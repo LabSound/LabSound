@@ -32,7 +32,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const float SmoothingTimeConstant = 0.020f; // 20ms
 
@@ -171,4 +171,4 @@ double DelayDSPKernel::latencyTime() const
     return 0;
 }
 
-} // namespace WebCore
+} // namespace lab

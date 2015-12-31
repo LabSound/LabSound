@@ -8,9 +8,9 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace LabSound 
+namespace lab 
 {
-    class SupersawNode : public WebCore::AudioNode 
+    class SupersawNode : public lab::AudioNode 
 	{
         class SupersawNodeInternal;
 		std::unique_ptr<SupersawNodeInternal> internalNode;
@@ -20,14 +20,14 @@ namespace LabSound
         SupersawNode(ContextRenderLock& r, float sampleRate);
         virtual ~SupersawNode();
         
-		std::shared_ptr<WebCore::AudioParam> attack() const;
-		std::shared_ptr<WebCore::AudioParam> decay() const;
-		std::shared_ptr<WebCore::AudioParam> sustain() const;
-		std::shared_ptr<WebCore::AudioParam> release() const;
+		std::shared_ptr<lab::AudioParam> attack() const;
+		std::shared_ptr<lab::AudioParam> decay() const;
+		std::shared_ptr<lab::AudioParam> sustain() const;
+		std::shared_ptr<lab::AudioParam> release() const;
 
-        std::shared_ptr<WebCore::AudioParam> sawCount() const;
-        std::shared_ptr<WebCore::AudioParam> frequency() const;
-        std::shared_ptr<WebCore::AudioParam> detune() const;
+        std::shared_ptr<lab::AudioParam> sawCount() const;
+        std::shared_ptr<lab::AudioParam> frequency() const;
+        std::shared_ptr<lab::AudioParam> detune() const;
 
 		void noteOn(double when);
 		void noteOff(ContextRenderLock&, double when);

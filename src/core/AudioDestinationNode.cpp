@@ -35,7 +35,7 @@
 
 #include "internal/AudioBus.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 	// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
@@ -151,5 +151,5 @@ AudioSourceProvider * AudioDestinationNode::localAudioInputProvider()
 	return static_cast<AudioSourceProvider*>(m_localAudioInputProvider); 
 }
 
-} // namespace WebCore
+} // namespace lab
 

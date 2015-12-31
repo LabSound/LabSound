@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore
+namespace lab
 {
 
 class AudioContext;
@@ -49,6 +49,6 @@ private:
 
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ChannelSplitterNode_h

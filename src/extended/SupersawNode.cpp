@@ -14,9 +14,9 @@
 
 #include <cfloat>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound 
+namespace lab 
 {
 
 	//////////////////////////////////////////
@@ -126,7 +126,7 @@ namespace LabSound
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-        setNodeType(LabSound::NodeType::NodeTypeSupersaw);
+        setNodeType(lab::NodeType::NodeTypeSupersaw);
 
         initialize();
     }
@@ -182,4 +182,4 @@ namespace LabSound
         return internalNode->gainNode->propagatesSilence(now);
     }
 
-} // End namespace LabSound
+} // End namespace lab

@@ -33,7 +33,7 @@
 
 #include "internal/FFTFrame.h"
 
-namespace WebCore {
+namespace lab {
 
 class ReverbAccumulationBuffer;
 class ReverbConvolver;
@@ -80,6 +80,6 @@ private:
     std::unique_ptr<DirectConvolver> m_directConvolver;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ReverbConvolverStage_h

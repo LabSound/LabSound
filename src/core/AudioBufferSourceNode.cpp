@@ -37,7 +37,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const double DefaultGrainDuration = 0.020; // 20ms
 
@@ -453,6 +453,6 @@ void AudioBufferSourceNode::clearPannerNode()
     m_pannerNode = 0;
 }
 
-} // namespace WebCore
+} // namespace lab
 
 

@@ -14,7 +14,7 @@
 #include <iostream>
 #include <mutex>
 
-namespace LabSound
+namespace lab
 {
 
     class ContextGraphLock
@@ -22,7 +22,7 @@ namespace LabSound
         
     public:
         
-        ContextGraphLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
+        ContextGraphLock(std::shared_ptr<lab::AudioContext> context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -51,11 +51,11 @@ namespace LabSound
             
         }
         
-        WebCore::AudioContext* context() { return m_context.get(); }
-        std::shared_ptr<WebCore::AudioContext> contextPtr() { return m_context; }
+        lab::AudioContext* context() { return m_context.get(); }
+        std::shared_ptr<lab::AudioContext> contextPtr() { return m_context; }
         
     private:
-        std::shared_ptr<WebCore::AudioContext> m_context;
+        std::shared_ptr<lab::AudioContext> m_context;
     };
     
     class ContextRenderLock
@@ -63,7 +63,7 @@ namespace LabSound
         
     public:
         
-        ContextRenderLock(std::shared_ptr<WebCore::AudioContext> context, const std::string & lockSuitor)
+        ContextRenderLock(std::shared_ptr<lab::AudioContext> context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -89,13 +89,13 @@ namespace LabSound
                 m_context->m_renderLock.unlock();
         }
         
-        WebCore::AudioContext * context() { return m_context.get(); }
-        std::shared_ptr<WebCore::AudioContext> contextPtr() { return m_context; }
+        lab::AudioContext * context() { return m_context.get(); }
+        std::shared_ptr<lab::AudioContext> contextPtr() { return m_context; }
         
     private:
-        std::shared_ptr<WebCore::AudioContext> m_context;
+        std::shared_ptr<lab::AudioContext> m_context;
     };
 
-} // end namespace LabSound
+} // end namespace lab
 
 #endif

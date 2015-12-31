@@ -34,7 +34,7 @@
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 
-namespace WebCore {
+namespace lab {
 
 const int kMaxFFTPow2Size = 24;
 
@@ -179,6 +179,6 @@ float* FFTFrame::imagData() const
     return m_frame.imagp;
 }
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // #if OS(DARWIN)

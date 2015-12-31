@@ -28,7 +28,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace WebCore {
+namespace lab {
 
 class DynamicsCompressor;
 
@@ -69,6 +69,6 @@ private:
     std::shared_ptr<AudioParam> m_release;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DynamicsCompressorNode_h

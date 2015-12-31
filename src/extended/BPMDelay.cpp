@@ -10,11 +10,11 @@
 #include <iostream>
 #include <vector>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound 
+namespace lab 
 {
-	int TempoSyncToIndex(TempoSync in)
+	inline int TempoSyncToIndex(TempoSync in)
 	{
 		switch(in)
 		{
@@ -36,9 +36,9 @@ namespace LabSound
 		}
 	}
 
-    BPMDelay::BPMDelay(float sampleRate, float tempo) : WebCore::DelayNode(sampleRate, 8.0f), tempo(tempo)
+    BPMDelay::BPMDelay(float sampleRate, float tempo) : lab::DelayNode(sampleRate, 8.0f), tempo(tempo)
     {
-        setNodeType(LabSound::NodeType::NodeTypeBPMDelay);
+        setNodeType(lab::NodeType::NodeTypeBPMDelay);
 
 		times = 
 		{

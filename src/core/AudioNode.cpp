@@ -40,7 +40,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
     
 
 AudioNode::AudioNode(float sampleRate)
@@ -355,4 +355,4 @@ void AudioNode::printNodeCounts()
 
 #endif // DEBUG_AUDIONODE_REFERENCES
 
-} // namespace WebCore
+} // namespace lab

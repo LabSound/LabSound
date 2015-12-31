@@ -4,7 +4,7 @@ struct ConnectDisconnectApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         
         auto ac = context.get();
         
@@ -38,6 +38,6 @@ struct ConnectDisconnectApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         
-        LabSound::finish(context);
+        lab::finish(context);
     }
 };

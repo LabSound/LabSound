@@ -33,7 +33,7 @@
 #include "internal/AudioDestination.h"
 #include <AudioUnit/AudioUnit.h>
 
-namespace WebCore {
+namespace lab {
 
 // An AudioDestination using CoreAudio's default output AudioUnit
 
@@ -67,6 +67,6 @@ private:
     Input* m_input; // LabSound
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioDestinationMac_h

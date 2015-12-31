@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace WebCore
+namespace lab
 {
 
 ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs) : AudioNode(sampleRate)
@@ -127,4 +127,4 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace WebCore
+} // namespace lab

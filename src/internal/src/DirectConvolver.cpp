@@ -34,7 +34,7 @@
 #include <Accelerate/Accelerate.h>
 #endif
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
     
@@ -356,4 +356,4 @@ void DirectConvolver::reset()
     m_buffer.zero();
 }
 
-} // namespace WebCore
+} // namespace lab

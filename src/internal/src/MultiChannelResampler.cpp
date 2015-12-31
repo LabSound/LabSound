@@ -30,7 +30,7 @@
 #include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
-namespace WebCore {
+namespace lab {
 
 namespace {
 
@@ -117,4 +117,4 @@ void MultiChannelResampler::process(ContextRenderLock&, AudioSourceProvider* pro
     }
 }
 
-} // namespace WebCore
+} // namespace lab

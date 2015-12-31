@@ -35,7 +35,7 @@
 #include <assert.h>
 #include <math.h>
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -665,4 +665,4 @@ void AudioBus::clearSilentFlag()
         m_channels[i]->clearSilentFlag();
 }
 
-} // WebCore
+} // lab

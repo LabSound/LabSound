@@ -41,7 +41,7 @@
 
 using namespace std;
  
-namespace WebCore 
+namespace lab 
 {
 
 // The range of elevations for the IRCAM impulse responses varies depending on azimuth, but the minimum elevation appears to always be -45.
@@ -138,7 +138,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(int azimuth, int elevati
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = "hrtf/IRC_" + subjectName + "_C_R0195_T" + tempStr + ".wav";
     
-    std::unique_ptr<AudioBus> impulseResponse = WebCore::MakeBusFromFile(resourceName.c_str(), false, sampleRate);
+    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false, sampleRate);
 
     if (!impulseResponse.get())
     {
@@ -273,4 +273,4 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
     frameDelayR = (1.0 - azimuthBlend) * frameDelayR + azimuthBlend * frameDelay2R;
 }
 
-} // namespace WebCore
+} // namespace lab

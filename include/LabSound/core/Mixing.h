@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-namespace LabSound
+namespace lab
 {
     
     enum class ChannelInterpretation

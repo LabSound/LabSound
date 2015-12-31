@@ -29,7 +29,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include <vector>
 
-namespace WebCore 
+namespace lab 
 {
 
 class AudioBus;
@@ -97,6 +97,6 @@ private:
     double m_maxDecibels;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // RealtimeAnalyser_h

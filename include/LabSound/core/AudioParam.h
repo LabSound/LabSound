@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <string>
 
-namespace WebCore {
+namespace lab {
 
 class AudioNodeOutput;
 
@@ -119,6 +119,6 @@ private:
     std::unique_ptr<Data> m_data;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioParam_h

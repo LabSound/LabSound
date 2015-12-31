@@ -30,7 +30,7 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/FloatPoint3D.h"
 
-namespace WebCore {
+namespace lab {
 
 // PannerNode is an AudioNode with one input and one output.
 // It positions a sound in 3D space, with the exact effect dependent on the panning model.
@@ -146,6 +146,6 @@ protected:
     unsigned m_connectionCount = 0;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // PannerNode_h

@@ -4,7 +4,7 @@ struct TremoloApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -45,6 +45,6 @@ struct TremoloApp : public LabSoundExampleApp
             nowInSeconds += 1;
         }
 
-        LabSound::finish(context);
+        lab::finish(context);
     }
 };

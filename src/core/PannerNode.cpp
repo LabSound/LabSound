@@ -42,7 +42,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 static void fixNANs(double &x)
 {
@@ -408,4 +408,4 @@ void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angl
 double PannerNode::tailTime() const { return m_panner ? m_panner->tailTime() : 0; }
 double PannerNode::latencyTime() const { return m_panner ? m_panner->latencyTime() : 0; }
 
-} // namespace WebCore
+} // namespace lab

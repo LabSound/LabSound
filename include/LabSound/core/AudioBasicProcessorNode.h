@@ -29,7 +29,7 @@
 #include "LabSound/core/AudioProcessor.h"
 #include <memory>
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 class AudioNodeInput;
@@ -67,6 +67,6 @@ protected:
 
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioBasicProcessorNode_h

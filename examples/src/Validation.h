@@ -31,7 +31,7 @@ struct ValidationApp : public LabSoundExampleApp
         
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
         
-        auto context = LabSound::init();
+        auto context = lab::init();
         auto ac = context.get();
 
         std::shared_ptr<AudioBufferSourceNode> beatNode;
@@ -44,7 +44,7 @@ struct ValidationApp : public LabSoundExampleApp
 			pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
 			pingping->BuildSubgraph(g);
 			pingping->SetFeedback(0.5);
-			pingping->SetDelayIndex(WebCore::TempoSync::TS_16T);
+			pingping->SetDelayIndex(lab::TempoSync::TS_16T);
 
 			pingping->output->connect(ac, context->destination().get(), 0, 0);
 
@@ -58,8 +58,7 @@ struct ValidationApp : public LabSoundExampleApp
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }
        
-        LabSound::finish(context);
-        
+        lab::finish(context);
     }
 
 };

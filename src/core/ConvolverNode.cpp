@@ -44,7 +44,7 @@ using namespace std;
 // Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
 const size_t MaxFFTSize = 32768;
 
-namespace WebCore {
+namespace lab {
 
 ConvolverNode::ConvolverNode(float sampleRate) : AudioNode(sampleRate), m_swapOnRender(false), m_normalize(true)
 {
@@ -163,4 +163,4 @@ double ConvolverNode::latencyTime() const
     return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(sampleRate()) : 0;
 }
 
-} // namespace WebCore
+} // namespace lab

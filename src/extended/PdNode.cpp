@@ -17,9 +17,9 @@
 
 #include <iostream>
 
-namespace LabSound {
+namespace lab {
 
-class PdNode::PdNodeInternal : public WebCore::AudioProcessor {
+class PdNode::PdNodeInternal : public lab::AudioProcessor {
 public:
 
     PdNodeInternal(float sampleRate)
@@ -39,7 +39,7 @@ public:
     virtual void uninitialize() { }
     
     // Processes the source to destination bus.  The number of channels must match in source and destination.
-    virtual void process(const WebCore::AudioBus* source, WebCore::AudioBus* destination, size_t framesToProcess) {
+    virtual void process(const lab::AudioBus* source, lab::AudioBus* destination, size_t framesToProcess) {
         if (!numChannels)
             return;
         
@@ -119,17 +119,17 @@ pd::PdBase& PdNode::pd() const {
     return data->pd;
 }
 
-PdNode::PdNode(WebCore::AudioContext* context, float sampleRate)
-: WebCore::AudioBasicProcessorNode(context, sampleRate)
+PdNode::PdNode(lab::AudioContext* context, float sampleRate)
+: lab::AudioBasicProcessorNode(context, sampleRate)
 , data(new PdNodeInternal(sampleRate))
 {
     // Initially setup as lowpass filter.
-    m_processor = std::move(std::unique_ptr<WebCore::AudioProcessor>(data));
+    m_processor = std::move(std::unique_ptr<lab::AudioProcessor>(data));
     
-    setNodeType((AudioNode::NodeType) LabSound::NodeTypePd);
+    setNodeType((AudioNode::NodeType) lab::NodeTypePd);
     
-    addInput(adoptPtr(new WebCore::AudioNodeInput(this)));
-    addOutput(adoptPtr(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+    addInput(adoptPtr(new lab::AudioNodeInput(this)));
+    addOutput(adoptPtr(new lab::AudioNodeOutput(this, 2))); // 2 stereo
 
     data->initPure(2, 2, sampleRate, 128);
     

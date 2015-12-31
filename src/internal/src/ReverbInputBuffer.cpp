@@ -29,7 +29,7 @@
 #include "internal/ReverbInputBuffer.h"
 #include "internal/Assertions.h"
 
-namespace WebCore {
+namespace lab {
 
 ReverbInputBuffer::ReverbInputBuffer(size_t length)
     : m_buffer(length)
@@ -81,4 +81,4 @@ void ReverbInputBuffer::reset()
     m_writeIndex = 0;
 }
 
-} // namespace WebCore
+} // namespace lab

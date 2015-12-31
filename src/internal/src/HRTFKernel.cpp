@@ -36,7 +36,7 @@
 
 using namespace std;
 
-namespace WebCore 
+namespace lab 
 {
 
 // Takes the input AudioChannel as an input impulse response and calculates the average group delay.
@@ -131,4 +131,4 @@ std::unique_ptr<HRTFKernel> MakeInterpolatedKernel(HRTFKernel* kernel1, HRTFKern
     return std::unique_ptr<HRTFKernel>(new HRTFKernel(std::move(interpolatedFrame), frameDelay, sampleRate1));
 }
 
-} // namespace WebCore
+} // namespace lab

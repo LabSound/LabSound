@@ -31,7 +31,7 @@
 #include "internal/Biquad.h"
 #include "internal/BiquadProcessor.h"
 
-namespace WebCore {
+namespace lab {
 
 class BiquadProcessor;
 
@@ -74,6 +74,6 @@ protected:
     void updateCoefficientsIfNecessary(ContextRenderLock& r, bool useSmoothing, bool forceUpdate);
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // BiquadDSPKernel_h

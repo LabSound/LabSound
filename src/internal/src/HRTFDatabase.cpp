@@ -31,7 +31,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const int HRTFDatabase::MinElevation = -45;
 const int HRTFDatabase::MaxElevation = 90;
@@ -106,4 +106,4 @@ unsigned HRTFDatabase::indexFromElevationAngle(double elevationAngle)
     return elevationIndex;
 }
 
-} // namespace WebCore
+} // namespace lab

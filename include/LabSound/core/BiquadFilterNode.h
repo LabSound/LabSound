@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioParam;
 class BiquadProcessor;
@@ -68,6 +68,6 @@ private:
     BiquadProcessor * biquadProcessor();
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // BiquadFilterNode_h

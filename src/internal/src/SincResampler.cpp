@@ -65,7 +65,7 @@ using namespace std;
 //
 // note: we're glossing over how the sub-sample handling works with m_virtualSourceIndex, etc.
 
-namespace WebCore {
+namespace lab {
 
 SincResampler::SincResampler(double scaleFactor, unsigned kernelSize, unsigned numberOfKernelOffsets)
     : m_scaleFactor(scaleFactor)
@@ -466,4 +466,4 @@ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destinat
     }
 }
 
-} // namespace WebCore
+} // namespace lab

@@ -6,13 +6,13 @@
 #include "internal/AudioBus.h"
 
 using namespace std;
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound {
+namespace lab {
 
     NoiseNode::NoiseNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)
     {
-        setNodeType(LabSound::NodeType::NodeTypeNoise);
+        setNodeType(lab::NodeType::NodeTypeNoise);
 
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
@@ -107,5 +107,5 @@ namespace LabSound {
         return !isPlayingOrScheduled() || hasFinished();
     }
     
-} // namespace LabSound
+} // namespace lab
 

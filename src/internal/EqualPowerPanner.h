@@ -27,7 +27,7 @@
 
 #include "internal/Panner.h"
 
-namespace WebCore
+namespace lab
 {
 
 // Common type of stereo panner as found in normal audio mixing equipment.
@@ -56,6 +56,6 @@ private:
     double m_gainR = 0.0;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif

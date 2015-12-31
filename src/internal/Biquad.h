@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <complex>
 
-namespace WebCore 
+namespace lab 
 {
 
 // A basic biquad (two-zero / two-pole digital filter)
@@ -107,6 +107,6 @@ private:
 
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // Biquad_h

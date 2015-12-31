@@ -33,7 +33,7 @@
 
 #include <wtf/MathExtras.h>
 
-namespace WebCore {
+namespace lab {
 
 using namespace AudioUtilities;
     
@@ -287,4 +287,4 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
     m_numberOfChannels = numberOfChannels;
 }
 
-} // namespace WebCore
+} // namespace lab

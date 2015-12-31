@@ -33,7 +33,7 @@
 
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
     
@@ -63,6 +63,6 @@ private:
     std::unique_ptr<AudioBus> m_tempBuffer;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // Reverb_h

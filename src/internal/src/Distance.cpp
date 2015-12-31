@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 DistanceEffect::DistanceEffect()
 {
@@ -78,5 +78,5 @@ double DistanceEffect::exponentialGain(double distance)
     return pow(distance / m_refDistance, -m_rolloffFactor);
 }
 
-} // namespace WebCore
+} // namespace lab
 

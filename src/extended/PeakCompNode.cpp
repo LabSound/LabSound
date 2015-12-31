@@ -49,9 +49,9 @@
 
 #include <vector>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound
+namespace lab
 {
 
     /////////////////////////////////////////
@@ -92,7 +92,7 @@ namespace LabSound
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r,
-                             const WebCore::AudioBus* sourceBus, WebCore::AudioBus* destinationBus,
+                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
                              size_t framesToProcess) override
         {
             if (!numberOfChannels())
@@ -241,16 +241,16 @@ namespace LabSound
     // Public PeakCompNode //
     /////////////////////////
     
-    PeakCompNode::PeakCompNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
+    PeakCompNode::PeakCompNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new PeakCompNodeInternal(sampleRate));
 
         internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
         
-        setNodeType(LabSound::NodeType::NodeTypePeakComp);
+        setNodeType(lab::NodeType::NodeTypePeakComp);
 
-        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); // 2 stereo
+        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); // 2 stereo
         
         initialize();
     }
@@ -260,4 +260,4 @@ namespace LabSound
         uninitialize();
     }
     
-} // End namespace LabSound
+} // End namespace lab

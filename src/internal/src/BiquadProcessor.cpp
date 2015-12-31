@@ -25,7 +25,7 @@
 #include "internal/BiquadProcessor.h"
 #include "internal/BiquadDSPKernel.h"
 
-namespace WebCore {
+namespace lab {
     
 BiquadProcessor::BiquadProcessor(float sampleRate, size_t numberOfChannels, bool autoInitialize)
     : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
@@ -126,4 +126,4 @@ void BiquadProcessor::getFrequencyResponse(ContextRenderLock& r,
     responseKernel->getFrequencyResponse(r, nFrequencies, frequencyHz, magResponse, phaseResponse);
 }
 
-} // namespace WebCore
+} // namespace lab

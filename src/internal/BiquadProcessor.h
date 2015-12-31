@@ -32,7 +32,7 @@
 #include "internal/AudioDSPKernelProcessor.h"
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 // BiquadProcessor is an AudioDSPKernelProcessor which uses Biquad objects to implement several common filters.
 
@@ -93,6 +93,6 @@ private:
     bool m_hasSampleAccurateValues;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // BiquadProcessor_h

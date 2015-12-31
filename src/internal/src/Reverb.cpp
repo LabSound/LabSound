@@ -40,7 +40,7 @@
 using namespace std;
 #endif
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -243,4 +243,4 @@ size_t Reverb::latencyFrames() const
     return !m_convolvers.empty() ? (*m_convolvers.begin())->latencyFrames() : 0;
 }
 
-} // namespace WebCore
+} // namespace lab

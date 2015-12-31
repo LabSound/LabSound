@@ -34,7 +34,7 @@
 
 #include <CoreAudio/AudioHardware.h>
 
-namespace WebCore {
+namespace lab {
 
 const int kBufferSize = 128;
 const float kLowThreshold = -1;
@@ -344,4 +344,4 @@ OSStatus AudioDestinationMac::inputProc(void* userData, AudioUnitRenderActionFla
     return audioOutput->render(numberOfFrames, ioData);
 }
 
-} // namespace WebCore
+} // namespace lab

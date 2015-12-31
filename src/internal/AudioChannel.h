@@ -33,7 +33,7 @@
 
 #include <memory>
 
-namespace WebCore {
+namespace lab {
 
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
@@ -133,6 +133,6 @@ private:
     bool m_silent;
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioChannel_h

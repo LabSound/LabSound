@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioSourceNode : public AudioNode 
 {
@@ -47,6 +47,6 @@ protected:
     virtual double latencyTime() const override { return 0; }
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioSourceNode_h

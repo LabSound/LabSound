@@ -32,7 +32,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/Assertions.h"
 
-namespace WebCore {
+namespace lab {
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
 AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sampleRate, unsigned numberOfChannels)
@@ -113,4 +113,4 @@ double AudioDSPKernelProcessor::latencyTime() const
     return !m_kernels.empty() ? (*m_kernels.begin())->latencyTime() : 0;
 }
 
-} // namespace WebCore
+} // namespace lab

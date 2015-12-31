@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-namespace WebCore {
+namespace lab {
 
 // ReverbInputBuffer is used to buffer input samples for deferred processing by the background threads.
 class ReverbInputBuffer {
@@ -59,6 +59,6 @@ private:
     size_t m_writeIndex;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ReverbInputBuffer_h

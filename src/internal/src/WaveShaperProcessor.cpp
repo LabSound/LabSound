@@ -28,7 +28,7 @@
 #include "internal/WaveShaperDSPKernel.h"
 #include "internal/Assertions.h"
 
-namespace WebCore {
+namespace lab {
     
 WaveShaperProcessor::WaveShaperProcessor(float sampleRate, size_t numberOfChannels)
     : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
@@ -73,4 +73,4 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
 }
 
 
-} // namespace WebCore
+} // namespace lab

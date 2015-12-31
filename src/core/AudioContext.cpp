@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <queue>
 
-const uint32_t WebCore::AudioContext::maxNumberOfChannels = 32;
+const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
 
-namespace WebCore
+namespace lab
 {
 
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r)
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r)
 {
     AudioSourceProvider * provider = nullptr;
     
@@ -510,4 +510,4 @@ void AudioContext::decrementActiveSourceCount()
     --m_activeSourceCount;
 }
 
-} // End namespace WebCore
+} // End namespace lab

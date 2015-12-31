@@ -28,7 +28,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/WaveShaperProcessor.h"
 
-namespace WebCore {
+namespace lab {
 
 class WaveShaperProcessor;
 
@@ -52,6 +52,6 @@ protected:
     WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // WaveShaperDSPKernel_h

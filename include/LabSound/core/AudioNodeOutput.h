@@ -30,7 +30,7 @@
 
 #include <set>
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
 class AudioNodeInput;
@@ -138,6 +138,6 @@ private:
     typedef std::set<AudioParam*>::iterator ParamsIterator;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioNodeOutput_h

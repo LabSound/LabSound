@@ -30,7 +30,7 @@
 #include "LabSound/core/WaveTable.h"
 #include "LabSound/core/Synthesis.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
 class AudioBus;
@@ -93,6 +93,6 @@ private:
     static std::shared_ptr<WaveTable> s_waveTableTriangle;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // OscillatorNode_h

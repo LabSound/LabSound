@@ -29,7 +29,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
 
-namespace WebCore
+namespace lab
 {
 
 // WebAudio: 
@@ -58,4 +58,4 @@ DelayProcessor * DelayNode::delayProcessor()
 	return static_cast<DelayProcessor*>(processor()); 
 }
 
-} // WebCore
+} // lab

@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-namespace WebCore
+namespace lab
 {
 
 // Singleton
@@ -120,4 +120,4 @@ HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()
     return s_loader->database();
 }
 
-} // namespace WebCore
+} // namespace lab

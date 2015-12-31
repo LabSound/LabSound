@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace WebCore
+namespace lab
 {
 
     class Spatializer;
@@ -45,6 +45,6 @@ private:
     
 };
     
-} // namespace WebCore
+} // namespace lab
 
 #endif // StereoPannerNode_h

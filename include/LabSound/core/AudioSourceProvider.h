@@ -31,7 +31,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 
@@ -56,6 +56,6 @@ public:
     virtual ~AudioSourceProvider() { }
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioSourceProvider_h

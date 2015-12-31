@@ -34,13 +34,13 @@
 #include <vector>
 #include <memory>
 
-namespace LabSound {
+namespace lab {
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace lab {
 
-    using namespace LabSound;
+    using namespace lab;
     
 class AudioBus;
     
@@ -62,6 +62,6 @@ private:
     unsigned m_numberOfChannels;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // MultiChannelResampler_h

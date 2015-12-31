@@ -10,24 +10,24 @@
 #include <algorithm>
 #include <WTF/MathExtras.h>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound 
+namespace lab 
 {
     PingPongDelayNode::PingPongDelayNode(float sampleRate, float tempo)
     {
-		input = std::make_shared<WebCore::GainNode>(sampleRate);
-		output = std::make_shared<WebCore::GainNode>(sampleRate);
+		input = std::make_shared<lab::GainNode>(sampleRate);
+		output = std::make_shared<lab::GainNode>(sampleRate);
 
-		leftDelay = std::make_shared<LabSound::BPMDelay>(sampleRate, tempo);
-		rightDelay = std::make_shared<LabSound::BPMDelay>(sampleRate, tempo);
+		leftDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
+		rightDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
 
-		splitterGain = std::make_shared<WebCore::GainNode>(sampleRate);
-		wetGain = std::make_shared<WebCore::GainNode>(sampleRate);
-		feedbackGain = std::make_shared<WebCore::GainNode>(sampleRate);
+		splitterGain = std::make_shared<lab::GainNode>(sampleRate);
+		wetGain = std::make_shared<lab::GainNode>(sampleRate);
+		feedbackGain = std::make_shared<lab::GainNode>(sampleRate);
 
-		merger = std::make_shared<WebCore::ChannelMergerNode>(sampleRate, 2);
-		splitter = std::make_shared<WebCore::ChannelSplitterNode>(sampleRate, 2);
+		merger = std::make_shared<lab::ChannelMergerNode>(sampleRate, 2);
+		splitter = std::make_shared<lab::ChannelSplitterNode>(sampleRate, 2);
 
 		SetDelayIndex(TempoSync::TS_8);
 		SetFeedback(0.5f);

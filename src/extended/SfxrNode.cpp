@@ -185,8 +185,8 @@
 #include <stdint.h>
 
 using namespace std;
-using namespace WebCore;
-using namespace LabSound;
+using namespace lab;
+using namespace lab;
 
 inline uint32_t rnd(uint32_t n) 
 {
@@ -582,13 +582,13 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
 #pragma mark _______________________
 #pragma mark Node Interface
 
-namespace LabSound {
+namespace lab {
 
     SfxrNode::SfxrNode(float sampleRate)
     : AudioScheduledSourceNode(sampleRate)
     , sfxr(new SfxrNode::Sfxr())
     {
-        setNodeType(LabSound::NodeType::NodeTypeSfxr);
+        setNodeType(lab::NodeType::NodeTypeSfxr);
 
         // Output is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -1068,4 +1068,4 @@ namespace LabSound {
     }
 
 
-} // namespace LabSound
+} // namespace lab

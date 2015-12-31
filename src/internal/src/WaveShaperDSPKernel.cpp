@@ -30,7 +30,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 void WaveShaperDSPKernel::process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess)
 {
@@ -68,4 +68,4 @@ void WaveShaperDSPKernel::process(ContextRenderLock&, const float* source, float
     }
 }
 
-} // namespace WebCore
+} // namespace lab

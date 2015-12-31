@@ -34,10 +34,10 @@
 #include "internal/AudioChannel.h"
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
-    using LabSound::ChannelInterpretation;
-    using LabSound::Channel;
+    using lab::ChannelInterpretation;
+    using lab::Channel;
     
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".
@@ -167,6 +167,6 @@ protected:
 
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioBus_h

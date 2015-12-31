@@ -19,15 +19,15 @@
 #include <mutex>
 #include <string>
 
-namespace LabSound
+namespace lab
 {
 	class ContextGraphLock;
 	class ContextRenderLock;
 }
 
-using namespace LabSound;
+using namespace lab;
 
-namespace WebCore
+namespace lab
 {
 
 class AudioBuffer;
@@ -52,13 +52,13 @@ struct PendingConnection
 };
 
 //@tofix: refactor such that this factory function doesn't need to exist
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(LabSound::ContextRenderLock & r);
+std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r);
 
 class AudioContext
 {
     
-	friend class LabSound::ContextGraphLock;
-	friend class LabSound::ContextRenderLock;
+	friend class lab::ContextGraphLock;
+	friend class lab::ContextRenderLock;
     
 public:
 
@@ -88,9 +88,9 @@ public:
 	// It *is* harmless to call it though, it's just not necessary.
 	void lazyInitialize();
 
-	void update(LabSound::ContextGraphLock &);
+	void update(lab::ContextGraphLock &);
 
-	void stop(LabSound::ContextGraphLock &);
+	void stop(lab::ContextGraphLock &);
 
 	void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 
@@ -111,11 +111,11 @@ public:
 	void incrementActiveSourceCount();
 	void decrementActiveSourceCount();
 
-	void handlePreRenderTasks(LabSound::ContextRenderLock &); // Called at the START of each render quantum.
-	void handlePostRenderTasks(LabSound::ContextRenderLock &); // Called at the END of each render quantum.
+	void handlePreRenderTasks(lab::ContextRenderLock &); // Called at the START of each render quantum.
+	void handlePostRenderTasks(lab::ContextRenderLock &); // Called at the END of each render quantum.
 
 	// We schedule deletion of all marked nodes at the end of each realtime render quantum.
-	void markForDeletion(LabSound::ContextRenderLock & r, AudioNode *);
+	void markForDeletion(lab::ContextRenderLock & r, AudioNode *);
 	void deleteMarkedNodes();
 
 	// AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
@@ -125,7 +125,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioDestinationNode should call this. 
-    void processAutomaticPullNodes(LabSound::ContextRenderLock &, size_t framesToProcess);
+    void processAutomaticPullNodes(lab::ContextRenderLock &, size_t framesToProcess);
     
 	// Keeps track of the number of connections made.
 	void incrementConnectionCount();
@@ -167,15 +167,15 @@ private:
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
 
-	void uninitialize(LabSound::ContextGraphLock &);
+	void uninitialize(lab::ContextGraphLock &);
 
 	// Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
 	void clear();
 
-	void scheduleNodeDeletion(LabSound::ContextRenderLock & g);
+	void scheduleNodeDeletion(lab::ContextRenderLock & g);
 
-	void referenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
-	void dereferenceSourceNode(LabSound::ContextGraphLock&, std::shared_ptr<AudioNode>);
+	void referenceSourceNode(lab::ContextGraphLock&, std::shared_ptr<AudioNode>);
+	void dereferenceSourceNode(lab::ContextGraphLock&, std::shared_ptr<AudioNode>);
     
 	void handleAutomaticSources();
 	void updateAutomaticPullNodes();
@@ -215,6 +215,6 @@ private:
 	//std::vector<PendingConnection<AudioNode, AudioNode>> pendingNodeConnections;
 };
 
-} // End namespace WebCore
+} // End namespace lab
 
 #endif // AudioContext_h

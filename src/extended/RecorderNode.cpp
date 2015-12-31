@@ -10,17 +10,17 @@
 
 #include "libnyquist/WavEncoder.h"
 
-namespace LabSound 
+namespace lab 
 {
     
-    using namespace WebCore;
+    using namespace lab;
     
     RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2), m_recording(false), m_mixToMono(false)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
         
-        setNodeType(LabSound::NodeType::NodeTypeRecorder);
+        setNodeType(lab::NodeType::NodeTypeRecorder);
         
         initialize();
     }
@@ -162,4 +162,4 @@ namespace LabSound
         // release the data in clear's destructor after the mutex has been released
     }
                                            
-} // end namespace LabSound
+} // end namespace lab

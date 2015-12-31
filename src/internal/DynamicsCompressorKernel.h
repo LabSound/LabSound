@@ -34,15 +34,15 @@
 #include <vector>
 #include <memory>
 
-namespace LabSound 
+namespace lab 
 {
     class ContextRenderLock;
 }
 
-namespace WebCore 
+namespace lab 
 {
 
-using namespace LabSound;
+using namespace lab;
     
 class DynamicsCompressorKernel 
 {
@@ -138,6 +138,6 @@ protected:
     float m_K;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DynamicsCompressorKernel_h

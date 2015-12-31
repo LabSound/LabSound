@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 class AudioParam;
@@ -59,6 +59,6 @@ public:
     std::shared_ptr<AudioParam> delayTime();
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DelayNode_h

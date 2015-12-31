@@ -31,7 +31,7 @@
 
 #include "internal/FFTFrame.h"
 
-namespace WebCore {
+namespace lab {
 
 // Normal constructor: allocates for a given fftSize.
 FFTFrame::FFTFrame(unsigned /*fftSize*/)
@@ -98,6 +98,6 @@ float* FFTFrame::imagData() const
     return 0;
 }
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // !OS(DARWIN)

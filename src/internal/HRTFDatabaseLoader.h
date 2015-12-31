@@ -35,7 +35,7 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace WebCore {
+namespace lab {
 
 // HRTFDatabaseLoader will asynchronously load the default HRTFDatabase in a new thread.
 
@@ -94,6 +94,6 @@ private:
     float m_databaseSampleRate;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // HRTFDatabaseLoader_h

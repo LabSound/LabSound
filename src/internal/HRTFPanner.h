@@ -29,7 +29,7 @@
 #include "internal/FFTConvolver.h"
 #include "internal/Panner.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 class HRTFPanner : public Panner
@@ -107,6 +107,6 @@ private:
     AudioFloatArray m_tempR2;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // HRTFPanner_h

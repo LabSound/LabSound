@@ -31,7 +31,7 @@
 #ifndef AudioDestinationConsumer_h
 #define AudioDestinationConsumer_h
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 
@@ -43,6 +43,6 @@ public:
     virtual void consumeAudio(AudioBus*, size_t numberOfFrames) = 0;
 };
 
-} // WebCore
+} // lab
 
 #endif // AudioDestinationConsumer_h

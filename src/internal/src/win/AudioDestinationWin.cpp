@@ -37,7 +37,7 @@
 #include "LabSound/core/AudioIOCallback.h"
 #include "LabSound/extended/Logging.h"
 
-namespace WebCore
+namespace lab
 {
 
 const float kLowThreshold = -1.0f;
@@ -166,4 +166,4 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
 	return 0;
 }
 
-} // namespace WebCore
+} // namespace lab

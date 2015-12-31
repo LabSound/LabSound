@@ -12,11 +12,11 @@
 #include <WTF/MathExtras.h>
 #include <mutex>
 
-namespace LabSound {
+namespace lab {
 
     DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate) : vb(0.2f), vl(0.4f), h(1.0)
     {
-        waveShaper = std::make_shared<WebCore::WaveShaperNode>(sampleRate);
+        waveShaper = std::make_shared<lab::WaveShaperNode>(sampleRate);
         setCurve(r);
         //initialize(); DiodeNode is not subclassed from node
     }

@@ -25,12 +25,12 @@
 #include "LabSound/core/WaveShaperNode.h"
 #include "internal/WaveShaperProcessor.h"
 
-namespace WebCore
+namespace lab
 {
 
 WaveShaperNode::WaveShaperNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
 {
-    m_processor.reset(new WebCore::WaveShaperProcessor(sampleRate, 1));
+    m_processor.reset(new lab::WaveShaperProcessor(sampleRate, 1));
     setNodeType(NodeTypeWaveShaper);
     initialize();
 }
@@ -50,4 +50,4 @@ std::shared_ptr<std::vector<float>> WaveShaperNode::curve()
 	 return static_cast<WaveShaperProcessor *>(m_processor.get());
  }
 
-} // namespace WebCore
+} // namespace lab

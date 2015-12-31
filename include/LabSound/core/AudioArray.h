@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace WebCore {
+namespace lab {
 
     template<typename T>
     class AudioArray {
@@ -141,6 +141,6 @@ namespace WebCore {
     typedef AudioArray<float> AudioFloatArray;
     typedef AudioArray<double> AudioDoubleArray;
     
-} // WebCore
+} // lab
 
 #endif // AudioArray_h

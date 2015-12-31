@@ -14,10 +14,10 @@
 #include <cmath>
 
 
-namespace LabSound 
+namespace lab 
 {
 
-    using namespace WebCore;
+    using namespace lab;
 
 	//////////////////////////////////////////////////////
     // Prviate FFT + SpectralMonitorNode Implementation //
@@ -101,7 +101,7 @@ namespace LabSound
     {
 		internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        setNodeType(LabSound::NodeType::NodeTypeSpectralMonitor);
+        setNodeType(lab::NodeType::NodeTypeSpectralMonitor);
         initialize();
     }
 
@@ -200,7 +200,7 @@ namespace LabSound
         }
 
         // http://www.ni.com/white-paper/4844/en/
-        applyWindow(LabSound::window_blackman, window);
+        applyWindow(lab::window_blackman, window);
         internalNode->fft->forward(window);
 
         // similar to cinder audio2 Scope object, although Scope smooths spectral samples frame by frame
@@ -229,4 +229,4 @@ namespace LabSound
         return internalNode->windowSize;
     }
 
-} // namespace LabSound
+} // namespace lab

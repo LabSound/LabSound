@@ -11,10 +11,10 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/GainNode.h"
 
-namespace LabSound
+namespace lab
 {
 
-    class ADSRNode : public WebCore::AudioBasicProcessorNode
+    class ADSRNode : public lab::AudioBasicProcessorNode
     {
         class ADSRNodeInternal;
         ADSRNodeInternal * internalNode;
@@ -33,11 +33,11 @@ namespace LabSound
 
 		void set(float aT, float aL, float d, float s, float r);
 
-        std::shared_ptr<WebCore::AudioParam> attackTime() const; // Duration in ms
-        std::shared_ptr<WebCore::AudioParam> attackLevel() const; // Duration in ms
-        std::shared_ptr<WebCore::AudioParam> decayTime() const; // Duration in ms
-        std::shared_ptr<WebCore::AudioParam> sustainLevel() const; // Level 0-10
-        std::shared_ptr<WebCore::AudioParam> releaseTime() const; // Duration in ms
+        std::shared_ptr<lab::AudioParam> attackTime() const; // Duration in ms
+        std::shared_ptr<lab::AudioParam> attackLevel() const; // Duration in ms
+        std::shared_ptr<lab::AudioParam> decayTime() const; // Duration in ms
+        std::shared_ptr<lab::AudioParam> sustainLevel() const; // Level 0-10
+        std::shared_ptr<lab::AudioParam> releaseTime() const; // Duration in ms
     };
     
 }

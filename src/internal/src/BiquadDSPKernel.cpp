@@ -29,7 +29,7 @@
 #include <limits.h>
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 // FIXME: As a recursive linear filter, depending on its parameters, a biquad filter can have
 // an infinite tailTime. In practice, Biquad filters do not usually (except for very high resonance values) 
@@ -160,4 +160,4 @@ double BiquadDSPKernel::latencyTime() const
     return 0;
 }
 
-} // namespace WebCore
+} // namespace lab

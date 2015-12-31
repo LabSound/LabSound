@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioBuffer;
 class Reverb;
@@ -66,6 +66,6 @@ private:
     bool m_normalize;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ConvolverNode_h

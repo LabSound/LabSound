@@ -7,7 +7,7 @@
 #include <condition_variable>
 #include <queue>
 
-namespace LabSound 
+namespace lab 
 {
 
 template<typename Data>

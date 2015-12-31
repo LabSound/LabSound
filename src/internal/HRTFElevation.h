@@ -32,7 +32,7 @@
 #include "internal/HRTFKernel.h"
 #include <string>
 
-namespace WebCore
+namespace lab
 {
 
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
@@ -102,6 +102,6 @@ private:
     float m_sampleRate;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // HRTFElevation_h

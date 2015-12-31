@@ -17,21 +17,21 @@
 
 
 
-namespace LabSound 
+namespace lab 
 {
 
 }
 
 
-namespace LabSound 
+namespace lab 
 {
 	class ContextGraphLock;
 
 	class SubgraphNode
 	{
 	public:
-		std::shared_ptr<WebCore::GainNode> output;
-		std::shared_ptr<WebCore::GainNode> input;
+		std::shared_ptr<lab::GainNode> output;
+		std::shared_ptr<lab::GainNode> input;
 		virtual void BuildSubgraph(ContextGraphLock & lock) = 0;
         virtual ~SubgraphNode() { }
 	};
@@ -41,15 +41,15 @@ namespace LabSound
 		float tempo;
 		int noteDivision;
 
-		std::shared_ptr<LabSound::BPMDelay> leftDelay;
-		std::shared_ptr<LabSound::BPMDelay> rightDelay;
+		std::shared_ptr<lab::BPMDelay> leftDelay;
+		std::shared_ptr<lab::BPMDelay> rightDelay;
 
-		std::shared_ptr<WebCore::GainNode> splitterGain;
-		std::shared_ptr<WebCore::GainNode> wetGain;
-		std::shared_ptr<WebCore::GainNode> feedbackGain;
+		std::shared_ptr<lab::GainNode> splitterGain;
+		std::shared_ptr<lab::GainNode> wetGain;
+		std::shared_ptr<lab::GainNode> feedbackGain;
 
-		std::shared_ptr<WebCore::ChannelMergerNode> merger;
-		std::shared_ptr<WebCore::ChannelSplitterNode> splitter;
+		std::shared_ptr<lab::ChannelMergerNode> merger;
+		std::shared_ptr<lab::ChannelSplitterNode> splitter;
 
 	public:
 
@@ -59,9 +59,9 @@ namespace LabSound
 		void SetTempo(float t);
 		void SetFeedback(float f);
 		void SetLevel(float f);
-		void SetDelayIndex(WebCore::TempoSync value);
+		void SetDelayIndex(lab::TempoSync value);
 
-		virtual void BuildSubgraph(LabSound::ContextGraphLock & lock) override;
+		virtual void BuildSubgraph(lab::ContextGraphLock & lock) override;
 	};
 }
 

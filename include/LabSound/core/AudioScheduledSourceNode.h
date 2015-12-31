@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioSourceNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 
@@ -104,6 +104,6 @@ protected:
     virtual void clearPannerNode() {}
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioScheduledSourceNode_h

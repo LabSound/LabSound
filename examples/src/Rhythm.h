@@ -5,7 +5,7 @@ struct RhythmApp : public LabSoundExampleApp
     void PlayExample()
     {
         
-        auto context = LabSound::init();
+        auto context = lab::init();
         float sampleRate = context->sampleRate();
         
         SoundBuffer kick("samples/kick.wav", sampleRate);
@@ -42,7 +42,7 @@ struct RhythmApp : public LabSoundExampleApp
         
         std::this_thread::sleep_for(std::chrono::seconds(5));
         
-        LabSound::finish(context);
+        lab::finish(context);
         
     }
 };

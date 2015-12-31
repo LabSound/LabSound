@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 class DirectConvolver 
@@ -51,6 +51,6 @@ private:
     AudioFloatArray m_buffer;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DirectConvolver_h

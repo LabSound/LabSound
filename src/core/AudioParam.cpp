@@ -36,9 +36,9 @@
 #include <wtf/MathExtras.h>
 #include <algorithm>
 
-namespace WebCore 
+namespace lab 
 {
-    // LabSound:: Data exists because AudioBus is not exposed in the public API
+    // lab:: Data exists because AudioBus is not exposed in the public API
     class AudioParam::Data {
     public:
         std::unique_ptr<AudioBus> m_internalSummingBus;
@@ -227,4 +227,4 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
     output->removeParam(g, param);
 }
 
-} // namespace WebCore
+} // namespace lab

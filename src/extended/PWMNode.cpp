@@ -11,15 +11,15 @@
 
 #include <iostream>
 
-using namespace WebCore;
+using namespace lab;
 
-namespace LabSound {
+namespace lab {
 
 	////////////////////////////////////
     // Private PWMNode Implementation //
     ////////////////////////////////////
 
-    class PWMNode::PWMNodeInternal : public WebCore::AudioProcessor
+    class PWMNode::PWMNodeInternal : public lab::AudioProcessor
 	{
 
     public:
@@ -36,7 +36,7 @@ namespace LabSound {
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock&,
-                             const WebCore::AudioBus* source, WebCore::AudioBus* destination,
+                             const lab::AudioBus* source, lab::AudioBus* destination,
                              size_t framesToProcess) override
 		{
             if (!numberOfChannels())
@@ -72,16 +72,16 @@ namespace LabSound {
     // Public PWMNode //
     ////////////////////
 
-    PWMNode::PWMNode(float sampleRate) : WebCore::AudioBasicProcessorNode(sampleRate)
+    PWMNode::PWMNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new PWMNodeInternal(sampleRate));
 
 		internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
 
-        setNodeType(LabSound::NodeType::NodeTypePWM);
+        setNodeType(lab::NodeType::NodeTypePWM);
 
-        addInput(std::unique_ptr<AudioNodeInput>(new WebCore::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new WebCore::AudioNodeOutput(this, 2))); 
+        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); 
 
         initialize();
     }

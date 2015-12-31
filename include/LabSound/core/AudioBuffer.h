@@ -32,7 +32,7 @@
 #include <vector>
 #include <memory>
 
-namespace WebCore
+namespace lab
 {
 
 class AudioBus;
@@ -74,6 +74,6 @@ protected:
     std::vector< std::shared_ptr<std::vector<float> > > m_channels;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioBuffer_h

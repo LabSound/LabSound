@@ -35,7 +35,7 @@ const float SmoothingTimeConstant = 0.050f;
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 EqualPowerPanner::EqualPowerPanner(float sampleRate) : Panner(PanningMode::EQUALPOWER)
 {
@@ -148,4 +148,4 @@ void EqualPowerPanner::pan(ContextRenderLock&,
     m_gainR = gainR;
 }
 
-} // namespace WebCore
+} // namespace lab

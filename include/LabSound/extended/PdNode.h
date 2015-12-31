@@ -16,15 +16,15 @@ namespace pd
     class PdReceiver;
 }
 
-namespace LabSound
+namespace lab
 {
 
-class PureDataNode : public WebCore::AudioBasicProcessorNode
+class PureDataNode : public lab::AudioBasicProcessorNode
 {
     
 public:
     
-    PureDataNode(WebCore::AudioContext *, float sampleRate);
+    PureDataNode(lab::AudioContext *, float sampleRate);
     virtual ~PureDataNode();
     
     pd::PdBase & pd() const;
@@ -39,6 +39,6 @@ private:
     
 };
 
-} // end namespace LabSound
+} // end namespace lab
 
 #endif

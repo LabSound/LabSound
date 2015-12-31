@@ -34,7 +34,7 @@
 
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 class HRTFKernel;
 
@@ -79,6 +79,6 @@ private:
     float m_sampleRate;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // HRTFDatabase_h

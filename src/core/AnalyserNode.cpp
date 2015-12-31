@@ -28,7 +28,7 @@
 
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode(sampleRate, 2), m_analyser(fftSize)
 {
@@ -70,4 +70,4 @@ void AnalyserNode::reset(ContextRenderLock&)
     m_analyser.reset();
 }
     
-} // namespace WebCore
+} // namespace lab

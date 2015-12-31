@@ -28,7 +28,7 @@
 #include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioDestinationNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioBus;
 class AudioContext;
@@ -63,6 +63,6 @@ private:
     
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif

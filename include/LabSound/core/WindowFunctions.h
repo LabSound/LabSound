@@ -18,7 +18,7 @@
 	#define M_TWO_PI 6.28318530717958647693
 #endif
 
-namespace LabSound {
+namespace lab {
     
     enum WindowType {
         window_rectangle,
@@ -117,4 +117,4 @@ namespace LabSound {
         
     }
 
-} // End namespace LabSound
+} // End namespace lab

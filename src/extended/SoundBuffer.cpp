@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include <iostream>
 
-namespace LabSound {
+namespace lab {
     
-    using namespace WebCore;
+    using namespace lab;
 
 
 	SoundBuffer::SoundBuffer()

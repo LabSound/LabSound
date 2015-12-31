@@ -37,7 +37,7 @@
 #include <complex>
 #include <wtf/MathExtras.h>
 
-namespace WebCore {
+namespace lab {
     
 typedef std::complex<double> Complex;
 
@@ -270,4 +270,4 @@ void FFTFrame::print()
 }
 #endif // NDEBUG
 
-} // namespace WebCore
+} // namespace lab

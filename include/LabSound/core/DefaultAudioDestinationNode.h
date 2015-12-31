@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioDestinationNode.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
 struct AudioDestination;
@@ -51,6 +51,6 @@ public:
     virtual void setChannelCount(ContextGraphLock&, unsigned long) override;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif

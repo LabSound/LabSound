@@ -42,7 +42,7 @@
 #include <algorithm>
 #include <math.h>
 
-namespace WebCore {
+namespace lab {
 
 namespace VectorMath {
 
@@ -740,4 +740,4 @@ void vdeintlve(const float* sourceP, float* realDestP, float* imagDestP, size_t 
 
 } // namespace VectorMath
 
-} // namespace WebCore
+} // namespace lab

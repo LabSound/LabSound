@@ -32,7 +32,7 @@
 #include "internal/VectorMath.h"
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -230,4 +230,4 @@ size_t ReverbConvolver::latencyFrames() const
     return 0;
 }
 
-} // namespace WebCore
+} // namespace lab

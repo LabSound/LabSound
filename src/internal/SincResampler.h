@@ -32,7 +32,7 @@
 #include "LabSound/core/AudioSourceProvider.h"
 #include "LabSound/core/AudioArray.h"
 
-namespace WebCore {
+namespace lab {
 
 // SincResampler is a high-quality sample-rate converter.
 
@@ -81,6 +81,6 @@ protected:
     bool m_isBufferPrimed;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // SincResampler_h

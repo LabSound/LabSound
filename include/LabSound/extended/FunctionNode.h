@@ -8,10 +8,10 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace LabSound
+namespace lab
 {
     
-    class FunctionNode : public WebCore::AudioScheduledSourceNode
+    class FunctionNode : public lab::AudioScheduledSourceNode
     {
         
     public:
@@ -38,6 +38,6 @@ namespace LabSound
         double _now = 0.0;
     };
     
-} // end namespace LabSound
+} // end namespace lab
 
 #endif

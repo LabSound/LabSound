@@ -32,7 +32,7 @@
 
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSourceProvider, float sampleRate) : AudioSourceNode(sampleRate)
 , m_audioSourceProvider(audioSourceProvider)
@@ -42,7 +42,7 @@ AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSour
     //@tofix: Default to stereo.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    setNodeType(LabSound::NodeType::NodeTypeHardwareSource);
+    setNodeType(lab::NodeType::NodeTypeHardwareSource);
 
     initialize();
 }
@@ -102,4 +102,4 @@ void AudioHardwareSourceNode::reset(ContextRenderLock&)
     
 }
 
-} // namespace WebCore
+} // namespace lab

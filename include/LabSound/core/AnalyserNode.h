@@ -30,7 +30,7 @@
 //@fixme this node is actually extended
 #include "LabSound/Extended/RealtimeAnalyser.h"
 
-namespace WebCore {
+namespace lab {
 
 class AnalyserNode : public AudioBasicInspectorNode {
 public:
@@ -66,6 +66,6 @@ private:
     RealtimeAnalyser m_analyser;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AnalyserNode_h

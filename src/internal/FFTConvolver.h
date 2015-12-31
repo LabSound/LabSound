@@ -33,7 +33,7 @@
 
 #include "internal/FFTFrame.h"
 
-namespace WebCore {
+namespace lab {
 
 class FFTConvolver {
 public:
@@ -67,6 +67,6 @@ private:
     AudioFloatArray m_lastOverlapBuffer;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // FFTConvolver_h

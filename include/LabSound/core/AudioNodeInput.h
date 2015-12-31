@@ -30,7 +30,7 @@
 
 #include <set>
 
-namespace WebCore {
+namespace lab {
 
 class AudioNode;
 class AudioNodeOutput;
@@ -86,6 +86,6 @@ private:
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioNodeInput_h

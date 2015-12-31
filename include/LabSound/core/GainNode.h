@@ -29,7 +29,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioArray.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioContext;
     
@@ -61,6 +61,6 @@ protected:  /// @LabSound - was private
     AudioFloatArray m_sampleAccurateGainValues;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // GainNode_h

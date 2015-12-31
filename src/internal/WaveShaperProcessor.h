@@ -28,7 +28,7 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
 
-namespace WebCore {
+namespace lab {
 
 // WaveShaperProcessor is an AudioDSPKernelProcessor which uses WaveShaperDSPKernel objects to implement non-linear distortion effects.
 
@@ -50,6 +50,6 @@ private:
     std::shared_ptr<std::vector<float>> m_curve;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // WaveShaperProcessor_h

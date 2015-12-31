@@ -29,7 +29,7 @@
 #ifndef FloatConversion_h
 #define FloatConversion_h
 
-namespace WebCore
+namespace lab
 {
 
     template<typename T>
@@ -41,6 +41,6 @@ namespace WebCore
         return static_cast<float>(number);
     }
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // FloatConversion_h

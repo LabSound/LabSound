@@ -5,7 +5,7 @@ struct StereoPanningApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = LabSound::init();
+        auto context = lab::init();
         auto ac = context.get();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
@@ -47,6 +47,6 @@ struct StereoPanningApp : public LabSoundExampleApp
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
         
-        LabSound::finish(context);
+        lab::finish(context);
     }
 };

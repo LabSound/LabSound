@@ -7,7 +7,7 @@
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-namespace LabSound
+namespace lab
 {
     
     namespace 
@@ -64,8 +64,8 @@ namespace LabSound
     }
     
     SpatializationNode::SpatializationNode(float sampleRate)
-    : WebCore::PannerNode(sampleRate) {
-        setNodeType(LabSound::NodeType::NodeTypeSpatialization);
+    : lab::PannerNode(sampleRate) {
+        setNodeType(lab::NodeType::NodeTypeSpatialization);
         initialize();
     }
     

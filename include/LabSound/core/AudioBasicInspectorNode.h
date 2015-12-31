@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace WebCore {
+namespace lab {
 
 // AudioBasicInspectorNode is an AudioNode with one input and one output where the output might not necessarily connect to another node's input.
 // If the output is not connected to any other node, then the AudioBasicInspectorNode's processIfNecessary() function will be called automatically by
@@ -42,6 +42,6 @@ public:
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioBasicInspectorNode_h

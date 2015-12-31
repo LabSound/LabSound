@@ -31,7 +31,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-namespace WebCore {
+namespace lab {
 
 // ReverbAccumulationBuffer is a circular delay buffer with one client reading from it and multiple clients
 // writing/accumulating to it at different delay offsets from the read position.  The read operation will zero the memory
@@ -62,6 +62,6 @@ private:
     size_t m_readTimeFrame; // for debugging (frame on continuous timeline)
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ReverbAccumulationBuffer_h

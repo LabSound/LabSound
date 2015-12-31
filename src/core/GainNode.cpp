@@ -32,7 +32,7 @@
 #include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 GainNode::GainNode(float sampleRate)
@@ -124,4 +124,4 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace WebCore
+} // namespace lab

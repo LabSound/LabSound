@@ -9,7 +9,7 @@
 
 namespace detail
 {
-	std::unique_ptr<WebCore::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
+	std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
 	{
         size_t numSamples = audioData->samples.size();
         size_t numberOfFrames = int(numSamples / audioData->channelCount);
@@ -18,7 +18,7 @@ namespace detail
         std::vector<float> planarSamples(numSamples);
 
         // Create AudioBus where we'll put the PCM audio data
-        std::unique_ptr<WebCore::AudioBus> audioBus(new WebCore::AudioBus(busChannelCount, numberOfFrames));
+        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, numberOfFrames));
         audioBus->setSampleRate(audioData->sampleRate);
         
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
@@ -49,7 +49,7 @@ namespace detail
 	}
 }
 
-namespace WebCore
+namespace lab
 {
 
 nqr::NyquistIO nyquistFileIO;
@@ -92,4 +92,4 @@ std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer,
     
 }
     
-} // end namespace WebCore
+} // end namespace lab

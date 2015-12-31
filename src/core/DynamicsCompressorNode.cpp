@@ -34,7 +34,7 @@
 
 using namespace std;
 
-namespace WebCore
+namespace lab
 {
 
 DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sampleRate)
@@ -117,4 +117,4 @@ double DynamicsCompressorNode::latencyTime() const
     return m_dynamicsCompressor->latencyTime();
 }
 
-} // end namespace WebCore
+} // end namespace lab

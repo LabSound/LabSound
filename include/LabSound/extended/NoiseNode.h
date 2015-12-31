@@ -7,10 +7,10 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace LabSound 
+namespace lab 
 {
 
-    class NoiseNode : public WebCore::AudioScheduledSourceNode 
+    class NoiseNode : public lab::AudioScheduledSourceNode 
 	{
 
     public:

@@ -27,7 +27,7 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace WebCore
+namespace lab
 {
    class WaveShaperProcessor;
 
@@ -45,6 +45,6 @@ public:
     std::shared_ptr<std::vector<float>> curve();
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif

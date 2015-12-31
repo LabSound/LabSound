@@ -29,7 +29,7 @@
 #include "internal/FFTConvolver.h"
 #include "internal/VectorMath.h"
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
     
@@ -114,4 +114,4 @@ void FFTConvolver::reset()
     m_readWriteIndex = 0;
 }
 
-} // namespace WebCore
+} // namespace lab

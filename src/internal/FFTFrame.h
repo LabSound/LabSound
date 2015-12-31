@@ -50,7 +50,7 @@
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
 
-namespace WebCore 
+namespace lab 
 {
 
 // Defines the interface for an "FFT frame", an object which is able to perform a forward
@@ -130,6 +130,6 @@ private:
 #endif // !USE_ACCELERATE_FFT
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // FFTFrame_h

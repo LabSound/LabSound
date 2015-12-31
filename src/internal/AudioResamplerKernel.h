@@ -27,13 +27,13 @@
 
 #include "LabSound/core/AudioArray.h"
 
-namespace LabSound {
+namespace lab {
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace lab {
 
-    using namespace LabSound;
+    using namespace lab;
     
 class AudioResampler;
 
@@ -77,6 +77,6 @@ private:
     unsigned m_fillIndex;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioResamplerKernel_h

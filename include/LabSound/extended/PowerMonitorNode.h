@@ -7,9 +7,9 @@
 #include <vector>
 #include <mutex>
 
-namespace LabSound {
+namespace lab {
     
-    class PowerMonitorNode : public WebCore::AudioBasicInspectorNode 
+    class PowerMonitorNode : public lab::AudioBasicInspectorNode 
 	{
     public:
 

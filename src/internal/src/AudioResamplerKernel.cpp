@@ -31,7 +31,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
     
 const size_t AudioResamplerKernel::MaxFramesToProcess = 128;
 
@@ -136,4 +136,4 @@ double AudioResamplerKernel::rate() const
     return m_resampler->rate();
 }
 
-} // namespace WebCore
+} // namespace lab

@@ -26,7 +26,7 @@
 
 #include "internal/BiquadProcessor.h"
 
-namespace WebCore 
+namespace lab 
 {
 
 BiquadFilterNode::BiquadFilterNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
@@ -90,4 +90,4 @@ std::shared_ptr<AudioParam> BiquadFilterNode::detune()
 	return biquadProcessor()->parameter4(); 
 }
 
-} // namespace WebCore
+} // namespace lab

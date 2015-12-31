@@ -29,7 +29,7 @@
 #ifndef ZeroPole_h
 #define ZeroPole_h
 
-namespace WebCore {
+namespace lab {
 
 // ZeroPole is a simple filter with one zero and one pole.
 
@@ -59,6 +59,6 @@ private:
     float m_lastY = 0.f;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ZeroPole_h

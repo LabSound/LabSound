@@ -33,15 +33,15 @@
 
 #include <stddef.h>
 
-namespace LabSound 
+namespace lab 
 {
     class ContextRenderLock;
 }
 
-namespace WebCore 
+namespace lab 
 {
 
-    using namespace LabSound;
+    using namespace lab;
     
 class AudioBus;
 
@@ -87,6 +87,6 @@ protected:
     float m_sampleRate;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioProcessor_h

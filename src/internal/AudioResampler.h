@@ -32,7 +32,7 @@
 
 #include <vector>
 
-namespace WebCore {
+namespace lab {
 
 // AudioResampler resamples the audio stream from an AudioSourceProvider.
 // The audio stream may be single or multi-channel.
@@ -64,6 +64,6 @@ private:
     std::unique_ptr<AudioBus> m_sourceBus;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioResampler_h

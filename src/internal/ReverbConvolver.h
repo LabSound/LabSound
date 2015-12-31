@@ -43,13 +43,13 @@
 #include <thread>
 #include <atomic>
 
-namespace LabSound {
+namespace lab {
     class ContextRenderLock;
 }
 
-namespace WebCore {
+namespace lab {
 
-    using namespace LabSound;
+    using namespace lab;
     
 class AudioChannel;
 
@@ -101,6 +101,6 @@ private:
     mutable std::condition_variable m_backgroundThreadCondition;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // ReverbConvolver_h

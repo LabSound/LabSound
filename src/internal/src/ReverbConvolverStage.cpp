@@ -34,7 +34,7 @@
 #include "internal/ReverbConvolver.h"
 #include "internal/ReverbInputBuffer.h"
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -173,4 +173,4 @@ void ReverbConvolverStage::reset()
     m_framesProcessed = 0;
 }
 
-} // namespace WebCore
+} // namespace lab

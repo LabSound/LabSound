@@ -44,11 +44,11 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/GainNode.h"
 
-namespace LabSound
+namespace lab
 {
-    using namespace WebCore;
+    using namespace lab;
 
-    class PeakCompNode : public WebCore::AudioBasicProcessorNode
+    class PeakCompNode : public lab::AudioBasicProcessorNode
     {
         class PeakCompNodeInternal;
         PeakCompNodeInternal * internalNode; // We do not own this!

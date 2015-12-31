@@ -12,7 +12,7 @@
 #include "internal/AudioUtilities.h"
 #include <WTF/MathExtras.h>
 
-namespace WebCore
+namespace lab
 {
 
 class Spatializer
@@ -327,4 +327,4 @@ void StereoPannerNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-} // namespace WebCore
+} // namespace lab

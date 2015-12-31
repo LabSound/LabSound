@@ -10,15 +10,15 @@
 
 #include <wtf/MathExtras.h>
 
-namespace LabSound {
+namespace lab {
     
-    using namespace WebCore;
+    using namespace lab;
     
     PowerMonitorNode::PowerMonitorNode(float sampleRate)
     : AudioBasicInspectorNode(sampleRate, 2), _db(0), _windowSize(128)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        setNodeType(LabSound::NodeType::NodeTypePowerMonitor);
+        setNodeType(lab::NodeType::NodeTypePowerMonitor);
         initialize();
     }
     
@@ -91,4 +91,4 @@ namespace LabSound {
         _db = 0;
     }
     
-} // namespace LabSound
+} // namespace lab

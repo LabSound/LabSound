@@ -29,7 +29,7 @@
 #ifndef Distance_h
 #define Distance_h
 
-namespace WebCore {
+namespace lab {
 
 // Distance models are defined according to the OpenAL specification:
 // http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm.
@@ -81,6 +81,6 @@ protected:
     double m_rolloffFactor = 1.0;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // Distance_h

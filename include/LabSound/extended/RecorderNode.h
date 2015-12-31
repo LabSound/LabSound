@@ -9,10 +9,10 @@
 #include <vector>
 #include <mutex>
 
-namespace LabSound
+namespace lab
 {
     
-    class RecorderNode : public WebCore::AudioBasicInspectorNode
+    class RecorderNode : public lab::AudioBasicInspectorNode
     {
         
     public:
@@ -48,6 +48,6 @@ namespace LabSound
 
     };
     
-} // end namespace LabSound
+} // end namespace lab
 
 #endif

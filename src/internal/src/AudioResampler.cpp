@@ -30,7 +30,7 @@
 
 using namespace std;
  
-namespace WebCore {
+namespace lab {
 
 const double AudioResampler::MaxRate = 8.0;
 
@@ -119,4 +119,4 @@ void AudioResampler::reset()
         m_kernels[i]->reset();
 }
 
-} // namespace WebCore
+} // namespace lab

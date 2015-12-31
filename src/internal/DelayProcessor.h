@@ -29,7 +29,7 @@
 
 #include "internal/AudioDSPKernelProcessor.h"
 
-namespace WebCore {
+namespace lab {
 
 class AudioDSPKernel;
     
@@ -50,6 +50,6 @@ public:
     double maxDelayTime() { return m_maxDelayTime; }
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // DelayProcessor_h

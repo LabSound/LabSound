@@ -37,7 +37,7 @@
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 
-namespace LabSound 
+namespace lab 
 {
     class ContextGraphLock;
     class ContextRenderLock;
@@ -90,10 +90,10 @@ namespace LabSound
 
 }
 
-namespace WebCore 
+namespace lab 
 {
   
-using namespace LabSound;
+using namespace lab;
 
 class AudioContext;
 class AudioNodeInput;
@@ -243,6 +243,6 @@ protected:
     ChannelInterpretation m_channelInterpretation;
 };
 
-} // namespace WebCore
+} // namespace lab
 
 #endif // AudioNode_h

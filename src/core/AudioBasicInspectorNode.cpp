@@ -30,7 +30,7 @@
 
 #include "internal/AudioBus.h"
 
-namespace WebCore {
+namespace lab {
 
 AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate, int outputChannelCount)
     : AudioNode(sampleRate)
@@ -64,5 +64,5 @@ void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace WebCore
+} // namespace lab
 

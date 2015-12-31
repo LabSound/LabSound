@@ -32,7 +32,7 @@
 
 #include <algorithm>
 
-namespace WebCore {
+namespace lab {
 
 using namespace VectorMath;
 
@@ -112,4 +112,4 @@ void ReverbAccumulationBuffer::reset()
     m_readTimeFrame = 0;
 }
 
-} // namespace WebCore
+} // namespace lab

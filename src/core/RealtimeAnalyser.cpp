@@ -38,7 +38,7 @@
 
 using namespace std;
 
-namespace WebCore {
+namespace lab {
 
 const double RealtimeAnalyser::DefaultSmoothingTimeConstant  = 0.8;
 const double RealtimeAnalyser::DefaultMinDecibels = -100;
@@ -305,5 +305,5 @@ void RealtimeAnalyser::getByteTimeDomainData(std::vector<uint8_t>& destinationAr
     }
 }
 
-} // namespace WebCore
+} // namespace lab
 
