@@ -212,7 +212,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    unsigned waveTableSize = m_waveTable->waveTableSize();
+    unsigned waveTableSize = m_waveTable->periodicWaveSize();
     double invWaveTableSize = 1.0 / waveTableSize;
 
     float* destP = outputBus->channel(0)->mutableData();
