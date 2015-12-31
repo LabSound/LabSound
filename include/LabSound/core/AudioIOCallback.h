@@ -31,18 +31,16 @@
 
 #include <stddef.h>
 
-namespace lab {
+namespace lab
+{
 
 class AudioBus;
-
-// Abstract base-class for isochronous audio I/O client.
-class AudioIOCallback {
-public:
+struct AudioIOCallback
+{
     // render() is called periodically to get the next render quantum of audio into destinationBus.
     // Optional audio input is given in sourceBus (if it's not 0).
-    virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t framesToProcess) = 0;
-
-    virtual ~AudioIOCallback() { }
+    virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t framesToProcess) = 0;
+    virtual ~AudioIOCallback() {}
 };
 
 } // lab
