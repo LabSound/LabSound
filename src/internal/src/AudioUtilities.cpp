@@ -30,6 +30,7 @@ double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
 
 size_t timeToSampleFrame(double time, double sampleRate)
 {
+    ASSERT(time >= 0);
     return static_cast<size_t>(round(time * sampleRate));
 }
     

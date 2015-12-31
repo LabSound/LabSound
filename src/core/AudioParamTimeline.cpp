@@ -323,7 +323,14 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     unsigned nextEventFillToFrame = fillToFrame;
                     float nextEventFillToTime = fillToTime;
                     fillToTime = std::min(endTime, time1 + duration);
-                    fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
+                    
+                    // |fillToTime| can be greater than |startTime| when the end of the
+                    // setValueCurve automation has been reached, but the next automation has not
+                    // yet started. In this case, |fillToTime| is clipped to |time1|+|duration|
+                    // above, but |startTime| will keep increasing (because the current time is
+                    // increasing).
+                    fillToFrame = AudioUtilities::timeToSampleFrame(std::max(0.0, fillToTime - startTime), sampleRate);
+                    
                     fillToFrame = std::min(fillToFrame, numberOfValues);
 
                     // Index into the curve data using a floating-point value.
