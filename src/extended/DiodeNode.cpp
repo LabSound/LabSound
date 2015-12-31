@@ -1,19 +1,14 @@
-//
-//  DiodeNode.cpp
-//  LabSound
-//
-//  Based on the DiodeNode found at the BBC Radiophonic Workshop
-//  http://webaudio.prototyping.bbc.co.uk/ring-modulator/
-//
-// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
-// License is MIT: http://opensource.org/licenses/MIT
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/DiodeNode.h"
 #include <WTF/MathExtras.h>
 #include <mutex>
 
 namespace lab {
-
+    
+    // Based on the DiodeNode found at the BBC Radiophonic Workshop
+    // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
     DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate) : vb(0.2f), vl(0.4f), h(1.0)
     {
         waveShaper = std::make_shared<lab::WaveShaperNode>(sampleRate);

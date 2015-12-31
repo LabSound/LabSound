@@ -1,3 +1,7 @@
+// License: BSD 2 Clause
+// Copyright (C) 2014, The Chromium Authors. All rights reserved.
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #ifndef StereoPannerNode_h
 #define StereoPannerNode_h
 
@@ -11,7 +15,7 @@
 namespace lab
 {
 
-    class Spatializer;
+class Spatializer;
     
 // StereoPannerNode is an AudioNode with one input and one output. It is
 // specifically designed for equal-power stereo panning.

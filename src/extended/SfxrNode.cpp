@@ -1,6 +1,5 @@
-
-
-// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 // This files contains portions of sfxr. The original code contained the following notes:
 
 /*

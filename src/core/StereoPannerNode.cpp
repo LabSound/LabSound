@@ -1,3 +1,7 @@
+// License: BSD 2 Clause
+// Copyright (C) 2014, The Chromium Authors. All rights reserved.
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/AudioBufferSourceNode.h"
 #include "LabSound/core/AudioContext.h"

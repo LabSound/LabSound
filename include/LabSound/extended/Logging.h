@@ -1,3 +1,6 @@
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
 #ifndef LABSOUND_LOGGING_H
 #define LABSOUND_LOGGING_H
 

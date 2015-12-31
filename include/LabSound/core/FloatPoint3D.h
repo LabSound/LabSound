@@ -1,6 +1,7 @@
+//@FIXME THIS IS GPL!
 
-#ifndef FloatPoint3d_included_h
-#define FloatPoint3d_included_h
+#ifndef FLOAT_POINT_3D_H
+#define FLOAT_POINT_3D_H
 
 #include <float.h>
 #include <math.h>

@@ -1,5 +1,5 @@
-// Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
-// License is MIT: http://opensource.org/licenses/MIT
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef ADSR_NODE_H
 #define ADSR_NODE_H

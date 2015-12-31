@@ -1,5 +1,5 @@
-//  Created by Nick Porcino on 2013 11/17.
-//  reference http://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/AudioNodeInput.h"
