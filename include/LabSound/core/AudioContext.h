@@ -1,12 +1,10 @@
-#pragma once
-
-// LabSound AudioContext
-//
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef AudioContext_h
-#define AudioContext_h
+#pragma once
+
+#ifndef AUDIO_CONTEXT_H
+#define AUDIO_CONTEXT_H
 
 #include "LabSound/core/ConcurrentQueue.h"
 #include "labSound/core/AudioScheduledSourceNode.h"

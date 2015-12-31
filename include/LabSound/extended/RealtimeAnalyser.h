@@ -22,8 +22,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RealtimeAnalyser_h
-#define RealtimeAnalyser_h
+#ifndef REALTIME_ANALYSER_H
+#define REALTIME_ANALYSER_H
 
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/extended/AudioContextLock.h"

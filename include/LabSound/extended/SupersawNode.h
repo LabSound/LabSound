@@ -1,8 +1,8 @@
 // Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-#ifndef __LabSound__SupersawNode__
-#define __LabSound__SupersawNode__
+#ifndef SUPERSAW_NODE_H
+#define SUPERSAW_NODE_H
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"

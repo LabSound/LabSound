@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef LabSound_h
-#define LabSound_h
+#ifndef LABSOUND_H
+#define LABSOUND_H
 
 // WebAudio Public API
 #include "LabSound/core/WaveShaperNode.h"

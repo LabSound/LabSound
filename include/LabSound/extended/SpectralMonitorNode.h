@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef SPECTRAL_MONITOR_NODE_H
+#define SPECTRAL_MONITOR_NODE_H
+
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioContext.h"
 
@@ -33,4 +36,6 @@ namespace lab
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
     };
-} 
+}
+
+#endif

@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef SPATIALIZATION_NODE_H
+#define SPATIALIZATION_NODE_H
+
 #include "LabSound/core/PannerNode.h"
 #include <map>
 
@@ -73,3 +76,4 @@ namespace lab {
     
 }
 
+#endif

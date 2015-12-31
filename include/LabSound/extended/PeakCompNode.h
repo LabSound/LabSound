@@ -1,5 +1,5 @@
-#ifndef LabSound_PeakCompNode_h
-#define LabSound_PeakCompNode_h
+#ifndef PEAK_COMP_NODE_H
+#define PEAK_COMP_NODE_H
 
 // PeakComp ported to LabSound from https://github.com/twobigears/tb_peakcomp
 // The copyright on the original is reproduced here in its entirety.
@@ -47,7 +47,7 @@
 namespace lab
 {
     
-class PeakCompNode : public AudioBasicProcessorNode {
+class PeakCompNode : public lab::AudioBasicProcessorNode {
     
     class PeakCompNodeInternal;
     PeakCompNodeInternal * internalNode; // We do not own this!

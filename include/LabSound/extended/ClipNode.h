@@ -1,18 +1,15 @@
-
 // Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
-// ClipNode clips a signal, using either thresholding or tanh
-
-#ifndef _LABSOUND_CLIP_NODE_H
-#define _LABSOUND_CLIP_NODE_H
+#ifndef CLIP_NODE_H
+#define CLIP_NODE_H
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioParam.h"
 
 namespace lab
 {
-
+    // ClipNode clips a signal, using either thresholding or tanh
     class ClipNode : public AudioBasicProcessorNode
     {
         class ClipNodeInternal;

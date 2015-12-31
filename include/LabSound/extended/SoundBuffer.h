@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef SOUND_BUFFER_H
+#define SOUND_BUFFER_H
+
 #include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioBufferSourceNode.h"
 #include "LabSound/core/AudioContext.h"
@@ -10,8 +13,7 @@
 namespace lab
 {
 
-/// @dp rewrite as a node, deprecate audio buffer source node
- 
+//@TOFIX: rewrite as a node, deprecate audio buffer source node
 class SoundBuffer 
 {
 
@@ -44,5 +46,6 @@ public:
     std::shared_ptr<AudioBufferSourceNode> create(ContextRenderLock& r, float sampleRate);
 };
 
+}
 
-} // LabSound
+#endif

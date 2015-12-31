@@ -1,8 +1,10 @@
-
 // Copyright (c) 2014 Dimitri Diakopolous, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
+
+#ifndef SAMPLED_INSTRUMENT_NODE
+#define SAMPLED_INSTRUMENT_NODE
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"
@@ -99,4 +101,6 @@ namespace lab
 		GainNode * GetOutputNode() { return gainNode.get(); }
 	};
 
-} // LabSound
+}
+
+#endif

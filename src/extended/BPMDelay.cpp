@@ -77,4 +77,4 @@ namespace lab
 			throw std::invalid_argument("Delay index out of bounds");
 	}
 
-} // LabSound
+}

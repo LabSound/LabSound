@@ -1,14 +1,16 @@
-
 // Copyright (c) 2003-2015 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
 #pragma once
 
+#ifndef SFXR_NODE_H
+#define SFXR_NODE_H
+
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace lab {
 
-    class SfxrNode : public AudioScheduledSourceNode {
+    class SfxrNode : public lab::AudioScheduledSourceNode {
     public:
 
         SfxrNode(float sampleRate);
@@ -113,3 +115,5 @@ namespace lab {
     };
     
 }
+
+#endif

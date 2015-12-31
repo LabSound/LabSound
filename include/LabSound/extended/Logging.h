@@ -1,5 +1,5 @@
-#ifndef LabSound_Logging_h
-#define LabSound_Logging_h
+#ifndef LABSOUND_LOGGING_H
+#define LABSOUND_LOGGING_H
 
 #include <cstdarg>
 #include <stdio.h>

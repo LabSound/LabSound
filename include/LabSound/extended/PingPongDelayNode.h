@@ -14,15 +14,6 @@
 
 #include "LabSound/extended/BPMDelay.h"
 
-
-
-
-namespace lab 
-{
-
-}
-
-
 namespace lab 
 {
 	class ContextGraphLock;

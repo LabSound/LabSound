@@ -5,8 +5,8 @@
 
 //#define DEBUG_LOCKS
 
-#ifndef AudioContextLock_h
-#define AudioContextLock_h
+#ifndef AUDIO_CONTEXT_LOCK_H
+#define AUDIO_CONTEXT_LOCK_H
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/extended/Logging.h"

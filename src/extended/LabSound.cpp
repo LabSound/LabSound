@@ -135,4 +135,4 @@ namespace lab
 		LOG("Could not acquire lock for shutdown");
 	}
 
-} // LabSound
+}

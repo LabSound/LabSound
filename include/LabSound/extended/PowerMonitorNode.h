@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef POWER_MONITOR_NODE_H
+#define POWER_MONITOR_NODE_H
+
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include <vector>
 #include <mutex>
@@ -47,4 +50,6 @@ namespace lab {
 
     };
 
-} // LabSound
+}
+
+#endif

@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef NOISE_NODE_H
+#define NOISE_NODE_H
+
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
@@ -54,3 +57,5 @@ namespace lab
     };
 
 }
+
+#endif

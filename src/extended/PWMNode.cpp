@@ -92,5 +92,5 @@ namespace lab {
     }
 
     
-} // LabSound
+}
 
