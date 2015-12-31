@@ -64,6 +64,7 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
         && event.duration() >= 0;
 
     ASSERT(isValid);
+    
     if (!isValid)
         return;
 
@@ -71,15 +72,45 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
 
     unsigned i = 0;
     float insertTime = event.time();
-    for (i = 0; i < m_events.size(); ++i) {
+    
+    for (i = 0; i < m_events.size(); ++i)
+    {
+        
+        if (event.type() == ParamEvent::SetValueCurve)
+        {
+            // If this event is a SetValueCurve, make sure it doesn't overlap any existing
+            // event. It's ok if the SetValueCurve starts at the same time as the end of some other
+            // duration.
+            double endTime = event.time() + event.duration();
+            if (m_events[i].time() > event.time() && m_events[i].time() < endTime)
+            {
+                throw std::runtime_error("ParamEvent::SetValueCurve overlaps existing");
+            }
+        }
+        else
+        {
+            // Otherwise, make sure this event doesn't overlap any existing SetValueCurve event.
+            if (m_events[i].type() == ParamEvent::SetValueCurve)
+            {
+                double endTime = m_events[i].time() + m_events[i].duration();
+                if (event.time() >= m_events[i].time() && event.time() < endTime)
+                {
+                    throw std::runtime_error("ParamEvent::SetValueCurve overlaps existing");
+                }
+            }
+        }
+        
         // Overwrite same event type and time.
-        if (m_events[i].time() == insertTime && m_events[i].type() == event.type()) {
+        if (m_events[i].time() == insertTime && m_events[i].type() == event.type())
+        {
             m_events[i] = event;
             return;
         }
 
         if (m_events[i].time() > insertTime)
+        {
             break;
+        }
     }
 
     m_events.insert(m_events.begin() + i, event);
