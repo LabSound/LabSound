@@ -176,11 +176,12 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     // point the summing bus at the values array
     m_data->m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
-    for (size_t i = 0; i < connectionCount; ++i) {
+    for (size_t i = 0; i < connectionCount; ++i)
+    {
         auto output = renderingOutput(r, i);
-        if (!output)
-            continue;
-
+        
+        ASSERT(output);
+        
         // Render audio from this output.
         AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
 
