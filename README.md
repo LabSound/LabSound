@@ -1,5 +1,7 @@
 # LabSound
 
+[![Build Status](https://travis-ci.org/ddiakopoulos/LabSound.svg?branch=master)](https://travis-ci.org/ddiakopoulos/LabSound)
+
 LabSound is the WebAudio implementation factored out of WebKit. All copyleft sources have been removed
 so that the entire library can be released under a BSD 3-clause style license.
 
