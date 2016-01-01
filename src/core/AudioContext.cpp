@@ -1,6 +1,9 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+// @tofix - webkit change c6e1946 removes isRunnable and simplifies HRTF database loading to be on demand
+// not during audio context start
+
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioListener.h"
@@ -149,8 +152,6 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
-// @TODO webkit change c6e1946 removes isRunnable and simplifies HRTF database loading to be on demand
-// not during audio context start
 bool AudioContext::isRunnable() const
 {
     if (!isInitialized())

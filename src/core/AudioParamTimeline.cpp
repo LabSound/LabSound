@@ -18,10 +18,11 @@ using namespace std;
 
 namespace lab {
 
-    namespace {
-        // @TODO to resolve - is there any reason this should be per object instead of static?
-        std::mutex m_eventsMutex;
-    }
+//@tofix - is there any reason this should be per object instead of static?
+namespace
+{
+    std::mutex m_eventsMutex;
+}
 
 void AudioParamTimeline::setValueAtTime(float value, float time)
 {

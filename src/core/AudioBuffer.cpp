@@ -84,9 +84,8 @@ void AudioBuffer::zero()
         if (getChannelData(i)) {
             std::vector<float>& vec = *(getChannelData(i).get());
             size_t l = length();
-            // @todo this should just be a memset
             for (size_t j = 0; j < l; ++j)
-                vec[j] = 0.f;
+                vec[j] = 0.f; // @tofix - this should just be a memset
         }
     }
 }

@@ -67,7 +67,7 @@ namespace lab
 
     }
 
-    //@tofix: add adsr
+    // @tofix - add adsr
     void SampledInstrumentNode::NoteOn(ContextRenderLock & r, const int midiNoteNumber, const float amplitude)
     {
         if (!r.context()) return;

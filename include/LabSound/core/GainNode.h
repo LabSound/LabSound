@@ -15,9 +15,10 @@ class AudioContext;
     
 // GainNode is an AudioNode with one input and one output which applies a gain (volume) change to the audio signal.
 // De-zippering (smoothing) is applied when the gain value is changed dynamically.
-
 class GainNode : public AudioNode {
+    
 public:
+    
     GainNode(float sampleRate);
     virtual ~GainNode();
     
@@ -30,10 +31,10 @@ public:
 
     std::shared_ptr<AudioParam> gain() const { return m_gain; }
     
-protected:  /// @LabSound - was private
+protected:
+    
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }
-
 
     float m_lastGain; // for de-zippering
     std::shared_ptr<AudioParam> m_gain;

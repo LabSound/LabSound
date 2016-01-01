@@ -3,7 +3,7 @@
 
 #include "ExampleBaseApp.h"
 
-// Illustrates the use of simple Equal-power stereo panning
+// Illustrates the use of simple equal-power stereo panning
 struct StereoPanningApp : public LabSoundExampleApp
 {
     void PlayExample()

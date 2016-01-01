@@ -68,7 +68,7 @@ void OfflineAudioDestinationNode::startRendering()
         
         m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
         
-        // @tofix: ability to update main thread from here. Currently blocks until complete
+        // @tofix - ability to update main thread from here. Currently blocks until complete
         if (m_renderThread.joinable())
             m_renderThread.join();
         

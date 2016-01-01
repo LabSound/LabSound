@@ -103,7 +103,7 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     {
         m_connectionCount = ac->connectionCount();
         // Recursively go through all nodes connected to us.
-        // notifyAudioSourcesConnectedToNode(r, this); //@tofix dimitri commented out 
+        // notifyAudioSourcesConnectedToNode(r, this); // @tofix - dimitri commented out
     }
 
     AudioNode::pullInputs(r, framesToProcess);
@@ -127,7 +127,7 @@ void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    //@tofix make sure hrtf database is loaded
+    // @tofix - make sure hrtf database is loaded
 
     // Apply the panning effect.
     double azimuth;

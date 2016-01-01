@@ -43,7 +43,7 @@ struct PendingConnection
     std::shared_ptr<Output> to;
 };
 
-//@tofix: refactor such that this factory function doesn't need to exist
+// @tofix - refactor such that this factory function doesn't need to exist
 std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
 
 class AudioContext
@@ -76,13 +76,13 @@ public:
     // Returns true when initialize() was called AND all asynchronous initialization has completed.
     bool isRunnable() const;
 
-    // Eexternal users shouldn't use this; it should be called by LabSound::init()
+    // Eexternal users shouldn't use this; it should be called by LabSound::MakeAudioContext()
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
-    void update(ContextGraphLock &);
+    void update(ContextGraphLock & g);
 
-    void stop(ContextGraphLock &);
+    void stop(ContextGraphLock & g);
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 

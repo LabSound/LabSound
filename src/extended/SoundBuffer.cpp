@@ -34,7 +34,7 @@ namespace lab {
 
     void SoundBuffer::initialize(const char * path, float sampleRate)
     {
-        //@tofix investigate mixing to mono here and why it breaks if we don't
+        // @tofix - investigate mixing to mono here and why it breaks if we don't
         std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
         if (auto f = busForFile.get())
         {

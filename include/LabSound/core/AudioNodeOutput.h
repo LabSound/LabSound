@@ -98,8 +98,8 @@ private:
     // m_internalBus and m_inPlaceBus must only be changed in the audio thread with the context's render lock (or constructor).
     std::unique_ptr<AudioBus> m_internalBus;
     
-    // temporary, during render quantum @TODO Should this be some kind of shared pointer?
-    // it is only valid for a single render quantum, so probably no.
+    // Temporary, during render quantum
+    // @tofix - Should this be some kind of shared pointer? It is only valid for a single render quantum, so probably no.
     AudioBus* m_inPlaceBus;
     
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;

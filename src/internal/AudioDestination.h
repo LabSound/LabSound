@@ -14,7 +14,7 @@ struct AudioIOCallback;
 // It optionally will pass in local/live audio input when it calls render().
 struct AudioDestination
 {
-    /// @TODO - web audio puts the input initialization on the destination as well. I'm not sure that makes sense.
+    //@tofix - web audio puts the input initialization on the destination as well. I'm not sure that makes sense.
     static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, unsigned numberOfOutputChannels, float sampleRate);
 
     virtual ~AudioDestination() { }

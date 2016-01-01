@@ -136,7 +136,8 @@ namespace lab
         
         fileData->channelCount = channels;
         fileData->sourceFormat = nqr::PCM_FLT;
-        fileData->sampleRate = 44100; // @tofix hardcoded sample rate
+        fileData->sampleRate = 44100; // @tofix - hardcoded sample rate
+        
         // fileData->... other file data not needed
         
         // Represents target encoding (wav only)
@@ -148,7 +149,6 @@ namespace lab
         int encoderStatus = encoder.WriteFile(params, fileData.get(), filenameWithWavExtension);
         
         LOG("[WavEncoder - Debug Status: %i]", encoderStatus);
-        
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

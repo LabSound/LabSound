@@ -24,7 +24,7 @@ class Spatializer
     
 public:
     
-    //@tofix only support equal power 
+    // @tofix - this only supports equal power
     enum PanningModel
     {
         PanningModelEqualPower = 0

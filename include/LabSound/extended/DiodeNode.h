@@ -8,7 +8,7 @@
 
 namespace lab {
 
-    /// @TODO DiodeNode should subclass waveShaper, then the create method will work
+    //@tofix - DiodeNode should subclass waveShaper, then the create method will work
     
     class DiodeNode
     {

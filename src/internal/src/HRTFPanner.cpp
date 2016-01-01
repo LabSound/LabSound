@@ -211,8 +211,6 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         database->getKernelsFromAzimuthElevation(azimuthBlend, m_azimuthIndex2, m_elevation2, kernelL2, kernelR2, frameDelayL2, frameDelayR2);
 
         bool areKernelsGood = kernelL1 && kernelR1 && kernelL2 && kernelR2;
-        
-        // @LabSound removed ASSERT(areKernelsGood);
         ASSERT(areKernelsGood);
 
         if (!areKernelsGood)

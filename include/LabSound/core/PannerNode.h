@@ -88,8 +88,8 @@ public:
     float coneOuterGain() const;
     void setConeOuterGain(float angle);
 
-    void getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation);
-    float dopplerRate(ContextRenderLock& r);
+    void getAzimuthElevation(ContextRenderLock & r, double * outAzimuth, double * outElevation);
+    float dopplerRate(ContextRenderLock & r);
 
     // Accessors for dynamically calculated gain values.
     std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
@@ -101,12 +101,12 @@ public:
 protected:
 
     // Returns the combined distance and cone gain attenuation.
-    virtual float distanceConeGain(ContextRenderLock& r);   /// @LabSound virtual
+    virtual float distanceConeGain(ContextRenderLock & r);
 
     // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
-    // @tofix dimitri kinda proken 
-    void notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode*);
+    // @tofix - broken?
+    void notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode *);
 
     std::unique_ptr<Panner> m_panner;
 

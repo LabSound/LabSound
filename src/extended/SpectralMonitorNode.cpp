@@ -208,9 +208,10 @@ namespace lab
         window[1] = 0.0f;
 
         // compute normalized magnitude spectrum
-        // TODO: break this into vector cartisian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
+        // @tofix - break this into vector cartisian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
         const float kMagScale = 1.0f ;/// detail->windowSize;
-        for(size_t i = 0; i < window.size(); i += 2) {
+        for(size_t i = 0; i < window.size(); i += 2)
+        {
             float re = window[i];
             float im = window[i+1];
             window[i/2] = sqrt(re * re + im * im) * kMagScale;

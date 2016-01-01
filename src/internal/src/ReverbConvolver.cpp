@@ -98,7 +98,7 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
 
     if (this->useBackgroundThreads() && m_backgroundStages.size() > 0)
     {
-        //@todo: proper notification when thread is completed with condition variable
+        // @tofix - proper notification when thread is completed with condition variable
         m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
     }
 

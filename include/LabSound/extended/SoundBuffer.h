@@ -13,7 +13,7 @@
 namespace lab
 {
 
-//@TOFIX: rewrite as a node, deprecate audio buffer source node
+// @tofix - rewrite as a node; deprecate audio buffer source node
 class SoundBuffer 
 {
 

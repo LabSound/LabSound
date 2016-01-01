@@ -78,21 +78,29 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
+    
     if (mode == ChannelCountMode::Explicit)
+    {
         return node()->channelCount();
+    }
    
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
     int c = numberOfRenderingConnections(r);
-    for (int i = 0; i < c; ++i) {
+    for (int i = 0; i < c; ++i)
+    {
         auto output = renderingOutput(r, i);
         if (output)
+        {
             maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
+        }
     }
 
     if (mode == ChannelCountMode::ClampedMax)
+    {
         maxChannels = min(maxChannels, static_cast<unsigned>(node()->channelCount()));
+    }
     
     return maxChannels;
 }
@@ -101,9 +109,12 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
     // note: The webkit sources check for max, but I can't see how that's correct
-    /// @TODO did I miss part of the merge?
+    
+    // @tofix - did I miss part of the merge?
     if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
+    {
         return renderingOutput(r, 0)->bus(r);
+    }
 
     // Multiple connections case (or no connections).
     return internalSummingBus(r);

@@ -2,6 +2,9 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+// @tofix - webkit change 1f083e8 and 2bd2dc2 adds support for different behaviors on mixing such as
+// clamping the max number of channels, and mixing 5.1 down to mono
+
 #ifndef AudioNode_h
 #define AudioNode_h
 
@@ -134,9 +137,6 @@ public:
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
     void processIfNecessary(ContextRenderLock& r, size_t framesToProcess);
-    
-    // @TODO webkit change 1f083e8 and 2bd2dc2 adds support for different behaviors on mixing such as
-    // clamping the max number of channels, and mixing 5.1 down to mono
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.

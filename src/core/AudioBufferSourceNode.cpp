@@ -2,6 +2,9 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+// @tofix - webkit change ef113b changes the logic of processing to test for non finite time values, change not reflected here.
+// @tofix - webkit change e369924 adds backward playback, change not incorporated yet
+
 #include "LabSound/core/AudioBufferSourceNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -56,9 +59,6 @@ AudioBufferSourceNode::~AudioBufferSourceNode()
     uninitialize();
 }
 
-    // @TODO webkit change ef113b changes the logic of processing to test for non finite time values, change not reflected here.
-    // @TODO webkit change e369924 adds backward playback, change not incorporated yet
-    
 void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus(r);
