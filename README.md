@@ -31,7 +31,7 @@ Compiling LabSound and its dependencies require a recent C++11 compiler.
 
 # Building
 
-Users of LabSound are expected to compile LabSound from source. All dependencies are included as source, though libnyquist is a submodule so it is recommended that new users clone the repository with the `--recursive` option. 
+Users of LabSound are expected to compile LabSound from source. While most dependencies are included as code in the repository, libnyquist is bundled as a git submodule so it is recommended that new users clone the repository with the `--recursive` option. 
 
 # Examples
 
