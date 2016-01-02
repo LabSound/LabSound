@@ -2,65 +2,63 @@
 
 [![Build Status](https://travis-ci.org/ddiakopoulos/LabSound.svg?branch=master)](https://travis-ci.org/ddiakopoulos/LabSound)
 
-LabSound is the WebAudio implementation factored out of WebKit. All copyleft sources have been removed
-so that the entire library can be released under a BSD 3-clause style license.
+LabSound is a graph-based audio engine built in modern C++11. As a fork of the WebAudio implementation in Chrome (Webkit), LabSound implements the WebAudio API specification while extending it with new features, nodes, bugfixes, and performance improvements. 
 
-The motivation behind LabSound is that the [WebAudio specification](https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html) is a well-designed API for an audio engine. Coupled with a well executed implementation provided by WebKit contributors, LabSound is a powerful and extensible audio engine for C++. 
+The engine is packaged as a batteries-included static library meant for integration in many types of software: games, interactive audio visualizers, audio editing and sequencing applications, and more. 
 
-LabSound’s internals were disconnected from Javascript and the browser infrastructure. The cross-platform nature of WebKit means that LabSound enjoys wide platform support across OSX 10.6+, Windows 7+, and although presently untested, Linux and iOS. 
+[LabSound homepage.](http://www.labsound.io/)
 
-One of LabSound’s goals is to provide higher-level DSP and signal generation nodes for use with the engine. To this end, integrations with PureData (PD), SFXR, and the STK are either complete or in progress.
+# Features
 
-The keyword LabSound is one indication that the code was modified from the original WebKit source. The engine has been rapidly integrating C++11 features while trying to remain as platform-agnostic as possible. All exposed interfaces have been renamed into the LabSound namespace. The Web Template Framework (WTF) used by the original Chromium codebase has been largely removed in favor of C++11-equivalent functionality. 
+* Compatibility with the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+* Audio asset loading via [libnyquist](https://github.com/ddiakopoulos/libnyquist)
+* Binaural audio / HRTF processing
+* New audio effects and generators (ADSR, noise, stereo delay, and more)
+* Signal analysis (both time & frequency)
+* Offline graph processing & wav export
+* High-quality realtime signal resampling
+* Thread safety guarantees for multi-threaded apps
+* Extensible base nodes for arbitrary DSP processing
+* Microphone input
+* SIMD accelerated channel mixing routines
+* DSP primitives including filters and delays
 
-## Building
+# Platforms
 
-Currently, this repository does not host precompiled binaries. Premake4 has been used previously generate platform-specific project files, although both the supplied XCode Workspace and Visual Studio Solution file are kept up-to-date. Please see the section below for your target platform. 
+LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback. The repository hosts maintained project files for Visual Studio 2013, Visual Studio 2015, and XCode 7. While not presently supported, LabSound has been shown previously to run on other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES). 
 
-## Usage
+Compiling LabSound and its dependencies require a recent C++11 compiler. 
 
-It is only necessary to have the `includes/` directory in your path. For convenience, `LabSoundIncludes.h` includes all default WebAudio and LabSound nodes for quick and easy application development. Don't forget to link against the built LabSound library.
+# Building
 
-On OSX, user projects will also need the following frameworks:
-+   Cocoa
-+   Accelerate
-+   CoreAudio
-+   AudioUnit
-+   AudioToolbox
+Users of LabSound are expected to compile LabSound from source. While most dependencies are included as code in the repository, libnyquist is bundled as a git submodule so it is recommended that new users clone the repository with the `--recursive` option. 
 
-On Windows, user projects will also need the following dependencies: 
-+   dsound.lib
-+   dxguid.lib
-+   winmm.lib
+# Examples
 
-LabSound includes WebAudio HRTF implementation. This creates an additional dependency on a folder of HRTF impulse wav files. These files should be located in a directory called `resources/` in the current working directory of the application. 
+LabSound is bundled with approximately 20 single-file samples. Platform-specific files for the example project can be found in the `examples\` subfolder. Generally, one might take any WebAudio JavaScript sample code and transliterate it to LabSound with only mild effort (modulo obvious architectual considerations of JavaScript vs C++).
 
-## Building with XCode on OSX
+# Using the Library
 
-Premake4 was used to generate the platform-specific project files. On OSX, the both the LabSound project and Examples workspace should build from a clean checkout. 
+Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although both included Visual Studio and XCode projects will build this dependency alongside LabSound. 
 
-## Building with Sublime on OSX
+On OSX, new applications also require the following frameworks:
++ Cocoa
++ Accelerate
++ CoreAudio
++ AudioUnit
++ AudioToolbox
++ libnyquist.a
 
-To do a build in Sublime using xctool, xctool must be in the path. If it isn't in the 
-launchctl path, one way to add it is in Sublime's Python console, eg -
+On Windows, new applications also require the following libraries: 
++ dsound.lib
++ dxguid.lib
++ winmm.lib
++ libnyquist.lib
 
-os.environ["PATH"] = os.environ["PATH"]+":/Users/dp/local/bin"
+For convenience, `LabSound.h` is used as an index header file with all public nodes included for easy application development. 
 
-xcodebuild works as well, but xctool is much more user friendly.
+LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files. These files should be located in a directory called `hrtf/` in the current working directory of the application. 
 
-## Building with Visual Studio 2013 on Windows 
+# License 
 
-Windows requires number of additional dependencies that are included in this repository, under their respective licenses. These include RtAudio and KissFFT. Both  RtAudio and KissFFT have nonrestrictive BSD-compatible licenses.
-
-## Examples + Wiki
-
-LabSound comes with a full compliment of examples to get started. Generally, one might take any WebAudio JavaScript sample code and transliterate it to LabSound with only mild effort (modulo obvious architectual considerations of JavaScript vs C++).
-
-The Github Wiki has additional examples and information. 
-
-## License 
-
-Any bits not part of the WebKit code can be assumed to be under a BSD 3-clause license. <http://opensource.org/licenses/BSD-3-Clause>
-
-The license on the WebKit files is the Google/Apple BSD 2 clause modified license on
-most of the Webkit sources. 
+LabSound is released under the simplified BSD 2 clause license. All LabSound dependencies are under similar permissive licenses. Further details are located in the `LICENSE` and `COPYING` files. 
