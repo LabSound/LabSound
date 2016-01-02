@@ -23,7 +23,8 @@ class DistanceEffect;
 class ConeEffect;
 class AudioBus;
 class Panner;
-
+class HRTFDatabaseLoader;
+    
 class PannerNode : public AudioNode 
 {
 
@@ -36,7 +37,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
     
-    PannerNode(float sampleRate);
+    PannerNode(float sampleRate, const std::string & searchPath = "");
     virtual ~PannerNode();
 
     // AudioNode
@@ -47,7 +48,7 @@ public:
     virtual void uninitialize() override;
 
     // Listener
-    AudioListener* listener(ContextRenderLock&);
+    AudioListener * listener(ContextRenderLock & r);
 
     // Panning model
     PanningMode panningModel() const { return m_panningModel; }
@@ -100,6 +101,8 @@ public:
 
 protected:
 
+    std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
+    
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock & r);
 

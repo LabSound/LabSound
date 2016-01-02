@@ -70,6 +70,7 @@ namespace lab
         return occlusionAttenuation;
     }
     
+    // @tofix - pass in HRTF loader path
     SpatializationNode::SpatializationNode(float sampleRate): lab::PannerNode(sampleRate)
     {
         setNodeType(lab::NodeType::NodeTypeSpatialization);

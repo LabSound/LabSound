@@ -10,13 +10,13 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/HRTFDatabaseLoader.h"
 #include "internal/HRTFPanner.h"
 #include "internal/AudioBus.h"
 #include "internal/Panner.h"
 #include "internal/Cone.h"
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
-#include "internal/HRTFPanner.h"
 
 #include <wtf/MathExtras.h>
 
@@ -24,14 +24,19 @@ using namespace std;
 
 namespace lab {
 
-static void fixNANs(double &x)
+static void fixNANs(double & x)
 {
-    if (isnan(x) || isinf(x))
-        x = 0.0;
+    if (isnan(x) || isinf(x)) x = 0.0;
 }
 
-PannerNode::PannerNode(float sampleRate) : AudioNode(sampleRate), m_panningModel(PanningMode::HRTF)
+PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : AudioNode(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
 {
+    if (searchPath.length())
+    {
+        LOG("Initializing HRTF Database");
+        m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(sampleRate, searchPath);
+    }
+    
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
 
@@ -62,8 +67,7 @@ PannerNode::~PannerNode()
 
 void PannerNode::initialize()
 {
-    if (isInitialized())
-        return;
+    if (isInitialized()) return;
     
     switch (m_panningModel) 
     {
@@ -109,7 +113,7 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     AudioNode::pullInputs(r, framesToProcess);
 }
 
-void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
+void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     AudioBus* destination = output(0)->bus(r);
 
@@ -127,7 +131,19 @@ void PannerNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    // @tofix - make sure hrtf database is loaded
+    // HRTFDatabase should be loaded before proceeding for offline audio context
+    if (m_panningModel == PanningMode::HRTF && !m_hrtfDatabaseLoader->isLoaded())
+    {
+        if (r.context()->isOfflineContext())
+        {
+            m_hrtfDatabaseLoader->waitForLoaderThreadCompletion();
+        }
+        else
+        {
+            destination->zero();
+            return;
+        }
+    }
 
     // Apply the panning effect.
     double azimuth;
