@@ -9,7 +9,6 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioBus.h"
-#include "internal/HRTFDatabaseLoader.h"
 
 #include <algorithm>
 
@@ -23,6 +22,7 @@ OfflineAudioDestinationNode::OfflineAudioDestinationNode(std::shared_ptr<AudioCo
     : AudioDestinationNode(context, renderTarget->sampleRate())
     , m_renderTarget(renderTarget)
     , m_startedRendering(false)
+    , ctx(context.get())
 {
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(renderTarget->numberOfChannels(), renderQuantumSize));
 }
@@ -94,15 +94,10 @@ void OfflineAudioDestinationNode::offlineRender()
     ASSERT(isRenderBusAllocated);
     if (!isRenderBusAllocated)
         return;
-        
-    // Synchronize with HRTFDatabaseLoader.
-    // The database must be loaded before we can proceed.
-    auto loader = HRTFDatabaseLoader::loader();
-    ASSERT(loader);
-    if (!loader)
-        return;
     
-    loader->waitForLoaderThreadCompletion();
+    bool isAudioContextInitialized = ctx->isInitialized();
+    ASSERT(isAudioContextInitialized);
+    if (!isAudioContextInitialized) return;
     
     // Break up the render target into smaller "render quantize" sized pieces.
     size_t framesToProcess = m_renderTarget->length();

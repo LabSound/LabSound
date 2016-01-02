@@ -25,7 +25,6 @@ class AudioDestinationNode;
 class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
-class HRTFDatabaseLoader;
 class AudioHardwareSourceNode;
 class AudioNodeInput;
 class AudioNodeOutput;
@@ -54,7 +53,7 @@ class AudioContext
     
 public:
 
-    // It is somewhat arbitrary and could be increased if necessary.
+    // Somewhat arbitrary and could be increased if necessary
     static const uint32_t maxNumberOfChannels;
 
     // Debugging/Sanity Checking
@@ -69,12 +68,7 @@ public:
 
     ~AudioContext();
 
-    void initHRTFDatabase();
-
     bool isInitialized() const;
-
-    // Returns true when initialize() was called AND all asynchronous initialization has completed.
-    bool isRunnable() const;
 
     // Eexternal users shouldn't use this; it should be called by LabSound::MakeAudioContext()
     // It *is* harmless to call it though, it's just not necessary.
@@ -143,7 +137,6 @@ private:
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;
-
     std::mutex automaticSourcesMutex;
 
     bool m_isStopScheduled = false;
@@ -151,7 +144,7 @@ private:
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
     bool m_isDeletionScheduled = false;
-    bool m_automaticPullNodesNeedUpdating = false;     // keeps track if m_automaticPullNodes is modified.
+    bool m_automaticPullNodesNeedUpdating = false; // keeps track if m_automaticPullNodes is modified.
 
     // Number of AudioBufferSourceNodes that are active (playing).
     std::atomic<int> m_activeSourceCount;
@@ -164,15 +157,14 @@ private:
 
     void scheduleNodeDeletion(ContextRenderLock & g);
 
-    void referenceSourceNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
-    void dereferenceSourceNode(ContextGraphLock&, std::shared_ptr<AudioNode>);
+    void referenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> n);
+    void dereferenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> n);
     
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
-    std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
     std::shared_ptr<AudioBuffer> m_renderTarget;
 
     std::vector<std::shared_ptr<AudioNode>> m_referencedNodes;

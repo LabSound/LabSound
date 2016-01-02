@@ -1,9 +1,6 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-// @tofix - webkit change c6e1946 removes isRunnable and simplifies HRTF database loading to be on demand
-// not during audio context start
-
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioListener.h"
@@ -16,17 +13,17 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/HRTFDatabaseLoader.h"
 #include "internal/AudioDestination.h"
+#include "internal/Assertions.h"
 
 #include <stdio.h>
 #include <queue>
 
-const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
-
 namespace lab
 {
 
+const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
+    
 std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r)
 {
     AudioSourceProvider * provider = nullptr;
@@ -60,11 +57,6 @@ AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, flo
 
     // Create a new destination for offline rendering.
     m_renderTarget = std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
-}
-
-void AudioContext::initHRTFDatabase()
-{
-    m_hrtfDatabaseLoader = HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(sampleRate());
 }
 
 AudioContext::~AudioContext()
@@ -152,15 +144,6 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
-bool AudioContext::isRunnable() const
-{
-    if (!isInitialized())
-        return false;
-
-    // Check with the HRTF spatialization system to see if it's finished loading.
-    return m_hrtfDatabaseLoader->isLoaded();
-}
-
 void AudioContext::stop(ContextGraphLock& g)
 {
     if (m_isStopScheduled)
@@ -174,12 +157,12 @@ void AudioContext::stop(ContextGraphLock& g)
     clear();
 }
 
-void AudioContext::referenceSourceNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
+void AudioContext::referenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> node)
 {
     m_referencedNodes.push_back(node);
 }
 
-void AudioContext::dereferenceSourceNode(ContextGraphLock& g, std::shared_ptr<AudioNode> node)
+void AudioContext::dereferenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> node)
 {
     ASSERT(g.context());
 

@@ -41,6 +41,8 @@ private:
     bool m_startedRendering;
     void offlineRender();
     
+    AudioContext * ctx;
+    
 };
 
 } // namespace lab
