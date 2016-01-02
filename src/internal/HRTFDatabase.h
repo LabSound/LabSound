@@ -11,15 +11,16 @@
 #include <vector>
 
 namespace lab {
-
+ 
 class HRTFKernel;
-
 class HRTFDatabase 
 {
+    
     NO_MOVE(HRTFDatabase);
+    
 public:
 
-    HRTFDatabase(float sampleRate);
+    HRTFDatabase(float sampleRate, const std::string & searchPath);
 
     // getKernelsFromAzimuthElevation() returns a left and right ear kernel, and an interpolated left and right frame delay for the given azimuth and elevation.
     // azimuthBlend must be in the range 0 -> 1.
@@ -30,29 +31,12 @@ public:
     // Returns the number of different azimuth angles.
     static unsigned numberOfAzimuths() { return HRTFElevation::NumberOfTotalAzimuths; }
 
-    float sampleRate() const { return m_sampleRate; }
-
-    // Number of elevations loaded from resource.
-    static const unsigned NumberOfRawElevations;
-
 private:
 
-    // Minimum and maximum elevation angles (inclusive) for a HRTFDatabase.
-    static const int MinElevation;
-    static const int MaxElevation;
-    static const unsigned RawElevationAngleSpacing;
-
-    // Interpolates by this factor to get the total number of elevations from every elevation loaded from resource.
-    static const unsigned InterpolationFactor;
-    
-    // Total number of elevations after interpolation.
-    static const unsigned NumberOfTotalElevations;
-
-    // Returns the index for the correct HRTFElevation given the elevation angle.
-    static unsigned indexFromElevationAngle(double);
-
     std::vector<std::unique_ptr<HRTFElevation> > m_elevations;
-    float m_sampleRate;
+    
+    std::unique_ptr<HRTFDatabaseInfo> info;
+    
 };
 
 } // namespace lab

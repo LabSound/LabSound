@@ -16,6 +16,7 @@ using namespace std;
 namespace lab 
 {
 
+// @fixme - will change for new HRTF databases
 // The value of 2 milliseconds is larger than the largest delay which exists in any HRTFKernel from the default HRTFDatabase (0.0136 seconds).
 // We ASSERT the delay values used in process() with this value.
 const double MaxDelayTimeSeconds = 0.002;

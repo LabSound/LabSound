@@ -16,16 +16,17 @@ namespace lab {
 // HRTFDatabaseLoader will asynchronously load the default HRTFDatabase in a new thread.
 
 class HRTFDatabaseLoader {
+    
 public:
     // Both constructor and destructor must be called from the main thread.
     // It's expected that the singletons will be accessed instead.
     // @CBB the guts of the loader should be a private singleton, so that the loader can be constructed without a factory
-    explicit HRTFDatabaseLoader(float sampleRate);
+    explicit HRTFDatabaseLoader(float sampleRate, const std::string & searchPath);
     
     // Lazily creates the singleton HRTFDatabaseLoader (if not already created) and starts loading asynchronously (when created the first time).
     // Returns the singleton HRTFDatabaseLoader.
     // Must be called from the main thread.
-    static std::shared_ptr<HRTFDatabaseLoader> createAndLoadAsynchronouslyIfNecessary(float sampleRate);
+    static std::shared_ptr<HRTFDatabaseLoader> MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath);
 
     // Returns the singleton HRTFDatabaseLoader.
     static std::shared_ptr<HRTFDatabaseLoader> loader() { return s_loader; }
@@ -39,7 +40,7 @@ public:
     // waitForLoaderThreadCompletion() may be called more than once and is thread-safe.
     void waitForLoaderThreadCompletion();
     
-    HRTFDatabase* database() { return m_hrtfDatabase.get(); }
+    HRTFDatabase * database() { return m_hrtfDatabase.get(); }
 
     float databaseSampleRate() const { return m_databaseSampleRate; }
     
@@ -68,6 +69,9 @@ private:
     bool m_loading;
 
     float m_databaseSampleRate;
+    
+    std::string searchPath;
+    
 };
 
 } // namespace lab

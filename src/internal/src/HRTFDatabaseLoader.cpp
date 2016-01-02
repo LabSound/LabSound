@@ -13,17 +13,17 @@ namespace lab
 // Singleton
 std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
 
-std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::createAndLoadAsynchronouslyIfNecessary(float sampleRate)
+std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath)
 {
     if (!s_loader)
     {
-        s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate);
+        s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate, searchPath);
         s_loader->loadAsynchronously();
     }
     return s_loader;
 }
 
-HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate) : m_databaseSampleRate(sampleRate), m_loading(false)
+HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & searchPath) : searchPath(searchPath), m_databaseSampleRate(sampleRate), m_loading(false)
 {
     ASSERT(!s_loader.get());
 }
@@ -43,7 +43,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
 
 
 // Asynchronously load the database in this thread.
-void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
+void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader * threadData)
 {
     std::lock_guard<std::mutex> locker(threadData->m_threadLock);
     HRTFDatabaseLoader * loader = reinterpret_cast<HRTFDatabaseLoader*>(threadData);
@@ -56,7 +56,7 @@ void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader* threadData)
 
 void HRTFDatabaseLoader::load()
 {
-    m_hrtfDatabase.reset(new HRTFDatabase(m_databaseSampleRate));
+    m_hrtfDatabase.reset(new HRTFDatabase(m_databaseSampleRate, searchPath));
     
     if (!m_hrtfDatabase.get())
     {
@@ -90,9 +90,7 @@ void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
 
 HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()
 {
-    if (!s_loader)
-        return nullptr;
-    
+    if (!s_loader) return nullptr;
     return s_loader->database();
 }
 
