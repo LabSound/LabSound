@@ -12,7 +12,7 @@ The engine is packaged as a batteries-included static library meant for integrat
 
 * Compatibility with the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 * Audio asset loading via [libnyquist](https://github.com/ddiakopoulos/libnyquist)
-* Binaural audio / HRTF processing
+* Binaural audio via IRCAM HRTF database
 * New audio effects and generators (ADSR, noise, stereo delay, and more)
 * Signal analysis (both time & frequency)
 * Offline graph processing & wav export
@@ -57,7 +57,7 @@ On Windows, new applications also require the following libraries:
 
 For convenience, `LabSound.h` is used as an index header file with all public nodes included for easy application development. 
 
-LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files. These files should be located in a directory called `hrtf/` in the current working directory of the application. 
+LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files when a `PannerNode` is configured to use `PanningMode::HRTF`. The constructor of `PannerNode` will take an additional path to the sample directory relative to the current working directory, and without a trailing slash.
 
 # License 
 
