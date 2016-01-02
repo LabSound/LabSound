@@ -14,7 +14,9 @@ struct SpatializationApp : public LabSoundExampleApp
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
         std::shared_ptr<OscillatorNode> osc; 
 
-        auto panner = std::make_shared<PannerNode>(context->sampleRate());
+        // Note the need to specify an asset search path if this node will be
+        // used in PanningMode::HRTF
+        auto panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");
         std::shared_ptr<AudioBufferSourceNode> trainNode;
         {
             ContextGraphLock g(context, "spatialization");
@@ -25,6 +27,7 @@ struct SpatializationApp : public LabSoundExampleApp
             //osc->start(0);
 
             panner->connect(ac, context->destination().get(), 0, 0);
+            panner->setPanningModel(PanningMode::HRTF);
             trainNode = train.play(r, panner, 0.0f);
         }
         

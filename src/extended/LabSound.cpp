@@ -48,7 +48,7 @@ namespace lab
         LOG("Initialize Context");
         mainContext = std::make_shared<lab::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(mainContext));
-        mainContext->initHRTFDatabase();
+        
         mainContext->lazyInitialize();
 
         g_GraphUpdateThread = std::thread(UpdateGraphThread);
@@ -60,6 +60,7 @@ namespace lab
     {
         LOG("Initialize Offline Context");
         
+        // @tofix - hardcoded parameters
         const int sampleRate = 44100;
         const int framesPerMillisecond = sampleRate / 1000;
         const int totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
@@ -67,7 +68,7 @@ namespace lab
         mainContext = std::make_shared<lab::AudioContext>(2, totalFramesToRecord, sampleRate);
         auto renderTarget = mainContext->getOfflineRenderTarget();
         mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
-        mainContext->initHRTFDatabase();
+        
         mainContext->lazyInitialize();
         
         return mainContext;
@@ -109,6 +110,7 @@ namespace lab
         ContextRenderLock r(ctx, id);
         callback(g, r);
     }
+
 }
 
 ///////////////////////

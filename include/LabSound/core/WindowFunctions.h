@@ -33,7 +33,7 @@ namespace lab {
         window_parzen
     };
 
-    void applyWindow(WindowType wType, std::vector<float> &buffer) {
+    inline void applyWindow(WindowType wType, std::vector<float> &buffer) {
 
         int bSize = buffer.size();
 

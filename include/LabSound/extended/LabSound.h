@@ -52,6 +52,7 @@
 #include "LabSound/extended/RecorderNode.h"
 
 #include <functional>
+#include <string>
 
 namespace lab 
 {

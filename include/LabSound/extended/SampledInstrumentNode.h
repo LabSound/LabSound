@@ -27,7 +27,7 @@ namespace lab
     // Ex: F#6. Assumes uppercase note names, hash symbol for sharp, and octave. 
     inline uint8_t MakeMIDINoteFromString(std::string noteName) 
     {
-        const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        const std::array<std::string, 12> midiTranslationArray = {{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" }};
 
         // Ocatve is always last character, as an integer 
         std::string octaveString = noteName.substr(noteName.length() - 1, 1);
@@ -56,7 +56,7 @@ namespace lab
 
     inline std::string MakeStringFromMIDINote(uint8_t note)
     {
-        const std::array<std::string, 12> midiTranslationArray = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        const std::array<std::string, 12> midiTranslationArray = {{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" }};
 
         int octave = int(note / 12) - 1;
         int positionInOctave = note % 12;

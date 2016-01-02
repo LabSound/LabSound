@@ -302,7 +302,7 @@ OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioD
     m_renderBus.setChannelMemory(0, (float*)buffers[0].mData, numberOfFrames);
     m_renderBus.setChannelMemory(1, (float*)buffers[1].mData, numberOfFrames);
 
-    // FIXME: Add support for local/live audio input.
+    //@tofix - add support for local/live audio input.
     m_callback.render(m_input->m_audioBus, &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
