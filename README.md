@@ -23,9 +23,9 @@ The engine is packaged as a batteries-included static library meant for integrat
 * SIMD accelerated channel mixing routines
 * DSP primitives including filters and delays
 
-# Platform Support
+# Platforms
 
-LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback. The repository hosts maintained project files for Visual Studio 2013, Visual Studio 2015, and XCode 7. While not presently maintained, LabSound has been shown to work with other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES). LabSound requires a recent C++11 compiler. 
+LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback. The repository hosts maintained project files for Visual Studio 2013, Visual Studio 2015, and XCode 7. While not presently supported, LabSound has been shown previously to run on other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES). LabSound requires a recent C++11 compiler. 
 
 # Building
 
