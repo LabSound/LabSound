@@ -6,6 +6,8 @@ LabSound is a graph-based audio engine built in modern C++11. As a fork of the W
 
 The engine is packaged as a batteries-included static library meant for integration in many types of software: games, interactive audio visualizers, audio editing and sequencing applications, and more. 
 
+[LabSound homepage.](http://www.labsound.io/)
+
 # Features
 
 * Compatibility with the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
