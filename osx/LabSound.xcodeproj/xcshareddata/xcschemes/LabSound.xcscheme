@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "4CD2088222DF730439355832"
-               BuildableName = "libLabSound.a"
+               BuildableName = "liblabsound.a"
                BlueprintName = "LabSound"
                ReferencedContainer = "container:LabSound.xcodeproj">
             </BuildableReference>
@@ -49,7 +49,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4CD2088222DF730439355832"
-            BuildableName = "libLabSound.a"
+            BuildableName = "liblabsound.a"
             BlueprintName = "LabSound"
             ReferencedContainer = "container:LabSound.xcodeproj">
          </BuildableReference>
@@ -67,7 +67,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4CD2088222DF730439355832"
-            BuildableName = "libLabSound.a"
+            BuildableName = "liblabsound.a"
             BlueprintName = "LabSound"
             ReferencedContainer = "container:LabSound.xcodeproj">
          </BuildableReference>

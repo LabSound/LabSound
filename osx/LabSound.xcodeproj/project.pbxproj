@@ -30,7 +30,6 @@
 		08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */; };
 		08650BE81AD6225900D19E38 /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBF1AD6225900D19E38 /* FFTFrame.cpp */; };
 		08650BE91AD6225900D19E38 /* FFTFrameKissFFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */; };
-		08650BEA1AD6225900D19E38 /* FFTFrameStub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC11AD6225900D19E38 /* FFTFrameStub.cpp */; };
 		08650BEB1AD6225900D19E38 /* HRTFDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */; };
 		08650BEC1AD6225900D19E38 /* HRTFDatabaseLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */; };
 		08650BED1AD6225900D19E38 /* HRTFElevation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC41AD6225900D19E38 /* HRTFElevation.cpp */; };
@@ -179,7 +178,6 @@
 		08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTConvolver.cpp; path = ../src/internal/src/FFTConvolver.cpp; sourceTree = SOURCE_ROOT; };
 		08650BBF1AD6225900D19E38 /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrame.cpp; path = ../src/internal/src/FFTFrame.cpp; sourceTree = SOURCE_ROOT; };
 		08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameKissFFT.cpp; path = ../src/internal/src/FFTFrameKissFFT.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC11AD6225900D19E38 /* FFTFrameStub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameStub.cpp; path = ../src/internal/src/FFTFrameStub.cpp; sourceTree = SOURCE_ROOT; };
 		08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFDatabase.cpp; path = ../src/internal/src/HRTFDatabase.cpp; sourceTree = SOURCE_ROOT; };
 		08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFDatabaseLoader.cpp; path = ../src/internal/src/HRTFDatabaseLoader.cpp; sourceTree = SOURCE_ROOT; };
 		08650BC41AD6225900D19E38 /* HRTFElevation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFElevation.cpp; path = ../src/internal/src/HRTFElevation.cpp; sourceTree = SOURCE_ROOT; };
@@ -676,7 +674,6 @@
 				08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */,
 				08650BBF1AD6225900D19E38 /* FFTFrame.cpp */,
 				08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */,
-				08650BC11AD6225900D19E38 /* FFTFrameStub.cpp */,
 				08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */,
 				08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */,
 				08650BC41AD6225900D19E38 /* HRTFElevation.cpp */,
@@ -758,7 +755,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				08650BDF1AD6225900D19E38 /* Cone.cpp in Sources */,
-				08650BEA1AD6225900D19E38 /* FFTFrameStub.cpp in Sources */,
 				08650BD91AD6225900D19E38 /* AudioResampler.cpp in Sources */,
 				08650BE11AD6225900D19E38 /* DelayProcessor.cpp in Sources */,
 				08650BDE1AD6225900D19E38 /* BiquadProcessor.cpp in Sources */,
