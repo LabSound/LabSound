@@ -25,7 +25,7 @@ The engine is packaged as a batteries-included static library meant for integrat
 
 LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback. The repository hosts maintained project files for Visual Studio 2013, Visual Studio 2015, and XCode 7. While not presently maintained, LabSound has been shown to work with other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES). LabSound requires a recent C++11 compiler. 
 
-## Building
+# Building
 
 Users of LabSound are expected to compile LabSound from source. All dependencies are included as source, though libnyquist is a submodule so it is recommended that new users clone the repository with the `--recursive` option. 
 
@@ -33,11 +33,11 @@ Users of LabSound are expected to compile LabSound from source. All dependencies
 
 LabSound is bundled with approximately 20 single-file samples. Platform-specific files for the example project can be found in the `examples\` subfolder. Generally, one might take any WebAudio JavaScript sample code and transliterate it to LabSound with only mild effort (modulo obvious architectual considerations of JavaScript vs C++).
 
-## Using the Library
+# Using the Library
 
-For convenience, `LabSound.h` is used as an index header file with all public nodes included for easy application development. Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although both included Visual Studio and XCode projects will build this dependency alongside LabSound. 
+Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although both included Visual Studio and XCode projects will build this dependency alongside LabSound. 
 
-On OSX, new projects require the following frameworks:
+On OSX, new applications also require the following frameworks:
 + Cocoa
 + Accelerate
 + CoreAudio
@@ -45,14 +45,16 @@ On OSX, new projects require the following frameworks:
 + AudioToolbox
 + libnyquist.a
 
-On Windows, new projects require the following libraries: 
+On Windows, new applications also require the following libraries: 
 + dsound.lib
 + dxguid.lib
 + winmm.lib
 + libnyquist.lib
 
+For convenience, `LabSound.h` is used as an index header file with all public nodes included for easy application development. 
+
 LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files. These files should be located in a directory called `hrtf/` in the current working directory of the application. 
 
-## License 
+# License 
 
 LabSound is released under the simplified BSD 2 clause license. All LabSound dependencies are under similar permissive licenses. Further details are located in the `LICENSE` and `COPYING` files. 
