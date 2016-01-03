@@ -61,6 +61,9 @@ For convenience, `LabSound.h` is used as an index header file with all public no
 
 LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files when a `PannerNode` is configured to use `PanningMode::HRTF`. The constructor of `PannerNode` will take an additional path to the sample directory relative to the current working directory, and without a trailing slash.
 
+# WebAudio Compatibility
+The W3C WebAudio specification is listed [at this URL](http://www.w3.org/TR/webaudio/). While LabSound is derived from one of the original WebAudio implementations, it does not aim to maintain full API compatibility with the spec. In many cases, LabSound has deliberately deviated from the spec for performance or usability reasons. This is expected to continue into the future as new functionality is added to the engine.
+
 # License 
 
 LabSound is released under the simplified BSD 2 clause license. All LabSound dependencies are under similar permissive licenses. Further details are located in the `LICENSE` and `COPYING` files. 
