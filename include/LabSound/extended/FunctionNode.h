@@ -35,6 +35,9 @@ namespace lab
         
         std::function<void(ContextRenderLock& r, FunctionNode *self,
                            int channel, float* values, size_t framesToProcess)> _function;
+        
+        int numChannels;
+        
         double _now = 0.0;
     };
     

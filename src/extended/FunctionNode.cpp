@@ -10,7 +10,7 @@ using namespace lab;
 
 namespace lab {
     
-    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
+    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate), numChannels(channels)
     {
         //@ tofix - channels needs to be set on this node. quick fix is to setChannelCount at the app layer for the node
         // see Groove.h example file.

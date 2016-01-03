@@ -30,11 +30,13 @@ struct RedAlertApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Red Alert");
             
             sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            sweep->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) 
+            sweep->setChannelCount(g, 1);
+            
+            sweep->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
 
-                double dt = 1.0 / self->sampleRate();
-                double now = fmod(self->now(), 1.2);
+                double dt = 1.0 / me->sampleRate();
+                double now = fmod(me->now(), 1.2f);
                 
                 for (size_t i = 0; i < framesToProcess; ++i) 
                 {
@@ -51,19 +53,26 @@ struct RedAlertApp : public LabSoundExampleApp
                     now += dt;
                 }
             });
+            
             sweep->start(0);
             
             outputGainFunction = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode *self, int channel, float* values, size_t framesToProcess) 
+            outputGainFunction->setChannelCount(g, 1);
+            
+            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
-                double dt = 1.0 / self->sampleRate();
-                double now = fmod(self->now(), 1.2);
+                double dt = 1.0 / me->sampleRate();
+                double now = fmod(me->now(), 1.2f);
                 
-                for (size_t i = 0; i < framesToProcess; ++i) {
+                for (size_t i = 0; i < framesToProcess; ++i)
+                {
                     //0 to 1 in 900 ms with a 1200ms gap in between
                     if (now > 0.9)
+                    {
                         values[i] = 0;
-                    else {
+                    }
+                    else
+                    {
                         values[i] = 0.333f;
                     }
                     
