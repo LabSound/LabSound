@@ -33,8 +33,14 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
 {
     if (searchPath.length())
     {
+        auto stripSlash = [&](const std::string & path) -> std::string
+        {
+            if (path[path.size()-1] == '/' || path[path.size()-1] == '\\')
+                return path.substr(0, path.size()-1);
+            return path;
+        };
         LOG("Initializing HRTF Database");
-        m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(sampleRate, searchPath);
+        m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(sampleRate, stripSlash(searchPath));
     }
     
     m_distanceEffect.reset(new DistanceEffect());
