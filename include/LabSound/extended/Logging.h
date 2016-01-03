@@ -9,7 +9,15 @@
 #include <string>
 #include <iostream>
 
-#define LOG(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__);
+#if defined(_DEBUG) || defined (DEBUG)
+    #define LOG(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__);
+    #define LOG_ERROR(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__)
+    #define LOG_VERBOSE(channel, ...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__)
+#else
+    #define LOG(...)
+    #define LOG_ERROR(channel, ...)
+    #define LOG_VERBOSE(channel, ...)
+#endif
 
 void LabSoundLog(const char* file, int line, const char* fmt, ...);
 void LabSoundAssertLog(const char* file, int line, const char * function, const char * assertion);

@@ -48,8 +48,4 @@ CRASH() ;                                                       \
 
 #define ASSERT_WITH_SECURITY_IMPLICATION(assertion) ASSERT(assertion)
 
-#define LOG_ERROR(...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__)
-
-#define LOG_VERBOSE(channel, ...) LabSoundLog(__FILE__, __LINE__, __VA_ARGS__)
-
 #endif
