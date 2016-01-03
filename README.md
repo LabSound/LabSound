@@ -1,6 +1,6 @@
 # LabSound
 
-[![Build Status](https://travis-ci.org/ddiakopoulos/LabSound.svg?branch=master)](https://travis-ci.org/ddiakopoulos/LabSound)
+[![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
 
 LabSound is a graph-based audio engine built in modern C++11. As a fork of the WebAudio implementation in Chrome (Webkit), LabSound implements the WebAudio API specification while extending it with new features, nodes, bugfixes, and performance improvements. 
 
