@@ -1,4 +1,6 @@
-# LabSound
+<p align="center">
+  <img src="https://raw.githubusercontent.com/LabSound/LabSound/master/assets/images/labsound_4x3.png"/>
+</p>
 
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
 
