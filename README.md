@@ -59,7 +59,7 @@ On Windows, new applications also require the following libraries:
 
 For convenience, `LabSound.h` is used as an index header file with all public nodes included for easy application development. 
 
-LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files when a `PannerNode` is configured to use `PanningMode::HRTF`. The constructor of `PannerNode` will take an additional path to the sample directory relative to the current working directory, and without a trailing slash.
+LabSound includes an HRTF implementation. This creates an additional dependency on a folder of impulse wav files when a `PannerNode` is configured to use `PanningMode::HRTF`. The constructor of `PannerNode` will take an additional path to the sample directory relative to the current working directory.
 
 # WebAudio Compatibility
 
