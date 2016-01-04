@@ -72,8 +72,7 @@ void AudioNode::setNodeType(NodeType type)
 
 void AudioNode::lazyInitialize()
 {
-    if (!isInitialized())
-        initialize();
+    if (!isInitialized()) initialize();
 }
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
@@ -89,16 +88,14 @@ void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
 {
-    if (i < m_inputs.size())
-        return m_inputs[i];
+    if (i < m_inputs.size()) return m_inputs[i];
     return 0;
 }
 
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
-    if (i < m_outputs.size())
-        return m_outputs[i];
+    if (i < m_outputs.size()) return m_outputs[i];
     return 0;
 }
 
@@ -114,7 +111,6 @@ void AudioNode::connect(AudioContext * context, AudioNode * destination, unsigne
     
     // &&& no need to defer this any more? If so remove connect from context and context from connect param list
     context->connect(input, output);
-
 }
 
 void AudioNode::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
@@ -191,33 +187,39 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
     }
 }
     
-void AudioNode::processIfNecessary(ContextRenderLock& r, size_t framesToProcess)
+void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
     if (!isInitialized())
         return;
     
     auto ac = r.context();
-    if (!ac)
-        return;
+    if (!ac) return;
     
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
     // The first time we're called during this time slice we process, but after that we don't want to re-process,
     // instead our output(s) will already have the results cached in their bus;
     double currentTime = ac->currentTime();
-    if (m_lastProcessingTime != currentTime) {
+    if (m_lastProcessingTime != currentTime)
+    {
         m_lastProcessingTime = currentTime; // important to first update this time because of feedback loops in the rendering graph
 
         pullInputs(r, framesToProcess);
 
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
+        {
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
+        }
 
         bool ps = propagatesSilence(r.context()->currentTime());
+        
         if (silentInputs && ps)
+        {
             silenceOutputs(r);
-        else {
+        }
+        else
+        {
             process(r, framesToProcess);
             unsilenceOutputs(r);
         }
@@ -303,6 +305,7 @@ void AudioNode::printNodeCounts()
         { NodeTypeDynamicsCompressor, "NodeTypeDynamicsCompressor" },
         { NodeTypeWaveShaper, "NodeTypeWaveShaper" },
         
+        // @tofix - node type function
         { NodeTypeADSR, "NodeTypeADSR" },
         { NodeTypeClip, "NodeTypeClip" },
         { NodeTypeDiode, "NodeTypeDiode" },

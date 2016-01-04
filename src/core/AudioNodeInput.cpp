@@ -181,7 +181,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     }
     
     // Handle multiple connections case
-    sumAllConnections(r, internalSummingBus, framesToProcess);
+    //sumAllConnections(r, internalSummingBus, framesToProcess);
     
     return internalSummingBus;
 }

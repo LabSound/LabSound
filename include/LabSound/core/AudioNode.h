@@ -164,7 +164,7 @@ public:
     void unsilenceOutputs(ContextRenderLock&);
 
     unsigned long channelCount();
-    virtual void setChannelCount(ContextGraphLock&, unsigned long);
+    virtual void setChannelCount(ContextGraphLock & g, unsigned long count);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
@@ -176,8 +176,8 @@ protected:
     
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
-    void addInput(std::unique_ptr<AudioNodeInput>);
-    void addOutput(std::unique_ptr<AudioNodeOutput>);
+    void addInput(std::unique_ptr<AudioNodeInput> input);
+    void addOutput(std::unique_ptr<AudioNodeOutput> output);
     
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.

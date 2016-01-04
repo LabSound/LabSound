@@ -19,13 +19,14 @@ namespace lab
         FunctionNode(float sampleRate, int channels);
         virtual ~FunctionNode();
         
-        void setFunction(std::function<void(ContextRenderLock&, FunctionNode*, int, float*, size_t)> fn)
+        // @tofix - should this be protected with a mutex?
+        void setFunction(std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * buffer, size_t frames)> fn)
         {
             _function = fn;
         }
         
-        virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock&) override;
+        virtual void process(ContextRenderLock & r, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock & r) override;
         
         double now() const { return _now; }
         
@@ -33,10 +34,7 @@ namespace lab
         
         virtual bool propagatesSilence(double now) const override;
         
-        std::function<void(ContextRenderLock& r, FunctionNode *self,
-                           int channel, float* values, size_t framesToProcess)> _function;
-        
-        int numChannels;
+        std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)> _function;
         
         double _now = 0.0;
     };

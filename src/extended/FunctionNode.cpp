@@ -2,18 +2,21 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioNodeInput.h"
+
 #include "LabSound/extended/FunctionNode.h"
+#include "LabSound/extended/AudioContextLock.h"
+
 #include "internal/AudioBus.h"
 
 using namespace std;
 using namespace lab;
 
-namespace lab {
+namespace lab
+{
     
-    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate), numChannels(channels)
+    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
     {
-        //@ tofix - channels needs to be set on this node. quick fix is to setChannelCount at the app layer for the node
-        // see Groove.h example file.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
         initialize();
     }
@@ -23,11 +26,11 @@ namespace lab {
         uninitialize();
     }
     
-    void FunctionNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
     {
-        AudioBus* outputBus = output(0)->bus(r);
-        
-        if (!isInitialized() || !outputBus->numberOfChannels() || !_function) 
+        AudioBus * outputBus = output(0)->bus(r);
+
+        if (!isInitialized() || !outputBus->numberOfChannels() || !_function)
         {
             outputBus->zero();
             return;
@@ -37,26 +40,25 @@ namespace lab {
         size_t nonSilentFramesToProcess;
         
         updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
-        
+
         if (!nonSilentFramesToProcess) 
         {
             outputBus->zero();
             return;
         }
 
-        for (size_t i = 0; i < channelCount(); ++i) 
+        for (size_t i = 0; i < outputBus->numberOfChannels(); ++i)
         {
             float * destP = outputBus->channel(i)->mutableData();
             
             // Start rendering at the correct offset.
             destP += quantumFrameOffset;
             int n = nonSilentFramesToProcess;
-            
+
             _function(r, this, i, destP, n);
         }
 
         _now += double(framesToProcess) / sampleRate();
-
         outputBus->clearSilentFlag();
     }
     
@@ -71,4 +73,3 @@ namespace lab {
     }
     
 } // namespace lab
-

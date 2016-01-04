@@ -30,11 +30,8 @@ struct RedAlertApp : public LabSoundExampleApp
             ContextRenderLock r(context, "Red Alert");
             
             sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            sweep->setChannelCount(g, 1);
-            
             sweep->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
-
                 double dt = 1.0 / me->sampleRate();
                 double now = fmod(me->now(), 1.2f);
                 
@@ -57,9 +54,7 @@ struct RedAlertApp : public LabSoundExampleApp
             sweep->start(0);
             
             outputGainFunction = std::make_shared<FunctionNode>(context->sampleRate(), 1);
-            outputGainFunction->setChannelCount(g, 1);
-            
-            outputGainFunction->setFunction([](ContextRenderLock& r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
+            outputGainFunction->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
                 double dt = 1.0 / me->sampleRate();
                 double now = fmod(me->now(), 1.2f);
@@ -79,6 +74,7 @@ struct RedAlertApp : public LabSoundExampleApp
                     now += dt;
                 }
             });
+            
             outputGainFunction->start(0);
 
             osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
