@@ -21,7 +21,6 @@ const float kHighThreshold = 1.0f;
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, unsigned numberOfOutputChannels, float sampleRate)
 {
-    //@tofix: numberOfOutputChannels
     return new AudioDestinationWin(callback, sampleRate);
 }
 
@@ -62,7 +61,10 @@ void AudioDestinationWin::configure()
     parameters.deviceId = dac.getDefaultOutputDevice();
     parameters.nChannels = 2;
     parameters.firstChannel = 0;
-    unsigned int sampleRate = unsigned int ( hardwareSampleRate() );
+    unsigned int sampleRate = unsigned int (hardwareSampleRate());
+
+	auto deviceInfo = dac.getDeviceInfo(parameters.deviceId);
+	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
