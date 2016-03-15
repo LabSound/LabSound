@@ -265,14 +265,14 @@ void AudioContext::update(ContextGraphLock& g)
         {
             if (i.connect)
             {
-                LOG("Connect from: %p", i.from.get());
-                LOG("Connect to: %p", i.to.get());
+                //LOG("Connect from: %p", i.from.get());
+                //LOG("Connect to: %p", i.to.get());
                 AudioNodeInput::connect(g, i.from, i.to);
             }
             else
             {
-                LOG("Disconnect from: %p", i.from.get());
-                LOG("Disconnect to: %p", i.to.get());
+                //LOG("Disconnect from: %p", i.from.get());
+                //LOG("Disconnect to: %p", i.to.get());
                 AudioNodeOutput::disconnectAll(g, i.to); // Params + Inputs
             }
         }
