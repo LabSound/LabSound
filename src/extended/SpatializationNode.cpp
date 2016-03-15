@@ -13,15 +13,15 @@ namespace lab
     namespace 
     {
         // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-        float distanceFromPointToLine(const ::FloatPoint3D& x0, const ::FloatPoint3D& x1, const ::FloatPoint3D& x2, float& t)
+        float distanceFromPointToLine(const FloatPoint3D& x0, const FloatPoint3D& x1, const FloatPoint3D& x2, float& t)
         {
-            ::FloatPoint3D x2x1 = x2 - x1;
-            ::FloatPoint3D x1x0 = x1 - x0;
+            FloatPoint3D x2x1 = x2 - x1;
+            FloatPoint3D x1x0 = x1 - x0;
             float l = magnitude(x2x1);
             t = dot(-x1x0, x2x1) / (l * l);
             
-            ::FloatPoint3D x0x1 = x0 - x1;
-            ::FloatPoint3D x0x2 = x0 - x2;
+            FloatPoint3D x0x1 = x0 - x1;
+            FloatPoint3D x0x2 = x0 - x2;
             float d = magnitude(cross(x0x1, x0x2)) / magnitude(x2x1);
             return d;
         }
@@ -40,12 +40,12 @@ namespace lab
             occluders.erase(i);
     }
     
-    float Occluders::occlusion(const FloatPoint3D& sourcePos, const FloatPoint3D& listenerPos) const
+    float Occluders::occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & listenerPos) const
     {
         float occlusionAttenuation = 1.0f;
         for (auto i : occluders)
         {
-            ::FloatPoint3D occPos(i.second.x, i.second.y, i.second.z);
+            FloatPoint3D occPos(i.second.x, i.second.y, i.second.z);
             
             float t;
             float d = distanceFromPointToLine(occPos, listenerPos, sourcePos, t);
