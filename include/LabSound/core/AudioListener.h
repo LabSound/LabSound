@@ -10,59 +10,54 @@
 namespace lab 
 {
 
-// AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
-class AudioListener 
-{
-public:
-
-    AudioListener()
+    // AudioListener maintains the state of the listener in the audio scene as defined in the OpenAL specification.
+    class AudioListener 
     {
+        // Position / Orientation
+        FloatPoint3D m_position = {0, 0, 0};
+        FloatPoint3D m_orientation {0, 0, 0};
+        FloatPoint3D m_upVector = {0, 1, 0};
 
-    }
+        FloatPoint3D m_velocity = {0, 0, 0};
 
-    // Position
-    void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
-    void setPosition(const FloatPoint3D &position) { m_position = position; }
-    const FloatPoint3D & position() const { return m_position; }
+        double m_dopplerFactor = 1.0;
+        double m_speedOfSound = 343.3;
 
-    // Orientation
-    void setOrientation(float x, float y, float z, float upX, float upY, float upZ)
-    {
-        setOrientation(FloatPoint3D(x, y, z));
-        setUpVector(FloatPoint3D(upX, upY, upZ));
-    }
-    void setOrientation(const FloatPoint3D &orientation) { m_orientation = orientation; }
-    const FloatPoint3D& orientation() const { return m_orientation; }
+    public:
 
-    // Up-vector
-    void setUpVector(const FloatPoint3D &upVector) { m_upVector = upVector; }
-    const FloatPoint3D& upVector() const { return m_upVector; }
+        AudioListener() {}
 
-    // Velocity
-    void setVelocity(float x, float y, float z) { setVelocity(FloatPoint3D(x, y, z)); }
-    void setVelocity(const FloatPoint3D &velocity) { m_velocity = velocity; }
-    const FloatPoint3D& velocity() const { return m_velocity; }
+        // Position
+        void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
+        void setPosition(const FloatPoint3D &position) { m_position = position; }
+        const FloatPoint3D & position() const { return m_position; }
 
-    // Doppler factor
-    void setDopplerFactor(double dopplerFactor) { m_dopplerFactor = dopplerFactor; }
-    double dopplerFactor() const { return m_dopplerFactor; }
+        // Orientation
+        void setOrientation(float x, float y, float z, float upX, float upY, float upZ)
+        {
+            setOrientation(FloatPoint3D(x, y, z));
+            setUpVector(FloatPoint3D(upX, upY, upZ));
+        }
+        void setOrientation(const FloatPoint3D &orientation) { m_orientation = orientation; }
+        const FloatPoint3D& orientation() const { return m_orientation; }
 
-    // Speed of sound
-    void setSpeedOfSound(double speedOfSound) { m_speedOfSound = speedOfSound; }
-    double speedOfSound() const { return m_speedOfSound; }
+        // Up-vector
+        void setUpVector(const FloatPoint3D &upVector) { m_upVector = upVector; }
+        const FloatPoint3D& upVector() const { return m_upVector; }
 
-private:
+        // Velocity
+        void setVelocity(float x, float y, float z) { setVelocity(FloatPoint3D(x, y, z)); }
+        void setVelocity(const FloatPoint3D &velocity) { m_velocity = velocity; }
+        const FloatPoint3D& velocity() const { return m_velocity; }
 
-    // Position / Orientation
-    FloatPoint3D m_position = {0, 0, 0};
-    FloatPoint3D m_orientation {0, 0, -1};
-    FloatPoint3D m_upVector = {0, 1, 0};
+        // Doppler factor
+        void setDopplerFactor(double dopplerFactor) { m_dopplerFactor = dopplerFactor; }
+        double dopplerFactor() const { return m_dopplerFactor; }
 
-    FloatPoint3D m_velocity = {0, 0, 0};
-
-    double m_dopplerFactor = 1.0;
-    double m_speedOfSound = 343.3;
-};
+        // Speed of sound
+        void setSpeedOfSound(double speedOfSound) { m_speedOfSound = speedOfSound; }
+        double speedOfSound() const { return m_speedOfSound; }
+    };
 
 } // lab
 

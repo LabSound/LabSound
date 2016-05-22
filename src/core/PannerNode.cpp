@@ -53,7 +53,7 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
     m_coneGain = std::make_shared<AudioParam>("coneGain", 1.0, 0.0, 1.0);
 
     m_position = FloatPoint3D(0, 0, 0);
-    m_orientation = FloatPoint3D(1, 0, 0);
+    m_orientation = FloatPoint3D(0, 0, 0);
     m_velocity = FloatPoint3D(0, 0, 0);
 
     // Node-specific default mixing rules.
@@ -245,15 +245,11 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     sourceListener = normalize(sourceListener);
 
     // Align axes
-    FloatPoint3D listenerFront = listener(r)->orientation();
+    FloatPoint3D listenerFront = normalize(listener(r)->orientation());
     FloatPoint3D listenerUp = listener(r)->upVector();
-    FloatPoint3D listenerRight = cross(listenerFront, listenerUp);
-    listenerRight = normalize(listenerRight);
+    FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
 
-    FloatPoint3D listenerFrontNorm = listenerFront;
-    listenerFrontNorm = normalize(listenerFrontNorm);
-
-    FloatPoint3D up = cross(listenerRight, listenerFrontNorm);
+    FloatPoint3D up = cross(listenerRight, listenerFront);
 
     float upProjection = dot(sourceListener, up);
 
@@ -263,8 +259,8 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / piDouble;
     fixNANs(azimuth); // avoid illegal values
 
-    // Source  in front or behind the listener
-    double frontBack = dot(projectedSource, listenerFrontNorm);
+    // Source in front or behind the listener
+    double frontBack = dot(projectedSource, listenerFront);
     if (frontBack < 0.0)
         azimuth = 360.0 - azimuth;
 
