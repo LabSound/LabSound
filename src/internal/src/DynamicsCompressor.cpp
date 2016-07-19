@@ -7,7 +7,7 @@
 #include "internal/AudioBus.h"
 #include "internal/AudioUtilities.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 namespace lab {
 

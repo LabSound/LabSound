@@ -8,7 +8,7 @@
 #include "LabSound/core/Mixing.h"
 
 #include <algorithm>
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 // Use a 50ms smoothing / de-zippering time-constant.
 const float SmoothingTimeConstant = 0.050f;

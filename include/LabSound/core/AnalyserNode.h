@@ -8,7 +8,7 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 
 //@fixme this node is actually extended
-#include "LabSound/Extended/RealtimeAnalyser.h"
+#include "LabSound/extended/RealtimeAnalyser.h"
 
 namespace lab {
 

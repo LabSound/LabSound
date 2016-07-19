@@ -12,7 +12,7 @@
 #include "internal/FloatConversion.h"
 #include "internal/AudioBus.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 #include <algorithm>
 
 using namespace lab;

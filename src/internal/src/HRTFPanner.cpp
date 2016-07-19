@@ -9,7 +9,7 @@
 #include "internal/HRTFDatabaseLoader.h"
 
 #include <algorithm>
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 using namespace std;
 

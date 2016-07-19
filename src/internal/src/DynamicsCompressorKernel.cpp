@@ -8,7 +8,7 @@
 
 #include <memory>
 #include <algorithm>
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 using namespace std;
 

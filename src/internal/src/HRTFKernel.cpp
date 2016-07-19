@@ -8,7 +8,7 @@
 #include "internal/FFTFrame.h"
 #include "internal/FloatConversion.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 using namespace std;
 

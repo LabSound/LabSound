@@ -10,7 +10,7 @@
 #include "internal/ConfigMacros.h"
 
 #include <math.h>
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 #if OS(DARWIN)
 using namespace std;

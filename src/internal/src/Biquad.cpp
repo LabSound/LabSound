@@ -5,7 +5,7 @@
 #include "internal/Biquad.h"
 #include "internal/DenormalDisabler.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 #include <algorithm>
 #include <stdio.h>
