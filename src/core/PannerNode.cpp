@@ -18,7 +18,7 @@
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ namespace lab {
 
 static void fixNANs(double & x)
 {
-    if (isnan(x) || isinf(x)) x = 0.0;
+    if (std::isnan(double(x)) || std::isinf(x)) x = 0.0;
 }
 
 PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : AudioNode(sampleRate), m_panningModel(PanningMode::EQUALPOWER)

@@ -6,7 +6,7 @@
 #include "internal/AudioBus.h"
 
 #include <algorithm>
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 using namespace std;
  
@@ -86,7 +86,7 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
 
 void AudioResampler::setRate(double rate)
 {
-    if (isnan(rate) || isinf(rate) || rate <= 0.0)
+    if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0)
         return;
     
     m_rate = min(AudioResampler::MaxRate, rate);

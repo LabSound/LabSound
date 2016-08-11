@@ -10,7 +10,7 @@
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 
-#include <wtf/MathExtras.h>
+#include <WTF/MathExtras.h>
 
 #include <algorithm>
 #include <limits.h>
