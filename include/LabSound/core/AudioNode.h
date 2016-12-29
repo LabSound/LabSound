@@ -170,6 +170,9 @@ public:
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelCountMode);
 
+    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
+
+
 protected:
 
     // Inputs and outputs must be created before the AudioNode is initialized.
