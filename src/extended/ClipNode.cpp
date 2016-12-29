@@ -18,13 +18,13 @@
 
 using namespace lab;
 
-namespace lab 
+namespace lab
 {
 
     /////////////////////////////////////
     // Prviate ClipNode Implementation //
     /////////////////////////////////////
-    
+
     class ClipNode::ClipNodeInternal : public lab::AudioProcessor {
     public:
 
@@ -58,17 +58,17 @@ namespace lab
                 gainValues.resize(framesToProcess);
 
             unsigned numChannels = numberOfChannels();
-            
+
             if (mode == ClipNode::TANH)
             {
                 float outputGain = aVal->value(r);
                 float inputGain = bVal->value(r);
-                
+
                 for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
                 {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
-                    
+
                     float * destination = destinationBus->channel(channelIndex)->mutableData();
                     for (size_t i = 0; i < framesToProcess; ++i)
                     {
@@ -76,28 +76,28 @@ namespace lab
                     }
                 }
             }
-            
+
             else
             {
                 float minf = aVal->value(r);
                 float maxf = bVal->value(r);
-                
+
                 for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
                 {
                     if (sourceBus->numberOfChannels() == numChannels)
                         source = sourceBus->channel(channelIndex)->data();
-                    
+
                     float * destination = destinationBus->channel(channelIndex)->mutableData();
-                    
+
                     for (size_t i = 0; i < framesToProcess; ++i)
                     {
                         float d = source[i];
-                        
+
                         if (d < minf)
                             d = minf;
                         else if (d > maxf)
                             d = maxf;
-                        
+
                         *destination++ = d;
                     }
                 }
@@ -108,33 +108,36 @@ namespace lab
 
         virtual double tailTime() const override { return 0; }
         virtual double latencyTime() const override { return 0; }
-        
+
         ClipNode::Mode mode;
-        
+
         std::shared_ptr<AudioParam> aVal;
         std::shared_ptr<AudioParam> bVal;
-        
+
         std::vector<float> gainValues;
     };
 
     /////////////////////
     // Public ClipNode //
     /////////////////////
-    
+
     ClipNode::ClipNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new ClipNodeInternal(sampleRate));
-        
+
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
-        
+
         setNodeType(lab::NodeType::NodeTypeClip);
+
+        m_params.push_back(internalNode->aVal);
+        m_params.push_back(internalNode->bVal);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
 
         initialize();
     }
-    
+
     ClipNode::~ClipNode()
     {
         uninitialize();

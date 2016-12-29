@@ -42,15 +42,18 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
         LOG("Initializing HRTF Database");
         m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(sampleRate, stripSlash(searchPath));
     }
-    
+
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
 
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-    
+
     m_distanceGain = std::make_shared<AudioParam>("distanceGain", 1.0, 0.0, 1.0);
     m_coneGain = std::make_shared<AudioParam>("coneGain", 1.0, 0.0, 1.0);
+
+    m_params.push_back(m_distanceGain);
+    m_params.push_back(m_coneGain);
 
     m_position = FloatPoint3D(0, 0, 0);
     m_orientation = FloatPoint3D(0, 0, 0);
@@ -60,27 +63,27 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
     m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
-    
+
     setNodeType(NodeTypePanner);
 
     initialize();
 }
 
 PannerNode::~PannerNode()
-{    
+{
     uninitialize();
 }
 
 void PannerNode::initialize()
 {
     if (isInitialized()) return;
-    
-    switch (m_panningModel) 
+
+    switch (m_panningModel)
     {
-        case PanningMode::EQUALPOWER: 
+        case PanningMode::EQUALPOWER:
             m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
             break;
-        case PanningMode::HRTF: 
+        case PanningMode::HRTF:
             m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
             break;
         default:
@@ -94,7 +97,7 @@ void PannerNode::uninitialize()
 {
     if (!isInitialized())
         return;
-        
+
     m_panner.reset();
 
     AudioNode::uninitialize();
@@ -108,8 +111,8 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 
     if (!ac)
         return;
-    
-    if (m_connectionCount != ac->connectionCount()) 
+
+    if (m_connectionCount != ac->connectionCount())
     {
         m_connectionCount = ac->connectionCount();
         // Recursively go through all nodes connected to us.
@@ -123,7 +126,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     AudioBus* destination = output(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected() || !m_panner.get()) 
+    if (!isInitialized() || !input(0)->isConnected() || !m_panner.get())
     {
         destination->zero();
         return;
@@ -131,7 +134,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     AudioBus* source = input(0)->bus(r);
 
-    if (!source) 
+    if (!source)
     {
         destination->zero();
         return;
@@ -164,7 +167,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     // Snap to desired gain at the beginning.
     if (m_lastGain == -1.0)
         m_lastGain = totalGain;
-        
+
     // Apply gain in-place with de-zippering.
     destination->copyWithGainFrom(*destination, &m_lastGain, totalGain);
 }
@@ -180,25 +183,25 @@ AudioListener * PannerNode::listener(ContextRenderLock& r)
 {
     if (!r.context())
         return nullptr;
-    
+
     return r.context()->listener();
 }
 
 void PannerNode::setPanningModel(PanningMode model)
 {
-    if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF) 
+    if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
         throw std::invalid_argument("Unknown panning model specified");
-    
+
     if (!m_panner.get() || model != m_panningModel)
     {
         m_panningModel = model;
 
-        switch (m_panningModel) 
+        switch (m_panningModel)
         {
-            case PanningMode::EQUALPOWER: 
+            case PanningMode::EQUALPOWER:
                 m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
                 break;
-            case PanningMode::HRTF: 
+            case PanningMode::HRTF:
                 m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
                 break;
             default:
@@ -211,7 +214,7 @@ void PannerNode::setPanningModel(PanningMode model)
 
 void PannerNode::setDistanceModel(unsigned short model)
 {
-    switch (model) 
+    switch (model)
     {
         case DistanceEffect::ModelLinear:
         case DistanceEffect::ModelInverse:
@@ -292,7 +295,7 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
     // FIXME: optimize for case when neither source nor listener has changed...
     double dopplerFactor = listener(r)->dopplerFactor();
 
-    if (dopplerFactor > 0.0) 
+    if (dopplerFactor > 0.0)
     {
         double speedOfSound = listener(r)->speedOfSound();
 
@@ -303,7 +306,7 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
         bool sourceHasVelocity = !is_zero(sourceVelocity);
         bool listenerHasVelocity = !is_zero(listenerVelocity);
 
-        if (sourceHasVelocity || listenerHasVelocity) 
+        if (sourceHasVelocity || listenerHasVelocity)
         {
             // Calculate the source to listener vector
             FloatPoint3D listenerPosition = listener(r)->position();
@@ -328,7 +331,7 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
             if (dopplerShift > 16.0)
                 dopplerShift = 16.0;
             else if (dopplerShift < 0.125)
-                dopplerShift = 0.125;   
+                dopplerShift = 0.125;
         }
     }
 
@@ -342,12 +345,12 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     double listenerDistance = magnitude(m_position - listenerPosition); // "distanceTo"
 
     double distanceGain = m_distanceEffect->gain(listenerDistance);
-    
+
     m_distanceGain->setValue(static_cast<float>(distanceGain));
 
     // FIXME: could optimize by caching coneGain
     double coneGain = m_coneEffect->gain(m_position, m_orientation, listenerPosition);
-    
+
     m_coneGain->setValue(static_cast<float>(coneGain));
 
     return float(distanceGain * coneGain);
@@ -358,9 +361,9 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
     ASSERT(node);
     if (!node)
         return;
-        
+
     // First check if this node is an AudioBufferSourceNode. If so, let it know about us so that doppler shift pitch can be taken into account.
-    if (node->nodeType() == NodeTypeAudioBufferSource) 
+    if (node->nodeType() == NodeTypeAudioBufferSource)
     {
         AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
         bufferSourceNode->setPannerNode(this);
@@ -373,7 +376,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
             auto input = node->input(i);
 
             // For each input, go through all of its connections, looking for AudioBufferSourceNodes.
-            for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j) 
+            for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);
                 AudioNode* connectedNode = connectedOutput->node();

@@ -16,7 +16,7 @@
 
 using namespace lab;
 
-namespace lab 
+namespace lab
 {
 
     //////////////////////////////////////////
@@ -51,26 +51,26 @@ namespace lab
                     i->frequency()->resetSmoothedValue();
                 }
             }
-            
+
             if (cachedDetune != detune->value(r))
             {
                 cachedDetune = detune->value(r);
                 float n = cachedDetune / ((float) saws.size() - 1.0f);
-                for (size_t i = 0; i < saws.size(); ++i) 
+                for (size_t i = 0; i < saws.size(); ++i)
                 {
                     saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
                 }
             }
         }
-        
-        void update(ContextRenderLock& r, bool okayToReallocate) 
+
+        void update(ContextRenderLock& r, bool okayToReallocate)
         {
             int currentN = saws.size();
             int n = int(sawCount->value(r) + 0.5f);
 
-            if (okayToReallocate && (n != currentN)) 
+            if (okayToReallocate && (n != currentN))
             {
-                for (auto i : sawStorage) 
+                for (auto i : sawStorage)
                 {
                     r.context()->disconnect(i);
                 }
@@ -84,9 +84,9 @@ namespace lab
                 for (int i = 0; i < n; ++i)
                     saws.push_back(sawStorage[i].get());
 
-                
+
                 auto c = r.context();
-                for (auto i : sawStorage) 
+                for (auto i : sawStorage)
                 {
                     i->setType(r, OscillatorType::SAWTOOTH);
                     c->connect(i, gainNode);
@@ -96,10 +96,10 @@ namespace lab
                 cachedFrequency = FLT_MAX;
                 cachedDetune = FLT_MAX;
             }
-            
+
             update(r);
         }
-        
+
         std::shared_ptr<ADSRNode> gainNode;
         std::shared_ptr<AudioParam> detune;
         std::shared_ptr<AudioParam> frequency;
@@ -123,6 +123,10 @@ namespace lab
     {
         internalNode.reset(new SupersawNodeInternal(sampleRate));
 
+        m_params.push_back(internalNode->detune);
+        m_params.push_back(internalNode->frequency);
+        m_params.push_back(internalNode->sawCount);
+
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
@@ -136,13 +140,13 @@ namespace lab
         uninitialize();
     }
 
-    void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess) 
+    void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess)
     {
         internalNode->update(r);
 
         AudioBus * outputBus = output(0)->bus(r);
 
-        if (!isInitialized() || !outputBus->numberOfChannels()) 
+        if (!isInitialized() || !outputBus->numberOfChannels())
         {
             outputBus->zero();
             return;
@@ -167,7 +171,7 @@ namespace lab
     std::shared_ptr<AudioParam> SupersawNode::frequency() const { return internalNode->frequency; }
     std::shared_ptr<AudioParam> SupersawNode::sawCount() const { return internalNode->sawCount; }
 
-    void SupersawNode::noteOn(double when)  
+    void SupersawNode::noteOn(double when)
     {
         internalNode->gainNode->noteOn(when);
     }

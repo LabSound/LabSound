@@ -40,13 +40,16 @@ OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
 
     // Use musical pitch standard A440 as a default.
     m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
-    
+
     // Default to no detuning.
     m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
 
+    m_params.push_back(m_frequency);
+    m_params.push_back(m_detune);
+
     // Sets up default wavetable.
     setType(r, m_type);
-    
+
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
@@ -63,7 +66,7 @@ void OscillatorNode::setType(bool isConstructor, OscillatorType type)
     std::shared_ptr<WaveTable> waveTable;
     float sampleRate = this->sampleRate();
 
-    switch (type) 
+    switch (type)
     {
         case OscillatorType::SINE:
             if (!s_waveTableSine)
@@ -88,7 +91,7 @@ void OscillatorNode::setType(bool isConstructor, OscillatorType type)
             break;
         case OscillatorType::TRIANGLE:
             if (!s_waveTableTriangle)
-            {           
+            {
                 s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
             }
             waveTable = s_waveTableTriangle;
@@ -107,7 +110,7 @@ void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type)
     setType(true, type);
 }
 
-    
+
 bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
@@ -126,7 +129,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
     float* phaseIncrements = m_phaseIncrements.data();
 
     float finalScale = m_waveTable->rateScale();
-    
+
     std::shared_ptr<AudioContext> c = r.contextPtr();
 
     if (m_frequency->hasSampleAccurateValues()) {

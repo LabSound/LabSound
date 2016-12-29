@@ -31,6 +31,13 @@ DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sam
     m_attack = make_shared<AudioParam>("attack", 0.003, 0, 1);
     m_release = make_shared<AudioParam>("release", 0.250, 0, 1);
 
+    m_params.push_back(m_threshold);
+    m_params.push_back(m_knee);
+    m_params.push_back(m_ratio);
+    m_params.push_back(m_reduction);
+    m_params.push_back(m_attack);
+    m_params.push_back(m_release);
+
     initialize();
 }
 
@@ -73,7 +80,7 @@ void DynamicsCompressorNode::initialize()
         return;
 
     m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), 2));
-    
+
     AudioNode::initialize();
 }
 
@@ -81,9 +88,9 @@ void DynamicsCompressorNode::uninitialize()
 {
     if (!isInitialized())
         return;
-    
+
     AudioNode::uninitialize();
-    
+
     m_dynamicsCompressor.reset();
 }
 

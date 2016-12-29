@@ -12,7 +12,7 @@
 #include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
-namespace lab 
+namespace lab
 {
 
 GainNode::GainNode(float sampleRate)
@@ -24,13 +24,15 @@ GainNode::GainNode(float sampleRate)
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    
+
+    m_params.push_back(m_gain);
+
     setNodeType(NodeTypeGain);
-    
+
     initialize();
 }
-    
-GainNode::~GainNode() 
+
+GainNode::~GainNode()
 {
     uninitialize();
 }
@@ -85,9 +87,9 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
 
     if (input != this->input(0).get())
         return;
-        
+
     unsigned numberOfChannels = input->numberOfChannels(r);
-    
+
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels())
     {
         // We're already initialized but the channel count has changed.

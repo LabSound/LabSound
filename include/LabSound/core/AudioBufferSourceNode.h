@@ -32,7 +32,7 @@ public:
     // setBuffer() is called on the main thread.  This is the buffer we use for playback.
     // returns true on success.
     bool setBuffer(ContextRenderLock&, std::shared_ptr<AudioBuffer>);
-    
+
     std::shared_ptr<AudioBuffer> buffer() { return m_buffer; }
 
     // numberOfChannels() returns the number of output channels.  This value equals the number of channels from the buffer.
@@ -66,7 +66,7 @@ public:
     void setPannerNode(PannerNode*);
     virtual void clearPannerNode() override;
 
-    // If we are no longer playing, propogate silence ahead to downstream nodes.
+    // If we are no longer playing, propagate silence ahead to downstream nodes.
     virtual bool propagatesSilence(double now) const override;
 
 private:
@@ -93,7 +93,7 @@ private:
     // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
     // If true, it will wrap around to the start of the buffer each time it reaches the end.
     bool m_isLooping;
-    
+
     bool m_startRequested;
     double m_requestWhen;
     double m_requestGrainOffset;

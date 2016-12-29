@@ -24,10 +24,10 @@ namespace lab
     /////////////////////////////////////////
     // Prviate PeakCompNode Implementation //
     /////////////////////////////////////////
-    
+
     class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
     {
-        
+
     public:
 
         PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
@@ -38,7 +38,7 @@ namespace lab
             m_release = std::make_shared<AudioParam>("release", 0.001f, 0, 1000);
             m_makeup = std::make_shared<AudioParam>("makeup", 0, 0, 60);
             m_knee = std::make_shared<AudioParam>("knee", 0, 0, 1);
-            
+
             for (int i = 0; i < 2; i++)
             {
                 kneeRecursive[i] = 0.;
@@ -52,7 +52,7 @@ namespace lab
         }
 
         virtual ~PeakCompNodeInternal() { }
-        
+
         virtual void initialize() override { }
 
         virtual void uninitialize() override { }
@@ -64,7 +64,7 @@ namespace lab
         {
             if (!numberOfChannels())
                 return;
-            
+
             // copy attributes to run time variables
             float v = m_threshold->value(r);
             if (v <= 0) {
@@ -109,10 +109,10 @@ namespace lab
             // calc coefficients from run time vars
             kneeCoeffs = expf(0. - (oneOverSampleRate / knee));
             kneeCoeffsMinus = 1. - kneeCoeffs;
-            
+
             attackCoeffs = expf(0. - (oneOverSampleRate / attack));
             attackCoeffsMinus = 1. - attackCoeffs;
-            
+
             releaseCoeff = expf(0. - (oneOverSampleRate / release));
             releaseCoeffMinus = 1. - releaseCoeff;
 
@@ -126,7 +126,7 @@ namespace lab
                 else
                     source[i] = sourceBus->channel(0)->data();
             }
-            
+
             float * dest[16];
             for (unsigned int i = 0; i < numChannels; ++i)
                 dest[i] = destinationBus->channel(i)->mutableData();
@@ -140,10 +140,10 @@ namespace lab
                 }
                 // Release recursive
                 releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, float(releaseRecursive[1])));
-                
+
                 // Attack recursive
                 attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
-                
+
                 // Knee smoothening and gain reduction
                 kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);
 
@@ -152,7 +152,7 @@ namespace lab
                     dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;
                 }
             }
-            
+
             releaseRecursive[1] = releaseRecursive[0];
             attackRecursive[1] = attackRecursive[0];
             kneeRecursive[1] = kneeRecursive[0];
@@ -160,7 +160,7 @@ namespace lab
 
         float internalSampleRate;
         double oneOverSampleRate;
-        
+
         // Arrays for delay lines
         double kneeRecursive[2];
         double attackRecursive[2];
@@ -170,14 +170,14 @@ namespace lab
         double release;
         double ratio;
         double threshold;
-        
+
         double knee;
         double kneeCoeffs;
         double kneeCoeffsMinus;
-        
+
         double attackCoeffs;
         double attackCoeffsMinus;
-        
+
         double releaseCoeff;
         double releaseCoeffMinus;
 
@@ -203,28 +203,35 @@ namespace lab
     std::shared_ptr<AudioParam> PeakCompNode::release() const { return internalNode->m_release; }
     std::shared_ptr<AudioParam> PeakCompNode::makeup() const { return internalNode->m_makeup; }
     std::shared_ptr<AudioParam> PeakCompNode::knee() const { return internalNode->m_knee; }
-    
+
     /////////////////////////
     // Public PeakCompNode //
     /////////////////////////
-    
+
     PeakCompNode::PeakCompNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new PeakCompNodeInternal(sampleRate));
 
         internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
-        
+
+        m_params.push_back(internalNode->m_threshold);
+        m_params.push_back(internalNode->m_ratio);
+        m_params.push_back(internalNode->m_attack);
+        m_params.push_back(internalNode->m_release);
+        m_params.push_back(internalNode->m_makeup);
+        m_params.push_back(internalNode->m_knee);
+
         setNodeType(lab::NodeType::NodeTypePeakComp);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); // 2 stereo
-        
+
         initialize();
     }
-    
+
     PeakCompNode::~PeakCompNode()
     {
         uninitialize();
     }
-    
+
 } // End namespace lab

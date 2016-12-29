@@ -20,9 +20,9 @@
 
 #define DEBUG_AUDIONODE_REFERENCES 1
 
-namespace lab 
+namespace lab
 {
-    
+
 enum PanningMode
 {
     EQUALPOWER = 10,
@@ -48,7 +48,7 @@ enum NodeType
     NodeTypeAnalyser,
     NodeTypeDynamicsCompressor,
     NodeTypeWaveShaper,
-    
+
     // Labsound Extensions
     NodeTypeADSR,
     NodeTypeClip,
@@ -65,35 +65,33 @@ enum NodeType
     NodeTypeSupersaw,
     NodeTypeSTK,
     NodeTypeBPMDelay,
-    
+
     NodeTypeEnd,
 };
-    
+
 class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
 class ContextGraphLock;
 class ContextRenderLock;
-    
+
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.
 // An AudioDestinationNode has one input and no outputs and represents the final destination to the audio hardware.
 // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
-class AudioNode 
+class AudioNode
 {
-
 public:
-
-    enum 
-    { 
+    enum
+    {
         ProcessingSizeInFrames = 128
     };
-    
+
     AudioNode(float sampleRate);
     virtual ~AudioNode();
-    
+
     NodeType nodeType() const { return m_nodeType; }
     void setNodeType(NodeType);
 
@@ -152,7 +150,7 @@ public:
     // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
     virtual double tailTime() const = 0;
     // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
-    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For 
+    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
     // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
     virtual double latencyTime() const = 0;
 
@@ -173,23 +171,23 @@ public:
     void setChannelInterpretation(ChannelCountMode);
 
 protected:
-    
+
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput> input);
     void addOutput(std::unique_ptr<AudioNodeOutput> output);
-    
+
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
     virtual void pullInputs(ContextRenderLock&, size_t framesToProcess);
-    
+
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock&);
-    
+
 private:
     friend class AudioContext;
-    
+
     volatile bool m_isInitialized;
     NodeType m_nodeType;
     float m_sampleRate;
@@ -202,15 +200,17 @@ private:
 
     // Ref-counting
     std::atomic<int> m_connectionRefCount;
-    
+
     bool m_isMarkedForDeletion;
-    
+
 #if DEBUG_AUDIONODE_REFERENCES
     static bool s_isNodeCountInitialized;
     static int s_nodeCount[NodeTypeEnd];
 #endif
-    
+
 protected:
+    std::vector<std::shared_ptr<AudioParam>> m_params;
+
     unsigned m_channelCount;
     ChannelCountMode m_channelCountMode;
     ChannelInterpretation m_channelInterpretation;

@@ -161,13 +161,13 @@
 
 
  ----------------------
- 
+
  http://www.drpetter.se
- 
+
  drpetter@gmail.com
- 
+
  ----------------------
- 
+
 */
 
 #include "LabSound/core/AudioNodeOutput.h"
@@ -187,7 +187,7 @@ using namespace std;
 using namespace lab;
 using namespace lab;
 
-inline uint32_t rnd(uint32_t n) 
+inline uint32_t rnd(uint32_t n)
 {
     if (n == 1)
         return ((rand() & 0x7fff) > 0x3fff) ? 1 : 0;
@@ -616,10 +616,34 @@ namespace lab {
         _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", 0, 0, 1);
         _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", 0, -1, 1);
 
+        m_params.push_back(_waveType);
+        m_params.push_back(_attack);
+        m_params.push_back(_sustainTime);
+        m_params.push_back(_sustainPunch);
+        m_params.push_back(_startFrequency);
+        m_params.push_back(_minFrequency);
+        m_params.push_back(_decayTime);
+        m_params.push_back(_slide);
+        m_params.push_back(_deltaSlide);
+        m_params.push_back(_vibratoDepth);
+        m_params.push_back(_vibratoSpeed);
+        m_params.push_back(_changeAmount);
+        m_params.push_back(_changeSpeed);
+        m_params.push_back(_squareDuty);
+        m_params.push_back(_dutySweep);
+        m_params.push_back(_repeatSpeed);
+        m_params.push_back(_phaserOffset);
+        m_params.push_back(_phaserSweep);
+        m_params.push_back(_lpFilterCutoff);
+        m_params.push_back(_lpFilterCutoffSweep);
+        m_params.push_back(_lpFiterResonance);
+        m_params.push_back(_hpFilterCutoff);
+        m_params.push_back(_hpFilterCutoffSweep);
+
         sfxr->ResetParams();
         sfxr->ResetSample(true);
         sfxr->PlaySample();
-        
+
         initialize();
     }
 
@@ -689,7 +713,7 @@ namespace lab {
 
         UPDATE(float, p_pha_offset, _phaserOffset)
         UPDATE(float, p_pha_ramp, _phaserSweep)
-        
+
         UPDATE(float, p_repeat_speed, _repeatSpeed)
         UPDATE(float, p_arp_speed, _changeSpeed)
         UPDATE(float, p_arp_mod, _changeAmount)
@@ -721,7 +745,7 @@ namespace lab {
     {
         return !isPlayingOrScheduled() || hasFinished();
     }
-    
+
 
 #pragma mark ____________________________________
 #pragma mark Some default sounds

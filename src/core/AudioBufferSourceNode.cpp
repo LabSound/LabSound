@@ -48,6 +48,9 @@ AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
 
+    m_params.push_back(m_gain);
+    m_params.push_back(m_playbackRate);
+
     // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
@@ -78,24 +81,24 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
     if (m_startRequested) {
         // Do sanity checking of grain parameters versus buffer size.
         double bufferDuration = buffer()->duration();
-        
+
         double grainOffset = std::max(0.0, m_requestGrainOffset);
         m_grainOffset = std::min(bufferDuration, grainOffset);
         m_grainOffset = grainOffset;
-        
+
         // Handle default/unspecified duration.
         double maxDuration = bufferDuration - grainOffset;
         double grainDuration = m_requestGrainDuration;
         if (!grainDuration)
             grainDuration = maxDuration;
-        
+
         grainDuration = std::max(0.0, grainDuration);
         grainDuration = std::min(maxDuration, grainDuration);
         m_grainDuration = grainDuration;
-        
+
         m_isGrain = true;
         m_startTime = m_requestWhen;
-        
+
         // We call timeToSampleFrame here since at playbackRate == 1 we don't want to go through linear interpolation
         // at a sub-sample position since it will degrade the quality.
         // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
@@ -103,13 +106,13 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
         m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, buffer()->sampleRate());
         m_startRequested = false;
     }
-    
+
     size_t quantumFrameOffset;
     size_t bufferFramesToProcess;
 
     updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, bufferFramesToProcess);
-                         
-    if (!bufferFramesToProcess) 
+
+    if (!bufferFramesToProcess)
     {
         outputBus->zero();
         return;
@@ -186,7 +189,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
 
     // Potentially zero out initial frames leading up to the offset.
     if (destinationFrameOffset) {
-        for (unsigned i = 0; i < numChannels; ++i) 
+        for (unsigned i = 0; i < numChannels; ++i)
             memset(m_destinationChannels[i], 0, sizeof(float) * destinationFrameOffset);
     }
 
@@ -199,7 +202,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
     // Avoid converting from time to sample-frames twice by computing
     // the grain end time first before computing the sample frame.
     unsigned endFrame = m_isGrain ? AudioUtilities::timeToSampleFrame(m_grainOffset + m_grainDuration, bufferSampleRate) : bufferLength;
-    
+
     // This is a HACK to allow for HRTF tail-time - avoids glitch at end.
     // FIXME: implement tailTime for each AudioNode for a more general solution to this problem.
     // https://bugs.webkit.org/show_bug.cgi?id=77224
@@ -255,7 +258,7 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
             int framesThisTime = std::min(framesToProcess, framesToEnd);
             framesThisTime = std::max(0, framesThisTime);
 
-            for (unsigned i = 0; i < numChannels; ++i) 
+            for (unsigned i = 0; i < numChannels; ++i)
                 memcpy(destinationChannels[i] + writeIndex, sourceChannels[i] + readIndex, sizeof(float) * framesThisTime);
 
             writeIndex += framesThisTime;
@@ -332,7 +335,7 @@ void AudioBufferSourceNode::reset(ContextRenderLock& r)
 bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
 {
     ASSERT(r.context());
-    
+
     if (buffer) {
         // Do any necesssary re-configuration to the buffer's number of channels.
         unsigned numberOfChannels = buffer->numberOfChannels();
@@ -345,7 +348,7 @@ bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<Audi
         m_sourceChannels = std::unique_ptr<const float*[]>(new const float*[numberOfChannels]);
         m_destinationChannels = std::unique_ptr<float*[]>(new float*[numberOfChannels]);
 
-        for (unsigned i = 0; i < numberOfChannels; ++i) 
+        for (unsigned i = 0; i < numberOfChannels; ++i)
             m_sourceChannels[i] = buffer->getChannelData(i)->data();
     }
 
@@ -373,7 +376,7 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     m_requestWhen = when;
     m_requestGrainOffset = grainOffset;
     m_requestGrainDuration = grainDuration;
-        
+
     m_playbackState = SCHEDULED_STATE;
     m_startRequested = true;
 }
@@ -383,13 +386,13 @@ double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
     double dopplerRate = 1.0;
     if (m_pannerNode)
         dopplerRate = m_pannerNode->dopplerRate(r);
-    
+
     // Incorporate buffer's sample-rate versus AudioContext's sample-rate.
     // Normally it's not an issue because buffers are loaded at the AudioContext's sample-rate, but we can handle it in any case.
     double sampleRateFactor = 1.0;
     if (buffer())
         sampleRateFactor = buffer()->sampleRate() / sampleRate();
-    
+
     double basePitchRate = playbackRate()->value(r);
 
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
@@ -399,7 +402,7 @@ double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
     if (!totalRate)
         totalRate = 1; // zero rate is considered illegal
     totalRate = std::min(MaxRate, totalRate);
-    
+
     bool isTotalRateValid = !std::isnan(totalRate) && !std::isinf(totalRate);
     ASSERT(isTotalRateValid);
     if (!isTotalRateValid)
