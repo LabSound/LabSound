@@ -42,53 +42,66 @@ namespace lab
         }
         LOG("Destroy UpdateGraphThread");
     }
-    
+
     std::shared_ptr<lab::AudioContext> MakeAudioContext()
     {
         LOG("Initialize Context");
         mainContext = std::make_shared<lab::AudioContext>();
         mainContext->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(mainContext));
-        
+
         mainContext->lazyInitialize();
 
         g_GraphUpdateThread = std::thread(UpdateGraphThread);
 
         return mainContext;
     }
-    
+
     std::shared_ptr<lab::AudioContext> MakeOfflineAudioContext(const int millisecondsToRun)
     {
         LOG("Initialize Offline Context");
-        
+
         // @tofix - hardcoded parameters
         const int sampleRate = 44100;
         const int framesPerMillisecond = sampleRate / 1000;
         const int totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
-        
+
         mainContext = std::make_shared<lab::AudioContext>(2, totalFramesToRecord, sampleRate);
         auto renderTarget = mainContext->getOfflineRenderTarget();
         mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
-        
+
         mainContext->lazyInitialize();
-        
+
         return mainContext;
     }
-    
+
+    std::shared_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, size_t totalFramesToRecord, float sampleRate)
+    {
+        LOG("Initialize Offline Context");
+
+        mainContext = std::make_shared<lab::AudioContext>(numChannels, totalFramesToRecord, sampleRate);
+        auto renderTarget = mainContext->getOfflineRenderTarget();
+        mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
+
+        mainContext->lazyInitialize();
+
+        return mainContext;
+    }
+
     void CleanupAudioContext(std::shared_ptr<lab::AudioContext> context)
     {
         LOG("Finish Context");
-        
+
         // Invalidate local shared_ptr
         mainContext.reset();
-        
+
         // Join update thread
         if (g_GraphUpdateThread.joinable())
             g_GraphUpdateThread.join();
-        
+
         for (int i = 0; i < 8; ++i)
         {
             ContextGraphLock g(context, "lab::finish");
-            
+
             if (!g.context())
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -100,7 +113,7 @@ namespace lab
                 return;
             }
         }
-        
+
         LOG("Could not acquire lock for shutdown");
     }
 
