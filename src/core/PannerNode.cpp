@@ -179,7 +179,7 @@ void PannerNode::reset(ContextRenderLock&)
         m_panner->reset();
 }
 
-AudioListener * PannerNode::listener(ContextRenderLock& r)
+std::shared_ptr<AudioListener> PannerNode::listener(ContextRenderLock& r)
 {
     if (!r.context())
         return nullptr;
