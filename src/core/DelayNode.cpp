@@ -12,8 +12,8 @@
 namespace lab
 {
 
-// WebAudio: 
-// "The maxDelayTime parameter is optional and specifies the 
+// WebAudio:
+// "The maxDelayTime parameter is optional and specifies the
 //  maximum delay time in seconds allowed for the delay line."
 const double maximumAllowedDelayTime = 128;
 
@@ -25,6 +25,9 @@ DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcesso
     }
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
     setNodeType(NodeTypeDelay);
+
+    m_params.push_back(delayProcessor()->delayTime());
+
     initialize();
 }
 
@@ -33,9 +36,9 @@ std::shared_ptr<AudioParam> DelayNode::delayTime()
     return delayProcessor()->delayTime();
 }
 
-DelayProcessor * DelayNode::delayProcessor() 
-{ 
-    return static_cast<DelayProcessor*>(processor()); 
+DelayProcessor * DelayNode::delayProcessor()
+{
+    return static_cast<DelayProcessor*>(processor());
 }
 
 } // lab

@@ -62,6 +62,7 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
+win.vs2015/LabSound.VC.*
 
 # Visual Studio profiler
 *.psess
@@ -78,7 +79,7 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# Mac Personal Files 
+# Mac Personal Files
 xcuserdata/
 *.pbxuser
 *.mode1v3

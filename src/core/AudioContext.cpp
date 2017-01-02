@@ -469,9 +469,9 @@ float AudioContext::sampleRate() const
     return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); 
 }
 
-AudioListener * AudioContext::listener() 
+std::shared_ptr<AudioListener> AudioContext::listener() 
 { 
-    return m_listener.get(); 
+    return m_listener; 
 }
 
 unsigned long AudioContext::activeSourceCount() const 

@@ -19,10 +19,10 @@ namespace lab
     /////////////////////////////////////
     // Private ADSRNode Implementation //
     /////////////////////////////////////
-    
+
     class ADSRNode::ADSRNodeInternal : public lab::AudioProcessor
     {
-        
+
     public:
 
         ADSRNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
@@ -47,7 +47,7 @@ namespace lab
         {
             if (!numberOfChannels())
                 return;
-            
+
             std::shared_ptr<lab::AudioContext> c = r.contextPtr();
 
             if (m_noteOnTime >= 0)
@@ -59,23 +59,23 @@ namespace lab
                 }
                 else
                     m_zeroSteps = 0;
-                
+
                 m_attackTimeTarget = m_noteOnTime + m_attackTime->value(r);
-                
+
                 m_attackSteps = m_attackTime->value(r) * sampleRate();
                 m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
-                
+
                 m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
-                
+
                 m_decaySteps = m_decayTime->value(r) * sampleRate();
                 m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
-                
+
                 m_releaseSteps = 0;
-                
+
                 m_noteOffTime = std::numeric_limits<double>::max();
                 m_noteOnTime = -1.;
             }
-            
+
             // We handle both the 1 -> N and N -> N case here.
             const float* source = sourceBus->channelByType(Channel::First)->data();
 
@@ -94,21 +94,21 @@ namespace lab
                     m_currentGain += m_zeroStepSize;
                     gainValues[i] = m_currentGain;
                 }
-                
+
                 else if (m_attackSteps > 0)
                 {
                     --m_attackSteps;
                     m_currentGain += m_attackStepSize;
                     gainValues[i] = m_currentGain;
                 }
-                
+
                 else if (m_decaySteps > 0)
                 {
                     --m_decaySteps;
                     m_currentGain += m_decayStepSize;
                     gainValues[i] = m_currentGain;
                 }
-                
+
                 else if (m_releaseSteps > 0)
                 {
                     --m_releaseSteps;
@@ -127,9 +127,9 @@ namespace lab
             {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source = sourceBus->channel(channelIndex)->data();
-                
+
                 float * destination = destinationBus->channel(channelIndex)->mutableData();
-                
+
                 VectorMath::vmul(source, 1, &gainValues[0], 1, destination, 1, framesToProcess);
             }
         }
@@ -148,7 +148,7 @@ namespace lab
         {
             // note off at any time except while a note is on, has no effect
             m_noteOnTime = -1.;
-            
+
             if (m_noteOffTime == std::numeric_limits<double>::max())
             {
                 m_noteOffTime = now + m_releaseTime->value(r);
@@ -159,24 +159,24 @@ namespace lab
 
         int m_zeroSteps;
         float m_zeroStepSize;
-        
+
         int m_attackSteps;
         float m_attackStepSize;
-        
+
         int m_decaySteps;
         float m_decayStepSize;
-        
+
         int m_releaseSteps;
         float m_releaseStepSize;
 
         double m_noteOnTime;
-        
+
         double m_attackTimeTarget, m_decayTimeTarget, m_noteOffTime;
-        
+
         float m_currentGain;
-        
+
         std::vector<float> gainValues;
-        
+
         std::shared_ptr<AudioParam> m_attackTime;
         std::shared_ptr<AudioParam> m_attackLevel;
         std::shared_ptr<AudioParam> m_decayTime;
@@ -187,17 +187,23 @@ namespace lab
     /////////////////////
     // Public ADSRNode //
     /////////////////////
-    
+
     ADSRNode::ADSRNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
     {
         m_processor.reset(new ADSRNodeInternal(sampleRate));
-        
+
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 
         setNodeType(lab::NodeTypeADSR);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
+
+        m_params.push_back(internalNode->m_attackTime);
+        m_params.push_back(internalNode->m_attackLevel);
+        m_params.push_back(internalNode->m_decayTime);
+        m_params.push_back(internalNode->m_sustainLevel);
+        m_params.push_back(internalNode->m_releaseTime);
 
         initialize();
     }
@@ -212,17 +218,17 @@ namespace lab
     {
         internalNode->noteOn(when);
     }
-    
+
     void ADSRNode::noteOff(ContextRenderLock& r, double when)
     {
         internalNode->noteOff(r, when);
     }
-    
+
     std::shared_ptr<AudioParam> ADSRNode::attackTime() const
     {
         return internalNode->m_attackTime;
     }
-    
+
     void ADSRNode::set(float aT, float aL, float d, float s, float r)
     {
         internalNode->m_attackTime->setValue(aT);
@@ -236,34 +242,34 @@ namespace lab
     {
         return internalNode->m_attackLevel;
     }
-    
+
     std::shared_ptr<AudioParam> ADSRNode::decayTime() const
     {
         return internalNode->m_decayTime;
     }
-    
+
     std::shared_ptr<AudioParam> ADSRNode::sustainLevel() const
     {
         return internalNode->m_sustainLevel;
     }
-    
+
     std::shared_ptr<AudioParam> ADSRNode::releaseTime() const
     {
         return internalNode->m_releaseTime;
     }
-    
+
     bool ADSRNode::finished(ContextRenderLock& r)
     {
         if (!r.context())
             return true;
-        
+
         double now = r.context()->currentTime();
-        
+
         if (now > internalNode->m_noteOffTime)
         {
             internalNode->m_noteOffTime = 0;
         }
-        
+
         return now > internalNode->m_noteOffTime;
     }
 
