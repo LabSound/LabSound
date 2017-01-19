@@ -95,6 +95,13 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
         }
 }
     
+void AudioSummingJunction::junctionDisconnectAllOutputs()
+{
+	std::lock_guard<std::mutex> lock(junctionMutex);
+	m_connectedOutputs.clear();
+	m_renderingStateNeedUpdating = true;
+}
+
 void AudioSummingJunction::changedOutputs(ContextGraphLock&)
 {
     if (!m_renderingStateNeedUpdating && canUpdateState())
