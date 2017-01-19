@@ -72,6 +72,7 @@ public:
     // Connect an audio-rate signal to control this parameter.
     static void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
     static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+	static void disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioParam>);
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
