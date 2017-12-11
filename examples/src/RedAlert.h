@@ -2,6 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "ExampleBaseApp.h"
+#include <cmath>
 
 struct RedAlertApp : public LabSoundExampleApp
 {
@@ -44,7 +45,7 @@ struct RedAlertApp : public LabSoundExampleApp
                     }
                     else 
                     {
-                        values[i] = sqrt(now * 1.f / 0.9f) * 487.f + 360.f;
+                        values[i] = std::sqrt((float) now * 1.f / 0.9f) * 487.f + 360.f;
                     }
                     
                     now += dt;
@@ -117,7 +118,7 @@ struct RedAlertApp : public LabSoundExampleApp
             //                + ...    .. --+
             //                +--> delay4 --+---> delaySum
             //
-            float delays[5] = {0.015, 0.022, 0.035, 0.024, 0.011};
+            float delays[5] = {0.015f, 0.022f, 0.035f, 0.024f, 0.011f};
             for (int i = 0; i < 5; ++i) {
                 delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
                 delay[i]->delayTime()->setValue(delays[i]);
@@ -151,8 +152,8 @@ struct RedAlertApp : public LabSoundExampleApp
             filterSum->connect(context.get(), context->destination().get(), 0, 0);
         }
         
-        int now = 0.0;
-        while(now < 10000)
+        int now = 0;
+        while (now < 10000)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             now += 1000;

@@ -1,0 +1,2 @@
+
+include(LabSound-lib.cmake)

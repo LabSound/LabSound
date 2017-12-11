@@ -49,13 +49,14 @@ public:
 
     void junctionConnectOutput(std::shared_ptr<AudioNodeOutput>);
     void junctionDisconnectOutput(std::shared_ptr<AudioNodeOutput>);
+	void junctionDisconnectAllOutputs();
     void setDirty() { m_renderingStateNeedUpdating = true; }
     
     static void handleDirtyAudioSummingJunctions(ContextRenderLock& r);
 
     bool isConnected(std::shared_ptr<AudioNodeOutput> o) const;
 
-private:
+protected:
     
     // m_outputs contains the AudioNodeOutputs representing current connections.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
