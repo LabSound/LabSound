@@ -83,8 +83,8 @@ struct InfiniteFMApp : public LabSoundExampleApp
             signalGain->connect(context.get(), context->destination().get(), 0, 0); // signalGain to DAC
         }
         
-        int now = 0.0;
-        while(true)
+        int now = 0;
+        while (true)
         {
             // Debugging cruft --
             float f = (float) std::uniform_int_distribution<int>(2, 48)(randomgenerator);

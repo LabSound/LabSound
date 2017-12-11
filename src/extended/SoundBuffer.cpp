@@ -104,7 +104,7 @@ namespace lab {
         auto ac = r.context();
         if (audioBuffer && ac) {
             if (end == 0)
-                end = audioBuffer->duration();
+                end = (float) audioBuffer->duration();
             
             auto ac = r.context();
             if (!ac)

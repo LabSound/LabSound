@@ -1023,8 +1023,10 @@ namespace lab {
         _changeAmount->setValue(frnd(2) - 1);
     }
 
+#ifdef __APPLE__
 #pragma mark ____________________________
 #pragma mark Conversions
+#endif
 
     // Conversion math was found here https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
     // and inverted as necessary.
@@ -1079,8 +1081,10 @@ namespace lab {
         return powf(s3, 1.0f/3.0f);
     }
 
+#ifdef __APPLE__
 #pragma mark ____________________________
 #pragma mark Convenience
+#endif
 
     void SfxrNode::setStartFrequencyInHz(float hz) {
         _startFrequency->setValue(frequencyInSfxrUnits(hz));
