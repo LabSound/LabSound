@@ -212,7 +212,6 @@
     <ClCompile Include="..\src\internal\src\WaveShaperProcessor.cpp" />
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp" />
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp" />
-    <ClCompile Include="..\third_party\json11\src\json11.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fft.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fftr.cpp" />
     <ClCompile Include="..\third_party\rtaudio\src\RtAudio.cpp" />
