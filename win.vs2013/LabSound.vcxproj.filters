@@ -587,9 +587,6 @@
     <ClCompile Include="..\src\extended\SupersawNode.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\third_party\json11\src\json11.cpp">
-      <Filter>third_party\json11</Filter>
-    </ClCompile>
     <ClCompile Include="..\third_party\kissfft\src\kiss_fft.cpp">
       <Filter>third_party\kissfft</Filter>
     </ClCompile>
