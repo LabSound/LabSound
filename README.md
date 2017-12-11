@@ -37,9 +37,15 @@ The submodules can be fetched after a clone with `git submodule update --init --
 
 Compiling LabSound and libnyquist requires a recent C++11 compiler.
 
+# Building with Cmake
+
+Cmake can be used as an alternative to the vcproj and xcodeproj files bundled with the LabSound source distribution.
+
+LabSound has a CMakeLists.txt at the root directory, and all the associated cmake files are in the `cmake/` subfolder. A cmake based build will work out of the box on Windows, it is not yet tested on other platforms. If you use the cmake build, it will build everything to a folder named `../local/` cmake build directory. As always with cmake, it is recommended that you do an out-of-source build.
+
 # Examples
 
-LabSound is bundled with approximately 20 single-file samples. Project files can be found in the `examples\` subfolder. A separate repository hosts [more sample applications](https://github.com/LabSound/samples) that require additional dependencies.
+LabSound is bundled with approximately 20 single-file samples. Project files can be found in the `examples/` subfolder. A separate repository hosts [more sample applications](https://github.com/LabSound/samples) that require additional dependencies.
 
 # Using the Library
 
