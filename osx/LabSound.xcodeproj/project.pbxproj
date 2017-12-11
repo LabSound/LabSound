@@ -93,7 +93,6 @@
 		08650CF11AD6241A00D19E38 /* RealtimeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */; };
 		08650CF21AD6241A00D19E38 /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */; };
 		08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD41AD6241A00D19E38 /* WaveTable.cpp */; };
-		08650CF51AD6247C00D19E38 /* json11.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF41AD6247C00D19E38 /* json11.cpp */; };
 		08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF61AD6248400D19E38 /* kiss_fft.cpp */; };
 		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
 		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
@@ -296,7 +295,6 @@
 		08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RealtimeAnalyser.cpp; path = ../src/core/RealtimeAnalyser.cpp; sourceTree = SOURCE_ROOT; };
 		08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperNode.cpp; path = ../src/core/WaveShaperNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650CD41AD6241A00D19E38 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveTable.cpp; path = ../src/core/WaveTable.cpp; sourceTree = SOURCE_ROOT; };
-		08650CF41AD6247C00D19E38 /* json11.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json11.cpp; path = ../third_party/json11/src/json11.cpp; sourceTree = "<group>"; };
 		08650CF61AD6248400D19E38 /* kiss_fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fft.cpp; path = ../third_party/kissfft/src/kiss_fft.cpp; sourceTree = "<group>"; };
 		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
 		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
@@ -330,14 +328,6 @@
 				08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */,
 			);
 			name = STK;
-			sourceTree = "<group>";
-		};
-		082FDF2119C6004800046275 /* json11 */ = {
-			isa = PBXGroup;
-			children = (
-				08650CF41AD6247C00D19E38 /* json11.cpp */,
-			);
-			name = json11;
 			sourceTree = "<group>";
 		};
 		082FE01C19C6009400046275 /* third_party */ = {
@@ -837,7 +827,6 @@
 				08650CE51AD6241A00D19E38 /* ChannelMergerNode.cpp in Sources */,
 				08650BF01AD6225900D19E38 /* MultiChannelResampler.cpp in Sources */,
 				08650BF31AD6225900D19E38 /* ReverbAccumulationBuffer.cpp in Sources */,
-				08650CF51AD6247C00D19E38 /* json11.cpp in Sources */,
 				08650BE31AD6225900D19E38 /* Distance.cpp in Sources */,
 				08650BF61AD6225900D19E38 /* ReverbInputBuffer.cpp in Sources */,
 				08650BEB1AD6225900D19E38 /* HRTFDatabase.cpp in Sources */,
