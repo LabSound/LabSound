@@ -1,11 +1,3 @@
 language: objective-c
-osx_image: xcode7
-
-script:
-- xctool -workspace osx/LabSound.xcworkspace -scheme LabSound
-
-before_install:
-- gem i slather --no-ri --no-rdoc
-- brew uninstall xctool; brew install xctool --HEAD;
-
-after_success: slather
+xcode_project: osx/LabSound.xcodeproj
+xcode_scheme: LabSound
