@@ -1,3 +1,4 @@
 language: objective-c
-xcode_project: osx/LabSound.xcodeproj
-xcode_scheme: LabSound
+script:
+    - xcodebuild clean build -workspace osx/LabSound.xcworkspace -scheme LabSound
+    
