@@ -3,6 +3,7 @@
 </p>
 
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLabSound%2FLabSound.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FLabSound%2FLabSound?ref=badge_shield)
 
 LabSound is a graph-based audio engine built using modern C++11. As a fork of the WebAudio implementation in Chrome, LabSound implements the WebAudio API specification while extending it with new features, nodes, bugfixes, and performance improvements.
 
@@ -76,3 +77,6 @@ The W3C WebAudio specification is listed [at this URL](http://www.w3.org/TR/weba
 # License
 
 LabSound is released under the simplified BSD 2 clause license. All LabSound dependencies are under similar permissive licenses. Further details are located in the `LICENSE` and `COPYING` files.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLabSound%2FLabSound.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FLabSound%2FLabSound?ref=badge_large)
