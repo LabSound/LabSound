@@ -51,7 +51,7 @@ AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
     m_params.push_back(m_gain);
     m_params.push_back(m_playbackRate);
 
-    // Default to mono.  A call to setBuffer() will set the number of output channels to that of the buffer.
+    // Default to mono. A call to setBuffer() will set the number of output channels to that of the buffer.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     initialize();

@@ -35,8 +35,8 @@ public:
     AudioNode* node() const { return m_node; }
 
     // Must be called with the context's graph lock. Static because a shared pointer to this is required
-    static void connect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void connect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
     // pull() processes all of the AudioNodes connected to us.
     // In the case of multiple connections it sums the result into an internal summing bus.
@@ -57,7 +57,7 @@ public:
     
 private:
 
-    AudioNode* m_node;
+    AudioNode * m_node;
 
     // Called from context's audio thread.
     AudioBus * internalSummingBus(ContextRenderLock&);

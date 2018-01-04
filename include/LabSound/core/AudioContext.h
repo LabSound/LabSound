@@ -117,13 +117,12 @@ public:
     void incrementConnectionCount();
     
     unsigned connectionCount() const { return m_connectionCount;}
+    
+    //void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
+    //void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
 
-    void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-    void connect(std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-
-    void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-    void disconnect(std::shared_ptr<AudioNode> from);
-    void disconnect(std::shared_ptr<AudioNodeOutput> toOutput);
+    void connect(std::shared_ptr<AudioNodeInput> destination, std::shared_ptr<AudioNodeOutput> source);
+    void disconnect(std::shared_ptr<AudioNodeOutput> source);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
     

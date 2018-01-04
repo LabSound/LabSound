@@ -91,7 +91,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
     }
 }
 
-AudioBus* AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
@@ -153,12 +153,13 @@ void AudioNodeOutput::removeInput(ContextGraphLock& g, std::shared_ptr<AudioNode
     if (!input)
         return;
     
-    for (std::vector<std::shared_ptr<AudioNodeInput>>::iterator i = m_inputs.begin(); i != m_inputs.end(); ++i) {
-        if (input == *i) {
+    for (std::vector<std::shared_ptr<AudioNodeInput>>::iterator i = m_inputs.begin(); i != m_inputs.end(); ++i) 
+    {
+        if (input == *i) 
+        {
             input->setDirty();
             i = m_inputs.erase(i);
-            if (i == m_inputs.end())
-                break;
+            if (i == m_inputs.end()) break;
         }
     }
 }

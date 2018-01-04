@@ -51,11 +51,7 @@ namespace lab {
         }
     }
     
-
-    SoundBuffer::~SoundBuffer()
-    {
-
-    }
+    SoundBuffer::~SoundBuffer() { }
   
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
@@ -70,7 +66,7 @@ namespace lab {
     }
     
     // Output to the default context output 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float when)
+    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock & r, float when)
     {
         if (audioBuffer && r.context())
         {
@@ -83,13 +79,14 @@ namespace lab {
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
     {
         auto ac = r.context();
-        if (audioBuffer && ac) {
+        if (audioBuffer && ac) 
+        {
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(outputNode->sampleRate()));
             sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the output node
             sourceBufferNode->start(when);
-            ac->connect(sourceBufferNode, outputNode);
+            ac->connect(outputNode->input(0), sourceBufferNode->output(0)); // dimitri
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
             return sourceBufferNode;
         }
@@ -97,7 +94,7 @@ namespace lab {
     }
     
     // This variant starts a sound at a given offset relative to the beginning of the
-    // sample, ends it an offfset (relative to the beginning), and optional delays
+    // sample, ends it an offset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {

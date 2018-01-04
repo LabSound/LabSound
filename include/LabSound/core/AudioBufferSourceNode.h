@@ -20,7 +20,8 @@ class AudioBus;
 // AudioBufferSourceNode is an AudioNode representing an audio source from an in-memory audio asset represented by an AudioBuffer.
 // It generally will be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
 
-class AudioBufferSourceNode : public AudioScheduledSourceNode {
+class AudioBufferSourceNode : public AudioScheduledSourceNode 
+{
 public:
     AudioBufferSourceNode(float sampleRate);
     virtual ~AudioBufferSourceNode();

@@ -89,14 +89,14 @@ void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
 {
     if (i < m_inputs.size()) return m_inputs[i];
-    return 0;
+    return nullptr;
 }
 
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
     if (i < m_outputs.size()) return m_outputs[i];
-    return 0;
+    return nullptr;
 }
 
 void AudioNode::connect(AudioContext * context, AudioNode * destination, unsigned outputIndex, unsigned inputIndex)
@@ -125,14 +125,15 @@ void AudioNode::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param,
 void AudioNode::disconnect(AudioContext * ctx)
 {
     for (auto & output : m_outputs)
+    {
         ctx->disconnect(output);
+    }
 }
 
 // Disconnect specific output
 void AudioNode::disconnect(AudioContext * ctx, unsigned outputIndex)
 {
     if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    
     ctx->disconnect(this->output(outputIndex));
 }
 
@@ -141,7 +142,7 @@ unsigned long AudioNode::channelCount()
     return m_channelCount;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount)
+void AudioNode::setChannelCount(ContextGraphLock & g, unsigned long channelCount)
 {
     if (!g.context())
     {
@@ -168,7 +169,6 @@ void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode)
     {
         throw std::invalid_argument("No context specified");
     }
-    
     else
     {
         if (m_channelCountMode != mode)
@@ -189,9 +189,7 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
     
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
-    if (!isInitialized())
-        return;
-    
+    if (!isInitialized()) return;
     auto ac = r.context();
     if (!ac) return;
     

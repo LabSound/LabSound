@@ -122,10 +122,10 @@ public:
     std::shared_ptr<AudioNodeInput> input(unsigned);
     std::shared_ptr<AudioNodeOutput> output(unsigned);
 
-    void connect(AudioContext*, AudioNode*, unsigned outputIndex, unsigned inputIndex);
+    void connect(AudioContext * ctx, AudioNode * destination, unsigned outputIndex, unsigned inputIndex);
     void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, unsigned outputIndex);
 
-    void disconnect(AudioContext* ctx);
+    void disconnect(AudioContext * ctx);
     void disconnect(AudioContext * ctx, unsigned outputIndex);
 
     virtual float sampleRate() const { return m_sampleRate; }

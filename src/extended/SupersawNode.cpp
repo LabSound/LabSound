@@ -40,7 +40,7 @@ namespace lab
 
         }
 
-        void update(ContextRenderLock& r)
+        void update(ContextRenderLock & r)
         {
             if (cachedFrequency != frequency->value(r))
             {
@@ -63,33 +63,32 @@ namespace lab
             }
         }
 
-        void update(ContextRenderLock& r, bool okayToReallocate)
+        void update(ContextRenderLock & r, bool okayToReallocate)
         {
             int currentN = saws.size();
             int n = int(sawCount->value(r) + 0.5f);
+
+            auto context = r.context();
 
             if (okayToReallocate && (n != currentN))
             {
                 for (auto i : sawStorage)
                 {
-                    r.context()->disconnect(i);
+                    // r.context()->disconnect(i); // dimitri
+                    context->disconnect(i->output(0));
                 }
 
                 sawStorage.clear();
                 saws.clear();
 
-                for (int i = 0; i < n; ++i)
-                    sawStorage.emplace_back(std::make_shared<OscillatorNode>(r, sampleRate));
+                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(r, sampleRate));
 
-                for (int i = 0; i < n; ++i)
-                    saws.push_back(sawStorage[i].get());
+                for (int i = 0; i < n; ++i) saws.push_back(sawStorage[i].get());
 
-
-                auto c = r.context();
                 for (auto i : sawStorage)
                 {
                     i->setType(r, OscillatorType::SAWTOOTH);
-                    c->connect(i, gainNode);
+                    context->connect(i->input(0), gainNode->output(0));
                     i->start(0);
                 }
 
