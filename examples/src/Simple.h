@@ -23,11 +23,13 @@ struct SimpleApp : public LabSoundExampleApp
             gain->gain()->setValue(0.0625f);
 
             // osc -> gain -> destination
-            oscillator->connect(ac, gain.get(), 0, 0);
-            gain->connect(ac, context->destination().get(), 0, 0);
+            ac->connect(gain, oscillator, 0, 0);
+            ac->connect(context->destination(), gain, 0, 0);
+
             oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);
+
             tonbiSound = tonbi.play(r, 0.0f);
         };
 

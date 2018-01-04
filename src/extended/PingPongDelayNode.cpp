@@ -75,28 +75,29 @@ namespace lab
             throw std::invalid_argument("Graph lock could not acquire context");
 
         // Input into splitter
-        input->connect(ac, splitter.get(), 0, 0);
+        //input->connect(ac, splitter.get(), 0, 0);
+        ac->connect(splitter, input, 0, 0);
 
-        splitter->connect(ac, splitterGain.get(), 0, 0);
-        splitter->connect(ac, splitterGain.get(), 1, 0);
+        ac->connect(splitterGain, splitter, 0, 0);
+        ac->connect(splitterGain, splitter, 1, 0);
 
-        splitterGain->connect(ac, wetGain.get(), 0, 0); 
+        ac->connect(wetGain, splitterGain, 0, 0);
         splitterGain->gain()->setValue(0.5f);
 
-        wetGain->connect(ac, leftDelay.get(), 0, 0);
+        ac->connect(leftDelay, wetGain, 0, 0);
 
-        feedbackGain->connect(ac, leftDelay.get(), 0, 0);
+        ac->connect(leftDelay, feedbackGain, 0, 0);
 
-        leftDelay->connect(ac, rightDelay.get(), 0, 0);
-        rightDelay->connect(ac, feedbackGain.get(), 0, 0);
+        ac->connect(rightDelay, leftDelay, 0, 0);
+        ac->connect(feedbackGain, rightDelay, 0, 0);
 
-        leftDelay->connect(ac, merger.get(), 0, 0);
-        rightDelay->connect(ac, merger.get(), 0, 1);
+        ac->connect(merger, leftDelay, 0, 0);
+        ac->connect(merger, rightDelay, 0, 1);
 
-        merger->connect(ac, output.get(), 0, 0);
+        ac->connect(output, merger, 0, 0);
 
         // Activate with input->output
-        input->connect(ac, output.get(), 0, 0);
+        ac->connect(output, input, 0, 0);
     }
 
 

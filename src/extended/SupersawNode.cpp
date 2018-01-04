@@ -88,7 +88,7 @@ namespace lab
                 for (auto i : sawStorage)
                 {
                     i->setType(r, OscillatorType::SAWTOOTH);
-                    context->connect(i->input(0), gainNode->output(0));
+                    context->connect(gainNode, i, 0, 0);
                     i->start(0);
                 }
 

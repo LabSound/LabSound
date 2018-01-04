@@ -86,7 +86,7 @@ namespace lab {
             
             // bus the sound to the output node
             sourceBufferNode->start(when);
-            ac->connect(outputNode->input(0), sourceBufferNode->output(0)); // dimitri
+            ac->connect(outputNode, sourceBufferNode, 0, 0);
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
             return sourceBufferNode;
         }
@@ -109,13 +109,13 @@ namespace lab {
             
             std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac->destination()->sampleRate()));
             
-            // Connect the source node to the parsed audio data for playback
+            // Set the source node to the parsed audio data for playback
             sourceBufferNode->setBuffer(r, audioBuffer);
             
-            // bus the sound to the mixer.
-            sourceBufferNode->connect(ac, ac->destination().get(), 0, 0);
-            sourceBufferNode->startGrain(when, start, end - start);
+            // bus the sound to the mixer
+            ac->connect(ac->destination(), sourceBufferNode, 0, 0);
             ac->holdSourceNodeUntilFinished(sourceBufferNode);
+            sourceBufferNode->startGrain(when, start, end - start);
 
             return sourceBufferNode;
         }

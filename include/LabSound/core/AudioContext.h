@@ -182,11 +182,14 @@ private:
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
+            return false;
+            /*
             if (!p2.destination->isScheduledNode()) return true;
             if (!p1.destination->isScheduledNode()) return false;
             AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.destination.get());
             AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());
             return ap2->startTime() < ap1->startTime();
+            */
         }
     };
     

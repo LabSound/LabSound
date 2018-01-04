@@ -8,6 +8,8 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
+
+/*
 #include "ConnectDisconnect.h"
 #include "OfflineRender.h"
 #include "ConvolutionReverb.h"
@@ -24,8 +26,11 @@
 #include "InfiniteFM.h"
 #include "Groove.h"
 #include "Validation.h"
+*/
 
 SimpleApp g_simpleExample;
+
+/*
 ConnectDisconnectApp g_connectApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
@@ -42,6 +47,7 @@ ValidationApp g_validation;
 InfiniteFMApp g_infiniteFM;
 StereoPanningApp g_stereoPanning;
 GrooveApp g_grooveExample;
+*/
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])

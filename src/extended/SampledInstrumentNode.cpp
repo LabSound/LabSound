@@ -57,7 +57,7 @@ namespace lab
         for (size_t i = 0; i < voices.size(); i++)
         {
             voices[i] = std::make_shared<AudioBufferSourceNode>(sampleRate);
-            voices[i]->connect(ctx, gainNode.get(), 0, 0);
+            ctx->connect(gainNode, voices[i], 0, 0);
         }
 
     }
