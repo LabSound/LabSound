@@ -8,9 +8,9 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
+#include "ConnectDisconnect.h"
 
 /*
-#include "ConnectDisconnect.h"
 #include "OfflineRender.h"
 #include "ConvolutionReverb.h"
 #include "MicrophoneDalek.h"
@@ -29,9 +29,9 @@
 */
 
 SimpleApp g_simpleExample;
+ConnectDisconnectApp g_connectApp;
 
 /*
-ConnectDisconnectApp g_connectApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
@@ -52,6 +52,6 @@ GrooveApp g_grooveExample;
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
-    g_simpleExample.PlayExample();
+    g_connectApp.PlayExample();
     return 0;
 }

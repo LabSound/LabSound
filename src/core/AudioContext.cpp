@@ -214,24 +214,27 @@ void AudioContext::update(ContextGraphLock & g)
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
         
     double now = currentTime();
-        
+      
+    std::vector<PendingConnection> skippedConnections;
+
     while (!pendingNodeConnections.empty())
     {
         auto connection = pendingNodeConnections.top();
 
         // stop processing the queue if the scheduled time is > 100ms away
-        if (connection.destination->isScheduledNode())
+        if (connection.destination && connection.destination->isScheduledNode())
         {
             AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
-            if (node->startTime() > now + sampleRate() * 1.f / 1000000.f * 1.f / 10.f)
+            if (node->startTime() > now + 0.1)
             {
-                break; 
+                pendingNodeConnections.pop(); // pop from current queue
+                skippedConnections.push_back(connection); // save for later
+                continue; 
             }
         }
 
         pendingNodeConnections.pop();
 
-        // from, to => destination, source => 
         if (connection.type == ConnectionType::Connect)
         {
             AudioNodeInput::connect(g, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
@@ -263,6 +266,12 @@ void AudioContext::update(ContextGraphLock & g)
                 }
             }
         }
+    }
+
+    // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
+    for (auto & sc : skippedConnections)
+    {
+        pendingNodeConnections.push(sc);
     }
 }
 
