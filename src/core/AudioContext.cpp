@@ -219,7 +219,6 @@ void AudioContext::update(ContextGraphLock & g)
     {
         auto connection = pendingNodeConnections.top();
 
-        /*
         // stop processing the queue if the scheduled time is > 100ms away
         if (connection.destination->isScheduledNode())
         {
@@ -229,7 +228,6 @@ void AudioContext::update(ContextGraphLock & g)
                 break; 
             }
         }
-        */
 
         pendingNodeConnections.pop();
 
