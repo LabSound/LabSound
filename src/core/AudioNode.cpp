@@ -13,43 +13,23 @@
 #include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
-#if DEBUG_AUDIONODE_REFERENCES
-#include <stdio.h>
-#include <map>
-#endif
-
 using namespace std;
 
 namespace lab {
     
-
 AudioNode::AudioNode(float sampleRate)
     : m_isInitialized(false)
     , m_nodeType(NodeTypeDefault)
     , m_sampleRate(sampleRate)
     , m_lastProcessingTime(-1)
     , m_lastNonSilentTime(-1)
-    , m_connectionRefCount(0)
     , m_isMarkedForDeletion(false)
     , m_channelCount(2)
     , m_channelCountMode(ChannelCountMode::Max)
     , m_channelInterpretation(ChannelInterpretation::Speakers)
-    {
-#if DEBUG_AUDIONODE_REFERENCES
-    if (!s_isNodeCountInitialized) {
-        s_isNodeCountInitialized = true;
-        atexit(AudioNode::printNodeCounts);
-    }
-#endif
-}
+    { }
 
-AudioNode::~AudioNode()
-{
-#if DEBUG_AUDIONODE_REFERENCES
-    --s_nodeCount[nodeType()];
-    fprintf(stderr, "%p: %d: AudioNode::~AudioNode() %d\n", this, nodeType(), m_connectionRefCount.load());
-#endif
-}
+AudioNode::~AudioNode() { }
 
 void AudioNode::initialize()
 {
@@ -64,10 +44,6 @@ void AudioNode::uninitialize()
 void AudioNode::setNodeType(NodeType type)
 {
     m_nodeType = type;
-
-#if DEBUG_AUDIONODE_REFERENCES
-    ++s_nodeCount[type];
-#endif
 }
 
 void AudioNode::lazyInitialize()
@@ -97,44 +73,6 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
 {
     if (i < m_outputs.size()) return m_outputs[i];
     return nullptr;
-}
-
-void AudioNode::connect(AudioContext * context, AudioNode * destination, unsigned outputIndex, unsigned inputIndex)
-{
-    if (!context) throw std::invalid_argument("No context specified");
-    if (!destination) throw std::invalid_argument("No destination specified");
-    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    if (inputIndex >= destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
-
-    auto input = destination->input(inputIndex);
-    auto output = this->output(outputIndex);
-    
-    // &&& no need to defer this any more? If so remove connect from context and context from connect param list
-    context->connect(input, output);
-}
-
-void AudioNode::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, unsigned outputIndex)
-{
-    if (!param) throw std::invalid_argument("No parameter specified");
-    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    
-    AudioParam::connect(g, param, this->output(outputIndex));
-}
-
-// Disconnect all outputs
-void AudioNode::disconnect(AudioContext * ctx)
-{
-    for (auto & output : m_outputs)
-    {
-        ctx->disconnect(output, nullptr);
-    }
-}
-
-// Disconnect specific output
-void AudioNode::disconnect(AudioContext * ctx, unsigned outputIndex)
-{
-    if (outputIndex >= numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    ctx->disconnect(this->output(outputIndex));
 }
 
 unsigned long AudioNode::channelCount()
@@ -268,72 +206,17 @@ bool AudioNode::inputsAreSilent(ContextRenderLock& r)
 void AudioNode::silenceOutputs(ContextRenderLock& r)
 {
     for (auto out : m_outputs)
+    {
         out->bus(r)->zero();
+    }
 }
 
 void AudioNode::unsilenceOutputs(ContextRenderLock& r)
 {
     for (auto out : m_outputs)
-        out->bus(r)->clearSilentFlag();
-}
-
-#if DEBUG_AUDIONODE_REFERENCES
-
-bool AudioNode::s_isNodeCountInitialized = false;
-int AudioNode::s_nodeCount[NodeTypeEnd];
-
-void AudioNode::printNodeCounts()
-{
-    std::map<int, std::string> NodeLookupTable =
     {
-        { NodeTypeDefault, "NodeTypeDefault" },
-        { NodeTypeDestination, "NodeTypeDestination" },
-        { NodeTypeOscillator, "NodeTypeOscillator" },
-        { NodeTypeAudioBufferSource, "NodeTypeAudioBufferSource" },
-        { NodeTypeHardwareSource, "NodeTypeHardwareSource" },
-        { NodeTypeBiquadFilter, "NodeTypeBiquadFilter" },
-        { NodeTypePanner, "NodeTypePanner" },
-        { NodeTypeStereoPanner, "NodeTypeStereoPanner" },
-        { NodeTypeConvolver, "NodeTypeConvolver" },
-        { NodeTypeDelay, "NodeTypeDelay" },
-        { NodeTypeGain, "NodeTypeGain" },
-        { NodeTypeChannelSplitter, "NodeTypeChannelSplitter" },
-        { NodeTypeChannelMerger, "NodeTypeChannelMerger" },
-        { NodeTypeAnalyser, "NodeTypeAnalyser" },
-        { NodeTypeDynamicsCompressor, "NodeTypeDynamicsCompressor" },
-        { NodeTypeWaveShaper, "NodeTypeWaveShaper" },
-        
-        // @tofix - node type function
-        { NodeTypeADSR, "NodeTypeADSR" },
-        { NodeTypeClip, "NodeTypeClip" },
-        { NodeTypeDiode, "NodeTypeDiode" },
-        { NodeTypeNoise, "NodeTypeNoise" },
-        { NodeTypePd, "NodeTypePd" },
-        { NodeTypePeakComp, "NodeTypePeakComp" },
-        { NodeTypePowerMonitor, "NodeTypePowerMonitor" },
-        { NodeTypePWM, "NodeTypePWM" },
-        { NodeTypeRecorder, "NodeTypeRecorder" },
-        { NodeTypeSfxr, "NodeTypeSfxr" },
-        { NodeTypeSpatialization, "NodeTypeSpatialization" },
-        { NodeTypeSpectralMonitor, "NodeTypeSpectralMonitor" },
-        { NodeTypeSupersaw, "NodeTypeSupersaw" },
-        { NodeTypeSTK, "NodeTypeSTK" },
-        { NodeTypeBPMDelay, "NodeTypeBPMDelay" },
-
-        { NodeTypeEnd, "NodeTypeEnd" },
-    };
-    
-    fprintf(stderr, "\n\n");
-    fprintf(stderr, "===========================\n");
-    fprintf(stderr, "AudioNode: reference counts\n");
-    fprintf(stderr, "===========================\n");
-
-    for (unsigned i = 0; i < NodeTypeEnd; ++i)
-        fprintf(stderr, "%d\t// %s \n", s_nodeCount[i], NodeLookupTable[i].c_str());
-
-    fprintf(stderr, "===========================\n\n\n");
+        out->bus(r)->clearSilentFlag();
+    }
 }
-
-#endif // DEBUG_AUDIONODE_REFERENCES
 
 } // namespace lab

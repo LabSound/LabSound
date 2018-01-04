@@ -18,8 +18,6 @@
 #include <thread>
 #include <vector>
 
-#define DEBUG_AUDIONODE_REFERENCES 1
-
 namespace lab
 {
 
@@ -84,6 +82,7 @@ class ContextRenderLock;
 class AudioNode
 {
 public:
+
     enum
     {
         ProcessingSizeInFrames = 128
@@ -119,14 +118,8 @@ public:
     unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
     unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
 
-    std::shared_ptr<AudioNodeInput> input(unsigned);
-    std::shared_ptr<AudioNodeOutput> output(unsigned);
-
-    void connect(AudioContext * ctx, AudioNode * destination, unsigned outputIndex, unsigned inputIndex);
-    void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, unsigned outputIndex);
-
-    void disconnect(AudioContext * ctx);
-    void disconnect(AudioContext * ctx, unsigned outputIndex);
+    std::shared_ptr<AudioNodeInput> input(unsigned index);
+    std::shared_ptr<AudioNodeOutput> output(unsigned index);
 
     virtual float sampleRate() const { return m_sampleRate; }
 
@@ -140,10 +133,6 @@ public:
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*);
-
-#if DEBUG_AUDIONODE_REFERENCES
-    static void printNodeCounts();
-#endif
 
     bool isMarkedForDeletion() const { return m_isMarkedForDeletion; }
 
@@ -168,10 +157,9 @@ public:
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
 
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
-    void setChannelInterpretation(ChannelCountMode);
+    void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
 
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
-
 
 protected:
 
@@ -203,14 +191,9 @@ private:
 
     bool m_isMarkedForDeletion;
 
-#if DEBUG_AUDIONODE_REFERENCES
-    static bool s_isNodeCountInitialized;
-    static int s_nodeCount[NodeTypeEnd];
-#endif
-
 protected:
-    std::vector<std::shared_ptr<AudioParam>> m_params;
 
+    std::vector<std::shared_ptr<AudioParam>> m_params;
     unsigned m_channelCount;
     ChannelCountMode m_channelCountMode;
     ChannelInterpretation m_channelInterpretation;
