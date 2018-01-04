@@ -35,7 +35,7 @@ struct SimpleApp : public LabSoundExampleApp
 
         lab::AcquireLocksForContext("Tone and Sample App", context, lockedArea);
 
-        const int seconds = 12;
+        const int seconds = 4;
         for (int t = 0; t < seconds; ++t)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -236,7 +236,7 @@ void AudioContext::update(ContextGraphLock & g)
         // from, to => destination, source => 
         if (connection.type == ConnectionType::Connect)
         {
-            AudioNodeInput::connect(g, connection.source->input(connection.srcIndex), connection.destination->output(connection.destIndex));
+            AudioNodeInput::connect(g, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
         }
         else if (connection.type == ConnectionType::Disconnect)
         {

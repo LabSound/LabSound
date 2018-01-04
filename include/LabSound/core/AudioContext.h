@@ -173,8 +173,8 @@ private:
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,
             ConnectionType t,
-            uint32_t inputIndex = 0,
-            uint32_t outputIndex = 0)
+            uint32_t destIndex = 0,
+            uint32_t srcIndex = 0)
             : destination(destination), source(source), type(t), destIndex(destIndex), srcIndex(srcIndex) { }
     };
 
