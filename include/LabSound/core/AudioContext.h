@@ -31,25 +31,6 @@ class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
 
-enum class ConnectionType : int
-{
-    Disconnect = 0,
-    Connect = 1
-};
-struct PendingConnection
-{
-    ConnectionType type;
-    std::shared_ptr<AudioNode> destination;
-    std::shared_ptr<AudioNode> source;
-    PendingConnection(
-        std::shared_ptr<AudioNode> destination,
-        std::shared_ptr<AudioNode> source,
-        uint32_t inputIndex, 
-        uint32_t oututIndex,
-        ConnectionType t)
-        : destination(destination), source(source), type(t) { }
-};
-
 // @tofix - refactor such that this factory function doesn't need to exist
 std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
 
@@ -175,6 +156,28 @@ private:
 
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
     
+    enum class ConnectionType : int
+    {
+        Disconnect = 0,
+        Connect = 1
+    };
+
+    struct PendingConnection
+    {
+        ConnectionType type;
+        std::shared_ptr<AudioNode> destination;
+        std::shared_ptr<AudioNode> source;
+        uint32_t inputIndex;
+        uint32_t outputIndex;
+        PendingConnection(
+            std::shared_ptr<AudioNode> destination,
+            std::shared_ptr<AudioNode> source,
+            ConnectionType t,
+            uint32_t inputIndex = 0,
+            uint32_t outputIndex = 0)
+            : destination(destination), source(source), type(t), inputIndex(inputIndex), outputIndex(outputIndex) { }
+    };
+
     struct CompareScheduledTime
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
