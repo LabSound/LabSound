@@ -106,8 +106,8 @@ public:
     
     unsigned connectionCount() const { return m_connectionCount;}
     
-    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
-    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
+    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
+    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
     
@@ -167,15 +167,15 @@ private:
         ConnectionType type;
         std::shared_ptr<AudioNode> destination;
         std::shared_ptr<AudioNode> source;
-        uint32_t inputIndex;
-        uint32_t outputIndex;
+        uint32_t destIndex;
+        uint32_t srcIndex;
         PendingConnection(
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,
             ConnectionType t,
             uint32_t inputIndex = 0,
             uint32_t outputIndex = 0)
-            : destination(destination), source(source), type(t), inputIndex(inputIndex), outputIndex(outputIndex) { }
+            : destination(destination), source(source), type(t), destIndex(destIndex), srcIndex(srcIndex) { }
     };
 
     struct CompareScheduledTime

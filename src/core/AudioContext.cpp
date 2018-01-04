@@ -194,16 +194,19 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
     handleAutomaticSources();
 }
 
-void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
+void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0)
 {
+    // input(src), output(dest)
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(destination, source, ConnectionType::Connect);
+    if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
+    if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
+    pendingNodeConnections.emplace(destination, source, destIdx, srcIdx, ConnectionType::Connect);
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
+void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect);
+    pendingNodeConnections.emplace(destination, source, destIdx, srcIdx, ConnectionType::Disconnect);
 }
 
 void AudioContext::update(ContextGraphLock & g)
@@ -228,16 +231,16 @@ void AudioContext::update(ContextGraphLock & g)
 
         pendingNodeConnections.pop();
 
-        // from, to => destination, source
+        // from, to => destination, source => 
         if (connection.type == ConnectionType::Connect)
         {
-            AudioNodeInput::connect(g, connection.source->input(connection.inputIndex), connection.destination->output(connection.outputIndex));
+            AudioNodeInput::connect(g, connection.source->input(connection.srcIndex), connection.destination->output(connection.destIndex));
         }
         else if (connection.type == ConnectionType::Disconnect)
         {
             if (connection.source && connection.destination)
             {
-                AudioNodeInput::disconnect(g, connection.destination->input(connection.inputIndex), connection.source->output(connection.outputIndex));
+                AudioNodeInput::disconnect(g, connection.destination->input(connection.srcIndex), connection.source->output(connection.destIndex));
             }
             else if (connection.destination)
             {
