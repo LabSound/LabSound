@@ -75,7 +75,7 @@ namespace lab
                 for (auto i : sawStorage)
                 {
                     // r.context()->disconnect(i); // dimitri
-                    context->disconnect(i->output(0));
+                    context->disconnect(i, nullptr);
                 }
 
                 sawStorage.clear();

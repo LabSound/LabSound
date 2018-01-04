@@ -126,7 +126,7 @@ void AudioNode::disconnect(AudioContext * ctx)
 {
     for (auto & output : m_outputs)
     {
-        ctx->disconnect(output);
+        ctx->disconnect(output, nullptr);
     }
 }
 

@@ -101,7 +101,6 @@ public:
     void handlePostRenderTasks(ContextRenderLock &); // Called at the END of each render quantum.
 
     // We schedule deletion of all marked nodes at the end of each realtime render quantum.
-    void markForDeletion(ContextRenderLock & r, AudioNode *);
     void deleteMarkedNodes();
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
@@ -118,11 +117,8 @@ public:
     
     unsigned connectionCount() const { return m_connectionCount;}
     
-    //void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-    //void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-
-    void connect(std::shared_ptr<AudioNodeInput> destination, std::shared_ptr<AudioNodeOutput> source);
-    void disconnect(std::shared_ptr<AudioNodeOutput> source);
+    void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
+    void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
     
@@ -156,17 +152,12 @@ private:
 
     void scheduleNodeDeletion(ContextRenderLock & g);
 
-    void referenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> n);
-    void dereferenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> n);
-    
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
     std::shared_ptr<AudioBuffer> m_renderTarget;
-
-    std::vector<std::shared_ptr<AudioNode>> m_referencedNodes;
 
     std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
     std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;

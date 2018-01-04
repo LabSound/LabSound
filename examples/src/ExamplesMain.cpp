@@ -46,6 +46,6 @@ GrooveApp g_grooveExample;
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
-    g_rhythm.PlayExample();
+    g_simpleExample.PlayExample();
     return 0;
 }

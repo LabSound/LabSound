@@ -72,7 +72,6 @@ AudioContext::~AudioContext()
     ASSERT(!m_isInitialized);
     ASSERT(m_isStopScheduled);
     ASSERT(!m_nodesToDelete.size());
-    ASSERT(!m_referencedNodes.size());
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
 }
@@ -130,7 +129,6 @@ void AudioContext::uninitialize(ContextGraphLock& g)
     
     updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
 
-    m_referencedNodes.clear();
     m_isInitialized = false;
 }
 
@@ -155,25 +153,6 @@ void AudioContext::stop(ContextGraphLock& g)
 
     uninitialize(g);
     clear();
-}
-
-void AudioContext::referenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> node)
-{
-    m_referencedNodes.push_back(node);
-}
-
-void AudioContext::dereferenceSourceNode(ContextGraphLock & g, std::shared_ptr<AudioNode> node)
-{
-    ASSERT(g.context());
-
-    for (std::vector<std::shared_ptr<AudioNode>>::iterator i = m_referencedNodes.begin(); i != m_referencedNodes.end(); ++i)
-    {
-        if (node == *i)
-        {
-            m_referencedNodes.erase(i);
-            break;
-        }
-    }
 }
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> sn)
@@ -219,7 +198,6 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
     handleAutomaticSources();
 }
 
-/*
 void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
@@ -231,44 +209,12 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<A
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
     pendingNodeConnections.emplace(from, to, false);
 }
-*/
-
-void AudioContext::connect(std::shared_ptr<AudioNodeInput> destination, std::shared_ptr<AudioNodeOutput> source)
-{
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(destination, source, true));
-}
-
-void AudioContext::disconnect(std::shared_ptr<AudioNodeOutput> source)
-{
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    auto nullDestination = std::shared_ptr<AudioNodeInput>(nullptr);
-    pendingConnections.emplace_back(PendingConnection<AudioNodeInput, AudioNodeOutput>(nullDestination, source, false));
-}
 
 void AudioContext::update(ContextGraphLock& g)
 {
     {
         std::lock_guard<std::mutex> lock(automaticSourcesMutex);
         
-        for (auto i : pendingConnections)
-        {
-            if (i.connect)
-            {
-                //LOG("Connect from: %p", i.from.get());
-                //LOG("Connect to: %p", i.to.get());
-                AudioNodeInput::connect(g, i.from, i.to);
-            }
-            else
-            {
-                //LOG("Disconnect from: %p", i.from.get());
-                //LOG("Disconnect to: %p", i.to.get());
-                AudioNodeOutput::disconnectAll(g, i.to); // Params + Inputs
-            }
-        }
-        pendingConnections.clear();
-
-        /*
         double now = currentTime();
         
         //for (auto i : pendingNodeConnections)
@@ -330,25 +276,11 @@ void AudioContext::update(ContextGraphLock& g)
                 }
             }
         }
-        */
-        
+
         //auto d = destination();
         //auto in = d->input(0);
         //printf("%d\n", (int) in->numberOfRenderingConnections());
         //pendingNodeConnections.clear();
-    }
-}
-
-void AudioContext::markForDeletion(ContextRenderLock& r, AudioNode* node)
-{
-    ASSERT(r.context());
-    for (auto i : m_referencedNodes)
-    {
-        if (i.get() == node)
-        {
-            m_nodesMarkedForDeletion.push_back(i);
-            return;
-        }
     }
 }
 
