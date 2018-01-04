@@ -39,9 +39,15 @@ enum class ConnectionType : int
 struct PendingConnection
 {
     ConnectionType type;
-    std::shared_ptr<AudioNode> from;
-    std::shared_ptr<AudioNode> to;
-    PendingConnection(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to, ConnectionType t) : from(from), to(to), type(t) { }
+    std::shared_ptr<AudioNode> destination;
+    std::shared_ptr<AudioNode> source;
+    PendingConnection(
+        std::shared_ptr<AudioNode> destination,
+        std::shared_ptr<AudioNode> source,
+        uint32_t inputIndex, 
+        uint32_t oututIndex,
+        ConnectionType t)
+        : destination(destination), source(source), type(t) { }
 };
 
 // @tofix - refactor such that this factory function doesn't need to exist
@@ -173,10 +179,10 @@ private:
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
-            if (!p2.from->isScheduledNode()) return true;
-            if (!p1.from->isScheduledNode()) return false;
-            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.from.get());
-            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.from.get());
+            if (!p2.destination->isScheduledNode()) return true;
+            if (!p1.destination->isScheduledNode()) return false;
+            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.destination.get());
+            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());
             return ap2->startTime() < ap1->startTime();
         }
     };

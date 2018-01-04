@@ -197,13 +197,13 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(destination, source, true);
+    pendingNodeConnections.emplace(destination, source, ConnectionType::Connect);
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(destination, source, false);
+    pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect);
 }
 
 void AudioContext::update(ContextGraphLock & g)
@@ -218,9 +218,9 @@ void AudioContext::update(ContextGraphLock & g)
             auto connection = pendingNodeConnections.top();
 
             // stop processing the queue if the scheduled time is > 100ms away
-            if (connection.from->isScheduledNode())
+            if (connection.destination->isScheduledNode())
             {
-                AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.from.get());
+                AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
                 if (node->startTime() > now + sampleRate() * 1.f / 1000000.f * 1.f / 10.f)
                 {
                     break; 
@@ -231,29 +231,30 @@ void AudioContext::update(ContextGraphLock & g)
             
             if (connection.type == ConnectionType::Connect)
             {
-                AudioNodeInput::connect(g, connection.to->input(0), connection.from->output(0));
+                // from, to => destination, source
+                AudioNodeInput::connect(g, connection.source->input(0), connection.destination->output(0));
             }
             else if (connection.type == ConnectionType::Disconnect)
             {
-                if (connection.to && connection.from)
+                if (connection.source && connection.destination)
                 {
-                    AudioNodeInput::disconnect(g, connection.from->input(0), connection.to->output(0));
+                    AudioNodeInput::disconnect(g, connection.destination->input(0), connection.source->output(0));
                 }
-                else if (connection.from)
+                else if (connection.destination)
                 {
-                    for (size_t out = 0; out < connection.from->numberOfOutputs(); ++out)
+                    for (size_t out = 0; out < connection.destination->numberOfOutputs(); ++out)
                     {
-                        auto output = connection.from->output(out);
+                        auto output = connection.destination->output(out);
                         if (!output) continue;
                         
                         AudioNodeOutput::disconnectAll(g, output);
                     }
                 }
-                else if (connection.to)
+                else if (connection.source)
                 {
-                    for (size_t out = 0; out < connection.to->numberOfOutputs(); ++out)
+                    for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
                     {
-                        auto output = connection.to->output(out);
+                        auto output = connection.source->output(out);
                         if (!output) continue;
                         
                         AudioNodeOutput::disconnectAll(g, output);
@@ -264,7 +265,7 @@ void AudioContext::update(ContextGraphLock & g)
     }
 }
 
-void AudioContext::scheduleNodeDeletion(ContextRenderLock& r)
+void AudioContext::scheduleNodeDeletion(ContextRenderLock & r)
 {
     //@fixme
     // &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
