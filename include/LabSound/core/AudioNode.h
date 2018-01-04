@@ -201,9 +201,6 @@ private:
     double m_lastProcessingTime;
     double m_lastNonSilentTime;
 
-    // Ref-counting
-    std::atomic<int> m_connectionRefCount;
-
     bool m_isMarkedForDeletion;
 
 #if DEBUG_AUDIONODE_REFERENCES

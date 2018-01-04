@@ -144,13 +144,9 @@ void AudioContext::incrementConnectionCount()
 
 void AudioContext::stop(ContextGraphLock& g)
 {
-    if (m_isStopScheduled)
-        return;
-
+    if (m_isStopScheduled) return;
     m_isStopScheduled = true;
-
     deleteMarkedNodes();
-
     uninitialize(g);
     clear();
 }
@@ -198,34 +194,33 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
     handleAutomaticSources();
 }
 
-void AudioContext::connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
+void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(from, to, true);
+    pendingNodeConnections.emplace(destination, source, true);
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to)
+void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    pendingNodeConnections.emplace(from, to, false);
+    pendingNodeConnections.emplace(destination, source, false);
 }
 
-void AudioContext::update(ContextGraphLock& g)
+void AudioContext::update(ContextGraphLock & g)
 {
     {
         std::lock_guard<std::mutex> lock(automaticSourcesMutex);
         
         double now = currentTime();
         
-        //for (auto i : pendingNodeConnections)
         while (!pendingNodeConnections.empty())
         {
-            auto i = pendingNodeConnections.top();
+            auto connection = pendingNodeConnections.top();
 
             // stop processing the queue if the scheduled time is > 100ms away
-            if (i.from->isScheduledNode()) 
+            if (connection.from->isScheduledNode())
             {
-                AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(i.from.get());
+                AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.from.get());
                 if (node->startTime() > now + sampleRate() * 1.f / 1000000.f * 1.f / 10.f)
                 {
                     break; 
@@ -234,41 +229,31 @@ void AudioContext::update(ContextGraphLock& g)
 
             pendingNodeConnections.pop();
             
-            if (i.connect)
+            if (connection.type == ConnectionType::Connect)
             {
-                AudioNodeInput::connect(g, i.to->input(0), i.from->output(0));
-                referenceSourceNode(g, i.from);
-                referenceSourceNode(g, i.to);
-                ++i.from->m_connectionRefCount;
-                ++i.to->m_connectionRefCount;
+                AudioNodeInput::connect(g, connection.to->input(0), connection.from->output(0));
             }
-            else
+            else if (connection.type == ConnectionType::Disconnect)
             {
-                if (i.to && i.from)
+                if (connection.to && connection.from)
                 {
-                    --i.from->m_connectionRefCount;
-                    --i.to->m_connectionRefCount;
-                    AudioNodeInput::disconnect(g, i.from->input(0), i.to->output(0));
-                    dereferenceSourceNode(g, i.from);
-                    dereferenceSourceNode(g, i.to);
+                    AudioNodeInput::disconnect(g, connection.from->input(0), connection.to->output(0));
                 }
-                else if (i.from)
+                else if (connection.from)
                 {
-                    --i.from->m_connectionRefCount;
-                    for (size_t out = 0; out < i.from->numberOfOutputs(); ++out)
+                    for (size_t out = 0; out < connection.from->numberOfOutputs(); ++out)
                     {
-                        auto output = i.from->output(out);
+                        auto output = connection.from->output(out);
                         if (!output) continue;
                         
                         AudioNodeOutput::disconnectAll(g, output);
                     }
                 }
-                else if (i.to)
+                else if (connection.to)
                 {
-                    --i.to->m_connectionRefCount;
-                    for (size_t out = 0; out < i.to->numberOfOutputs(); ++out)
+                    for (size_t out = 0; out < connection.to->numberOfOutputs(); ++out)
                     {
-                        auto output = i.to->output(out);
+                        auto output = connection.to->output(out);
                         if (!output) continue;
                         
                         AudioNodeOutput::disconnectAll(g, output);
@@ -276,11 +261,6 @@ void AudioContext::update(ContextGraphLock& g)
                 }
             }
         }
-
-        //auto d = destination();
-        //auto in = d->input(0);
-        //printf("%d\n", (int) in->numberOfRenderingConnections());
-        //pendingNodeConnections.clear();
     }
 }
 

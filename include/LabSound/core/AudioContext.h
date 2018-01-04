@@ -30,16 +30,18 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
-    
-template<class Input, class Output>
+
+enum class ConnectionType : int
+{
+    Disconnect = 0,
+    Connect = 1
+};
 struct PendingConnection
 {
-    PendingConnection(std::shared_ptr<Input> from,
-                      std::shared_ptr<Output> to,
-                      bool connect) : from(from), to(to), connect(connect) {}
-    bool connect; // true: connect; false: disconnect
-    std::shared_ptr<Input> from;
-    std::shared_ptr<Output> to;
+    ConnectionType type;
+    std::shared_ptr<AudioNode> from;
+    std::shared_ptr<AudioNode> to;
+    PendingConnection(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to, ConnectionType t) : from(from), to(to), type(t) { }
 };
 
 // @tofix - refactor such that this factory function doesn't need to exist
@@ -97,8 +99,8 @@ public:
     void incrementActiveSourceCount();
     void decrementActiveSourceCount();
 
-    void handlePreRenderTasks(ContextRenderLock &); // Called at the START of each render quantum.
-    void handlePostRenderTasks(ContextRenderLock &); // Called at the END of each render quantum.
+    void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
+    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
 
     // We schedule deletion of all marked nodes at the end of each realtime render quantum.
     void deleteMarkedNodes();
@@ -117,8 +119,8 @@ public:
     
     unsigned connectionCount() const { return m_connectionCount;}
     
-    void connect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
-    void disconnect(std::shared_ptr<AudioNode> from, std::shared_ptr<AudioNode> to);
+    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
+    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
     
@@ -166,12 +168,10 @@ private:
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
-
-    typedef PendingConnection<AudioNode, AudioNode> PendingNodeConnection;
     
     struct CompareScheduledTime
     {
-        bool operator()(const PendingNodeConnection & p1, const PendingNodeConnection & p2)
+        bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
             if (!p2.from->isScheduledNode()) return true;
             if (!p1.from->isScheduledNode()) return false;
@@ -181,8 +181,7 @@ private:
         }
     };
     
-    std::vector<PendingConnection<AudioNodeInput, AudioNodeOutput>> pendingConnections;
-    std::priority_queue<PendingNodeConnection, std::deque<PendingNodeConnection>, CompareScheduledTime> pendingNodeConnections;
+    std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
 };
 
 } // End namespace lab
