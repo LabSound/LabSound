@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
 
-LabSound is a graph-based audio engine built using modern C++11. As a fork of the WebAudio implementation in Chrome, LabSound implements the WebAudio API specification while extending it with new features, nodes, bugfixes, and performance improvements.
+LabSound is a graph-based audio engine built in modern C++11. As a fork of the WebAudio implementation in Google's Chrome browser, LabSound implements many aspects of the WebAudio specification while extending its functionality with an improved API, new graph nodes, bugfixes, and performance improvements.
 
 The engine is packaged as a batteries-included static library meant for integration in many types of software: games, visualizers, interactive installations, live coding environments, VST plugins, audio editing/sequencing applications, and more.
 
@@ -71,7 +71,7 @@ LabSound includes an HRTF implementation. This creates an additional dependency 
 
 # WebAudio Compatibility
 
-The W3C WebAudio specification is listed [at this URL](http://www.w3.org/TR/webaudio/). While LabSound is derived from one of the original WebAudio implementations, it does not aim to maintain full API compatibility with the spec. In many cases, LabSound has deliberately deviated from the spec for performance or usability reasons. This is expected to continue into the future as new functionality is added to the engine. Generally, one might take any WebAudio JavaScript sample code and transliterate it to LabSound with only mild effort (modulo obvious architectual considerations of JavaScript vs C++).
+LabSound is derived from one of the original WebAudio implementations, but does not maintain full compatibility with the [spec](http://www.w3.org/TR/webaudio/). In many cases, LabSound has deliberately deviated from the spec for performance or API usability reasons. This is expected to continue into the future as new functionality is added to the engine. It possible to reformulate most WebAudio API sample code written in JS as a LabSound sketch (modulo obvious architectual considerations of JavaScript vs C++).
 
 # License
 
