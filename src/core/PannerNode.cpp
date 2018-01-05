@@ -55,10 +55,6 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
     m_params.push_back(m_distanceGain);
     m_params.push_back(m_coneGain);
 
-    m_position = FloatPoint3D(0, 0, 0);
-    m_orientation = FloatPoint3D(0, 0, 0);
-    m_velocity = FloatPoint3D(0, 0, 0);
-
     // Node-specific default mixing rules.
     m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
@@ -181,9 +177,7 @@ void PannerNode::reset(ContextRenderLock&)
 
 std::shared_ptr<AudioListener> PannerNode::listener(ContextRenderLock& r)
 {
-    if (!r.context())
-        return nullptr;
-
+    if (!r.context()) return nullptr;
     return r.context()->listener();
 }
 
@@ -235,7 +229,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     // Calculate the source-listener vector
     FloatPoint3D listenerPosition = listener(r)->position();
-    FloatPoint3D sourceListener = m_position - listenerPosition;
+    FloatPoint3D sourceListener = normalize(m_position - listenerPosition);
 
     if (is_zero(sourceListener))
     {
@@ -245,19 +239,15 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
         return;
     }
 
-    sourceListener = normalize(sourceListener);
-
     // Align axes
     FloatPoint3D listenerFront = normalize(listener(r)->orientation());
     FloatPoint3D listenerUp = listener(r)->upVector();
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
-
     FloatPoint3D up = cross(listenerRight, listenerFront);
 
     float upProjection = dot(sourceListener, up);
 
-    FloatPoint3D projectedSource = sourceListener - upProjection * up;
-    projectedSource = normalize(projectedSource);
+    FloatPoint3D projectedSource = normalize(sourceListener - upProjection * up);
 
     azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / piDouble;
     fixNANs(azimuth); // avoid illegal values

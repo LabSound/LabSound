@@ -36,7 +36,8 @@ struct SpatializationApp : public LabSoundExampleApp
             trainNode->setLooping(true);
             context->listener()->setPosition(0, 0, 0);
             panner->setVelocity(4, 0, 0);
-            
+
+
             const int seconds = 10;
             float halfTime = seconds * 0.5f;
             for (float i = 0; i < seconds; i += 0.01f)
@@ -45,6 +46,7 @@ struct SpatializationApp : public LabSoundExampleApp
                 // Put position a +up && +front, because if it goes right through the
                 // listener at (0, 0, 0) it abruptly switches from left to right.
                 panner->setPosition(x, 0.1f, 0.1f);
+
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }

@@ -14,9 +14,9 @@ namespace lab
     class AudioListener 
     {
         // Position / Orientation
-        FloatPoint3D m_position = {0, 0, 0};
-        FloatPoint3D m_orientation {0, 0, 0};
-        FloatPoint3D m_upVector = {0, 1, 0};
+        FloatPoint3D m_position {0, 0, 0};
+        FloatPoint3D m_orientation {0, 0, -1}; // forward vector
+        FloatPoint3D m_upVector {-1, 1, 0};
 
         FloatPoint3D m_velocity = {0, 0, 0};
 
@@ -29,7 +29,7 @@ namespace lab
 
         // Position
         void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
-        void setPosition(const FloatPoint3D &position) { m_position = position; }
+        void setPosition(const FloatPoint3D & position) { m_position = position; }
         const FloatPoint3D & position() const { return m_position; }
 
         // Orientation
@@ -38,8 +38,8 @@ namespace lab
             setOrientation(FloatPoint3D(x, y, z));
             setUpVector(FloatPoint3D(upX, upY, upZ));
         }
-        void setOrientation(const FloatPoint3D &orientation) { m_orientation = orientation; }
-        const FloatPoint3D& orientation() const { return m_orientation; }
+        void setOrientation(const FloatPoint3D & orientation) { m_orientation = orientation; }
+        const FloatPoint3D & orientation() const { return m_orientation; }
 
         // Up-vector
         void setUpVector(const FloatPoint3D &upVector) { m_upVector = upVector; }

@@ -56,15 +56,15 @@ public:
 
     // Position
     FloatPoint3D position() const { return m_position; }
-    void setPosition(float x, float y, float z) { m_position = FloatPoint3D(x, y, z); }
+    void setPosition(float x, float y, float z) { m_position = { x, y, z }; }
 
     // Orientation
-    FloatPoint3D orientation() const { return m_position; }
-    void setOrientation(float x, float y, float z) { m_orientation = FloatPoint3D(x, y, z); }
+    FloatPoint3D orientation() const { return m_orientation; }
+    void setOrientation(float x, float y, float z) { m_orientation = { x, y, z }; }
 
     // Velocity
     FloatPoint3D velocity() const { return m_velocity; }
-    void setVelocity(float x, float y, float z) { m_velocity = FloatPoint3D(x, y, z); }
+    void setVelocity(float x, float y, float z) { m_velocity = { x, y, z }; }
 
     // Distance parameters
     unsigned short distanceModel();
@@ -115,9 +115,9 @@ protected:
 
     PanningMode m_panningModel;
 
-    FloatPoint3D m_position;
-    FloatPoint3D m_orientation;
-    FloatPoint3D m_velocity;
+    FloatPoint3D m_position{ 0, 0, 0 };
+    FloatPoint3D m_orientation{ 0, 0, 0 };
+    FloatPoint3D m_velocity{ 0, 0, 0 };
 
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;
