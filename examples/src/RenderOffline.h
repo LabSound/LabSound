@@ -19,8 +19,8 @@ struct OfflineRenderApp : public LabSoundExampleApp
         context->addAutomaticPullNode(recorder);
         recorder->startRecording();
         {
-            ContextGraphLock g(context, "OfflineRenderApp");
-            ContextRenderLock r(context, "OfflineRenderApp");
+            ContextGraphLock g(context.get(), "OfflineRenderApp");
+            ContextRenderLock r(context.get(), "OfflineRenderApp");
             
             oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             context->connect(recorder, oscillator, 0, 0);
@@ -31,11 +31,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
             tonbiSound = tonbi.play(r, recorder, 0.0f);
             tonbiSound = tonbi.play(r, 0.0f);
             oscillator->start(0);
-            
-            // Offline audio contexts do not run an update thread to make
-            // scheduled graph changes. This needs to be called manually
-            // to effect change. Power to the people!
-            context->update(g);
         }
         
         context->offlineRenderCompleteCallback = [&context, &recorder]()
@@ -51,7 +46,5 @@ struct OfflineRenderApp : public LabSoundExampleApp
         context->startRendering();
         
         //std::this_thread::sleep_for(std::chrono::seconds(1));
-        
-        lab::CleanupAudioContext(context);
     }
 };

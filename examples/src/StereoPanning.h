@@ -15,8 +15,8 @@ struct StereoPanningApp : public LabSoundExampleApp
         
         std::shared_ptr<AudioBufferSourceNode> trainNode;
         {
-            ContextGraphLock g(context, "Panning");
-            ContextRenderLock r(context, "Panning");
+            ContextGraphLock g(context.get(), "Stereo Panning");
+            ContextRenderLock r(context.get(), "Stereo Panning");
             context->connect(context->destination(), stereoPanner, 0, 0);
             trainNode = train.play(r, stereoPanner, 0.0f);
         }
@@ -46,7 +46,5 @@ struct StereoPanningApp : public LabSoundExampleApp
         {
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

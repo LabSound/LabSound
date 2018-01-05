@@ -14,15 +14,18 @@
 #include <iostream>
 #include <mutex>
 
+// #define DEBUG_LOCKS
+
 namespace lab
 {
 
     class ContextGraphLock
     {
-        
+        AudioContext * m_context;
+
     public:
         
-        ContextGraphLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
+        ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -51,19 +54,16 @@ namespace lab
             
         }
         
-        AudioContext* context() { return m_context.get(); }
-        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
-        
-    private:
-        std::shared_ptr<AudioContext> m_context;
+        AudioContext * context() { return m_context; }
     };
     
     class ContextRenderLock
     {
-        
+        AudioContext * m_context;
+
     public:
         
-        ContextRenderLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
+        ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -86,14 +86,12 @@ namespace lab
         ~ContextRenderLock()
         {
             if (m_context)
+            {
                 m_context->m_renderLock.unlock();
+            }
         }
         
-        AudioContext * context() { return m_context.get(); }
-        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
-        
-    private:
-        std::shared_ptr<AudioContext> m_context;
+        AudioContext * context() { return m_context; }
     };
 
 } // end namespace lab

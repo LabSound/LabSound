@@ -18,8 +18,8 @@ struct RhythmApp : public LabSoundExampleApp
         // store the notes to keep them around long enough to play
         std::vector<std::shared_ptr<AudioNode>> notes;
         {
-            ContextGraphLock g(context, "RhythmApp");
-            ContextRenderLock r(context, "RhythmApp");
+            ContextGraphLock g(context.get(), "RhythmApp");
+            ContextRenderLock r(context.get(), "RhythmApp");
             
             float startTime = 0;
             float eighthNoteTime = 1.0f / 4.0f;
@@ -44,6 +44,5 @@ struct RhythmApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(5));
-        lab::CleanupAudioContext(context);
     }
 };

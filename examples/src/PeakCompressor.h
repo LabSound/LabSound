@@ -19,8 +19,8 @@ struct PeakCompressorApp : public LabSoundExampleApp
         
         std::vector<std::shared_ptr<AudioNode>> notes;
         {
-            ContextGraphLock g(context, "peak comp");
-            ContextRenderLock r(context, "peak comp");
+            ContextGraphLock g(context.get(), "peak comp");
+            ContextRenderLock r(context.get(), "peak comp");
             
             filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
             filter->setType(BiquadFilterNode::LOWPASS);
@@ -50,7 +50,5 @@ struct PeakCompressorApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(4));
-        
-        lab::CleanupAudioContext(context);
     }
 };

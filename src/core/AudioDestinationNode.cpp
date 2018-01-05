@@ -53,7 +53,7 @@ namespace lab
     };
 
     
-AudioDestinationNode::AudioDestinationNode(std::shared_ptr<AudioContext> c, float sampleRate) : AudioNode(sampleRate) , m_currentSampleFrame(0), m_context(c)
+AudioDestinationNode::AudioDestinationNode(AudioContext * ctx, float sampleRate) : AudioNode(sampleRate) , m_currentSampleFrame(0), m_context(ctx)
 {
     m_localAudioInputProvider = new LocalAudioInputProvider();
 

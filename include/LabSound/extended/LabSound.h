@@ -56,11 +56,10 @@
 
 namespace lab
 {
-    std::shared_ptr<AudioContext> MakeRealtimeAudioContext();
-    std::shared_ptr<AudioContext> MakeOfflineAudioContext(const int millisecondsToRun);
-    std::shared_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, size_t frames, float sample_rate);
-    void CleanupAudioContext(std::shared_ptr<AudioContext> context);
-    void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext();
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const int millisecondsToRun);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, size_t frames, float sample_rate);
+    void AcquireLocksForContext(const std::string id, AudioContext * ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
 }
 
 #endif

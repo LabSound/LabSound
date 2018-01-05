@@ -24,8 +24,7 @@ class AudioDestinationNode : public AudioNode, public AudioIOCallback {
 
 public:
 
-    AudioDestinationNode(std::shared_ptr<AudioContext>, float sampleRate);
-
+    AudioDestinationNode(AudioContext * ctx, float sampleRate);
     virtual ~AudioDestinationNode();
     
     // AudioNode   
@@ -53,7 +52,7 @@ protected:
     // Counts the number of sample-frames processed by the destination.
     size_t m_currentSampleFrame;
 
-    std::shared_ptr<AudioContext> m_context;
+    AudioContext * m_context;
 
 };
 

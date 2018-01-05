@@ -33,14 +33,13 @@ struct SimpleApp : public LabSoundExampleApp
             tonbiSound = tonbi.play(r, 0.0f);
         };
 
-        lab::AcquireLocksForContext("Tone and Sample App", context, lockedArea);
+        lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);
 
         const int seconds = 4;
         for (int t = 0; t < seconds; ++t)
         {
             std::this_thread::sleep_for(std::chrono::seconds(1)); 
         }
-        
-        lab::CleanupAudioContext(context);
+
     }
 };

@@ -19,8 +19,8 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
         std::shared_ptr<AudioNode> voice;
         
         {
-            ContextGraphLock g(context, "ConvolutionReverbApp");
-            ContextRenderLock r(context, "ConvolutionReverbApp");
+            ContextGraphLock g(context.get(), "ConvolutionReverbApp");
+            ContextRenderLock r(context.get(), "ConvolutionReverbApp");
 
             auto ac = context.get();
 
@@ -44,7 +44,5 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
         {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

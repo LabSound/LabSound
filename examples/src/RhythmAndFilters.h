@@ -20,8 +20,8 @@ struct RhythmAndFiltersApp : public LabSoundExampleApp
         // store the notes to keep them around long enough to play
         std::vector<std::shared_ptr<AudioNode>> notes;
         {
-            ContextGraphLock g(context, "rhythm filtered");
-            ContextRenderLock r(context, "rhythm filtered");
+            ContextGraphLock g(context.get(), "rhythm filtered");
+            ContextRenderLock r(context.get(), "rhythm filtered");
             
             filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
             filter->setType(BiquadFilterNode::LOWPASS);
@@ -48,6 +48,5 @@ struct RhythmAndFiltersApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(5));
-        lab::CleanupAudioContext(context);
     }
 };

@@ -18,8 +18,8 @@ struct SpatializationApp : public LabSoundExampleApp
         auto panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");
         std::shared_ptr<AudioBufferSourceNode> trainNode;
         {
-            ContextGraphLock g(context, "spatialization");
-            ContextRenderLock r(context, "spatialization");
+            ContextGraphLock g(context.get(), "spatialization");
+            ContextRenderLock r(context.get(), "spatialization");
             
             //osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
             //osc->connect(ac, panner.get(), 0, 0);
@@ -54,7 +54,5 @@ struct SpatializationApp : public LabSoundExampleApp
         {
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

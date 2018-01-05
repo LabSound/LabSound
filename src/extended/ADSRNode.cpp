@@ -48,7 +48,7 @@ namespace lab
             if (!numberOfChannels())
                 return;
 
-            std::shared_ptr<lab::AudioContext> c = r.contextPtr();
+            auto c = r.context();
 
             if (m_noteOnTime >= 0)
             {

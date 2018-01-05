@@ -28,9 +28,9 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRend
 {
     AudioSourceProvider * provider = nullptr;
     
-    provider = r.contextPtr()->destination()->localAudioInputProvider();
+    provider = r.context()->destination()->localAudioInputProvider();
     
-    auto sampleRate = r.contextPtr()->sampleRate();
+    auto sampleRate = r.context()->sampleRate();
     
     std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider, sampleRate));
     
@@ -61,10 +61,30 @@ AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, flo
 
 AudioContext::~AudioContext()
 {
-#if DEBUG_AUDIONODE_REFERENCES
-    fprintf(stderr, "%p: AudioContext::~AudioContext()\n", this);
-#endif
-    
+    LOG("Begin AudioContext::~AudioContext()");
+
+    // Join update thread
+    updateThreadShouldRun = false;
+    if (graphUpdateThread.joinable())
+    {
+        graphUpdateThread.join();
+    }
+
+    for (int i = 0; i < 4; ++i)
+    {
+        ContextGraphLock g(this, "AudioContext::~AudioContext");
+
+        if (!g.context())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        else
+        {
+            // Stop then calls deleteMarkedNodes() and uninitialize()
+            stop(g);
+        }
+    }
+
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
 #endif
@@ -74,6 +94,8 @@ AudioContext::~AudioContext()
     ASSERT(!m_nodesToDelete.size());
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
+
+    LOG("Finish AudioContext::~AudioContext()");
 }
 
 void AudioContext::lazyInitialize()
@@ -95,6 +117,11 @@ void AudioContext::lazyInitialize()
                     m_destinationNode->startRendering();
                 }
 
+                graphUpdateThread = std::thread(&AudioContext::update, this);
+            }
+            else
+            {
+                LOG_ERROR("m_destinationNode not specified");
             }
             m_isInitialized = true;
         }
@@ -217,78 +244,92 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     pendingParamConnections.push(std::make_tuple(param, driver, index));
 }
 
-void AudioContext::update(ContextGraphLock & g)
+void AudioContext::update()
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-        
-    double now = currentTime();
-      
-    // Satisfy parameter connections
-    while (!pendingParamConnections.empty())
+    LOG("Create UpdateGraphThread");
+
+    while (updateThreadShouldRun)
     {
-        auto connection = pendingParamConnections.front();
-        pendingParamConnections.pop();
-        AudioParam::connect(g, std::get<0>(connection), std::get<1>(connection)->output(std::get<2>(connection)));
-    }
+        ContextGraphLock gLock(this, "context::update");
 
-    std::vector<PendingConnection> skippedConnections;
-
-    // Satisfy node connections
-    while (!pendingNodeConnections.empty())
-    {
-        auto connection = pendingNodeConnections.top();
-
-        // stop processing the queue if the scheduled time is > 100ms away
-        if (connection.destination && connection.destination->isScheduledNode())
+        // Verify that we've acquired the lock, and check again 5 ms later if not
+        if (!gLock.context())
         {
-            AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
-            if (node->startTime() > now + 0.1)
-            {
-                pendingNodeConnections.pop(); // pop from current queue
-                skippedConnections.push_back(connection); // save for later
-                continue; 
-            }
+            if (!m_isOfflineContext) std::this_thread::sleep_for(std::chrono::milliseconds(5));
+            continue;
         }
 
-        pendingNodeConnections.pop();
+        double now = currentTime();
 
-        if (connection.type == ConnectionType::Connect)
+        // Satisfy parameter connections
+        while (!pendingParamConnections.empty())
         {
-            AudioNodeInput::connect(g, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+            auto connection = pendingParamConnections.front();
+            pendingParamConnections.pop();
+            AudioParam::connect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<2>(connection)));
         }
-        else if (connection.type == ConnectionType::Disconnect)
+
+        std::vector<PendingConnection> skippedConnections;
+
+        // Satisfy node connections
+        while (!pendingNodeConnections.empty())
         {
-            if (connection.source && connection.destination)
+            auto connection = pendingNodeConnections.top();
+
+            // stop processing the queue if the scheduled time is > 100ms away
+            if (connection.destination && connection.destination->isScheduledNode())
             {
-                AudioNodeInput::disconnect(g, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
-            }
-            else if (connection.destination)
-            {
-                for (size_t out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
+                if (node->startTime() > now + 0.1)
                 {
-                    auto output = connection.destination->output(out);
-                    if (!output) continue;
-                        
-                    AudioNodeOutput::disconnectAll(g, output);
+                    pendingNodeConnections.pop(); // pop from current queue
+                    skippedConnections.push_back(connection); // save for later
+                    continue;
                 }
             }
-            else if (connection.source)
+
+            pendingNodeConnections.pop();
+
+            if (connection.type == ConnectionType::Connect)
             {
-                for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
+                AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+            }
+            else if (connection.type == ConnectionType::Disconnect)
+            {
+                if (connection.source && connection.destination)
                 {
-                    auto output = connection.source->output(out);
-                    if (!output) continue;
-                        
-                    AudioNodeOutput::disconnectAll(g, output);
+                    AudioNodeInput::disconnect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+                }
+                else if (connection.destination)
+                {
+                    for (size_t out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                    {
+                        auto output = connection.destination->output(out);
+                        if (!output) continue;
+
+                        AudioNodeOutput::disconnectAll(gLock, output);
+                    }
+                }
+                else if (connection.source)
+                {
+                    for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
+                    {
+                        auto output = connection.source->output(out);
+                        if (!output) continue;
+
+                        AudioNodeOutput::disconnectAll(gLock, output);
+                    }
                 }
             }
         }
-    }
 
-    // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
-    for (auto & sc : skippedConnections)
-    {
-        pendingNodeConnections.push(sc);
+        // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
+        for (auto & sc : skippedConnections)
+        {
+            pendingNodeConnections.push(sc);
+        }
+
+        if (!m_isOfflineContext) std::this_thread::sleep_for(std::chrono::milliseconds(10)); // fixed 10ms timestep 
     }
 }
 

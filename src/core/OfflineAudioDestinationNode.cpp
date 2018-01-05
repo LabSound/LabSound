@@ -18,11 +18,10 @@ namespace lab {
     
 const size_t renderQuantumSize = 128;    
 
-OfflineAudioDestinationNode::OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer* renderTarget)
-    : AudioDestinationNode(context, renderTarget->sampleRate())
-    , m_renderTarget(renderTarget)
-    , m_startedRendering(false)
-    , ctx(context.get())
+OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, AudioBuffer* renderTarget)
+    : AudioDestinationNode(context, renderTarget->sampleRate()), 
+    m_renderTarget(renderTarget), 
+    ctx(context)
 {
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(renderTarget->numberOfChannels(), renderQuantumSize));
 }

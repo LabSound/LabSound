@@ -41,8 +41,8 @@ struct ValidationApp : public LabSoundExampleApp
         std::shared_ptr<PingPongDelayNode> pingping;
 
         {
-            ContextGraphLock g(context, "Validator");
-            ContextRenderLock r(context, "Validator");
+            ContextGraphLock g(ac, "Validator");
+            ContextRenderLock r(ac, "Validator");
             
             pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
             pingping->BuildSubgraph(g);
@@ -60,7 +60,5 @@ struct ValidationApp : public LabSoundExampleApp
         {
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-       
-        lab::CleanupAudioContext(context);
     }
 };

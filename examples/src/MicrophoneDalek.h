@@ -36,8 +36,8 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<AudioBufferSourceNode> player;
         
         {
-            ContextGraphLock g(context, "dalek voice");
-            ContextRenderLock r(context, "dalek voice");
+            ContextGraphLock g(context.get(), "dalek voice");
+            ContextRenderLock r(context.get(), "dalek voice");
             
             vIn = std::make_shared<OscillatorNode>(r, sampleRate);
             vIn->frequency()->setValue(30.0f);
@@ -128,6 +128,5 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(30));
-        lab::CleanupAudioContext(context);
     }
 };

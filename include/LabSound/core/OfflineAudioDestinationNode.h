@@ -18,7 +18,7 @@ class OfflineAudioDestinationNode : public AudioDestinationNode
     
 public:
     
-    OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer * renderTarget);
+    OfflineAudioDestinationNode(AudioContext * context, AudioBuffer * renderTarget);
     virtual ~OfflineAudioDestinationNode();
     
     virtual void initialize();
@@ -38,7 +38,7 @@ private:
     // Rendering thread.
     std::thread m_renderThread;
     
-    bool m_startedRendering;
+    bool m_startedRendering{ false };
     void offlineRender();
     
     AudioContext * ctx;

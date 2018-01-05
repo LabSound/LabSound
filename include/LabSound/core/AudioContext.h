@@ -63,8 +63,6 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
-    void update(ContextGraphLock & g);
-
     void stop(ContextGraphLock & g);
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
@@ -125,6 +123,10 @@ private:
     std::mutex m_renderLock;
     std::mutex automaticSourcesMutex;
 
+    std::atomic<bool> updateThreadShouldRun{ true };
+    std::thread graphUpdateThread;
+    void update();
+
     bool m_isStopScheduled = false;
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
@@ -184,6 +186,7 @@ private:
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
+            if (!p1.destination || !p2.destination) return false;
             if (!p2.destination->isScheduledNode()) return false; // src cannot be compared
             if (!p1.destination->isScheduledNode()) return false; // dest cannot be compared
             AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());

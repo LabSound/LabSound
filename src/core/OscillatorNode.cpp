@@ -130,7 +130,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r
 
     float finalScale = m_waveTable->rateScale();
 
-    std::shared_ptr<AudioContext> c = r.contextPtr();
+    AudioContext * c = r.context();
 
     if (m_frequency->hasSampleAccurateValues()) {
         hasSampleAccurateValues = true;

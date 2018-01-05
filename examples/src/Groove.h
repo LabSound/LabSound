@@ -158,8 +158,8 @@ struct GrooveApp : public LabSoundExampleApp
         float songLenSeconds = 16.0f;
         
         {
-            ContextGraphLock g(context, "GrooveApp");
-            ContextRenderLock r(context, "GrooveApp");
+            ContextGraphLock g(context.get(), "GrooveApp");
+            ContextRenderLock r(context.get(), "GrooveApp");
             
             float elapsedTime = 0.0f;
             
@@ -236,7 +236,5 @@ struct GrooveApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::seconds(1));
             nowInSeconds += 1;
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

@@ -13,7 +13,7 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         std::shared_ptr<GainNode> gain;
         std::shared_ptr<AudioBufferSourceNode> tonbiSound;
 
-        lab::AcquireLocksForContext("Tone and Sample App", context, [&](ContextGraphLock & g, ContextRenderLock & r)
+        lab::AcquireLocksForContext("Tone and Sample App", context.get(), [&](ContextGraphLock & g, ContextRenderLock & r)
         {
             SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
 
@@ -25,7 +25,7 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
 
             // osc -> gain -> destination
             context->connect(gain, oscillator1, 0, 0);
-            context->connect(context->destination(), gain, 0, 10);
+            context->connect(context->destination(), gain, 0, 0);
 
             oscillator1->start(0);
             oscillator1->frequency()->setValue(220.f);
@@ -51,7 +51,5 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         context->disconnect(tonbiSound, nullptr, 0, 0);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-        lab::CleanupAudioContext(context);
     }
 };

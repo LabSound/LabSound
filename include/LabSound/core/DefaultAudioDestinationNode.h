@@ -12,7 +12,7 @@ namespace lab {
 class AudioContext;
 struct AudioDestination;
     
-class DefaultAudioDestinationNode : public AudioDestinationNode 
+class DefaultAudioDestinationNode final : public AudioDestinationNode 
 {
     std::unique_ptr<AudioDestination> m_destination;
 
@@ -20,7 +20,7 @@ class DefaultAudioDestinationNode : public AudioDestinationNode
     
 public:
 
-    DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
+    DefaultAudioDestinationNode(AudioContext * ctx);
     virtual ~DefaultAudioDestinationNode();
     
     virtual void initialize() override;

@@ -18,8 +18,8 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         std::shared_ptr<RecorderNode> recorder;
         
         {
-            ContextGraphLock g(context, "MicrophoneReverbApp");
-            ContextRenderLock r(context, "MicrophoneReverbApp");
+            ContextGraphLock g(context.get(), "MicrophoneReverbApp");
+            ContextRenderLock r(context.get(), "MicrophoneReverbApp");
             
             input = MakeHardwareSourceNode(r);
             
@@ -46,7 +46,5 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
         context->removeAutomaticPullNode(recorder);
         
         recorder->writeRecordingToWav(1, "MicrophoneReverbApp.wav");
-        
-        lab::CleanupAudioContext(context);
     }
 };

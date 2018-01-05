@@ -27,8 +27,8 @@ struct RedAlertApp : public LabSoundExampleApp
         std::shared_ptr<BiquadFilterNode> filter[5];
         
         {
-            ContextGraphLock g(context, "Red Alert");
-            ContextRenderLock r(context, "Red Alert");
+            ContextGraphLock g(context.get(), "Red Alert");
+            ContextRenderLock r(context.get(), "Red Alert");
             
             sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
             sweep->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
@@ -157,7 +157,6 @@ struct RedAlertApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             now += 1000;
         }
-        
-        lab::CleanupAudioContext(context);
+       
     }
 };
