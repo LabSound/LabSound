@@ -226,8 +226,8 @@ struct GrooveApp : public LabSoundExampleApp
             grooveBox->start(0);
             envelope->noteOn(0.0);
             
-            grooveBox->connect(context.get(), envelope.get(), 0, 0);
-            envelope->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(envelope, grooveBox, 0, 0);
+            context->connect(context->destination(), envelope, 0, 0);
         }
         
         int nowInSeconds = 0;

@@ -8,10 +8,8 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
-#include "ConnectDisconnect.h"
-
-/*
-#include "OfflineRender.h"
+#include "LiveGraphUpdate.h"
+#include "RenderOffline.h"
 #include "ConvolutionReverb.h"
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
@@ -26,12 +24,9 @@
 #include "InfiniteFM.h"
 #include "Groove.h"
 #include "Validation.h"
-*/
 
 SimpleApp g_simpleExample;
-ConnectDisconnectApp g_connectApp;
-
-/*
+LiveGraphUpdateApp g_liveGraphUpdateApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
@@ -47,11 +42,10 @@ ValidationApp g_validation;
 InfiniteFMApp g_infiniteFM;
 StereoPanningApp g_stereoPanning;
 GrooveApp g_grooveExample;
-*/
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
-    g_connectApp.PlayExample();
+    g_liveGraphUpdateApp.PlayExample();
     return 0;
 }

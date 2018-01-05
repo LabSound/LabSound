@@ -36,9 +36,9 @@ struct TremoloApp : public LabSoundExampleApp
             // Set up processing chain
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
-            modulator->connect(context.get(), modulatorGain.get(), 0, 0);
-            modulatorGain->connect(g, osc->frequency(), 0);
-            osc->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(modulatorGain, modulator, 0, 0);
+            context->connect(osc->frequency(), modulatorGain, 0);
+            context->connect(context->destination(), osc, 0, 0);
         }
         
         int nowInSeconds = 0;

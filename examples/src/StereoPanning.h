@@ -9,7 +9,6 @@ struct StereoPanningApp : public LabSoundExampleApp
     void PlayExample()
     {
         auto context = lab::MakeAudioContext();
-        auto ac = context.get();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
         auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
@@ -18,7 +17,7 @@ struct StereoPanningApp : public LabSoundExampleApp
         {
             ContextGraphLock g(context, "Panning");
             ContextRenderLock r(context, "Panning");
-            stereoPanner->connect(ac, context->destination().get(), 0, 0);
+            context->connect(context->destination(), stereoPanner, 0, 0);
             trainNode = train.play(r, stereoPanner, 0.0f);
         }
         
@@ -30,7 +29,6 @@ struct StereoPanningApp : public LabSoundExampleApp
             
             std::thread controlThreadTest([&stereoPanner, seconds]()
             {
-
                 float halfTime = seconds * 0.5f;
                 for (float i = 0; i < seconds; i += 0.01f)
                 {
@@ -43,7 +41,6 @@ struct StereoPanningApp : public LabSoundExampleApp
             std::this_thread::sleep_for(std::chrono::seconds(seconds));
             
             controlThreadTest.join();
-
         }
         else
         {

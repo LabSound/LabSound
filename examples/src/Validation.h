@@ -49,7 +49,7 @@ struct ValidationApp : public LabSoundExampleApp
             pingping->SetFeedback(0.5);
             pingping->SetDelayIndex(lab::TempoSync::TS_16T);
 
-            pingping->output->connect(ac, context->destination().get(), 0, 0);
+            ac->connect(context->destination(), pingping->output, 0, 0);
 
             SoundBuffer beat("samples/kick.wav", context->sampleRate());
             beatNode = beat.play(r, pingping->input, 0.0f);

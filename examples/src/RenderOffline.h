@@ -9,7 +9,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
     {
         // Run for 3 seconds
         auto context = lab::MakeOfflineAudioContext(3000);
-        auto ac = context.get();
         
         std::shared_ptr<OscillatorNode> oscillator;
         SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
@@ -24,7 +23,7 @@ struct OfflineRenderApp : public LabSoundExampleApp
             ContextRenderLock r(context, "OfflineRenderApp");
             
             oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            oscillator->connect(ac, recorder.get(), 0, 0);
+            context->connect(recorder, oscillator, 0, 0);
 
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);

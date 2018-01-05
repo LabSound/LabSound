@@ -70,17 +70,14 @@ struct InfiniteFMApp : public LabSoundExampleApp
             chainDelay->delayTime()->setValue(0.0f); // passthrough delay, not sure if this has the same DSP semantic as ChucK
             
             // Set up processing chain:
-            modulator->connect(context.get(), modulatorGain.get(), 0, 0);           // Modulator to Gain
-            modulatorGain->connect(g, osc->frequency(), 0);                         // Gain to frequency parameter
-            osc->connect(context.get(), trigger.get(), 0, 0);                       // Osc to ADSR
-            trigger->connect(context.get(), signalGain.get(), 0, 0);                // ADSR to signalGain
-
-            signalGain->connect(context.get(), feedbackTap.get(), 0, 0);            // Signal to Feedback
-            feedbackTap->connect(context.get(), chainDelay.get(), 0, 0);            // Feedback to Delay
-            
-            chainDelay->connect(context.get(), signalGain.get(), 0, 0);             // Delay to signalGain
-            
-            signalGain->connect(context.get(), context->destination().get(), 0, 0); // signalGain to DAC
+            context->connect(modulatorGain, modulator, 0, 0);                   // Modulator to Gain
+            context->connect(g, osc->frequency(), modulatorGain, 0, 0);         // Gain to frequency parameter
+            context->connect(trigger, osc, 0, 0);                               // Osc to ADSR
+            context->connect(signalGain, trigger, 0, 0);                        // ADSR to signalGain
+            context->connect(feedbackTap, signalGain, 0, 0);                    // Signal to Feedback
+            context->connect(chainDelay, feedbackTap, 0, 0);                    // Feedback to Delay
+            context->connect(signalGain, 0, 0);                                 // Delay to signalGain
+            context->connect(context->destination(), 0, 0);                     // signalGain to DAC
         }
         
         int now = 0;

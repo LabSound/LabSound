@@ -3,7 +3,7 @@
 
 #include "ExampleBaseApp.h"
 
-struct ConnectDisconnectApp : public LabSoundExampleApp
+struct LiveGraphUpdateApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
@@ -11,7 +11,7 @@ struct ConnectDisconnectApp : public LabSoundExampleApp
         
         auto ac = context.get();
         
-        std::shared_ptr<OscillatorNode> oscillator;
+        std::shared_ptr<OscillatorNode> oscillator1, oscillator2;
         std::shared_ptr<GainNode> gain;
         std::shared_ptr<AudioBufferSourceNode> tonbiSound;
         {
@@ -20,24 +20,33 @@ struct ConnectDisconnectApp : public LabSoundExampleApp
 
             SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
             
-            oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            oscillator1 = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            oscillator2 = std::make_shared<OscillatorNode>(r, context->sampleRate());
+
             gain = std::make_shared<GainNode>(context->sampleRate());
             gain->gain()->setValue(0.0625f);
             
             // osc -> gain -> destination
-            ac->connect(gain, oscillator, 0, 0);
+            ac->connect(gain, oscillator1, 0, 0);
             ac->connect(context->destination(), gain, 0, 0);
 
-            oscillator->start(0);
-            oscillator->frequency()->setValue(220.f);
-            oscillator->setType(r, OscillatorType::SINE);
+            oscillator1->start(0);
+            oscillator1->frequency()->setValue(220.f);
+            oscillator1->setType(r, OscillatorType::SINE);
+
+            oscillator2->setType(r, OscillatorType::SINE);
 
             tonbiSound = tonbi.play(r, 1.0f);
         }
         
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
         
-        ac->disconnect(nullptr, oscillator, 0, 0);
+        ac->disconnect(nullptr, oscillator1, 0, 0);
+
+        ac->connect(gain, oscillator2, 0, 0);
+        ac->connect(context->destination(), gain, 0, 0);
+        oscillator2->start(0);
+        oscillator2->frequency()->setValue(440.f);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 

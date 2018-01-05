@@ -26,7 +26,7 @@ struct RhythmAndFiltersApp : public LabSoundExampleApp
             filter = std::make_shared<BiquadFilterNode>(context->sampleRate());
             filter->setType(BiquadFilterNode::LOWPASS);
             filter->frequency()->setValue(500.0f);
-            filter->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(context->destination(), filter, 0, 0);
             
             float startTime = 0;
             float eighthNoteTime = 1.0f / 4.0f;

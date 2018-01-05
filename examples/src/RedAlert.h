@@ -97,18 +97,17 @@ struct RedAlertApp : public LabSoundExampleApp
             resonanceSum->gain()->setValue(0.5f);
             
             // sweep drives oscillator frequency
-            sweep->connect(g, osc->frequency(), 0);
+            context->connect(osc->frequency(), sweep, 0);
             
             // oscillator drives resonator frequency
-            osc->connect(g, resonator->frequency(), 0);
+            context->connect(resonator->frequency(), osc, 0);
 
             // osc --> oscGain -------------+
             // resonator -> resonatorGain --+--> resonanceSum
-            //
-            osc->connect(context.get(), oscGain.get(), 0, 0);
-            oscGain->connect(context.get(), resonanceSum.get(), 0, 0);
-            resonator->connect(context.get(), resonatorGain.get(), 0, 0);
-            resonatorGain->connect(context.get(), resonanceSum.get(), 0, 0);
+            context->connect(oscGain, osc, 0, 0);
+            context->connect(resonanceSum, oscGain, 0, 0);
+            context->connect(resonatorGain, resonator, 0, 0);
+            context->connect(resonanceSum, resonatorGain, 0, 0);
             
             delaySum = std::make_shared<GainNode>(context->sampleRate());
             delaySum->gain()->setValue(0.2f);
@@ -117,13 +116,13 @@ struct RedAlertApp : public LabSoundExampleApp
             //                +--> delay1 --+
             //                + ...    .. --+
             //                +--> delay4 --+---> delaySum
-            //
             float delays[5] = {0.015f, 0.022f, 0.035f, 0.024f, 0.011f};
-            for (int i = 0; i < 5; ++i) {
+            for (int i = 0; i < 5; ++i) 
+            {
                 delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
                 delay[i]->delayTime()->setValue(delays[i]);
-                resonanceSum->connect(context.get(), delay[i].get(), 0, 0);
-                delay[i]->connect(context.get(), delaySum.get(), 0, 0);
+                context->connect(delay[i], resonanceSum, 0, 0);
+                context->connect(delaySum, delay[i], 0, 0);
             }
             
             filterSum = std::make_shared<GainNode>(context->sampleRate());
@@ -135,21 +134,21 @@ struct RedAlertApp : public LabSoundExampleApp
             //            +--> filter3 --+
             //            +--------------+----> filterSum
             //
-            delaySum->connect(context.get(), filterSum.get(), 0, 0);
+            context->connect(filterSum, delaySum, 0, 0);
 
             float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 4; ++i) 
+            {
                 filter[i] = std::make_shared<BiquadFilterNode>(context->sampleRate());
                 filter[i]->frequency()->setValue(centerFrequencies[i]);
                 filter[i]->q()->setValue(12.f);
-                delaySum->connect(context.get(), filter[i].get(), 0, 0);
-                filter[i]->connect(context.get(), filterSum.get(), 0, 0);
+                context->connect(filter[i], delaySum, 0, 0);
+                context->connect(filterSum, filter[i], 0, 0);
             }
             
             // filterSum --> destination
-            //
-            outputGainFunction->connect(g, filterSum->gain(), 0);
-            filterSum->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(filterSum->gain(), outputGainFunction, 0);
+            context->connect( context->destination(), filterSum, 0, 0);
         }
         
         int now = 0;

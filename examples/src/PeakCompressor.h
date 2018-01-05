@@ -27,8 +27,8 @@ struct PeakCompressorApp : public LabSoundExampleApp
             filter->frequency()->setValue(2800.0f);
             
             peakComp = std::make_shared<PeakCompNode>(context->sampleRate());
-            filter->connect(context.get(), peakComp.get(), 0, 0);
-            peakComp->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(peakComp, filter, 0, 0);
+            context->connect(context->destination(), peakComp, 0, 0);
             
             float startTime = 0;
             float eighthNoteTime = 1.0f / 4.0f;

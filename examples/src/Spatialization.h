@@ -26,7 +26,7 @@ struct SpatializationApp : public LabSoundExampleApp
             //osc->connect(ac, panner.get(), 0, 0);
             //osc->start(0);
 
-            panner->connect(ac, context->destination().get(), 0, 0);
+            context->connect(context->destination(), panner, 0, 0);
             panner->setPanningModel(PanningMode::HRTF);
             trainNode = train.play(r, panner, 0.0f);
         }

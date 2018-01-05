@@ -95,32 +95,32 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             input->connect(ac, vcInverter1.get(), 0, 0);
             input->connect(ac, vcDiode4->node().get(), 0, 0);
 #else
-            player->connect(ac, vcInverter1.get(), 0, 0);
-            player->connect(ac, vcDiode4->node().get(), 0, 0);
+            context->connect(vcInverter1, player, 0, 0);
+            context->connect(vcDiode4->node(), player, 0, 0);
 #endif
             
-            vcInverter1->connect(ac, vcDiode3->node().get(), 0, 0);
+            context->connect(vcDiode3->node(), vcInverter1, 0, 0);
             
             // Then the Vin side
-            vIn->connect(ac, vInGain.get(), 0, 0);
-            vInGain->connect(ac, vInInverter1.get(), 0, 0);
-            vInGain->connect(ac, vcInverter1.get(), 0, 0);
-            vInGain->connect(ac, vcDiode4->node().get(), 0, 0);
+            context->connect(vInGain, vIn, 0, 0);
+            context->connect(vInInverter1, vInGain, 0, 0);
+            context->connect(vcInverter1, vInGain, 0, 0);
+            context->connect(vcDiode4->node(), vInGain, 0, 0);
             
-            vInInverter1->connect(ac, vInInverter2.get(), 0, 0);
-            vInInverter1->connect(ac, vInDiode2->node().get(), 0, 0);
-            vInInverter2->connect(ac, vInDiode1->node().get(), 0, 0);
+            context->connect(vInInverter2, vInInverter1, 0, 0);
+            context->connect(vInDiode2->node(), vInInverter1, 0, 0);
+            context->connect(vInDiode1->node(), vInInverter2, 0, 0);
             
             // Finally connect the four diodes to the destination via the output-stage compressor and master gain node
-            vInDiode1->node()->connect(ac, vInInverter3.get(), 0, 0);
-            vInDiode2->node()->connect(ac, vInInverter3.get(), 0, 0);
+            context->connect(vInInverter3, vInDiode1->node(), 0, 0);
+            context->connect(vInInverter3, vInDiode2->node(), 0, 0);
             
-            vInInverter3->connect(ac, compressor.get(), 0, 0);
-            vcDiode3->node()->connect(ac, compressor.get(), 0, 0);
-            vcDiode4->node()->connect(ac, compressor.get(), 0, 0);
+            context->connect(compressor, vInInverter3, 0, 0);
+            context->connect(compressor, vcDiode3->node(), 0, 0);
+            context->connect(compressor, vcDiode4->node(), 0, 0);
             
-            compressor->connect(ac, outGain.get(), 0, 0);
-            outGain->connect(ac, context->destination().get(), 0, 0);
+            context->connect(outGain, compressor, 0, 0);
+            context->connect(context->destination(), outGain, 0, 0);
             
 #ifndef USE_LIVE
             player->start(0);

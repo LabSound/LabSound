@@ -15,7 +15,7 @@ struct MicrophoneLoopbackApp : public LabSoundExampleApp
             ContextRenderLock r(context, "MicrophoneLoopbackApp");
             
             input = MakeHardwareSourceNode(r);
-            input->connect(context.get(), context->destination().get(), 0, 0);
+            context->connect(context->destination(), input, 0, 0);
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(10));

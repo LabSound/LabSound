@@ -34,11 +34,10 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(1.f);
             
-            input->connect(ac, convolve.get(), 0, 0);
-            convolve->connect(ac, wetGain.get(), 0, 0);
-            wetGain->connect(ac, context->destination().get(), 0, 0);
-            
-            wetGain->connect(ac, recorder.get(), 0, 0);
+            context->connect(convolve, input, 0, 0);
+            context->connect(wetGain, convolve, 0, 0);
+            context->connect(context->destination(), wetGain, 0, 0);
+            context->connect(recorder, wetGain, 0, 0);
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(5));
