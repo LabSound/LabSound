@@ -43,7 +43,7 @@ namespace lab
         LOG("Destroy UpdateGraphThread");
     }
 
-    std::shared_ptr<lab::AudioContext> MakeAudioContext()
+    std::shared_ptr<lab::AudioContext> MakeRealtimeAudioContext()
     {
         LOG("Initialize Context");
         mainContext = std::make_shared<lab::AudioContext>();
@@ -96,7 +96,9 @@ namespace lab
 
         // Join update thread
         if (g_GraphUpdateThread.joinable())
+        {
             g_GraphUpdateThread.join();
+        }
 
         for (int i = 0; i < 8; ++i)
         {
@@ -119,9 +121,16 @@ namespace lab
 
     void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback)
     {
-        ContextGraphLock g(ctx, id);
-        ContextRenderLock r(ctx, id);
-        callback(g, r);
+        try
+        {
+            ContextGraphLock g(ctx, id);
+            ContextRenderLock r(ctx, id);
+            callback(g, r);
+        }
+        catch (const std::exception & e)
+        {
+            LOG_ERROR("caught exception %s", e.what());
+        }
     }
 
 }

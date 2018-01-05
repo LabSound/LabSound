@@ -7,7 +7,7 @@ struct SimpleApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
         auto ac = context.get();
         

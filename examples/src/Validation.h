@@ -34,7 +34,7 @@ struct ValidationApp : public LabSoundExampleApp
         
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
         
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         auto ac = context.get();
 
         std::shared_ptr<AudioBufferSourceNode> beatNode;

@@ -7,7 +7,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         float sampleRate = context->sampleRate();
         
         SoundBuffer kick("samples/kick.wav", sampleRate);

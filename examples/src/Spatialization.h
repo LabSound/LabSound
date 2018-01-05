@@ -8,7 +8,7 @@ struct SpatializationApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
         std::shared_ptr<OscillatorNode> osc; 

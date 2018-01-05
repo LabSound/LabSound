@@ -8,7 +8,7 @@ struct StereoPanningApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
         auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());

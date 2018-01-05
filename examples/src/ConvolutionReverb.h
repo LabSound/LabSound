@@ -7,7 +7,7 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
         SoundBuffer impulseResponse("impulse/cardiod-rear-levelled.wav", context->sampleRate());
         //SoundBuffer impulseResponse("impulse/filter-telephone.wav", context->sampleRate()); // alternate

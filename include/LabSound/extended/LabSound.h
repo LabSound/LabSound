@@ -56,7 +56,7 @@
 
 namespace lab
 {
-    std::shared_ptr<AudioContext> MakeAudioContext();
+    std::shared_ptr<AudioContext> MakeRealtimeAudioContext();
     std::shared_ptr<AudioContext> MakeOfflineAudioContext(const int millisecondsToRun);
     std::shared_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, size_t frames, float sample_rate);
     void CleanupAudioContext(std::shared_ptr<AudioContext> context);

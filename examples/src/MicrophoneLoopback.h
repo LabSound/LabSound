@@ -7,7 +7,7 @@ struct MicrophoneLoopbackApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
         std::shared_ptr<AudioHardwareSourceNode> input;
         {

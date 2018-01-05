@@ -59,7 +59,7 @@ public:
 
     bool isInitialized() const;
 
-    // Eexternal users shouldn't use this; it should be called by LabSound::MakeAudioContext()
+    // Eexternal users shouldn't use this; it should be called by LabSound::MakeRealtimeAudioContext()
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
