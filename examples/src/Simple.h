@@ -12,7 +12,7 @@ struct SimpleApp : public LabSoundExampleApp
         auto ac = context.get();
         
         std::shared_ptr<OscillatorNode> oscillator;
-        SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
+        SoundBuffer tonbi("samples/stereo-music-clip.wav", context->sampleRate());
         std::shared_ptr<GainNode> gain;
         std::shared_ptr<AudioBufferSourceNode> tonbiSound;
 
@@ -26,7 +26,7 @@ struct SimpleApp : public LabSoundExampleApp
             ac->connect(gain, oscillator, 0, 0);
             ac->connect(context->destination(), gain, 0, 0);
 
-            oscillator->start(0);
+            //oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);
 

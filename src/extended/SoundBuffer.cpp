@@ -12,15 +12,10 @@
 #include <stdio.h>
 #include <iostream>
 
-namespace lab {
-    
-    using namespace lab;
+namespace lab 
+{
 
-
-    SoundBuffer::SoundBuffer()
-    {
-
-    }
+    SoundBuffer::SoundBuffer() { }
 
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
@@ -34,8 +29,7 @@ namespace lab {
 
     void SoundBuffer::initialize(const char * path, float sampleRate)
     {
-        // @tofix - investigate mixing to mono here and why it breaks if we don't
-        std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, true, sampleRate);
+        std::shared_ptr<AudioBus> busForFile = MakeBusFromFile(path, false, sampleRate);
         if (auto f = busForFile.get())
         {
              audioBuffer = std::make_shared<AudioBuffer>(f);
@@ -98,23 +92,19 @@ namespace lab {
     // the start. If 0 is passed as end, then the sound will play to the end.
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {
-        auto ac = r.context();
-        if (audioBuffer && ac) {
-            if (end == 0)
-                end = (float) audioBuffer->duration();
+        auto context = r.context();
+        if (audioBuffer && context)
+        {
+            if (end == 0.0f) end = (float) audioBuffer->duration();
             
-            auto ac = r.context();
-            if (!ac)
-                return nullptr;
-            
-            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(ac->destination()->sampleRate()));
+            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(context->destination()->sampleRate()));
             
             // Set the source node to the parsed audio data for playback
             sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the mixer
-            ac->connect(ac->destination(), sourceBufferNode, 0, 0);
-            ac->holdSourceNodeUntilFinished(sourceBufferNode);
+            context->connect(context->destination(), sourceBufferNode, 0, 0);
+            context->holdSourceNodeUntilFinished(sourceBufferNode);
             sourceBufferNode->startGrain(when, start, end - start);
 
             return sourceBufferNode;

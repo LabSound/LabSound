@@ -110,7 +110,6 @@ void OscillatorNode::setType(ContextRenderLock& r, OscillatorType type)
     setType(true, type);
 }
 
-
 bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock& r, size_t framesToProcess)
 {
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();

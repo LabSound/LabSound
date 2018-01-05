@@ -2,7 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
-# define _CRT_SECURE_NO_WARNINGS
+    #define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #include "ExampleBaseApp.h"
@@ -46,6 +46,6 @@ GrooveApp g_grooveExample;
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
-    g_liveGraphUpdateApp.PlayExample();
+    g_simpleExample.PlayExample();
     return 0;
 }
