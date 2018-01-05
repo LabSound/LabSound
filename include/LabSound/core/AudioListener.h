@@ -16,7 +16,7 @@ namespace lab
         // Position / Orientation
         FloatPoint3D m_position {0, 0, 0};
         FloatPoint3D m_orientation {0, 0, -1}; // forward vector
-        FloatPoint3D m_upVector {-1, 1, 0};
+        FloatPoint3D m_upVector {-0, 1, 0};
 
         FloatPoint3D m_velocity = {0, 0, 0};
 
