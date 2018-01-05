@@ -109,6 +109,8 @@ public:
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
 
+    void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
+
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
     
     // Necessary to call when using an OfflineAudioDestinationNode
@@ -191,6 +193,7 @@ private:
     };
     
     std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
+    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, uint32_t>> pendingParamConnections;
 };
 
 } // End namespace lab

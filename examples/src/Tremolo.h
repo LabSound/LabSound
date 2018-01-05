@@ -37,7 +37,7 @@ struct TremoloApp : public LabSoundExampleApp
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
             context->connect(modulatorGain, modulator, 0, 0);
-            context->connect(osc->frequency(), modulatorGain, 0);
+            context->connectParam(osc->frequency(), modulatorGain, 0);
             context->connect(context->destination(), osc, 0, 0);
         }
         

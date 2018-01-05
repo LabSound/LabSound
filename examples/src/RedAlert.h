@@ -97,10 +97,10 @@ struct RedAlertApp : public LabSoundExampleApp
             resonanceSum->gain()->setValue(0.5f);
             
             // sweep drives oscillator frequency
-            context->connect(osc->frequency(), sweep, 0);
+            context->connectParam(osc->frequency(), sweep, 0);
             
             // oscillator drives resonator frequency
-            context->connect(resonator->frequency(), osc, 0);
+            context->connectParam(resonator->frequency(), osc, 0);
 
             // osc --> oscGain -------------+
             // resonator -> resonatorGain --+--> resonanceSum
@@ -147,7 +147,7 @@ struct RedAlertApp : public LabSoundExampleApp
             }
             
             // filterSum --> destination
-            context->connect(filterSum->gain(), outputGainFunction, 0);
+            context->connectParam(filterSum->gain(), outputGainFunction, 0);
             context->connect( context->destination(), filterSum, 0, 0);
         }
         

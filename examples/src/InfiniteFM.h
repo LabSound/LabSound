@@ -25,7 +25,6 @@
      }
  */
 
-
 // @tofix - This doesn't match the expected sonic result of the ChucK patch. Presumably
 // it is because LabSound oscillators are wavetable generated?
 struct InfiniteFMApp : public LabSoundExampleApp
@@ -71,13 +70,13 @@ struct InfiniteFMApp : public LabSoundExampleApp
             
             // Set up processing chain:
             context->connect(modulatorGain, modulator, 0, 0);                   // Modulator to Gain
-            context->connect(g, osc->frequency(), modulatorGain, 0, 0);         // Gain to frequency parameter
+            context->connectParam(osc->frequency(), modulatorGain, 0);          // Gain to frequency parameter
             context->connect(trigger, osc, 0, 0);                               // Osc to ADSR
             context->connect(signalGain, trigger, 0, 0);                        // ADSR to signalGain
             context->connect(feedbackTap, signalGain, 0, 0);                    // Signal to Feedback
             context->connect(chainDelay, feedbackTap, 0, 0);                    // Feedback to Delay
-            context->connect(signalGain, 0, 0);                                 // Delay to signalGain
-            context->connect(context->destination(), 0, 0);                     // signalGain to DAC
+            context->connect(signalGain, chainDelay, 0, 0);                     // Delay to signalGain
+            context->connect(context->destination(), signalGain, 0, 0);         // signalGain to DAC
         }
         
         int now = 0;

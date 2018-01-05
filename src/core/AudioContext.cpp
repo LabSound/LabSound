@@ -164,7 +164,7 @@ void AudioContext::handleAutomaticSources()
     {
         if ((*i)->hasFinished())
         {
-            pendingNodeConnections.emplace(std::shared_ptr<AudioNode>(), *i, ConnectionType::Disconnect, 0, 0); // order? 
+            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0); // order? 
             i = automaticSources.erase(i);
             if (i == automaticSources.end()) break;
         }
@@ -209,14 +209,30 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
     pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
 }
 
+void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
+{
+    if (!param) throw std::invalid_argument("No parameter specified");
+    if (index >= driver->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs on the driver");
+    pendingParamConnections.push(std::make_tuple(param, driver, index));
+}
+
 void AudioContext::update(ContextGraphLock & g)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
         
     double now = currentTime();
       
+    // Satisfy parameter connections
+    while (!pendingParamConnections.empty())
+    {
+        auto connection = pendingParamConnections.front();
+        pendingParamConnections.pop();
+        AudioParam::connect(g, std::get<0>(connection), std::get<1>(connection)->output(std::get<2>(connection)));
+    }
+
     std::vector<PendingConnection> skippedConnections;
 
+    // Satisfy node connections
     while (!pendingNodeConnections.empty())
     {
         auto connection = pendingNodeConnections.top();

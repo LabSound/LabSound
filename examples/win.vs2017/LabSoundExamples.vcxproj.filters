@@ -63,10 +63,10 @@
     <ClInclude Include="..\src\StereoPanning.h">
       <Filter>Examples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\connectdisconnect.h">
+    <ClInclude Include="..\src\RenderOffline.h">
       <Filter>Examples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\offlinerender.h">
+    <ClInclude Include="..\src\LiveGraphUpdate.h">
       <Filter>Examples</Filter>
     </ClInclude>
   </ItemGroup>

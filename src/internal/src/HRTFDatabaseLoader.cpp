@@ -41,7 +41,6 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
     s_loader.reset();
 }
 
-
 // Asynchronously load the database in this thread.
 void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader * threadData)
 {

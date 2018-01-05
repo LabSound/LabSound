@@ -176,7 +176,7 @@
     <ClCompile Include="..\src\ExamplesMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\connectdisconnect.h" />
+    <ClInclude Include="..\src\LiveGraphUpdate.h" />
     <ClInclude Include="..\src\ConvolutionReverb.h" />
     <ClInclude Include="..\src\ExampleBaseApp.h" />
     <ClInclude Include="..\src\Groove.h" />
@@ -184,7 +184,7 @@
     <ClInclude Include="..\src\MicrophoneDalek.h" />
     <ClInclude Include="..\src\MicrophoneLoopback.h" />
     <ClInclude Include="..\src\MicrophoneReverb.h" />
-    <ClInclude Include="..\src\offlinerender.h" />
+    <ClInclude Include="..\src\RenderOffline.h" />
     <ClInclude Include="..\src\PeakCompressor.h" />
     <ClInclude Include="..\src\RedAlert.h" />
     <ClInclude Include="..\src\Rhythm.h" />
