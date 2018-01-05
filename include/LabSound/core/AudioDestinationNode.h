@@ -5,7 +5,6 @@
 #ifndef AudioDestinationNode_h
 #define AudioDestinationNode_h
 
-#include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
 

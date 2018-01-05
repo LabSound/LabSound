@@ -16,6 +16,7 @@ namespace lab
 {
 
     SoundBuffer::SoundBuffer() { }
+    SoundBuffer::~SoundBuffer() { }
 
     SoundBuffer::SoundBuffer(const char * path, float sampleRate)
     {
@@ -44,9 +45,7 @@ namespace lab
              audioBuffer = std::make_shared<AudioBuffer>(f);
         }
     }
-    
-    SoundBuffer::~SoundBuffer() { }
-  
+
     std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
         if (audioBuffer) 

@@ -6,7 +6,6 @@
 #ifndef SOUND_BUFFER_H
 #define SOUND_BUFFER_H
 
-#include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioBufferSourceNode.h"
 #include "LabSound/core/AudioContext.h"
 

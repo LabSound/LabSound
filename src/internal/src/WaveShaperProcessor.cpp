@@ -10,8 +10,7 @@
 
 namespace lab {
     
-WaveShaperProcessor::WaveShaperProcessor(float sampleRate, size_t numberOfChannels)
-    : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
+WaveShaperProcessor::WaveShaperProcessor(float sampleRate, size_t numberOfChannels) : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
 {
 }
 
@@ -40,17 +39,14 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
         return;
     }
     
-    bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() &&
-                               source->numberOfChannels() == m_kernels.size();
+    bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() && source->numberOfChannels() == m_kernels.size();
     
     if (!channelCountMatches)
         return;
 
     // For each channel of our input, process using the corresponding WaveShaperDSPKernel into the output channel.
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(r, source->channel(i)->data(),
-                                 destination->channel(i)->mutableData(), framesToProcess);
+        m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
 }
-
 
 } // namespace lab

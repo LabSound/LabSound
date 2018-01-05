@@ -5,7 +5,6 @@
 #ifndef OfflineAudioDestinationNode_h
 #define OfflineAudioDestinationNode_h
 
-#include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioDestinationNode.h"
 
 namespace lab {
