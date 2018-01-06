@@ -73,7 +73,6 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         context->incrementActiveSourceCount();
     }
 
-
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
     quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;

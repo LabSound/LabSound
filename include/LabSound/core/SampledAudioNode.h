@@ -16,12 +16,14 @@ namespace lab {
 class AudioContext;
 class AudioBus;
 
-// It generally will be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
-
-class SampledAudioNode : public AudioScheduledSourceNode
+// This should  be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
+class SampledAudioNode final : public AudioScheduledSourceNode
 {
+
 public:
-    SampledAudioNode(float sampleRate);
+
+    SampledAudioNode();
+    SampledAudioNode(std::shared_ptr<AudioBus> bus);
     virtual ~SampledAudioNode();
 
     // AudioNode
@@ -64,6 +66,7 @@ public:
     virtual bool propagatesSilence(double now) const override;
 
 private:
+
     virtual double tailTime() const override { return 0; }
     virtual double latencyTime() const override { return 0; }
 
