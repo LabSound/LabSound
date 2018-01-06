@@ -3,7 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/StereoPannerNode.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"

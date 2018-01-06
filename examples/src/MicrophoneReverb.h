@@ -29,7 +29,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             recorder->startRecording();
             
             convolve = std::make_shared<ConvolverNode>(context->sampleRate());
-            convolve->setBuffer(g, ir.audioBuffer);
+            convolve->setBuffer(g, ir.audioBuffer); // dimitri
             
             wetGain = std::make_shared<GainNode>(context->sampleRate());
             wetGain->gain()->setValue(1.f);

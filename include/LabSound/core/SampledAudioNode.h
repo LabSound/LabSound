@@ -2,8 +2,8 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef AudioBufferSourceNode_h
-#define AudioBufferSourceNode_h
+#ifndef SampledAudioNode_h
+#define SampledAudioNode_h
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
@@ -16,14 +16,13 @@ namespace lab {
 class AudioContext;
 class AudioBus;
 
-// AudioBufferSourceNode is an AudioNode representing an audio source from an in-memory audio asset represented by an AudioBuffer.
 // It generally will be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
 
-class AudioBufferSourceNode : public AudioScheduledSourceNode 
+class SampledAudioNode : public AudioScheduledSourceNode
 {
 public:
-    AudioBufferSourceNode(float sampleRate);
-    virtual ~AudioBufferSourceNode();
+    SampledAudioNode(float sampleRate);
+    virtual ~SampledAudioNode();
 
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
@@ -125,4 +124,4 @@ private:
 
 } // namespace lab
 
-#endif // AudioBufferSourceNode_h
+#endif // SampledAudioNode

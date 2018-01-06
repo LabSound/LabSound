@@ -20,7 +20,6 @@
 namespace lab
 {
 
-class AudioBuffer;
 class AudioDestinationNode;
 class AudioListener;
 class AudioNode;
@@ -133,7 +132,7 @@ private:
     bool m_isDeletionScheduled = false;
     bool m_automaticPullNodesNeedUpdating = false; // keeps track if m_automaticPullNodes is modified.
 
-    // Number of AudioBufferSourceNodes that are active (playing).
+    // Number of SampledAudioNode that are active (playing).
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
 

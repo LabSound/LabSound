@@ -56,28 +56,32 @@ void OfflineAudioDestinationNode::uninitialize()
 
 void OfflineAudioDestinationNode::startRendering()
 {
-
     if (!m_startedRendering) 
     {
         m_startedRendering = true;
-        
-        LOG("Starting Offline Rendering");
-        
+
         m_renderThread = std::thread(&OfflineAudioDestinationNode::offlineRender, this);
         
         // @tofix - ability to update main thread from here. Currently blocks until complete
         if (m_renderThread.joinable())
             m_renderThread.join();
-        
-        LOG("Stopping Offline Rendering");
+
         
         if (m_context->offlineRenderCompleteCallback)
             m_context->offlineRenderCompleteCallback();
+
+        m_startedRendering = false;
+    }
+    else
+    {
+        LOG("Offline rendering has already started");
     }
 }
 
 void OfflineAudioDestinationNode::offlineRender()
 {
+    LOG("Starting Offline Rendering");
+
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
@@ -89,19 +93,20 @@ void OfflineAudioDestinationNode::offlineRender()
     
     bool isAudioContextInitialized = ctx->isInitialized();
     ASSERT(isAudioContextInitialized);
-    if (!isAudioContextInitialized) return;
+    if (!isAudioContextInitialized) 
+        return;
 
     // Break up the render target into smaller "render quantize" sized pieces.
     size_t framesToProcess = (m_lengthSeconds * m_sampleRate) / renderQuantumSize;
 
-    unsigned n = 0;
     while (framesToProcess > 0)
     {
         render(0, m_renderBus.get(), renderQuantumSize);
         size_t framesAvailableToCopy = min(framesToProcess, renderQuantumSize);
-        n += framesAvailableToCopy;
         framesToProcess -= framesAvailableToCopy;
     }
+
+    LOG("Stopping Offline Rendering");
 }
 
 } // namespace lab

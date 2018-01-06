@@ -11,7 +11,7 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         
         std::shared_ptr<OscillatorNode> oscillator1, oscillator2;
         std::shared_ptr<GainNode> gain;
-        std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+        std::shared_ptr<SampledAudioNode> tonbiSound;
 
         lab::AcquireLocksForContext("Tone and Sample App", context.get(), [&](ContextGraphLock & g, ContextRenderLock & r)
         {

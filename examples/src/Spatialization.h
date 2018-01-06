@@ -16,7 +16,7 @@ struct SpatializationApp : public LabSoundExampleApp
         // Note the need to specify an asset search path if this node will be
         // used in PanningMode::HRTF
         auto panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");
-        std::shared_ptr<AudioBufferSourceNode> trainNode;
+        std::shared_ptr<SampledAudioNode> trainNode;
         {
             ContextGraphLock g(context.get(), "spatialization");
             ContextRenderLock r(context.get(), "spatialization");

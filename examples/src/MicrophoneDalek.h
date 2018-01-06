@@ -33,7 +33,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<DiodeNode> vcDiode4; 
         std::shared_ptr<GainNode> outGain;
         std::shared_ptr<DynamicsCompressorNode> compressor;
-        std::shared_ptr<AudioBufferSourceNode> player;
+        std::shared_ptr<SampledAudioNode> player;
         
         {
             ContextGraphLock g(context.get(), "dalek voice");

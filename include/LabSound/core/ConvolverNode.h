@@ -9,7 +9,6 @@
 
 namespace lab {
 
-class AudioBuffer;
 class Reverb;
     
 class ConvolverNode : public AudioNode {

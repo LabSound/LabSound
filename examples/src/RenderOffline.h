@@ -12,7 +12,7 @@ struct OfflineRenderApp : public LabSoundExampleApp
         
         std::shared_ptr<OscillatorNode> oscillator;
         SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
-        std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+        std::shared_ptr<SampledAudioNode> tonbiSound;
         
         auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
         

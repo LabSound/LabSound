@@ -106,7 +106,7 @@ protected:
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock & r);
 
-    // Notifies any AudioBufferSourceNodes connected to us either directly or indirectly about our existence.
+    // Notifies any SampledAudioNodes connected to us either directly or indirectly about our existence.
     // This is in order to handle the pitch change necessary for the doppler shift.
     // @tofix - broken?
     void notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode *);

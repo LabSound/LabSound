@@ -37,7 +37,7 @@ struct ValidationApp : public LabSoundExampleApp
         auto context = lab::MakeRealtimeAudioContext();
         auto ac = context.get();
 
-        std::shared_ptr<AudioBufferSourceNode> beatNode;
+        std::shared_ptr<SampledAudioNode> beatNode;
         std::shared_ptr<PingPongDelayNode> pingping;
 
         {

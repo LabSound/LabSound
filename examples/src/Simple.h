@@ -14,7 +14,7 @@ struct SimpleApp : public LabSoundExampleApp
         std::shared_ptr<OscillatorNode> oscillator;
         SoundBuffer tonbi("samples/mono-music-clip.wav", context->sampleRate());
         std::shared_ptr<GainNode> gain;
-        std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+        std::shared_ptr<SampledAudioNode> tonbiSound;
 
         auto lockedArea = [&](ContextGraphLock & g, ContextRenderLock & r)
         {

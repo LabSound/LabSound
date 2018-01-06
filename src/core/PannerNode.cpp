@@ -3,7 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/PannerNode.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -352,10 +352,10 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
     if (!node)
         return;
 
-    // First check if this node is an AudioBufferSourceNode. If so, let it know about us so that doppler shift pitch can be taken into account.
+    // First check if this node is an SampledAudioNode. If so, let it know about us so that doppler shift pitch can be taken into account.
     if (node->nodeType() == NodeTypeAudioBufferSource)
     {
-        AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
+        SampledAudioNode * bufferSourceNode = reinterpret_cast<SampledAudioNode*>(node);
         bufferSourceNode->setPannerNode(this);
     }
     else
@@ -365,7 +365,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
         {
             auto input = node->input(i);
 
-            // For each input, go through all of its connections, looking for AudioBufferSourceNodes.
+            // For each input, go through all of its connections, looking for SampledAudioNodes.
             for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);

@@ -5,7 +5,7 @@
 // @tofix - webkit change ef113b changes the logic of processing to test for non finite time values, change not reflected here.
 // @tofix - webkit change e369924 adds backward playback, change not incorporated yet
 
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 
@@ -29,7 +29,7 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
+SampledAudioNode::SampledAudioNode(float sampleRate)
     : AudioScheduledSourceNode(sampleRate)
     , m_buffer(0)
     , m_isLooping(false)
@@ -57,12 +57,12 @@ AudioBufferSourceNode::AudioBufferSourceNode(float sampleRate)
     initialize();
 }
 
-AudioBufferSourceNode::~AudioBufferSourceNode()
+SampledAudioNode::~SampledAudioNode()
 {
     uninitialize();
 }
 
-void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess)
+void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus(r);
     if (!buffer() || !isInitialized() || ! r.context()) {
@@ -137,7 +137,7 @@ void AudioBufferSourceNode::process(ContextRenderLock& r, size_t framesToProcess
 }
 
 // Returns true if we're finished.
-bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus*, unsigned index, size_t framesToProcess)
+bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus*, unsigned index, size_t framesToProcess)
 {
     if (!loop()) {
         // If we're not looping, then stop playing when we get to the end.
@@ -155,7 +155,7 @@ bool AudioBufferSourceNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock
     return false;
 }
 
-bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
+bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
     if (!r.context())
         return false;
@@ -325,14 +325,14 @@ bool AudioBufferSourceNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus
 }
 
 
-void AudioBufferSourceNode::reset(ContextRenderLock& r)
+void SampledAudioNode::reset(ContextRenderLock& r)
 {
     m_virtualReadIndex = 0;
     m_lastGain = gain()->value(r);
     AudioScheduledSourceNode::reset(r);
 }
 
-bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
+bool SampledAudioNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
 {
     ASSERT(r.context());
 
@@ -357,18 +357,18 @@ bool AudioBufferSourceNode::setBuffer(ContextRenderLock& r, std::shared_ptr<Audi
     return true;
 }
 
-unsigned AudioBufferSourceNode::numberOfChannels(ContextRenderLock& r)
+unsigned SampledAudioNode::numberOfChannels(ContextRenderLock& r)
 {
     return output(0)->numberOfChannels();
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset)
+void SampledAudioNode::startGrain(double when, double grainOffset)
 {
     // Duration of 0 has special value, meaning calculate based on the entire buffer's duration.
     startGrain(when, grainOffset, 0);
 }
 
-void AudioBufferSourceNode::startGrain(double when, double grainOffset, double grainDuration)
+void SampledAudioNode::startGrain(double when, double grainOffset, double grainDuration)
 {
     if (!buffer())
         return;
@@ -381,7 +381,7 @@ void AudioBufferSourceNode::startGrain(double when, double grainOffset, double g
     m_startRequested = true;
 }
 
-double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
+double SampledAudioNode::totalPitchRate(ContextRenderLock& r)
 {
     double dopplerRate = 1.0;
     if (m_pannerNode)
@@ -411,27 +411,27 @@ double AudioBufferSourceNode::totalPitchRate(ContextRenderLock& r)
     return totalRate;
 }
 
-bool AudioBufferSourceNode::looping()
+bool SampledAudioNode::looping()
 {
     return m_isLooping;
 }
 
-void AudioBufferSourceNode::setLooping(bool looping)
+void SampledAudioNode::setLooping(bool looping)
 {
     m_isLooping = looping;
 }
 
-bool AudioBufferSourceNode::propagatesSilence(double now) const
+bool SampledAudioNode::propagatesSilence(double now) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_buffer;
 }
 
-void AudioBufferSourceNode::setPannerNode(PannerNode* pannerNode)
+void SampledAudioNode::setPannerNode(PannerNode* pannerNode)
 {
     m_pannerNode = pannerNode;
 }
 
-void AudioBufferSourceNode::clearPannerNode()
+void SampledAudioNode::clearPannerNode()
 {
     m_pannerNode = 0;
 }

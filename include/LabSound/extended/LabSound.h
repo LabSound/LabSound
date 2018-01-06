@@ -28,7 +28,7 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioDestinationNode.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"

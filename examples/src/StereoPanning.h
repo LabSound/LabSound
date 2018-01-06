@@ -13,7 +13,7 @@ struct StereoPanningApp : public LabSoundExampleApp
         SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
         auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
         
-        std::shared_ptr<AudioBufferSourceNode> trainNode;
+        std::shared_ptr<SampledAudioNode> trainNode;
         {
             ContextGraphLock g(context.get(), "Stereo Panning");
             ContextRenderLock r(context.get(), "Stereo Panning");

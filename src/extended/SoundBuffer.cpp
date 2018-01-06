@@ -46,11 +46,11 @@ namespace lab
         }
     }
 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
+    std::shared_ptr<SampledAudioNode> SoundBuffer::create(ContextRenderLock& r, float sampleRate)
     {
         if (audioBuffer) 
         {
-            std::shared_ptr<AudioBufferSourceNode> sourceBuffer(new AudioBufferSourceNode(sampleRate));
+            std::shared_ptr<SampledAudioNode> sourceBuffer(new SampledAudioNode(sampleRate));
             // Connect the source node to the parsed audio data for playback
             sourceBuffer->setBuffer(r, audioBuffer);
             return sourceBuffer;
@@ -59,7 +59,7 @@ namespace lab
     }
     
     // Output to the default context output 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock & r, float when)
+    std::shared_ptr<SampledAudioNode> SoundBuffer::play(ContextRenderLock & r, float when)
     {
         if (audioBuffer && r.context())
         {
@@ -69,12 +69,12 @@ namespace lab
     }
 
     // Output to a specific note 
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
+    std::shared_ptr<SampledAudioNode> SoundBuffer::play(ContextRenderLock& r, std::shared_ptr<AudioNode> outputNode, float when)
     {
         auto ac = r.context();
         if (audioBuffer && ac) 
         {
-            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(outputNode->sampleRate()));
+            std::shared_ptr<SampledAudioNode> sourceBufferNode(new SampledAudioNode(outputNode->sampleRate()));
             sourceBufferNode->setBuffer(r, audioBuffer);
             
             // bus the sound to the output node
@@ -89,14 +89,14 @@ namespace lab
     // This variant starts a sound at a given offset relative to the beginning of the
     // sample, ends it an offset (relative to the beginning), and optional delays
     // the start. If 0 is passed as end, then the sound will play to the end.
-    std::shared_ptr<AudioBufferSourceNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
+    std::shared_ptr<SampledAudioNode> SoundBuffer::play(ContextRenderLock& r, float start, float end, float when)
     {
         auto context = r.context();
         if (audioBuffer && context)
         {
             if (end == 0.0f) end = (float) audioBuffer->duration();
             
-            std::shared_ptr<AudioBufferSourceNode> sourceBufferNode(new AudioBufferSourceNode(context->destination()->sampleRate()));
+            std::shared_ptr<SampledAudioNode> sourceBufferNode(new SampledAudioNode(context->destination()->sampleRate()));
             
             // Set the source node to the parsed audio data for playback
             sourceBufferNode->setBuffer(r, audioBuffer);
