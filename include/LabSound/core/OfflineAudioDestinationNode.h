@@ -11,37 +11,31 @@ namespace lab {
 
 class AudioBus;
 class AudioContext;
-    
-class OfflineAudioDestinationNode : public AudioDestinationNode
+
+class OfflineAudioDestinationNode final : public AudioDestinationNode
 {
     
 public:
     
-    OfflineAudioDestinationNode(AudioContext * context, AudioBuffer * renderTarget);
+    OfflineAudioDestinationNode(AudioContext * context, const float lengthSeconds, const uint32_t numChannels, const float sampleRate);
     virtual ~OfflineAudioDestinationNode();
     
     virtual void initialize();
     virtual void uninitialize();
-    virtual float sampleRate() const { return m_renderTarget->sampleRate(); }
+    virtual float sampleRate() const { return m_sampleRate; }
 
     void startRendering();
     
 private:
-    
-    // This AudioNode renders into this AudioBuffer.
-    AudioBuffer * m_renderTarget;
-    
-    // Temporary AudioBus for each render quantum.
+  
     std::unique_ptr<AudioBus> m_renderBus;
-    
-    // Rendering thread.
     std::thread m_renderThread;
-    
-    bool m_startedRendering{ false };
     void offlineRender();
-    
+    bool m_startedRendering{ false };
+    float m_sampleRate;
+    uint32_t m_numChannels;
+    float m_lengthSeconds;
     AudioContext * ctx;
-    
 };
 
 } // namespace lab

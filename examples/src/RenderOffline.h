@@ -45,6 +45,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
         // be outside the scope of where we make changes to the graph!
         context->startRendering();
         
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 };

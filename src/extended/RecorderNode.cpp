@@ -15,7 +15,7 @@ namespace lab
     
     using namespace lab;
     
-    RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2), m_recording(false), m_mixToMono(false)
+    RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -30,7 +30,7 @@ namespace lab
         uninitialize();
     }
     
-    void RecorderNode::getData(std::vector<float>& result)
+    void RecorderNode::getData(std::vector<float> & result)
     {
         // swap is quick enough that process should not be adversely affected
         result.clear();

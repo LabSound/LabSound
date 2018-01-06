@@ -53,7 +53,7 @@ public:
     AudioContext();
 
     // Offline (non-realtime) Context
-    AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
+    AudioContext(unsigned numberOfChannels, float sampleRate);
 
     ~AudioContext();
 
@@ -114,7 +114,6 @@ public:
     // Necessary to call when using an OfflineAudioDestinationNode
     void startRendering();
     
-    std::shared_ptr<AudioBuffer> getOfflineRenderTarget() { return m_renderTarget; }
     std::function<void()> offlineRenderCompleteCallback;
 
 private:
@@ -150,7 +149,6 @@ private:
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
-    std::shared_ptr<AudioBuffer> m_renderTarget;
 
     std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
     std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;

@@ -26,29 +26,27 @@ namespace lab
         return ctx;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const int millisecondsToRun)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds)
     {
         LOG("Initialize Offline Context");
 
         // @tofix - hardcoded parameters
         const int sampleRate = 44100;
-        const int framesPerMillisecond = sampleRate / 1000;
-        const int totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
+        float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(2, totalFramesToRecord, sampleRate));
-        auto renderTarget = ctx->getOfflineRenderTarget();
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), renderTarget.get()));
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(2, sampleRate));
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx, secondsToRun, 2, sampleRate));
         ctx->lazyInitialize();
         return ctx;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, size_t totalFramesToRecord, float sampleRate)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sampleRate)
     {
         LOG("Initialize Offline Context");
 
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(numChannels, totalFramesToRecord, sampleRate));
-        auto renderTarget = ctx->getOfflineRenderTarget();
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), renderTarget.get()));
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(numChannels, sampleRate));
+        float secondsToRun = (float)recordTimeMilliseconds * 0.001f;
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx, secondsToRun, numChannels, sampleRate));
         ctx->lazyInitialize();
         return ctx;
     }

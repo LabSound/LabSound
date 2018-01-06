@@ -50,13 +50,10 @@ AudioContext::AudioContext()
 }
 
 // Constructor for offline (non-realtime) rendering.
-AudioContext::AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate)
+AudioContext::AudioContext(unsigned numberOfChannels, float sampleRate)
 {
     m_isOfflineContext = true;
     m_listener = std::make_shared<AudioListener>();
-
-    // Create a new destination for offline rendering.
-    m_renderTarget = std::make_shared<AudioBuffer>(numberOfChannels, numberOfFrames, sampleRate);
 }
 
 AudioContext::~AudioContext()

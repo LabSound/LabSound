@@ -16,14 +16,16 @@ using namespace std;
  
 namespace lab {
     
-const size_t renderQuantumSize = 128;    
+const size_t renderQuantumSize = 256;    
 
-OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, AudioBuffer* renderTarget)
-    : AudioDestinationNode(context, renderTarget->sampleRate()), 
-    m_renderTarget(renderTarget), 
+OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float lengthSeconds, const uint32_t numChannels, const float sampleRate)
+    : AudioDestinationNode(context, sampleRate),
+    m_sampleRate(sampleRate),
+    m_numChannels(numChannels),
+    m_lengthSeconds(lengthSeconds),
     ctx(context)
 {
-    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(renderTarget->numberOfChannels(), renderQuantumSize));
+    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(numChannels, renderQuantumSize));
 }
 
 OfflineAudioDestinationNode::~OfflineAudioDestinationNode()
@@ -54,11 +56,7 @@ void OfflineAudioDestinationNode::uninitialize()
 
 void OfflineAudioDestinationNode::startRendering()
 {
-    ASSERT(m_renderTarget);
-    
-    if (!m_renderTarget)
-        return;
-    
+
     if (!m_startedRendering) 
     {
         m_startedRendering = true;
@@ -83,12 +81,7 @@ void OfflineAudioDestinationNode::offlineRender()
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
-    
-    bool channelsMatch = m_renderBus->numberOfChannels() == m_renderTarget->numberOfChannels();
-    ASSERT(channelsMatch);
-    if (!channelsMatch)
-        return;
-        
+
     bool isRenderBusAllocated = m_renderBus->length() >= renderQuantumSize;
     ASSERT(isRenderBusAllocated);
     if (!isRenderBusAllocated)
@@ -97,26 +90,15 @@ void OfflineAudioDestinationNode::offlineRender()
     bool isAudioContextInitialized = ctx->isInitialized();
     ASSERT(isAudioContextInitialized);
     if (!isAudioContextInitialized) return;
-    
+
     // Break up the render target into smaller "render quantize" sized pieces.
-    size_t framesToProcess = m_renderTarget->length();
-    unsigned numberOfChannels = m_renderTarget->numberOfChannels();
+    size_t framesToProcess = (m_lengthSeconds * m_sampleRate) / renderQuantumSize;
 
     unsigned n = 0;
     while (framesToProcess > 0)
     {
-        // Render one quantum (nominally 128 frames)
         render(0, m_renderBus.get(), renderQuantumSize);
-        
         size_t framesAvailableToCopy = min(framesToProcess, renderQuantumSize);
-        
-        for (unsigned channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex)
-        {
-            const float * source = m_renderBus->channel(channelIndex)->data();
-            float * destination = m_renderTarget->getChannelData(channelIndex)->data();
-            memcpy(destination + n, source, sizeof(float) * framesAvailableToCopy);
-        }
-        
         n += framesAvailableToCopy;
         framesToProcess -= framesAvailableToCopy;
     }
