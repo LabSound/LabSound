@@ -29,19 +29,7 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-SampledAudioNode::SampledAudioNode(float sampleRate)
-    : AudioScheduledSourceNode(sampleRate)
-    , m_buffer(0)
-    , m_isLooping(false)
-    , m_loopStart(0)
-    , m_loopEnd(0)
-    , m_virtualReadIndex(0)
-    , m_isGrain(false)
-    , m_startRequested(false)
-    , m_grainOffset(0.0)
-    , m_grainDuration(DefaultGrainDuration)
-    , m_lastGain(1.0)
-    , m_pannerNode(0)
+SampledAudioNode::SampledAudioNode(float sampleRate) : AudioScheduledSourceNode(sampleRate), m_grainDuration(DefaultGrainDuration)
 {
     setNodeType(NodeTypeAudioBufferSource);
 
@@ -62,10 +50,12 @@ SampledAudioNode::~SampledAudioNode()
     uninitialize();
 }
 
-void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
+void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     AudioBus* outputBus = output(0)->bus(r);
-    if (!buffer() || !isInitialized() || ! r.context()) {
+
+    if (!getBus() || !isInitialized() || ! r.context())
+    {
         outputBus->zero();
         return;
     }
@@ -73,14 +63,16 @@ void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
     // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
     // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
     // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
-    if (numberOfChannels(r) != buffer()->numberOfChannels()) {
+    if (numberOfChannels(r) != getBus()->numberOfChannels())
+    {
         outputBus->zero();
         return;
     }
 
-    if (m_startRequested) {
+    if (m_startRequested) 
+    {
         // Do sanity checking of grain parameters versus buffer size.
-        double bufferDuration = buffer()->duration();
+        double bufferDuration = duration();
 
         double grainOffset = std::max(0.0, m_requestGrainOffset);
         m_grainOffset = std::min(bufferDuration, grainOffset);
@@ -103,7 +95,7 @@ void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
         // at a sub-sample position since it will degrade the quality.
         // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
         // Since playbackRate == 1 is very common, it's worth considering quality.
-        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, buffer()->sampleRate());
+        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, m_sourceBus->sampleRate());
         m_startRequested = false;
     }
 
@@ -118,11 +110,6 @@ void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
-    {
-        m_destinationChannels[i] = outputBus->channel(i)->mutableData();
-    }
-
     // Render by reading directly from the buffer.
     if (!renderFromBuffer(r, outputBus, quantumFrameOffset, bufferFramesToProcess))
     {
@@ -131,22 +118,26 @@ void SampledAudioNode::process(ContextRenderLock& r, size_t framesToProcess)
     }
 
     // Apply the gain (in-place) to the output bus.
-    float totalGain = gain()->value(r) * m_buffer->gain();
+    float totalGain = gain()->value(r);
     outputBus->copyWithGainFrom(*outputBus, &m_lastGain, totalGain);
     outputBus->clearSilentFlag();
 }
 
 // Returns true if we're finished.
-bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus*, unsigned index, size_t framesToProcess)
+bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus * bus, unsigned index, size_t framesToProcess)
 {
-    if (!loop()) {
+    if (!loop()) 
+    {
         // If we're not looping, then stop playing when we get to the end.
 
-        if (framesToProcess > 0) {
+        if (framesToProcess > 0) 
+        {
             // We're not looping and we've reached the end of the sample data, but we still need to provide more output,
             // so generate silence for the remaining.
             for (unsigned i = 0; i < numberOfChannels(r); ++i)
-                memset(m_destinationChannels[i] + index, 0, sizeof(float) * framesToProcess);
+            {
+                memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
+            }
         }
 
         finish(r);
@@ -155,15 +146,15 @@ bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, 
     return false;
 }
 
-bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
+bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
     if (!r.context())
         return false;
 
     // Basic sanity checking
     ASSERT(bus);
-    ASSERT(buffer());
-    if (!bus || !buffer())
+    ASSERT(getBus());
+    if (!bus || !getBus())
         return false;
 
     unsigned numChannels = numberOfChannels(r);
@@ -187,17 +178,11 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
     if (!isOffsetGood)
         return false;
 
-    // Potentially zero out initial frames leading up to the offset.
-    if (destinationFrameOffset) {
-        for (unsigned i = 0; i < numChannels; ++i)
-            memset(m_destinationChannels[i], 0, sizeof(float) * destinationFrameOffset);
-    }
-
     // Offset the pointers to the correct offset frame.
     unsigned writeIndex = destinationFrameOffset;
 
-    size_t bufferLength = buffer()->length();
-    double bufferSampleRate = buffer()->sampleRate();
+    size_t bufferLength = getBus()->length();
+    double bufferSampleRate = getBus()->sampleRate();
 
     // Avoid converting from time to sample-frames twice by computing
     // the grain end time first before computing the sample frame.
@@ -222,8 +207,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
 
     if (loop() && (m_loopStart || m_loopEnd) && m_loopStart >= 0 && m_loopEnd > 0 && m_loopStart < m_loopEnd) {
         // Convert from seconds to sample-frames.
-        double loopStartFrame = m_loopStart * buffer()->sampleRate();
-        double loopEndFrame = m_loopEnd * buffer()->sampleRate();
+        double loopStartFrame = m_loopStart * getBus()->sampleRate();
+        double loopEndFrame = m_loopEnd * getBus()->sampleRate();
 
         virtualEndFrame = std::min(loopEndFrame, virtualEndFrame);
         virtualDeltaFrames = virtualEndFrame - loopStartFrame;
@@ -242,45 +227,51 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
     // Render loop - reading from the source buffer to the destination using linear interpolation.
     int framesToProcess = numberOfFrames;
 
-    const float** sourceChannels = m_sourceChannels.get();
-    float** destinationChannels = m_destinationChannels.get();
-
     // Optimize for the very common case of playing back with pitchRate == 1.
     // We can avoid the linear interpolation.
-    if (pitchRate == 1 && virtualReadIndex == floor(virtualReadIndex)
-        && virtualDeltaFrames == floor(virtualDeltaFrames)
-        && virtualEndFrame == floor(virtualEndFrame)) {
+    if (pitchRate == 1 && virtualReadIndex == floor(virtualReadIndex) && virtualDeltaFrames == floor(virtualDeltaFrames) && virtualEndFrame == floor(virtualEndFrame)) 
+    {
         unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
         unsigned deltaFrames = static_cast<unsigned>(virtualDeltaFrames);
         endFrame = static_cast<unsigned>(virtualEndFrame);
-        while (framesToProcess > 0) {
+
+        while (framesToProcess > 0) 
+        {
             int framesToEnd = endFrame - readIndex;
             int framesThisTime = std::min(framesToProcess, framesToEnd);
             framesThisTime = std::max(0, framesThisTime);
 
             for (unsigned i = 0; i < numChannels; ++i)
-                memcpy(destinationChannels[i] + writeIndex, sourceChannels[i] + readIndex, sizeof(float) * framesThisTime);
+            {
+                memcpy(bus->channel(i)->mutableData() + writeIndex, m_sourceBus->channel(i)->data() + readIndex, sizeof(float) * framesThisTime);
+            }
 
             writeIndex += framesThisTime;
             readIndex += framesThisTime;
             framesToProcess -= framesThisTime;
 
             // Wrap-around.
-            if (readIndex >= endFrame) {
+            if (readIndex >= endFrame) 
+            {
                 readIndex -= deltaFrames;
                 if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
                     break;
             }
         }
         virtualReadIndex = readIndex;
-    } else {
-        while (framesToProcess--) {
+    } 
+    else 
+    {
+        while (framesToProcess--) 
+        {
             unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
             double interpolationFactor = virtualReadIndex - readIndex;
 
             // For linear interpolation we need the next sample-frame too.
             unsigned readIndex2 = readIndex + 1;
-            if (readIndex2 >= bufferLength) {
+
+            if (readIndex2 >= bufferLength) 
+            {
                 if (loop()) {
                     // Make sure to wrap around at the end of the buffer.
                     readIndex2 = static_cast<unsigned>(virtualReadIndex + 1 - virtualDeltaFrames);
@@ -294,9 +285,10 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
                 break;
 
             // Linear interpolation.
-            for (unsigned i = 0; i < numChannels; ++i) {
-                float* destination = destinationChannels[i];
-                const float* source = sourceChannels[i];
+            for (unsigned i = 0; i < numChannels; ++i) 
+            {
+                float * destination = bus->channel(i)->mutableData();
+                const float * source = m_sourceBus->channel(i)->data();
 
                 double sample1 = source[readIndex];
                 double sample2 = source[readIndex2];
@@ -309,7 +301,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
             virtualReadIndex += pitchRate;
 
             // Wrap-around, retaining sub-sample position since virtualReadIndex is floating-point.
-            if (virtualReadIndex >= virtualEndFrame) {
+            if (virtualReadIndex >= virtualEndFrame) 
+            {
                 virtualReadIndex -= virtualDeltaFrames;
                 if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
                     break;
@@ -332,11 +325,12 @@ void SampledAudioNode::reset(ContextRenderLock& r)
     AudioScheduledSourceNode::reset(r);
 }
 
-bool SampledAudioNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuffer> buffer)
+bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> buffer)
 {
     ASSERT(r.context());
 
-    if (buffer) {
+    if (buffer) 
+    {
         // Do any necesssary re-configuration to the buffer's number of channels.
         unsigned numberOfChannels = buffer->numberOfChannels();
 
@@ -344,16 +338,10 @@ bool SampledAudioNode::setBuffer(ContextRenderLock& r, std::shared_ptr<AudioBuff
             return false;
 
         output(0)->setNumberOfChannels(r, numberOfChannels);
-
-        m_sourceChannels = std::unique_ptr<const float*[]>(new const float*[numberOfChannels]);
-        m_destinationChannels = std::unique_ptr<float*[]>(new float*[numberOfChannels]);
-
-        for (unsigned i = 0; i < numberOfChannels; ++i)
-            m_sourceChannels[i] = buffer->getChannelData(i)->data();
     }
 
     m_virtualReadIndex = 0;
-    m_buffer = buffer;
+    m_sourceBus = buffer;
     return true;
 }
 
@@ -370,7 +358,7 @@ void SampledAudioNode::startGrain(double when, double grainOffset)
 
 void SampledAudioNode::startGrain(double when, double grainOffset, double grainDuration)
 {
-    if (!buffer())
+    if (!getBus())
         return;
 
     m_requestWhen = when;
@@ -390,8 +378,8 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock& r)
     // Incorporate buffer's sample-rate versus AudioContext's sample-rate.
     // Normally it's not an issue because buffers are loaded at the AudioContext's sample-rate, but we can handle it in any case.
     double sampleRateFactor = 1.0;
-    if (buffer())
-        sampleRateFactor = buffer()->sampleRate() / sampleRate();
+    if (getBus())
+        sampleRateFactor = getBus()->sampleRate() / sampleRate();
 
     double basePitchRate = playbackRate()->value(r);
 
@@ -411,19 +399,9 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock& r)
     return totalRate;
 }
 
-bool SampledAudioNode::looping()
-{
-    return m_isLooping;
-}
-
-void SampledAudioNode::setLooping(bool looping)
-{
-    m_isLooping = looping;
-}
-
 bool SampledAudioNode::propagatesSilence(double now) const
 {
-    return !isPlayingOrScheduled() || hasFinished() || !m_buffer;
+    return !isPlayingOrScheduled() || hasFinished() || !m_sourceBus;
 }
 
 void SampledAudioNode::setPannerNode(PannerNode* pannerNode)

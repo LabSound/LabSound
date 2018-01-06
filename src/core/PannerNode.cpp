@@ -289,8 +289,8 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
     {
         double speedOfSound = listener(r)->speedOfSound();
 
-        const FloatPoint3D &sourceVelocity = m_velocity;
-        const FloatPoint3D &listenerVelocity = listener(r)->velocity();
+        const FloatPoint3D & sourceVelocity = m_velocity;
+        const FloatPoint3D & listenerVelocity = listener(r)->velocity();
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);

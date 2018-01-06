@@ -5,7 +5,6 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
-#include "internal/ConfigMacros.h"
 #include "LabSound/core/Mixing.h"
 #include "internal/AudioChannel.h"
 #include <vector>
