@@ -30,7 +30,7 @@ namespace lab
 
     public:
 
-        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
+        PeakCompNodeInternal() : AudioProcessor(2)
         {
             m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);
             m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);
@@ -208,9 +208,9 @@ namespace lab
     // Public PeakCompNode //
     /////////////////////////
 
-    PeakCompNode::PeakCompNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    PeakCompNode::PeakCompNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new PeakCompNodeInternal(sampleRate));
+        m_processor.reset(new PeakCompNodeInternal());
 
         internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
 

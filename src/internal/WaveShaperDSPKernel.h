@@ -14,12 +14,11 @@ class WaveShaperProcessor;
 
 // WaveShaperDSPKernel is an AudioDSPKernel and is responsible for non-linear distortion on one channel.
 
-class WaveShaperDSPKernel : public AudioDSPKernel {
+class WaveShaperDSPKernel : public AudioDSPKernel 
+{
 public:  
-    explicit WaveShaperDSPKernel(WaveShaperProcessor* processor)
-    : AudioDSPKernel(processor)
-    {
-    }
+
+    explicit WaveShaperDSPKernel(WaveShaperProcessor * processor) : AudioDSPKernel(processor) { }
     
     // AudioDSPKernel
     virtual void process(ContextRenderLock&,
@@ -29,7 +28,9 @@ public:
     virtual double latencyTime() const override { return 0; }
     
 protected:
+
     WaveShaperProcessor* waveShaperProcessor() { return static_cast<WaveShaperProcessor*>(processor()); }
+
 };
 
 } // namespace lab

@@ -20,7 +20,7 @@ class DynamicsCompressorKernel
 
 public:
 
-    DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels);
+    DynamicsCompressorKernel(unsigned numberOfChannels);
 
     void setNumberOfChannels(unsigned);
 
@@ -50,14 +50,10 @@ public:
 
     unsigned latencyFrames() const { return m_lastPreDelayFrames; }
 
-    float sampleRate() const { return m_sampleRate; }
-
     float meteringGain() const { return m_meteringGain; }
 
 protected:
     
-    float m_sampleRate;
-
     float m_detectorAverage;
     float m_compressorGain;
 

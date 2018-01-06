@@ -121,9 +121,9 @@ namespace lab
     // Public ClipNode //
     /////////////////////
 
-    ClipNode::ClipNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    ClipNode::ClipNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ClipNodeInternal(sampleRate));
+        m_processor.reset(new ClipNodeInternal());
 
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
 

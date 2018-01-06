@@ -12,9 +12,11 @@
 
 namespace lab {
 
-class AnalyserNode : public AudioBasicInspectorNode {
+class AnalyserNode : public AudioBasicInspectorNode 
+{
 public:
-    AnalyserNode(float sampleRate, size_t fftSize);
+
+    AnalyserNode(size_t fftSize);
     virtual ~AnalyserNode();
     
     // AudioNode

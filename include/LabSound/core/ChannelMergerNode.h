@@ -11,9 +11,11 @@ namespace lab {
 
 class AudioContext;
     
-class ChannelMergerNode : public AudioNode {
+class ChannelMergerNode : public AudioNode 
+{
 public:
-    ChannelMergerNode(float sampleRate, unsigned numberOfInputs);
+
+    ChannelMergerNode(unsigned numberOfInputs);
     virtual ~ChannelMergerNode() {}
 
     // AudioNode

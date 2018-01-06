@@ -14,7 +14,7 @@ class AudioSourceNode : public AudioNode
 
 public:
 
-    AudioSourceNode(float sampleRate) : AudioNode(sampleRate) {}
+    AudioSourceNode() : AudioNode() { }
     virtual ~AudioSourceNode() {}
     
 protected:

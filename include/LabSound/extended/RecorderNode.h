@@ -17,7 +17,7 @@ namespace lab
         
     public:
         
-        RecorderNode(float sampleRate);
+        RecorderNode();
         virtual ~RecorderNode();
         
         // AudioNode

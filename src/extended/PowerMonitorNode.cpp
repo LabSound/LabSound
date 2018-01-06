@@ -14,8 +14,7 @@ namespace lab {
     
     using namespace lab;
     
-    PowerMonitorNode::PowerMonitorNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate, 2), _db(0), _windowSize(128)
+    PowerMonitorNode::PowerMonitorNode() : AudioBasicInspectorNode(2), _db(0), _windowSize(128)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         setNodeType(lab::NodeType::NodeTypePowerMonitor);

@@ -21,9 +21,8 @@ const float meteringReleaseTimeConstant = 0.325f;
 
 const float uninitializedValue = -1;
 
-DynamicsCompressorKernel::DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels)
-    : m_sampleRate(sampleRate)
-    , m_lastPreDelayFrames(DefaultPreDelayFrames)
+DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels) :
+      m_lastPreDelayFrames(DefaultPreDelayFrames)
     , m_preDelayReadIndex(0)
     , m_preDelayWriteIndex(DefaultPreDelayFrames)
     , m_ratio(uninitializedValue)
@@ -176,7 +175,7 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
     return m_K;
 }
 
-void DynamicsCompressorKernel::process(ContextRenderLock&,
+void DynamicsCompressorKernel::process(ContextRenderLock &,
                                        float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,

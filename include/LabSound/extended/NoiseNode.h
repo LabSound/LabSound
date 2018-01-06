@@ -26,7 +26,7 @@ namespace lab
             NOISE_TYPE_END,
         };
 
-        NoiseNode(float sampleRate);
+        NoiseNode();
         virtual ~NoiseNode();
 
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;

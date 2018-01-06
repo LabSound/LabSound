@@ -27,9 +27,9 @@ namespace lab
     {
     public:
 
-        SupersawNodeInternal(float sampleRate) : sampleRate(sampleRate), cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
+        SupersawNodeInternal() : cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
         {
-            gainNode = std::make_shared<ADSRNode>(sampleRate);
+            gainNode = std::make_shared<ADSRNode>();
             sawCount = std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f);
             detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
             frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
@@ -118,9 +118,9 @@ namespace lab
     // Public Supersaw Node //
     //////////////////////////
 
-    SupersawNode::SupersawNode(ContextRenderLock & r, float sampleRate) : AudioNode(sampleRate)
+    SupersawNode::SupersawNode(ContextRenderLock & r) : AudioNode()
     {
-        internalNode.reset(new SupersawNodeInternal(sampleRate));
+        internalNode.reset(new SupersawNodeInternal());
 
         m_params.push_back(internalNode->detune);
         m_params.push_back(internalNode->frequency);

@@ -15,7 +15,7 @@ using namespace std;
 namespace lab
 {
 
-ChannelMergerNode::ChannelMergerNode(float sampleRate, unsigned numberOfInputs) : AudioNode(sampleRate)
+ChannelMergerNode::ChannelMergerNode(unsigned numberOfInputs) : AudioNode()
 {
     numberOfInputs = std::max(1U, std::min(numberOfInputs, AudioContext::maxNumberOfChannels));
     

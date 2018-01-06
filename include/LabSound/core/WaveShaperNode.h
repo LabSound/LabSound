@@ -18,7 +18,7 @@ class WaveShaperNode : public AudioBasicProcessorNode
     
 public:
     
-    WaveShaperNode(float sampleRate);
+    WaveShaperNode();
     ~WaveShaperNode() {}
 
     void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);

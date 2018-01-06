@@ -23,7 +23,7 @@ class StereoPannerNode : public AudioNode
 {
 public:
     
-    StereoPannerNode(float sampleRate);
+    StereoPannerNode();
     
     virtual ~StereoPannerNode();
     

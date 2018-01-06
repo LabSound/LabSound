@@ -20,7 +20,7 @@ namespace lab
         std::unique_ptr<SpectralMonitorNodeInternal> internalNode;
     public:
 
-        SpectralMonitorNode(float sampleRate);
+        SpectralMonitorNode();
         virtual ~SpectralMonitorNode();
 
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;

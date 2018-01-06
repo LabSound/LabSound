@@ -12,9 +12,10 @@ namespace lab {
 
 // WaveShaperProcessor is an AudioDSPKernelProcessor which uses WaveShaperDSPKernel objects to implement non-linear distortion effects.
 
-class WaveShaperProcessor : public AudioDSPKernelProcessor {
+class WaveShaperProcessor : public AudioDSPKernelProcessor 
+{
 public:
-    WaveShaperProcessor(float sampleRate, size_t numberOfChannels);
+    WaveShaperProcessor(size_t numberOfChannels);
 
     virtual ~WaveShaperProcessor();
 

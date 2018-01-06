@@ -19,8 +19,7 @@ namespace lab {
 
 const double UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode(float sampleRate)
-    : AudioSourceNode(sampleRate)
+AudioScheduledSourceNode::AudioScheduledSourceNode() : AudioSourceNode()
     , m_playbackState(UNSCHEDULED_STATE)
     , m_startTime(0)
     , m_endTime(UnknownTime)

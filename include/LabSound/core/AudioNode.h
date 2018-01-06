@@ -88,7 +88,7 @@ public:
         ProcessingSizeInFrames = 128
     };
 
-    AudioNode(float sampleRate);
+    AudioNode();
     virtual ~AudioNode();
 
     NodeType nodeType() const { return m_nodeType; }
@@ -120,8 +120,6 @@ public:
 
     std::shared_ptr<AudioNodeInput> input(unsigned index);
     std::shared_ptr<AudioNodeOutput> output(unsigned index);
-
-    virtual float sampleRate() const { return m_sampleRate; }
 
     // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
@@ -177,26 +175,26 @@ protected:
     void updateChannelsForInputs(ContextGraphLock&);
 
 private:
+
     friend class AudioContext;
 
-    volatile bool m_isInitialized;
-    NodeType m_nodeType;
-    float m_sampleRate;
+    volatile bool m_isInitialized{ false };
+    NodeType m_nodeType{ NodeTypeDefault };
 
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
-    double m_lastProcessingTime;
-    double m_lastNonSilentTime;
+    double m_lastProcessingTime{ -1.0 };
+    double m_lastNonSilentTime{ -1.0 };
 
-    bool m_isMarkedForDeletion;
+    bool m_isMarkedForDeletion{ false };
 
 protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
-    unsigned m_channelCount;
-    ChannelCountMode m_channelCountMode;
-    ChannelInterpretation m_channelInterpretation;
+    unsigned m_channelCount{ 2 };
+    ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
+    ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 };
 
 } // namespace lab

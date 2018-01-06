@@ -20,7 +20,7 @@ class AudioBasicProcessorNode : public AudioNode
 
 public:
 
-    AudioBasicProcessorNode(float sampleRate);
+    AudioBasicProcessorNode();
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode

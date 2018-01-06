@@ -29,7 +29,7 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-SampledAudioNode::SampledAudioNode(float sampleRate) : AudioScheduledSourceNode(sampleRate), m_grainDuration(DefaultGrainDuration)
+SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration)
 {
     setNodeType(NodeTypeAudioBufferSource);
 

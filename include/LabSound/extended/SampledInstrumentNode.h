@@ -12,7 +12,6 @@
 #include "LabSound/core/SampledAudioNode.h"
 
 #include "LabSound/extended/ADSRNode.h"
-#include "LabSound/extended/SoundBuffer.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include <iostream> 

@@ -24,9 +24,7 @@ namespace lab {
 
     public:
 
-        PWMNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
-        {
-        }
+        PWMNodeInternal() : AudioProcessor(2) { }
 
         virtual ~PWMNodeInternal() { }
 
@@ -72,9 +70,9 @@ namespace lab {
     // Public PWMNode //
     ////////////////////
 
-    PWMNode::PWMNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    PWMNode::PWMNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new PWMNodeInternal(sampleRate));
+        m_processor.reset(new PWMNodeInternal());
 
         internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
 

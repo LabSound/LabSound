@@ -19,8 +19,8 @@ class WaveTable
 
 public:
 
-    WaveTable(float sampleRate, OscillatorType basicWaveform);
-    WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+    WaveTable(OscillatorType basicWaveform);
+    WaveTable(OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
     ~WaveTable();
 
@@ -36,14 +36,11 @@ public:
     float rateScale() const { return m_rateScale; }
 
     unsigned periodicWaveSize() const;
-    
-    float sampleRate() const { return m_sampleRate; }
 
 private:
 
     void generateBasicWaveform(OscillatorType);
 
-    float m_sampleRate;
     unsigned m_numberOfRanges;
     float m_centsPerRange;
 

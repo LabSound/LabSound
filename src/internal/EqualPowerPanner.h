@@ -15,7 +15,7 @@ class EqualPowerPanner : public Panner
 {
 
 public:
-    EqualPowerPanner(float sampleRate);
+    EqualPowerPanner();
 
     virtual void pan(ContextRenderLock&, double azimuth, double elevation,
                      const AudioBus * inputBus, AudioBus * outputBuf,

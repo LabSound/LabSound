@@ -13,7 +13,7 @@
 namespace lab 
 {
 
-ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs) : AudioNode(sampleRate)
+ChannelSplitterNode::ChannelSplitterNode(unsigned numberOfOutputs) : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 

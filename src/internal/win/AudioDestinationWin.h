@@ -16,7 +16,8 @@
 
 namespace lab {
 
-class AudioDestinationWin : public AudioDestination { 
+class AudioDestinationWin : public AudioDestination 
+{ 
 
 public:
 

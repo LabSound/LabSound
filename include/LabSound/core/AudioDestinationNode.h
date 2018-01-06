@@ -23,7 +23,7 @@ class AudioDestinationNode : public AudioNode, public AudioIOCallback {
 
 public:
 
-    AudioDestinationNode(AudioContext * ctx, float sampleRate);
+    AudioDestinationNode(AudioContext * ctx);
     virtual ~AudioDestinationNode();
     
     // AudioNode   
@@ -35,7 +35,7 @@ public:
     virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames) override;
 
     size_t currentSampleFrame() const { return m_currentSampleFrame; }
-    double currentTime() const { return currentSampleFrame() / static_cast<double>(sampleRate()); }
+    double currentTime() const { return currentSampleFrame() / static_cast<double>(m_context->sampleRate()); }
 
     virtual unsigned numberOfChannels() const { return 2; } // FIXME: update when multi-channel (more than stereo) is supported
 

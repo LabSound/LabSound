@@ -17,7 +17,7 @@ using namespace std;
 namespace lab
 {
 
-DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sampleRate)
+DynamicsCompressorNode::DynamicsCompressorNode() : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -79,7 +79,7 @@ void DynamicsCompressorNode::initialize()
     if (isInitialized())
         return;
 
-    m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), 2));
+    m_dynamicsCompressor.reset(new DynamicsCompressor(2));
 
     AudioNode::initialize();
 }

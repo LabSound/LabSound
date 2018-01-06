@@ -30,7 +30,7 @@ public:
         PanningModelEqualPower = 0
     };
 
-    Spatializer(PanningModel model, float sampleRate)
+    Spatializer(PanningModel model)
     {
         // Convert smoothing time (50ms) to a per-sample time value.
         m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
@@ -249,7 +249,7 @@ private:
 
 using namespace std;
 
-StereoPannerNode::StereoPannerNode(float sampleRate) : AudioNode(sampleRate)
+StereoPannerNode::StereoPannerNode() : AudioNode()
 {
 
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
@@ -257,7 +257,7 @@ StereoPannerNode::StereoPannerNode(float sampleRate) : AudioNode(sampleRate)
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_stereoPanner.reset(new Spatializer(Spatializer::PanningModelEqualPower, sampleRate));
+    m_stereoPanner.reset(new Spatializer(Spatializer::PanningModelEqualPower));
 
     m_pan = std::make_shared<AudioParam>("pan", 0.5, 0.0, 1.0);
     m_params.push_back(m_pan);

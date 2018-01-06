@@ -26,7 +26,7 @@ public:
         ALLPASS = 7
     };
     
-    BiquadFilterNode(float sampleRate);
+    BiquadFilterNode();
     
     unsigned short type();
     void setType(unsigned short type);

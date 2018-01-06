@@ -10,7 +10,7 @@
 
 namespace lab {
     
-WaveShaperProcessor::WaveShaperProcessor(float sampleRate, size_t numberOfChannels) : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
+WaveShaperProcessor::WaveShaperProcessor(size_t numberOfChannels) : AudioDSPKernelProcessor(numberOfChannels)
 {
 }
 

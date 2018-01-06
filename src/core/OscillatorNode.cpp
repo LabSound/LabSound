@@ -28,8 +28,7 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSquare = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSawtooth = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
-OscillatorNode::OscillatorNode(ContextRenderLock& r, float sampleRate)
-    : AudioScheduledSourceNode(sampleRate)
+OscillatorNode::OscillatorNode(ContextRenderLock& r) : AudioScheduledSourceNode()
     , m_type(OscillatorType::SINE)
     , m_firstRender(true)
     , m_virtualReadIndex(0)

@@ -71,7 +71,7 @@ namespace lab
     }
     
     // @tofix - pass in HRTF loader path
-    SpatializationNode::SpatializationNode(float sampleRate): lab::PannerNode(sampleRate)
+    SpatializationNode::SpatializationNode(): lab::PannerNode()
     {
         setNodeType(lab::NodeType::NodeTypeSpatialization);
         initialize();

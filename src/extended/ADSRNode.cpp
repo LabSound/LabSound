@@ -25,7 +25,7 @@ namespace lab
 
     public:
 
-        ADSRNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
+        ADSRNodeInternal() : AudioProcessor(2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
         {
             m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
             m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);
@@ -188,9 +188,9 @@ namespace lab
     // Public ADSRNode //
     /////////////////////
 
-    ADSRNode::ADSRNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    ADSRNode::ADSRNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ADSRNodeInternal(sampleRate));
+        m_processor.reset(new ADSRNodeInternal());
 
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 

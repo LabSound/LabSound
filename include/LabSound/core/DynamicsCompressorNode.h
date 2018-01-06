@@ -17,7 +17,7 @@ class DynamicsCompressorNode : public AudioNode
     
 public:
     
-    DynamicsCompressorNode(float sampleRate);
+    DynamicsCompressorNode();
     virtual ~DynamicsCompressorNode();
 
     // AudioNode

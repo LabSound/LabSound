@@ -16,7 +16,7 @@ namespace lab {
     {
     public:
 
-        PowerMonitorNode(float sampleRate);
+        PowerMonitorNode();
 
         virtual ~PowerMonitorNode();
         

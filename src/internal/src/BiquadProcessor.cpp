@@ -7,8 +7,8 @@
 
 namespace lab {
     
-BiquadProcessor::BiquadProcessor(float sampleRate, size_t numberOfChannels, bool autoInitialize)
-    : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
+BiquadProcessor::BiquadProcessor(size_t numberOfChannels, bool autoInitialize)
+    : AudioDSPKernelProcessor(numberOfChannels)
     , m_type(LowPass)
     , m_filterCoefficientsDirty(true)
     , m_hasSampleAccurateValues(false)

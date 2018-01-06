@@ -20,7 +20,7 @@ class OscillatorNode : public AudioScheduledSourceNode
     
 public:
     
-    OscillatorNode(ContextRenderLock& r, float sampleRate);
+    OscillatorNode(ContextRenderLock& r);
     virtual ~OscillatorNode();
     
     // AudioNode

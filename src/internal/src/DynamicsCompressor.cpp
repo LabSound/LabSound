@@ -13,10 +13,7 @@ namespace lab {
 
 using namespace AudioUtilities;
     
-DynamicsCompressor::DynamicsCompressor(float sampleRate, unsigned numberOfChannels)
-    : m_numberOfChannels(numberOfChannels)
-    , m_sampleRate(sampleRate)
-    , m_compressor(sampleRate, numberOfChannels)
+DynamicsCompressor::DynamicsCompressor(unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels), m_compressor(numberOfChannels)
 {
     // Uninitialized state - for parameter recalculation.
     m_lastFilterStageRatio = -1;

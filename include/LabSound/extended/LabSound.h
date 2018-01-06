@@ -44,7 +44,6 @@
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/PowerMonitorNode.h"
 #include "LabSound/extended/PWMNode.h"
-#include "LabSound/extended/SoundBuffer.h"
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"

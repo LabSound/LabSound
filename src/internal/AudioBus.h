@@ -23,10 +23,10 @@ class AudioBus
     
 public:
 
+    // Can define non-standard layouts here:
     enum 
     {
         LayoutCanonical = 0
-        // Can define non-standard layouts here
     };
     
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
@@ -77,12 +77,12 @@ public:
 
     // Creates a new buffer from a range in the source buffer.
     // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame);
+    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, unsigned startFrame, unsigned endFrame);
 
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
     // Note: sample-rate conversion is already handled in the file-reading code for the mac port, so we don't need this.
-    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, double newSampleRate);
+    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus * sourceBus, bool mixToMono, double newSampleRate);
 
     // Creates a new AudioBus by mixing all the channels down to mono.
     // If sourceBus is already mono, then the returned AudioBus will simply be a copy.

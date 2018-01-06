@@ -17,17 +17,7 @@ using namespace std;
 
 namespace lab {
     
-AudioNode::AudioNode(float sampleRate)
-    : m_isInitialized(false)
-    , m_nodeType(NodeTypeDefault)
-    , m_sampleRate(sampleRate)
-    , m_lastProcessingTime(-1)
-    , m_lastNonSilentTime(-1)
-    , m_isMarkedForDeletion(false)
-    , m_channelCount(2)
-    , m_channelCountMode(ChannelCountMode::Max)
-    , m_channelInterpretation(ChannelInterpretation::Speakers)
-    { }
+AudioNode::AudioNode() { }
 
 AudioNode::~AudioNode() { }
 
@@ -145,7 +135,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
         {
-            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
+            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(r.context()->sampleRate());
         }
 
         bool ps = propagatesSilence(r.context()->currentTime());

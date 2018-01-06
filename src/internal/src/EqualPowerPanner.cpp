@@ -17,7 +17,7 @@ using namespace std;
 
 namespace lab {
 
-EqualPowerPanner::EqualPowerPanner(float sampleRate) : Panner(PanningMode::EQUALPOWER)
+EqualPowerPanner::EqualPowerPanner() : Panner(PanningMode::EQUALPOWER)
 {
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
 }

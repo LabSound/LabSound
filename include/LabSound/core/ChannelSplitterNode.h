@@ -13,10 +13,11 @@ namespace lab
 class AudioContext;
     
 class ChannelSplitterNode : public AudioNode
-    {
+{
         
 public:
-    ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs);
+
+    ChannelSplitterNode(unsigned numberOfOutputs);
     virtual ~ChannelSplitterNode() {}
     
     // AudioNode

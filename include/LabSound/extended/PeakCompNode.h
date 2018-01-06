@@ -26,14 +26,15 @@
 namespace lab
 {
     
-class PeakCompNode : public lab::AudioBasicProcessorNode {
+class PeakCompNode : public lab::AudioBasicProcessorNode 
+{
     
     class PeakCompNodeInternal;
     PeakCompNodeInternal * internalNode; // We do not own this!
     
 public:
 
-    PeakCompNode(float sampleRate);
+    PeakCompNode();
     virtual ~PeakCompNode();
 
     void set(float aT, float aL, float d, float s, float r);

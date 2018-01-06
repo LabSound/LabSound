@@ -10,7 +10,7 @@ using namespace lab;
 
 namespace lab {
 
-    NoiseNode::NoiseNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)
+    NoiseNode::NoiseNode() : AudioScheduledSourceNode()
     {
         setNodeType(lab::NodeType::NodeTypeNoise);
 

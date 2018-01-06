@@ -15,7 +15,7 @@ namespace lab
     
     using namespace lab;
     
-    RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2)
+    RecorderNode::RecorderNode() : AudioBasicInspectorNode(2)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

@@ -8,9 +8,9 @@
 namespace lab
 {
 
-WaveShaperNode::WaveShaperNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
+WaveShaperNode::WaveShaperNode() : AudioBasicProcessorNode()
 {
-    m_processor.reset(new lab::WaveShaperProcessor(sampleRate, 1));
+    m_processor.reset(new lab::WaveShaperProcessor(1));
     setNodeType(NodeTypeWaveShaper);
     initialize();
 }

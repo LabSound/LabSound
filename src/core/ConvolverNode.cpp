@@ -24,7 +24,7 @@ const size_t MaxFFTSize = 32768;
 
 namespace lab {
 
-ConvolverNode::ConvolverNode(float sampleRate) : AudioNode(sampleRate), m_swapOnRender(false), m_normalize(true)
+ConvolverNode::ConvolverNode() : AudioNode(), m_swapOnRender(false), m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

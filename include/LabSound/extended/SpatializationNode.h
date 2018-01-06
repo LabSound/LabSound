@@ -60,7 +60,8 @@ namespace lab {
     {
 
     public:
-        SpatializationNode(float sampleRate);
+
+        SpatializationNode();
         virtual ~SpatializationNode();
 
         void setOccluders(OccludersPtr);

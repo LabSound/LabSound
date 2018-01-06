@@ -23,9 +23,7 @@ const double MaxDelayTimeSeconds = 0.002;
 const int UninitializedAzimuth = -1;
 const uint32_t RenderingQuantum = 128;
 
-HRTFPanner::HRTFPanner(float sampleRate)
-    : Panner(PanningMode::HRTF)
-    , m_sampleRate(sampleRate)
+HRTFPanner::HRTFPanner() : Panner(PanningMode::HRTF)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)
     , m_elevation1(0)

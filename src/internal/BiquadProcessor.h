@@ -29,7 +29,7 @@ public:
         Allpass = 7
     };
 
-    BiquadProcessor(float sampleRate, size_t numberOfChannels, bool autoInitialize);
+    BiquadProcessor(size_t numberOfChannels, bool autoInitialize);
 
     virtual ~BiquadProcessor();
     
