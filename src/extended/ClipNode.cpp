@@ -25,10 +25,12 @@ namespace lab
     // Prviate ClipNode Implementation //
     /////////////////////////////////////
 
-    class ClipNode::ClipNodeInternal : public lab::AudioProcessor {
+    class ClipNode::ClipNodeInternal : public lab::AudioProcessor 
+    {
+
     public:
 
-        ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), mode(ClipNode::CLIP)
+        ClipNodeInternal() : AudioProcessor(2), mode(ClipNode::CLIP)
         {
             auto fMax = std::numeric_limits<float>::max();
             aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);

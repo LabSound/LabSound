@@ -63,35 +63,34 @@ OscillatorNode::~OscillatorNode()
 void OscillatorNode::setType(bool isConstructor, OscillatorType type)
 {
     std::shared_ptr<WaveTable> waveTable;
-    float sampleRate = this->sampleRate();
 
     switch (type)
     {
         case OscillatorType::SINE:
             if (!s_waveTableSine)
             {
-                s_waveTableSine = std::make_shared<WaveTable>(sampleRate, OscillatorType::SINE);
+                s_waveTableSine = std::make_shared<WaveTable>(OscillatorType::SINE);
             }
             waveTable = s_waveTableSine;
             break;
         case OscillatorType::SQUARE:
             if (!s_waveTableSquare)
             {
-                s_waveTableSquare = std::make_shared<WaveTable>(sampleRate, OscillatorType::SQUARE);
+                s_waveTableSquare = std::make_shared<WaveTable>(OscillatorType::SQUARE);
             }
             waveTable = s_waveTableSquare;
             break;
         case OscillatorType::SAWTOOTH:
             if (!s_waveTableSawtooth)
             {
-                s_waveTableSawtooth = std::make_shared<WaveTable>(sampleRate, OscillatorType::SAWTOOTH);
+                s_waveTableSawtooth = std::make_shared<WaveTable>(OscillatorType::SAWTOOTH);
             }
             waveTable = s_waveTableSawtooth;
             break;
         case OscillatorType::TRIANGLE:
             if (!s_waveTableTriangle)
             {
-                s_waveTableTriangle = std::make_shared<WaveTable>(sampleRate, OscillatorType::TRIANGLE);
+                s_waveTableTriangle = std::make_shared<WaveTable>(OscillatorType::TRIANGLE);
             }
             waveTable = s_waveTableTriangle;
             break;

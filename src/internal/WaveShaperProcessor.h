@@ -14,7 +14,9 @@ namespace lab {
 
 class WaveShaperProcessor : public AudioDSPKernelProcessor 
 {
+
 public:
+
     WaveShaperProcessor(size_t numberOfChannels);
 
     virtual ~WaveShaperProcessor();

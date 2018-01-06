@@ -9,14 +9,14 @@ namespace lab {
     
     // Based on the DiodeNode found at the BBC Radiophonic Workshop
     // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
-    DiodeNode::DiodeNode(ContextRenderLock& r, float sampleRate) : vb(0.2f), vl(0.4f), h(1.0)
+    DiodeNode::DiodeNode(ContextRenderLock& r) : vb(0.2f), vl(0.4f), h(1.0)
     {
-        waveShaper = std::make_shared<lab::WaveShaperNode>(sampleRate);
+        waveShaper = std::make_shared<lab::WaveShaperNode>();
         setCurve(r);
         //initialize(); DiodeNode is not subclassed from node
     }
 
-    void DiodeNode::setDistortion(ContextRenderLock& r, float distortion)
+    void DiodeNode::setDistortion(ContextRenderLock & r, float distortion)
     {
         // We increase the distortion by increasing the gradient of the linear portion of the waveshaper's curve.
         h = distortion;

@@ -19,7 +19,7 @@ namespace lab {
 const size_t renderQuantumSize = 256;    
 
 OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float lengthSeconds, const uint32_t numChannels, const float sampleRate)
-    : AudioDestinationNode(context, sampleRate),
+    : AudioDestinationNode(context),
     m_sampleRate(sampleRate),
     m_numChannels(numChannels),
     m_lengthSeconds(lengthSeconds),

@@ -13,7 +13,7 @@ namespace lab {
     class DiodeNode
     {
     public:
-        DiodeNode(ContextRenderLock& r, float sampleRate);
+        DiodeNode(ContextRenderLock& r);
         void setDistortion(ContextRenderLock& r, float distortion);
         std::shared_ptr<WaveShaperNode> node() const { return waveShaper; }
 
