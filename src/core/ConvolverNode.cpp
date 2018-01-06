@@ -49,8 +49,8 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
     if (m_swapOnRender)
     {
         m_reverb = std::move(m_newReverb);
-        m_buffer = m_newBuffer;
-        m_newBuffer.reset();
+        m_bus = m_newBus;
+        m_newBus.reset();
         m_swapOnRender = false;
     }
     
@@ -58,8 +58,7 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
     
     if (!isInitialized() || !m_reverb)
     {
-        if (outputBus)
-            outputBus->zero();
+        if (outputBus) outputBus->zero();
         return;
     }
 
@@ -93,42 +92,30 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(ContextGraphLock& g, std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setImpulse(ContextGraphLock& g, std::shared_ptr<AudioBus> bus)
 {
-    if (!buffer || !g.context())
+    if (!bus || !g.context())
         return;
 
-    unsigned numberOfChannels = buffer->numberOfChannels();
-    size_t bufferLength = buffer->length();
+    unsigned numberOfChannels = bus->numberOfChannels();
+    size_t bufferLength = bus->length();
 
     // The current implementation supports up to four channel impulse responses, which are interpreted as true-stereo (see Reverb class).
     bool isBufferGood = numberOfChannels > 0 && numberOfChannels <= 4 && bufferLength;
     ASSERT(isBufferGood);
-    if (!isBufferGood)
-        return;
-
-    // Wrap the AudioBuffer by an AudioBus. It's an efficient pointer set and not a memcpy().
-    // This memory is simply used in the Reverb constructor and no reference to it is kept for later use in that class.
-    AudioBus bufferBus(numberOfChannels, bufferLength, false);
-    for (unsigned i = 0; i < numberOfChannels; ++i)
-        bufferBus.setChannelMemory(i, buffer->getChannelData(i)->data(), bufferLength);
-
-    bufferBus.setSampleRate(buffer->sampleRate());
+    if (!isBufferGood) return;
 
     // Create the reverb with the given impulse response.
     const bool nonRealtimeForLargeBuffers = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2,
-                                                  nonRealtimeForLargeBuffers, m_normalize));
-    m_newBuffer = buffer;
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, nonRealtimeForLargeBuffers, m_normalize));
+    m_newBus = bus;
     m_swapOnRender = true;
 }
 
-std::shared_ptr<AudioBuffer> ConvolverNode::buffer()
+std::shared_ptr<AudioBus> ConvolverNode::getImpulse()
 {
-    if (m_swapOnRender) {
-        return m_newBuffer;
-    }
-    return m_buffer;
+    if (m_swapOnRender) return m_newBus;
+    return m_bus;
 }
 
 double ConvolverNode::tailTime() const

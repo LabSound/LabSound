@@ -197,6 +197,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
     // Do some sanity checking.
     if (endFrame > bufferLength)
         endFrame = bufferLength;
+
     if (m_virtualReadIndex >= endFrame)
         m_virtualReadIndex = 0; // reset to start
 
@@ -205,7 +206,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
     double virtualEndFrame = endFrame;
     double virtualDeltaFrames = endFrame;
 
-    if (loop() && (m_loopStart || m_loopEnd) && m_loopStart >= 0 && m_loopEnd > 0 && m_loopStart < m_loopEnd) {
+    if (loop() && (m_loopStart || m_loopEnd) && m_loopStart >= 0 && m_loopEnd > 0 && m_loopStart < m_loopEnd) 
+    {
         // Convert from seconds to sample-frames.
         double loopStartFrame = m_loopStart * getBus()->sampleRate();
         double loopEndFrame = m_loopEnd * getBus()->sampleRate();
@@ -415,5 +417,4 @@ void SampledAudioNode::clearPannerNode()
 }
 
 } // namespace lab
-
 
