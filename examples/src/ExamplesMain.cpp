@@ -12,6 +12,7 @@
 #include "RenderOffline.h"
 #include "ConvolutionReverb.h"
 #include "PeakCompressor.h"
+#include "RedAlert.h"
 
 /*
 
@@ -25,7 +26,7 @@
 #include "StereoPanning.h"
 #include "Spatialization.h"
 #include "Tremolo.h"
-#include "RedAlert.h"
+
 #include "InfiniteFM.h"
 #include "Groove.h"
 #include "Validation.h"
@@ -36,13 +37,15 @@ LiveGraphUpdateApp g_liveGraphUpdateApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 PeakCompressorApp g_peakCompressor;
+RedAlertApp g_redAlert;
+
 /*
 
 MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 
-RedAlertApp g_redAlert;
+
 RhythmApp g_rhythm;
 RhythmAndFiltersApp g_rhythmAndFilters;
 SpatializationApp g_spatialization;
@@ -58,7 +61,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_peakCompressor.PlayExample();
+        g_redAlert.PlayExample();
     }
     catch (const std::exception & e)
     {

@@ -30,10 +30,10 @@ struct RedAlertApp : public LabSoundExampleApp
             ContextGraphLock g(context.get(), "Red Alert");
             ContextRenderLock r(context.get(), "Red Alert");
             
-            sweep = std::make_shared<FunctionNode>(context->sampleRate(), 1);
+            sweep = std::make_shared<FunctionNode>(1);
             sweep->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
-                double dt = 1.0 / me->sampleRate();
+                double dt = 1.0 / r.context()->sampleRate();
                 double now = fmod(me->now(), 1.2f);
                 
                 for (size_t i = 0; i < framesToProcess; ++i) 
@@ -54,10 +54,10 @@ struct RedAlertApp : public LabSoundExampleApp
             
             sweep->start(0);
             
-            outputGainFunction = std::make_shared<FunctionNode>(context->sampleRate(), 1);
+            outputGainFunction = std::make_shared<FunctionNode>(1);
             outputGainFunction->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)
             {
-                double dt = 1.0 / me->sampleRate();
+                double dt = 1.0 / r.context()->sampleRate();
                 double now = fmod(me->now(), 1.2f);
                 
                 for (size_t i = 0; i < framesToProcess; ++i)
@@ -78,22 +78,22 @@ struct RedAlertApp : public LabSoundExampleApp
             
             outputGainFunction->start(0);
 
-            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, OscillatorType::SAWTOOTH);
+            osc = std::make_shared<OscillatorNode>(context->sampleRate());
+            osc->setType(OscillatorType::SAWTOOTH);
             osc->frequency()->setValue(220);
             osc->start(0);
-            oscGain = std::make_shared<GainNode>(context->sampleRate());
+            oscGain = std::make_shared<GainNode>();
             oscGain->gain()->setValue(0.5f);
             
-            resonator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            resonator->setType(r, OscillatorType::SINE);
+            resonator = std::make_shared<OscillatorNode>(context->sampleRate());
+            resonator->setType(OscillatorType::SINE);
             resonator->frequency()->setValue(220);
             resonator->start(0);
             
-            resonatorGain = std::make_shared<GainNode>(context->sampleRate());
+            resonatorGain = std::make_shared<GainNode>();
             resonatorGain->gain()->setValue(0.0f);
 
-            resonanceSum = std::make_shared<GainNode>(context->sampleRate());
+            resonanceSum = std::make_shared<GainNode>();
             resonanceSum->gain()->setValue(0.5f);
             
             // sweep drives oscillator frequency
@@ -109,7 +109,7 @@ struct RedAlertApp : public LabSoundExampleApp
             context->connect(resonatorGain, resonator, 0, 0);
             context->connect(resonanceSum, resonatorGain, 0, 0);
             
-            delaySum = std::make_shared<GainNode>(context->sampleRate());
+            delaySum = std::make_shared<GainNode>();
             delaySum->gain()->setValue(0.2f);
             
             // resonanceSum --+--> delay0 --+
@@ -125,7 +125,7 @@ struct RedAlertApp : public LabSoundExampleApp
                 context->connect(delaySum, delay[i], 0, 0);
             }
             
-            filterSum = std::make_shared<GainNode>(context->sampleRate());
+            filterSum = std::make_shared<GainNode>();
             filterSum->gain()->setValue(0.2f);
             
             // delaySum --+--> filter0 --+
@@ -139,7 +139,7 @@ struct RedAlertApp : public LabSoundExampleApp
             float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
             for (int i = 0; i < 4; ++i) 
             {
-                filter[i] = std::make_shared<BiquadFilterNode>(context->sampleRate());
+                filter[i] = std::make_shared<BiquadFilterNode>();
                 filter[i]->frequency()->setValue(centerFrequencies[i]);
                 filter[i]->q()->setValue(12.f);
                 context->connect(filter[i], delaySum, 0, 0);
