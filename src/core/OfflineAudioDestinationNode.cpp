@@ -16,7 +16,7 @@ using namespace std;
  
 namespace lab {
     
-const size_t renderQuantumSize = 256;    
+const size_t renderQuantumSize = 128;    
 
 OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels) : AudioDestinationNode(context, sampleRate),
     m_numChannels(numChannels),
@@ -99,8 +99,7 @@ void OfflineAudioDestinationNode::offlineRender()
     while (framesToProcess > 0)
     {
         render(0, m_renderBus.get(), renderQuantumSize);
-        size_t framesAvailableToCopy = min(framesToProcess, renderQuantumSize);
-        framesToProcess -= framesAvailableToCopy;
+        framesToProcess -= 1;
     }
 
     LOG("Stopping Offline Rendering");

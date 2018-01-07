@@ -29,7 +29,7 @@ void AudioChannel::scale(float scale)
     vsmul(data(), 1, &scale, mutableData(), 1, length());
 }
 
-void AudioChannel::copyFrom(const AudioChannel* sourceChannel)
+void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
 {
     bool isSafe = (sourceChannel && sourceChannel->length() >= length());
     ASSERT(isSafe);

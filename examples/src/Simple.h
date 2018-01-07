@@ -22,7 +22,6 @@ struct SimpleApp : public LabSoundExampleApp
 
             musicClipNode = std::make_shared<SampledAudioNode>();
             musicClipNode->setBus(r, musicClip);
-
             context->connect(gain, musicClipNode, 0, 0);
             musicClipNode->start(0.0f);
 
