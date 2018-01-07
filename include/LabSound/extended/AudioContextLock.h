@@ -32,15 +32,12 @@ namespace lab
                 context->m_graphLock.lock();
                 m_context = context;
                 m_context->m_graphLocker = lockSuitor;
+                //LOG("%s ACQUIRED! %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
             }
 #if defined(DEBUG_LOCKS)
-            else if (context && context->m_graphLocker.size())
+            if (!m_context && context->m_graphLocker.size())
             {
                 LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
-            }
-            else
-            {
-                LOG("%s failed to acquire [GRAPH] lock.", lockSuitor.c_str());
             }
 #endif
         }
@@ -49,6 +46,7 @@ namespace lab
         {
             if (m_context)
             {
+                //m_context->m_graphLocker.clear();
                 m_context->m_graphLock.unlock();
             }
             

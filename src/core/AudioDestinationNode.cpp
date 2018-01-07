@@ -73,24 +73,27 @@ AudioDestinationNode::~AudioDestinationNode()
 
 void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames)
 {
-    ContextRenderLock r(m_context, "AudioDestinationNode()::render");
+    // The audio system might still be invoking callbacks during shutdown, so bail out if so.
+    if (!m_context)
+        return;
 
-    if (!r.context())
-        return; // return if couldn't acquire lock
-    
     // We don't want denormals slowing down any of the audio processing
     // since they can very seriously hurt performance.
     // This will take care of all AudioNodes because they all process within this scope.
     DenormalDisabler denormalDisabler;
     
-    if (!r.context()->isInitialized())
+    ContextRenderLock renderLock(m_context, "AudioDestinationNode::render");
+    if (!renderLock.context())
+        return; // return if couldn't acquire lock
+
+    if (!m_context->isInitialized())
     {
         destinationBus->zero();
         return;
     }
 
     // Let the context take care of any business at the start of each render quantum.
-    r.context()->handlePreRenderTasks(r);
+    m_context->handlePreRenderTasks(renderLock);
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
@@ -98,7 +101,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
 
     // This will cause the node(s) connected to this destination node to process, which in turn will pull on their input(s),
     // all the way backwards through the rendering graph.
-    AudioBus* renderedBus = input(0)->pull(r, destinationBus, numberOfFrames);
+    AudioBus* renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
     {
@@ -111,10 +114,10 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
     }
 
     // Process nodes which need a little extra help because they are not connected to anything, but still need to process.
-    r.context()->processAutomaticPullNodes(r, numberOfFrames);
+    m_context->processAutomaticPullNodes(renderLock, numberOfFrames);
 
     // Let the context take care of any business at the end of each render quantum.
-    r.context()->handlePostRenderTasks(r);
+    m_context->handlePostRenderTasks(renderLock);
     
     // Advance current sample-frame.
     m_currentSampleFrame += numberOfFrames;

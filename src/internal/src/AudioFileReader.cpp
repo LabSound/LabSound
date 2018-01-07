@@ -15,8 +15,7 @@ namespace detail
     std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono)
     {
         size_t numSamples = audioData->samples.size();
-        if (!numSamples)
-            return {};
+        if (!numSamples) return nullptr;
 
         size_t numberOfFrames = int(numSamples / audioData->channelCount);
         const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
