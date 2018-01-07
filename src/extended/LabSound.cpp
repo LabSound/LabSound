@@ -17,6 +17,15 @@
 
 namespace lab
 {
+
+    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r)
+    {
+        AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
+        std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
+        inputNode->setFormat(r, 1, r.context()->sampleRate()); // 1 vs 2 channels?
+        return inputNode;
+    }
+
     std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext()
     {
         LOG("Initialize Realtime Context");

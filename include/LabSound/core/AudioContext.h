@@ -30,9 +30,6 @@ class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
 
-// @tofix - refactor such that this factory function doesn't need to exist
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
-
 class AudioContext
 {
     

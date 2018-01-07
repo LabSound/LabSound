@@ -24,21 +24,7 @@ namespace lab
 {
 
 const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
-    
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r)
-{
-    AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
-    
-    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
-    
-    // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-    inputNode->setFormat(r, 2, r.context()->sampleRate());
-    
-    //m_referencedNodes.push_back(inputNode); // context keeps reference until node is disconnected
-    
-    return inputNode;
-}
-    
+
 // Constructor for realtime rendering
 AudioContext::AudioContext(bool isOffline)
 {
