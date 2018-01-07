@@ -12,15 +12,17 @@ struct SimpleApp : public LabSoundExampleApp
         auto ac = context.get();
         
         std::shared_ptr<OscillatorNode> oscillator;
-        SoundBuffer tonbi("samples/mono-music-clip.wav", context->sampleRate());
+        std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
-        std::shared_ptr<SampledAudioNode> tonbiSound;
+        std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
 
         auto lockedArea = [&](ContextGraphLock & g, ContextRenderLock & r)
         {
             oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
             gain = std::make_shared<GainNode>(context->sampleRate());
             gain->gain()->setValue(0.0625f);
+
+            musicClipNode = std::make_shared<SampledAudioNode>(musicClip);
 
             // osc -> gain -> destination
             ac->connect(gain, oscillator, 0, 0);
@@ -30,7 +32,7 @@ struct SimpleApp : public LabSoundExampleApp
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(r, OscillatorType::SINE);
 
-            tonbiSound = tonbi.play(r, 0.0f);
+            musicClipNode->start(0.0f);
         };
 
         lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);

@@ -45,6 +45,22 @@ SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDurati
     initialize();
 }
 
+SampledAudioNode::SampledAudioNode(std::shared_ptr<AudioBus> bus) : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration), m_sourceBus(bus)
+{
+    setNodeType(NodeTypeAudioBufferSource);
+
+    m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
+    m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
+
+    m_params.push_back(m_gain);
+    m_params.push_back(m_playbackRate);
+
+    // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+
+    initialize();
+}
+
 SampledAudioNode::~SampledAudioNode()
 {
     uninitialize();
@@ -371,7 +387,7 @@ void SampledAudioNode::startGrain(double when, double grainOffset, double grainD
     m_startRequested = true;
 }
 
-double SampledAudioNode::totalPitchRate(ContextRenderLock& r)
+double SampledAudioNode::totalPitchRate(ContextRenderLock & r)
 {
     double dopplerRate = 1.0;
     if (m_pannerNode)
@@ -381,7 +397,7 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock& r)
     // Normally it's not an issue because buffers are loaded at the AudioContext's sample-rate, but we can handle it in any case.
     double sampleRateFactor = 1.0;
     if (getBus())
-        sampleRateFactor = getBus()->sampleRate() / sampleRate();
+        sampleRateFactor = getBus()->sampleRate() / r.context()->sampleRate();
 
     double basePitchRate = playbackRate()->value(r);
 

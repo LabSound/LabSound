@@ -17,15 +17,15 @@ class AudioHardwareSourceNode : public AudioSourceNode, public AudioSourceProvid
 
 public:
 
-    AudioHardwareSourceNode(AudioSourceProvider*, float sampleRate);
+    AudioHardwareSourceNode(AudioSourceProvider*);
     virtual ~AudioHardwareSourceNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
-    // AudioSourceProviderClient
-    virtual void setFormat(ContextRenderLock & r, size_t numberOfChannels, float sampleRate) override;
+    // Interface for AudioSourceProviderClient
+    virtual void setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate) override;
 
     AudioSourceProvider * audioSourceProvider() const { return m_audioSourceProvider; }
 

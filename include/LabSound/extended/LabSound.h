@@ -50,6 +50,9 @@
 #include "LabSound/extended/SampledInstrumentNode.h"
 #include "LabSound/extended/RecorderNode.h"
 
+// fixme - move headers to core
+#include "../src/internal/AudioFileReader.h"
+
 #include <functional>
 #include <string>
 

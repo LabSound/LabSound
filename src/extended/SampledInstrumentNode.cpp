@@ -93,7 +93,7 @@ namespace lab
                         v->gain()->setValue(amplitude); 
 
                         // Connect the source node to the parsed audio data for playback
-                        v->setBuffer(r, sample->soundBuf->audioBuffer);
+                        v->setBus(r, sample->soundBuf->audioBuffer);
 
                         v->start(r.context()->currentTime());
                         v->stop(r.context()->currentTime() + sample->soundBuf->audioBuffer->length());

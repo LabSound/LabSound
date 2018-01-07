@@ -7,12 +7,11 @@
 #include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/FloatConversion.h"
-
 #include "libnyquist/AudioDecoder.h"
 
 namespace detail
 {
-    std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono, float sampleRate)
+    std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono)
     {
         size_t numSamples = audioData->samples.size();
         if (!numSamples)
@@ -61,7 +60,7 @@ namespace lab
 nqr::NyquistIO nyquistFileIO;
 std::mutex g_fileIOMutex;
     
-std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float sampleRate)
+std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     
@@ -76,10 +75,10 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono,
         throw;
     }
     
-    return detail::LoadInternal(audioData, mixToMono, sampleRate);
+    return detail::LoadInternal(audioData, mixToMono);
 }
 
-std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono, float sampleRate)
+std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     
@@ -94,7 +93,7 @@ std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer,
         throw;
     }
     
-    return detail::LoadInternal(audioData, mixToMono, sampleRate);
+    return detail::LoadInternal(audioData, mixToMono);
     
 }
     

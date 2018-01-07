@@ -14,9 +14,7 @@
 
 namespace lab {
 
-AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSourceProvider, float sampleRate) : AudioSourceNode(sampleRate)
-, m_audioSourceProvider(audioSourceProvider)
-, m_sourceNumberOfChannels(0)
+AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSourceProvider) : AudioSourceNode(), m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
 {
     
     // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
@@ -34,10 +32,10 @@ AudioHardwareSourceNode::~AudioHardwareSourceNode()
 
 void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
 {
-    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != sampleRate())
+    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
     {
         // The sample-rate must be equal to the context's sample-rate.
-        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != sampleRate())
+        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
             throw std::runtime_error("AudioHardwareSourceNode must match samplerate of context... ");
 
         m_sourceNumberOfChannels = numberOfChannels;
