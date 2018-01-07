@@ -38,6 +38,8 @@ public:
     // Converts back into impulse-response form.
     std::unique_ptr<AudioChannel> createImpulseResponse();
 
+    float sampleRate() const { return m_sampleRate; }
+
 private:
 
     // Note: this is destructive on the passed in AudioChannel.

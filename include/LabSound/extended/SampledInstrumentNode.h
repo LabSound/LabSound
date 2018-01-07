@@ -19,6 +19,7 @@
 #include <string>
 #include <algorithm>
 
+/*
 namespace lab 
 {
     struct SamplerSound;
@@ -101,5 +102,7 @@ namespace lab
     };
 
 }
+
+*/
 
 #endif

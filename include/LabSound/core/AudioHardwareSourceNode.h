@@ -32,7 +32,7 @@ public:
 private:
 
     // As an audio source, we will never propagate silence.
-    virtual bool propagatesSilence(double now) const override { return false; }
+    virtual bool propagatesSilence(ContextRenderLock & r) const override { return false; }
 
     AudioSourceProvider * m_audioSourceProvider;
 

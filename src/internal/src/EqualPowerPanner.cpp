@@ -6,6 +6,7 @@
 #include "internal/AudioBus.h"
 #include "internal/AudioUtilities.h"
 #include "LabSound/core/Mixing.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include <algorithm>
 #include <WTF/MathExtras.h>
@@ -17,14 +18,15 @@ using namespace std;
 
 namespace lab {
 
-EqualPowerPanner::EqualPowerPanner() : Panner(PanningMode::EQUALPOWER)
+EqualPowerPanner::EqualPowerPanner(const float sampleRate) : Panner(sampleRate, PanningMode::EQUALPOWER)
 {
-    m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
+
 }
 
-void EqualPowerPanner::pan(ContextRenderLock&,
-                           double azimuth, double /*elevation*/, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess)
+void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*elevation*/, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess)
 {
+    m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, r.context()->sampleRate());
+
     bool isInputSafe = inputBus && (inputBus->numberOfChannels() == 1 || inputBus->numberOfChannels() == 2) && framesToProcess <= inputBus->length();
     ASSERT(isInputSafe);
     if (!isInputSafe)

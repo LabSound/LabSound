@@ -126,6 +126,11 @@ void AudioDestinationNode::render(AudioBus* sourceBus, AudioBus* destinationBus,
     m_currentSampleFrame += numberOfFrames;
 }
 
+double AudioDestinationNode::currentTime() const 
+{ 
+    return currentSampleFrame() / static_cast<double>(m_context->sampleRate()); 
+}
+
 AudioSourceProvider * AudioDestinationNode::localAudioInputProvider() 
 { 
     return static_cast<AudioSourceProvider*>(m_localAudioInputProvider); 

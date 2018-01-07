@@ -21,13 +21,14 @@ const double UnknownTime = -1;
 
 AudioScheduledSourceNode::AudioScheduledSourceNode() : AudioSourceNode(), m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
 {
+
 }
 
 void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
                                                     size_t quantumFrameSize,
-                                                    AudioBus* outputBus,
-                                                    size_t& quantumFrameOffset,
-                                                    size_t& nonSilentFramesToProcess)
+                                                    AudioBus * outputBus,
+                                                    size_t & quantumFrameOffset,
+                                                    size_t & nonSilentFramesToProcess)
 {
     if (!outputBus)
         return;
@@ -39,7 +40,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (!context)
         return;
     
-    double sampleRate = this->sampleRate();
+    float sampleRate = r.context()->sampleRate();
     
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.

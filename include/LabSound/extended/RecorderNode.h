@@ -37,8 +37,8 @@ namespace lab
         
     private:
         
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         bool m_mixToMono{ false };
         bool m_recording{ false };

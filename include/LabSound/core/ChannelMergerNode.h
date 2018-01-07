@@ -26,8 +26,9 @@ public:
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 
 private:
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     
     uint32_t m_desiredNumberOfOutputChannels = 1; // default
 };

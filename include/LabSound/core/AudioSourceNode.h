@@ -19,8 +19,8 @@ public:
     
 protected:
 
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 };
 
 } // namespace lab

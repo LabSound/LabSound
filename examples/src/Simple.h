@@ -2,6 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "ExampleBaseApp.h"
+#include "../src/internal/AudioBus.h"
 
 struct SimpleApp : public LabSoundExampleApp
 {
@@ -18,8 +19,8 @@ struct SimpleApp : public LabSoundExampleApp
 
         auto lockedArea = [&](ContextGraphLock & g, ContextRenderLock & r)
         {
-            oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            gain = std::make_shared<GainNode>(context->sampleRate());
+            oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
+            gain = std::make_shared<GainNode>();
             gain->gain()->setValue(0.0625f);
 
             musicClipNode = std::make_shared<SampledAudioNode>(musicClip);
@@ -30,7 +31,7 @@ struct SimpleApp : public LabSoundExampleApp
 
             //oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
-            oscillator->setType(r, OscillatorType::SINE);
+            oscillator->setType(OscillatorType::SINE);
 
             musicClipNode->start(0.0f);
         };

@@ -94,14 +94,14 @@ void DynamicsCompressorNode::uninitialize()
     m_dynamicsCompressor.reset();
 }
 
-double DynamicsCompressorNode::tailTime() const
+double DynamicsCompressorNode::tailTime(ContextRenderLock & r) const
 {
-    return m_dynamicsCompressor->tailTime();
+    return m_dynamicsCompressor->tailTime(r);
 }
 
-double DynamicsCompressorNode::latencyTime() const
+double DynamicsCompressorNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_dynamicsCompressor->latencyTime();
+    return m_dynamicsCompressor->latencyTime(r);
 }
 
 } // end namespace lab

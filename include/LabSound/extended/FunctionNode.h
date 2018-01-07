@@ -16,7 +16,7 @@ namespace lab
         
     public:
         
-        FunctionNode(float sampleRate, int channels);
+        FunctionNode(int channels);
         virtual ~FunctionNode();
         
         // @tofix - should this be protected with a mutex?
@@ -32,7 +32,7 @@ namespace lab
         
     private:
         
-        virtual bool propagatesSilence(double now) const override;
+        virtual bool propagatesSilence(ContextRenderLock & r) const override;
         
         std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess)> _function;
         

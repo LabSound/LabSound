@@ -81,13 +81,13 @@ namespace lab
                 sawStorage.clear();
                 saws.clear();
 
-                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(r, sampleRate));
+                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(sampleRate));
 
                 for (int i = 0; i < n; ++i) saws.push_back(sawStorage[i].get());
 
                 for (auto i : sawStorage)
                 {
-                    i->setType(r, OscillatorType::SAWTOOTH);
+                    i->setType(OscillatorType::SAWTOOTH);
                     context->connect(gainNode, i, 0, 0);
                     i->start(0);
                 }
@@ -180,9 +180,9 @@ namespace lab
         internalNode->gainNode->noteOff(r, when);
     }
 
-    bool SupersawNode::propagatesSilence(double now) const
+    bool SupersawNode::propagatesSilence(ContextRenderLock & r) const
     {
-        return internalNode->gainNode->propagatesSilence(now);
+        return true; // return internalNode->gainNode->propagatesSilence(now); // dimitri 
     }
 
 } // End namespace lab

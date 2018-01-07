@@ -42,8 +42,9 @@ public:
     void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser.getByteTimeDomainData(array); }
 
 private:
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     RealtimeAnalyser m_analyser;
 };

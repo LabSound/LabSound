@@ -118,14 +118,14 @@ std::shared_ptr<AudioBus> ConvolverNode::getImpulse()
     return m_bus;
 }
 
-double ConvolverNode::tailTime() const
+double ConvolverNode::tailTime(ContextRenderLock & r) const
 {
-    return m_reverb ? m_reverb->impulseResponseLength() / static_cast<double>(sampleRate()) : 0;
+    return m_reverb ? m_reverb->impulseResponseLength() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
 
-double ConvolverNode::latencyTime() const
+double ConvolverNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(sampleRate()) : 0;
+    return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
 
 } // namespace lab

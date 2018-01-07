@@ -18,6 +18,8 @@ class AudioDSPKernel
 public:
 
     AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor);
+    AudioDSPKernel();
+
     virtual ~AudioDSPKernel() {}
 
     // Subclasses must override process() to do the processing and reset() to reset DSP state.
@@ -27,8 +29,8 @@ public:
     AudioDSPKernelProcessor * processor() { return m_kernelProcessor; }
     const AudioDSPKernelProcessor * processor() const { return m_kernelProcessor; }
 
-    virtual double tailTime() const = 0;
-    virtual double latencyTime() const = 0;
+    virtual double tailTime(ContextRenderLock & r) const = 0;
+    virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
 

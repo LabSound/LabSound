@@ -38,7 +38,7 @@ namespace lab
 
     private:
 
-        virtual bool propagatesSilence(double now) const override;
+        virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
         NoiseType m_type = WHITE;
 

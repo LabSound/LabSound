@@ -5,14 +5,8 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
 
-namespace lab {
-    
-    AudioDSPKernel::AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor) : m_kernelProcessor(kernelProcessor)
-    {
-    }
-    
-    AudioDSPKernel::AudioDSPKernel() : m_kernelProcessor(0)
-    {
-    }
-    
+namespace lab
+{
+    AudioDSPKernel::AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor) : m_kernelProcessor(kernelProcessor) { }
+    AudioDSPKernel::AudioDSPKernel() : m_kernelProcessor(nullptr) { }
 }

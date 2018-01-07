@@ -41,11 +41,8 @@ public:
     void startGrain(double when, double grainOffset);
     void startGrain(double when, double grainOffset, double grainDuration);
 
-    float duration() const { return m_sourceBus->length() / sampleRate(); }
+    float duration() const;
 
-    // Note: the attribute was originally exposed as .looping, but to be more consistent in naming with <audio>
-    // and with how it's described in the specification, the proper attribute name is .loop
-    // The old attribute is kept for backwards compatibility.
     bool loop() const { return m_isLooping; }
     void setLoop(bool looping) { m_isLooping = looping; }
 
@@ -63,12 +60,12 @@ public:
     virtual void clearPannerNode() override;
 
     // If we are no longer playing, propagate silence ahead to downstream nodes.
-    virtual bool propagatesSilence(double now) const override;
+    virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
 private:
 
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     // Returns true on success.
     bool renderFromBuffer(ContextRenderLock &, AudioBus *, unsigned destinationFrameOffset, size_t numberOfFrames);

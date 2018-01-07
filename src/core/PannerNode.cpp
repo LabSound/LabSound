@@ -29,7 +29,7 @@ static void fixNANs(double & x)
     if (std::isnan(double(x)) || std::isinf(x)) x = 0.0;
 }
 
-PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : AudioNode(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
+PannerNode::PannerNode(const float sampleRate, const std::string & searchPath) : AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
 {
     if (searchPath.length())
     {
@@ -77,10 +77,10 @@ void PannerNode::initialize()
     switch (m_panningModel)
     {
         case PanningMode::EQUALPOWER:
-            m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
+            m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
             break;
         case PanningMode::HRTF:
-            m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
+            m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
             break;
         default:
             throw std::runtime_error("invalid panning model");
@@ -193,10 +193,10 @@ void PannerNode::setPanningModel(PanningMode model)
         switch (m_panningModel)
         {
             case PanningMode::EQUALPOWER:
-                m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
+                m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
                 break;
             case PanningMode::HRTF:
-                m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
+                m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
                 break;
             default:
                 throw std::invalid_argument("invalid panning model");
@@ -396,7 +396,7 @@ void PannerNode::setConeOuterAngle(float angle) { m_coneEffect->setOuterAngle(an
 float PannerNode::coneOuterGain() const { return static_cast<float>(m_coneEffect->outerGain()); }
 void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angle); }
 
-double PannerNode::tailTime() const { return m_panner ? m_panner->tailTime() : 0; }
-double PannerNode::latencyTime() const { return m_panner ? m_panner->latencyTime() : 0; }
+double PannerNode::tailTime(ContextRenderLock & r) const { return m_panner ? m_panner->tailTime(r) : 0; }
+double PannerNode::latencyTime(ContextRenderLock & r) const { return m_panner ? m_panner->latencyTime(r) : 0; }
 
 } // namespace lab

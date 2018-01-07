@@ -17,18 +17,18 @@ class HRTFPanner : public Panner
 
 public:
 
-    HRTFPanner();
+    HRTFPanner(const float sampleRate);
     virtual ~HRTFPanner();
 
     // Panner
-    virtual void pan(ContextRenderLock &, double azimuth, double elevation, const AudioBus* inputBus, AudioBus* outputBus, size_t framesToProcess) override;
+    virtual void pan(ContextRenderLock &, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess) override;
     virtual void reset() override;
 
     uint32_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
     static uint32_t fftSizeForSampleRate(float sampleRate);
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
 private:
 

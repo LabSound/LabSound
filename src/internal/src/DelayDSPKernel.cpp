@@ -16,14 +16,13 @@ namespace lab {
 
 const float SmoothingTimeConstant = 0.020f; // 20ms
 
-DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
-    : AudioDSPKernel(processor)
+DelayDSPKernel::DelayDSPKernel( DelayProcessor * processor, float sampleRate) : AudioDSPKernel(processor)
     , m_writeIndex(0)
     , m_firstTime(true)
     , m_delayTimes(AudioNode::ProcessingSizeInFrames)
 {
-    ASSERT(processor && processor->sampleRate() > 0);
-    if (!(processor && processor->sampleRate() > 0))
+    ASSERT(processor);
+    if (!processor)
         return;
 
     m_maxDelayTime = processor->maxDelayTime();
@@ -31,17 +30,13 @@ DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
     if (m_maxDelayTime < 0)
         return;
 
-    m_buffer.allocate(bufferLengthForDelay(m_maxDelayTime, processor->sampleRate()));
+    m_buffer.allocate(bufferLengthForDelay(m_maxDelayTime, sampleRate));
     m_buffer.zero();
 
-    m_smoothingRate = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, processor->sampleRate());
+    m_smoothingRate = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
 }
 
-DelayDSPKernel::DelayDSPKernel(double maxDelayTime, float sampleRate)
-    : AudioDSPKernel(sampleRate)
-    , m_maxDelayTime(maxDelayTime)
-    , m_writeIndex(0)
-    , m_firstTime(true)
+DelayDSPKernel::DelayDSPKernel(double maxDelayTime, float sampleRate) : AudioDSPKernel(), m_maxDelayTime(maxDelayTime), m_writeIndex(0), m_firstTime(true)
 {
     ASSERT(maxDelayTime > 0.0);
     if (maxDelayTime <= 0.0)
@@ -78,7 +73,7 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
     if (!source || !destination)
         return;
 
-    float sampleRate = this->sampleRate();
+    float sampleRate = r.context()->sampleRate();
     double delayTime = 0;
     float* delayTimes = m_delayTimes.data();
     double maxTime = maxDelayTime();
@@ -141,12 +136,12 @@ void DelayDSPKernel::reset()
     m_buffer.zero();
 }
 
-double DelayDSPKernel::tailTime() const
+double DelayDSPKernel::tailTime(ContextRenderLock & r) const
 {
     return m_maxDelayTime;
 }
 
-double DelayDSPKernel::latencyTime() const
+double DelayDSPKernel::latencyTime(ContextRenderLock & r) const
 {
     return 0;
 }

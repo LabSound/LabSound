@@ -42,8 +42,8 @@ namespace lab {
         
     private:
 
-        virtual double tailTime() const override { return 0; }      // required for BasicInspector
-        virtual double latencyTime() const override { return 0; }   // required for BasicInspector
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }      // required for BasicInspector
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }   // required for BasicInspector
 
         float _db;
         size_t _windowSize;

@@ -56,8 +56,8 @@ public:
     void setParameterValue(unsigned parameterID, float value);
     float parameterValue(unsigned parameterID);
 
-    double tailTime() const { return 0; }
-    double latencyTime() const { return m_compressor.latencyFrames() / static_cast<double>(sampleRate()); }
+    double tailTime(ContextRenderLock & r) const;
+    double latencyTime(ContextRenderLock & r) const;
 
 protected:
     unsigned m_numberOfChannels;

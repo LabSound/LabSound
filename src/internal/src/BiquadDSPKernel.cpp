@@ -43,7 +43,7 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
         }
 
         // Convert from Hertz to normalized frequency 0 -> 1.
-        double nyquist = this->nyquist();
+        double nyquist = r.context()->sampleRate() * 0.5f;
         double normalizedFrequency = value1 / nyquist;
 
         // Offset frequency by detune.
@@ -113,7 +113,7 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
 
     std::vector<float> frequency(nFrequencies);
 
-    double nyquist = this->nyquist();
+    float nyquist = r.context()->sampleRate() * 0.5f;
 
     // Convert from frequency in Hz to normalized frequency (0 -> 1),
     // with 1 equal to the Nyquist frequency.
@@ -130,12 +130,12 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
     m_biquad.getFrequencyResponse(nFrequencies, &frequency[0], magResponse, phaseResponse);
 }
 
-double BiquadDSPKernel::tailTime() const
+double BiquadDSPKernel::tailTime(ContextRenderLock & r) const
 {
     return MaxBiquadDelayTime;
 }
 
-double BiquadDSPKernel::latencyTime() const
+double BiquadDSPKernel::latencyTime(ContextRenderLock & r) const
 {
     return 0;
 }

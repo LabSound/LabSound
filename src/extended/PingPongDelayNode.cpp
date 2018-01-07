@@ -19,18 +19,18 @@ namespace lab
 {
     PingPongDelayNode::PingPongDelayNode(float sampleRate, float tempo)
     {
-        input = std::make_shared<lab::GainNode>(sampleRate);
-        output = std::make_shared<lab::GainNode>(sampleRate);
+        input = std::make_shared<lab::GainNode>();
+        output = std::make_shared<lab::GainNode>();
 
-        leftDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
-        rightDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
+        leftDelay = std::make_shared<lab::BPMDelay>(tempo);
+        rightDelay = std::make_shared<lab::BPMDelay>(tempo);
 
-        splitterGain = std::make_shared<lab::GainNode>(sampleRate);
-        wetGain = std::make_shared<lab::GainNode>(sampleRate);
-        feedbackGain = std::make_shared<lab::GainNode>(sampleRate);
+        splitterGain = std::make_shared<lab::GainNode>();
+        wetGain = std::make_shared<lab::GainNode>();
+        feedbackGain = std::make_shared<lab::GainNode>();
 
-        merger = std::make_shared<lab::ChannelMergerNode>(sampleRate, 2);
-        splitter = std::make_shared<lab::ChannelSplitterNode>(sampleRate, 2);
+        merger = std::make_shared<lab::ChannelMergerNode>(2);
+        splitter = std::make_shared<lab::ChannelSplitterNode>(2);
 
         SetDelayIndex(TempoSync::TS_8);
         SetFeedback(0.5f);

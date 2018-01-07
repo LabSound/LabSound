@@ -138,7 +138,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(r.context()->sampleRate());
         }
 
-        bool ps = propagatesSilence(r.context()->currentTime());
+        bool ps = propagatesSilence(r);
         
         if (silentInputs && ps)
         {
@@ -165,9 +165,9 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInp
     }
 }
 
-bool AudioNode::propagatesSilence(double now) const
+bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
-    return m_lastNonSilentTime + latencyTime() + tailTime() < now;
+    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 
 void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)

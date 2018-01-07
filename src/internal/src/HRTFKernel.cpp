@@ -42,7 +42,7 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, uint32_t analysisF
     return frameDelay;
 }
 
-HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
+HRTFKernel::HRTFKernel(AudioChannel * channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
 {
     ASSERT(channel);
 

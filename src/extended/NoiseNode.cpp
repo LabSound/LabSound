@@ -102,7 +102,7 @@ namespace lab {
     {
     }
     
-    bool NoiseNode::propagatesSilence(double now) const
+    bool NoiseNode::propagatesSilence(ContextRenderLock & r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

@@ -38,7 +38,7 @@ namespace lab
         }
     }
 
-    BPMDelay::BPMDelay(float sampleRate, float tempo) : lab::DelayNode(sampleRate, 8.0f), tempo(tempo)
+    BPMDelay::BPMDelay(float tempo) : lab::DelayNode(8.0f), tempo(tempo)
     {
         setNodeType(lab::NodeType::NodeTypeBPMDelay);
 

@@ -109,7 +109,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
     
-    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false, info->sampleRate);
+    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
 
     if (!impulseResponse.get())
     {

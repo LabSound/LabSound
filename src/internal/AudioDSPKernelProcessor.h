@@ -38,8 +38,8 @@ public:
     virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
     virtual void reset() override;
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
     std::vector<std::unique_ptr<AudioDSPKernel> > m_kernels;

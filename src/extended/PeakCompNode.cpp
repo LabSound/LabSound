@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioContext.h"
 
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/AudioContextLock.h"
@@ -46,9 +47,6 @@ namespace lab
                 releaseRecursive[i] = 0.;
             }
 
-            // Get sample rate
-            internalSampleRate = sampleRate;
-            oneOverSampleRate = 1.0 / sampleRate;
         }
 
         virtual ~PeakCompNodeInternal() { }
@@ -58,10 +56,12 @@ namespace lab
         virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r,
-                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
-                             size_t framesToProcess) override
+        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, size_t framesToProcess) override
         {
+            // Get sample rate
+            internalSampleRate = r.context()->sampleRate();
+            oneOverSampleRate = 1.0 / internalSampleRate;
+
             if (!numberOfChannels())
                 return;
 
@@ -186,8 +186,8 @@ namespace lab
         // Resets filter state
         virtual void reset() override { /* @tofix */ }
 
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         std::shared_ptr<AudioParam> m_threshold;
         std::shared_ptr<AudioParam> m_ratio;

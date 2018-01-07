@@ -37,7 +37,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
     
-    PannerNode(float sampleRate, const std::string & searchPath = "");
+    PannerNode(const float sampleRate, const std::string & searchPath = "");
     virtual ~PannerNode();
 
     // AudioNode
@@ -96,8 +96,8 @@ public:
     std::shared_ptr<AudioParam> distanceGain() { return m_distanceGain; }
     std::shared_ptr<AudioParam> coneGain() { return m_coneGain; }
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
 
@@ -127,6 +127,7 @@ protected:
 
     float m_lastGain = -1.0f;
     unsigned m_connectionCount = 0;
+    float m_sampleRate;
 };
 
 } // namespace lab

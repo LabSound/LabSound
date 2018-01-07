@@ -135,15 +135,17 @@ public:
     bool isMarkedForDeletion() const { return m_isMarkedForDeletion; }
 
     // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
-    virtual double tailTime() const = 0;
+    virtual double tailTime(ContextRenderLock & r) const = 0;
+
     // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
     // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
     // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
-    virtual double latencyTime() const = 0;
+    virtual double latencyTime(ContextRenderLock & r) const = 0;
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
-    virtual bool propagatesSilence(double now) const;
+    virtual bool propagatesSilence(ContextRenderLock & r) const;
+
     bool inputsAreSilent(ContextRenderLock&);
     void silenceOutputs(ContextRenderLock&);
     void unsilenceOutputs(ContextRenderLock&);

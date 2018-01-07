@@ -66,7 +66,7 @@ protected:
     enum { MaxPreDelayFramesMask = MaxPreDelayFrames - 1 };
     enum { DefaultPreDelayFrames = 256 }; // setPreDelayTime() will override this initial value
     unsigned m_lastPreDelayFrames;
-    void setPreDelayTime(float);
+    void setPreDelayTime(float time, float sampleRate);
 
     std::vector< std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
 

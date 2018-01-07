@@ -7,9 +7,12 @@
 
 #include "LabSound/core/AudioNode.h"
 
+#include <memory>
+
 namespace lab {
 
 class Reverb;
+class AudioBus;
     
 class ConvolverNode final : public AudioNode 
 {
@@ -34,8 +37,8 @@ public:
 
 private:
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
     std::unique_ptr<Reverb> m_reverb;
     std::shared_ptr<AudioBus> m_bus;

@@ -19,8 +19,8 @@ class WaveTable
 
 public:
 
-    WaveTable(OscillatorType basicWaveform);
-    WaveTable(OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+    WaveTable(const float sampleRate, OscillatorType basicWaveform);
+    WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
     ~WaveTable();
 
@@ -48,7 +48,7 @@ private:
     // Playing back lower than this frequency will gradually lose more high-frequency information.
     // This frequency is quite low (~10Hz @ 44.1KHz)
     float m_lowestFundamentalFrequency;
-
+    float m_sampleRate;
     float m_rateScale;
 
     unsigned numberOfRanges() const { return m_numberOfRanges; }

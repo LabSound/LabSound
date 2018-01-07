@@ -387,6 +387,11 @@ void SampledAudioNode::startGrain(double when, double grainOffset, double grainD
     m_startRequested = true;
 }
 
+float SampledAudioNode::duration() const 
+{ 
+    return m_sourceBus->length() / m_sourceBus->sampleRate(); 
+}
+
 double SampledAudioNode::totalPitchRate(ContextRenderLock & r)
 {
     double dopplerRate = 1.0;
@@ -417,7 +422,7 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock & r)
     return totalRate;
 }
 
-bool SampledAudioNode::propagatesSilence(double now) const
+bool SampledAudioNode::propagatesSilence(ContextRenderLock & r) const
 {
     return !isPlayingOrScheduled() || hasFinished() || !m_sourceBus;
 }

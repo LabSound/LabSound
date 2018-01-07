@@ -12,8 +12,7 @@
 
 namespace lab {
     
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext * ctx)
-    : AudioDestinationNode(ctx, AudioDestination::hardwareSampleRate())
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext * ctx): AudioDestinationNode(ctx)
 {
     // Node-specific default mixing rules.
     m_channelCount = 2;

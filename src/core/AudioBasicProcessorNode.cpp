@@ -110,14 +110,14 @@ unsigned AudioBasicProcessorNode::numberOfChannels()
     return output(0)->numberOfChannels();
 }
 
-double AudioBasicProcessorNode::tailTime() const
+double AudioBasicProcessorNode::tailTime(ContextRenderLock & r) const
 {
-    return m_processor->tailTime();
+    return m_processor->tailTime(r);
 }
 
-double AudioBasicProcessorNode::latencyTime() const
+double AudioBasicProcessorNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_processor->latencyTime();
+    return m_processor->latencyTime(r);
 }
 
 AudioProcessor * AudioBasicProcessorNode::processor() 

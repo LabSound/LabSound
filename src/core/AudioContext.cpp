@@ -32,7 +32,7 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRend
     
     auto sampleRate = r.context()->sampleRate();
     
-    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider, sampleRate));
+    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider));
     
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
     inputNode->setFormat(r, 2, sampleRate);
@@ -433,7 +433,7 @@ double AudioContext::currentTime() const
 
 float AudioContext::sampleRate() const 
 {  
-    return m_destinationNode ? m_destinationNode->sampleRate() : AudioDestination::hardwareSampleRate(); 
+    return AudioDestination::hardwareSampleRate(); 
 }
 
 std::shared_ptr<AudioListener> AudioContext::listener() 

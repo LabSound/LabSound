@@ -42,8 +42,8 @@ public:
 
     bool isInitialized() const { return m_initialized; }
 
-    virtual double tailTime() const = 0;
-    virtual double latencyTime() const = 0;
+    virtual double tailTime(ContextRenderLock & r) const = 0;
+    virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
     bool m_initialized = false;

@@ -6,6 +6,8 @@
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
 
+#include "LabSound/extended/AudioContextLock.h"
+
 #include <memory>
 #include <algorithm>
 #include <WTF/MathExtras.h>
@@ -39,8 +41,6 @@ DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels) :
 
     // Initializes most member variables
     reset();
-
-    m_meteringReleaseK = static_cast<float>(discreteTimeConstantForSampleRate(meteringReleaseTimeConstant, sampleRate));
 }
 
 void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
@@ -55,10 +55,10 @@ void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 
 }
 
-void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime)
+void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime, float sampleRate)
 {
     // Re-configure look-ahead section pre-delay if delay time has changed.
-    unsigned preDelayFrames = preDelayTime * sampleRate();
+    unsigned preDelayFrames = preDelayTime * sampleRate;
     if (preDelayFrames > MaxPreDelayFrames - 1)
         preDelayFrames = MaxPreDelayFrames - 1;
 
@@ -175,7 +175,7 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
     return m_K;
 }
 
-void DynamicsCompressorKernel::process(ContextRenderLock &,
+void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,
@@ -198,7 +198,9 @@ void DynamicsCompressorKernel::process(ContextRenderLock &,
 {
     ASSERT(m_preDelayBuffers.size() == numberOfChannels);
 
-    float sampleRate = this->sampleRate();
+    float sampleRate = r.context()->sampleRate();
+
+    m_meteringReleaseK = static_cast<float>(discreteTimeConstantForSampleRate(meteringReleaseTimeConstant, sampleRate));
 
     float dryMix = 1 - effectBlend;
     float wetMix = effectBlend;
@@ -248,7 +250,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock &,
 
     // y calculates adaptive release frames depending on the amount of compression.
 
-    setPreDelayTime(preDelayTime);
+    setPreDelayTime(preDelayTime, r.context()->sampleRate());
 
     const int nDivisionFrames = 32;
 

@@ -35,7 +35,7 @@ public:
     virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames) override;
 
     size_t currentSampleFrame() const { return m_currentSampleFrame; }
-    double currentTime() const { return currentSampleFrame() / static_cast<double>(m_context->sampleRate()); }
+    double currentTime() const;
 
     virtual unsigned numberOfChannels() const { return 2; } // FIXME: update when multi-channel (more than stereo) is supported
 
@@ -45,8 +45,8 @@ public:
     
 protected:
 
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     // Counts the number of sample-frames processed by the destination.
     size_t m_currentSampleFrame;

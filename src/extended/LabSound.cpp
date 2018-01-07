@@ -35,7 +35,7 @@ namespace lab
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(2, sampleRate));
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx, secondsToRun, 2, sampleRate));
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), secondsToRun, 2, sampleRate));
         ctx->lazyInitialize();
         return ctx;
     }
@@ -46,7 +46,7 @@ namespace lab
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(numChannels, sampleRate));
         float secondsToRun = (float)recordTimeMilliseconds * 0.001f;
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx, secondsToRun, numChannels, sampleRate));
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), secondsToRun, numChannels, sampleRate));
         ctx->lazyInitialize();
         return ctx;
     }

@@ -145,8 +145,6 @@ namespace lab
         nqr::EncoderParams params = {2, nqr::PCM_FLT, nqr::DITHER_NONE};
 
         int encoderStatus = nqr::WavEncoder::WriteFile(params, fileData.get(), filenameWithWavExtension);
-        
-        LOG("[WavEncoder - Debug Status: %i]", encoderStatus);
     }
     
     void RecorderNode::reset(ContextRenderLock& r)
