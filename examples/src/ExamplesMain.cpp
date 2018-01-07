@@ -11,6 +11,7 @@
 #include "LiveGraphUpdate.h"
 #include "RenderOffline.h"
 #include "ConvolutionReverb.h"
+#include "PeakCompressor.h"
 
 /*
 
@@ -20,7 +21,7 @@
 #include "MicrophoneReverb.h"
 #include "Rhythm.h"
 #include "RhythmAndFilters.h"
-#include "PeakCompressor.h"
+
 #include "StereoPanning.h"
 #include "Spatialization.h"
 #include "Tremolo.h"
@@ -34,13 +35,13 @@ SimpleApp g_simpleExample;
 LiveGraphUpdateApp g_liveGraphUpdateApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
-
+PeakCompressorApp g_peakCompressor;
 /*
 
 MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
-PeakCompressorApp g_peakCompressor;
+
 RedAlertApp g_redAlert;
 RhythmApp g_rhythm;
 RhythmAndFiltersApp g_rhythmAndFilters;
@@ -57,7 +58,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_convolutionReverbExample.PlayExample();
+        g_peakCompressor.PlayExample();
     }
     catch (const std::exception & e)
     {

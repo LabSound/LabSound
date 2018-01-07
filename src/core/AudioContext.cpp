@@ -212,7 +212,7 @@ void AudioContext::update()
 
         {
             ContextGraphLock gLock(this, "context::update");
-
+            
             // Verify that we've acquired the lock, and check again 5 ms later if not
             if (!gLock.context())
             {

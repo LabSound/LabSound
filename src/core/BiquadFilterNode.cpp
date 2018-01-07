@@ -42,7 +42,8 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
     int n = std::min(frequencyHz.size(),
                      std::min(magResponse.size(), phaseResponse.size()));
 
-    if (n) {
+    if (n) 
+    {
         biquadProcessor()->getFrequencyResponse(r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
 }

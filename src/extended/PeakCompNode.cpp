@@ -42,9 +42,9 @@ namespace lab
 
             for (int i = 0; i < 2; i++)
             {
-                kneeRecursive[i] = 0.;
-                attackRecursive[i] = 0.;
-                releaseRecursive[i] = 0.;
+                kneeRecursive[i] = 0.f;
+                attackRecursive[i] = 0.f;
+                releaseRecursive[i] = 0.f;
             }
 
         }
@@ -142,7 +142,7 @@ namespace lab
                 releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, float(releaseRecursive[1])));
 
                 // Attack recursive
-                attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
+                attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1])) + 0.000001f; // avoid div by 0
 
                 // Knee smoothening and gain reduction
                 kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);

@@ -6,7 +6,6 @@
 #include "internal/AudioFileReader.h"
 #include "internal/ConfigMacros.h"
 #include "internal/AudioFileReader.h"
-#include "internal/FloatConversion.h"
 
 #include "libnyquist/AudioDecoder.h"
 

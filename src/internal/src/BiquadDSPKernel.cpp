@@ -4,7 +4,6 @@
 
 #include "internal/BiquadDSPKernel.h"
 #include "internal/BiquadProcessor.h"
-#include "internal/FloatConversion.h"
 
 #include <limits.h>
 #include <vector>
@@ -118,7 +117,7 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
     // Convert from frequency in Hz to normalized frequency (0 -> 1),
     // with 1 equal to the Nyquist frequency.
     for (int k = 0; k < nFrequencies; ++k)
-        frequency[k] = narrowPrecisionToFloat(frequencyHz[k] / nyquist);
+        frequency[k] = static_cast<float>(frequencyHz[k] / nyquist);
 
     // We want to get the final values of the coefficients and compute
     // the response from that instead of some intermediate smoothed

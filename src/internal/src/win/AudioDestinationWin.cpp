@@ -6,7 +6,6 @@
 #include <mmsystem.h>
 
 #include "internal/win/AudioDestinationWin.h"
-#include "internal/FloatConversion.h"
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioNode.h"

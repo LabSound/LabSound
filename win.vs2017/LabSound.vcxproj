@@ -104,7 +104,6 @@
     <ClInclude Include="..\src\internal\EqualPowerPanner.h" />
     <ClInclude Include="..\src\internal\FFTConvolver.h" />
     <ClInclude Include="..\src\internal\FFTFrame.h" />
-    <ClInclude Include="..\src\internal\FloatConversion.h" />
     <ClInclude Include="..\src\internal\HRTFDatabase.h" />
     <ClInclude Include="..\src\internal\HRTFDatabaseLoader.h" />
     <ClInclude Include="..\src\internal\HRTFElevation.h" />

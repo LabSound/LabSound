@@ -10,7 +10,6 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
-#include "internal/FloatConversion.h"
 
 #include <WTF/MathExtras.h>
 #include <algorithm>
@@ -48,13 +47,13 @@ float AudioParam::value(ContextRenderLock& r)
     // Update value for timeline.
     if (r.context()) {
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
         
         if (hasValue)
             m_value = timelineValue;
     }
 
-    return narrowPrecisionToFloat(m_value);
+    return static_cast<float>(m_value);
 }
 
 void AudioParam::setValue(float value)
@@ -65,7 +64,7 @@ void AudioParam::setValue(float value)
 
 float AudioParam::smoothedValue()
 {
-    return narrowPrecisionToFloat(m_smoothedValue);
+    return static_cast<float>(m_smoothedValue);
 }
 
 bool AudioParam::smooth(ContextRenderLock& r)
@@ -74,7 +73,7 @@ bool AudioParam::smooth(ContextRenderLock& r)
     // Smoothing effectively is performed by the timeline.
     bool useTimelineValue = false;
     if (r.context())
-        m_value = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), useTimelineValue);
+        m_value = m_timeline.valueForContextTime(r, static_cast<float>(m_value), useTimelineValue);
     
     if (m_smoothedValue == m_value) {
         // Smoothed value has already approached and snapped to value.
@@ -126,12 +125,12 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     else {
         // Calculate control-rate (k-rate) intrinsic value.
         bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r, narrowPrecisionToFloat(m_value), hasValue);
+        float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
 
         if (hasValue)
             m_value = timelineValue;
 
-        values[0] = narrowPrecisionToFloat(m_value);
+        values[0] = static_cast<float>(m_value);
     }
     
     // if there are rendering connections, be sure they are ready
@@ -179,7 +178,7 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, un
 
     // Note we're running control rate at the sample-rate.
     // Pass in the current value as default value.
-    m_value = m_timeline.valuesForTimeRange(startTime, endTime, narrowPrecisionToFloat(m_value), values, numberOfValues, sampleRate, sampleRate);
+    m_value = m_timeline.valuesForTimeRange(startTime, endTime, static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
     
 void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)

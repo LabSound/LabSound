@@ -123,9 +123,6 @@
     <ClInclude Include="..\src\internal\FFTFrame.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\FloatConversion.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\HRTFDatabase.h">
       <Filter>Internal\include</Filter>
     </ClInclude>

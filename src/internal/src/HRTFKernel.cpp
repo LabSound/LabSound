@@ -5,7 +5,6 @@
 #include "internal/HRTFKernel.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
-#include "internal/FloatConversion.h"
 
 #include "LabSound/core/AudioChannel.h"
 
@@ -37,7 +36,7 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, uint32_t analysisF
     FFTFrame estimationFrame(analysisFFTSize);
     estimationFrame.doFFT(impulseP);
 
-    float frameDelay = narrowPrecisionToFloat(estimationFrame.extractAverageGroupDelay());
+    float frameDelay = static_cast<float>(estimationFrame.extractAverageGroupDelay());
     estimationFrame.doInverseFFT(impulseP);
 
     return frameDelay;

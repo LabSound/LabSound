@@ -10,7 +10,6 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "internal/FloatConversion.h"
 
 #include <WTF/MathExtras.h>
 #include <algorithm>

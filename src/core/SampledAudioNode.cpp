@@ -13,7 +13,6 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
-#include "internal/FloatConversion.h"
 
 #include <algorithm>
 #include <WTF/MathExtras.h>
@@ -296,7 +295,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
                 double sample2 = source[readIndex2];
                 double sample = (1.0 - interpolationFactor) * sample1 + interpolationFactor * sample2;
 
-                destination[writeIndex] = narrowPrecisionToFloat(sample);
+                destination[writeIndex] = static_cast<float>(sample);
             }
             writeIndex++;
 
