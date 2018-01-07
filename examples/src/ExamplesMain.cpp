@@ -16,13 +16,14 @@
 #include "Groove.h"
 #include "InfiniteFM.h"
 #include "Tremolo.h"
+#include "Spatialization.h"
 
 /*
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
 #include "StereoPanning.h"
-#include "Spatialization.h"
+
 #include "Validation.h"
 */
 
@@ -35,12 +36,13 @@ RedAlertApp g_redAlert;
 GrooveApp g_grooveExample;
 InfiniteFMApp g_infiniteFM;
 TremoloApp g_tremolo;
+SpatializationApp g_spatialization;
 
 /*
     MicrophoneDalekApp g_microphoneDalekApp;
     MicrophoneLoopbackApp g_microphoneLoopback;
     MicrophoneReverbApp g_microphoneReverb;
-    SpatializationApp g_spatialization;
+
     ValidationApp g_validation;
     StereoPanningApp g_stereoPanning;
 */
@@ -50,7 +52,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_tremolo.PlayExample();
+        g_spatialization.PlayExample();
     }
     catch (const std::exception & e)
     {
