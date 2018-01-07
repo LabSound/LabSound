@@ -19,7 +19,7 @@ namespace lab {
 
 const double UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode() : AudioSourceNode(), m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
+AudioScheduledSourceNode::AudioScheduledSourceNode() : m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
 {
 
 }
@@ -36,7 +36,8 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
         return;
 
-    AudioContext* context = r.context();
+    AudioContext * context = r.context();
+
     if (!context)
         return;
     

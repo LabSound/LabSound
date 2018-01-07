@@ -45,22 +45,6 @@ SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDurati
     initialize();
 }
 
-SampledAudioNode::SampledAudioNode(std::shared_ptr<AudioBus> bus) : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration), m_sourceBus(bus)
-{
-    setNodeType(NodeTypeAudioBufferSource);
-
-    m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
-    m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
-
-    m_params.push_back(m_gain);
-    m_params.push_back(m_playbackRate);
-
-    // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-    initialize();
-}
-
 SampledAudioNode::~SampledAudioNode()
 {
     uninitialize();
@@ -78,7 +62,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // After calling setBuffer() with a buffer having a different number of channels, there can in rare cases be a slight delay
     // before the output bus is updated to the new number of channels because of use of tryLocks() in the context's updating system.
-    // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
+    // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence. 
     if (numberOfChannels(r) != getBus()->numberOfChannels())
     {
         outputBus->zero();

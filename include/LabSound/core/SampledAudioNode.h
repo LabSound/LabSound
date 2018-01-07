@@ -23,7 +23,6 @@ class SampledAudioNode final : public AudioScheduledSourceNode
 public:
 
     SampledAudioNode();
-    SampledAudioNode(std::shared_ptr<AudioBus> bus);
     virtual ~SampledAudioNode();
 
     // AudioNode

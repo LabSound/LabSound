@@ -17,17 +17,17 @@ namespace detail
         size_t numSamples = audioData->samples.size();
         if (!numSamples) return nullptr;
 
-        size_t numberOfFrames = int(numSamples / audioData->channelCount);
+        size_t length = int(numSamples / audioData->channelCount);
         const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
         
         std::vector<float> planarSamples(numSamples);
 
         // Create AudioBus where we'll put the PCM audio data
-        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, numberOfFrames));
+        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, length));
         audioBus->setSampleRate(audioData->sampleRate);
         
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
-        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numberOfFrames, audioData->channelCount, numberOfFrames);
+        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), length, audioData->channelCount, length);
         
         // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
         // because we've already deinterleaved
@@ -35,16 +35,18 @@ namespace detail
         {
             float * destinationMono = audioBus->channel(0)->mutableData();
             float * leftSamples = planarSamples.data();
-            float * rightSamples = planarSamples.data() + numberOfFrames;
+            float * rightSamples = planarSamples.data() + length;
             
-            for (size_t i = 0; i < numberOfFrames; i++)
+            for (size_t i = 0; i < length; i++)
+            {
                 destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
+            }
         }
         else
         {
             for (size_t i = 0; i < busChannelCount; ++i)
             {
-                memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * numberOfFrames), numberOfFrames * sizeof(float));
+                std::memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * length), length * sizeof(float));
             }
         }
         
