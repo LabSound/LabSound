@@ -2,10 +2,11 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
+
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioUtilities.h"
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"

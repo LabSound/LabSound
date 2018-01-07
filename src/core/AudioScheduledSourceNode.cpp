@@ -4,11 +4,11 @@
 
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
-#include "internal/AudioBus.h"
 
 #include <WTF/MathExtras.h>
 #include <algorithm>

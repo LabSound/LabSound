@@ -3,7 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/AudioResampler.h"
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 
 #include <algorithm>
 #include <WTF/MathExtras.h>

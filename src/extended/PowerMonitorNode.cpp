@@ -3,10 +3,9 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/PowerMonitorNode.h"
-
-#include "internal/AudioBus.h"
 
 #include <WTF/MathExtras.h>
 

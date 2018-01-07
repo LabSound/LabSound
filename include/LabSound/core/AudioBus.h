@@ -6,7 +6,7 @@
 #define AudioBus_h
 
 #include "LabSound/core/Mixing.h"
-#include "internal/AudioChannel.h"
+#include "LabSound/core/AudioChannel.h"
 #include <vector>
 
 namespace lab {

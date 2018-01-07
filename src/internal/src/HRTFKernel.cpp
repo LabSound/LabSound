@@ -3,10 +3,11 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/HRTFKernel.h"
-#include "internal/AudioChannel.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
 #include "internal/FloatConversion.h"
+
+#include "LabSound/core/AudioChannel.h"
 
 #include <WTF/MathExtras.h>
 

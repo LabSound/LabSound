@@ -8,12 +8,13 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Mixing.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Panner.h"
 #include "internal/AudioUtilities.h"
+
 #include <WTF/MathExtras.h>
 
 namespace lab

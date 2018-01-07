@@ -3,11 +3,10 @@
 
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/FunctionNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-
-#include "internal/AudioBus.h"
 
 using namespace std;
 using namespace lab;

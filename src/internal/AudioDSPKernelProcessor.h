@@ -6,8 +6,8 @@
 #define AudioDSPKernelProcessor_h
 
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioDSPKernel.h"
 
 #include <vector>

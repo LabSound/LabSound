@@ -35,7 +35,7 @@ class DelayNode : public AudioBasicProcessorNode
 {
     DelayProcessor * delayProcessor();
 public:
-    DelayNode(double maxDelayTime);
+    DelayNode(float sampleRate, double maxDelayTime);
     std::shared_ptr<AudioParam> delayTime();
 };
 

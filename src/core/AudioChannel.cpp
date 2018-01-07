@@ -2,9 +2,10 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/AudioChannel.h"
 #include "internal/VectorMath.h"
 #include "internal/Assertions.h"
+
+#include "LabSound/core/AudioChannel.h"
 
 #include <algorithm>
 #include <math.h>

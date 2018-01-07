@@ -1,12 +1,13 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/AudioFileReader.h"
+#include "LabSound/core/AudioBus.h"
 
+#include "internal/AudioFileReader.h"
 #include "internal/ConfigMacros.h"
-#include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/FloatConversion.h"
+
 #include "libnyquist/AudioDecoder.h"
 
 namespace detail

@@ -6,8 +6,8 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/VectorMath.h"
 
 #include <limits>

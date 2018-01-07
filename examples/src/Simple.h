@@ -2,7 +2,6 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "ExampleBaseApp.h"
-#include "../src/internal/AudioBus.h"
 
 struct SimpleApp : public LabSoundExampleApp
 {

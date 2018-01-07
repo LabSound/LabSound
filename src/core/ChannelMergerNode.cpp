@@ -6,9 +6,9 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "internal/Assertions.h"
-#include "internal/AudioBus.h"
 
 using namespace std;
 

@@ -6,10 +6,10 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 #include <algorithm>

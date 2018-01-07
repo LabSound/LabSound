@@ -6,11 +6,11 @@
 #define BiquadProcessor_h
 
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "internal/Biquad.h"
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
-#include "internal/AudioBus.h"
 
 namespace lab {
 

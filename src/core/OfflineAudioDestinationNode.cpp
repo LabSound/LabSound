@@ -4,11 +4,11 @@
 
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/Logging.h"
 
 #include "internal/Assertions.h"
-#include "internal/AudioBus.h"
 
 #include <algorithm>
 

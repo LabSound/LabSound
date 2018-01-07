@@ -2,8 +2,9 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
+
 #include "internal/MultiChannelResampler.h"
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 namespace lab {

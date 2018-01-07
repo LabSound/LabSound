@@ -6,12 +6,12 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/VectorMath.h"
-#include "internal/AudioBus.h"
 
 #include <WTF/MathExtras.h>
 

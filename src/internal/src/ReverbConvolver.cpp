@@ -6,7 +6,8 @@
 
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
-#include "internal/AudioBus.h"
+
+#include "LabSound/core/AudioBus.h"
 
 namespace lab {
 

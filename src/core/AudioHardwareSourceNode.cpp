@@ -6,11 +6,10 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
-
-#include "internal/AudioBus.h"
 
 namespace lab {
 

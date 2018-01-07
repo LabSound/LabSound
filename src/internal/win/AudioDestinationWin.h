@@ -6,8 +6,8 @@
 #define AudioDestinationWin_h
 
 #include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioDestination.h"
 
 #include "rtaudio/RtAudio.h"

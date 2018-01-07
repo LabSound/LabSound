@@ -5,12 +5,11 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Synthesis.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-
-#include "internal/AudioBus.h"
 
 #include <cfloat>
 

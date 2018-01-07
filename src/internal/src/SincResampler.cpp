@@ -4,7 +4,8 @@
 
 #include "internal/ConfigMacros.h"
 #include "internal/SincResampler.h"
-#include "internal/AudioBus.h"
+
+#include "LabSound/core/AudioBus.h"
 
 #include <WTF/MathExtras.h>
 

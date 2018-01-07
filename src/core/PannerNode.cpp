@@ -7,12 +7,12 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/HRTFDatabaseLoader.h"
 #include "internal/HRTFPanner.h"
-#include "internal/AudioBus.h"
 #include "internal/Panner.h"
 #include "internal/Cone.h"
 #include "internal/Distance.h"

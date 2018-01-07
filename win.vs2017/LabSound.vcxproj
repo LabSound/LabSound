@@ -23,6 +23,8 @@
     <ClInclude Include="..\include\LabSound\core\AudioArray.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioBus.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioChannel.h" />
     <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioContext.h" />
     <ClInclude Include="..\include\LabSound\core\AudioDestinationNode.h" />
@@ -77,9 +79,9 @@
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
     <ClInclude Include="..\include\LabSound\extended\Util.h" />
+    <ClInclude Include="..\src\core\AudioBus.h" />
+    <ClInclude Include="..\src\core\AudioChannel.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
-    <ClInclude Include="..\src\internal\AudioBus.h" />
-    <ClInclude Include="..\src\internal\AudioChannel.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
@@ -127,6 +129,8 @@
     <ClCompile Include="..\src\core\AnalyserNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicInspectorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
+    <ClCompile Include="..\src\core\AudioBus.cpp" />
+    <ClCompile Include="..\src\core\AudioChannel.cpp" />
     <ClCompile Include="..\src\core\SampledAudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
@@ -169,8 +173,6 @@
     <ClCompile Include="..\src\extended\SpatializationNode.cpp" />
     <ClCompile Include="..\src\extended\SpectralMonitorNode.cpp" />
     <ClCompile Include="..\src\extended\SupersawNode.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioBus.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
     <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />

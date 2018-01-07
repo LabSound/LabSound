@@ -2,14 +2,15 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
+#include "LabSound/core/AudioBus.h"
+
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 #include "internal/FloatConversion.h"
-#include "internal/AudioBus.h"
 
 #include <WTF/MathExtras.h>
 #include <algorithm>

@@ -72,12 +72,6 @@
     <ClInclude Include="..\src\internal\ZeroPole.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\AudioBus.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\AudioChannel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\AudioDestination.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
@@ -366,18 +360,24 @@
     <ClInclude Include="..\include\LabSound\core\AudioArray.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\core\AudioChannel.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\AudioBus.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioBus.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioChannel.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
       <Filter>Internal\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioBus.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioChannel.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp">
@@ -630,6 +630,12 @@
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\SampledAudioNode.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\AudioBus.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\AudioChannel.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
   </ItemGroup>

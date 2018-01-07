@@ -5,8 +5,7 @@
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 
 namespace lab {
 

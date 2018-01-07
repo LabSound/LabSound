@@ -2,11 +2,11 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
 #include "internal/DynamicsCompressor.h"
-#include "internal/AudioBus.h"
-#include "internal/AudioUtilities.h"
 
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include <WTF/MathExtras.h>

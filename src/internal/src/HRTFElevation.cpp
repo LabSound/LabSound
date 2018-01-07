@@ -2,8 +2,9 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
+
 #include "internal/HRTFElevation.h"
-#include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
