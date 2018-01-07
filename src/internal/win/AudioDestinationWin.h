@@ -21,7 +21,7 @@ class AudioDestinationWin : public AudioDestination
 
 public:
 
-    AudioDestinationWin(AudioIOCallback&, float sampleRate);
+    AudioDestinationWin(AudioIOCallback &, float sampleRate);
     virtual ~AudioDestinationWin();
 
     virtual void start() override;
@@ -30,7 +30,7 @@ public:
     bool isPlaying() override { return m_isPlaying; }
     float sampleRate() const override { return m_sampleRate; }
 
-    void render(int numberOfFrames, void *outputBuffer, void *inputBuffer); 
+    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
 private:
 
@@ -43,7 +43,6 @@ private:
     bool m_isPlaying = false;;
 
     RtAudio dac;
-
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 

@@ -12,7 +12,7 @@
 
 namespace lab {
     
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext * ctx): AudioDestinationNode(ctx)
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext * context, const float sampleRate) : AudioDestinationNode(context, sampleRate)
 {
     // Node-specific default mixing rules.
     m_channelCount = 2;
@@ -46,9 +46,8 @@ void DefaultAudioDestinationNode::uninitialize()
     
 void DefaultAudioDestinationNode::createDestination()
 {
-    float hardwareSampleRate = AudioDestination::hardwareSampleRate();
-    LOG("Hardware Samplerate: %f", hardwareSampleRate);
-    m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, channelCount(), hardwareSampleRate));
+    LOG("Designated Samplerate: %f", m_sampleRate);
+    m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, channelCount(), m_sampleRate));
 }
 
 void DefaultAudioDestinationNode::startRendering()

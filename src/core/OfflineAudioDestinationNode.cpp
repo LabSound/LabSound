@@ -5,7 +5,7 @@
 #include "LabSound/core/OfflineAudioDestinationNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioBus.h"
-
+#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
 
 #include "internal/Assertions.h"
@@ -18,12 +18,9 @@ namespace lab {
     
 const size_t renderQuantumSize = 256;    
 
-OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float lengthSeconds, const uint32_t numChannels, const float sampleRate)
-    : AudioDestinationNode(context),
-    m_sampleRate(sampleRate),
+OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels) : AudioDestinationNode(context, sampleRate),
     m_numChannels(numChannels),
-    m_lengthSeconds(lengthSeconds),
-    ctx(context)
+    m_lengthSeconds(lengthSeconds) 
 {
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(numChannels, renderQuantumSize));
 }
@@ -91,13 +88,13 @@ void OfflineAudioDestinationNode::offlineRender()
     if (!isRenderBusAllocated)
         return;
     
-    bool isAudioContextInitialized = ctx->isInitialized();
+    bool isAudioContextInitialized = m_context->isInitialized();
     ASSERT(isAudioContextInitialized);
     if (!isAudioContextInitialized) 
         return;
 
     // Break up the render target into smaller "render quantize" sized pieces.
-    size_t framesToProcess = (m_lengthSeconds * m_sampleRate) / renderQuantumSize;
+    size_t framesToProcess = (m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize;
 
     while (framesToProcess > 0)
     {

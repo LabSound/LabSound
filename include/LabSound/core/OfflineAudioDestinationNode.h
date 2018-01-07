@@ -17,14 +17,13 @@ class OfflineAudioDestinationNode final : public AudioDestinationNode
     
 public:
     
-    OfflineAudioDestinationNode(AudioContext * context, const float lengthSeconds, const uint32_t numChannels, const float sampleRate);
+    OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
     virtual ~OfflineAudioDestinationNode();
     
     virtual void initialize();
     virtual void uninitialize();
-    virtual float sampleRate() const { return m_sampleRate; }
 
-    void startRendering();
+    virtual void startRendering() override;
     
 private:
   
@@ -32,10 +31,8 @@ private:
     std::thread m_renderThread;
     void offlineRender();
     bool m_startedRendering{ false };
-    float m_sampleRate;
     uint32_t m_numChannels;
     float m_lengthSeconds;
-    AudioContext * ctx;
 };
 
 } // namespace lab

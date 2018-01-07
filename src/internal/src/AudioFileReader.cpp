@@ -64,38 +64,17 @@ std::mutex g_fileIOMutex;
 std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    
     nqr::AudioData * audioData = new nqr::AudioData();
-    
-    try
-    {
-        nyquistFileIO.Load(audioData, std::string(filePath));
-    }
-    catch (...)
-    {
-        throw;
-    }
-    
+    nyquistFileIO.Load(audioData, std::string(filePath));
     return detail::LoadInternal(audioData, mixToMono);
 }
 
 std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    
     nqr::AudioData * audioData = new nqr::AudioData();
-    
-    try
-    {
-        nyquistFileIO.Load(audioData, extension, buffer);
-    }
-    catch (...)
-    {
-        throw;
-    }
-    
+    nyquistFileIO.Load(audioData, extension, buffer);
     return detail::LoadInternal(audioData, mixToMono);
-    
 }
     
 } // end namespace lab

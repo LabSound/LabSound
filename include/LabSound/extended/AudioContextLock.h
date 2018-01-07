@@ -14,7 +14,7 @@
 #include <iostream>
 #include <mutex>
 
-// #define DEBUG_LOCKS
+#define DEBUG_LOCKS
 
 namespace lab
 {

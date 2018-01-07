@@ -48,11 +48,7 @@ public:
     std::string m_graphLocker;
     std::string m_renderLocker;
 
-    // Realtime Context
-    AudioContext();
-
-    // Offline (non-realtime) Context
-    AudioContext(unsigned numberOfChannels, float sampleRate);
+    AudioContext(bool isOffline);
 
     ~AudioContext();
 

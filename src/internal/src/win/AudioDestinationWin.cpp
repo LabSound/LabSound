@@ -29,16 +29,10 @@ unsigned long AudioDestination::maxChannelCount()
     return 2;
 }
 
-float AudioDestination::hardwareSampleRate()
-{
-    // Danger: default to 44100
-    return 44100;
-}
-
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, float sampleRate) : m_callback(callback)
 {
     m_sampleRate = sampleRate;
-    m_renderBus.setSampleRate(hardwareSampleRate());
+    m_renderBus.setSampleRate(m_sampleRate);
     configure();
 }
 
@@ -61,7 +55,7 @@ void AudioDestinationWin::configure()
     parameters.deviceId = dac.getDefaultOutputDevice();
     parameters.nChannels = 2;
     parameters.firstChannel = 0;
-    unsigned int sampleRate = unsigned int (hardwareSampleRate());
+    unsigned int sampleRate = unsigned int (m_sampleRate);
 
 	auto deviceInfo = dac.getDeviceInfo(parameters.deviceId);
 	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
@@ -137,7 +131,7 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     // Buffer is nBufferFrames * channels
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationWin* audioOutput = static_cast<AudioDestinationWin*>(userData);
+    AudioDestinationWin * audioOutput = static_cast<AudioDestinationWin*>(userData);
 
     audioOutput->render(nBufferFrames, fBufOut, inputBuffer);
 

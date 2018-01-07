@@ -194,7 +194,8 @@ private:
 protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
-    unsigned m_channelCount{ 2 };
+    unsigned m_channelCount;
+    float m_sampleRate;
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 };

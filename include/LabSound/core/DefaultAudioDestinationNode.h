@@ -20,7 +20,7 @@ class DefaultAudioDestinationNode final : public AudioDestinationNode
     
 public:
 
-    DefaultAudioDestinationNode(AudioContext * ctx);
+    DefaultAudioDestinationNode(AudioContext * context, const float sampleRate);
     virtual ~DefaultAudioDestinationNode();
     
     virtual void initialize() override;
@@ -28,7 +28,7 @@ public:
     virtual void startRendering() override;
     
     unsigned maxChannelCount() const;
-    virtual void setChannelCount(ContextGraphLock&, unsigned long) override;
+    virtual void setChannelCount(ContextGraphLock &, unsigned long) override;
 };
 
 } // namespace lab

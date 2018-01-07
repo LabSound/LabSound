@@ -21,8 +21,8 @@ namespace lab
         input = std::make_shared<lab::GainNode>();
         output = std::make_shared<lab::GainNode>();
 
-        leftDelay = std::make_shared<lab::BPMDelay>(tempo);
-        rightDelay = std::make_shared<lab::BPMDelay>(tempo);
+        leftDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
+        rightDelay = std::make_shared<lab::BPMDelay>(sampleRate, tempo);
 
         splitterGain = std::make_shared<lab::GainNode>();
         wetGain = std::make_shared<lab::GainNode>();

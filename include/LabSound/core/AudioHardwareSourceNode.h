@@ -17,7 +17,7 @@ class AudioHardwareSourceNode : public AudioSourceNode, public AudioSourceProvid
 
 public:
 
-    AudioHardwareSourceNode(AudioSourceProvider*);
+    AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider *);
     virtual ~AudioHardwareSourceNode();
 
     // AudioNode

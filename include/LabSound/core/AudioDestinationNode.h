@@ -23,7 +23,7 @@ class AudioDestinationNode : public AudioNode, public AudioIOCallback {
 
 public:
 
-    AudioDestinationNode(AudioContext * ctx);
+    AudioDestinationNode(AudioContext * context, float sampleRate);
     virtual ~AudioDestinationNode();
     
     // AudioNode   
@@ -32,7 +32,7 @@ public:
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).
-    virtual void render(AudioBus* sourceBus, AudioBus* destinationBus, size_t numberOfFrames) override;
+    virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
 
     size_t currentSampleFrame() const { return m_currentSampleFrame; }
     double currentTime() const;
@@ -40,6 +40,8 @@ public:
     virtual unsigned numberOfChannels() const { return 2; } // FIXME: update when multi-channel (more than stereo) is supported
 
     virtual void startRendering() = 0;
+
+    float sampleRate() const { return m_sampleRate; }
 
     AudioSourceProvider * localAudioInputProvider();
     
@@ -51,8 +53,8 @@ protected:
     // Counts the number of sample-frames processed by the destination.
     size_t m_currentSampleFrame;
 
+    float m_sampleRate;
     AudioContext * m_context;
-
 };
 
 } // namespace lab

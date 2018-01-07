@@ -9,8 +9,6 @@ struct SimpleApp : public LabSoundExampleApp
     {
         auto context = lab::MakeRealtimeAudioContext();
         
-        auto ac = context.get();
-        
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
@@ -23,16 +21,17 @@ struct SimpleApp : public LabSoundExampleApp
             gain->gain()->setValue(0.0625f);
 
             musicClipNode = std::make_shared<SampledAudioNode>(musicClip);
+            context->connect(gain, musicClipNode, 0, 0);
+            musicClipNode->start(0.0f);
 
             // osc -> gain -> destination
-            ac->connect(gain, oscillator, 0, 0);
-            ac->connect(context->destination(), gain, 0, 0);
+            context->connect(gain, oscillator, 0, 0);
+            context->connect(context->destination(), gain, 0, 0);
 
-            //oscillator->start(0);
             oscillator->frequency()->setValue(440.f);
             oscillator->setType(OscillatorType::SINE);
+            oscillator->start(0.0f); 
 
-            musicClipNode->start(0.0f);
         };
 
         lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);

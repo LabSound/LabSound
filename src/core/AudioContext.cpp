@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <queue>
+#include <assert.h>
 
 namespace lab
 {
@@ -26,16 +27,12 @@ const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
     
 std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRenderLock & r)
 {
-    AudioSourceProvider * provider = nullptr;
+    AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
     
-    provider = r.context()->destination()->localAudioInputProvider();
-    
-    auto sampleRate = r.context()->sampleRate();
-    
-    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(provider));
+    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
     
     // FIXME: Only stereo streams are supported right now. We should be able to accept multi-channel streams.
-    inputNode->setFormat(r, 2, sampleRate);
+    inputNode->setFormat(r, 2, r.context()->sampleRate());
     
     //m_referencedNodes.push_back(inputNode); // context keeps reference until node is disconnected
     
@@ -43,16 +40,9 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRend
 }
     
 // Constructor for realtime rendering
-AudioContext::AudioContext()
+AudioContext::AudioContext(bool isOffline)
 {
-    m_isOfflineContext = false;
-    m_listener = std::make_shared<AudioListener>();
-}
-
-// Constructor for offline (non-realtime) rendering.
-AudioContext::AudioContext(unsigned numberOfChannels, float sampleRate)
-{
-    m_isOfflineContext = true;
+    m_isOfflineContext = isOffline;
     m_listener = std::make_shared<AudioListener>();
 }
 
@@ -433,7 +423,8 @@ double AudioContext::currentTime() const
 
 float AudioContext::sampleRate() const 
 {  
-    return AudioDestination::hardwareSampleRate(); 
+    ASSERT(m_destinationNode);
+    return m_destinationNode->sampleRate();
 }
 
 std::shared_ptr<AudioListener> AudioContext::listener() 

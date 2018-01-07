@@ -26,7 +26,7 @@ namespace lab
         }
             
     public:
-        BPMDelay(float tempo);
+        BPMDelay(float sampleRate, float tempo);
         virtual ~BPMDelay();
 
         void SetTempo(float newTempo)

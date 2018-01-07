@@ -51,6 +51,14 @@ GrooveApp g_grooveExample;
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
-    g_simpleExample.PlayExample();
+    try
+    {
+        g_simpleExample.PlayExample();
+    }
+    catch (const std::exception & e)
+    {
+        std::cout << "Uncaught fatal exception: " << e.what() << std::endl;
+    }
+
     return 0;
 }
