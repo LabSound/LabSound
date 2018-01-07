@@ -14,6 +14,7 @@
 #include "PeakCompressor.h"
 #include "RedAlert.h"
 #include "Groove.h"
+#include "InfiniteFM.h"
 
 /*
 
@@ -28,7 +29,7 @@
 #include "Spatialization.h"
 #include "Tremolo.h"
 
-#include "InfiniteFM.h"
+
 
 #include "Validation.h"
 */
@@ -40,6 +41,7 @@ ConvolutionReverbApp g_convolutionReverbExample;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
 GrooveApp g_grooveExample;
+InfiniteFMApp g_infiniteFM;
 
 /*
 
@@ -53,7 +55,7 @@ RhythmAndFiltersApp g_rhythmAndFilters;
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
 ValidationApp g_validation;
-InfiniteFMApp g_infiniteFM;
+
 StereoPanningApp g_stereoPanning;
 
 */
@@ -63,7 +65,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_grooveExample.PlayExample();
+        g_infiniteFM.PlayExample();
     }
     catch (const std::exception & e)
     {
