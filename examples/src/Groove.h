@@ -163,7 +163,7 @@ struct GrooveApp : public LabSoundExampleApp
             
             float elapsedTime = 0.0f;
             
-            envelope = std::make_shared<ADSRNode>(context->sampleRate());
+            envelope = std::make_shared<ADSRNode>();
             envelope->set(6.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
         
             float lfo_a, lfo_b, lfo_c;
@@ -172,10 +172,10 @@ struct GrooveApp : public LabSoundExampleApp
             float kickWaveform, kickSample;
             float synthWaveform, synthPercussive, synthDegradedWaveform, synthSample;
             
-            grooveBox = std::make_shared<FunctionNode>(context->sampleRate(), 2);
+            grooveBox = std::make_shared<FunctionNode>(2);
             grooveBox->setFunction([&](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
-                double dt = 1.0 / self->sampleRate(); // time duration of one sample
+                double dt = 1.0 / r.context()->sampleRate(); // time duration of one sample
                 double now = self->now();
                 
                 int nextMeasure = int((now / 2)) % bassline.size();

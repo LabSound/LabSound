@@ -13,6 +13,7 @@
 #include "ConvolutionReverb.h"
 #include "PeakCompressor.h"
 #include "RedAlert.h"
+#include "Groove.h"
 
 /*
 
@@ -28,7 +29,7 @@
 #include "Tremolo.h"
 
 #include "InfiniteFM.h"
-#include "Groove.h"
+
 #include "Validation.h"
 */
 
@@ -38,6 +39,7 @@ OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
+GrooveApp g_grooveExample;
 
 /*
 
@@ -53,7 +55,7 @@ TremoloApp g_tremolo;
 ValidationApp g_validation;
 InfiniteFMApp g_infiniteFM;
 StereoPanningApp g_stereoPanning;
-GrooveApp g_grooveExample;
+
 */
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
@@ -61,7 +63,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_redAlert.PlayExample();
+        g_grooveExample.PlayExample();
     }
     catch (const std::exception & e)
     {
