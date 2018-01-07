@@ -20,16 +20,16 @@ struct TremoloApp : public LabSoundExampleApp
             ContextGraphLock g(context.get(), "Tremolo");
             ContextRenderLock r(context.get(), "Tremolo");
             
-            modulator = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            modulator->setType(r, OscillatorType::SINE);
+            modulator = std::make_shared<OscillatorNode>(context->sampleRate());
+            modulator->setType(OscillatorType::SINE);
             modulator->start(0);
             modulator->frequency()->setValue(8.0f);
             
-            modulatorGain = std::make_shared<GainNode>(context->sampleRate());
+            modulatorGain = std::make_shared<GainNode>();
             modulatorGain->gain()->setValue(10);
             
-            osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            osc->setType(r, OscillatorType::TRIANGLE);
+            osc = std::make_shared<OscillatorNode>(context->sampleRate());
+            osc->setType(OscillatorType::TRIANGLE);
             osc->frequency()->setValue(440);
             osc->start(0);
             

@@ -12,22 +12,17 @@
 #include "LiveGraphUpdate.h"
 #include "RenderOffline.h"
 #include "ConvolutionReverb.h"
-
 #include "RedAlert.h"
 #include "Groove.h"
 #include "InfiniteFM.h"
+#include "Tremolo.h"
 
 /*
-
-
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
-
 #include "StereoPanning.h"
 #include "Spatialization.h"
-#include "Tremolo.h"
-
 #include "Validation.h"
 */
 
@@ -39,21 +34,15 @@ ConvolutionReverbApp g_convolutionReverbExample;
 RedAlertApp g_redAlert;
 GrooveApp g_grooveExample;
 InfiniteFMApp g_infiniteFM;
+TremoloApp g_tremolo;
 
 /*
-
-MicrophoneDalekApp g_microphoneDalekApp;
-MicrophoneLoopbackApp g_microphoneLoopback;
-MicrophoneReverbApp g_microphoneReverb;
-
-
-
-SpatializationApp g_spatialization;
-TremoloApp g_tremolo;
-ValidationApp g_validation;
-
-StereoPanningApp g_stereoPanning;
-
+    MicrophoneDalekApp g_microphoneDalekApp;
+    MicrophoneLoopbackApp g_microphoneLoopback;
+    MicrophoneReverbApp g_microphoneReverb;
+    SpatializationApp g_spatialization;
+    ValidationApp g_validation;
+    StereoPanningApp g_stereoPanning;
 */
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
@@ -61,7 +50,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_rhythm.PlayExample();
+        g_tremolo.PlayExample();
     }
     catch (const std::exception & e)
     {

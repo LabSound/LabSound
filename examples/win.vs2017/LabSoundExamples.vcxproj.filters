@@ -30,12 +30,6 @@
     <ClInclude Include="..\src\PeakCompressor.h">
       <Filter>Examples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Rhythm.h">
-      <Filter>Examples</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RhythmAndFilters.h">
-      <Filter>Examples</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Simple.h">
       <Filter>Examples</Filter>
     </ClInclude>
