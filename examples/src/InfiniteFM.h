@@ -85,7 +85,6 @@ struct InfiniteFMApp : public LabSoundExampleApp
             float cF = (float)std::uniform_int_distribution<int>(80, 440)(randomgenerator);
             osc->frequency()->setValue(cF);
 
-            // Debugging cruft --
             float f = (float) std::uniform_int_distribution<int>(4, 512)(randomgenerator);
             modulator->frequency()->setValue(f);
             std::cout << "Modulator Frequency: " << f << std::endl;

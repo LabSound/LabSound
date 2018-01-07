@@ -8,10 +8,11 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
+#include "PeakCompressor.h"
 #include "LiveGraphUpdate.h"
 #include "RenderOffline.h"
 #include "ConvolutionReverb.h"
-#include "PeakCompressor.h"
+
 #include "RedAlert.h"
 #include "Groove.h"
 #include "InfiniteFM.h"
@@ -22,23 +23,19 @@
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
-#include "Rhythm.h"
-#include "RhythmAndFilters.h"
 
 #include "StereoPanning.h"
 #include "Spatialization.h"
 #include "Tremolo.h"
 
-
-
 #include "Validation.h"
 */
 
 SimpleApp g_simpleExample;
+PeakCompressorApp g_peakCompressor;
 LiveGraphUpdateApp g_liveGraphUpdateApp;
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
-PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
 GrooveApp g_grooveExample;
 InfiniteFMApp g_infiniteFM;
@@ -50,8 +47,7 @@ MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
 
 
-RhythmApp g_rhythm;
-RhythmAndFiltersApp g_rhythmAndFilters;
+
 SpatializationApp g_spatialization;
 TremoloApp g_tremolo;
 ValidationApp g_validation;
@@ -65,7 +61,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_infiniteFM.PlayExample();
+        g_rhythm.PlayExample();
     }
     catch (const std::exception & e)
     {
