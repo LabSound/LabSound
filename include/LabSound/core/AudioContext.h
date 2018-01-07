@@ -49,7 +49,6 @@ public:
     std::string m_renderLocker;
 
     AudioContext(bool isOffline);
-
     ~AudioContext();
 
     bool isInitialized() const;
@@ -82,9 +81,6 @@ public:
     void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
 
-    // We schedule deletion of all marked nodes at the end of each realtime render quantum.
-    void deleteMarkedNodes();
-
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
     void addAutomaticPullNode(std::shared_ptr<AudioNode>);
@@ -104,11 +100,10 @@ public:
 
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
 
-    void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
+    void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
     
     // Necessary to call when using an OfflineAudioDestinationNode
     void startRendering();
-    
     std::function<void()> offlineRenderCompleteCallback;
 
 private:
@@ -125,7 +120,6 @@ private:
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
-    bool m_isDeletionScheduled = false;
     bool m_automaticPullNodesNeedUpdating = false; // keeps track if m_automaticPullNodes is modified.
 
     // Number of SampledAudioNode that are active (playing).
@@ -137,16 +131,11 @@ private:
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
     void clear();
 
-    void scheduleNodeDeletion(ContextRenderLock & g);
-
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
-
-    std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
-    std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes

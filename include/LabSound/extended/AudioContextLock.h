@@ -14,7 +14,7 @@
 #include <iostream>
 #include <mutex>
 
-#define DEBUG_LOCKS
+//#define DEBUG_LOCKS
 
 namespace lab
 {
@@ -32,7 +32,6 @@ namespace lab
                 context->m_graphLock.lock();
                 m_context = context;
                 m_context->m_graphLocker = lockSuitor;
-                //LOG("%s ACQUIRED! %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
             }
 #if defined(DEBUG_LOCKS)
             if (!m_context && context->m_graphLocker.size())

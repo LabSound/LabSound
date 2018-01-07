@@ -8,8 +8,8 @@
 #include "ExampleBaseApp.h"
 
 #include "Simple.h"
-/*
 #include "LiveGraphUpdate.h"
+/*
 #include "RenderOffline.h"
 #include "ConvolutionReverb.h"
 #include "MicrophoneDalek.h"
@@ -28,9 +28,10 @@
 */
 
 SimpleApp g_simpleExample;
+LiveGraphUpdateApp g_liveGraphUpdateApp;
 
 /*
-LiveGraphUpdateApp g_liveGraphUpdateApp;
+
 OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
@@ -53,7 +54,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_simpleExample.PlayExample();
+        g_liveGraphUpdateApp.PlayExample();
     }
     catch (const std::exception & e)
     {

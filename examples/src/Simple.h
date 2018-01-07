@@ -12,7 +12,7 @@ struct SimpleApp : public LabSoundExampleApp
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
-        std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
+        std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/mono-music-clip.wav", false);
 
         auto lockedArea = [&](ContextGraphLock & g, ContextRenderLock & r)
         {

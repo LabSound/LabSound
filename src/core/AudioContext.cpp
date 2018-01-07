@@ -78,7 +78,6 @@ AudioContext::~AudioContext()
     
     ASSERT(!m_isInitialized);
     ASSERT(m_isStopScheduled);
-    ASSERT(!m_nodesToDelete.size());
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
 
@@ -118,16 +117,7 @@ void AudioContext::lazyInitialize()
 void AudioContext::clear()
 {
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    if (m_destinationNode.get())
-        m_destinationNode.reset();
-    
-    do
-    {
-        deleteMarkedNodes();
-        m_nodesToDelete.insert(m_nodesToDelete.end(), m_nodesMarkedForDeletion.begin(), m_nodesMarkedForDeletion.end());
-        m_nodesMarkedForDeletion.clear();
-    }
-    while (m_nodesToDelete.size());
+    if (m_destinationNode.get()) m_destinationNode.reset();
 }
 
 void AudioContext::uninitialize(ContextGraphLock& g)
@@ -160,15 +150,14 @@ void AudioContext::stop(ContextGraphLock& g)
 {
     if (m_isStopScheduled) return;
     m_isStopScheduled = true;
-    deleteMarkedNodes();
     uninitialize(g);
     clear();
 }
 
-void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> sn)
+void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    automaticSources.push_back(sn);
+    automaticSources.push_back(node);
 }
 
 void AudioContext::handleAutomaticSources()
@@ -198,12 +187,9 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 {
     ASSERT(r.context());
 
-    // Don't delete in the real-time thread. Let the main thread do it because the clean up may take time
-    scheduleNodeDeletion(r);
-
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
-    updateAutomaticPullNodes();
 
+    updateAutomaticPullNodes();
     handleAutomaticSources();
 }
 
@@ -240,6 +226,7 @@ void AudioContext::update()
 
         {
             ContextGraphLock gLock(this, "context::update");
+
             // Verify that we've acquired the lock, and check again 5 ms later if not
             if (!gLock.context())
             {
@@ -327,36 +314,6 @@ void AudioContext::update()
     LOG("End UpdateGraphThread");
 }
 
-void AudioContext::scheduleNodeDeletion(ContextRenderLock & r)
-{
-    //@fixme
-    // &&& all this deletion stuff should be handled by a concurrent queue - simply have only a m_nodesToDelete concurrent queue and ditch the marked vector
-    // then this routine sould go away completely
-    // node->deref is the only caller, it should simply add itself to the scheduled deletion queue
-    // marked for deletion should go away too
-
-    bool isGood = m_isInitialized && r.context();
-    ASSERT(isGood);
-
-    if (m_nodesMarkedForDeletion.size() && !m_isDeletionScheduled)
-    {
-        m_nodesToDelete.insert(m_nodesToDelete.end(), m_nodesMarkedForDeletion.begin(), m_nodesMarkedForDeletion.end());
-        m_nodesMarkedForDeletion.clear();
-
-        m_isDeletionScheduled = true;
-
-        deleteMarkedNodes();
-    }
-}
-
-void AudioContext::deleteMarkedNodes()
-{
-    //@fixme thread safety
-    m_nodesToDelete.clear();
-    m_isDeletionScheduled = false;
-}
-
-
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
@@ -397,7 +354,7 @@ void AudioContext::updateAutomaticPullNodes()
     }
 }
 
-void AudioContext::processAutomaticPullNodes(ContextRenderLock& r, size_t framesToProcess)
+void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t framesToProcess)
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
         m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
