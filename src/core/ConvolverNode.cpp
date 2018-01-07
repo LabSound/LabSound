@@ -93,9 +93,9 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setImpulse(ContextGraphLock& g, std::shared_ptr<AudioBus> bus)
+void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
-    if (!bus || !g.context())
+    if (!bus)
         return;
 
     unsigned numberOfChannels = bus->numberOfChannels();

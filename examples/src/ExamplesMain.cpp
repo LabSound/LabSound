@@ -10,10 +10,11 @@
 #include "Simple.h"
 #include "LiveGraphUpdate.h"
 #include "RenderOffline.h"
+#include "ConvolutionReverb.h"
 
 /*
 
-#include "ConvolutionReverb.h"
+
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
@@ -32,11 +33,10 @@
 SimpleApp g_simpleExample;
 LiveGraphUpdateApp g_liveGraphUpdateApp;
 OfflineRenderApp g_offlineRenderApp;
+ConvolutionReverbApp g_convolutionReverbExample;
 
 /*
 
-
-ConvolutionReverbApp g_convolutionReverbExample;
 MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_offlineRenderApp.PlayExample();
+        g_convolutionReverbExample.PlayExample();
     }
     catch (const std::exception & e)
     {

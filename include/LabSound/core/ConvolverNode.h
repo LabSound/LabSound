@@ -29,7 +29,7 @@ public:
     virtual void uninitialize() override;
 
     // Impulse responses
-    void setImpulse(ContextGraphLock & r, std::shared_ptr<AudioBus> bus);
+    void setImpulse(std::shared_ptr<AudioBus> bus);
     std::shared_ptr<AudioBus> getImpulse();
 
     bool normalize() const { return m_normalize; }
