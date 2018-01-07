@@ -71,7 +71,7 @@ public:
 
     float sampleRate() const;
 
-    std::shared_ptr<AudioListener> listener();
+    AudioListener & listener();
 
     unsigned long activeSourceCount() const;
 

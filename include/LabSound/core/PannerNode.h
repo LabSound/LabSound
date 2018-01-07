@@ -47,9 +47,6 @@ public:
     virtual void initialize() override;
     virtual void uninitialize() override;
 
-    // Listener
-    std::shared_ptr<AudioListener> listener(ContextRenderLock & r);
-
     // Panning model
     PanningMode panningModel() const { return m_panningModel; }
     void setPanningModel(PanningMode m);

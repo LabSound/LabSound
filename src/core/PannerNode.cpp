@@ -175,12 +175,6 @@ void PannerNode::reset(ContextRenderLock&)
         m_panner->reset();
 }
 
-std::shared_ptr<AudioListener> PannerNode::listener(ContextRenderLock& r)
-{
-    if (!r.context()) return nullptr;
-    return r.context()->listener();
-}
-
 void PannerNode::setPanningModel(PanningMode model)
 {
     if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
@@ -221,14 +215,16 @@ void PannerNode::setDistanceModel(unsigned short model)
     }
 }
 
-void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation)
+void PannerNode::getAzimuthElevation(ContextRenderLock & r, double* outAzimuth, double* outElevation)
 {
     // FIXME: we should cache azimuth and elevation (if possible), so we only re-calculate if a change has been made.
 
     double azimuth = 0.0;
 
+    AudioListener & listener = r.context()->listener();
+
     // Calculate the source-listener vector
-    FloatPoint3D listenerPosition = listener(r)->position();
+    FloatPoint3D listenerPosition = listener.position();
     FloatPoint3D sourceListener = normalize(m_position - listenerPosition);
 
     if (is_zero(sourceListener))
@@ -240,8 +236,8 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     }
 
     // Align axes
-    FloatPoint3D listenerFront = normalize(listener(r)->orientation());
-    FloatPoint3D listenerUp = listener(r)->upVector();
+    FloatPoint3D listenerFront = normalize(listener.orientation());
+    FloatPoint3D listenerUp = listener.upVector();
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
     FloatPoint3D up = cross(listenerRight, listenerFront);
 
@@ -278,19 +274,21 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
         *outElevation = elevation;
 }
 
-float PannerNode::dopplerRate(ContextRenderLock& r)
+float PannerNode::dopplerRate(ContextRenderLock & r)
 {
     double dopplerShift = 1.0;
 
+    AudioListener & listener = r.context()->listener();
+
     // FIXME: optimize for case when neither source nor listener has changed...
-    double dopplerFactor = listener(r)->dopplerFactor();
+    double dopplerFactor = listener.dopplerFactor();
 
     if (dopplerFactor > 0.0)
     {
-        double speedOfSound = listener(r)->speedOfSound();
+        double speedOfSound = listener.speedOfSound();
 
         const FloatPoint3D & sourceVelocity = m_velocity;
-        const FloatPoint3D & listenerVelocity = listener(r)->velocity();
+        const FloatPoint3D & listenerVelocity = listener.velocity();
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);
@@ -299,7 +297,7 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
         if (sourceHasVelocity || listenerHasVelocity)
         {
             // Calculate the source to listener vector
-            FloatPoint3D listenerPosition = listener(r)->position();
+            FloatPoint3D listenerPosition = listener.position();
             FloatPoint3D sourceToListener = m_position - listenerPosition;
 
             double sourceListenerMagnitude = magnitude(sourceToListener);
@@ -330,7 +328,9 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
 
 float PannerNode::distanceConeGain(ContextRenderLock& r)
 {
-    FloatPoint3D listenerPosition = listener(r)->position();
+    AudioListener & listener = r.context()->listener();
+
+    FloatPoint3D listenerPosition = listener.position();
 
     double listenerDistance = magnitude(m_position - listenerPosition); // "distanceTo"
 

@@ -43,7 +43,7 @@ std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(lab::ContextRend
 AudioContext::AudioContext(bool isOffline)
 {
     m_isOfflineContext = isOffline;
-    m_listener = std::make_shared<AudioListener>();
+    m_listener.reset(new AudioListener());
 }
 
 AudioContext::~AudioContext()
@@ -391,9 +391,9 @@ float AudioContext::sampleRate() const
     return m_destinationNode->sampleRate();
 }
 
-std::shared_ptr<AudioListener> AudioContext::listener() 
+AudioListener & AudioContext::listener() 
 { 
-    return m_listener; 
+    return *m_listener.get(); 
 }
 
 unsigned long AudioContext::activeSourceCount() const 
