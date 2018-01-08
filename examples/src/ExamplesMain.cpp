@@ -44,7 +44,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_microphoneReverb.PlayExample();
+        g_convolutionReverbExample.PlayExample();
     }
     catch (const std::exception & e)
     {
