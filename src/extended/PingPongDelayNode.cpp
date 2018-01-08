@@ -33,7 +33,7 @@ namespace lab
 
         SetDelayIndex(TempoSync::TS_8);
         SetFeedback(0.5f);
-        SetLevel(0.5f);
+        SetLevel(1.0f);
     }
     
     PingPongDelayNode::~PingPongDelayNode()
@@ -74,7 +74,6 @@ namespace lab
             throw std::invalid_argument("Graph lock could not acquire context");
 
         // Input into splitter
-        //input->connect(ac, splitter.get(), 0, 0);
         ac->connect(splitter, input, 0, 0);
 
         ac->connect(splitterGain, splitter, 0, 0);
@@ -84,7 +83,6 @@ namespace lab
         splitterGain->gain()->setValue(0.5f);
 
         ac->connect(leftDelay, wetGain, 0, 0);
-
         ac->connect(leftDelay, feedbackGain, 0, 0);
 
         ac->connect(rightDelay, leftDelay, 0, 0);

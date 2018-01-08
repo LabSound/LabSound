@@ -37,22 +37,24 @@ struct ValidationApp : public LabSoundExampleApp
         auto context = lab::MakeRealtimeAudioContext();
         auto ac = context.get();
 
-        std::shared_ptr<SampledAudioNode> beatNode;
-        std::shared_ptr<PingPongDelayNode> pingping;
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/cello_pluck/cello_pluck_As0.wav", false);
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
 
         {
             ContextGraphLock g(ac, "Validator");
             ContextRenderLock r(ac, "Validator");
             
-            pingping  = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
             pingping->BuildSubgraph(g);
-            pingping->SetFeedback(0.5);
-            pingping->SetDelayIndex(lab::TempoSync::TS_16T);
+            pingping->SetFeedback(0.5f);
+            pingping->SetDelayIndex(lab::TempoSync::TS_8);
 
             ac->connect(context->destination(), pingping->output, 0, 0);
 
-            SoundBuffer beat("samples/kick.wav", context->sampleRate());
-            beatNode = beat.play(r, pingping->input, 0.0f);
+            audioClipNode->setBus(r, audioClip);
+
+            ac->connect(pingping->input, audioClipNode, 0, 0);
+            audioClipNode->start(0.0f);
         }
      
         const int seconds = 10;

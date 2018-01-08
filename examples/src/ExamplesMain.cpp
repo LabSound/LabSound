@@ -16,15 +16,17 @@
 #include "Groove.h"
 #include "InfiniteFM.h"
 #include "Tremolo.h"
+#include "StereoPanning.h"
 #include "Spatialization.h"
+#include "Validation.h"
 
 /*
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
-#include "StereoPanning.h"
 
-#include "Validation.h"
+
+
 */
 
 SimpleApp g_simpleExample;
@@ -36,15 +38,15 @@ RedAlertApp g_redAlert;
 GrooveApp g_grooveExample;
 InfiniteFMApp g_infiniteFM;
 TremoloApp g_tremolo;
+StereoPanningApp g_stereoPanning;
 SpatializationApp g_spatialization;
+ValidationApp g_validation;
 
 /*
     MicrophoneDalekApp g_microphoneDalekApp;
     MicrophoneLoopbackApp g_microphoneLoopback;
     MicrophoneReverbApp g_microphoneReverb;
 
-    ValidationApp g_validation;
-    StereoPanningApp g_stereoPanning;
 */
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
@@ -52,7 +54,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_spatialization.PlayExample();
+        g_stereoPanning.PlayExample();
     }
     catch (const std::exception & e)
     {
