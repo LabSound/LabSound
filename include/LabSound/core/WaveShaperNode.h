@@ -13,16 +13,12 @@ namespace lab
 
 class WaveShaperNode : public AudioBasicProcessorNode
 {
-   
     WaveShaperProcessor * waveShaperProcessor();
-    
 public:
-    
     WaveShaperNode();
-    ~WaveShaperNode() {}
-
-    void setCurve(ContextRenderLock&, std::shared_ptr<std::vector<float>>);
-    std::shared_ptr<std::vector<float>> curve();
+    ~WaveShaperNode() { }
+    void setCurve(const std::vector<float> & curve);
+    std::vector<float> & curve();
 };
 
 } // namespace lab
