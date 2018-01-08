@@ -40,7 +40,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             
             vIn = std::make_shared<OscillatorNode>(context->sampleRate());
             vIn->frequency()->setValue(30.0f);
-            vIn->start(0);
+            vIn->start(0.f);
             
             vInGain = std::make_shared<GainNode>();
             vInGain->gain()->setValue(0.5f);
@@ -72,7 +72,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // immediately before the output. This ensures that the user's volume remains
             // somewhat constant when the distortion is increased.
             compressor = std::make_shared<DynamicsCompressorNode>();
-            compressor->threshold()->setValue(-12.0f);
+            compressor->threshold()->setValue(-14.0f);
             
             // Now we connect up the graph following the block diagram above (on the web page).
             // When working on complex graphs it helps to have a pen and paper handy!
@@ -85,6 +85,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             audioClipNode->setBus(r, audioClip);
             context->connect(vcInverter1, audioClipNode, 0, 0);
             context->connect(vcDiode4->node(), audioClipNode, 0, 0);
+            audioClipNode->start(0.f);
 #endif
             
             context->connect(vcDiode3->node(), vcInverter1, 0, 0);
@@ -109,10 +110,6 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             
             context->connect(outGain, compressor, 0, 0);
             context->connect(context->destination(), outGain, 0, 0);
-            
-#ifndef USE_LIVE
-            audioClipNode->start(0);
-#endif
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(30));

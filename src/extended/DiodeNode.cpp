@@ -31,7 +31,7 @@ namespace lab
 
         const int samples = 1024;
 
-        std::vector<float > wsCurve;
+        std::vector<float> wsCurve;
         wsCurve.resize(samples);
 
         float s = float(samples);

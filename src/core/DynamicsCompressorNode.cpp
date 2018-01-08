@@ -17,7 +17,7 @@ using namespace std;
 namespace lab
 {
 
-DynamicsCompressorNode::DynamicsCompressorNode() : AudioNode()
+DynamicsCompressorNode::DynamicsCompressorNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -46,9 +46,9 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
     uninitialize();
 }
 
-void DynamicsCompressorNode::process(ContextRenderLock& r, size_t framesToProcess)
+void DynamicsCompressorNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
     float threshold = m_threshold->value(r);

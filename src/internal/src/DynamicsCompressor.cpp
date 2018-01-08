@@ -77,7 +77,8 @@ void DynamicsCompressor::setEmphasisStageParameters(unsigned stageIndex, float g
 
     ASSERT(m_numberOfChannels == m_preFilterPacks.size());
 
-    for (unsigned i = 0; i < m_numberOfChannels; ++i) {
+    for (unsigned i = 0; i < m_numberOfChannels; ++i) 
+    {
         // Set pre-filter zero and pole to create an emphasis filter.
         ZeroPole& preFilter = m_preFilterPacks[i]->filters[stageIndex];
         preFilter.setZero(r1);
@@ -190,11 +191,10 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
     // The processing is performed in place.
     // Dimitri... broken?
     m_compressor.process(r,
-                         m_destinationChannels.get(),
+                         m_sourceChannels.get(),
                          m_destinationChannels.get(),
                          numberOfChannels,
                          framesToProcess,
-
                          dbThreshold,
                          dbKnee,
                          ratio,
@@ -203,7 +203,6 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
                          preDelayTime,
                          dbPostGain,
                          effectBlend,
-
                          releaseZone1,
                          releaseZone2,
                          releaseZone3,

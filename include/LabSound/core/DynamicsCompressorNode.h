@@ -21,8 +21,8 @@ public:
     virtual ~DynamicsCompressorNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 

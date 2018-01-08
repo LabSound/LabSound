@@ -12,7 +12,7 @@ using namespace std;
 
 namespace lab {
 
-void WaveShaperDSPKernel::process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess)
+void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, float* destination, size_t framesToProcess)
 {
     ASSERT(source && destination && waveShaperProcessor());
 

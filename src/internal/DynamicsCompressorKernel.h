@@ -26,7 +26,7 @@ public:
 
     // Performs stereo-linked compression.
     void process(ContextRenderLock&,
-                 float * sourceChannels[],
+                 const float * sourceChannels[],
                  float * destinationChannels[],
                  unsigned numberOfChannels,
                  unsigned framesToProcess,

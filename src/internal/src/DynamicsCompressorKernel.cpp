@@ -176,11 +176,10 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
 }
 
 void DynamicsCompressorKernel::process(ContextRenderLock & r,
-                                       float * sourceChannels[],
+                                       const float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,
                                        unsigned framesToProcess,
-
                                        float dbThreshold,
                                        float dbKnee,
                                        float ratio,
@@ -189,7 +188,6 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        float preDelayTime,
                                        float dbPostGain,
                                        float effectBlend, /* equal power crossfade */
-
                                        float releaseZone1,
                                        float releaseZone2,
                                        float releaseZone3,
@@ -257,7 +255,8 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
     const int nDivisions = framesToProcess / nDivisionFrames;
 
     unsigned frameIndex = 0;
-    for (int i = 0; i < nDivisions; ++i) {
+    for (int i = 0; i < nDivisions; ++i) 
+    {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Calculate desired gain
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -416,7 +415,8 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                     m_meteringGain += (dbRealGain - m_meteringGain) * m_meteringReleaseK;
 
                 // Apply final gain.
-                for (unsigned i = 0; i < numberOfChannels; ++i) {
+                for (unsigned i = 0; i < numberOfChannels; ++i) 
+                {
                     float* delayBuffer = m_preDelayBuffers[i]->data();
                     destinationChannels[i][frameIndex] = delayBuffer[preDelayReadIndex] * totalGain;
                 }
