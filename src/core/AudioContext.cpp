@@ -108,6 +108,8 @@ void AudioContext::clear()
 
 void AudioContext::uninitialize(ContextGraphLock& g)
 {
+    LOG("AudioContext::uninitialize()");
+
     if (!m_isInitialized)
         return;
 
@@ -132,12 +134,13 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
-void AudioContext::stop(ContextGraphLock& g)
+void AudioContext::stop(ContextGraphLock & g)
 {
     if (m_isStopScheduled) return;
     m_isStopScheduled = true;
     uninitialize(g);
     clear();
+    LOG("AudioContext::stop()");
 }
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)

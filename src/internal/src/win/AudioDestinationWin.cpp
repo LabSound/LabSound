@@ -50,14 +50,19 @@ void AudioDestinationWin::configure()
 
     dac.showWarnings(true);
 
-    RtAudio::StreamParameters parameters;
-    parameters.deviceId = dac.getDefaultOutputDevice();
-    parameters.nChannels = 2;
-    parameters.firstChannel = 0;
+    RtAudio::StreamParameters outputParams;
+    outputParams.deviceId = dac.getDefaultOutputDevice();
+    outputParams.nChannels = 2;
+    outputParams.firstChannel = 0;
     unsigned int sampleRate = unsigned int (m_sampleRate);
 
-	auto deviceInfo = dac.getDeviceInfo(parameters.deviceId);
+	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
 	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
+
+    RtAudio::StreamParameters inputParams;
+    inputParams.deviceId = dac.getDefaultInputDevice();
+    inputParams.nChannels = 1;
+    inputParams.firstChannel = 0;
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -66,7 +71,7 @@ void AudioDestinationWin::configure()
 
     try
     {
-        dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
@@ -101,9 +106,10 @@ void AudioDestinationWin::stop()
 }
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *inputBuffer)
+void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
     float *myOutputBufferOfFloats = (float*) outputBuffer;
+    float *myInputBufferOfFloats = (float*) inputBuffer;
 
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
@@ -112,8 +118,13 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
         m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
     }
 
-    // Source Bus :: Destination Bus (no source/input)
-    m_callback.render(0, &m_renderBus, numberOfFrames);
+    if (m_inputBus.isFirstTime())
+    {
+        m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+    }
+
+    // Source Bus :: Destination Bus 
+    m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
@@ -130,9 +141,9 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     // Buffer is nBufferFrames * channels
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationWin * audioOutput = static_cast<AudioDestinationWin*>(userData);
+    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin*>(userData);
 
-    audioOutput->render(nBufferFrames, fBufOut, inputBuffer);
+    audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;
 }

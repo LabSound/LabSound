@@ -125,7 +125,8 @@ ReverbConvolver::~ReverbConvolver()
 
 void ReverbConvolver::backgroundThreadEntry()
 {
-    while (!m_wantsToExit) {
+    while (!m_wantsToExit) 
+    {
         // Wait for realtime thread to give us more input
         m_moreInputBuffered = false;        
         {
@@ -183,7 +184,8 @@ void ReverbConvolver::process(ContextRenderLock&, const AudioChannel* sourceChan
     // signal from time to time, since we'll get to it the next time we're called.  We're called repeatedly
     // and frequently (around every 3ms).  The background thread is processing well into the future and has a considerable amount of 
     // leeway here...
-    if (m_backgroundThreadLock.try_lock()) {
+    if (m_backgroundThreadLock.try_lock()) 
+    {
         m_moreInputBuffered = true;
         m_backgroundThreadCondition.notify_one();
         m_backgroundThreadLock.unlock();

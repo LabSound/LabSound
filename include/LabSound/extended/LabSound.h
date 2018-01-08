@@ -58,8 +58,7 @@
 
 namespace lab
 {
-    // These are convenience functions with straightforward definitions. Most of the samples use them,
-    // but they are not strictly required. 
+    // These are convenience functions with straightforward definitions. Most of the samples use them, but they are not strictly required. 
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext();
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds);

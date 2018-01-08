@@ -118,7 +118,9 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
     if (!isInitialized()) return;
+
     auto ac = r.context();
+
     if (!ac) return;
     
     // Ensure that we only process once per rendering quantum.
@@ -135,7 +137,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
         {
-            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(r.context()->sampleRate());
+            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(ac->sampleRate());
         }
 
         bool ps = propagatesSilence(r);

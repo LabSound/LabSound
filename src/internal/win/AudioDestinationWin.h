@@ -37,7 +37,9 @@ private:
     void configure();
 
     AudioIOCallback & m_callback;
+
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
+    AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
     bool m_isPlaying = false;;

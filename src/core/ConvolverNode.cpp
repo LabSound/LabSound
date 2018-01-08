@@ -25,7 +25,7 @@ const size_t MaxFFTSize = 32768;
 
 namespace lab {
 
-ConvolverNode::ConvolverNode() : AudioNode(), m_swapOnRender(false), m_normalize(true)
+ConvolverNode::ConvolverNode() : m_swapOnRender(false), m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -45,7 +45,7 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
+void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     if (m_swapOnRender)
     {
@@ -55,7 +55,7 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
         m_swapOnRender = false;
     }
     
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
     
     if (!isInitialized() || !m_reverb)
     {
@@ -65,7 +65,7 @@ void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
 
     // Process using the convolution engine.
     // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
-    // FIXME:  If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
+    // FIXME: If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
     // we keep getting fed silence.
     m_reverb->process(r, input(0)->bus(r), outputBus, framesToProcess);
 }
@@ -86,17 +86,17 @@ void ConvolverNode::initialize()
 
 void ConvolverNode::uninitialize()
 {
+    m_reverb.reset();
+
     if (!isInitialized())
         return;
 
-    m_reverb.reset();
     AudioNode::uninitialize();
 }
 
 void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
-    if (!bus)
-        return;
+    if (!bus) return;
 
     unsigned numberOfChannels = bus->numberOfChannels();
     size_t bufferLength = bus->length();
@@ -107,8 +107,8 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
     if (!isBufferGood) return;
 
     // Create the reverb with the given impulse response.
-    const bool nonRealtimeForLargeBuffers = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, nonRealtimeForLargeBuffers, m_normalize));
+    const bool threaded = false;
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, m_normalize));
     m_newBus = bus;
     m_swapOnRender = true;
 }

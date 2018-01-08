@@ -141,7 +141,7 @@ namespace lab
         
         // Represents target encoding (wav only)
         // Libnyquist bug with things other than PCM_FLT?
-        nqr::EncoderParams params = {2, nqr::PCM_FLT, nqr::DITHER_NONE};
+        nqr::EncoderParams params = {channels, nqr::PCM_FLT, nqr::DITHER_NONE};
 
         int encoderStatus = nqr::WavEncoder::WriteFile(params, fileData.get(), filenameWithWavExtension);
     }
