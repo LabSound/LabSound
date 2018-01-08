@@ -52,7 +52,7 @@ void DynamicsCompressor::initializeParameters()
 
     m_parameters[ParamFilterStageGain] = 4.4f; // dB
     m_parameters[ParamFilterStageRatio] = 2;
-    m_parameters[ParamFilterAnchor] = 15000 / 22500; // dimitri sample rate
+    m_parameters[ParamFilterAnchor] = 15000.f / 22500.f; // dimitri sample rate
     
     m_parameters[ParamPostGain] = 0; // dB
     m_parameters[ParamReduction] = 0; // dB

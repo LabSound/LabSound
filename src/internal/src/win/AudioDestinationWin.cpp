@@ -118,7 +118,7 @@ void AudioDestinationWin::render(int numberOfFrames, void *outputBuffer, void *i
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
     {
-        AudioChannel* channel = m_renderBus.channel(i);
+        AudioChannel * channel = m_renderBus.channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
 }
