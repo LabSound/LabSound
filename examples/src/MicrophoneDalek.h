@@ -83,7 +83,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             context->connect(vcDiode4->node(), input, 0, 0);
 #else
             audioClipNode->setBus(r, audioClip);
-            context->connect(vcInverter1, audioClipNode, 0, 0);
+            //context->connect(vcInverter1, audioClipNode, 0, 0); // dimitri 
             context->connect(vcDiode4->node(), audioClipNode, 0, 0);
             audioClipNode->start(0.f);
 #endif

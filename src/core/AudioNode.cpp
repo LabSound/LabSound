@@ -167,6 +167,8 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInp
 
 bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
+    ASSERT(r.context());
+
     return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 

@@ -18,7 +18,7 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
 
     std::vector<float> & curve = waveShaperProcessor()->curve();
 
-    if (curve.size() > 0) 
+    if (curve.size() == 0) 
     {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * framesToProcess);
