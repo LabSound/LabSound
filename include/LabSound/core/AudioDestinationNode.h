@@ -16,7 +16,8 @@ class AudioContext;
 class AudioSourceProvider;
 class LocalAudioInputProvider;
 
-class AudioDestinationNode : public AudioNode, public AudioIOCallback {
+class AudioDestinationNode : public AudioNode, public AudioIOCallback 
+{
 
     class LocalAudioInputProvider;
     LocalAudioInputProvider * m_localAudioInputProvider;

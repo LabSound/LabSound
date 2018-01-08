@@ -21,7 +21,10 @@ namespace lab
     // If there is local/live audio input, we call set() with the audio input data every render quantum.
     class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider 
     {
+        AudioBus m_sourceBus;
+
     public:
+
         LocalAudioInputProvider() : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
         {
 
@@ -38,15 +41,13 @@ namespace lab
         }
 
         // AudioSourceProvider.
-        virtual void provideInput(AudioBus* destinationBus, size_t numberOfFrames)
+        virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames)
         {
             bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus.length() == numberOfFrames;
             ASSERT(isGood);
             if (isGood) destinationBus->copyFrom(m_sourceBus);
         }
 
-    private:
-        AudioBus m_sourceBus;
     };
 
     
@@ -101,7 +102,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
 
     // This will cause the node(s) connected to this destination node to process, which in turn will pull on their input(s),
     // all the way backwards through the rendering graph.
-    AudioBus* renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
+    AudioBus * renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
     
     if (!renderedBus)
     {

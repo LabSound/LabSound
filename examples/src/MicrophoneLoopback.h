@@ -9,12 +9,12 @@ struct MicrophoneLoopbackApp : public LabSoundExampleApp
     {
         auto context = lab::MakeRealtimeAudioContext();
         
+        // Danger - this sample creates an open feedback loop :)
         std::shared_ptr<AudioHardwareSourceNode> input;
         {
             ContextGraphLock g(context.get(), "MicrophoneLoopbackApp");
             ContextRenderLock r(context.get(), "MicrophoneLoopbackApp");
-            
-            input = MakeHardwareSourceNode(r);
+            input = lab::MakeHardwareSourceNode(r);
             context->connect(context->destination(), input, 0, 0);
         }
         

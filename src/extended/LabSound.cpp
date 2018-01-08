@@ -22,7 +22,7 @@ namespace lab
     {
         AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
         std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
-        inputNode->setFormat(r, 1, r.context()->sampleRate()); // 1 vs 2 channels?
+        inputNode->setFormat(r, 2, r.context()->sampleRate()); // 1 vs 2 channels?
         return inputNode;
     }
 

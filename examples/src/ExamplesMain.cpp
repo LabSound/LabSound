@@ -20,8 +20,8 @@
 #include "Spatialization.h"
 #include "Validation.h"
 #include "MicrophoneDalek.h"
-//#include "MicrophoneLoopback.h"
-//#include "MicrophoneReverb.h"
+#include "MicrophoneLoopback.h"
+#include "MicrophoneReverb.h"
 
 SimpleApp g_simpleExample;
 PeakCompressorApp g_peakCompressor;
@@ -35,17 +35,16 @@ TremoloApp g_tremolo;
 StereoPanningApp g_stereoPanning;
 SpatializationApp g_spatialization;
 ValidationApp g_validation;
-
 MicrophoneDalekApp g_microphoneDalekApp;
-//MicrophoneLoopbackApp g_microphoneLoopback;
-//MicrophoneReverbApp g_microphoneReverb;
+MicrophoneLoopbackApp g_microphoneLoopback;
+MicrophoneReverbApp g_microphoneReverb;
 
 // Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
 int main (int argc, char *argv[])
 {
     try
     {
-        g_microphoneDalekApp.PlayExample();
+        g_microphoneReverb.PlayExample();
     }
     catch (const std::exception & e)
     {

@@ -13,7 +13,7 @@
 
 namespace lab {
 
-AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : AudioSourceNode(), m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
+AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
 {
     // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -73,7 +73,7 @@ void AudioHardwareSourceNode::process(ContextRenderLock & r, size_t numberOfFram
     }
 }
 
-void AudioHardwareSourceNode::reset(ContextRenderLock&)
+void AudioHardwareSourceNode::reset(ContextRenderLock & r)
 {
     
 }

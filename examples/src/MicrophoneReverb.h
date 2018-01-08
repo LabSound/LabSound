@@ -8,10 +8,9 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
     void PlayExample()
     {
         auto context = lab::MakeRealtimeAudioContext();
-        auto ac = context.get();
-        
-        SoundBuffer ir("impulse/cardiod-rear-levelled.wav", context->sampleRate());
-        
+
+        std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
+
         std::shared_ptr<AudioHardwareSourceNode> input;
         std::shared_ptr<ConvolverNode> convolve;
         std::shared_ptr<GainNode> wetGain;
@@ -21,17 +20,17 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             ContextGraphLock g(context.get(), "MicrophoneReverbApp");
             ContextRenderLock r(context.get(), "MicrophoneReverbApp");
             
-            input = MakeHardwareSourceNode(r);
+            input = lab::MakeHardwareSourceNode(r);
             
-            recorder = std::make_shared<RecorderNode>(context->sampleRate());
+            recorder = std::make_shared<RecorderNode>();
             // input->connect(ac, recorder.get(), 0, 0); Debugging -- this works
             context->addAutomaticPullNode(recorder);
             recorder->startRecording();
             
-            convolve = std::make_shared<ConvolverNode>(context->sampleRate());
-            convolve->setBuffer(g, ir.audioBuffer); // dimitri
+            convolve = std::make_shared<ConvolverNode>();
+            convolve->setImpulse(impulseResponseClip); // dimitri
             
-            wetGain = std::make_shared<GainNode>(context->sampleRate());
+            wetGain = std::make_shared<GainNode>();
             wetGain->gain()->setValue(1.f);
             
             context->connect(convolve, input, 0, 0);
@@ -40,7 +39,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             context->connect(recorder, wetGain, 0, 0);
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
         
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
