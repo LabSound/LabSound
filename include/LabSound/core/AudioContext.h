@@ -75,8 +75,8 @@ public:
     void incrementActiveSourceCount();
     void decrementActiveSourceCount();
 
-    void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
-    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
+    void handlePreRenderTasks(ContextRenderLock &);     // Called at the start of each render quantum.
+    void handlePostRenderTasks(ContextRenderLock &);    // Called at the end of each render quantum.
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
@@ -107,7 +107,7 @@ private:
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;
-    std::mutex automaticSourcesMutex;
+    std::mutex m_updateMutex;
 
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
@@ -128,8 +128,8 @@ private:
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
     void clear();
 
-    void handleAutomaticSources();
-    void updateAutomaticPullNodes();
+    void handleAutomaticSources(ContextRenderLock & r);
+    void updateAutomaticPullNodes(ContextRenderLock & r);
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;

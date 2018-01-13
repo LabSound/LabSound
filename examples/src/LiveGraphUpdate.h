@@ -21,7 +21,6 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
                 gain = std::make_shared<GainNode>();
                 gain->gain()->setValue(0.50);
 
-
                 // osc -> gain -> destination
                 context->connect(gain, oscillator1, 0, 0);
                 context->connect(gain, oscillator2, 0, 0);

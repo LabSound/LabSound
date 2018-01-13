@@ -94,7 +94,7 @@ void AudioContext::clear()
     if (m_destinationNode.get()) m_destinationNode.reset();
 }
 
-void AudioContext::uninitialize(ContextGraphLock& g)
+void AudioContext::uninitialize(ContextGraphLock & g)
 {
     LOG("AudioContext::uninitialize()");
 
@@ -107,7 +107,7 @@ void AudioContext::uninitialize(ContextGraphLock& g)
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
     
-    updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
+    // updateAutomaticPullNodes(); // fixme - added for the case where an OfflineAudioDestinationNode needs to update the graph
 
     m_isInitialized = false;
 }
@@ -133,13 +133,11 @@ void AudioContext::stop(ContextGraphLock & g)
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
     automaticSources.push_back(node);
 }
 
-void AudioContext::handleAutomaticSources()
+void AudioContext::handleAutomaticSources(ContextRenderLock & r)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
     for (auto i = automaticSources.begin(); i != automaticSources.end(); ++i)
     {
         if ((*i)->hasFinished())
@@ -151,28 +149,28 @@ void AudioContext::handleAutomaticSources()
     }
 }
 
-void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
+void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
     // At the beginning of every render quantum, try to update the internal rendering graph state (from main thread changes).
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
-    updateAutomaticPullNodes();
+    updateAutomaticPullNodes(r);
 }
 
-void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
+void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
 
-    updateAutomaticPullNodes();
-    handleAutomaticSources();
+    updateAutomaticPullNodes(r);
+    handleAutomaticSources(r);
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Connect, destIdx, srcIdx);
@@ -180,7 +178,7 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
@@ -188,6 +186,7 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
 
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
 {
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (!param) throw std::invalid_argument("No parameter specified");
     if (index >= driver->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs on the driver");
     pendingParamConnections.push(std::make_tuple(param, driver, index));
@@ -199,11 +198,9 @@ void AudioContext::update()
 
     while (updateThreadShouldRun && !m_isStopScheduled)
     {
-
         {
             ContextGraphLock gLock(this, "context::update");
-            
-            std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+            std::lock_guard<std::mutex> updateLock(m_updateMutex);
 
             // Verify that we've acquired the lock, and check again 5 ms later if not
             if (!gLock.context())
@@ -294,7 +291,7 @@ void AudioContext::update()
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end())
     {
         m_automaticPullNodes.insert(node);
@@ -304,7 +301,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 
 void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     auto it = m_automaticPullNodes.find(node);
     if (it != m_automaticPullNodes.end())
     {
@@ -313,12 +310,10 @@ void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
     }
 }
 
-void AudioContext::updateAutomaticPullNodes()
+void AudioContext::updateAutomaticPullNodes(ContextRenderLock & r)
 {
     if (m_automaticPullNodesNeedUpdating)
     {
-        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-
         // Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
         m_renderingAutomaticPullNodes.resize(m_automaticPullNodes.size());
 
@@ -335,7 +330,9 @@ void AudioContext::updateAutomaticPullNodes()
 void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t framesToProcess)
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
+    {
         m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+    }
 }
 
 void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> node) 
