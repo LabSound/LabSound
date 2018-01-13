@@ -44,7 +44,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_convolutionReverbExample.PlayExample();
+        g_liveGraphUpdateApp.PlayExample();
     }
     catch (const std::exception & e)
     {

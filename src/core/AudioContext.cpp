@@ -36,26 +36,14 @@ AudioContext::~AudioContext()
 {
     LOG("Begin AudioContext::~AudioContext()");
 
+    ContextGraphLock g(this, "AudioContext::~AudioContext");
+    stop(g);
+
     // Join update thread
     updateThreadShouldRun = false;
     if (graphUpdateThread.joinable())
     {
         graphUpdateThread.join();
-    }
-
-    for (int i = 0; i < 4; ++i)
-    {
-        ContextGraphLock g(this, "AudioContext::~AudioContext");
-
-        if (!g.context())
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        }
-        else
-        {
-            // Stop then calls deleteMarkedNodes() and uninitialize()
-            stop(g);
-        }
     }
 
 #if USE_ACCELERATE_FFT
@@ -192,7 +180,6 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
-    // fixme - checks
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
@@ -210,12 +197,14 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    while (updateThreadShouldRun)
+    while (updateThreadShouldRun && !m_isStopScheduled)
     {
 
         {
             ContextGraphLock gLock(this, "context::update");
             
+            std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+
             // Verify that we've acquired the lock, and check again 5 ms later if not
             if (!gLock.context())
             {
@@ -223,7 +212,7 @@ void AudioContext::update()
                 continue;
             }
 
-            double now = currentTime();
+            const double now = currentTime();
 
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())

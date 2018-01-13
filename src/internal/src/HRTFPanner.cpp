@@ -3,7 +3,6 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
-
 #include "internal/HRTFPanner.h"
 #include "internal/FFTConvolver.h"
 #include "internal/HRTFDatabase.h"
