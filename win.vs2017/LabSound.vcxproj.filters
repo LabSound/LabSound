@@ -369,6 +369,18 @@
     <ClInclude Include="..\include\LabSound\core\AudioChannel.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\third_party\WTF\Compiler.h">
+      <Filter>third_party\WTF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\WTF\CPU.h">
+      <Filter>third_party\WTF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\WTF\MathExtras.h">
+      <Filter>third_party\WTF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\WTF\Platform.h">
+      <Filter>third_party\WTF</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">

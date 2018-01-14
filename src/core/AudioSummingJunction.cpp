@@ -104,7 +104,7 @@ void AudioSummingJunction::junctionDisconnectAllOutputs()
 
 void AudioSummingJunction::changedOutputs(ContextGraphLock&)
 {
-    if (!m_renderingStateNeedUpdating && canUpdateState())
+    if (!m_renderingStateNeedUpdating)
     {
         m_renderingStateNeedUpdating = true;
     }
@@ -112,7 +112,7 @@ void AudioSummingJunction::changedOutputs(ContextGraphLock&)
     
 void AudioSummingJunction::updateRenderingState(ContextRenderLock& r)
 {
-    if (r.context() && m_renderingStateNeedUpdating && canUpdateState())
+    if (r.context() && m_renderingStateNeedUpdating)
     {
         std::lock_guard<std::mutex> lock(junctionMutex);
         

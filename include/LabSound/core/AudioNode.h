@@ -88,6 +88,8 @@ public:
         ProcessingSizeInFrames = 128
     };
 
+    float m_disconnectSchedule{ -1.f };
+
     AudioNode();
     virtual ~AudioNode();
 
@@ -131,8 +133,6 @@ public:
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*);
-
-    bool isMarkedForDeletion() const { return m_isMarkedForDeletion; }
 
     // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
     virtual double tailTime(ContextRenderLock & r) const = 0;
@@ -188,8 +188,6 @@ private:
 
     double m_lastProcessingTime{ -1.0 };
     double m_lastNonSilentTime{ -1.0 };
-
-    bool m_isMarkedForDeletion{ false };
 
 protected:
 

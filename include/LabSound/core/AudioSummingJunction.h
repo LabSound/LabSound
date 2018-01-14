@@ -44,7 +44,6 @@ public:
     
     bool isConnected() const { return numberOfConnections() > 0; }
 
-    virtual bool canUpdateState() = 0;
     virtual void didUpdate(ContextRenderLock&) = 0;
 
     void junctionConnectOutput(std::shared_ptr<AudioNodeOutput>);

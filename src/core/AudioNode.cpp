@@ -17,9 +17,8 @@ using namespace std;
 
 namespace lab {
     
-AudioNode::AudioNode() { }
-
-AudioNode::~AudioNode() { }
+AudioNode::AudioNode() = default;
+AudioNode::~AudioNode() = default;
 
 void AudioNode::initialize()
 {
@@ -130,7 +129,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
     double currentTime = ac->currentTime();
     if (m_lastProcessingTime != currentTime)
     {
-        m_lastProcessingTime = currentTime; // important to first update this time because of feedback loops in the rendering graph
+        m_lastProcessingTime = currentTime; // important to first update this time to accomodate feedback loops in the rendering graph
 
         pullInputs(r, framesToProcess);
 
@@ -140,15 +139,36 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
             m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(ac->sampleRate());
         }
 
-        bool ps = propagatesSilence(r);
-        
-        if (silentInputs && ps)
+        // if this node is supposed to copy silence through, and is itself silent
+        if (silentInputs && propagatesSilence(r))
         {
             silenceOutputs(r);
         }
         else
         {
             process(r, framesToProcess);
+
+            float new_schedule = 0.f;
+
+            if (m_disconnectSchedule >= 0)
+            {
+                for (auto out : m_outputs)
+                    for (unsigned i = 0; i < out->numberOfChannels(); ++i)
+                    {
+                        float scale = m_disconnectSchedule;
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        for (size_t s = 0; s < numSamples; ++s)
+                        {
+                            sample[s] *= scale;
+                            scale *= 0.95f;
+                        }
+                        new_schedule = scale;
+                    }
+
+                m_disconnectSchedule = new_schedule;
+            }
+
             unsilenceOutputs(r);
         }
     }

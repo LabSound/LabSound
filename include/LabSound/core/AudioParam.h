@@ -25,7 +25,6 @@ public:
     virtual ~AudioParam();
     
     // AudioSummingJunction
-    virtual bool canUpdateState() override { return true; }
     virtual void didUpdate(ContextRenderLock&) override { }
 
     // Intrinsic value.

@@ -228,26 +228,50 @@ void AudioContext::update()
             while (!pendingNodeConnections.empty())
             {
                 auto connection = pendingNodeConnections.top();
-
-                // stop processing the queue if the scheduled time is > 100ms away
-                if (connection.destination && connection.destination->isScheduledNode())
-                {
-                    AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
-                    if (node->startTime() > now + 0.1)
-                    {
-                        pendingNodeConnections.pop(); // pop from current queue
-                        skippedConnections.push_back(connection); // save for later
-                        continue;
-                    }
-                }
-
                 pendingNodeConnections.pop();
 
-                if (connection.type == ConnectionType::Connect)
+                switch (connection.type)
                 {
+                case ConnectionType::Connect:
+                {
+                    // requue this node if the scheduled time is > 100ms away
+                    if (connection.destination && connection.destination->isScheduledNode())
+                    {
+                        AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
+                        if (node->startTime() > now + 0.1)
+                        {
+                            pendingNodeConnections.pop(); // pop from current queue
+                            skippedConnections.push_back(connection); // save for later
+                            continue;
+                        }
+                    }
+
+                    connection.source->m_disconnectSchedule = -1.f;
+
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
                 }
-                else if (connection.type == ConnectionType::Disconnect)
+                break;
+
+                case ConnectionType::Disconnect:
+                {
+                    connection.type = ConnectionType::FinishDisconnect;
+                    skippedConnections.push_back(connection); // save for later
+                    if (connection.source)
+                    {
+                        // if source and destination are specified, then we don't ramp out the destination
+                        connection.source->m_disconnectSchedule = 1.f;
+                    }
+                    else if (connection.destination)
+                    {
+                        // this case is a disconnect where source is nothing, and destination is something
+                        // probably this case should be disallowed because we have to study it to find out
+                        // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
+                        connection.destination->m_disconnectSchedule = 1.f;
+                    }
+                }
+                break;
+
+                case ConnectionType::FinishDisconnect:
                 {
                     if (connection.source && connection.destination)
                     {
@@ -274,13 +298,13 @@ void AudioContext::update()
                         }
                     }
                 }
+                break;
+                }
             }
 
             // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
             for (auto & sc : skippedConnections)
-            {
                 pendingNodeConnections.push(sc);
-            }
         }
 
         if (!m_isOfflineContext)

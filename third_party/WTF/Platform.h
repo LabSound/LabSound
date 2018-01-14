@@ -31,16 +31,13 @@
 /* Include compiler specific macros */
 #include "Compiler.h"
 
-/* ==== PLATFORM handles OS, operating environment, graphics API, and
-   CPU. This macro will be phased out in favor of platform adaptation
-   macros, policy decision macros, and top-level port definitions. ==== */
-#define PLATFORM(WTF_FEATURE) (defined WTF_PLATFORM_##WTF_FEATURE  && WTF_PLATFORM_##WTF_FEATURE)
-
-
 /* ==== Platform adaptation macros: these describe properties of the target environment. ==== */
 
 /* CPU() - the target CPU architecture */
 #define CPU(WTF_FEATURE) (defined WTF_CPU_##WTF_FEATURE  && WTF_CPU_##WTF_FEATURE)
+
+/// @TODO this macro is only used for ARM_NEON_INTRINSICS. 
+/// should detect the need for that some other way and get rid of this macro
 /* HAVE() - specific system features (headers, functions or similar) that are present or not */
 #define HAVE(WTF_FEATURE) (defined HAVE_##WTF_FEATURE  && HAVE_##WTF_FEATURE)
 /* OS() - underlying operating system; only to be used for mandated low-level services like 
@@ -50,10 +47,10 @@
 
 /* ==== Policy decision macros: these define policy choices for a particular port. ==== */
 
+/// @TODO this macro is only used to control WEBAUDIO_KISSFFT. Can probably strip that right out
+/// and then this macro as well
 /* USE() - use a particular third-party library or optional OS service */
 #define USE(WTF_FEATURE) (defined WTF_USE_##WTF_FEATURE  && WTF_USE_##WTF_FEATURE)
-/* ENABLE() - turn on a specific feature of WebKit */
-#define ENABLE(WTF_FEATURE) (defined ENABLE_##WTF_FEATURE  && ENABLE_##WTF_FEATURE)
 
 
 /* ==== CPU() - the target CPU architecture ==== */
@@ -283,48 +280,4 @@
 #define WTF_PLATFORM_IOS_SIMULATOR 1
 #endif
 
-/* On Windows, use QueryPerformanceCounter by default */
-#if OS(WINDOWS)
-#define WTF_USE_QUERY_PERFORMANCE_COUNTER  1
-#endif
-
-#if PLATFORM(WIN) && !OS(WINCE)
-#define WTF_USE_CF 1
-#endif
-
-#endif
-
-#if OS(UNIX)
-#define HAVE_SIGNAL_H 1
-#endif
-
-#if OS(DARWIN)
-
-#define WTF_USE_CF 1
-#define WTF_USE_PTHREADS 1
-
-#if !PLATFORM(IOS)
-#define HAVE_PTHREAD_SETNAME_NP 1
-#endif
-
-#endif
-
-#if PLATFORM(IOS)
-#define HAVE_PTHREAD_SETNAME_NP 1
-#endif
-
-#if OS(WINDOWS)
-#define HAVE_ISDEBUGGERPRESENT 1
-#endif
-
-/* FIXME: This define won't be needed once #27551 is fully landed. However, 
-   since most ports try to support sub-project independence, adding new headers
-   to WTF causes many ports to break, and so this way we can address the build
-   breakages one port at a time. */
-#if !defined(WTF_USE_EXPORT_MACROS) && (PLATFORM(MAC) || PLATFORM(QT) || PLATFORM(WX))
-#define WTF_USE_EXPORT_MACROS 1
-#endif
-
-#if !defined(WTF_USE_EXPORT_MACROS_FOR_TESTING) && (PLATFORM(GTK) || PLATFORM(WIN))
-#define WTF_USE_EXPORT_MACROS_FOR_TESTING 1
 #endif

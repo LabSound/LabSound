@@ -353,6 +353,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
         return;
 
     // First check if this node is an SampledAudioNode. If so, let it know about us so that doppler shift pitch can be taken into account.
+    /// @TODO This is the ONLY use of nodeType anywhere, let's just eliminate nodeType. We don't need home made RTTI
     if (node->nodeType() == NodeTypeAudioBufferSource)
     {
         SampledAudioNode * bufferSourceNode = reinterpret_cast<SampledAudioNode*>(node);
