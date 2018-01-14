@@ -104,11 +104,7 @@ private:
     
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     
-private:
-    
-    // If m_isInPlace is true, use m_inPlaceBus as the valid AudioBus; If false, use the default m_internalBus.
-    bool m_isInPlace;
-    
+private:    
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
     unsigned m_renderingFanOutCount;

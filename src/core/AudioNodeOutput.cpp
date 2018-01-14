@@ -28,7 +28,6 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
-    , m_isInPlace(false)
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
     , m_inPlaceBus(0)
@@ -104,10 +103,10 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, siz
 
     updateRenderingState(r);
     
-    m_isInPlace = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() && (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
+    bool useInPlaceBus = inPlaceBus && inPlaceBus->numberOfChannels() == numberOfChannels() && (m_renderingFanOutCount + m_renderingParamFanOutCount) == 1;
     
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
-    m_inPlaceBus = m_isInPlace ? inPlaceBus : 0;
+    m_inPlaceBus = useInPlaceBus ? inPlaceBus : 0;
     
     node()->processIfNecessary(r, framesToProcess);
     return bus(r);
@@ -115,8 +114,8 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, siz
 
 AudioBus* AudioNodeOutput::bus(ContextRenderLock& r) const
 {
-    ASSERT(r.context()); // only legal during rendering
-    return m_isInPlace ? m_inPlaceBus : m_internalBus.get();
+    ASSERT(r.context()); // only legal during rendering because an in place bus might have been supplied to pull
+    return m_inPlaceBus ? m_inPlaceBus : m_internalBus.get();
 }
 
 unsigned AudioNodeOutput::fanOutCount()
