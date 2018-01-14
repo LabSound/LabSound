@@ -2,7 +2,7 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 #include "internal/DenormalDisabler.h"
 #include "internal/SincResampler.h"
 #include "internal/VectorMath.h"
@@ -60,7 +60,7 @@ void AudioBus::zero()
         m_channels[i]->zero();
 }
 
-AudioChannel* AudioBus::channelByType(Channel channelType)
+AudioChannel * AudioBus::channelByType(Channel channelType)
 {
     
     // For now we only support canonical channel layouts...

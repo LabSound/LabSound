@@ -7,27 +7,17 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 using namespace std;
 
 namespace lab {
     
-AudioNode::AudioNode(float sampleRate)
-    : m_isInitialized(false)
-    , m_nodeType(NodeTypeDefault)
-    , m_sampleRate(sampleRate)
-    , m_lastProcessingTime(-1)
-    , m_lastNonSilentTime(-1)
-    , m_isMarkedForDeletion(false)
-    , m_channelCount(2)
-    , m_channelCountMode(ChannelCountMode::Max)
-    , m_channelInterpretation(ChannelInterpretation::Speakers)
-    { }
+AudioNode::AudioNode() { }
 
 AudioNode::~AudioNode() { }
 
@@ -128,7 +118,9 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
     if (!isInitialized()) return;
+
     auto ac = r.context();
+
     if (!ac) return;
     
     // Ensure that we only process once per rendering quantum.
@@ -145,10 +137,10 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
         {
-            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
+            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(ac->sampleRate());
         }
 
-        bool ps = propagatesSilence(r.context()->currentTime());
+        bool ps = propagatesSilence(r);
         
         if (silentInputs && ps)
         {
@@ -156,7 +148,31 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         }
         else
         {
+            //std::cout << disconnectScheduled << std::endl;
+
             process(r, framesToProcess);
+
+            if (disconnectScheduled)
+            {
+                //std::cout << "DISCONNECT SCHEDULED.... \n";
+                for (auto out : m_outputs)
+                {
+                    for (unsigned i = 0; i < out->numberOfChannels(); ++i)
+                    {
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        const float scale = 1.f / (float) numSamples;
+                        for (int s = 1; s < numSamples + 1; ++s)
+                        {
+                            sample[s - 1] = 0.0f;// (1.f - (scale * (float)s));
+                            //std::cout << std::to_string(sample[s - 1]) + "\n";
+                        }
+                    }
+                }
+                //disconnectScheduled = false;
+            }
+
+
             unsilenceOutputs(r);
         }
     }
@@ -175,9 +191,10 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInp
     }
 }
 
-bool AudioNode::propagatesSilence(double now) const
+bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
-    return m_lastNonSilentTime + latencyTime() + tailTime() < now;
+    ASSERT(r.context());
+    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 
 void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
@@ -203,7 +220,7 @@ bool AudioNode::inputsAreSilent(ContextRenderLock& r)
     return true;
 }
 
-void AudioNode::silenceOutputs(ContextRenderLock& r)
+void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
     for (auto out : m_outputs)
     {

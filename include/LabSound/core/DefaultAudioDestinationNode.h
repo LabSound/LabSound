@@ -12,7 +12,7 @@ namespace lab {
 class AudioContext;
 struct AudioDestination;
     
-class DefaultAudioDestinationNode : public AudioDestinationNode 
+class DefaultAudioDestinationNode final : public AudioDestinationNode 
 {
     std::unique_ptr<AudioDestination> m_destination;
 
@@ -20,7 +20,7 @@ class DefaultAudioDestinationNode : public AudioDestinationNode
     
 public:
 
-    DefaultAudioDestinationNode(std::shared_ptr<AudioContext>);
+    DefaultAudioDestinationNode(AudioContext * context, const float sampleRate);
     virtual ~DefaultAudioDestinationNode();
     
     virtual void initialize() override;
@@ -28,7 +28,7 @@ public:
     virtual void startRendering() override;
     
     unsigned maxChannelCount() const;
-    virtual void setChannelCount(ContextGraphLock&, unsigned long) override;
+    virtual void setChannelCount(ContextGraphLock &, unsigned long) override;
 };
 
 } // namespace lab

@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\LabSound\core\AnalyserNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioArray.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h" />
-    <ClInclude Include="..\include\LabSound\core\AudioBuffer.h" />
-    <ClInclude Include="..\include\LabSound\core\AudioBufferSourceNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioBus.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioChannel.h" />
+    <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioContext.h" />
     <ClInclude Include="..\include\LabSound\core\AudioDestinationNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioHardwareSourceNode.h" />
@@ -73,16 +75,14 @@
     <ClInclude Include="..\include\LabSound\extended\RealtimeAnalyser.h" />
     <ClInclude Include="..\include\LabSound\extended\RecorderNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SampledInstrumentNode.h" />
-    <ClInclude Include="..\include\LabSound\extended\SoundBuffer.h" />
     <ClInclude Include="..\include\LabSound\extended\SpatializationNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
     <ClInclude Include="..\include\LabSound\extended\Util.h" />
+    <ClInclude Include="..\src\core\AudioBus.h" />
+    <ClInclude Include="..\src\core\AudioChannel.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
-    <ClInclude Include="..\src\internal\AudioBus.h" />
-    <ClInclude Include="..\src\internal\AudioChannel.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
-    <ClInclude Include="..\src\internal\AudioDestinationConsumer.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
     <ClInclude Include="..\src\internal\AudioFileReader.h" />
@@ -104,7 +104,6 @@
     <ClInclude Include="..\src\internal\EqualPowerPanner.h" />
     <ClInclude Include="..\src\internal\FFTConvolver.h" />
     <ClInclude Include="..\src\internal\FFTFrame.h" />
-    <ClInclude Include="..\src\internal\FloatConversion.h" />
     <ClInclude Include="..\src\internal\HRTFDatabase.h" />
     <ClInclude Include="..\src\internal\HRTFDatabaseLoader.h" />
     <ClInclude Include="..\src\internal\HRTFElevation.h" />
@@ -129,8 +128,9 @@
     <ClCompile Include="..\src\core\AnalyserNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicInspectorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
-    <ClCompile Include="..\src\core\AudioBuffer.cpp" />
-    <ClCompile Include="..\src\core\AudioBufferSourceNode.cpp" />
+    <ClCompile Include="..\src\core\AudioBus.cpp" />
+    <ClCompile Include="..\src\core\AudioChannel.cpp" />
+    <ClCompile Include="..\src\core\SampledAudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
     <ClCompile Include="..\src\core\AudioHardwareSourceNode.cpp" />
@@ -169,12 +169,9 @@
     <ClCompile Include="..\src\extended\PWMNode.cpp" />
     <ClCompile Include="..\src\extended\RecorderNode.cpp" />
     <ClCompile Include="..\src\extended\SampledInstrumentNode.cpp" />
-    <ClCompile Include="..\src\extended\SoundBuffer.cpp" />
     <ClCompile Include="..\src\extended\SpatializationNode.cpp" />
     <ClCompile Include="..\src\extended\SpectralMonitorNode.cpp" />
     <ClCompile Include="..\src\extended\SupersawNode.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioBus.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
     <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />

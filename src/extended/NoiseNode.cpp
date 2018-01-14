@@ -1,16 +1,17 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeOutput.h"
+
 #include "LabSound/extended/NoiseNode.h"
-#include "internal/AudioBus.h"
 
 using namespace std;
 using namespace lab;
 
 namespace lab {
 
-    NoiseNode::NoiseNode(float sampleRate) : AudioScheduledSourceNode(sampleRate)
+    NoiseNode::NoiseNode() : AudioScheduledSourceNode()
     {
         setNodeType(lab::NodeType::NodeTypeNoise);
 
@@ -102,7 +103,7 @@ namespace lab {
     {
     }
     
-    bool NoiseNode::propagatesSilence(double now) const
+    bool NoiseNode::propagatesSilence(ContextRenderLock & r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

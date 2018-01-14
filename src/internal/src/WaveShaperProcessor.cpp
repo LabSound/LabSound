@@ -10,47 +10,51 @@
 
 namespace lab {
     
-WaveShaperProcessor::WaveShaperProcessor(float sampleRate, size_t numberOfChannels)
-    : AudioDSPKernelProcessor(sampleRate, numberOfChannels)
+WaveShaperProcessor::WaveShaperProcessor(size_t numberOfChannels) : AudioDSPKernelProcessor(numberOfChannels)
 {
+
 }
 
 WaveShaperProcessor::~WaveShaperProcessor()
 {
-    if (isInitialized())
-        uninitialize();
+    if (isInitialized()) uninitialize();
 }
 
-AudioDSPKernel* WaveShaperProcessor::createKernel()
+AudioDSPKernel * WaveShaperProcessor::createKernel()
 {
     return new WaveShaperDSPKernel(this);
 }
 
-void WaveShaperProcessor::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
+void WaveShaperProcessor::setCurve(const std::vector<float> & curve)
 {
-    // can't rewrite the curve whilst rendering
-    ASSERT(r.context());
-    m_curve = curve;
+    m_newCurve = curve;
 }
 
 void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
 {
-    if (!isInitialized() || !r.context()) {
+    if (!isInitialized() || !r.context()) 
+    {
         destination->zero();
         return;
     }
+
+    // tofix - make this thread safe
+    if (m_newCurve.size())
+    {
+        m_curve = m_newCurve;
+        m_newCurve.clear();
+    }
     
-    bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() &&
-                               source->numberOfChannels() == m_kernels.size();
+    const bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() && source->numberOfChannels() == m_kernels.size();
     
     if (!channelCountMatches)
         return;
 
     // For each channel of our input, process using the corresponding WaveShaperDSPKernel into the output channel.
     for (unsigned i = 0; i < m_kernels.size(); ++i)
-        m_kernels[i]->process(r, source->channel(i)->data(),
-                                 destination->channel(i)->mutableData(), framesToProcess);
+    {
+        m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+    }
 }
-
 
 } // namespace lab

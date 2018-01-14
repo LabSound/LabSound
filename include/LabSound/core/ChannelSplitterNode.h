@@ -13,10 +13,11 @@ namespace lab
 class AudioContext;
     
 class ChannelSplitterNode : public AudioNode
-    {
+{
         
 public:
-    ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs);
+
+    ChannelSplitterNode(unsigned numberOfOutputs);
     virtual ~ChannelSplitterNode() {}
     
     // AudioNode
@@ -24,8 +25,9 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
 private:
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
 };
 

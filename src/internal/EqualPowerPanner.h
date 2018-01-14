@@ -15,7 +15,8 @@ class EqualPowerPanner : public Panner
 {
 
 public:
-    EqualPowerPanner(float sampleRate);
+
+    EqualPowerPanner(const float sampleRate);
 
     virtual void pan(ContextRenderLock&, double azimuth, double elevation,
                      const AudioBus * inputBus, AudioBus * outputBuf,
@@ -23,8 +24,8 @@ public:
 
     virtual void reset() override { m_isFirstRender = true; }
 
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
 private:
 

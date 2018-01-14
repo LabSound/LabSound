@@ -14,15 +14,18 @@
 #include <iostream>
 #include <mutex>
 
+//#define DEBUG_LOCKS
+
 namespace lab
 {
 
     class ContextGraphLock
     {
-        
+        AudioContext * m_context;
+
     public:
         
-        ContextGraphLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
+        ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -31,13 +34,9 @@ namespace lab
                 m_context->m_graphLocker = lockSuitor;
             }
 #if defined(DEBUG_LOCKS)
-            else if (context && context->m_graphLocker.size())
+            if (!m_context && context->m_graphLocker.size())
             {
                 LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
-            }
-            else
-            {
-                LOG("%s failed to acquire [GRAPH] lock.", lockSuitor.c_str());
             }
 #endif
         }
@@ -46,24 +45,22 @@ namespace lab
         {
             if (m_context)
             {
+                //m_context->m_graphLocker.clear();
                 m_context->m_graphLock.unlock();
             }
             
         }
         
-        AudioContext* context() { return m_context.get(); }
-        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
-        
-    private:
-        std::shared_ptr<AudioContext> m_context;
+        AudioContext * context() { return m_context; }
     };
     
     class ContextRenderLock
     {
-        
+        AudioContext * m_context;
+
     public:
         
-        ContextRenderLock(std::shared_ptr<AudioContext> context, const std::string & lockSuitor)
+        ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
         {
             if (context)
             {
@@ -86,14 +83,12 @@ namespace lab
         ~ContextRenderLock()
         {
             if (m_context)
+            {
                 m_context->m_renderLock.unlock();
+            }
         }
         
-        AudioContext * context() { return m_context.get(); }
-        std::shared_ptr<AudioContext> contextPtr() { return m_context; }
-        
-    private:
-        std::shared_ptr<AudioContext> m_context;
+        AudioContext * context() { return m_context; }
     };
 
 } // end namespace lab

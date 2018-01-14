@@ -35,11 +35,10 @@ public:
     uint32_t fftSize() const { return m_fftFrame->fftSize(); }
     float frameDelay() const { return m_frameDelay; }
 
-    float sampleRate() const { return m_sampleRate; }
-    double nyquist() const { return 0.5 * sampleRate(); }
-
     // Converts back into impulse-response form.
     std::unique_ptr<AudioChannel> createImpulseResponse();
+
+    float sampleRate() const { return m_sampleRate; }
 
 private:
 

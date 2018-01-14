@@ -5,10 +5,10 @@
 #ifndef AudioBus_h
 #define AudioBus_h
 
-#include "internal/ConfigMacros.h"
 #include "LabSound/core/Mixing.h"
-#include "internal/AudioChannel.h"
+#include "LabSound/core/AudioChannel.h"
 #include <vector>
+#include <iostream>
 
 namespace lab {
 
@@ -24,10 +24,10 @@ class AudioBus
     
 public:
 
+    // Can define non-standard layouts here:
     enum 
     {
         LayoutCanonical = 0
-        // Can define non-standard layouts here
     };
     
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
@@ -78,12 +78,12 @@ public:
 
     // Creates a new buffer from a range in the source buffer.
     // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame);
+    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, unsigned startFrame, unsigned endFrame);
 
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
     // Note: sample-rate conversion is already handled in the file-reading code for the mac port, so we don't need this.
-    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, double newSampleRate);
+    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus * sourceBus, bool mixToMono, double newSampleRate);
 
     // Creates a new AudioBus by mixing all the channels down to mono.
     // If sourceBus is already mono, then the returned AudioBus will simply be a copy.
@@ -95,11 +95,11 @@ public:
     void reset() { m_isFirstTime = true; } // for de-zippering
 
     // Assuming sourceBus has the same topology, copies sample data from each channel of sourceBus to our corresponding channel.
-    void copyFrom(const AudioBus &sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
+    void copyFrom(const AudioBus & sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
 
     // Sums the sourceBus into our bus with unity gain.
     // Our own internal gain m_busGain is ignored.
-    void sumFrom(const AudioBus &sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
+    void sumFrom(const AudioBus & sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
 
     // Copy each channel from sourceBus into our corresponding channel.
     // We scale by targetGain (and our own internal gain m_busGain), performing "de-zippering" to smoothly change from *lastMixGain to (targetGain*m_busGain).
@@ -108,7 +108,7 @@ public:
     void copyWithGainFrom(const AudioBus &sourceBus, float* lastMixGain, float targetGain);
 
     // Copies the sourceBus by scaling with sample-accurate gain values.
-    void copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, float* gainValues, unsigned numberOfGainValues);
+    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float* gainValues, unsigned numberOfGainValues);
 
     // Returns maximum absolute value across all channels (useful for normalization).
     float maxAbsValue() const;

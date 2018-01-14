@@ -17,7 +17,7 @@ namespace lab
 //  maximum delay time in seconds allowed for the delay line."
 const double maximumAllowedDelayTime = 128;
 
-DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode(sampleRate)
+DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode()
 {
     if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime)
     {

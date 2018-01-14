@@ -6,13 +6,11 @@
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 
 namespace lab {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(float sampleRate, int outputChannelCount)
-    : AudioNode(sampleRate)
+AudioBasicInspectorNode::AudioBasicInspectorNode(int outputChannelCount) : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outputChannelCount)));

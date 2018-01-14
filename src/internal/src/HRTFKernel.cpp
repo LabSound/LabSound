@@ -3,10 +3,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/HRTFKernel.h"
-#include "internal/AudioChannel.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
-#include "internal/FloatConversion.h"
+
+#include "LabSound/core/AudioChannel.h"
 
 #include <WTF/MathExtras.h>
 
@@ -36,13 +36,13 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, uint32_t analysisF
     FFTFrame estimationFrame(analysisFFTSize);
     estimationFrame.doFFT(impulseP);
 
-    float frameDelay = narrowPrecisionToFloat(estimationFrame.extractAverageGroupDelay());
+    float frameDelay = static_cast<float>(estimationFrame.extractAverageGroupDelay());
     estimationFrame.doInverseFFT(impulseP);
 
     return frameDelay;
 }
 
-HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
+HRTFKernel::HRTFKernel(AudioChannel * channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
 {
     ASSERT(channel);
 

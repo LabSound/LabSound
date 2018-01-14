@@ -21,7 +21,7 @@ namespace lab
         
     public:
         
-        ADSRNode(float sampleRate);
+        ADSRNode();
         virtual ~ADSRNode();
         
         // If noteOn is called before noteOff has finished, a pop can occur. Polling

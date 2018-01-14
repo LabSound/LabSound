@@ -10,8 +10,7 @@ using namespace std;
 
 namespace lab {
 
-DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime) : 
-AudioDSPKernelProcessor(sampleRate, numberOfChannels), m_maxDelayTime(maxDelayTime)
+DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime) : AudioDSPKernelProcessor(numberOfChannels), m_sampleRate(sampleRate), m_maxDelayTime(maxDelayTime)
 {
     m_delayTime = std::make_shared<AudioParam>("delayTime", 0.0, 0.0, maxDelayTime);
 }
@@ -24,7 +23,7 @@ DelayProcessor::~DelayProcessor()
 
 AudioDSPKernel * DelayProcessor::createKernel()
 {
-    return new DelayDSPKernel(this);
+    return new DelayDSPKernel(this, m_sampleRate);
 }
 
 } // namespace lab

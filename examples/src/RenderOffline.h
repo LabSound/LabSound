@@ -11,31 +11,27 @@ struct OfflineRenderApp : public LabSoundExampleApp
         auto context = lab::MakeOfflineAudioContext(5000);
         
         std::shared_ptr<OscillatorNode> oscillator;
-        SoundBuffer tonbi("samples/tonbi.wav", context->sampleRate());
-        std::shared_ptr<AudioBufferSourceNode> tonbiSound;
+        std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/mono-music-clip.wav", false);
+        std::shared_ptr<SampledAudioNode> musicClipNode;
         
-        auto recorder = std::make_shared<RecorderNode>(context->sampleRate());
+        auto recorder = std::make_shared<RecorderNode>();
         
         context->addAutomaticPullNode(recorder);
         recorder->startRecording();
         {
-            ContextGraphLock g(context, "OfflineRenderApp");
-            ContextRenderLock r(context, "OfflineRenderApp");
+            ContextGraphLock g(context.get(), "OfflineRenderApp");
+            ContextRenderLock r(context.get(), "OfflineRenderApp");
             
-            oscillator = std::make_shared<OscillatorNode>(r, context->sampleRate());
+            oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
             context->connect(recorder, oscillator, 0, 0);
-
             oscillator->frequency()->setValue(880.f);
-            oscillator->setType(r, OscillatorType::SINE);
-            
-            tonbiSound = tonbi.play(r, recorder, 0.0f);
-            tonbiSound = tonbi.play(r, 0.0f);
+            oscillator->setType(OscillatorType::SINE);
             oscillator->start(0);
-            
-            // Offline audio contexts do not run an update thread to make
-            // scheduled graph changes. This needs to be called manually
-            // to effect change. Power to the people!
-            context->update(g);
+
+            musicClipNode = std::make_shared<SampledAudioNode>();
+            musicClipNode->setBus(r, musicClip);
+            context->connect(recorder, musicClipNode, 0, 0);
+            musicClipNode->start(0.0f);
         }
         
         context->offlineRenderCompleteCallback = [&context, &recorder]()
@@ -50,8 +46,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
         // be outside the scope of where we make changes to the graph!
         context->startRendering();
         
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
-        
-        lab::CleanupAudioContext(context);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 };

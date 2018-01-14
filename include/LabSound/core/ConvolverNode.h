@@ -7,14 +7,19 @@
 
 #include "LabSound/core/AudioNode.h"
 
+#include <memory>
+
 namespace lab {
 
-class AudioBuffer;
 class Reverb;
+class AudioBus;
     
-class ConvolverNode : public AudioNode {
+class ConvolverNode final : public AudioNode 
+{
+
 public:
-    ConvolverNode(float sampleRate);
+
+    ConvolverNode();
     virtual ~ConvolverNode();
     
     // AudioNode
@@ -24,23 +29,24 @@ public:
     virtual void uninitialize() override;
 
     // Impulse responses
-    void setBuffer(ContextGraphLock&, std::shared_ptr<AudioBuffer>);
-    std::shared_ptr<AudioBuffer> buffer();
+    void setImpulse(std::shared_ptr<AudioBus> bus);
+    std::shared_ptr<AudioBus> getImpulse();
 
     bool normalize() const { return m_normalize; }
     void setNormalize(bool normalize) { m_normalize = normalize; }
 
 private:
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
     std::unique_ptr<Reverb> m_reverb;
-    std::shared_ptr<AudioBuffer> m_buffer;
+    std::shared_ptr<AudioBus> m_bus;
 
     // lock free swap on update
     bool m_swapOnRender;
     std::unique_ptr<Reverb> m_newReverb;
-    std::shared_ptr<AudioBuffer> m_newBuffer;
+    std::shared_ptr<AudioBus> m_newBus;
 
     // Normalize the impulse response or not. Must default to true.
     bool m_normalize;

@@ -23,7 +23,7 @@ class StereoPannerNode : public AudioNode
 {
 public:
     
-    StereoPannerNode(float sampleRate);
+    StereoPannerNode(const float sampleRate);
     
     virtual ~StereoPannerNode();
     
@@ -39,8 +39,8 @@ private:
     virtual void uninitialize() override;
     
     
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     
     std::shared_ptr<AudioParam> m_pan;
     

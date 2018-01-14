@@ -2,8 +2,9 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
+
 #include "internal/Reverb.h"
-#include "internal/AudioBus.h"
 #include "internal/AudioFileReader.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
@@ -35,7 +36,8 @@ static float calculateNormalizationScale(AudioBus* response)
 
     float power = 0;
 
-    for (size_t i = 0; i < numberOfChannels; ++i) {
+    for (size_t i = 0; i < numberOfChannels; ++i) 
+    {
         float channelPower = 0;
         vsvesq(response->channel(i)->data(), 1, &channelPower, length);
         power += channelPower;
@@ -120,7 +122,8 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         return;
 
     // For now only handle mono or stereo output
-    if (destinationBus->numberOfChannels() > 2) {
+    if (destinationBus->numberOfChannels() > 2) 
+    {
         destinationBus->zero();
         return;
     }

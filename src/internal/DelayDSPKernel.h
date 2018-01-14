@@ -16,7 +16,7 @@ class DelayProcessor;
     
 class DelayDSPKernel : public AudioDSPKernel {
 public:  
-    explicit DelayDSPKernel(DelayProcessor*);
+    explicit DelayDSPKernel(DelayProcessor*, float sampleRate);
     DelayDSPKernel(double maxDelayTime, float sampleRate);
     virtual ~DelayDSPKernel() {}
     
@@ -27,8 +27,8 @@ public:
     
     void setDelayFrames(double numberOfFrames) { m_desiredDelayFrames = numberOfFrames; }
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
 private:
     AudioFloatArray m_buffer;

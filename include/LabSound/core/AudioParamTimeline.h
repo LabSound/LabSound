@@ -16,16 +16,13 @@ class AudioParamTimeline
 
 public:
 
-    AudioParamTimeline()
-    {
-
-    }
+    AudioParamTimeline() { }
 
     void setValueAtTime(float value, float time);
     void linearRampToValueAtTime(float value, float time);
     void exponentialRampToValueAtTime(float value, float time);
     void setTargetAtTime(float target, float time, float timeConstant);
-    void setValueCurveAtTime(std::shared_ptr<std::vector<float>> curve, float time, float duration);
+    void setValueCurveAtTime(std::vector<float> & curve, float time, float duration);
     void cancelScheduledValues(float startTime);
 
     // hasValue is set to true if a valid timeline value is returned.
@@ -45,9 +42,13 @@ private:
 
     // @tofix - move to implementation file to hide from public API 
 
-    class ParamEvent {
+    class ParamEvent 
+    {
+
     public:
-        enum Type {
+
+        enum Type 
+        {
             SetValue,
             LinearRampToValue,
             ExponentialRampToValue,
@@ -56,7 +57,7 @@ private:
             LastType
         };
 
-        ParamEvent(Type type, float value, float time, float timeConstant, float duration, std::shared_ptr<std::vector<float>> curve)
+        ParamEvent(Type type, float value, float time, float timeConstant, float duration, std::vector<float> curve)
             : m_type(type)
             , m_value(value)
             , m_time(time)
@@ -77,6 +78,7 @@ private:
         }
 
         const ParamEvent& operator=(const ParamEvent& rhs) {
+
             m_type = rhs.m_type;
             m_value = rhs.m_value;
             m_time = rhs.m_time;
@@ -91,7 +93,7 @@ private:
         float time() const { return m_time; }
         float timeConstant() const { return m_timeConstant; }
         float duration() const { return m_duration; }
-        std::shared_ptr<std::vector<float>> curve() { return m_curve; }
+        std::vector<float> & curve() { return m_curve; }
 
     private:
         unsigned m_type;
@@ -99,7 +101,7 @@ private:
         float m_time;
         float m_timeConstant;
         float m_duration;
-        std::shared_ptr<std::vector<float>> m_curve;
+        std::vector<float> m_curve;
     };
 
     void insertEvent(const ParamEvent&);

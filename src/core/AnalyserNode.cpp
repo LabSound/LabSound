@@ -5,12 +5,11 @@
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 
 namespace lab {
 
-AnalyserNode::AnalyserNode(float sampleRate, size_t fftSize) : AudioBasicInspectorNode((uint32_t) sampleRate, 2), m_analyser((uint32_t) fftSize)
+AnalyserNode::AnalyserNode(size_t fftSize) : AudioBasicInspectorNode((uint32_t) 2), m_analyser((uint32_t) fftSize)
 {
     //N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
     setNodeType(NodeTypeAnalyser);

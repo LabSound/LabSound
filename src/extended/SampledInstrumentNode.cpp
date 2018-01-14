@@ -1,8 +1,10 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+
 #include "LabSound/extended/SampledInstrumentNode.h"
 
+/*
 #include "internal/ConfigMacros.h"
 
 #include <string>
@@ -56,7 +58,7 @@ namespace lab
 
         for (size_t i = 0; i < voices.size(); i++)
         {
-            voices[i] = std::make_shared<AudioBufferSourceNode>(sampleRate);
+            voices[i] = std::make_shared<SampledAudioNode>(sampleRate);
             ctx->connect(gainNode, voices[i], 0, 0);
         }
 
@@ -93,7 +95,7 @@ namespace lab
                         v->gain()->setValue(amplitude); 
 
                         // Connect the source node to the parsed audio data for playback
-                        v->setBuffer(r, sample->soundBuf->audioBuffer);
+                        v->setBus(r, sample->soundBuf->audioBuffer);
 
                         v->start(r.context()->currentTime());
                         v->stop(r.context()->currentTime() + sample->soundBuf->audioBuffer->length());
@@ -129,3 +131,4 @@ namespace lab
     }
 
 }
+*/

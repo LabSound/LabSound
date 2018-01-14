@@ -17,12 +17,12 @@ class DynamicsCompressorNode : public AudioNode
     
 public:
     
-    DynamicsCompressorNode(float sampleRate);
+    DynamicsCompressorNode();
     virtual ~DynamicsCompressorNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 
@@ -37,8 +37,8 @@ public:
     std::shared_ptr<AudioParam> reduction() { return m_reduction; }
 
 private:
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
     std::unique_ptr<DynamicsCompressor> m_dynamicsCompressor;
     std::shared_ptr<AudioParam> m_threshold;

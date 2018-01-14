@@ -28,8 +28,8 @@ public:
         FINISHED_STATE = 3
     };
     
-    AudioScheduledSourceNode(float sampleRate);
-    virtual ~AudioScheduledSourceNode() {}
+    AudioScheduledSourceNode();
+    virtual ~AudioScheduledSourceNode() { }
 
     // Scheduling.
     void start(double when);

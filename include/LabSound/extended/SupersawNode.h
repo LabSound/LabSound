@@ -17,7 +17,7 @@ namespace lab
 
     public:
 
-        SupersawNode(ContextRenderLock& r, float sampleRate);
+        SupersawNode(ContextRenderLock & r);
         virtual ~SupersawNode();
         
         std::shared_ptr<AudioParam> attack() const;
@@ -37,11 +37,13 @@ namespace lab
     private:
 
         virtual void process(ContextRenderLock&, size_t) override;
-        virtual void reset(ContextRenderLock&) override { /*m_currentSampleFrame = 0;*/ }
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
-        virtual bool propagatesSilence(double now) const override;
 
+        virtual void reset(ContextRenderLock&) override { /*m_currentSampleFrame = 0;*/ }
+
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+        virtual bool propagatesSilence(ContextRenderLock & r) const override;
     };
 }
 

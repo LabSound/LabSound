@@ -20,7 +20,7 @@ class OscillatorNode : public AudioScheduledSourceNode
     
 public:
     
-    OscillatorNode(ContextRenderLock& r, float sampleRate);
+    OscillatorNode(const float sampleRate);
     virtual ~OscillatorNode();
     
     // AudioNode
@@ -28,26 +28,25 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
     OscillatorType type() const { return m_type; }
-    void setType(ContextRenderLock& r, OscillatorType);
+    void setType(OscillatorType type);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
-    void setWaveTable(ContextRenderLock& r, std::shared_ptr<WaveTable>);
-
 private:
 
-    void setType(bool isConstructor, OscillatorType);
-    void setWaveTable(bool isConstructor, std::shared_ptr<WaveTable>);
+    float m_sampleRate;
+
+    void setWaveTable(std::shared_ptr<WaveTable> table);
 
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&, size_t framesToProcess);
 
-    virtual bool propagatesSilence(double now) const override;
+    virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
     // One of the waveform types defined in the enum.
     OscillatorType m_type;
-    
+   
     // Frequency value in Hertz.
     std::shared_ptr<AudioParam> m_frequency;
 

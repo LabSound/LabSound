@@ -72,16 +72,7 @@
     <ClInclude Include="..\src\internal\ZeroPole.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\AudioBus.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\AudioChannel.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\AudioDestination.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\AudioDestinationConsumer.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\AudioDSPKernel.h">
@@ -130,9 +121,6 @@
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\FFTFrame.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\FloatConversion.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\HRTFDatabase.h">
@@ -223,9 +211,6 @@
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\SampledInstrumentNode.h">
-      <Filter>LabSound\extended\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\extended\SoundBuffer.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\extended\SpatializationNode.h">
@@ -327,12 +312,6 @@
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\AudioBuffer.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\AudioBufferSourceNode.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\core\AudioContext.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
@@ -372,18 +351,30 @@
     <ClInclude Include="..\include\LabSound\extended\PingPongDelayNode.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioArray.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\AudioChannel.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\AudioBus.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioBus.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\AudioChannel.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
       <Filter>Internal\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioBus.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioChannel.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp">
@@ -471,12 +462,6 @@
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\AudioBuffer.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\AudioBufferSourceNode.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioContext.cpp">
@@ -575,9 +560,6 @@
     <ClCompile Include="..\src\extended\SampledInstrumentNode.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\extended\SoundBuffer.cpp">
-      <Filter>LabSound\extended\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\extended\SpatializationNode.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
@@ -643,6 +625,15 @@
     </ClCompile>
     <ClCompile Include="..\src\extended\PingPongDelayNode.cpp">
       <Filter>LabSound\extended\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\SampledAudioNode.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\AudioBus.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\AudioChannel.cpp">
+      <Filter>LabSound\core\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

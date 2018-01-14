@@ -8,41 +8,36 @@ struct SpatializationApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
-        SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
-        std::shared_ptr<OscillatorNode> osc; 
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/trainrolling.wav", false);
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf"); // note search path
 
-        // Note the need to specify an asset search path if this node will be
-        // used in PanningMode::HRTF
-        auto panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");
-        std::shared_ptr<AudioBufferSourceNode> trainNode;
         {
-            ContextGraphLock g(context, "spatialization");
-            ContextRenderLock r(context, "spatialization");
+            ContextGraphLock g(context.get(), "spatialization");
+            ContextRenderLock r(context.get(), "spatialization");
             
-            //osc = std::make_shared<OscillatorNode>(r, context->sampleRate());
-            //osc->connect(ac, panner.get(), 0, 0);
-            //osc->start(0);
-
             panner->setPanningModel(PanningMode::HRTF);
             context->connect(context->destination(), panner, 0, 0);
 
-            trainNode = train.play(r, panner, 0.0f);
+            audioClipNode->setBus(r, audioClip);
+            context->connect(panner, audioClipNode, 0, 0);
+            audioClipNode->start(0.0f);
         }
         
-        if (trainNode)
+        if (audioClipNode)
         {
-            trainNode->setLooping(true);
-            context->listener()->setPosition(0, 0, 0);
+            audioClipNode->setLoop(true);
+            context->listener().setPosition(0, 0, 0);
             panner->setVelocity(4, 0, 0);
-
 
             const int seconds = 10;
             float halfTime = seconds * 0.5f;
             for (float i = 0; i < seconds; i += 0.01f)
             {
                 float x = (i - halfTime) / halfTime;
+
                 // Put position a +up && +front, because if it goes right through the
                 // listener at (0, 0, 0) it abruptly switches from left to right.
                 panner->setPosition(x, 0.1f, 0.1f);
@@ -54,7 +49,5 @@ struct SpatializationApp : public LabSoundExampleApp
         {
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

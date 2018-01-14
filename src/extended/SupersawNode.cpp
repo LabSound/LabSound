@@ -5,12 +5,11 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Synthesis.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-
-#include "internal/AudioBus.h"
 
 #include <cfloat>
 
@@ -27,9 +26,9 @@ namespace lab
     {
     public:
 
-        SupersawNodeInternal(float sampleRate) : sampleRate(sampleRate), cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
+        SupersawNodeInternal() : cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
         {
-            gainNode = std::make_shared<ADSRNode>(sampleRate);
+            gainNode = std::make_shared<ADSRNode>();
             sawCount = std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f);
             detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
             frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
@@ -81,13 +80,13 @@ namespace lab
                 sawStorage.clear();
                 saws.clear();
 
-                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(r, sampleRate));
+                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(sampleRate));
 
                 for (int i = 0; i < n; ++i) saws.push_back(sawStorage[i].get());
 
                 for (auto i : sawStorage)
                 {
-                    i->setType(r, OscillatorType::SAWTOOTH);
+                    i->setType(OscillatorType::SAWTOOTH);
                     context->connect(gainNode, i, 0, 0);
                     i->start(0);
                 }
@@ -118,9 +117,9 @@ namespace lab
     // Public Supersaw Node //
     //////////////////////////
 
-    SupersawNode::SupersawNode(ContextRenderLock & r, float sampleRate) : AudioNode(sampleRate)
+    SupersawNode::SupersawNode(ContextRenderLock & r) : AudioNode()
     {
-        internalNode.reset(new SupersawNodeInternal(sampleRate));
+        internalNode.reset(new SupersawNodeInternal());
 
         m_params.push_back(internalNode->detune);
         m_params.push_back(internalNode->frequency);
@@ -180,9 +179,9 @@ namespace lab
         internalNode->gainNode->noteOff(r, when);
     }
 
-    bool SupersawNode::propagatesSilence(double now) const
+    bool SupersawNode::propagatesSilence(ContextRenderLock & r) const
     {
-        return internalNode->gainNode->propagatesSilence(now);
+        return true; // return internalNode->gainNode->propagatesSilence(now); // dimitri 
     }
 
 } // End namespace lab

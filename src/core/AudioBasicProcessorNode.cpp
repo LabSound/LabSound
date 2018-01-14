@@ -6,13 +6,13 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "internal/Assertions.h"
-#include "internal/AudioBus.h"
 
 namespace lab {
 
-AudioBasicProcessorNode::AudioBasicProcessorNode(float sampleRate) : AudioNode(sampleRate)
+AudioBasicProcessorNode::AudioBasicProcessorNode() : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -110,14 +110,14 @@ unsigned AudioBasicProcessorNode::numberOfChannels()
     return output(0)->numberOfChannels();
 }
 
-double AudioBasicProcessorNode::tailTime() const
+double AudioBasicProcessorNode::tailTime(ContextRenderLock & r) const
 {
-    return m_processor->tailTime();
+    return m_processor->tailTime(r);
 }
 
-double AudioBasicProcessorNode::latencyTime() const
+double AudioBasicProcessorNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_processor->latencyTime();
+    return m_processor->latencyTime(r);
 }
 
 AudioProcessor * AudioBasicProcessorNode::processor() 

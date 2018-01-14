@@ -3,10 +3,9 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/RecorderNode.h"
-
-#include "internal/AudioBus.h"
 
 #include "libnyquist/WavEncoder.h"
 
@@ -15,7 +14,7 @@ namespace lab
     
     using namespace lab;
     
-    RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2), m_recording(false), m_mixToMono(false)
+    RecorderNode::RecorderNode() : AudioBasicInspectorNode(2)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -30,7 +29,7 @@ namespace lab
         uninitialize();
     }
     
-    void RecorderNode::getData(std::vector<float>& result)
+    void RecorderNode::getData(std::vector<float> & result)
     {
         // swap is quick enough that process should not be adversely affected
         result.clear();
@@ -38,9 +37,9 @@ namespace lab
         result.swap(m_data);
     }
 
-    void RecorderNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
     {
-        AudioBus* outputBus = output(0)->bus(r);
+        AudioBus * outputBus = output(0)->bus(r);
         
         if (!isInitialized() || !input(0)->isConnected())
         {
@@ -142,11 +141,9 @@ namespace lab
         
         // Represents target encoding (wav only)
         // Libnyquist bug with things other than PCM_FLT?
-        nqr::EncoderParams params = {2, nqr::PCM_FLT, nqr::DITHER_NONE};
+        nqr::EncoderParams params = {channels, nqr::PCM_FLT, nqr::DITHER_NONE};
 
         int encoderStatus = nqr::WavEncoder::WriteFile(params, fileData.get(), filenameWithWavExtension);
-        
-        LOG("[WavEncoder - Debug Status: %i]", encoderStatus);
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

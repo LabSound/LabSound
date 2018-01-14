@@ -16,7 +16,7 @@
 namespace lab 
 {
     
-lab::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
+lab::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions; // fixme - static
 
 namespace
 {
@@ -28,7 +28,9 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r
     ASSERT(r.context());
     std::shared_ptr<AudioSummingJunction> asj;
     while (s_dirtySummingJunctions.try_pop(asj))
+    {
         asj->updateRenderingState(r);
+    }
 }
 
 AudioSummingJunction::AudioSummingJunction() : m_renderingStateNeedUpdating(false)
@@ -88,11 +90,14 @@ void AudioSummingJunction::junctionDisconnectOutput(std::shared_ptr<AudioNodeOut
     std::lock_guard<std::mutex> lock(junctionMutex);
 
     for (std::vector<std::weak_ptr<AudioNodeOutput>>::iterator i = m_connectedOutputs.begin(); i != m_connectedOutputs.end(); ++i)
-        if (!i->expired() && i->lock() == o) {
+    {
+        if (!i->expired() && i->lock() == o)
+        {
             m_connectedOutputs.erase(i);
             m_renderingStateNeedUpdating = true;
             break;
         }
+    }
 }
     
 void AudioSummingJunction::junctionDisconnectAllOutputs()

@@ -20,13 +20,13 @@ class DynamicsCompressorKernel
 
 public:
 
-    DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels);
+    DynamicsCompressorKernel(unsigned numberOfChannels);
 
     void setNumberOfChannels(unsigned);
 
     // Performs stereo-linked compression.
     void process(ContextRenderLock&,
-                 float * sourceChannels[],
+                 const float * sourceChannels[],
                  float * destinationChannels[],
                  unsigned numberOfChannels,
                  unsigned framesToProcess,
@@ -50,14 +50,10 @@ public:
 
     unsigned latencyFrames() const { return m_lastPreDelayFrames; }
 
-    float sampleRate() const { return m_sampleRate; }
-
     float meteringGain() const { return m_meteringGain; }
 
 protected:
     
-    float m_sampleRate;
-
     float m_detectorAverage;
     float m_compressorGain;
 
@@ -70,7 +66,7 @@ protected:
     enum { MaxPreDelayFramesMask = MaxPreDelayFrames - 1 };
     enum { DefaultPreDelayFrames = 256 }; // setPreDelayTime() will override this initial value
     unsigned m_lastPreDelayFrames;
-    void setPreDelayTime(float);
+    void setPreDelayTime(float time, float sampleRate);
 
     std::vector< std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
 
