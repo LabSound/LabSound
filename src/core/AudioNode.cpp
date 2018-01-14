@@ -168,6 +168,24 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
 
                 m_disconnectSchedule = new_schedule;
             }
+            if (m_connectSchedule < 1)
+            {
+                for (auto out : m_outputs)
+                    for (unsigned i = 0; i < out->numberOfChannels(); ++i)
+                    {
+                        float scale = m_connectSchedule;
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        for (size_t s = 0; s < numSamples; ++s)
+                        {
+                            sample[s] *= scale;
+                            scale = 1.f - ((1.f - scale) * 0.95f);
+                        }
+                        new_schedule = scale;
+                    }
+
+                m_connectSchedule = new_schedule;
+            }
 
             unsilenceOutputs(r);
         }

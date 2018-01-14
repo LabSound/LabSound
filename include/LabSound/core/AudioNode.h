@@ -89,6 +89,7 @@ public:
     };
 
     float m_disconnectSchedule{ -1.f };
+    float m_connectSchedule{ 0.f };
 
     AudioNode();
     virtual ~AudioNode();

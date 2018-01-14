@@ -247,6 +247,7 @@ void AudioContext::update()
                     }
 
                     connection.source->m_disconnectSchedule = -1.f;
+                    connection.source->m_connectSchedule = 0.f;
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
                 }
