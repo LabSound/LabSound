@@ -11,6 +11,7 @@
 #include "internal/VectorMath.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <exception>
 

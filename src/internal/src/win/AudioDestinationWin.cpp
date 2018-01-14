@@ -2,9 +2,6 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include <windows.h>
-#include <mmsystem.h>
-
 #include "internal/win/AudioDestinationWin.h"
 #include "internal/VectorMath.h"
 
@@ -54,7 +51,6 @@ void AudioDestinationWin::configure()
     outputParams.deviceId = dac.getDefaultOutputDevice();
     outputParams.nChannels = 2;
     outputParams.firstChannel = 0;
-    unsigned int sampleRate = unsigned int (m_sampleRate);
 
 	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
 	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
@@ -71,7 +67,7 @@ void AudioDestinationWin::configure()
 
     try
     {
-        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
