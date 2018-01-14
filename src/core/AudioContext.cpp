@@ -172,6 +172,8 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
+    if (!destination) throw std::runtime_error("Cannot connect to null destination");
+    if (!destination) throw std::runtime_error("Cannot connect from null source");
     std::lock_guard<std::mutex> lock(automaticSourcesMutex);
     if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");

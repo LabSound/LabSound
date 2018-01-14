@@ -49,8 +49,7 @@ namespace lab
         }
 
         // =====> should this follow the WebAudio pattern have a writer object to call here?
-        AudioBus* bus = input(0)->bus(r);
-        
+        AudioBus* bus = input(0)->bus(r);        
         bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= framesToProcess);
         
         if (!isBusGood)
