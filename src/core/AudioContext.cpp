@@ -248,8 +248,7 @@ void AudioContext::update()
                         }
                     }
 
-                    connection.source->m_disconnectSchedule = -1.f;
-                    connection.source->m_connectSchedule = 0.f;
+                    connection.source->scheduleConnect();
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
                 }
@@ -262,18 +261,19 @@ void AudioContext::update()
                     if (connection.source)
                     {
                         // if source and destination are specified, then we don't ramp out the destination
-                        connection.source->m_disconnectSchedule = 1.f;
+                        connection.source->scheduleDisconnect();
                     }
                     else if (connection.destination)
                     {
                         // this case is a disconnect where source is nothing, and destination is something
                         // probably this case should be disallowed because we have to study it to find out
                         // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
-                        connection.destination->m_disconnectSchedule = 1.f;
+                        connection.destination->scheduleDisconnect();
                     }
                 }
                 break;
 
+                /// @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
                 case ConnectionType::FinishDisconnect:
                 {
                     if (connection.source && connection.destination)

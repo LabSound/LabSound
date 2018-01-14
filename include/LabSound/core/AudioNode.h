@@ -88,9 +88,6 @@ public:
         ProcessingSizeInFrames = 128
     };
 
-    float m_disconnectSchedule{ -1.f };
-    float m_connectSchedule{ 0.f };
-
     AudioNode();
     virtual ~AudioNode();
 
@@ -189,6 +186,33 @@ private:
 
     double m_lastProcessingTime{ -1.0 };
     double m_lastNonSilentTime{ -1.0 };
+
+    // starts an immediate ramp to zero in preparation for disconnection
+    void scheduleDisconnect()
+    {
+        m_disconnectSchedule = 1.f;
+        m_connectSchedule = 1.f;
+    }
+
+    float audibleThreshold() const { return 0.05f; }
+
+    // returns true if the disconnection ramp has reached zero.
+    // This is intended to allow the AudioContext to manage popping artifacts
+    bool disconnectionReady() const { return m_disconnectSchedule >= 0.f && m_disconnectSchedule <= audibleThreshold(); }
+
+    // starts an immediate ramp to unity due to being newly connected to a graph
+    void scheduleConnect()
+    {
+        m_disconnectSchedule = -1.f;
+        m_connectSchedule = 0.f;
+    }
+
+    // returns true if the connection has ramped to unity
+    // This is intended to signal when the danger of possible popping artifacts has passed
+    bool connectionReady() const { return m_connectSchedule > (1.f - audibleThreshold()); }
+
+    std::atomic<float> m_disconnectSchedule{ -1.f };
+    std::atomic<float> m_connectSchedule{ 0.f };
 
 protected:
 
