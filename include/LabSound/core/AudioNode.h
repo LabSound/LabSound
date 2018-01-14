@@ -161,6 +161,8 @@ public:
 
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
 
+    bool disconnectScheduled{ false };
+
 protected:
 
     // Inputs and outputs must be created before the AudioNode is initialized.

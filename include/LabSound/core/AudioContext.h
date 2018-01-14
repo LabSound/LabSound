@@ -142,7 +142,8 @@ private:
     enum class ConnectionType : int
     {
         Disconnect = 0,
-        Connect = 1
+        Connect = 1,
+        ScheduleDisconnect = 2
     };
 
     struct PendingConnection

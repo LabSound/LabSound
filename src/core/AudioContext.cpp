@@ -181,7 +181,8 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
     std::lock_guard<std::mutex> lock(m_updateMutex);
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
-    pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
+    pendingNodeConnections.emplace(destination, source, ConnectionType::ScheduleDisconnect, destIdx, srcIdx);
+    //source->disconnectScheduled = true;
 }
 
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
@@ -198,7 +199,13 @@ void AudioContext::update()
 
     while (updateThreadShouldRun && !m_isStopScheduled)
     {
+
+        std::vector<PendingConnection> skippedConnections;
+
         {
+            // very briefly update via render thread
+
+
             ContextGraphLock gLock(this, "context::update");
             std::lock_guard<std::mutex> updateLock(m_updateMutex);
 
@@ -208,7 +215,6 @@ void AudioContext::update()
                 if (!m_isOfflineContext) std::this_thread::sleep_for(std::chrono::milliseconds(5));
                 continue;
             }
-
             const double now = currentTime();
 
             // Satisfy parameter connections
@@ -218,8 +224,6 @@ void AudioContext::update()
                 pendingParamConnections.pop();
                 AudioParam::connect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<2>(connection)));
             }
-
-            std::vector<PendingConnection> skippedConnections;
 
             // Satisfy node connections
             while (!pendingNodeConnections.empty())
@@ -242,13 +246,17 @@ void AudioContext::update()
 
                 if (connection.type == ConnectionType::Connect)
                 {
+                    std::cout << now << " - connect" << std::endl;
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
                 }
                 else if (connection.type == ConnectionType::Disconnect)
                 {
+                    std::cout << now << " - disconnect" << std::endl;
                     if (connection.source && connection.destination)
                     {
                         AudioNodeInput::disconnect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+                        //connection.source->disconnectScheduled = false;
+                        //connection.destination->disconnectScheduled = false;
                     }
                     else if (connection.destination)
                     {
@@ -259,6 +267,7 @@ void AudioContext::update()
 
                             AudioNodeOutput::disconnectAll(gLock, output);
                         }
+                        connection.destination->disconnectScheduled = false;
                     }
                     else if (connection.source)
                     {
@@ -269,12 +278,42 @@ void AudioContext::update()
 
                             AudioNodeOutput::disconnectAll(gLock, output);
                         }
+                        //connection.source->disconnectScheduled = false;
                     }
+                }
+                else if (connection.type == ConnectionType::ScheduleDisconnect)
+                {
+                    m_renderLock.lock();
+                    std::cout << now << " - scheduling disconnect" << std::endl;
+                    if (connection.source) connection.source->disconnectScheduled = true;
+                    if (connection.destination) connection.destination->disconnectScheduled = true;
+                    connection.type = ConnectionType::Disconnect;
+                    skippedConnections.push_back(connection);
+                    m_renderLock.unlock();
                 }
             }
 
+            /*
+            {
+                while (!pendingNodeConnections.empty())
+                {
+                    auto connection = pendingNodeConnections.top();
+
+                    if (connection.type == ConnectionType::ScheduleDisconnect)
+                    {
+                        std::cout << "Scheduled disconnect" << std::endl;
+
+                    }
+
+                    pendingNodeConnections.pop();
+
+                }
+
+            }
+            */
+
             // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
-            for (auto & sc : skippedConnections)
+            for (auto sc : skippedConnections)
             {
                 pendingNodeConnections.push(sc);
             }
@@ -282,7 +321,7 @@ void AudioContext::update()
 
         if (!m_isOfflineContext)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // fixed 10ms timestep 
+            std::this_thread::sleep_for(std::chrono::milliseconds(5)); // fixed 10ms timestep 
         }
     }
 

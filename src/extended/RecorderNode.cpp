@@ -37,9 +37,9 @@ namespace lab
         result.swap(m_data);
     }
 
-    void RecorderNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
     {
-        AudioBus* outputBus = output(0)->bus(r);
+        AudioBus * outputBus = output(0)->bus(r);
         
         if (!isInitialized() || !input(0)->isConnected())
         {

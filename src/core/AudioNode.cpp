@@ -148,7 +148,31 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         }
         else
         {
+            //std::cout << disconnectScheduled << std::endl;
+
             process(r, framesToProcess);
+
+            if (disconnectScheduled)
+            {
+                //std::cout << "DISCONNECT SCHEDULED.... \n";
+                for (auto out : m_outputs)
+                {
+                    for (unsigned i = 0; i < out->numberOfChannels(); ++i)
+                    {
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        const float scale = 1.f / (float) numSamples;
+                        for (int s = 1; s < numSamples + 1; ++s)
+                        {
+                            sample[s - 1] = 0.0f;// (1.f - (scale * (float)s));
+                            //std::cout << std::to_string(sample[s - 1]) + "\n";
+                        }
+                    }
+                }
+                //disconnectScheduled = false;
+            }
+
+
             unsilenceOutputs(r);
         }
     }
@@ -170,7 +194,6 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInp
 bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
     ASSERT(r.context());
-
     return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 
@@ -197,7 +220,7 @@ bool AudioNode::inputsAreSilent(ContextRenderLock& r)
     return true;
 }
 
-void AudioNode::silenceOutputs(ContextRenderLock& r)
+void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
     for (auto out : m_outputs)
     {

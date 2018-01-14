@@ -60,7 +60,7 @@ void AudioBus::zero()
         m_channels[i]->zero();
 }
 
-AudioChannel* AudioBus::channelByType(Channel channelType)
+AudioChannel * AudioBus::channelByType(Channel channelType)
 {
     
     // For now we only support canonical channel layouts...
