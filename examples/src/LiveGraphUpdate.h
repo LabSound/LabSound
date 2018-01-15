@@ -36,24 +36,19 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
                 oscillator2->start(0.015f);
             });
 
-            for (int i = 0; i < 128; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 context->disconnect(nullptr, oscillator1, 0, 0);
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
                 context->connect(gain, oscillator2, 0, 0);
-
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
                 context->disconnect(nullptr, oscillator2, 0, 0);
-
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
                 context->connect(gain, oscillator1, 0, 0);
-
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             }
+
+            context->disconnect(nullptr, oscillator1, 0, 0);
+            //context->disconnect(nullptr, oscillator2, 0, 0);
 
             context.reset();
 

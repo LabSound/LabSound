@@ -36,8 +36,7 @@ AudioContext::~AudioContext()
 {
     LOG("Begin AudioContext::~AudioContext()");
 
-    ContextGraphLock g(this, "AudioContext::~AudioContext");
-    stop(g);
+    keepAlive += 8;
 
     // Join update thread
     updateThreadShouldRun = false;
@@ -45,6 +44,8 @@ AudioContext::~AudioContext()
     {
         graphUpdateThread.join();
     }
+
+    stop();
 
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
@@ -94,7 +95,7 @@ void AudioContext::clear()
     if (m_destinationNode.get()) m_destinationNode.reset();
 }
 
-void AudioContext::uninitialize(ContextGraphLock& g)
+void AudioContext::uninitialize()
 {
     LOG("AudioContext::uninitialize()");
 
@@ -122,11 +123,11 @@ void AudioContext::incrementConnectionCount()
     ++m_connectionCount;
 }
 
-void AudioContext::stop(ContextGraphLock & g)
+void AudioContext::stop()
 {
     if (m_isStopScheduled) return;
     m_isStopScheduled = true;
-    uninitialize(g);
+    uninitialize();
     clear();
     LOG("AudioContext::stop()");
 }
@@ -151,7 +152,7 @@ void AudioContext::handleAutomaticSources()
     }
 }
 
-void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
+void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
@@ -160,7 +161,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock& r)
     updateAutomaticPullNodes();
 }
 
-void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
+void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
@@ -168,6 +169,17 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock& r)
 
     updateAutomaticPullNodes();
     handleAutomaticSources();
+
+    {
+        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+        currentRenderQuanta++;
+    }
+}
+
+uint64_t AudioContext::currentQuanta() 
+{
+    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    return currentRenderQuanta;
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
@@ -199,13 +211,15 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    while (updateThreadShouldRun && !m_isStopScheduled)
+    while (updateThreadShouldRun || keepAlive > 0)
     {
+        std::cout << keepAlive << std::endl;
 
         {
             ContextGraphLock gLock(this, "context::update");
-            
             std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+
+            if (keepAlive > 0) keepAlive--;
 
             // Verify that we've acquired the lock, and check again 5 ms later if not
             if (!gLock.context())
@@ -251,6 +265,8 @@ void AudioContext::update()
                     connection.source->scheduleConnect();
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+
+                    keepAlive = 16;
                 }
                 break;
 
@@ -292,14 +308,24 @@ void AudioContext::update()
                     }
                     else if (connection.source)
                     {
-                        for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
-                        {
-                            auto output = connection.source->output(out);
-                            if (!output) continue;
+                        std::cout << "Disconnect Ready? " << connection.source->disconnectionReady() << std::endl;
 
-                            AudioNodeOutput::disconnectAll(gLock, output);
-                        }
+                        //while (!connection.source->disconnectionReady()) continue;
+
+                       // if (connection.source->disconnectionReady())
+                        //{
+                            for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
+                            {
+                                auto output = connection.source->output(out);
+                                if (!output) continue;
+
+                                AudioNodeOutput::disconnectAll(gLock, output);
+                            }
+                            std::cout << "Bam Disconnect " << connection.source->disconnectionReady() << std::endl;
+                            break; // early out
+                       // } else skippedConnections.push_back(connection); // save for later
                     }
+                    keepAlive = 16;
                 }
                 break;
                 }
@@ -314,7 +340,7 @@ void AudioContext::update()
 
         if (!m_isOfflineContext)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(50)); // fixed 10ms timestep 
+            std::this_thread::sleep_for(std::chrono::milliseconds(20)); // fixed timestep 
         }
     }
 

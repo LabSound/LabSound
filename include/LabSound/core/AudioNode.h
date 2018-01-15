@@ -17,6 +17,7 @@
 #include <set>
 #include <thread>
 #include <vector>
+#include <iostream>
 
 namespace lab
 {
@@ -187,14 +188,14 @@ private:
     double m_lastProcessingTime{ -1.0 };
     double m_lastNonSilentTime{ -1.0 };
 
+    float audibleThreshold() const { return 0.05f; }
+
     // starts an immediate ramp to zero in preparation for disconnection
     void scheduleDisconnect()
     {
         m_disconnectSchedule = 1.f;
         m_connectSchedule = 1.f;
     }
-
-    float audibleThreshold() const { return 0.05f; }
 
     // returns true if the disconnection ramp has reached zero.
     // This is intended to allow the AudioContext to manage popping artifacts

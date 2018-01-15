@@ -54,7 +54,7 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
-    void stop(ContextGraphLock & g);
+    void stop();
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 
@@ -65,6 +65,8 @@ public:
     size_t currentSampleFrame() const;
 
     double currentTime() const;
+
+    uint64_t currentQuanta();
 
     float sampleRate() const;
 
@@ -112,6 +114,7 @@ private:
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
     void update();
+    std::atomic<uint32_t> keepAlive{ 0 };
 
     bool m_isStopScheduled = false;
     bool m_isInitialized = false;
@@ -123,7 +126,7 @@ private:
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
 
-    void uninitialize(ContextGraphLock &);
+    void uninitialize();
 
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
     void clear();
@@ -138,6 +141,8 @@ private:
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
+
+    uint64_t currentRenderQuanta{ 0 };
     
     enum class ConnectionType : int
     {
