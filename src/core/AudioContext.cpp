@@ -26,9 +26,8 @@ namespace lab
 const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
 
 // Constructor for realtime rendering
-AudioContext::AudioContext(bool isOffline)
+AudioContext::AudioContext(bool isOffline) : m_isOfflineContext(isOffline)
 {
-    m_isOfflineContext = isOffline;
     m_listener.reset(new AudioListener());
 }
 
@@ -36,12 +35,16 @@ AudioContext::~AudioContext()
 {
     LOG("Begin AudioContext::~AudioContext()");
 
-    keepAlive += 8;
+    keepAlive = 0.25f;
 
     // Join update thread
+
+    //keepAlive = currentTime() + 0.5f;
+
     updateThreadShouldRun = false;
     if (graphUpdateThread.joinable())
     {
+        cv.notify_all();
         graphUpdateThread.join();
     }
 
@@ -73,6 +76,8 @@ void AudioContext::lazyInitialize()
             {
                 m_destinationNode->initialize();
 
+                graphUpdateThread = std::thread(&AudioContext::update, this);
+
                 if (!isOfflineContext())
                 {
                     // This starts the audio thread. The destination node's provideInput() method will now be called repeatedly to render audio.
@@ -80,7 +85,7 @@ void AudioContext::lazyInitialize()
                     m_destinationNode->startRendering();
                 }
 
-                graphUpdateThread = std::thread(&AudioContext::update, this);
+                cv.notify_all();
             }
             else
             {
@@ -132,7 +137,7 @@ void AudioContext::handleAutomaticSources()
     {
         if ((*i)->hasFinished())
         {
-            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0); // order? 
+            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0); 
             i = automaticSources.erase(i);
             if (i == automaticSources.end()) break;
         }
@@ -166,6 +171,7 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
     if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Connect, destIdx, srcIdx);
+    cv.notify_all();
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
@@ -174,6 +180,7 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
+    cv.notify_all();
 }
 
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
@@ -181,6 +188,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     if (!param) throw std::invalid_argument("No parameter specified");
     if (index >= driver->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs on the driver");
     pendingParamConnections.push(std::make_tuple(param, driver, index));
+    cv.notify_all();
 }
 
 void AudioContext::update()
@@ -189,21 +197,43 @@ void AudioContext::update()
 
     while (updateThreadShouldRun || keepAlive > 0)
     {
+        std::unique_lock<std::mutex> lk(m_updateMutex);
+        if (!m_isOfflineContext)
+        {
+            //std::cout << "Current: " << currentTime() << ", alive: " << keepAlive << std::endl;
+            // graph needs to tick to complete
+            if ((currentTime() + keepAlive) > currentTime())
+            {
+                std::cout << "Keep alive... " << keepAlive << std::endl;
+                float delta = (currentTime() - lastUpdate);
+                std::cout << "Delta: " << delta << std::endl;
+                lastUpdate = currentTime();
+                keepAlive = keepAlive - delta;
+                cv.wait_for(lk, std::chrono::milliseconds(5));
+
+            }
+            else
+            {
+                std::cout << "Wait... " << std::endl;
+                // otherwise wait
+                cv.wait(lk);
+            }
+        }
 
         {
-            ContextGraphLock gLock(this, "context::update");
-            std::lock_guard<std::mutex> lock(m_updateMutex);
+            ContextGraphLock gLock(this, "AudioContext::Update()");
 
-            if (keepAlive > 0) keepAlive--;
+            //LOG("Acquiring graph lock");
 
-            // Verify that we've acquired the lock, and check again 5 ms later if not
-            if (!gLock.context())
-            {
-                if (!m_isOfflineContext) std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                continue;
-            }
+            //keepAlive = currentTime() + 0.5; // connection.duration;
+
+            //std::cout << "keep alive: " << keepAlive << std::endl;
+
+            //std::lock_guard<std::mutex> lock(m_updateMutex);
 
             const double now = currentTime();
+
+            //std::cout << "Now: " << now << std::endl;
 
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())
@@ -241,7 +271,7 @@ void AudioContext::update()
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
 
-                    keepAlive = connection.duration;
+                    keepAlive = 0.25;
                 }
                 break;
 
@@ -261,6 +291,7 @@ void AudioContext::update()
                         // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
                         connection.destination->scheduleDisconnect();
                     }
+                    keepAlive = 0.25;
                 }
                 break;
 
@@ -298,23 +329,31 @@ void AudioContext::update()
                             AudioNodeOutput::disconnectAll(gLock, output);
                         }
                     }
-                    keepAlive = connection.duration;
+
                 }
                 break;
                 }
             }
 
-            // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
+            // We have incompletely connected nodes, so next time the thread ticks we can re-check them 
             for (auto & sc : skippedConnections)
             {
                 pendingNodeConnections.push(sc);
             }
+
         }
 
+        /*
         if (!m_isOfflineContext)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(20)); // fixed timestep 
+
+            //std::unique_lock<std::mutex> lk(m_updateMutex);
+            //cv.wait(lk, [this] { return keepAlive > 0; });
+            //std::this_thread::sleep_for(std::chrono::milliseconds(20)); // fixed timestep 
         }
+        */
+
+        lk.unlock();
     }
 
     LOG("End UpdateGraphThread");

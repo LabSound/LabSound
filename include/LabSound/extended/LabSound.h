@@ -59,11 +59,11 @@
 namespace lab
 {
     // These are convenience functions with straightforward definitions. Most of the samples use them, but they are not strictly required. 
-    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
+    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(std::unique_ptr<AudioContext> & context);
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext();
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sample_rate);
-    void AcquireLocksForContext(const std::string id, AudioContext * ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
+    //void AcquireLocksForContext(const std::string id, AudioContext * ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
 }
 
 #endif

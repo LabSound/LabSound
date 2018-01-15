@@ -20,7 +20,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
                 ContextGraphLock g(context.get(), "MicrophoneReverbApp");
                 ContextRenderLock r(context.get(), "MicrophoneReverbApp");
 
-                input = lab::MakeHardwareSourceNode(r);
+                input = lab::MakeHardwareSourceNode(context);
 
                 recorder = std::make_shared<RecorderNode>();
                 context->addAutomaticPullNode(recorder);

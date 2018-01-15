@@ -14,7 +14,7 @@ struct MicrophoneLoopbackApp : public LabSoundExampleApp
         {
             ContextGraphLock g(context.get(), "MicrophoneLoopbackApp");
             ContextRenderLock r(context.get(), "MicrophoneLoopbackApp");
-            input = lab::MakeHardwareSourceNode(r);
+            input = lab::MakeHardwareSourceNode(context);
             context->connect(context->destination(), input, 0, 0);
         }
         

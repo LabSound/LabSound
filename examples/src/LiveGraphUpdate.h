@@ -13,14 +13,12 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         {
             std::unique_ptr<AudioContext> context = lab::MakeRealtimeAudioContext();
 
-            lab::AcquireLocksForContext("LiveGraphUpdateApp", context.get(), [&](ContextGraphLock & g, ContextRenderLock & r)
             {
                 oscillator1 = std::make_shared<OscillatorNode>(context->sampleRate());
                 oscillator2 = std::make_shared<OscillatorNode>(context->sampleRate());
 
                 gain = std::make_shared<GainNode>();
                 gain->gain()->setValue(0.50);
-
 
                 // osc -> gain -> destination
                 context->connect(gain, oscillator1, 0, 0);
@@ -34,9 +32,9 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
                 oscillator2->setType(OscillatorType::SINE);
                 oscillator2->frequency()->setValue(440.f);
                 oscillator2->start(0.00);
-            });
+            }
 
-            for (int i = 0; i < 64; ++i)
+            for (int i = 0; i < 4; ++i)
             {
                 context->disconnect(nullptr, oscillator1, 0, 0);
                 context->connect(gain, oscillator2, 0, 0);

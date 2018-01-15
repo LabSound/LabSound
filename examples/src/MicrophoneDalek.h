@@ -78,7 +78,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // When working on complex graphs it helps to have a pen and paper handy!
             
 #ifdef USE_LIVE
-            input = MakeHardwareSourceNode(r);
+            input = MakeHardwareSourceNode(context);
             context->connect(vcInverter1, input, 0, 0);
             context->connect(vcDiode4->node(), input, 0, 0);
 #else

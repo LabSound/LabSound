@@ -34,7 +34,7 @@ struct SimpleApp : public LabSoundExampleApp
             oscillator->start(0.0f); 
         };
 
-        lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);
+        //lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);
 
         const int seconds = 4;
         for (int t = 0; t < seconds; ++t)
