@@ -108,13 +108,12 @@ private:
     std::mutex m_renderLock;
     std::mutex m_updateMutex;
     std::condition_variable cv;
-    bool updatesRequested = false;
 
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
     void update();
-    std::atomic<float> keepAlive{ 0.f };
-    float lastUpdate = 0.f;
+    float graphKeepAlive{ 0.f };
+    float lastGraphUpdateTime{ 0.f };
 
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;

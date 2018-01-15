@@ -44,7 +44,7 @@ int main (int argc, char *argv[])
 {
     try
     {
-        g_liveGraphUpdateApp.PlayExample();
+        g_peakCompressor.PlayExample();
     }
     catch (const std::exception & e)
     {

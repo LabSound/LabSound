@@ -19,7 +19,6 @@ struct PeakCompressorApp : public LabSoundExampleApp
         std::shared_ptr<PeakCompNode> peakComp;
 
         {
-            ContextGraphLock g(context.get(), "PeakCompressorApp");
             ContextRenderLock r(context.get(), "PeakCompressorApp");
             
             filter = std::make_shared<BiquadFilterNode>();
@@ -39,7 +38,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
                 samples.push_back(s);
             };
 
-            float startTime = 0;
+            float startTime = 0.25f;
             float eighthNoteTime = 1.0f / 4.0f;
             for (int bar = 0; bar < 2; bar++)
             {
@@ -58,6 +57,6 @@ struct PeakCompressorApp : public LabSoundExampleApp
             }
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(4));
+        std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 };

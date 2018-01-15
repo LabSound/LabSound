@@ -35,11 +35,7 @@ AudioContext::~AudioContext()
 {
     LOG("Begin AudioContext::~AudioContext()");
 
-    keepAlive = 0.25f;
-
-    // Join update thread
-
-    //keepAlive = currentTime() + 0.5f;
+    graphKeepAlive = 0.25f;
 
     updateThreadShouldRun = false;
     if (graphUpdateThread.joinable())
@@ -195,27 +191,22 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    while (updateThreadShouldRun || keepAlive > 0)
+    while (updateThreadShouldRun || graphKeepAlive > 0)
     {
         std::unique_lock<std::mutex> lk(m_updateMutex);
         if (!m_isOfflineContext)
         {
-            //std::cout << "Current: " << currentTime() << ", alive: " << keepAlive << std::endl;
             // graph needs to tick to complete
-            if ((currentTime() + keepAlive) > currentTime())
+            if ((currentTime() + graphKeepAlive) > currentTime())
             {
-                std::cout << "Keep alive... " << keepAlive << std::endl;
-                float delta = (currentTime() - lastUpdate);
-                std::cout << "Delta: " << delta << std::endl;
-                lastUpdate = currentTime();
-                keepAlive = keepAlive - delta;
+                const float delta = (currentTime() - lastGraphUpdateTime);
+                lastGraphUpdateTime = currentTime();
+                graphKeepAlive = graphKeepAlive - delta;
                 cv.wait_for(lk, std::chrono::milliseconds(5));
-
             }
             else
             {
-                std::cout << "Wait... " << std::endl;
-                // otherwise wait
+                // otherwise wait for someone to connect or disconnect something
                 cv.wait(lk);
             }
         }
@@ -223,17 +214,7 @@ void AudioContext::update()
         {
             ContextGraphLock gLock(this, "AudioContext::Update()");
 
-            //LOG("Acquiring graph lock");
-
-            //keepAlive = currentTime() + 0.5; // connection.duration;
-
-            //std::cout << "keep alive: " << keepAlive << std::endl;
-
-            //std::lock_guard<std::mutex> lock(m_updateMutex);
-
             const double now = currentTime();
-
-            //std::cout << "Now: " << now << std::endl;
 
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())
@@ -271,7 +252,7 @@ void AudioContext::update()
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
 
-                    keepAlive = 0.25;
+                    graphKeepAlive = 0.25;
                 }
                 break;
 
@@ -291,7 +272,7 @@ void AudioContext::update()
                         // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
                         connection.destination->scheduleDisconnect();
                     }
-                    keepAlive = 0.25;
+                    graphKeepAlive = 0.25;
                 }
                 break;
 
@@ -342,16 +323,6 @@ void AudioContext::update()
             }
 
         }
-
-        /*
-        if (!m_isOfflineContext)
-        {
-
-            //std::unique_lock<std::mutex> lk(m_updateMutex);
-            //cv.wait(lk, [this] { return keepAlive > 0; });
-            //std::this_thread::sleep_for(std::chrono::milliseconds(20)); // fixed timestep 
-        }
-        */
 
         lk.unlock();
     }

@@ -62,31 +62,6 @@ namespace lab
         ctx->lazyInitialize();
         return ctx;
     }
-
-    /*
-    void AcquireLocksForContext(const std::string id, AudioContext * ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback)
-    {
-        try
-        {
-            ContextGraphLock g(ctx, id);
-            ContextRenderLock r(ctx, id);
-
-            // Verify that we've acquired the lock, and check again 5 ms later if not
-            while(!g.context())
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
-                continue;
-            }
-
-            callback(g, r);
-        }
-        catch (const std::exception & e)
-        {
-            LOG_ERROR("caught exception %s", e.what());
-        }
-    }
-    */
-
 }
 
 ///////////////////////

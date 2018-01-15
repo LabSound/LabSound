@@ -63,7 +63,6 @@ namespace lab
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext();
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sample_rate);
-    //void AcquireLocksForContext(const std::string id, AudioContext * ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
 }
 
 #endif
