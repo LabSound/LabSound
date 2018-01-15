@@ -64,8 +64,6 @@ public:
 
     double currentTime() const;
 
-    uint64_t currentQuanta();
-
     float sampleRate() const;
 
     AudioListener & listener();
@@ -107,7 +105,7 @@ private:
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;
-    std::mutex automaticSourcesMutex;
+    std::mutex m_updateMutex;
 
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
@@ -135,8 +133,6 @@ private:
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
-
-    uint64_t currentRenderQuanta{ 0 };
     
     enum class ConnectionType : int
     {

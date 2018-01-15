@@ -13,7 +13,7 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         {
             std::unique_ptr<AudioContext> context = lab::MakeRealtimeAudioContext();
 
-            lab::AcquireLocksForContext("Tone and Sample App", context.get(), [&](ContextGraphLock & g, ContextRenderLock & r)
+            lab::AcquireLocksForContext("LiveGraphUpdateApp", context.get(), [&](ContextGraphLock & g, ContextRenderLock & r)
             {
                 oscillator1 = std::make_shared<OscillatorNode>(context->sampleRate());
                 oscillator2 = std::make_shared<OscillatorNode>(context->sampleRate());

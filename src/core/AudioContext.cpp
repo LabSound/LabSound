@@ -121,13 +121,13 @@ void AudioContext::incrementConnectionCount()
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     automaticSources.push_back(node);
 }
 
 void AudioContext::handleAutomaticSources()
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     for (auto i = automaticSources.begin(); i != automaticSources.end(); ++i)
     {
         if ((*i)->hasFinished())
@@ -156,24 +156,13 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 
     updateAutomaticPullNodes();
     handleAutomaticSources();
-
-    {
-        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-        currentRenderQuanta++;
-    }
-}
-
-uint64_t AudioContext::currentQuanta() 
-{
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
-    return currentRenderQuanta;
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
     if (!destination) throw std::runtime_error("Cannot connect to null destination");
     if (!destination) throw std::runtime_error("Cannot connect from null source");
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Connect, destIdx, srcIdx);
@@ -181,7 +170,7 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
@@ -203,7 +192,7 @@ void AudioContext::update()
 
         {
             ContextGraphLock gLock(this, "context::update");
-            std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+            std::lock_guard<std::mutex> lock(m_updateMutex);
 
             if (keepAlive > 0) keepAlive--;
 
@@ -333,7 +322,7 @@ void AudioContext::update()
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end())
     {
         m_automaticPullNodes.insert(node);
@@ -343,7 +332,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 
 void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
-    std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+    std::lock_guard<std::mutex> lock(m_updateMutex);
     auto it = m_automaticPullNodes.find(node);
     if (it != m_automaticPullNodes.end())
     {
@@ -356,7 +345,7 @@ void AudioContext::updateAutomaticPullNodes()
 {
     if (m_automaticPullNodesNeedUpdating)
     {
-        std::lock_guard<std::mutex> lock(automaticSourcesMutex);
+        std::lock_guard<std::mutex> lock(m_updateMutex);
 
         // Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
         m_renderingAutomaticPullNodes.resize(m_automaticPullNodes.size());
