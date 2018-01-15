@@ -54,8 +54,6 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
-    void stop();
-
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 
     std::shared_ptr<AudioDestinationNode> destination();
@@ -116,7 +114,6 @@ private:
     void update();
     std::atomic<uint32_t> keepAlive{ 0 };
 
-    bool m_isStopScheduled = false;
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
@@ -127,9 +124,6 @@ private:
     std::atomic<int> m_connectionCount;
 
     void uninitialize();
-
-    // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    void clear();
 
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
@@ -158,6 +152,7 @@ private:
         std::shared_ptr<AudioNode> source;
         uint32_t destIndex;
         uint32_t srcIndex;
+        uint32_t duration = 8;
         PendingConnection(
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,

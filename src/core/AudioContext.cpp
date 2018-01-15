@@ -45,14 +45,16 @@ AudioContext::~AudioContext()
         graphUpdateThread.join();
     }
 
-    stop();
+    uninitialize();
+
+    // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
+    if (m_destinationNode.get()) m_destinationNode.reset();
 
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
 #endif
     
     ASSERT(!m_isInitialized);
-    ASSERT(m_isStopScheduled);
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
 
@@ -89,12 +91,6 @@ void AudioContext::lazyInitialize()
     }
 }
 
-void AudioContext::clear()
-{
-    // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    if (m_destinationNode.get()) m_destinationNode.reset();
-}
-
 void AudioContext::uninitialize()
 {
     LOG("AudioContext::uninitialize()");
@@ -121,15 +117,6 @@ bool AudioContext::isInitialized() const
 void AudioContext::incrementConnectionCount()
 {
     ++m_connectionCount;
-}
-
-void AudioContext::stop()
-{
-    if (m_isStopScheduled) return;
-    m_isStopScheduled = true;
-    uninitialize();
-    clear();
-    LOG("AudioContext::stop()");
 }
 
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
@@ -213,7 +200,6 @@ void AudioContext::update()
 
     while (updateThreadShouldRun || keepAlive > 0)
     {
-        std::cout << keepAlive << std::endl;
 
         {
             ContextGraphLock gLock(this, "context::update");
@@ -266,7 +252,7 @@ void AudioContext::update()
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
 
-                    keepAlive = 16;
+                    keepAlive = connection.duration;
                 }
                 break;
 
@@ -289,9 +275,16 @@ void AudioContext::update()
                 }
                 break;
 
-                /// @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
+                // @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
                 case ConnectionType::FinishDisconnect:
                 {
+                    if (connection.duration != 0)
+                    {
+                        connection.duration--;
+                        skippedConnections.push_back(connection); 
+                        continue;
+                    }
+
                     if (connection.source && connection.destination)
                     {
                         AudioNodeInput::disconnect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
@@ -308,24 +301,15 @@ void AudioContext::update()
                     }
                     else if (connection.source)
                     {
-                        std::cout << "Disconnect Ready? " << connection.source->disconnectionReady() << std::endl;
+                        for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
+                        {
+                            auto output = connection.source->output(out);
+                            if (!output) continue;
 
-                        //while (!connection.source->disconnectionReady()) continue;
-
-                       // if (connection.source->disconnectionReady())
-                        //{
-                            for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
-                            {
-                                auto output = connection.source->output(out);
-                                if (!output) continue;
-
-                                AudioNodeOutput::disconnectAll(gLock, output);
-                            }
-                            std::cout << "Bam Disconnect " << connection.source->disconnectionReady() << std::endl;
-                            break; // early out
-                       // } else skippedConnections.push_back(connection); // save for later
+                            AudioNodeOutput::disconnectAll(gLock, output);
+                        }
                     }
-                    keepAlive = 16;
+                    keepAlive = connection.duration;
                 }
                 break;
                 }

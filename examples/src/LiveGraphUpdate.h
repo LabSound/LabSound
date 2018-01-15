@@ -29,14 +29,14 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
 
                 oscillator1->setType(OscillatorType::SINE);
                 oscillator1->frequency()->setValue(220.f);
-                oscillator1->start(0.010f);
+                oscillator1->start(0.00f);
 
                 oscillator2->setType(OscillatorType::SINE);
                 oscillator2->frequency()->setValue(440.f);
-                oscillator2->start(0.015f);
+                oscillator2->start(0.00);
             });
 
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 64; ++i)
             {
                 context->disconnect(nullptr, oscillator1, 0, 0);
                 context->connect(gain, oscillator2, 0, 0);
@@ -48,10 +48,9 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
             }
 
             context->disconnect(nullptr, oscillator1, 0, 0);
-            //context->disconnect(nullptr, oscillator2, 0, 0);
+            context->disconnect(nullptr, oscillator2, 0, 0);
 
             context.reset();
-
         }
 
         std::cout << "OscillatorNode 1 use_count: " << oscillator1.use_count() << std::endl;
