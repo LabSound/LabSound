@@ -17,17 +17,18 @@
 namespace lab 
 {
     class ContextGraphLock;
+    class AudioContext;
 
-    class SubgraphNode
+    class Subgraph
     {
     public:
         std::shared_ptr<GainNode> output;
         std::shared_ptr<GainNode> input;
-        virtual void BuildSubgraph(ContextGraphLock & lock) = 0;
-        virtual ~SubgraphNode() { }
+        virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) = 0;
+        virtual ~Subgraph() { }
     };
 
-    class PingPongDelayNode : public SubgraphNode
+    class PingPongDelayNode : public Subgraph
     {
         float tempo;
         int noteDivision;
@@ -52,7 +53,7 @@ namespace lab
         void SetLevel(float f);
         void SetDelayIndex(TempoSync value);
 
-        virtual void BuildSubgraph(ContextGraphLock & lock) override;
+        virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) override;
     };
 }
 

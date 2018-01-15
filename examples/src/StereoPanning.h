@@ -15,7 +15,6 @@ struct StereoPanningApp : public LabSoundExampleApp
         auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
 
         {
-            ContextGraphLock g(context.get(), "Stereo Panning");
             ContextRenderLock r(context.get(), "Stereo Panning");
 
             audioClipNode->setBus(r, audioClip);

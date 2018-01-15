@@ -42,10 +42,9 @@ struct ValidationApp : public LabSoundExampleApp
         std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
 
         {
-            ContextGraphLock g(ac, "Validator");
             ContextRenderLock r(ac, "Validator");
             
-            pingping->BuildSubgraph(g);
+            pingping->BuildSubgraph(context);
             pingping->SetFeedback(0.5f);
             pingping->SetDelayIndex(lab::TempoSync::TS_8);
 

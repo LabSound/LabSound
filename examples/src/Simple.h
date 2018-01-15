@@ -14,8 +14,9 @@ struct SimpleApp : public LabSoundExampleApp
         std::shared_ptr<GainNode> gain;
         std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
 
-        auto lockedArea = [&](ContextGraphLock & g, ContextRenderLock & r)
         {
+            ContextRenderLock r(context.get(), "Red Alert");
+
             oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
             gain = std::make_shared<GainNode>();
             gain->gain()->setValue(0.0625f);
@@ -33,8 +34,6 @@ struct SimpleApp : public LabSoundExampleApp
             oscillator->setType(OscillatorType::SINE);
             oscillator->start(0.0f); 
         };
-
-        //lab::AcquireLocksForContext("Tone and Sample App", context.get(), lockedArea);
 
         const int seconds = 4;
         for (int t = 0; t < seconds; ++t)

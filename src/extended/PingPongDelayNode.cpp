@@ -66,12 +66,8 @@ namespace lab
         rightDelay->SetDelayIndex(value);
     }
 
-    void PingPongDelayNode::BuildSubgraph(ContextGraphLock & lock) 
+    void PingPongDelayNode::BuildSubgraph(std::unique_ptr<AudioContext> & ac) 
     {
-        auto ac = lock.context();
-
-        if (!ac) 
-            throw std::invalid_argument("Graph lock could not acquire context");
 
         // Input into splitter
         ac->connect(splitter, input, 0, 0);

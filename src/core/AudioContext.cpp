@@ -35,7 +35,7 @@ AudioContext::~AudioContext()
 {
     LOG("Begin AudioContext::~AudioContext()");
 
-    graphKeepAlive = 0.25f;
+    if (!isOfflineContext()) graphKeepAlive = 0.25f;
 
     updateThreadShouldRun = false;
     if (graphUpdateThread.joinable())
@@ -200,10 +200,11 @@ void AudioContext::update()
         // A `unique_lock` automatically acquires a lock on construction. The purpose of
         // this mutex is to synchronize updates to the graph from the main thread, 
         // primarily through `connect(...)` and `disconnect(...)`. 
-        std::unique_lock<std::mutex> lk(m_updateMutex);
+        std::unique_lock<std::mutex> lk;
 
         if (!m_isOfflineContext)
         {   
+            lk = std::unique_lock<std::mutex>(m_updateMutex);
             // A condition variable is used to notify this thread that a graph update is pending 
             // in one of the queues. 
 
@@ -226,6 +227,8 @@ void AudioContext::update()
             const float delta = (now - lastGraphUpdateTime);
             lastGraphUpdateTime = now;
             graphKeepAlive -= delta;
+
+            //std::cout << now << std::endl;
 
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())
@@ -333,7 +336,7 @@ void AudioContext::update()
 
         }
 
-        lk.unlock();
+        if (lk.owns_lock()) lk.unlock();
     }
 
     LOG("End UpdateGraphThread");

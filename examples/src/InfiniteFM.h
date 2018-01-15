@@ -43,9 +43,6 @@ struct InfiniteFMApp : public LabSoundExampleApp
         std::shared_ptr<DelayNode> chainDelay;
         
         {
-            ContextGraphLock g(context.get(), "Infinite FM");
-            ContextRenderLock r(context.get(), "Infinite FM");
-            
             modulator = std::make_shared<OscillatorNode>(context->sampleRate());
             modulator->setType(OscillatorType::SQUARE);
             modulator->start(0);

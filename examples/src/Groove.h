@@ -158,9 +158,6 @@ struct GrooveApp : public LabSoundExampleApp
         float songLenSeconds = 16.0f;
         
         {
-            ContextGraphLock g(context.get(), "GrooveApp");
-            ContextRenderLock r(context.get(), "GrooveApp");
-            
             float elapsedTime = 0.0f;
             
             envelope = std::make_shared<ADSRNode>();

@@ -17,7 +17,6 @@ struct TremoloApp : public LabSoundExampleApp
         std::shared_ptr<ADSRNode> trigger;
         
         {
-            ContextGraphLock g(context.get(), "Tremolo");
             ContextRenderLock r(context.get(), "Tremolo");
             
             modulator = std::make_shared<OscillatorNode>(context->sampleRate());

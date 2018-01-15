@@ -63,7 +63,6 @@ void OfflineAudioDestinationNode::startRendering()
         if (m_renderThread.joinable())
             m_renderThread.join();
 
-        
         if (m_context->offlineRenderCompleteCallback)
             m_context->offlineRenderCompleteCallback();
 

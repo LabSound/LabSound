@@ -35,7 +35,6 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<DynamicsCompressorNode> compressor;
         
         {
-            ContextGraphLock g(context.get(), "dalek voice");
             ContextRenderLock r(context.get(), "dalek voice");
             
             vIn = std::make_shared<OscillatorNode>(context->sampleRate());
@@ -78,7 +77,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // When working on complex graphs it helps to have a pen and paper handy!
             
 #ifdef USE_LIVE
-            input = MakeHardwareSourceNode(context);
+            input = MakeHardwareSourceNode(r);
             context->connect(vcInverter1, input, 0, 0);
             context->connect(vcDiode4->node(), input, 0, 0);
 #else

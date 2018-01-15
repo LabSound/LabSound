@@ -15,7 +15,6 @@ struct SpatializationApp : public LabSoundExampleApp
         std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf"); // note search path
 
         {
-            ContextGraphLock g(context.get(), "spatialization");
             ContextRenderLock r(context.get(), "spatialization");
             
             panner->setPanningModel(PanningMode::HRTF);

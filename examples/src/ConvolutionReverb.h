@@ -19,7 +19,6 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
         std::shared_ptr<GainNode> outputGain = std::make_shared<GainNode>();
         
         {
-            ContextGraphLock g(context.get(), "ConvolutionReverbApp");
             ContextRenderLock r(context.get(), "ConvolutionReverbApp");
 
             convolve = std::make_shared<ConvolverNode>();

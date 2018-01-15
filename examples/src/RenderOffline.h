@@ -19,7 +19,6 @@ struct OfflineRenderApp : public LabSoundExampleApp
         context->addAutomaticPullNode(recorder);
         recorder->startRecording();
         {
-            ContextGraphLock g(context.get(), "OfflineRenderApp");
             ContextRenderLock r(context.get(), "OfflineRenderApp");
             
             oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
