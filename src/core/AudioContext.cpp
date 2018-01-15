@@ -191,18 +191,26 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
+    const float frameSizeMs = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
+    const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
+    const int graphTickDurationUs = graphTickDurationMs * 1000.f;  // = ~5550us
+
     while (updateThreadShouldRun || graphKeepAlive > 0)
     {
+        // A `unique_lock` automatically acquires a lock on construction. The purpose of
+        // this mutex is to synchronize updates to the graph from the main thread, 
+        // primarily through `connect(...)` and `disconnect(...)`. 
         std::unique_lock<std::mutex> lk(m_updateMutex);
+
         if (!m_isOfflineContext)
-        {
+        {   
+            // A condition variable is used to notify this thread that a graph update is pending 
+            // in one of the queues. 
+
             // graph needs to tick to complete
             if ((currentTime() + graphKeepAlive) > currentTime())
             {
-                const float delta = (currentTime() - lastGraphUpdateTime);
-                lastGraphUpdateTime = currentTime();
-                graphKeepAlive = graphKeepAlive - delta;
-                cv.wait_for(lk, std::chrono::milliseconds(5));
+                cv.wait_until(lk, std::chrono::steady_clock::now() + std::chrono::microseconds(graphTickDurationUs));
             }
             else
             {
@@ -215,6 +223,9 @@ void AudioContext::update()
             ContextGraphLock gLock(this, "AudioContext::Update()");
 
             const double now = currentTime();
+            const float delta = (now - lastGraphUpdateTime);
+            lastGraphUpdateTime = now;
+            graphKeepAlive -= delta;
 
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())
@@ -251,8 +262,6 @@ void AudioContext::update()
                     connection.source->scheduleConnect();
 
                     AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
-
-                    graphKeepAlive = 0.25;
                 }
                 break;
 
@@ -272,16 +281,16 @@ void AudioContext::update()
                         // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
                         connection.destination->scheduleDisconnect();
                     }
-                    graphKeepAlive = 0.25;
+                    graphKeepAlive = updateThreadShouldRun ? connection.duration : graphKeepAlive;
                 }
                 break;
 
                 // @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
                 case ConnectionType::FinishDisconnect:
                 {
-                    if (connection.duration != 0)
+                    if (connection.duration > 0)
                     {
-                        connection.duration--;
+                        connection.duration -= delta;
                         skippedConnections.push_back(connection); 
                         continue;
                     }

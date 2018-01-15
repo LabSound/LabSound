@@ -151,7 +151,7 @@ private:
         std::shared_ptr<AudioNode> source;
         uint32_t destIndex;
         uint32_t srcIndex;
-        uint32_t duration = 8;
+        float duration = 0.1f;
         PendingConnection(
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,
