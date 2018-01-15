@@ -307,12 +307,14 @@ void AudioContext::update()
 
             // We have unsatisfied scheduled nodes, so next time the thread ticks we can re-check them 
             for (auto & sc : skippedConnections)
+            {
                 pendingNodeConnections.push(sc);
+            }
         }
 
         if (!m_isOfflineContext)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10)); // fixed 10ms timestep 
+            std::this_thread::sleep_for(std::chrono::milliseconds(50)); // fixed 10ms timestep 
         }
     }
 

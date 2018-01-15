@@ -161,7 +161,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
                         for (size_t s = 0; s < numSamples; ++s)
                         {
                             sample[s] *= scale;
-                            scale *= 0.95f;
+                            scale *= 0.97f;
                         }
                         new_schedule = scale;
                     }
@@ -181,7 +181,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
                         for (size_t s = 0; s < numSamples; ++s)
                         {
                             sample[s] *= scale;
-                            scale = 1.f - ((1.f - scale) * 0.95f);
+                            scale = 1.f - ((1.f - scale) * 0.97f);
                         }
                         new_schedule = scale;
                     }
