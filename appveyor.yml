@@ -7,6 +7,9 @@ configuration:
   - Release
   - Debug
 
+install:
+  - git submodule update --init --recursive
+
 build:
   verbosity: minimal
   project: examples/win.vs2017/LabSoundExamples.sln
