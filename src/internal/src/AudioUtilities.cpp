@@ -3,8 +3,9 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/AudioUtilities.h"
+#include "internal/Assertions.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 namespace lab { namespace AudioUtilities {
 

@@ -5,12 +5,12 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/PingPongDelayNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace lab;
 

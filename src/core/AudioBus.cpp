@@ -6,6 +6,7 @@
 #include "internal/DenormalDisabler.h"
 #include "internal/SincResampler.h"
 #include "internal/VectorMath.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <assert.h>

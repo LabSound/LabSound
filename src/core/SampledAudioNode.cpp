@@ -9,13 +9,14 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace std;
 

@@ -4,9 +4,10 @@
 
 #include "internal/DirectConvolver.h"
 #include "internal/VectorMath.h"
-#include "internal/ConfigMacros.h"
+#include "internal/Assertions.h"
+#include "LabSound/core/Macros.h"
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 #include <Accelerate/Accelerate.h>
 #endif
 
@@ -45,7 +46,7 @@ void DirectConvolver::process(AudioFloatArray* convolutionKernel, const float* s
     // Copy samples to 2nd half of input buffer.
     memcpy(inputP, sourceP, sizeof(float) * framesToProcess);
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 #if defined(__ppc__) || defined(__i386__)
     conv(inputP - kernelSize + 1, 1, kernelP + kernelSize - 1, -1, destP, 1, framesToProcess, kernelSize);
 #else

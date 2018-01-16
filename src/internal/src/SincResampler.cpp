@@ -2,12 +2,10 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
 #include "internal/SincResampler.h"
-
+#include "internal/Assertions.h"
 #include "LabSound/core/AudioBus.h"
-
-#include <WTF/MathExtras.h>
 
 #ifdef __SSE2__
 #include <emmintrin.h>

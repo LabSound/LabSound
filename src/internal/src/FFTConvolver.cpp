@@ -4,6 +4,7 @@
 
 #include "internal/FFTConvolver.h"
 #include "internal/VectorMath.h"
+#include "internal/Assertions.h"
 
 namespace lab {
 

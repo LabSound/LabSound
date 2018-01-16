@@ -3,14 +3,17 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Mixing.h"
+#include "LabSound/core/Macros.h"
 
 #include "internal/EqualPowerPanner.h"
 #include "internal/AudioUtilities.h"
-#include "LabSound/core/Mixing.h"
+#include "internal/Assertions.h"
+
 #include "LabSound/extended/AudioContextLock.h"
 
 #include <algorithm>
-#include <WTF/MathExtras.h>
+
 
 // Use a 50ms smoothing / de-zippering time-constant.
 const float SmoothingTimeConstant = 0.050f;

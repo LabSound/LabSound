@@ -4,6 +4,7 @@
 
 #include "internal/BiquadDSPKernel.h"
 #include "internal/BiquadProcessor.h"
+#include "internal/Assertions.h"
 
 #include <limits.h>
 #include <vector>

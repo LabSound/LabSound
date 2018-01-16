@@ -9,6 +9,7 @@
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
 #include "internal/HRTFPanner.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <math.h>

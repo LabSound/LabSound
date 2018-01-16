@@ -5,13 +5,13 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 
-#include <WTF/MathExtras.h>
 #include <algorithm>
 
 using namespace std;

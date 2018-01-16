@@ -2,14 +2,15 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioBus.h"
+#include "internal/Assertions.h"
 #include "internal/HRTFPanner.h"
 #include "internal/FFTConvolver.h"
 #include "internal/HRTFDatabase.h"
 #include "internal/HRTFDatabaseLoader.h"
 
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace std;
 

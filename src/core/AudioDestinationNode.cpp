@@ -13,6 +13,7 @@
 
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
+#include "internal/Assertions.h"
 
 namespace lab 
 {

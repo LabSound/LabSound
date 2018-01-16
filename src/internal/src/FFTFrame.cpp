@@ -11,7 +11,7 @@
 #endif
 
 #include <complex>
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 namespace lab {
     

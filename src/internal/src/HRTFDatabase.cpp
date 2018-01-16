@@ -4,6 +4,7 @@
 
 #include "internal/HRTFDatabase.h"
 #include "internal/HRTFElevation.h"
+#include "internal/Assertions.h"
 
 using namespace std;
 

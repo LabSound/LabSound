@@ -2,15 +2,17 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
+
 #include "internal/DynamicsCompressorKernel.h"
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
+#include "internal/Assertions.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include <memory>
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace std;
 

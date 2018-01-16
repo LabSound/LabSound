@@ -10,9 +10,6 @@
     <Filter Include="third_party\STK">
       <UniqueIdentifier>{39b4c2c4-df47-4b14-b05d-cdb17560e916}</UniqueIdentifier>
     </Filter>
-    <Filter Include="third_party\WTF">
-      <UniqueIdentifier>{6E4ACF82-449A-9C46-A197-C1A1746114E3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="third_party\rtaudio">
       <UniqueIdentifier>{cfa7c5d9-f96f-4c90-b6e5-5cacb1339831}</UniqueIdentifier>
     </Filter>
@@ -282,9 +279,6 @@
     <ClInclude Include="..\include\LabSound\core\GainNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\MediaStream.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\core\OfflineAudioDestinationNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
@@ -324,9 +318,6 @@
     <ClInclude Include="..\include\LabSound\core\AudioSourceProvider.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\ConfigMacros.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\internal\Assertions.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
@@ -357,29 +348,14 @@
     <ClInclude Include="..\include\LabSound\core\AudioArray.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\core\AudioChannel.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\core\AudioBus.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\core\AudioBus.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\LabSound\core\AudioChannel.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\third_party\WTF\Compiler.h">
-      <Filter>third_party\WTF</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\WTF\CPU.h">
-      <Filter>third_party\WTF</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\WTF\MathExtras.h">
-      <Filter>third_party\WTF</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\WTF\Platform.h">
-      <Filter>third_party\WTF</Filter>
+    <ClInclude Include="..\include\LabSound\core\Macros.h">
+      <Filter>LabSound\core\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

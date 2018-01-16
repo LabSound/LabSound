@@ -8,12 +8,12 @@
 #include "internal/AudioFileReader.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
-#include "internal/ConfigMacros.h"
+#include "internal/Assertions.h"
+#include "LabSound/core/Macros.h"
 
 #include <math.h>
-#include <WTF/MathExtras.h>
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 using namespace std;
 #endif
 

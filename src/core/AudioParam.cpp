@@ -2,6 +2,7 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -10,8 +11,8 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
+#include "internal/Assertions.h"
 
-#include <WTF/MathExtras.h>
 #include <algorithm>
 
 using namespace lab;

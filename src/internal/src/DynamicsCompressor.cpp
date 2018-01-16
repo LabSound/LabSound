@@ -9,7 +9,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 namespace lab {
 

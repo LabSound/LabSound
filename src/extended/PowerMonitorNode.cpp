@@ -4,10 +4,9 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/PowerMonitorNode.h"
-
-#include <WTF/MathExtras.h>
 
 namespace lab {
     

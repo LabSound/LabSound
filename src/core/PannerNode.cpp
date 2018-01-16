@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -17,8 +18,7 @@
 #include "internal/Cone.h"
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
-
-#include <WTF/MathExtras.h>
+#include "internal/Assertions.h"
 
 using namespace std;
 

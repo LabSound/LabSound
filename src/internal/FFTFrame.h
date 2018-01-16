@@ -7,11 +7,12 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
 
 #include <vector>
+#include <memory>
 
-#if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
+#if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
 #define USE_ACCELERATE_FFT 1
 #else
 #define USE_ACCELERATE_FFT 0
@@ -21,7 +22,7 @@
 #include <Accelerate/Accelerate.h>
 #endif // !USE_ACCELERATE_FFT
 
-#if USE(WEBAUDIO_KISSFFT)
+#if defined(WEBAUDIO_KISSFFT)
 #include <kissfft/kiss_fft.hpp>
 #include <kissfft/kiss_fftr.hpp>
 #endif // USE(WEBAUDIO_KISSFFT)
@@ -90,7 +91,7 @@ private:
     AudioFloatArray m_imagData;
 #else // !USE_ACCELERATE_FFT
     
-#if USE(WEBAUDIO_KISSFFT)
+#if defined(WEBAUDIO_KISSFFT)
     kiss_fftr_cfg mFFT;
     kiss_fftr_cfg mIFFT;
 

@@ -6,6 +6,7 @@
 
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
+#include "internal/Assertions.h"
 
 #include "LabSound/core/AudioBus.h"
 

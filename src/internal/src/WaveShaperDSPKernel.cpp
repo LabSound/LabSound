@@ -2,9 +2,10 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
 #include "internal/WaveShaperDSPKernel.h"
 #include "internal/WaveShaperProcessor.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 

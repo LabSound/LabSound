@@ -9,6 +9,7 @@
 #include "internal/ReverbAccumulationBuffer.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/ReverbInputBuffer.h"
+#include "internal/Assertions.h"
 
 namespace lab {
 

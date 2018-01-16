@@ -9,13 +9,14 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Panner.h"
 #include "internal/AudioUtilities.h"
+#include "internal/Assertions.h"
 
-#include <WTF/MathExtras.h>
 
 namespace lab
 {

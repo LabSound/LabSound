@@ -5,12 +5,12 @@
 #include "internal/Biquad.h"
 #include "internal/DenormalDisabler.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 #include <algorithm>
 #include <stdio.h>
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 #include <Accelerate/Accelerate.h>
 #endif
 
@@ -22,7 +22,7 @@ const int kBufferSize = 1024;
 
 Biquad::Biquad()
 {
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
     // Allocate two samples more for filter history
     m_inputBuffer.allocate(kBufferSize + 2);
     m_outputBuffer.allocate(kBufferSize + 2);
@@ -40,7 +40,7 @@ Biquad::~Biquad()
 
 void Biquad::process(const float* sourceP, float* destP, size_t framesToProcess)
 {
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
     // Use vecLib if available
     processFast(sourceP, destP, framesToProcess);
 #else
@@ -88,7 +88,7 @@ void Biquad::process(const float* sourceP, float* destP, size_t framesToProcess)
 #endif
 }
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 
 // Here we have optimized version using Accelerate.framework
 
@@ -147,7 +147,7 @@ void Biquad::processSliceFast(double* sourceP, double* destP, double* coefficien
 
 void Biquad::reset()
 {
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
     // Two extra samples for filter history
     double* inputP = m_inputBuffer.data();
     inputP[0] = 0;

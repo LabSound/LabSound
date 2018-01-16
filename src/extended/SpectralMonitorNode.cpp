@@ -5,14 +5,12 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/WindowFunctions.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/SpectralMonitorNode.h"
 
-#include "internal/ConfigMacros.h"
-
 #include <ooura/fftsg.h>
 #include <cmath>
-
 
 namespace lab 
 {

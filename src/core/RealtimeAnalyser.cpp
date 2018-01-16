@@ -3,6 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/AudioContextLock.h"
@@ -10,8 +11,7 @@
 #include "internal/AudioUtilities.h"
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
-
-#include <WTF/MathExtras.h>
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <limits.h>

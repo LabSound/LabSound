@@ -13,7 +13,7 @@
 
 #include "internal/VectorMath.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 #include <vector>
 

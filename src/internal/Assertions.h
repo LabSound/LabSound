@@ -5,11 +5,11 @@
 #ifndef LabSound_Assertions_h
 #define LabSound_Assertions_h
 
-#include <WTF/Platform.h>
+#include "LabSound/core/Macros.h"
 #include "LabSound/extended/Logging.h"
 
 // FIXME: Change to use something other than ASSERT to avoid this conflict with the underlying platform
-#if OS(WINDOWS)
+#if defined(LABSOUND_PLATFORM_WINDOWS)
 #undef ASSERT
 #define __func__ __FUNCTION__
 #endif

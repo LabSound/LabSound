@@ -25,6 +25,7 @@
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBus.h" />
     <ClInclude Include="..\include\LabSound\core\AudioChannel.h" />
+    <ClInclude Include="..\include\LabSound\core\Macros.h" />
     <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioContext.h" />
     <ClInclude Include="..\include\LabSound\core\AudioDestinationNode.h" />
@@ -51,7 +52,6 @@
     <ClInclude Include="..\include\LabSound\core\DynamicsCompressorNode.h" />
     <ClInclude Include="..\include\LabSound\core\FloatPoint3D.h" />
     <ClInclude Include="..\include\LabSound\core\GainNode.h" />
-    <ClInclude Include="..\include\LabSound\core\MediaStream.h" />
     <ClInclude Include="..\include\LabSound\core\OfflineAudioDestinationNode.h" />
     <ClInclude Include="..\include\LabSound\core\OscillatorNode.h" />
     <ClInclude Include="..\include\LabSound\core\PannerNode.h" />
@@ -79,8 +79,6 @@
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
     <ClInclude Include="..\include\LabSound\extended\Util.h" />
-    <ClInclude Include="..\src\core\AudioBus.h" />
-    <ClInclude Include="..\src\core\AudioChannel.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
@@ -93,7 +91,6 @@
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h" />
     <ClInclude Include="..\src\internal\BiquadProcessor.h" />
     <ClInclude Include="..\src\internal\Cone.h" />
-    <ClInclude Include="..\src\internal\ConfigMacros.h" />
     <ClInclude Include="..\src\internal\DelayDSPKernel.h" />
     <ClInclude Include="..\src\internal\DelayProcessor.h" />
     <ClInclude Include="..\src\internal\DenormalDisabler.h" />
@@ -123,10 +120,6 @@
     <ClInclude Include="..\src\internal\win\AudioDestinationWin.h" />
     <ClInclude Include="..\src\internal\ZeroPole.h" />
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp" />
-    <ClInclude Include="..\third_party\WTF\Compiler.h" />
-    <ClInclude Include="..\third_party\WTF\CPU.h" />
-    <ClInclude Include="..\third_party\WTF\MathExtras.h" />
-    <ClInclude Include="..\third_party\WTF\Platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\core\AnalyserNode.cpp" />
