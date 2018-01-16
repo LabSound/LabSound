@@ -129,8 +129,6 @@ namespace lab
 
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
 
-        setNodeType(lab::NodeType::NodeTypeClip);
-
         m_params.push_back(internalNode->aVal);
         m_params.push_back(internalNode->bVal);
 

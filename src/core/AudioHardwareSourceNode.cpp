@@ -18,8 +18,6 @@ AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSo
     // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    setNodeType(lab::NodeType::NodeTypeHardwareSource);
-
     initialize();
 }
 

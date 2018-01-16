@@ -30,8 +30,6 @@ const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration)
 {
-    setNodeType(NodeTypeAudioBufferSource);
-
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
 

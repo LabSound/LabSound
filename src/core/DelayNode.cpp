@@ -24,7 +24,6 @@ DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcesso
          throw std::out_of_range("Delay time exceeds limit of 128 seconds");
     }
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
-    setNodeType(NodeTypeDelay);
 
     m_params.push_back(delayProcessor()->delayTime());
 

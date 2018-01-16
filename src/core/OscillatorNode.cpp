@@ -36,8 +36,6 @@ OscillatorNode::OscillatorNode(const float sampleRate) :
       m_phaseIncrements(AudioNode::ProcessingSizeInFrames),
       m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
-    setNodeType(NodeTypeOscillator);
-
     // Use musical pitch standard A440 as a default.
     m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
 

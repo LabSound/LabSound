@@ -194,8 +194,6 @@ namespace lab
 
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 
-        setNodeType(lab::NodeTypeADSR);
-
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
 

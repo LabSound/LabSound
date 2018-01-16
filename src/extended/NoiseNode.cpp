@@ -13,8 +13,6 @@ namespace lab {
 
     NoiseNode::NoiseNode() : AudioScheduledSourceNode()
     {
-        setNodeType(lab::NodeType::NodeTypeNoise);
-
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
         initialize();

@@ -35,8 +35,6 @@ ConvolverNode::ConvolverNode() : m_swapOnRender(false), m_normalize(true)
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
     
-    setNodeType(NodeTypeConvolver);
-    
     initialize();
 }
 

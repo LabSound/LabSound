@@ -128,8 +128,6 @@ namespace lab
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-        setNodeType(lab::NodeType::NodeTypeSupersaw);
-
         initialize();
     }
 

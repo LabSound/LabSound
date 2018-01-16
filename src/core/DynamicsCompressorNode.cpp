@@ -22,8 +22,6 @@ DynamicsCompressorNode::DynamicsCompressorNode()
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    setNodeType(NodeTypeDynamicsCompressor);
-
     m_threshold = make_shared<AudioParam>("threshold", -24, -100, 0);
     m_knee = make_shared<AudioParam>("knee", 30, 0, 40);
     m_ratio = make_shared<AudioParam>("ratio", 12, 1, 20);

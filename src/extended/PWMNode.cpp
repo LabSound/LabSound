@@ -73,9 +73,7 @@ namespace lab {
     {
         m_processor.reset(new PWMNodeInternal());
 
-        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
-
-        setNodeType(lab::NodeType::NodeTypePWM);
+        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); 

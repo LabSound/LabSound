@@ -56,7 +56,6 @@ AudioDestinationNode::AudioDestinationNode(AudioContext * context, float sampleR
     m_localAudioInputProvider = new LocalAudioInputProvider();
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    setNodeType(NodeTypeDestination);
 
     // Node-specific default mixing rules.
     m_channelCount = 2;

@@ -100,7 +100,6 @@ namespace lab
     {
         internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        setNodeType(lab::NodeType::NodeTypeSpectralMonitor);
         initialize();
     }
 

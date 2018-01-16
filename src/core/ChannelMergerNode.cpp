@@ -27,8 +27,6 @@ ChannelMergerNode::ChannelMergerNode(unsigned numberOfInputs) : AudioNode()
 
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     
-    setNodeType(NodeTypeChannelMerger);
-    
     initialize();
 }
 

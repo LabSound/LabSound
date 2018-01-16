@@ -28,46 +28,6 @@ enum PanningMode
     HRTF = 20,
 };
 
-enum NodeType
-{
-    // Core API Nodes
-    NodeTypeDefault,
-    NodeTypeDestination,
-    NodeTypeOscillator,
-    NodeTypeAudioBufferSource,
-    NodeTypeHardwareSource,
-    NodeTypeBiquadFilter,
-    NodeTypePanner,
-    NodeTypeStereoPanner,
-    NodeTypeConvolver,
-    NodeTypeDelay,
-    NodeTypeGain,
-    NodeTypeChannelSplitter,
-    NodeTypeChannelMerger,
-    NodeTypeAnalyser,
-    NodeTypeDynamicsCompressor,
-    NodeTypeWaveShaper,
-
-    // Labsound Extensions
-    NodeTypeADSR,
-    NodeTypeClip,
-    NodeTypeDiode,
-    NodeTypeNoise,
-    NodeTypePd,
-    NodeTypePeakComp,
-    NodeTypePowerMonitor,
-    NodeTypePWM,
-    NodeTypeRecorder,
-    NodeTypeSfxr,
-    NodeTypeSpatialization,
-    NodeTypeSpectralMonitor,
-    NodeTypeSupersaw,
-    NodeTypeSTK,
-    NodeTypeBPMDelay,
-
-    NodeTypeEnd,
-};
-
 class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
@@ -91,9 +51,6 @@ public:
 
     AudioNode();
     virtual ~AudioNode();
-
-    NodeType nodeType() const { return m_nodeType; }
-    void setNodeType(NodeType);
 
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
@@ -180,7 +137,6 @@ private:
     friend class AudioContext;
 
     volatile bool m_isInitialized{ false };
-    NodeType m_nodeType{ NodeTypeDefault };
 
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;

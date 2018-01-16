@@ -13,7 +13,6 @@ BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
 {
     // Initially setup as lowpass filter.
     m_processor.reset(new BiquadProcessor(1, false));
-    setNodeType(NodeTypeBiquadFilter);
 
     m_params.push_back(biquadProcessor()->parameter1());
     m_params.push_back(biquadProcessor()->parameter2());

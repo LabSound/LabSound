@@ -11,7 +11,6 @@ namespace lab
 WaveShaperNode::WaveShaperNode()
 {
     m_processor.reset(new WaveShaperProcessor(1));
-    setNodeType(NodeTypeWaveShaper);
     initialize();
 }
 

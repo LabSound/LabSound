@@ -30,11 +30,6 @@ void AudioNode::uninitialize()
     m_isInitialized = false;
 }
 
-void AudioNode::setNodeType(NodeType type)
-{
-    m_nodeType = type;
-}
-
 void AudioNode::lazyInitialize()
 {
     if (!isInitialized()) initialize();

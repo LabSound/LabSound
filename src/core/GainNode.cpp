@@ -24,8 +24,6 @@ GainNode::GainNode() : AudioNode() , m_lastGain(1.0) , m_sampleAccurateGainValue
 
     m_params.push_back(m_gain);
 
-    setNodeType(NodeTypeGain);
-
     initialize();
 }
 

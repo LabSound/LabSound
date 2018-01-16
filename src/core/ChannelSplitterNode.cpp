@@ -29,8 +29,6 @@ ChannelSplitterNode::ChannelSplitterNode(unsigned numberOfOutputs) : AudioNode()
        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     }
 
-    setNodeType(NodeTypeChannelSplitter);
-    
     initialize();
 }
 

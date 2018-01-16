@@ -60,8 +60,6 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath) :
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    setNodeType(NodeTypePanner);
-
     initialize();
 }
 
@@ -352,11 +350,9 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
     if (!node)
         return;
 
-    // First check if this node is an SampledAudioNode. If so, let it know about us so that doppler shift pitch can be taken into account.
-    /// @TODO This is the ONLY use of nodeType anywhere, let's just eliminate nodeType. We don't need home made RTTI
-    if (node->nodeType() == NodeTypeAudioBufferSource)
+    // First check if this node is an SampledAudioNode.
+    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode*>(node))
     {
-        SampledAudioNode * bufferSourceNode = reinterpret_cast<SampledAudioNode*>(node);
         bufferSourceNode->setPannerNode(this);
     }
     else
