@@ -45,7 +45,6 @@
 		08650BFA1AD6225900D19E38 /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */; };
 		08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD21AD6225900D19E38 /* ZeroPole.cpp */; };
 		08650C021AD622A400D19E38 /* AudioDestinationMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */; };
-		08650C031AD622A400D19E38 /* AudioFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFF1AD622A400D19E38 /* AudioFileReader.cpp */; };
 		08650C041AD622A400D19E38 /* FFTFrameMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C001AD622A400D19E38 /* FFTFrameMac.cpp */; };
 		08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C451AD6239000D19E38 /* ADSRNode.cpp */; };
 		08650C561AD6239000D19E38 /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C461AD6239000D19E38 /* ClipNode.cpp */; };
@@ -96,6 +95,7 @@
 		DA12233A200D88DD00AB1504 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122337200D88DD00AB1504 /* AudioBus.cpp */; };
 		DA12233B200D88DD00AB1504 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122338200D88DD00AB1504 /* AudioChannel.cpp */; };
 		DA12233C200D88DD00AB1504 /* SampledAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122339200D88DD00AB1504 /* SampledAudioNode.cpp */; };
+		E28FC138200DDFF60057982C /* AudioFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E28FC137200DDFF60057982C /* AudioFileReader.cpp */; };
 		E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */; };
 /* End PBXBuildFile section */
 
@@ -113,7 +113,6 @@
 		08650A251AD61FE800D19E38 /* AudioDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestination.h; path = ../src/internal/AudioDestination.h; sourceTree = "<group>"; };
 		08650A271AD61FE800D19E38 /* AudioDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernel.h; path = ../src/internal/AudioDSPKernel.h; sourceTree = "<group>"; };
 		08650A281AD61FE800D19E38 /* AudioDSPKernelProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernelProcessor.h; path = ../src/internal/AudioDSPKernelProcessor.h; sourceTree = "<group>"; };
-		08650A2A1AD61FE800D19E38 /* AudioFileReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioFileReader.h; path = ../src/internal/AudioFileReader.h; sourceTree = "<group>"; };
 		08650A2C1AD61FE800D19E38 /* AudioResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResampler.h; path = ../src/internal/AudioResampler.h; sourceTree = "<group>"; };
 		08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResamplerKernel.h; path = ../src/internal/AudioResamplerKernel.h; sourceTree = "<group>"; };
 		08650A2E1AD61FE800D19E38 /* AudioUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioUtilities.h; path = ../src/internal/AudioUtilities.h; sourceTree = "<group>"; };
@@ -121,7 +120,6 @@
 		08650A301AD61FE800D19E38 /* BiquadDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BiquadDSPKernel.h; path = ../src/internal/BiquadDSPKernel.h; sourceTree = "<group>"; };
 		08650A311AD61FE800D19E38 /* BiquadProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BiquadProcessor.h; path = ../src/internal/BiquadProcessor.h; sourceTree = "<group>"; };
 		08650A321AD61FE800D19E38 /* Cone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cone.h; path = ../src/internal/Cone.h; sourceTree = "<group>"; };
-		08650A331AD61FE800D19E38 /* ConfigMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ConfigMacros.h; path = ../src/internal/ConfigMacros.h; sourceTree = "<group>"; };
 		08650A341AD61FE800D19E38 /* DelayDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DelayDSPKernel.h; path = ../src/internal/DelayDSPKernel.h; sourceTree = "<group>"; };
 		08650A351AD61FE800D19E38 /* DelayProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DelayProcessor.h; path = ../src/internal/DelayProcessor.h; sourceTree = "<group>"; };
 		08650A361AD61FE800D19E38 /* DenormalDisabler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DenormalDisabler.h; path = ../src/internal/DenormalDisabler.h; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 		08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperProcessor.cpp; path = ../src/internal/src/WaveShaperProcessor.cpp; sourceTree = SOURCE_ROOT; };
 		08650BD21AD6225900D19E38 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZeroPole.cpp; path = ../src/internal/src/ZeroPole.cpp; sourceTree = SOURCE_ROOT; };
 		08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDestinationMac.cpp; path = ../src/internal/src/mac/AudioDestinationMac.cpp; sourceTree = SOURCE_ROOT; };
-		08650BFF1AD622A400D19E38 /* AudioFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileReader.cpp; path = ../src/internal/src/AudioFileReader.cpp; sourceTree = SOURCE_ROOT; };
 		08650C001AD622A400D19E38 /* FFTFrameMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameMac.cpp; path = ../src/internal/src/mac/FFTFrameMac.cpp; sourceTree = SOURCE_ROOT; };
 		08650C451AD6239000D19E38 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ADSRNode.cpp; path = ../src/extended/ADSRNode.cpp; sourceTree = SOURCE_ROOT; };
 		08650C461AD6239000D19E38 /* ClipNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipNode.cpp; path = ../src/extended/ClipNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -297,6 +294,7 @@
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		E28FC137200DDFF60057982C /* AudioFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileReader.cpp; path = ../extended/AudioFileReader.cpp; sourceTree = "<group>"; };
 		E2D4FE501AF55198001B7E6C /* FunctionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FunctionNode.h; path = ../include/LabSound/extended/FunctionNode.h; sourceTree = SOURCE_ROOT; };
 		E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FunctionNode.cpp; path = ../src/extended/FunctionNode.cpp; sourceTree = SOURCE_ROOT; };
 		E2D4FE531AF55DFA001B7E6C /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synthesis.h; path = ../include/LabSound/core/Synthesis.h; sourceTree = SOURCE_ROOT; };
@@ -460,6 +458,7 @@
 		08650A201AD61F8D00D19E38 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E28FC137200DDFF60057982C /* AudioFileReader.cpp */,
 				08650C451AD6239000D19E38 /* ADSRNode.cpp */,
 				08650C461AD6239000D19E38 /* ClipNode.cpp */,
 				08650C471AD6239000D19E38 /* DiodeNode.cpp */,
@@ -577,12 +576,10 @@
 				08650A2C1AD61FE800D19E38 /* AudioResampler.h */,
 				08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */,
 				08650A2E1AD61FE800D19E38 /* AudioUtilities.h */,
-				08650A2A1AD61FE800D19E38 /* AudioFileReader.h */,
 				08650A2F1AD61FE800D19E38 /* Biquad.h */,
 				08650A301AD61FE800D19E38 /* BiquadDSPKernel.h */,
 				08650A311AD61FE800D19E38 /* BiquadProcessor.h */,
 				08650A321AD61FE800D19E38 /* Cone.h */,
-				08650A331AD61FE800D19E38 /* ConfigMacros.h */,
 				08650A341AD61FE800D19E38 /* DelayDSPKernel.h */,
 				08650A351AD61FE800D19E38 /* DelayProcessor.h */,
 				08650A361AD61FE800D19E38 /* DenormalDisabler.h */,
@@ -634,7 +631,6 @@
 				08650BB01AD6225900D19E38 /* AudioResampler.cpp */,
 				08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */,
 				08650BB21AD6225900D19E38 /* AudioUtilities.cpp */,
-				08650BFF1AD622A400D19E38 /* AudioFileReader.cpp */,
 				08650BB31AD6225900D19E38 /* Biquad.cpp */,
 				08650BB41AD6225900D19E38 /* BiquadDSPKernel.cpp */,
 				08650BB51AD6225900D19E38 /* BiquadProcessor.cpp */,
@@ -787,7 +783,6 @@
 				08650BE51AD6225900D19E38 /* DynamicsCompressorKernel.cpp in Sources */,
 				08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */,
 				08650CEB1AD6241A00D19E38 /* GainNode.cpp in Sources */,
-				08650C031AD622A400D19E38 /* AudioFileReader.cpp in Sources */,
 				08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */,
 				08650BE01AD6225900D19E38 /* DelayDSPKernel.cpp in Sources */,
 				08567C2A1B61D09D00EB6C0D /* PingPongDelayNode.cpp in Sources */,
@@ -819,6 +814,7 @@
 				08650BDB1AD6225900D19E38 /* AudioUtilities.cpp in Sources */,
 				08650CE61AD6241A00D19E38 /* ChannelSplitterNode.cpp in Sources */,
 				08650CEA1AD6241A00D19E38 /* DynamicsCompressorNode.cpp in Sources */,
+				E28FC138200DDFF60057982C /* AudioFileReader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -887,7 +883,6 @@
 					HAVE_ALLOCA,
 					HAVE_UNISTD_H,
 					USEAPI_DUMMY,
-					"BUILDING_WTF=1",
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = "";
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -901,7 +896,6 @@
 			baseConfigurationReference = E285226F1A642304003F1CA7 /* LabSound.xcconfig */;
 			buildSettings = {
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"BUILDING_WTF=1",
 					NDEBUG,
 					PD,
 					__MACOSX_CORE__,

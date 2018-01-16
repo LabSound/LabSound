@@ -62,7 +62,7 @@ const float piOverFourFloat = static_cast<float>(M_PI_4);
 const double twoPiDouble = piDouble * 2.0;
 const float twoPiFloat = piFloat * 2.0f;
 
-template<typename T> inline T clampTo(double value, T min = defaultMinimumForClamp<T>(), T max = defaultMaximumForClamp<T>())
+template<typename T> inline T clampTo(double value, T min, T max)
 {
     if (value >= static_cast<double>(max)) return max;
     if (value <= static_cast<double>(min)) return min;

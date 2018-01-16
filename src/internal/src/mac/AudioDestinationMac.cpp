@@ -4,7 +4,7 @@
 
 #include "LabSound/core/AudioIOCallback.h"
 
-#include "internal/ConfigMacros.h"
+#include "internal/Assertions.h"
 #include "internal/mac/AudioDestinationMac.h"
 #include "internal/VectorMath.h"
 
