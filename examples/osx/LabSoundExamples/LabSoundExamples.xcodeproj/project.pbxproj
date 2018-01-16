@@ -30,16 +30,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		082AE3D51C338A7F0084E40C /* ConnectDisconnect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ConnectDisconnect.h; path = ../../src/ConnectDisconnect.h; sourceTree = "<group>"; };
 		08650A0D1AD23A6400D19E38 /* ConvolutionReverb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ConvolutionReverb.h; path = ../../src/ConvolutionReverb.h; sourceTree = "<group>"; };
 		08650A0E1AD23A6400D19E38 /* MicrophoneDalek.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MicrophoneDalek.h; path = ../../src/MicrophoneDalek.h; sourceTree = "<group>"; };
 		08650A0F1AD23A6400D19E38 /* MicrophoneLoopback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MicrophoneLoopback.h; path = ../../src/MicrophoneLoopback.h; sourceTree = "<group>"; };
 		08650A101AD23A6400D19E38 /* MicrophoneReverb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MicrophoneReverb.h; path = ../../src/MicrophoneReverb.h; sourceTree = "<group>"; };
 		08650A111AD23A6400D19E38 /* PeakCompressor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PeakCompressor.h; path = ../../src/PeakCompressor.h; sourceTree = "<group>"; };
-		08650A121AD23A6400D19E38 /* Rhythm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Rhythm.h; path = ../../src/Rhythm.h; sourceTree = "<group>"; };
-		08650A131AD23A6400D19E38 /* RhythmAndFilters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RhythmAndFilters.h; path = ../../src/RhythmAndFilters.h; sourceTree = "<group>"; };
 		08650A141AD23A6400D19E38 /* Simple.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Simple.h; path = ../../src/Simple.h; sourceTree = "<group>"; };
-		08650A151AD23A6400D19E38 /* OfflineRender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineRender.h; path = ../../src/OfflineRender.h; sourceTree = "<group>"; };
 		08650A161AD23A6400D19E38 /* Spatialization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Spatialization.h; path = ../../src/Spatialization.h; sourceTree = "<group>"; };
 		08650A171AD23AF300D19E38 /* ExampleBaseApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ExampleBaseApp.h; path = ../../src/ExampleBaseApp.h; sourceTree = "<group>"; };
 		08650A181AD2E6E600D19E38 /* Validation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Validation.h; path = ../../src/Validation.h; sourceTree = "<group>"; };
@@ -48,6 +44,8 @@
 		08C25E871ADE29520097D572 /* StereoPanning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPanning.h; path = ../../src/StereoPanning.h; sourceTree = "<group>"; };
 		08CC50E61AF9217400F0B81F /* Groove.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Groove.h; path = ../../src/Groove.h; sourceTree = "<group>"; };
 		08F5C8091C38686F00784ABD /* liblabsound.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblabsound.a; path = ../../../../../Library/Developer/Xcode/DerivedData/bin/Debug/liblabsound.a; sourceTree = "<group>"; };
+		DA122330200D87D400AB1504 /* RenderOffline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RenderOffline.h; path = ../../src/RenderOffline.h; sourceTree = "<group>"; };
+		DA122331200D87D400AB1504 /* LiveGraphUpdate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LiveGraphUpdate.h; path = ../../src/LiveGraphUpdate.h; sourceTree = "<group>"; };
 		E23015DC185F611A00FEC991 /* LabSoundExamples */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LabSoundExamples; sourceTree = BUILT_PRODUCTS_DIR; };
 		E23015ED1860235E00FEC991 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E23015EE1860235E00FEC991 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -80,6 +78,8 @@
 		08650A0C1AD23A5C00D19E38 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				DA122331200D87D400AB1504 /* LiveGraphUpdate.h */,
+				DA122330200D87D400AB1504 /* RenderOffline.h */,
 				08650A0D1AD23A6400D19E38 /* ConvolutionReverb.h */,
 				08650A191AD38AD700D19E38 /* InfiniteFM.h */,
 				08650A0E1AD23A6400D19E38 /* MicrophoneDalek.h */,
@@ -89,11 +89,7 @@
 				08C25E871ADE29520097D572 /* StereoPanning.h */,
 				E2D4FE4F1AF54A6B001B7E6C /* RedAlert.h */,
 				08CC50E61AF9217400F0B81F /* Groove.h */,
-				08650A121AD23A6400D19E38 /* Rhythm.h */,
-				08650A131AD23A6400D19E38 /* RhythmAndFilters.h */,
 				08650A141AD23A6400D19E38 /* Simple.h */,
-				082AE3D51C338A7F0084E40C /* ConnectDisconnect.h */,
-				08650A151AD23A6400D19E38 /* OfflineRender.h */,
 				08650A161AD23A6400D19E38 /* Spatialization.h */,
 				E2D4FE4E1AF4944C001B7E6C /* Tremolo.h */,
 				08650A181AD2E6E600D19E38 /* Validation.h */,

@@ -5,7 +5,7 @@
 #ifndef AudioDestinationMac_h
 #define AudioDestinationMac_h
 
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 #include "internal/AudioDestination.h"
 #include <AudioUnit/AudioUnit.h>
 

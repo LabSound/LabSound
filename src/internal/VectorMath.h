@@ -5,6 +5,9 @@
 #ifndef VectorMath_h
 #define VectorMath_h
 
+
+#include <cstddef>
+
 // Defines the interface for several vector math functions whose implementation will ideally be optimized.
 
 namespace lab {
