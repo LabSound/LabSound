@@ -218,16 +218,6 @@
     <ClCompile Include="..\third_party\rtaudio\src\RtAudio.cpp" />
     <ClCompile Include="..\third_party\STK\src\STKInlineCompile.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj">
-      <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2C11853-81F3-C348-8C6E-8DA318E0C84E}</ProjectGuid>
     <RootNamespace>LabSound</RootNamespace>
