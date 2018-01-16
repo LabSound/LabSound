@@ -44,9 +44,9 @@ int main (int argc, char *argv[])
 {
     try
     {
-        for (int i = 0; i < 24; ++i)
+        for (int i = 0; i < 48; ++i)
         {
-            g_peakCompressor.PlayExample();
+            g_liveGraphUpdateApp.PlayExample();
         }
 
     }

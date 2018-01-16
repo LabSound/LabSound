@@ -60,9 +60,9 @@ struct PeakCompressorApp : public LabSoundExampleApp
         
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
+        // Scheduled nodes need to be explicitly cleaned up before the context
         for (auto s : samples)
         {
-            //context->disconnect(nullptr, s, 0, 0);
             s.reset();
         }
 
