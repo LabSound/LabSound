@@ -6,8 +6,7 @@
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioFileReader.h"
-#include "internal/AudioFileReader.h"
+#include "LabSound/extended/AudioFileReader.h"
 
 #include "libnyquist/AudioDecoder.h"
 

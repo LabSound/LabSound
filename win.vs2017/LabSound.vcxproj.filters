@@ -13,9 +13,6 @@
     <Filter Include="third_party\rtaudio">
       <UniqueIdentifier>{cfa7c5d9-f96f-4c90-b6e5-5cacb1339831}</UniqueIdentifier>
     </Filter>
-    <Filter Include="third_party\json11">
-      <UniqueIdentifier>{9bc22e16-52ef-45be-b0ca-63dfeee6bff7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="third_party\kissfft">
       <UniqueIdentifier>{00015ea6-6eed-4302-bb85-05279eff22d1}</UniqueIdentifier>
     </Filter>
@@ -76,9 +73,6 @@
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h">
-      <Filter>Internal\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\internal\AudioFileReader.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\AudioResampler.h">
@@ -357,6 +351,9 @@
     <ClInclude Include="..\include\LabSound\core\Macros.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\extended\AudioFileReader.h">
+      <Filter>LabSound\extended\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -599,9 +596,6 @@
     <ClCompile Include="..\src\extended\FunctionNode.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\internal\src\AudioFileReader.cpp">
-      <Filter>Internal\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\extended\LabSound.cpp">
       <Filter>LabSound</Filter>
     </ClCompile>
@@ -622,6 +616,9 @@
     </ClCompile>
     <ClCompile Include="..\src\core\AudioChannel.cpp">
       <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extended\AudioFileReader.cpp">
+      <Filter>LabSound\extended\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

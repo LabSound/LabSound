@@ -49,9 +49,7 @@
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SampledInstrumentNode.h"
 #include "LabSound/extended/RecorderNode.h"
-
-// fixme - move headers to core
-#include "../src/internal/AudioFileReader.h"
+#include "LabSound/extended/AudioFileReader.h"
 
 #include <functional>
 #include <string>

@@ -12,10 +12,15 @@ namespace lab {
 class AudioParam;
 class BiquadProcessor;
 
-class BiquadFilterNode : public AudioBasicProcessorNode {
+class BiquadFilterNode : public AudioBasicProcessorNode 
+{
+
+    BiquadProcessor * biquadProcessor();
+
 public:
-    // These must be defined as in the .idl file and must match those in the BiquadProcessor class.
-    enum {
+
+    enum 
+    {
         LOWPASS = 0,
         HIGHPASS = 1,
         BANDPASS = 2,
@@ -38,14 +43,8 @@ public:
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextRenderLock&,
-                              const std::vector<float>& frequencyHz,
-                              std::vector<float>& magResponse,
-                              std::vector<float>& phaseResponse);
+    void getFrequencyResponse(ContextRenderLock&, const std::vector<float>& frequencyHz, std::vector<float>& magResponse, std::vector<float>& phaseResponse);
 
-private:
-
-    BiquadProcessor * biquadProcessor();
 };
 
 } // namespace lab

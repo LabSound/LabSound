@@ -2,14 +2,14 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/AudioBus.h"
-
 #include "internal/Reverb.h"
-#include "internal/AudioFileReader.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
 #include "internal/Assertions.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/extended/AudioFileReader.h"
 
 #include <math.h>
 

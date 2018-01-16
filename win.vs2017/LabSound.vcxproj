@@ -61,6 +61,7 @@
     <ClInclude Include="..\include\LabSound\core\WindowFunctions.h" />
     <ClInclude Include="..\include\LabSound\extended\ADSRNode.h" />
     <ClInclude Include="..\include\LabSound\extended\AudioContextLock.h" />
+    <ClInclude Include="..\include\LabSound\extended\AudioFileReader.h" />
     <ClInclude Include="..\include\LabSound\extended\BPMDelay.h" />
     <ClInclude Include="..\include\LabSound\extended\ClipNode.h" />
     <ClInclude Include="..\include\LabSound\extended\DiodeNode.h" />
@@ -83,7 +84,6 @@
     <ClInclude Include="..\src\internal\AudioDestination.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
-    <ClInclude Include="..\src\internal\AudioFileReader.h" />
     <ClInclude Include="..\src\internal\AudioResampler.h" />
     <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
     <ClInclude Include="..\src\internal\AudioUtilities.h" />
@@ -154,6 +154,7 @@
     <ClCompile Include="..\src\core\WaveShaperNode.cpp" />
     <ClCompile Include="..\src\core\WaveTable.cpp" />
     <ClCompile Include="..\src\extended\ADSRNode.cpp" />
+    <ClCompile Include="..\src\extended\AudioFileReader.cpp" />
     <ClCompile Include="..\src\extended\BPMDelay.cpp" />
     <ClCompile Include="..\src\extended\ClipNode.cpp" />
     <ClCompile Include="..\src\extended\DiodeNode.cpp" />
@@ -171,7 +172,6 @@
     <ClCompile Include="..\src\extended\SupersawNode.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResampler.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResamplerKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioUtilities.cpp" />
