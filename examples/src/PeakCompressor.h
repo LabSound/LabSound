@@ -56,7 +56,16 @@ struct PeakCompressorApp : public LabSoundExampleApp
                 }
             }
         }
+
         
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        for (auto s : samples)
+        {
+            //context->disconnect(nullptr, s, 0, 0);
+            s.reset();
+        }
+
+        context.reset();
     }
 };

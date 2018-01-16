@@ -44,6 +44,8 @@ AudioContext::~AudioContext()
         graphUpdateThread.join();
     }
 
+    //std::unique_lock<std::mutex> lk(m_updateMutex); // do we need this? 
+
     uninitialize();
 
     // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
