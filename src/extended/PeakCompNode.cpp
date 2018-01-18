@@ -5,14 +5,15 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/VectorMath.h"
-#include "internal/AudioBus.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace lab
 
     public:
 
-        PeakCompNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
+        PeakCompNodeInternal() : AudioProcessor(2)
         {
             m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);
             m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);
@@ -41,14 +42,11 @@ namespace lab
 
             for (int i = 0; i < 2; i++)
             {
-                kneeRecursive[i] = 0.;
-                attackRecursive[i] = 0.;
-                releaseRecursive[i] = 0.;
+                kneeRecursive[i] = 0.f;
+                attackRecursive[i] = 0.f;
+                releaseRecursive[i] = 0.f;
             }
 
-            // Get sample rate
-            internalSampleRate = sampleRate;
-            oneOverSampleRate = 1.0 / sampleRate;
         }
 
         virtual ~PeakCompNodeInternal() { }
@@ -58,10 +56,12 @@ namespace lab
         virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r,
-                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
-                             size_t framesToProcess) override
+        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, size_t framesToProcess) override
         {
+            // Get sample rate
+            internalSampleRate = r.context()->sampleRate();
+            oneOverSampleRate = 1.0 / internalSampleRate;
+
             if (!numberOfChannels())
                 return;
 
@@ -142,7 +142,7 @@ namespace lab
                 releaseRecursive[0] = (releaseCoeffMinus * peakEnv) + (releaseCoeff * std::max(peakEnv, float(releaseRecursive[1])));
 
                 // Attack recursive
-                attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1]));
+                attackRecursive[0] = ((attackCoeffsMinus * releaseRecursive[0]) + (attackCoeffs * attackRecursive[1])) + 0.000001f; // avoid div by 0
 
                 // Knee smoothening and gain reduction
                 kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);
@@ -186,8 +186,8 @@ namespace lab
         // Resets filter state
         virtual void reset() override { /* @tofix */ }
 
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         std::shared_ptr<AudioParam> m_threshold;
         std::shared_ptr<AudioParam> m_ratio;
@@ -208,9 +208,9 @@ namespace lab
     // Public PeakCompNode //
     /////////////////////////
 
-    PeakCompNode::PeakCompNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    PeakCompNode::PeakCompNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new PeakCompNodeInternal(sampleRate));
+        m_processor.reset(new PeakCompNodeInternal());
 
         internalNode = static_cast<PeakCompNodeInternal*>(m_processor.get());
 
@@ -220,8 +220,6 @@ namespace lab
         m_params.push_back(internalNode->m_release);
         m_params.push_back(internalNode->m_makeup);
         m_params.push_back(internalNode->m_knee);
-
-        setNodeType(lab::NodeType::NodeTypePeakComp);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); // 2 stereo

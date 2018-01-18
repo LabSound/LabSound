@@ -3,12 +3,15 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/HRTFKernel.h"
-#include "internal/AudioChannel.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
-#include "internal/FloatConversion.h"
+#include "internal/Assertions.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/AudioChannel.h"
+
+#include "LabSound/core/Macros.h"
+
+#include <algorithm>
 
 using namespace std;
 
@@ -36,13 +39,13 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, uint32_t analysisF
     FFTFrame estimationFrame(analysisFFTSize);
     estimationFrame.doFFT(impulseP);
 
-    float frameDelay = narrowPrecisionToFloat(estimationFrame.extractAverageGroupDelay());
+    float frameDelay = static_cast<float>(estimationFrame.extractAverageGroupDelay());
     estimationFrame.doInverseFFT(impulseP);
 
     return frameDelay;
 }
 
-HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
+HRTFKernel::HRTFKernel(AudioChannel * channel, uint32_t fftSize, float sampleRate) : m_frameDelay(0) , m_sampleRate(sampleRate)
 {
     ASSERT(channel);
 
@@ -53,7 +56,7 @@ HRTFKernel::HRTFKernel(AudioChannel* channel, uint32_t fftSize, float sampleRate
     uint32_t responseLength = channel->length();
 
     // We need to truncate to fit into 1/2 the FFT size (with zero padding) in order to do proper convolution.
-    uint32_t truncatedResponseLength = min(responseLength, fftSize / 2); // truncate if necessary to max impulse response length allowed by FFT
+    uint32_t truncatedResponseLength = std::min(responseLength, fftSize / 2); // truncate if necessary to max impulse response length allowed by FFT
 
     // Quick fade-out (apply window) at truncation point
     unsigned numberOfFadeOutFrames = static_cast<unsigned>(sampleRate / 4410); // 10 sample-frames @44.1KHz sample-rate
@@ -92,7 +95,7 @@ std::unique_ptr<HRTFKernel> MakeInterpolatedKernel(HRTFKernel* kernel1, HRTFKern
         return 0;
  
     ASSERT(x >= 0.0 && x < 1.0);
-    x = min(1.0f, max(0.0f, x));
+    x = std::min(1.0f, std::max(0.0f, x));
     
     float sampleRate1 = kernel1->sampleRate();
     float sampleRate2 = kernel2->sampleRate();

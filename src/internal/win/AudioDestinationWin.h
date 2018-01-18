@@ -6,8 +6,8 @@
 #define AudioDestinationWin_h
 
 #include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioDestination.h"
 
 #include "rtaudio/RtAudio.h"
@@ -16,11 +16,12 @@
 
 namespace lab {
 
-class AudioDestinationWin : public AudioDestination { 
+class AudioDestinationWin : public AudioDestination 
+{ 
 
 public:
 
-    AudioDestinationWin(AudioIOCallback&, float sampleRate);
+    AudioDestinationWin(AudioIOCallback &, float sampleRate);
     virtual ~AudioDestinationWin();
 
     virtual void start() override;
@@ -29,20 +30,21 @@ public:
     bool isPlaying() override { return m_isPlaying; }
     float sampleRate() const override { return m_sampleRate; }
 
-    void render(int numberOfFrames, void *outputBuffer, void *inputBuffer); 
+    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
 private:
 
     void configure();
 
     AudioIOCallback & m_callback;
+
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
+    AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
     bool m_isPlaying = false;;
 
     RtAudio dac;
-
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 

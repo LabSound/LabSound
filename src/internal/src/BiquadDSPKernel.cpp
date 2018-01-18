@@ -4,7 +4,7 @@
 
 #include "internal/BiquadDSPKernel.h"
 #include "internal/BiquadProcessor.h"
-#include "internal/FloatConversion.h"
+#include "internal/Assertions.h"
 
 #include <limits.h>
 #include <vector>
@@ -43,7 +43,7 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
         }
 
         // Convert from Hertz to normalized frequency 0 -> 1.
-        double nyquist = this->nyquist();
+        double nyquist = r.context()->sampleRate() * 0.5f;
         double normalizedFrequency = value1 / nyquist;
 
         // Offset frequency by detune.
@@ -113,12 +113,12 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
 
     std::vector<float> frequency(nFrequencies);
 
-    double nyquist = this->nyquist();
+    float nyquist = r.context()->sampleRate() * 0.5f;
 
     // Convert from frequency in Hz to normalized frequency (0 -> 1),
     // with 1 equal to the Nyquist frequency.
     for (int k = 0; k < nFrequencies; ++k)
-        frequency[k] = narrowPrecisionToFloat(frequencyHz[k] / nyquist);
+        frequency[k] = static_cast<float>(frequencyHz[k] / nyquist);
 
     // We want to get the final values of the coefficients and compute
     // the response from that instead of some intermediate smoothed
@@ -130,12 +130,12 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
     m_biquad.getFrequencyResponse(nFrequencies, &frequency[0], magResponse, phaseResponse);
 }
 
-double BiquadDSPKernel::tailTime() const
+double BiquadDSPKernel::tailTime(ContextRenderLock & r) const
 {
     return MaxBiquadDelayTime;
 }
 
-double BiquadDSPKernel::latencyTime() const
+double BiquadDSPKernel::latencyTime(ContextRenderLock & r) const
 {
     return 0;
 }

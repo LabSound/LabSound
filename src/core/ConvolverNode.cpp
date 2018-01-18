@@ -6,11 +6,11 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBuffer.h"
+#include "LabSound/core/AudioBus.h"
+
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
-#include "internal/AudioBus.h"
 #include "internal/Reverb.h"
 
 using namespace std;
@@ -25,7 +25,7 @@ const size_t MaxFFTSize = 32768;
 
 namespace lab {
 
-ConvolverNode::ConvolverNode(float sampleRate) : AudioNode(sampleRate), m_swapOnRender(false), m_normalize(true)
+ConvolverNode::ConvolverNode() : m_swapOnRender(false), m_normalize(true)
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -35,8 +35,6 @@ ConvolverNode::ConvolverNode(float sampleRate) : AudioNode(sampleRate), m_swapOn
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
     
-    setNodeType(NodeTypeConvolver);
-    
     initialize();
 }
 
@@ -45,28 +43,27 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-void ConvolverNode::process(ContextRenderLock& r, size_t framesToProcess)
+void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     if (m_swapOnRender)
     {
         m_reverb = std::move(m_newReverb);
-        m_buffer = m_newBuffer;
-        m_newBuffer.reset();
+        m_bus = m_newBus;
+        m_newBus.reset();
         m_swapOnRender = false;
     }
     
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
     
     if (!isInitialized() || !m_reverb)
     {
-        if (outputBus)
-            outputBus->zero();
+        if (outputBus) outputBus->zero();
         return;
     }
 
     // Process using the convolution engine.
     // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
-    // FIXME:  If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
+    // FIXME: If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
     // we keep getting fed silence.
     m_reverb->process(r, input(0)->bus(r), outputBus, framesToProcess);
 }
@@ -87,59 +84,47 @@ void ConvolverNode::initialize()
 
 void ConvolverNode::uninitialize()
 {
+    m_reverb.reset();
+
     if (!isInitialized())
         return;
 
-    m_reverb.reset();
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setBuffer(ContextGraphLock& g, std::shared_ptr<AudioBuffer> buffer)
+void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
-    if (!buffer || !g.context())
-        return;
+    if (!bus) return;
 
-    unsigned numberOfChannels = buffer->numberOfChannels();
-    size_t bufferLength = buffer->length();
+    unsigned numberOfChannels = bus->numberOfChannels();
+    size_t bufferLength = bus->length();
 
     // The current implementation supports up to four channel impulse responses, which are interpreted as true-stereo (see Reverb class).
     bool isBufferGood = numberOfChannels > 0 && numberOfChannels <= 4 && bufferLength;
     ASSERT(isBufferGood);
-    if (!isBufferGood)
-        return;
-
-    // Wrap the AudioBuffer by an AudioBus. It's an efficient pointer set and not a memcpy().
-    // This memory is simply used in the Reverb constructor and no reference to it is kept for later use in that class.
-    AudioBus bufferBus(numberOfChannels, bufferLength, false);
-    for (unsigned i = 0; i < numberOfChannels; ++i)
-        bufferBus.setChannelMemory(i, buffer->getChannelData(i)->data(), bufferLength);
-
-    bufferBus.setSampleRate(buffer->sampleRate());
+    if (!isBufferGood) return;
 
     // Create the reverb with the given impulse response.
-    const bool nonRealtimeForLargeBuffers = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(&bufferBus, AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2,
-                                                  nonRealtimeForLargeBuffers, m_normalize));
-    m_newBuffer = buffer;
+    const bool threaded = false;
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, m_normalize));
+    m_newBus = bus;
     m_swapOnRender = true;
 }
 
-std::shared_ptr<AudioBuffer> ConvolverNode::buffer()
+std::shared_ptr<AudioBus> ConvolverNode::getImpulse()
 {
-    if (m_swapOnRender) {
-        return m_newBuffer;
-    }
-    return m_buffer;
+    if (m_swapOnRender) return m_newBus;
+    return m_bus;
 }
 
-double ConvolverNode::tailTime() const
+double ConvolverNode::tailTime(ContextRenderLock & r) const
 {
-    return m_reverb ? m_reverb->impulseResponseLength() / static_cast<double>(sampleRate()) : 0;
+    return m_reverb ? m_reverb->impulseResponseLength() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
 
-double ConvolverNode::latencyTime() const
+double ConvolverNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(sampleRate()) : 0;
+    return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
 
 } // namespace lab

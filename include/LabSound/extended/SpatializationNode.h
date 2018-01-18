@@ -60,15 +60,14 @@ namespace lab {
     {
 
     public:
+
         SpatializationNode(float sampleRate);
         virtual ~SpatializationNode();
-
-        void setOccluders(OccludersPtr);
+        void setOccluders(OccludersPtr ptr);
         
     private:
 
         virtual float distanceConeGain(ContextRenderLock& r);
-        
         std::shared_ptr<Occluders> occluders;
     };
     

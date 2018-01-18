@@ -70,15 +70,12 @@ public:
     // Zeroes out all sample values in buffer.
     void zero()
     {
-        if (m_silent)
-            return;
+        if (m_silent) return;
 
         m_silent = true;
 
-        if (m_memBuffer.get())
-            m_memBuffer->zero();
-        else
-            memset(m_rawPointer, 0, sizeof(float) * m_length);
+        if (m_memBuffer.get()) m_memBuffer->zero();
+        else memset(m_rawPointer, 0, sizeof(float) * m_length);
     }
 
     // Clears the silent flag.

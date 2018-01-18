@@ -4,14 +4,13 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/VectorMath.h"
-
-#include <WTF/MathExtras.h>
 
 #include <iostream>
 #include <vector>
@@ -25,10 +24,12 @@ namespace lab
     // Prviate ClipNode Implementation //
     /////////////////////////////////////
 
-    class ClipNode::ClipNodeInternal : public lab::AudioProcessor {
+    class ClipNode::ClipNodeInternal : public lab::AudioProcessor 
+    {
+
     public:
 
-        ClipNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), mode(ClipNode::CLIP)
+        ClipNodeInternal() : AudioProcessor(2), mode(ClipNode::CLIP)
         {
             auto fMax = std::numeric_limits<float>::max();
             aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
@@ -106,8 +107,8 @@ namespace lab
 
         virtual void reset() override { }
 
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         ClipNode::Mode mode;
 
@@ -121,13 +122,11 @@ namespace lab
     // Public ClipNode //
     /////////////////////
 
-    ClipNode::ClipNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    ClipNode::ClipNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ClipNodeInternal(sampleRate));
+        m_processor.reset(new ClipNodeInternal());
 
         internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
-
-        setNodeType(lab::NodeType::NodeTypeClip);
 
         m_params.push_back(internalNode->aVal);
         m_params.push_back(internalNode->bVal);

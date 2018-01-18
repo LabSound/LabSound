@@ -45,7 +45,7 @@ namespace lab {
 
                 T* allocation = static_cast<T*>(malloc(initialSize + extraAllocationBytes));
                 if (!allocation) {
-                    //CRASH();
+                    //CRASH(); // dimitri
                 }
                 T* alignedData = alignedAddress(allocation, alignment);
 

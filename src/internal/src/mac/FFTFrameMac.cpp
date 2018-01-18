@@ -2,9 +2,12 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/ConfigMacros.h"
-#if OS(DARWIN) && !USE(WEBAUDIO_KISSFFT)
 
+#include "LabSound/core/Macros.h"
+
+#if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
+
+#include "internal/Assertions.h"
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 

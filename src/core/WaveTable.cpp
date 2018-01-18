@@ -11,6 +11,7 @@
 #include "internal/VectorMath.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <exception>
 
@@ -28,9 +29,7 @@ namespace lab
     
 using namespace VectorMath;
 
-WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform) :
-    m_sampleRate(sampleRate),
-    m_centsPerRange(CentsPerRange)
+WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
 {
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -43,9 +42,7 @@ WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform) :
     generateBasicWaveform(basicWaveform);
 }
 
-WaveTable::WaveTable(float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
-    : m_sampleRate(sampleRate),
-    m_centsPerRange(CentsPerRange)
+WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
 {
     float nyquist = 0.5 * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -78,13 +75,8 @@ unsigned WaveTable::periodicWaveSize() const
     // FFTs when possible to limit the complexity.  The breakpoints here are somewhat arbitrary, but
     // we want sample rates around 44.1 kHz or so to have a size of 4096 to preserve backward
     // compatibility.
-    if (m_sampleRate <= 24000) {
-        return 2048;
-    }
-
-    if (m_sampleRate <= 88200) {
-        return 4096;
-    }
+    if (m_sampleRate <= 24000) return 2048;
+    if (m_sampleRate <= 88200) return 4096;
 
     return kMaxPeriodicWaveSize;
 }

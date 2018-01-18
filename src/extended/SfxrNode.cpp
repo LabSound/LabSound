@@ -175,7 +175,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SfxrNode.h"
 
-#include "internal/AudioBus.h"
+#include "LabSound/core/AudioBus.h"
 
 #include <math.h>
 #include <memory.h>
@@ -583,12 +583,8 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
 
 namespace lab {
 
-    SfxrNode::SfxrNode(float sampleRate)
-    : AudioScheduledSourceNode(sampleRate)
-    , sfxr(new SfxrNode::Sfxr())
+    SfxrNode::SfxrNode(float sampleRate) : AudioScheduledSourceNode(), sfxr(new SfxrNode::Sfxr())
     {
-        setNodeType(lab::NodeType::NodeTypeSfxr);
-
         // Output is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
@@ -741,7 +737,7 @@ namespace lab {
     {
     }
 
-    bool SfxrNode::propagatesSilence(double now) const
+    bool SfxrNode::propagatesSilence(ContextRenderLock & r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

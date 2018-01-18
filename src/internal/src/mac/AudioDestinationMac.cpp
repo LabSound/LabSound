@@ -4,9 +4,8 @@
 
 #include "LabSound/core/AudioIOCallback.h"
 
-#include "internal/ConfigMacros.h"
+#include "internal/Assertions.h"
 #include "internal/mac/AudioDestinationMac.h"
-#include "internal/FloatConversion.h"
 #include "internal/VectorMath.h"
 
 #include <CoreAudio/AudioHardware.h>
@@ -167,32 +166,6 @@ public:
 AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, unsigned numberOfOutputChannels, float sampleRate)
 {
     return new AudioDestinationMac(callback, sampleRate);
-}
-
-float AudioDestination::hardwareSampleRate()
-{
-    // Determine the default output device's sample-rate.
-    AudioDeviceID deviceID = kAudioDeviceUnknown;
-    UInt32 infoSize = sizeof(deviceID);
-
-    AudioObjectPropertyAddress defaultOutputDeviceAddress = { kAudioHardwarePropertyDefaultOutputDevice,
-                                                              kAudioObjectPropertyScopeGlobal,
-                                                              kAudioObjectPropertyElementMaster };
-    OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &defaultOutputDeviceAddress, 0, 0, &infoSize, (void*)&deviceID);
-    if (result)
-        return 0; // error
-
-    Float64 nominalSampleRate;
-    infoSize = sizeof(Float64);
-
-    AudioObjectPropertyAddress nominalSampleRateAddress = { kAudioDevicePropertyNominalSampleRate,
-                                                            kAudioObjectPropertyScopeGlobal,
-                                                            kAudioObjectPropertyElementMaster };
-    result = AudioObjectGetPropertyData(deviceID, &nominalSampleRateAddress, 0, 0, &infoSize, (void*)&nominalSampleRate);
-    if (result)
-        return 0; // error
-
-    return narrowPrecisionToFloat(nominalSampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()

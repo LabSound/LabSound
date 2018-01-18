@@ -6,8 +6,8 @@
 #define AudioDSPKernelProcessor_h
 
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioDSPKernel.h"
 
 #include <vector>
@@ -21,11 +21,12 @@ class AudioProcessor;
 // It uses one AudioDSPKernel object per channel to do the processing, thus there is no cross-channel processing.
 // Despite this limitation it turns out to be a very common and useful type of processor.
 
-class AudioDSPKernelProcessor : public AudioProcessor {
+class AudioDSPKernelProcessor : public AudioProcessor 
+{
 public:
     // numberOfChannels may be later changed if object is not yet in an "initialized" state
-    AudioDSPKernelProcessor(float sampleRate, unsigned numberOfChannels);
-    virtual ~AudioDSPKernelProcessor() {}
+    AudioDSPKernelProcessor(unsigned numberOfChannels);
+    virtual ~AudioDSPKernelProcessor() { }
 
     // Subclasses create the appropriate type of processing kernel here.
     // We'll call this to create a kernel for each channel.
@@ -37,8 +38,8 @@ public:
     virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
     virtual void reset() override;
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
     std::vector<std::unique_ptr<AudioDSPKernel> > m_kernels;

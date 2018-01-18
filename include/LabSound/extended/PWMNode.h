@@ -21,7 +21,7 @@ namespace lab
         class PWMNodeInternal;
         PWMNodeInternal * internalNode;
     public:
-        PWMNode(float sampleRate);
+        PWMNode();
         virtual ~PWMNode();
     };
     

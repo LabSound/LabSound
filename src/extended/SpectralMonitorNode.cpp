@@ -4,15 +4,13 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/WindowFunctions.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/SpectralMonitorNode.h"
 
-#include "internal/AudioBus.h"
-#include "internal/ConfigMacros.h"
-
 #include <ooura/fftsg.h>
 #include <cmath>
-
 
 namespace lab 
 {
@@ -96,12 +94,10 @@ namespace lab
     // Public SpectralMonitorNode //
     ////////////////////////////////
 
-    SpectralMonitorNode::SpectralMonitorNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate, 2)
+    SpectralMonitorNode::SpectralMonitorNode() : AudioBasicInspectorNode(2)
     {
         internalNode.reset(new SpectralMonitorNodeInternal());
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        setNodeType(lab::NodeType::NodeTypeSpectralMonitor);
         initialize();
     }
 

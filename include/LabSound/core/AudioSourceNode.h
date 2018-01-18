@@ -14,13 +14,13 @@ class AudioSourceNode : public AudioNode
 
 public:
 
-    AudioSourceNode(float sampleRate) : AudioNode(sampleRate) {}
+    AudioSourceNode() : AudioNode() { }
     virtual ~AudioSourceNode() {}
     
 protected:
 
-    virtual double tailTime() const override { return 0; }
-    virtual double latencyTime() const override { return 0; }
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 };
 
 } // namespace lab

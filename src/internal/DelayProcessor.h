@@ -17,6 +17,7 @@ class DelayProcessor : public AudioDSPKernelProcessor
 {
     std::shared_ptr<AudioParam> m_delayTime;
     double m_maxDelayTime;
+    float m_sampleRate;
 public:
 
     DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime);

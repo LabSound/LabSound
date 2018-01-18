@@ -9,11 +9,10 @@
 namespace lab
 {
 
-BiquadFilterNode::BiquadFilterNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
+BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
 {
     // Initially setup as lowpass filter.
-    m_processor.reset(new BiquadProcessor(sampleRate, 1, false));
-    setNodeType(NodeTypeBiquadFilter);
+    m_processor.reset(new BiquadProcessor(1, false));
 
     m_params.push_back(biquadProcessor()->parameter1());
     m_params.push_back(biquadProcessor()->parameter2());
@@ -42,7 +41,8 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
     int n = std::min(frequencyHz.size(),
                      std::min(magResponse.size(), phaseResponse.size()));
 
-    if (n) {
+    if (n) 
+    {
         biquadProcessor()->getFrequencyResponse(r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
 }

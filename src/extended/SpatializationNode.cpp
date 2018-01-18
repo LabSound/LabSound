@@ -71,9 +71,8 @@ namespace lab
     }
     
     // @tofix - pass in HRTF loader path
-    SpatializationNode::SpatializationNode(float sampleRate): lab::PannerNode(sampleRate)
+    SpatializationNode::SpatializationNode(const float sampleRate) : lab::PannerNode(sampleRate)
     {
-        setNodeType(lab::NodeType::NodeTypeSpatialization);
         initialize();
     }
     
@@ -87,12 +86,13 @@ namespace lab
         occluders = o;
     }
     
-    float SpatializationNode::distanceConeGain(ContextRenderLock& r)
+    float SpatializationNode::distanceConeGain(ContextRenderLock & r)
     {
         if (!r.context())
             return 1.f;
         
-        float occlusionAttenuation = occluders ? occluders->occlusion(m_position, listener(r)->position()) : 1.0f;
+        AudioListener & listener = r.context()->listener();
+        float occlusionAttenuation = occluders ? occluders->occlusion(m_position, listener.position()) : 1.0f;
         return occlusionAttenuation * PannerNode::distanceConeGain(r);
     }
 }

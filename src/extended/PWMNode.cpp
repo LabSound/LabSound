@@ -4,10 +4,9 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/PWMNode.h"
-
-#include "internal/AudioBus.h"
 
 #include <iostream>
 
@@ -24,9 +23,7 @@ namespace lab {
 
     public:
 
-        PWMNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2)
-        {
-        }
+        PWMNodeInternal() : AudioProcessor(2) { }
 
         virtual ~PWMNodeInternal() { }
 
@@ -64,21 +61,19 @@ namespace lab {
 
         virtual void reset() override { }
 
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     };
 
     ////////////////////
     // Public PWMNode //
     ////////////////////
 
-    PWMNode::PWMNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    PWMNode::PWMNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new PWMNodeInternal(sampleRate));
+        m_processor.reset(new PWMNodeInternal());
 
-        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused 
-
-        setNodeType(lab::NodeType::NodeTypePWM);
+        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); 

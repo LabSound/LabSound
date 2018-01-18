@@ -5,17 +5,16 @@
 #ifndef DenormalDisabler_h
 #define DenormalDisabler_h
 
-#include "internal/ConfigMacros.h"
-
-#include <WTF/MathExtras.h>
+#include "LabSound/core/Macros.h"
 
 namespace lab {
 
 // Deal with denormals. They can very seriously impact performance on x86.
 
 // Define HAVE_DENORMAL if we support flushing denormals to zero.
-#if OS(WINDOWS) && COMPILER(MSVC)
-#define HAVE_DENORMAL
+#if defined(LABSOUND_PLATFORM_WINDOWS)
+    #define HAVE_DENORMAL
+    #include <float.h>
 #endif
 
 #if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
@@ -28,7 +27,7 @@ public:
     DenormalDisabler()
             : m_savedCSR(0)
     {
-#if OS(WINDOWS) && COMPILER(MSVC)
+#if defined(LABSOUND_PLATFORM_WINDOWS)
         // Save the current state, and set mode to flush denormals.
         //
         // http://stackoverflow.com/questions/637175/possible-bug-in-controlfp-s-may-not-restore-control-word-correctly
@@ -43,7 +42,7 @@ public:
 
     ~DenormalDisabler()
     {
-#if OS(WINDOWS) && COMPILER(MSVC)
+#if defined(LABSOUND_PLATFORM_WINDOWS)
         unsigned int unused;
         _controlfp_s(&unused, m_savedCSR, _MCW_DN);
 #else
@@ -54,7 +53,7 @@ public:
     // This is a nop if we can flush denormals to zero in hardware.
     static inline float flushDenormalFloatToZero(float f)
     {
-#if OS(WINDOWS) && COMPILER(MSVC) && (!_M_IX86_FP)
+#if defined(LABSOUND_PLATFORM_WINDOWS) && (!_M_IX86_FP)
         // For systems using x87 instead of sse, there's no hardware support
         // to flush denormals automatically. Hence, we need to flush
         // denormals to zero manually.

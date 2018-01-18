@@ -3,22 +3,18 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/PowerMonitorNode.h"
-
-#include "internal/AudioBus.h"
-
-#include <WTF/MathExtras.h>
 
 namespace lab {
     
     using namespace lab;
     
-    PowerMonitorNode::PowerMonitorNode(float sampleRate)
-    : AudioBasicInspectorNode(sampleRate, 2), _db(0), _windowSize(128)
+    PowerMonitorNode::PowerMonitorNode() : AudioBasicInspectorNode(2), _db(0), _windowSize(128)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        setNodeType(lab::NodeType::NodeTypePowerMonitor);
         initialize();
     }
     

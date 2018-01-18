@@ -7,29 +7,18 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 using namespace std;
 
 namespace lab {
     
-AudioNode::AudioNode(float sampleRate)
-    : m_isInitialized(false)
-    , m_nodeType(NodeTypeDefault)
-    , m_sampleRate(sampleRate)
-    , m_lastProcessingTime(-1)
-    , m_lastNonSilentTime(-1)
-    , m_isMarkedForDeletion(false)
-    , m_channelCount(2)
-    , m_channelCountMode(ChannelCountMode::Max)
-    , m_channelInterpretation(ChannelInterpretation::Speakers)
-    { }
-
-AudioNode::~AudioNode() { }
+AudioNode::AudioNode() = default;
+AudioNode::~AudioNode() = default;
 
 void AudioNode::initialize()
 {
@@ -39,11 +28,6 @@ void AudioNode::initialize()
 void AudioNode::uninitialize()
 {
     m_isInitialized = false;
-}
-
-void AudioNode::setNodeType(NodeType type)
-{
-    m_nodeType = type;
 }
 
 void AudioNode::lazyInitialize()
@@ -128,7 +112,9 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
     if (!isInitialized()) return;
+
     auto ac = r.context();
+
     if (!ac) return;
     
     // Ensure that we only process once per rendering quantum.
@@ -138,25 +124,66 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
     double currentTime = ac->currentTime();
     if (m_lastProcessingTime != currentTime)
     {
-        m_lastProcessingTime = currentTime; // important to first update this time because of feedback loops in the rendering graph
+        m_lastProcessingTime = currentTime; // important to first update this time to accomodate feedback loops in the rendering graph
 
         pullInputs(r, framesToProcess);
 
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
         {
-            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(m_sampleRate);
+            m_lastNonSilentTime = (ac->currentSampleFrame() + framesToProcess) / static_cast<double>(ac->sampleRate());
         }
 
-        bool ps = propagatesSilence(r.context()->currentTime());
-        
-        if (silentInputs && ps)
+        // if this node is supposed to copy silence through, and is itself silent
+        if (silentInputs && propagatesSilence(r))
         {
             silenceOutputs(r);
         }
         else
         {
             process(r, framesToProcess);
+
+            float new_schedule = 0.f;
+
+            if (m_disconnectSchedule >= 0)
+            {
+                for (auto out : m_outputs)
+                    for (unsigned i = 0; i < out->bus(r)->numberOfChannels(); ++i)
+                    {
+                        float scale = m_disconnectSchedule;
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        for (size_t s = 0; s < numSamples; ++s)
+                        {
+                            sample[s] *= scale;
+                            scale *= 0.98f;
+                        }
+                        new_schedule = scale;
+                    }
+
+                m_disconnectSchedule = new_schedule;
+            }
+         
+            new_schedule = 1.f;
+            if (m_connectSchedule < 1)
+            {
+                for (auto out : m_outputs)
+                    for (unsigned i = 0; i < out->bus(r)->numberOfChannels(); ++i)
+                    {
+                        float scale = m_connectSchedule;
+                        float * sample = out->bus(r)->channel(i)->mutableData();
+                        size_t numSamples = out->bus(r)->channel(i)->length();
+                        for (size_t s = 0; s < numSamples; ++s)
+                        {
+                            sample[s] *= scale;
+                            scale = 1.f - ((1.f - scale) * 0.98f);
+                        }
+                        new_schedule = scale;
+                    }
+
+                m_connectSchedule = new_schedule;
+            }
+            
             unsilenceOutputs(r);
         }
     }
@@ -175,9 +202,11 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInp
     }
 }
 
-bool AudioNode::propagatesSilence(double now) const
+bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
-    return m_lastNonSilentTime + latencyTime() + tailTime() < now;
+    ASSERT(r.context());
+
+    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 
 void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)

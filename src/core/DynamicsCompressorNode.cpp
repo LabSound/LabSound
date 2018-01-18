@@ -17,12 +17,10 @@ using namespace std;
 namespace lab
 {
 
-DynamicsCompressorNode::DynamicsCompressorNode(float sampleRate) : AudioNode(sampleRate)
+DynamicsCompressorNode::DynamicsCompressorNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
-    setNodeType(NodeTypeDynamicsCompressor);
 
     m_threshold = make_shared<AudioParam>("threshold", -24, -100, 0);
     m_knee = make_shared<AudioParam>("knee", 30, 0, 40);
@@ -46,9 +44,9 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
     uninitialize();
 }
 
-void DynamicsCompressorNode::process(ContextRenderLock& r, size_t framesToProcess)
+void DynamicsCompressorNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
     float threshold = m_threshold->value(r);
@@ -79,7 +77,7 @@ void DynamicsCompressorNode::initialize()
     if (isInitialized())
         return;
 
-    m_dynamicsCompressor.reset(new DynamicsCompressor(sampleRate(), 2));
+    m_dynamicsCompressor.reset(new DynamicsCompressor(2));
 
     AudioNode::initialize();
 }
@@ -94,14 +92,14 @@ void DynamicsCompressorNode::uninitialize()
     m_dynamicsCompressor.reset();
 }
 
-double DynamicsCompressorNode::tailTime() const
+double DynamicsCompressorNode::tailTime(ContextRenderLock & r) const
 {
-    return m_dynamicsCompressor->tailTime();
+    return m_dynamicsCompressor->tailTime(r);
 }
 
-double DynamicsCompressorNode::latencyTime() const
+double DynamicsCompressorNode::latencyTime(ContextRenderLock & r) const
 {
-    return m_dynamicsCompressor->latencyTime();
+    return m_dynamicsCompressor->latencyTime(r);
 }
 
 } // end namespace lab

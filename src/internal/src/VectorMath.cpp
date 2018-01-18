@@ -2,12 +2,12 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
 #include "internal/Assertions.h"
 
 #include "internal/VectorMath.h"
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 #include <Accelerate/Accelerate.h>
 #endif
 
@@ -15,7 +15,7 @@
 #include <emmintrin.h>
 #endif
 
-#if HAVE(ARM_NEON_INTRINSICS)
+#if defined(ARM_NEON_INTRINSICS)
 #include <arm_neon.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace lab {
 
 namespace VectorMath {
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
 // On the Mac we use the highly optimized versions in Accelerate.framework
 // In 32-bit mode (__ppc__ or __i386__) <Accelerate/Accelerate.h> includes <vecLib/vDSP_translate.h> which defines macros of the same name as
 // our namespaced function names, so we must handle this case differently. Other architectures (64bit, ARM, etc.) do not include this header file.
@@ -143,7 +143,7 @@ void vsma(const float* sourceP, int sourceStride, const float* scale, float* des
 
         n = tailFrames;
     }
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if ((sourceStride == 1) && (destStride == 1)) {
         int tailFrames = n % 4;
         const float* endP = destP + n - tailFrames;
@@ -223,7 +223,7 @@ void vsmul(const float* sourceP, int sourceStride, const float* scale, float* de
             n--;
         }
     } else { // If strides are not 1, rollback to normal algorithm.
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if ((sourceStride == 1) && (destStride == 1)) {
         float k = *scale;
         int tailFrames = n % 4;
@@ -334,7 +334,7 @@ void vadd(const float* source1P, int sourceStride1, const float* source2P, int s
             n--;
         }
     } else { // if strides are not 1, rollback to normal algorithm
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
         int tailFrames = n % 4;
         const float* endP = destP + n - tailFrames;
@@ -411,7 +411,7 @@ void vmul(const float* source1P, int sourceStride1, const float* source2P, int s
 
         n = tailFrames;
     }
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if ((sourceStride1 ==1) && (sourceStride2 == 1) && (destStride == 1)) {
         int tailFrames = n % 4;
         const float* endP = destP + n - tailFrames;
@@ -465,7 +465,7 @@ void zvmul(const float* real1P, const float* imag1P, const float* real2P, const 
             i += 4;
         }
     }
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
         unsigned endSize = framesToProcess - framesToProcess % 4;
         while (i < endSize) {
             float32x4_t real1 = vld1q_f32(real1P + i);
@@ -527,7 +527,7 @@ void vsvesq(const float* sourceP, int sourceStride, float* sumP, size_t framesTo
  
         n = tailFrames; 
     } 
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if (sourceStride == 1) {
         int tailFrames = n % 4;
         const float* endP = sourceP + n - tailFrames;
@@ -597,7 +597,7 @@ void vmaxmgv(const float* sourceP, int sourceStride, float* maxP, size_t framesT
 
         n = tailFrames;
     }
-#elif HAVE(ARM_NEON_INTRINSICS)
+#elif defined(ARM_NEON_INTRINSICS)
     if (sourceStride == 1) {
         int tailFrames = n % 4;
         const float* endP = sourceP + n - tailFrames;
@@ -634,7 +634,7 @@ void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, c
     float highThreshold = *highThresholdP;
 
     // FIXME: Optimize for SSE2.
-#if HAVE(ARM_NEON_INTRINSICS)
+#if defined(ARM_NEON_INTRINSICS)
     if ((sourceStride == 1) && (destStride == 1)) {
         int tailFrames = n % 4;
         const float* endP = destP + n - tailFrames;
@@ -661,7 +661,7 @@ void vclip(const float* sourceP, int sourceStride, const float* lowThresholdP, c
 
 void vintlve(const float* realSrcP, const float* imagSrcP, float* destP, size_t framesToProcess) {
     int i = 0;
-#if HAVE(ARM_NEON_INTRINSICS)
+#if defined(ARM_NEON_INTRINSICS)
     int j = 0;
     int endSize = framesToProcess - framesToProcess % 4;
     int len = endSize / 2;
@@ -690,7 +690,7 @@ void vintlve(const float* realSrcP, const float* imagSrcP, float* destP, size_t 
 
 void vdeintlve(const float* sourceP, float* realDestP, float* imagDestP, size_t framesToProcess) {
     int i = 0;
-#if HAVE(ARM_NEON_INTRINSICS)
+#if defined(ARM_NEON_INTRINSICS)
     int j = 0;
     int endSize = framesToProcess - framesToProcess % 4;
 

@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSound", "LabSound.vcxproj", "{C2C11853-81F3-C348-8C6E-8DA318E0C84E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0EEC3739-F60A-4B90-8B75-9E1AFF28106A} = {0EEC3739-F60A-4B90-8B75-9E1AFF28106A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\third_party\libnyquist\libnyquist.vcxproj\v141\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,5 +37,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C8BA94F-1B46-4479-A71F-F82A85DE19A3}
 	EndGlobalSection
 EndGlobal

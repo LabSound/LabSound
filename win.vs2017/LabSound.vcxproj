@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\LabSound\core\AnalyserNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioArray.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicInspectorNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h" />
-    <ClInclude Include="..\include\LabSound\core\AudioBuffer.h" />
-    <ClInclude Include="..\include\LabSound\core\AudioBufferSourceNode.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioBus.h" />
+    <ClInclude Include="..\include\LabSound\core\AudioChannel.h" />
+    <ClInclude Include="..\include\LabSound\core\Macros.h" />
+    <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioContext.h" />
     <ClInclude Include="..\include\LabSound\core\AudioDestinationNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioHardwareSourceNode.h" />
@@ -49,7 +52,6 @@
     <ClInclude Include="..\include\LabSound\core\DynamicsCompressorNode.h" />
     <ClInclude Include="..\include\LabSound\core\FloatPoint3D.h" />
     <ClInclude Include="..\include\LabSound\core\GainNode.h" />
-    <ClInclude Include="..\include\LabSound\core\MediaStream.h" />
     <ClInclude Include="..\include\LabSound\core\OfflineAudioDestinationNode.h" />
     <ClInclude Include="..\include\LabSound\core\OscillatorNode.h" />
     <ClInclude Include="..\include\LabSound\core\PannerNode.h" />
@@ -59,6 +61,7 @@
     <ClInclude Include="..\include\LabSound\core\WindowFunctions.h" />
     <ClInclude Include="..\include\LabSound\extended\ADSRNode.h" />
     <ClInclude Include="..\include\LabSound\extended\AudioContextLock.h" />
+    <ClInclude Include="..\include\LabSound\extended\AudioFileReader.h" />
     <ClInclude Include="..\include\LabSound\extended\BPMDelay.h" />
     <ClInclude Include="..\include\LabSound\extended\ClipNode.h" />
     <ClInclude Include="..\include\LabSound\extended\DiodeNode.h" />
@@ -73,19 +76,14 @@
     <ClInclude Include="..\include\LabSound\extended\RealtimeAnalyser.h" />
     <ClInclude Include="..\include\LabSound\extended\RecorderNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SampledInstrumentNode.h" />
-    <ClInclude Include="..\include\LabSound\extended\SoundBuffer.h" />
     <ClInclude Include="..\include\LabSound\extended\SpatializationNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
     <ClInclude Include="..\include\LabSound\extended\Util.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
-    <ClInclude Include="..\src\internal\AudioBus.h" />
-    <ClInclude Include="..\src\internal\AudioChannel.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
-    <ClInclude Include="..\src\internal\AudioDestinationConsumer.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernelProcessor.h" />
-    <ClInclude Include="..\src\internal\AudioFileReader.h" />
     <ClInclude Include="..\src\internal\AudioResampler.h" />
     <ClInclude Include="..\src\internal\AudioResamplerKernel.h" />
     <ClInclude Include="..\src\internal\AudioUtilities.h" />
@@ -93,7 +91,6 @@
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h" />
     <ClInclude Include="..\src\internal\BiquadProcessor.h" />
     <ClInclude Include="..\src\internal\Cone.h" />
-    <ClInclude Include="..\src\internal\ConfigMacros.h" />
     <ClInclude Include="..\src\internal\DelayDSPKernel.h" />
     <ClInclude Include="..\src\internal\DelayProcessor.h" />
     <ClInclude Include="..\src\internal\DenormalDisabler.h" />
@@ -104,7 +101,6 @@
     <ClInclude Include="..\src\internal\EqualPowerPanner.h" />
     <ClInclude Include="..\src\internal\FFTConvolver.h" />
     <ClInclude Include="..\src\internal\FFTFrame.h" />
-    <ClInclude Include="..\src\internal\FloatConversion.h" />
     <ClInclude Include="..\src\internal\HRTFDatabase.h" />
     <ClInclude Include="..\src\internal\HRTFDatabaseLoader.h" />
     <ClInclude Include="..\src\internal\HRTFElevation.h" />
@@ -129,8 +125,9 @@
     <ClCompile Include="..\src\core\AnalyserNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicInspectorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
-    <ClCompile Include="..\src\core\AudioBuffer.cpp" />
-    <ClCompile Include="..\src\core\AudioBufferSourceNode.cpp" />
+    <ClCompile Include="..\src\core\AudioBus.cpp" />
+    <ClCompile Include="..\src\core\AudioChannel.cpp" />
+    <ClCompile Include="..\src\core\SampledAudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
     <ClCompile Include="..\src\core\AudioHardwareSourceNode.cpp" />
@@ -157,6 +154,7 @@
     <ClCompile Include="..\src\core\WaveShaperNode.cpp" />
     <ClCompile Include="..\src\core\WaveTable.cpp" />
     <ClCompile Include="..\src\extended\ADSRNode.cpp" />
+    <ClCompile Include="..\src\extended\AudioFileReader.cpp" />
     <ClCompile Include="..\src\extended\BPMDelay.cpp" />
     <ClCompile Include="..\src\extended\ClipNode.cpp" />
     <ClCompile Include="..\src\extended\DiodeNode.cpp" />
@@ -169,15 +167,11 @@
     <ClCompile Include="..\src\extended\PWMNode.cpp" />
     <ClCompile Include="..\src\extended\RecorderNode.cpp" />
     <ClCompile Include="..\src\extended\SampledInstrumentNode.cpp" />
-    <ClCompile Include="..\src\extended\SoundBuffer.cpp" />
     <ClCompile Include="..\src\extended\SpatializationNode.cpp" />
     <ClCompile Include="..\src\extended\SpectralMonitorNode.cpp" />
     <ClCompile Include="..\src\extended\SupersawNode.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioBus.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioChannel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioDSPKernelProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\AudioFileReader.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResampler.cpp" />
     <ClCompile Include="..\src\internal\src\AudioResamplerKernel.cpp" />
     <ClCompile Include="..\src\internal\src\AudioUtilities.cpp" />
@@ -216,16 +210,6 @@
     <ClCompile Include="..\third_party\kissfft\src\kiss_fftr.cpp" />
     <ClCompile Include="..\third_party\rtaudio\src\RtAudio.cpp" />
     <ClCompile Include="..\third_party\STK\src\STKInlineCompile.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj">
-      <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2C11853-81F3-C348-8C6E-8DA318E0C84E}</ProjectGuid>

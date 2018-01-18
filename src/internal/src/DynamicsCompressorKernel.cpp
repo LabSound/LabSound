@@ -2,13 +2,17 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
+
 #include "internal/DynamicsCompressorKernel.h"
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
+#include "internal/Assertions.h"
+
+#include "LabSound/extended/AudioContextLock.h"
 
 #include <memory>
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace std;
 
@@ -21,9 +25,8 @@ const float meteringReleaseTimeConstant = 0.325f;
 
 const float uninitializedValue = -1;
 
-DynamicsCompressorKernel::DynamicsCompressorKernel(float sampleRate, unsigned numberOfChannels)
-    : m_sampleRate(sampleRate)
-    , m_lastPreDelayFrames(DefaultPreDelayFrames)
+DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels) :
+      m_lastPreDelayFrames(DefaultPreDelayFrames)
     , m_preDelayReadIndex(0)
     , m_preDelayWriteIndex(DefaultPreDelayFrames)
     , m_ratio(uninitializedValue)
@@ -40,8 +43,6 @@ DynamicsCompressorKernel::DynamicsCompressorKernel(float sampleRate, unsigned nu
 
     // Initializes most member variables
     reset();
-
-    m_meteringReleaseK = static_cast<float>(discreteTimeConstantForSampleRate(meteringReleaseTimeConstant, sampleRate));
 }
 
 void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
@@ -56,10 +57,10 @@ void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 
 }
 
-void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime)
+void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime, float sampleRate)
 {
     // Re-configure look-ahead section pre-delay if delay time has changed.
-    unsigned preDelayFrames = preDelayTime * sampleRate();
+    unsigned preDelayFrames = preDelayTime * sampleRate;
     if (preDelayFrames > MaxPreDelayFrames - 1)
         preDelayFrames = MaxPreDelayFrames - 1;
 
@@ -176,12 +177,11 @@ float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, f
     return m_K;
 }
 
-void DynamicsCompressorKernel::process(ContextRenderLock&,
-                                       float * sourceChannels[],
+void DynamicsCompressorKernel::process(ContextRenderLock & r,
+                                       const float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,
                                        unsigned framesToProcess,
-
                                        float dbThreshold,
                                        float dbKnee,
                                        float ratio,
@@ -190,7 +190,6 @@ void DynamicsCompressorKernel::process(ContextRenderLock&,
                                        float preDelayTime,
                                        float dbPostGain,
                                        float effectBlend, /* equal power crossfade */
-
                                        float releaseZone1,
                                        float releaseZone2,
                                        float releaseZone3,
@@ -199,7 +198,9 @@ void DynamicsCompressorKernel::process(ContextRenderLock&,
 {
     ASSERT(m_preDelayBuffers.size() == numberOfChannels);
 
-    float sampleRate = this->sampleRate();
+    float sampleRate = r.context()->sampleRate();
+
+    m_meteringReleaseK = static_cast<float>(discreteTimeConstantForSampleRate(meteringReleaseTimeConstant, sampleRate));
 
     float dryMix = 1 - effectBlend;
     float wetMix = effectBlend;
@@ -249,14 +250,15 @@ void DynamicsCompressorKernel::process(ContextRenderLock&,
 
     // y calculates adaptive release frames depending on the amount of compression.
 
-    setPreDelayTime(preDelayTime);
+    setPreDelayTime(preDelayTime, r.context()->sampleRate());
 
     const int nDivisionFrames = 32;
 
     const int nDivisions = framesToProcess / nDivisionFrames;
 
     unsigned frameIndex = 0;
-    for (int i = 0; i < nDivisions; ++i) {
+    for (int i = 0; i < nDivisions; ++i) 
+    {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Calculate desired gain
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -415,7 +417,8 @@ void DynamicsCompressorKernel::process(ContextRenderLock&,
                     m_meteringGain += (dbRealGain - m_meteringGain) * m_meteringReleaseK;
 
                 // Apply final gain.
-                for (unsigned i = 0; i < numberOfChannels; ++i) {
+                for (unsigned i = 0; i < numberOfChannels; ++i) 
+                {
                     float* delayBuffer = m_preDelayBuffers[i]->data();
                     destinationChannels[i][frameIndex] = delayBuffer[preDelayReadIndex] * totalGain;
                 }

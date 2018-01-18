@@ -20,7 +20,7 @@ class AudioBasicProcessorNode : public AudioNode
 
 public:
 
-    AudioBasicProcessorNode(float sampleRate);
+    AudioBasicProcessorNode();
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
@@ -38,8 +38,8 @@ public:
 
 protected:
 
-    virtual double tailTime() const override;
-    virtual double latencyTime() const override;
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
 
     AudioProcessor * processor();
 

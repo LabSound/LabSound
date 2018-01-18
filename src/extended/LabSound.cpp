@@ -17,113 +17,48 @@
 
 namespace lab
 {
-    std::thread g_GraphUpdateThread;
-    std::shared_ptr<lab::AudioContext> mainContext;
-    const int update_rate_ms = 10;
 
-    static void UpdateGraphThread()
+    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r)
     {
-        LOG("Create UpdateGraphThread");
-        while (true)
-        {
-            if (mainContext)
-            {
-                ContextGraphLock g(mainContext, "lab::UpdateGraphThread");
-                if (mainContext && g.context())
-                {
-                    g.context()->update(g);
-                }
-            }
-            else
-            {
-                break;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(update_rate_ms));
-        }
-        LOG("Destroy UpdateGraphThread");
+        AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
+        std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
+        inputNode->setFormat(r, 1, r.context()->sampleRate());
+        return inputNode;
     }
 
-    std::shared_ptr<lab::AudioContext> MakeAudioContext()
+    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext()
     {
-        LOG("Initialize Context");
-        mainContext = std::make_shared<lab::AudioContext>();
-        mainContext->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(mainContext));
-
-        mainContext->lazyInitialize();
-
-        g_GraphUpdateThread = std::thread(UpdateGraphThread);
-
-        return mainContext;
+        LOG("Initialize Realtime Context");
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
+        ctx->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(ctx.get(), 44100));
+        ctx->lazyInitialize();
+        return ctx;
     }
 
-    std::shared_ptr<lab::AudioContext> MakeOfflineAudioContext(const int millisecondsToRun)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds)
     {
         LOG("Initialize Offline Context");
 
         // @tofix - hardcoded parameters
-        const int sampleRate = 44100;
-        const int framesPerMillisecond = sampleRate / 1000;
-        const int totalFramesToRecord = millisecondsToRun * framesPerMillisecond;
+        const float sampleRate = 44100;
+        float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
-        mainContext = std::make_shared<lab::AudioContext>(2, totalFramesToRecord, sampleRate);
-        auto renderTarget = mainContext->getOfflineRenderTarget();
-        mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
-
-        mainContext->lazyInitialize();
-
-        return mainContext;
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), sampleRate, secondsToRun, 2));
+        ctx->lazyInitialize();
+        return ctx;
     }
 
-    std::shared_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, size_t totalFramesToRecord, float sampleRate)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sampleRate)
     {
         LOG("Initialize Offline Context");
 
-        mainContext = std::make_shared<lab::AudioContext>(numChannels, totalFramesToRecord, sampleRate);
-        auto renderTarget = mainContext->getOfflineRenderTarget();
-        mainContext->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(mainContext, renderTarget.get()));
-
-        mainContext->lazyInitialize();
-
-        return mainContext;
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
+        float secondsToRun = (float)recordTimeMilliseconds * 0.001f;
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
+        ctx->lazyInitialize();
+        return ctx;
     }
-
-    void CleanupAudioContext(std::shared_ptr<lab::AudioContext> context)
-    {
-        LOG("Finish Context");
-
-        // Invalidate local shared_ptr
-        mainContext.reset();
-
-        // Join update thread
-        if (g_GraphUpdateThread.joinable())
-            g_GraphUpdateThread.join();
-
-        for (int i = 0; i < 8; ++i)
-        {
-            ContextGraphLock g(context, "lab::finish");
-
-            if (!g.context())
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(5));
-            }
-            else
-            {
-                // Stop then calls deleteMarkedNodes() and uninitialize()
-                context->stop(g);
-                return;
-            }
-        }
-
-        LOG("Could not acquire lock for shutdown");
-    }
-
-    void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback)
-    {
-        ContextGraphLock g(ctx, id);
-        ContextRenderLock r(ctx, id);
-        callback(g, r);
-    }
-
 }
 
 ///////////////////////

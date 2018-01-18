@@ -6,14 +6,14 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "internal/Assertions.h"
-#include "internal/AudioBus.h"
 
 namespace lab 
 {
 
-ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutputs) : AudioNode(sampleRate)
+ChannelSplitterNode::ChannelSplitterNode(unsigned numberOfOutputs) : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
@@ -29,8 +29,6 @@ ChannelSplitterNode::ChannelSplitterNode(float sampleRate, unsigned numberOfOutp
        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     }
 
-    setNodeType(NodeTypeChannelSplitter);
-    
     initialize();
 }
 

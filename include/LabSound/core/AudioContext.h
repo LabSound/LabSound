@@ -16,11 +16,11 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include <condition_variable>
 
 namespace lab
 {
 
-class AudioBuffer;
 class AudioDestinationNode;
 class AudioListener;
 class AudioNode;
@@ -30,9 +30,6 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
-
-// @tofix - refactor such that this factory function doesn't need to exist
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
 
 class AudioContext
 {
@@ -49,23 +46,14 @@ public:
     std::string m_graphLocker;
     std::string m_renderLocker;
 
-    // Realtime Context
-    AudioContext();
-
-    // Offline (non-realtime) Context
-    AudioContext(unsigned numberOfChannels, size_t numberOfFrames, float sampleRate);
-
+    AudioContext(bool isOffline);
     ~AudioContext();
 
     bool isInitialized() const;
 
-    // Eexternal users shouldn't use this; it should be called by LabSound::MakeAudioContext()
+    // Eexternal users shouldn't use this; it should be called by LabSound::MakeRealtimeAudioContext()
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
-
-    void update(ContextGraphLock & g);
-
-    void stop(ContextGraphLock & g);
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
 
@@ -79,7 +67,7 @@ public:
 
     float sampleRate() const;
 
-    std::shared_ptr<AudioListener> listener();
+    AudioListener & listener();
 
     unsigned long activeSourceCount() const;
 
@@ -88,9 +76,6 @@ public:
 
     void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
-
-    // We schedule deletion of all marked nodes at the end of each realtime render quantum.
-    void deleteMarkedNodes();
 
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
@@ -111,47 +96,41 @@ public:
 
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
 
-    void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode>);
+    void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
     
     // Necessary to call when using an OfflineAudioDestinationNode
     void startRendering();
-    
-    std::shared_ptr<AudioBuffer> getOfflineRenderTarget() { return m_renderTarget; }
     std::function<void()> offlineRenderCompleteCallback;
 
 private:
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;
-    std::mutex automaticSourcesMutex;
+    std::mutex m_updateMutex;
+    std::condition_variable cv;
 
-    bool m_isStopScheduled = false;
+    std::atomic<bool> updateThreadShouldRun{ true };
+    std::thread graphUpdateThread;
+    void update();
+    float graphKeepAlive{ 0.f };
+    float lastGraphUpdateTime{ 0.f };
+
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
-    bool m_isDeletionScheduled = false;
     bool m_automaticPullNodesNeedUpdating = false; // keeps track if m_automaticPullNodes is modified.
 
-    // Number of AudioBufferSourceNodes that are active (playing).
+    // Number of SampledAudioNode that are active (playing).
     std::atomic<int> m_activeSourceCount;
     std::atomic<int> m_connectionCount;
 
-    void uninitialize(ContextGraphLock &);
-
-    // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    void clear();
-
-    void scheduleNodeDeletion(ContextRenderLock & g);
+    void uninitialize();
 
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
-    std::shared_ptr<AudioBuffer> m_renderTarget;
-
-    std::vector<std::shared_ptr<AudioNode>> m_nodesToDelete;
-    std::vector<std::shared_ptr<AudioNode>> m_nodesMarkedForDeletion;
 
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
@@ -161,7 +140,8 @@ private:
     enum class ConnectionType : int
     {
         Disconnect = 0,
-        Connect = 1
+        Connect,
+        FinishDisconnect
     };
 
     struct PendingConnection
@@ -171,6 +151,7 @@ private:
         std::shared_ptr<AudioNode> source;
         uint32_t destIndex;
         uint32_t srcIndex;
+        float duration = 0.1f;
         PendingConnection(
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,
@@ -184,6 +165,7 @@ private:
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
+            if (!p1.destination || !p2.destination) return false;
             if (!p2.destination->isScheduledNode()) return false; // src cannot be compared
             if (!p1.destination->isScheduledNode()) return false; // dest cannot be compared
             AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());

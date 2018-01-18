@@ -3,18 +3,20 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/StereoPannerNode.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Mixing.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Panner.h"
 #include "internal/AudioUtilities.h"
-#include <WTF/MathExtras.h>
+#include "internal/Assertions.h"
+
 
 namespace lab
 {
@@ -30,7 +32,7 @@ public:
         PanningModelEqualPower = 0
     };
 
-    Spatializer(PanningModel model, float sampleRate)
+    Spatializer(const float sampleRate, PanningModel model)
     {
         // Convert smoothing time (50ms) to a per-sample time value.
         m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
@@ -225,15 +227,8 @@ public:
         // No-op
     }
 
-    virtual double tailTime() const
-    {
-        return 0;
-    }
-
-    virtual double latencyTime() const
-    {
-        return 0;
-    }
+    virtual double tailTime(ContextRenderLock & r) const {  return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const { return 0; }
 
 private:
 
@@ -249,20 +244,17 @@ private:
 
 using namespace std;
 
-StereoPannerNode::StereoPannerNode(float sampleRate) : AudioNode(sampleRate)
+StereoPannerNode::StereoPannerNode(const float sampleRate) : AudioNode()
 {
-
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_stereoPanner.reset(new Spatializer(Spatializer::PanningModelEqualPower, sampleRate));
+    m_stereoPanner.reset(new Spatializer(sampleRate, Spatializer::PanningModelEqualPower));
 
     m_pan = std::make_shared<AudioParam>("pan", 0.5, 0.0, 1.0);
     m_params.push_back(m_pan);
-
-    setNodeType(NodeTypeStereoPanner);
 
     initialize();
 }
@@ -316,19 +308,14 @@ void StereoPannerNode::reset(ContextRenderLock &)
 
 void StereoPannerNode::initialize()
 {
-    if (isInitialized())
-        return;
-
+    if (isInitialized()) return;
     AudioNode::initialize();
 }
 
 void StereoPannerNode::uninitialize()
 {
-    if (!isInitialized())
-        return;
-
+    if (!isInitialized()) return;
     m_stereoPanner.reset();
-
     AudioNode::uninitialize();
 }
 

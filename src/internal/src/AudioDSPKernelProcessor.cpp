@@ -9,9 +9,7 @@
 namespace lab {
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
-AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sampleRate, unsigned numberOfChannels)
-    : AudioProcessor(sampleRate, numberOfChannels)
-    , m_hasJustReset(true)
+AudioDSPKernelProcessor::AudioDSPKernelProcessor(unsigned numberOfChannels) : AudioProcessor(numberOfChannels), m_hasJustReset(true)
 {
 }
 
@@ -75,16 +73,16 @@ void AudioDSPKernelProcessor::reset()
         m_kernels[i]->reset();
 }
 
-double AudioDSPKernelProcessor::tailTime() const
+double AudioDSPKernelProcessor::tailTime(ContextRenderLock & r) const
 {
     // It is expected that all the kernels have the same tailTime.
-    return !m_kernels.empty() ? (*m_kernels.begin())->tailTime() : 0;
+    return !m_kernels.empty() ? (*m_kernels.begin())->tailTime(r) : 0;
 }
 
-double AudioDSPKernelProcessor::latencyTime() const
+double AudioDSPKernelProcessor::latencyTime(ContextRenderLock & r) const
 {
     // It is expected that all the kernels have the same latencyTime.
-    return !m_kernels.empty() ? (*m_kernels.begin())->latencyTime() : 0;
+    return !m_kernels.empty() ? (*m_kernels.begin())->latencyTime(r) : 0;
 }
 
 } // namespace lab

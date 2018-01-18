@@ -3,22 +3,22 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/PannerNode.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/HRTFDatabaseLoader.h"
 #include "internal/HRTFPanner.h"
-#include "internal/AudioBus.h"
 #include "internal/Panner.h"
 #include "internal/Cone.h"
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
-
-#include <WTF/MathExtras.h>
+#include "internal/Assertions.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ static void fixNANs(double & x)
     if (std::isnan(double(x)) || std::isinf(x)) x = 0.0;
 }
 
-PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : AudioNode(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
+PannerNode::PannerNode(const float sampleRate, const std::string & searchPath) : AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
 {
     if (searchPath.length())
     {
@@ -60,8 +60,6 @@ PannerNode::PannerNode(float sampleRate, const std::string & searchPath) : Audio
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    setNodeType(NodeTypePanner);
-
     initialize();
 }
 
@@ -77,10 +75,10 @@ void PannerNode::initialize()
     switch (m_panningModel)
     {
         case PanningMode::EQUALPOWER:
-            m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
+            m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
             break;
         case PanningMode::HRTF:
-            m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
+            m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
             break;
         default:
             throw std::runtime_error("invalid panning model");
@@ -175,12 +173,6 @@ void PannerNode::reset(ContextRenderLock&)
         m_panner->reset();
 }
 
-std::shared_ptr<AudioListener> PannerNode::listener(ContextRenderLock& r)
-{
-    if (!r.context()) return nullptr;
-    return r.context()->listener();
-}
-
 void PannerNode::setPanningModel(PanningMode model)
 {
     if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
@@ -193,10 +185,10 @@ void PannerNode::setPanningModel(PanningMode model)
         switch (m_panningModel)
         {
             case PanningMode::EQUALPOWER:
-                m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(sampleRate()));
+                m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
                 break;
             case PanningMode::HRTF:
-                m_panner = std::unique_ptr<Panner>(new HRTFPanner(sampleRate()));
+                m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
                 break;
             default:
                 throw std::invalid_argument("invalid panning model");
@@ -221,14 +213,16 @@ void PannerNode::setDistanceModel(unsigned short model)
     }
 }
 
-void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation)
+void PannerNode::getAzimuthElevation(ContextRenderLock & r, double* outAzimuth, double* outElevation)
 {
     // FIXME: we should cache azimuth and elevation (if possible), so we only re-calculate if a change has been made.
 
     double azimuth = 0.0;
 
+    AudioListener & listener = r.context()->listener();
+
     // Calculate the source-listener vector
-    FloatPoint3D listenerPosition = listener(r)->position();
+    FloatPoint3D listenerPosition = listener.position();
     FloatPoint3D sourceListener = normalize(m_position - listenerPosition);
 
     if (is_zero(sourceListener))
@@ -240,8 +234,8 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     }
 
     // Align axes
-    FloatPoint3D listenerFront = normalize(listener(r)->orientation());
-    FloatPoint3D listenerUp = listener(r)->upVector();
+    FloatPoint3D listenerFront = normalize(listener.orientation());
+    FloatPoint3D listenerUp = listener.upVector();
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
     FloatPoint3D up = cross(listenerRight, listenerFront);
 
@@ -278,19 +272,21 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
         *outElevation = elevation;
 }
 
-float PannerNode::dopplerRate(ContextRenderLock& r)
+float PannerNode::dopplerRate(ContextRenderLock & r)
 {
     double dopplerShift = 1.0;
 
+    AudioListener & listener = r.context()->listener();
+
     // FIXME: optimize for case when neither source nor listener has changed...
-    double dopplerFactor = listener(r)->dopplerFactor();
+    double dopplerFactor = listener.dopplerFactor();
 
     if (dopplerFactor > 0.0)
     {
-        double speedOfSound = listener(r)->speedOfSound();
+        double speedOfSound = listener.speedOfSound();
 
-        const FloatPoint3D &sourceVelocity = m_velocity;
-        const FloatPoint3D &listenerVelocity = listener(r)->velocity();
+        const FloatPoint3D & sourceVelocity = m_velocity;
+        const FloatPoint3D & listenerVelocity = listener.velocity();
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);
@@ -299,7 +295,7 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
         if (sourceHasVelocity || listenerHasVelocity)
         {
             // Calculate the source to listener vector
-            FloatPoint3D listenerPosition = listener(r)->position();
+            FloatPoint3D listenerPosition = listener.position();
             FloatPoint3D sourceToListener = m_position - listenerPosition;
 
             double sourceListenerMagnitude = magnitude(sourceToListener);
@@ -330,7 +326,9 @@ float PannerNode::dopplerRate(ContextRenderLock& r)
 
 float PannerNode::distanceConeGain(ContextRenderLock& r)
 {
-    FloatPoint3D listenerPosition = listener(r)->position();
+    AudioListener & listener = r.context()->listener();
+
+    FloatPoint3D listenerPosition = listener.position();
 
     double listenerDistance = magnitude(m_position - listenerPosition); // "distanceTo"
 
@@ -352,10 +350,9 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
     if (!node)
         return;
 
-    // First check if this node is an AudioBufferSourceNode. If so, let it know about us so that doppler shift pitch can be taken into account.
-    if (node->nodeType() == NodeTypeAudioBufferSource)
+    // First check if this node is an SampledAudioNode.
+    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode*>(node))
     {
-        AudioBufferSourceNode* bufferSourceNode = reinterpret_cast<AudioBufferSourceNode*>(node);
         bufferSourceNode->setPannerNode(this);
     }
     else
@@ -365,7 +362,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
         {
             auto input = node->input(i);
 
-            // For each input, go through all of its connections, looking for AudioBufferSourceNodes.
+            // For each input, go through all of its connections, looking for SampledAudioNodes.
             for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);
@@ -396,7 +393,7 @@ void PannerNode::setConeOuterAngle(float angle) { m_coneEffect->setOuterAngle(an
 float PannerNode::coneOuterGain() const { return static_cast<float>(m_coneEffect->outerGain()); }
 void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angle); }
 
-double PannerNode::tailTime() const { return m_panner ? m_panner->tailTime() : 0; }
-double PannerNode::latencyTime() const { return m_panner ? m_panner->latencyTime() : 0; }
+double PannerNode::tailTime(ContextRenderLock & r) const { return m_panner ? m_panner->tailTime(r) : 0; }
+double PannerNode::latencyTime(ContextRenderLock & r) const { return m_panner ? m_panner->latencyTime(r) : 0; }
 
 } // namespace lab

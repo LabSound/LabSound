@@ -8,22 +8,25 @@ struct StereoPanningApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext();
         
-        SoundBuffer train("samples/trainrolling.wav", context->sampleRate());
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/trainrolling.wav", false);
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
         auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
-        
-        std::shared_ptr<AudioBufferSourceNode> trainNode;
+
         {
-            ContextGraphLock g(context, "Panning");
-            ContextRenderLock r(context, "Panning");
+            ContextRenderLock r(context.get(), "Stereo Panning");
+
+            audioClipNode->setBus(r, audioClip);
+            context->connect(stereoPanner, audioClipNode, 0, 0);
+            audioClipNode->start(0.0f);
+
             context->connect(context->destination(), stereoPanner, 0, 0);
-            trainNode = train.play(r, stereoPanner, 0.0f);
         }
         
-        if (trainNode)
+        if (audioClipNode)
         {
-            trainNode->setLooping(true);
+            audioClipNode->setLoop(true);
             
             const int seconds = 8;
             
@@ -46,7 +49,5 @@ struct StereoPanningApp : public LabSoundExampleApp
         {
             std::cerr << std::endl << "Couldn't initialize train node to play" << std::endl;
         }
-        
-        lab::CleanupAudioContext(context);
     }
 };

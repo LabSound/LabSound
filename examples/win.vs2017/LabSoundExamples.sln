@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 14 for Windows Desktop
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSoundExamples", "LabSoundExamples.vcxproj", "{9C88A880-EB5A-4BF2-8837-D6828C46E32E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -10,9 +10,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSoundExamples", "LabSoun
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabSound", "..\..\win.vs2017\LabSound.vcxproj", "{C2C11853-81F3-C348-8C6E-8DA318E0C84E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{34D81D02-2E0C-4C7E-A57A-FBCB46277F81}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnyquist", "..\..\third_party\libnyquist\libnyquist.vcxproj\v141\libnyquist.vcxproj", "{0EEC3739-F60A-4B90-8B75-9E1AFF28106A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,5 +53,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C2C11853-81F3-C348-8C6E-8DA318E0C84E} = {34D81D02-2E0C-4C7E-A57A-FBCB46277F81}
 		{0EEC3739-F60A-4B90-8B75-9E1AFF28106A} = {34D81D02-2E0C-4C7E-A57A-FBCB46277F81}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F0F01F99-BC9B-4A96-BB20-34A8885FD310}
 	EndGlobalSection
 EndGlobal

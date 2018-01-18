@@ -2,21 +2,20 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
 #include "internal/DynamicsCompressor.h"
-#include "internal/AudioBus.h"
-#include "internal/AudioUtilities.h"
 
-#include <WTF/MathExtras.h>
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/extended/AudioContextLock.h"
+
+#include "LabSound/core/Macros.h"
 
 namespace lab {
 
 using namespace AudioUtilities;
     
-DynamicsCompressor::DynamicsCompressor(float sampleRate, unsigned numberOfChannels)
-    : m_numberOfChannels(numberOfChannels)
-    , m_sampleRate(sampleRate)
-    , m_compressor(sampleRate, numberOfChannels)
+DynamicsCompressor::DynamicsCompressor(unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels), m_compressor(numberOfChannels)
 {
     // Uninitialized state - for parameter recalculation.
     m_lastFilterStageRatio = -1;
@@ -53,7 +52,7 @@ void DynamicsCompressor::initializeParameters()
 
     m_parameters[ParamFilterStageGain] = 4.4f; // dB
     m_parameters[ParamFilterStageRatio] = 2;
-    m_parameters[ParamFilterAnchor] = 15000 / nyquist();
+    m_parameters[ParamFilterAnchor] = 15000.f / 22500.f; // dimitri sample rate
     
     m_parameters[ParamPostGain] = 0; // dB
     m_parameters[ParamReduction] = 0; // dB
@@ -78,7 +77,8 @@ void DynamicsCompressor::setEmphasisStageParameters(unsigned stageIndex, float g
 
     ASSERT(m_numberOfChannels == m_preFilterPacks.size());
 
-    for (unsigned i = 0; i < m_numberOfChannels; ++i) {
+    for (unsigned i = 0; i < m_numberOfChannels; ++i) 
+    {
         // Set pre-filter zero and pole to create an emphasis filter.
         ZeroPole& preFilter = m_preFilterPacks[i]->filters[stageIndex];
         preFilter.setZero(r1);
@@ -191,11 +191,10 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
     // The processing is performed in place.
     // Dimitri... broken?
     m_compressor.process(r,
-                         m_destinationChannels.get(),
+                         m_sourceChannels.get(),
                          m_destinationChannels.get(),
                          numberOfChannels,
                          framesToProcess,
-
                          dbThreshold,
                          dbKnee,
                          ratio,
@@ -204,7 +203,6 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
                          preDelayTime,
                          dbPostGain,
                          effectBlend,
-
                          releaseZone1,
                          releaseZone2,
                          releaseZone3,
@@ -262,5 +260,9 @@ void DynamicsCompressor::setNumberOfChannels(unsigned numberOfChannels)
     m_compressor.setNumberOfChannels(numberOfChannels);
     m_numberOfChannels = numberOfChannels;
 }
+
+
+double DynamicsCompressor::tailTime(ContextRenderLock & r) const { return 0; }
+double DynamicsCompressor::latencyTime(ContextRenderLock & r) const { return m_compressor.latencyFrames() / static_cast<double>(r.context()->sampleRate()); }
 
 } // namespace lab

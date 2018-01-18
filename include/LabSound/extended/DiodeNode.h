@@ -12,20 +12,14 @@ namespace lab {
     
     class DiodeNode
     {
-    public:
-        DiodeNode(ContextRenderLock& r, float sampleRate);
-        void setDistortion(ContextRenderLock& r, float distortion);
-        std::shared_ptr<WaveShaperNode> node() const { return waveShaper; }
-
-    private:
-        void setCurve(ContextRenderLock&);
-
+        void setCurve();
         std::shared_ptr<WaveShaperNode> waveShaper;
-        
-        // parameters controlling the shape of the curve
-        float vb;
-        float vl;
-        float h;
+        float vb, vl, h;  // parameters controlling the shape of the curve
+    public:
+
+        DiodeNode();
+        void setDistortion(float distortion = 1.0);
+        std::shared_ptr<WaveShaperNode> node() const { return waveShaper; }
     };
     
 }

@@ -160,7 +160,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\third_party\libnyquist\libnyquist.vcxproj\v140\libnyquist.vcxproj">
+    <ProjectReference Include="..\..\third_party\libnyquist\libnyquist.vcxproj\v141\libnyquist.vcxproj">
       <Project>{0eec3739-f60a-4b90-8b75-9e1aff28106a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\win.vs2017\LabSound.vcxproj">
@@ -187,8 +187,6 @@
     <ClInclude Include="..\src\RenderOffline.h" />
     <ClInclude Include="..\src\PeakCompressor.h" />
     <ClInclude Include="..\src\RedAlert.h" />
-    <ClInclude Include="..\src\Rhythm.h" />
-    <ClInclude Include="..\src\RhythmAndFilters.h" />
     <ClInclude Include="..\src\Simple.h" />
     <ClInclude Include="..\src\Spatialization.h" />
     <ClInclude Include="..\src\StereoPanning.h" />

@@ -20,7 +20,7 @@ namespace lab
         std::unique_ptr<SpectralMonitorNodeInternal> internalNode;
     public:
 
-        SpectralMonitorNode(float sampleRate);
+        SpectralMonitorNode();
         virtual ~SpectralMonitorNode();
 
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
@@ -32,9 +32,8 @@ namespace lab
 
     private:
 
-        // required for BasicInspector
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     };
 }
 

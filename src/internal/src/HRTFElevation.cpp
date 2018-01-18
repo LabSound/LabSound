@@ -2,12 +2,14 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/extended/AudioFileReader.h"
+
 #include "internal/HRTFElevation.h"
-#include "internal/AudioBus.h"
-#include "internal/AudioFileReader.h"
 #include "internal/Biquad.h"
 #include "internal/FFTFrame.h"
 #include "internal/HRTFPanner.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <math.h>
@@ -109,7 +111,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
     
-    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false, info->sampleRate);
+    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
 
     if (!impulseResponse.get())
     {

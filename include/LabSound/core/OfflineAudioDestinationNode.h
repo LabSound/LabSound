@@ -5,44 +5,34 @@
 #ifndef OfflineAudioDestinationNode_h
 #define OfflineAudioDestinationNode_h
 
-#include "LabSound/core/AudioBuffer.h"
 #include "LabSound/core/AudioDestinationNode.h"
 
 namespace lab {
 
 class AudioBus;
 class AudioContext;
-    
-class OfflineAudioDestinationNode : public AudioDestinationNode
+
+class OfflineAudioDestinationNode final : public AudioDestinationNode
 {
     
 public:
     
-    OfflineAudioDestinationNode(std::shared_ptr<AudioContext> context, AudioBuffer * renderTarget);
+    OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
     virtual ~OfflineAudioDestinationNode();
     
     virtual void initialize();
     virtual void uninitialize();
-    virtual float sampleRate() const { return m_renderTarget->sampleRate(); }
 
-    void startRendering();
+    virtual void startRendering() override;
     
 private:
-    
-    // This AudioNode renders into this AudioBuffer.
-    AudioBuffer * m_renderTarget;
-    
-    // Temporary AudioBus for each render quantum.
+  
     std::unique_ptr<AudioBus> m_renderBus;
-    
-    // Rendering thread.
     std::thread m_renderThread;
-    
-    bool m_startedRendering;
     void offlineRender();
-    
-    AudioContext * ctx;
-    
+    bool m_startedRendering{ false };
+    uint32_t m_numChannels;
+    float m_lengthSeconds;
 };
 
 } // namespace lab

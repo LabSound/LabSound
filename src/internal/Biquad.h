@@ -7,7 +7,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
 
 #include <sys/types.h>
 #include <complex>
@@ -68,7 +68,7 @@ private:
     double m_a1;
     double m_a2;
 
-#if OS(DARWIN)
+#if defined(LABSOUND_PLATFORM_OSX)
     void processFast(const float* sourceP, float* destP, size_t framesToProcess);
     void processSliceFast(double* sourceP, double* destP, double* coefficientsP, size_t framesToProcess);
     AudioDoubleArray m_inputBuffer;

@@ -18,7 +18,7 @@ namespace lab
     public:
         enum Mode { CLIP, TANH };
 
-        ClipNode(float sampleRate);
+        ClipNode();
         virtual ~ClipNode();
 
         void setMode(Mode m);

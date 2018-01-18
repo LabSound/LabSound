@@ -2,15 +2,16 @@
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
-#include "internal/AudioBus.h"
+#include "internal/Assertions.h"
 
-#include <WTF/MathExtras.h>
 #include <algorithm>
 
 using namespace std;
@@ -19,19 +20,16 @@ namespace lab {
 
 const double UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode(float sampleRate)
-    : AudioSourceNode(sampleRate)
-    , m_playbackState(UNSCHEDULED_STATE)
-    , m_startTime(0)
-    , m_endTime(UnknownTime)
+AudioScheduledSourceNode::AudioScheduledSourceNode() : m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
 {
+
 }
 
 void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
                                                     size_t quantumFrameSize,
-                                                    AudioBus* outputBus,
-                                                    size_t& quantumFrameOffset,
-                                                    size_t& nonSilentFramesToProcess)
+                                                    AudioBus * outputBus,
+                                                    size_t & quantumFrameOffset,
+                                                    size_t & nonSilentFramesToProcess)
 {
     if (!outputBus)
         return;
@@ -39,11 +37,12 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
         return;
 
-    AudioContext* context = r.context();
+    AudioContext * context = r.context();
+
     if (!context)
         return;
     
-    double sampleRate = this->sampleRate();
+    float sampleRate = r.context()->sampleRate();
     
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
@@ -72,7 +71,6 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         m_playbackState = PLAYING_STATE;
         context->incrementActiveSourceCount();
     }
-
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
     quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range

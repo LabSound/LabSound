@@ -84,7 +84,7 @@ namespace lab {
         void randomize(ContextRenderLock&);
 
     private:
-        virtual bool propagatesSilence(double now) const override;
+        virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
         std::shared_ptr<AudioParam> _waveType;
         std::shared_ptr<AudioParam> _attack;

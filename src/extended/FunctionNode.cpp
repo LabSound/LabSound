@@ -3,11 +3,10 @@
 
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/FunctionNode.h"
 #include "LabSound/extended/AudioContextLock.h"
-
-#include "internal/AudioBus.h"
 
 using namespace std;
 using namespace lab;
@@ -15,7 +14,7 @@ using namespace lab;
 namespace lab
 {
     
-    FunctionNode::FunctionNode(float sampleRate, int channels) : AudioScheduledSourceNode(sampleRate)
+    FunctionNode::FunctionNode(int channels) : AudioScheduledSourceNode()
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
         initialize();
@@ -58,7 +57,7 @@ namespace lab
             _function(r, this, i, destP, n);
         }
 
-        _now += double(framesToProcess) / sampleRate();
+        _now += double(framesToProcess) / r.context()->sampleRate();
         outputBus->clearSilentFlag();
     }
     
@@ -67,7 +66,7 @@ namespace lab
         // No-op
     }
     
-    bool FunctionNode::propagatesSilence(double now) const
+    bool FunctionNode::propagatesSilence(ContextRenderLock & r) const
     {
         return !isPlayingOrScheduled() || hasFinished();
     }

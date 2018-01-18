@@ -4,6 +4,7 @@
 
 #include "internal/HRTFDatabaseLoader.h"
 #include "internal/HRTFDatabase.h"
+#include "internal/Assertions.h"
 
 #include <iostream>
 

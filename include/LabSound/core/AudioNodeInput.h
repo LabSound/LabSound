@@ -28,7 +28,6 @@ public:
     virtual ~AudioNodeInput();
 
     // AudioSummingJunction
-    virtual bool canUpdateState() override { return !node()->isMarkedForDeletion(); }
     virtual void didUpdate(ContextRenderLock&) override;
 
     // Can be called from any thread.

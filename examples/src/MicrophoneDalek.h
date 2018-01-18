@@ -12,11 +12,11 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
     // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
     void PlayExample()
     {
-        auto context = lab::MakeAudioContext();
-        float sampleRate = context->sampleRate();
+        auto context = lab::MakeRealtimeAudioContext();
         
 #ifndef USE_LIVE
-        SoundBuffer sample("samples/voice.ogg", sampleRate);
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/voice.ogg", false);
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
 #endif
         
         std::shared_ptr<AudioHardwareSourceNode> input;
@@ -33,70 +33,58 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<DiodeNode> vcDiode4; 
         std::shared_ptr<GainNode> outGain;
         std::shared_ptr<DynamicsCompressorNode> compressor;
-        std::shared_ptr<AudioBufferSourceNode> player;
         
         {
-            ContextGraphLock g(context, "dalek voice");
-            ContextRenderLock r(context, "dalek voice");
+            ContextRenderLock r(context.get(), "dalek voice");
             
-            vIn = std::make_shared<OscillatorNode>(r, sampleRate);
+            vIn = std::make_shared<OscillatorNode>(context->sampleRate());
             vIn->frequency()->setValue(30.0f);
-            vIn->start(0);
+            vIn->start(0.f);
             
-            vInGain = std::make_shared<GainNode>(sampleRate);
+            vInGain = std::make_shared<GainNode>();
             vInGain->gain()->setValue(0.5f);
             
             // GainNodes can take negative gain which represents phase inversion
-            vInInverter1 = std::make_shared<GainNode>(sampleRate);
+            vInInverter1 = std::make_shared<GainNode>();
             vInInverter1->gain()->setValue(-1.0f);
-            vInInverter2 = std::make_shared<GainNode>(sampleRate);
+            vInInverter2 = std::make_shared<GainNode>();
             vInInverter2->gain()->setValue(-1.0f);
             
-            vInDiode1 = std::make_shared<DiodeNode>(r, sampleRate);
-            vInDiode2 = std::make_shared<DiodeNode>(r, sampleRate);
+            vInDiode1 = std::make_shared<DiodeNode>();
+            vInDiode2 = std::make_shared<DiodeNode>();
             
-            vInInverter3 = std::make_shared<GainNode>(sampleRate);
+            vInInverter3 = std::make_shared<GainNode>();
             vInInverter3->gain()->setValue(-1.0f);
             
             // Now we create the objects on the Vc side of the graph
-#ifndef USE_LIVE
-            player = sample.create(r, sampleRate);
-            if (!player)
-            {
-                std::cerr << "Sample buffer wasn't loaded" << std::endl;
-                return;
-            }
-#endif
-            
-            vcInverter1 = std::make_shared<GainNode>(sampleRate);
+            vcInverter1 = std::make_shared<GainNode>();
             vcInverter1->gain()->setValue(-1.0f);
             
-            vcDiode3 = std::make_shared<DiodeNode>(r, sampleRate);
-            vcDiode4 = std::make_shared<DiodeNode>(r, sampleRate);
+            vcDiode3 = std::make_shared<DiodeNode>();
+            vcDiode4 = std::make_shared<DiodeNode>();
             
             // A gain node to control master output levels
-            outGain = std::make_shared<GainNode>(sampleRate);
+            outGain = std::make_shared<GainNode>();
             outGain->gain()->setValue(1.0f);
             
             // A small addition to the graph given in Parker's paper is a compressor node
             // immediately before the output. This ensures that the user's volume remains
             // somewhat constant when the distortion is increased.
-            compressor = std::make_shared<DynamicsCompressorNode>(sampleRate);
-            compressor->threshold()->setValue(-12.0f);
+            compressor = std::make_shared<DynamicsCompressorNode>();
+            compressor->threshold()->setValue(-14.0f);
             
             // Now we connect up the graph following the block diagram above (on the web page).
             // When working on complex graphs it helps to have a pen and paper handy!
             
-            // First the Vc side
-            AudioContext* ac = context.get();
-            
 #ifdef USE_LIVE
             input = MakeHardwareSourceNode(r);
-            input->connect(ac, vcInverter1.get(), 0, 0);
-            input->connect(ac, vcDiode4->node().get(), 0, 0);
+            context->connect(vcInverter1, input, 0, 0);
+            context->connect(vcDiode4->node(), input, 0, 0);
 #else
-            context->connect(vcInverter1, player, 0, 0);
-            context->connect(vcDiode4->node(), player, 0, 0);
+            audioClipNode->setBus(r, audioClip);
+            //context->connect(vcInverter1, audioClipNode, 0, 0); // dimitri 
+            context->connect(vcDiode4->node(), audioClipNode, 0, 0);
+            audioClipNode->start(0.f);
 #endif
             
             context->connect(vcDiode3->node(), vcInverter1, 0, 0);
@@ -121,13 +109,8 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             
             context->connect(outGain, compressor, 0, 0);
             context->connect(context->destination(), outGain, 0, 0);
-            
-#ifndef USE_LIVE
-            player->start(0);
-#endif
         }
         
         std::this_thread::sleep_for(std::chrono::seconds(30));
-        lab::CleanupAudioContext(context);
     }
 };

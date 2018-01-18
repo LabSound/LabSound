@@ -1,15 +1,15 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/ConfigMacros.h"
+#include "LabSound/core/Macros.h"
+#include "internal/Assertions.h"
 
-#if USE(WEBAUDIO_KISSFFT)
+#if defined(WEBAUDIO_KISSFFT)
 
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 
 #include <kissfft/kiss_fftr.hpp>
-#include <WTF/MathExtras.h>
 #include <iostream>
 
 // To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines

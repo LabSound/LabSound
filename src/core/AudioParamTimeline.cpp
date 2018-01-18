@@ -2,16 +2,16 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
+
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "internal/FloatConversion.h"
-#include "internal/AudioBus.h"
 
-#include <WTF/MathExtras.h>
 #include <algorithm>
 
 using namespace std;
@@ -26,25 +26,25 @@ namespace
 
 void AudioParamTimeline::setValueAtTime(float value, float time)
 {
-    insertEvent(ParamEvent(ParamEvent::SetValue, value, time, 0, 0, 0));
+    insertEvent(ParamEvent(ParamEvent::SetValue, value, time, 0, 0, {}));
 }
 
 void AudioParamTimeline::linearRampToValueAtTime(float value, float time)
 {
-    insertEvent(ParamEvent(ParamEvent::LinearRampToValue, value, time, 0, 0, 0));
+    insertEvent(ParamEvent(ParamEvent::LinearRampToValue, value, time, 0, 0, {}));
 }
 
 void AudioParamTimeline::exponentialRampToValueAtTime(float value, float time)
 {
-    insertEvent(ParamEvent(ParamEvent::ExponentialRampToValue, value, time, 0, 0, 0));
+    insertEvent(ParamEvent(ParamEvent::ExponentialRampToValue, value, time, 0, 0, {}));
 }
 
 void AudioParamTimeline::setTargetAtTime(float target, float time, float timeConstant)
 {
-    insertEvent(ParamEvent(ParamEvent::SetTarget, target, time, timeConstant, 0, 0));
+    insertEvent(ParamEvent(ParamEvent::SetTarget, target, time, timeConstant, 0, {}));
 }
 
-void AudioParamTimeline::setValueCurveAtTime(std::shared_ptr<std::vector<float>> curve, float time, float duration)
+void AudioParamTimeline::setValueCurveAtTime(std::vector<float> & curve, float time, float duration)
 {
     insertEvent(ParamEvent(ParamEvent::SetValueCurve, 0, time, 0, duration, curve));
 }
@@ -300,9 +300,9 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
             case ParamEvent::SetValueCurve:
                 {
-                    std::shared_ptr<std::vector<float>> curve = event.curve();
-                    float* curveData = curve ? &(*curve)[0] : 0;
-                    size_t numberOfCurvePoints = curve ? curve->size() : 0;
+                    std::vector<float> & curve = event.curve();
+                    float * curveData = curve.size() > 0 ? curve.data() : 0;
+                    size_t numberOfCurvePoints = curve.size() > 0 ? curve.size() : 0;
 
                     // Curve events have duration, so don't just use next event time.
                     float duration = event.duration();
@@ -311,7 +311,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     // (N - 1)/Td in the specification.
                     double curvePointsPerFrame = (numberOfCurvePoints - 1) / duration / sampleRate;
 
-                    if (!curve || !curveData || !numberOfCurvePoints || duration <= 0 || sampleRate <= 0) {
+                    if (curve.size() == 0 || !curveData || !numberOfCurvePoints || duration <= 0 || sampleRate <= 0)
+                    {
                         // Error condition - simply propagate previous value.
                         currentTime = fillToTime;
                         for (; writeIndex < fillToFrame; ++writeIndex)

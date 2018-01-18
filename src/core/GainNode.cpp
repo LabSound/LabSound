@@ -6,19 +6,16 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioArray.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 namespace lab
 {
 
-GainNode::GainNode(float sampleRate)
-    : AudioNode(sampleRate)
-    , m_lastGain(1.0)
-    , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
+GainNode::GainNode() : AudioNode() , m_lastGain(1.0) , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
 {
     m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0);
 
@@ -26,8 +23,6 @@ GainNode::GainNode(float sampleRate)
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     m_params.push_back(m_gain);
-
-    setNodeType(NodeTypeGain);
 
     initialize();
 }

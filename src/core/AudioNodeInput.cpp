@@ -6,10 +6,10 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioBus.h"
 #include "internal/Assertions.h"
 
 #include <algorithm>
@@ -51,10 +51,10 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
 void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!junction || !junction->node() || !toOutput)
-        return;
+    if (!junction || !junction->node() || !toOutput) return;
     
-    if (junction->isConnected(toOutput)) {
+    if (junction->isConnected(toOutput)) 
+    {
         junction->junctionDisconnectOutput(toOutput);
         toOutput->removeInput(g, junction);
     }

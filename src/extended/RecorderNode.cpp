@@ -3,10 +3,9 @@
 
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/RecorderNode.h"
-
-#include "internal/AudioBus.h"
 
 #include "libnyquist/WavEncoder.h"
 
@@ -15,13 +14,11 @@ namespace lab
     
     using namespace lab;
     
-    RecorderNode::RecorderNode(float sampleRate) : AudioBasicInspectorNode(sampleRate, 2), m_recording(false), m_mixToMono(false)
+    RecorderNode::RecorderNode() : AudioBasicInspectorNode(2)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-        
-        setNodeType(lab::NodeType::NodeTypeRecorder);
-        
+
         initialize();
     }
     
@@ -30,7 +27,7 @@ namespace lab
         uninitialize();
     }
     
-    void RecorderNode::getData(std::vector<float>& result)
+    void RecorderNode::getData(std::vector<float> & result)
     {
         // swap is quick enough that process should not be adversely affected
         result.clear();
@@ -50,8 +47,7 @@ namespace lab
         }
 
         // =====> should this follow the WebAudio pattern have a writer object to call here?
-        AudioBus* bus = input(0)->bus(r);
-        
+        AudioBus* bus = input(0)->bus(r);        
         bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= framesToProcess);
         
         if (!isBusGood)
@@ -142,11 +138,9 @@ namespace lab
         
         // Represents target encoding (wav only)
         // Libnyquist bug with things other than PCM_FLT?
-        nqr::EncoderParams params = {2, nqr::PCM_FLT, nqr::DITHER_NONE};
+        nqr::EncoderParams params = {channels, nqr::PCM_FLT, nqr::DITHER_NONE};
 
         int encoderStatus = nqr::WavEncoder::WriteFile(params, fileData.get(), filenameWithWavExtension);
-        
-        LOG("[WavEncoder - Debug Status: %i]", encoderStatus);
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

@@ -2,14 +2,15 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/Macros.h"
+#include "LabSound/core/AudioBus.h"
+#include "internal/Assertions.h"
 #include "internal/HRTFPanner.h"
-#include "internal/AudioBus.h"
 #include "internal/FFTConvolver.h"
 #include "internal/HRTFDatabase.h"
 #include "internal/HRTFDatabaseLoader.h"
 
 #include <algorithm>
-#include <WTF/MathExtras.h>
 
 using namespace std;
 
@@ -23,9 +24,7 @@ const double MaxDelayTimeSeconds = 0.002;
 const int UninitializedAzimuth = -1;
 const uint32_t RenderingQuantum = 128;
 
-HRTFPanner::HRTFPanner(float sampleRate)
-    : Panner(PanningMode::HRTF)
-    , m_sampleRate(sampleRate)
+HRTFPanner::HRTFPanner(const float sampleRate) : Panner(sampleRate, PanningMode::HRTF)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)
     , m_elevation1(0)
@@ -163,7 +162,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     // Cross-fade / transition over a period of around 45 milliseconds.
     // This is an empirical value tuned to be a reasonable trade-off between
     // smoothness and speed.
-    const double fadeFrames = sampleRate() <= 48000 ? 2048 : 4096;
+    const double fadeFrames = r.context()->sampleRate() <= 48000 ? 2048 : 4096;
 
     // Check for azimuth and elevation changes, initiating a cross-fade if needed.
     if (!m_crossfadeX && m_crossfadeSelection == CrossfadeSelection1)
@@ -220,8 +219,8 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
             return;
         }
 
-        ASSERT(frameDelayL1 / sampleRate() < MaxDelayTimeSeconds && frameDelayR1 / sampleRate() < MaxDelayTimeSeconds);
-        ASSERT(frameDelayL2 / sampleRate() < MaxDelayTimeSeconds && frameDelayR2 / sampleRate() < MaxDelayTimeSeconds);
+        ASSERT(frameDelayL1 / r.context()->sampleRate() < MaxDelayTimeSeconds && frameDelayR1 / r.context()->sampleRate() < MaxDelayTimeSeconds);
+        ASSERT(frameDelayL2 / r.context()->sampleRate() < MaxDelayTimeSeconds && frameDelayR2 / r.context()->sampleRate() < MaxDelayTimeSeconds);
 
         // Crossfade inter-aural delays based on transitions.
         double frameDelayL = (1 - m_crossfadeX) * frameDelayL1 + m_crossfadeX * frameDelayL2;
@@ -297,19 +296,18 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     }
 }
 
-double HRTFPanner::tailTime() const
+double HRTFPanner::tailTime(ContextRenderLock & r) const
 {
     // Because HRTFPanner is implemented with a DelayKernel and a FFTConvolver, the tailTime of the HRTFPanner
     // is the sum of the tailTime of the DelayKernel and the tailTime of the FFTConvolver, which is MaxDelayTimeSeconds
     // and fftSize() / 2, respectively.
-    return MaxDelayTimeSeconds + (fftSize() / 2) / static_cast<double>(sampleRate());
+    return MaxDelayTimeSeconds + (fftSize() / 2) / static_cast<double>(r.context()->sampleRate());
 }
 
-double HRTFPanner::latencyTime() const
+double HRTFPanner::latencyTime(ContextRenderLock & r) const
 {
-    // The latency of a FFTConvolver is also fftSize() / 2, and is in addition to its tailTime of the
-    // same value.
-    return (fftSize() / 2) / static_cast<double>(sampleRate());
+    // The latency of a FFTConvolver is also fftSize() / 2, and is in addition to its tailTime of the same value.
+    return (fftSize() / 2) / static_cast<double>(r.context()->sampleRate());
 }
 
 } // namespace lab

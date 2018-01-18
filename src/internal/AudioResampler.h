@@ -6,8 +6,8 @@
 #define AudioResampler_h
 
 #include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/AudioResamplerKernel.h"
 
 #include <vector>

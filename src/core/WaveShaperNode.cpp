@@ -8,19 +8,18 @@
 namespace lab
 {
 
-WaveShaperNode::WaveShaperNode(float sampleRate) : AudioBasicProcessorNode(sampleRate)
+WaveShaperNode::WaveShaperNode()
 {
-    m_processor.reset(new lab::WaveShaperProcessor(sampleRate, 1));
-    setNodeType(NodeTypeWaveShaper);
+    m_processor.reset(new WaveShaperProcessor(1));
     initialize();
 }
 
-void WaveShaperNode::setCurve(ContextRenderLock& r, std::shared_ptr<std::vector<float>> curve)
+void WaveShaperNode::setCurve(const std::vector<float> & curve)
 {
-    waveShaperProcessor()->setCurve(r, curve);
+    waveShaperProcessor()->setCurve(curve);
 }
 
-std::shared_ptr<std::vector<float>> WaveShaperNode::curve()
+std::vector<float> & WaveShaperNode::curve()
 {
     return waveShaperProcessor()->curve();
 }

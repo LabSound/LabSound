@@ -6,23 +6,17 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
 
-#include "internal/AudioBus.h"
-
 namespace lab {
 
-AudioHardwareSourceNode::AudioHardwareSourceNode(AudioSourceProvider * audioSourceProvider, float sampleRate) : AudioSourceNode(sampleRate)
-, m_audioSourceProvider(audioSourceProvider)
-, m_sourceNumberOfChannels(0)
+AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
 {
-    
     // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
-    setNodeType(lab::NodeType::NodeTypeHardwareSource);
 
     initialize();
 }
@@ -34,10 +28,10 @@ AudioHardwareSourceNode::~AudioHardwareSourceNode()
 
 void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
 {
-    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != sampleRate())
+    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
     {
         // The sample-rate must be equal to the context's sample-rate.
-        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != sampleRate())
+        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
             throw std::runtime_error("AudioHardwareSourceNode must match samplerate of context... ");
 
         m_sourceNumberOfChannels = numberOfChannels;
@@ -47,7 +41,7 @@ void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfCh
     }
 }
 
-void AudioHardwareSourceNode::process(ContextRenderLock& r, size_t numberOfFrames)
+void AudioHardwareSourceNode::process(ContextRenderLock & r, size_t numberOfFrames)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -77,7 +71,7 @@ void AudioHardwareSourceNode::process(ContextRenderLock& r, size_t numberOfFrame
     }
 }
 
-void AudioHardwareSourceNode::reset(ContextRenderLock&)
+void AudioHardwareSourceNode::reset(ContextRenderLock & r)
 {
     
 }

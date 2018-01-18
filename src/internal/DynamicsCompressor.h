@@ -21,9 +21,13 @@ class AudioBus;
 // of the loudest parts of the signal and raises the volume of the softest parts,
 // making the sound richer, fuller, and more controlled.
 
-class DynamicsCompressor {
+class DynamicsCompressor 
+{
+
 public:
-    enum {
+
+    enum 
+    {
         ParamThreshold,
         ParamKnee,
         ParamRatio,
@@ -43,20 +47,17 @@ public:
         ParamLast
     };
 
-    DynamicsCompressor(float sampleRate, unsigned numberOfChannels);
+    DynamicsCompressor(unsigned numberOfChannels);
 
-    void process(ContextRenderLock&, const AudioBus* sourceBus, AudioBus* destinationBus, unsigned framesToProcess);
+    void process(ContextRenderLock &, const AudioBus * sourceBus, AudioBus * destinationBus, unsigned framesToProcess);
     void reset();
     void setNumberOfChannels(unsigned);
 
     void setParameterValue(unsigned parameterID, float value);
     float parameterValue(unsigned parameterID);
 
-    float sampleRate() const { return m_sampleRate; }
-    float nyquist() const { return m_sampleRate / 2; }
-
-    double tailTime() const { return 0; }
-    double latencyTime() const { return m_compressor.latencyFrames() / static_cast<double>(sampleRate()); }
+    double tailTime(ContextRenderLock & r) const;
+    double latencyTime(ContextRenderLock & r) const;
 
 protected:
     unsigned m_numberOfChannels;
@@ -64,8 +65,6 @@ protected:
     // m_parameters holds the tweakable compressor parameters.
     float m_parameters[ParamLast];
     void initializeParameters();
-
-    float m_sampleRate;
 
     // Emphasis filter controls.
     float m_lastFilterStageRatio;

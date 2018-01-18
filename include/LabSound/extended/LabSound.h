@@ -28,7 +28,7 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioDestinationNode.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioBufferSourceNode.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"
@@ -44,23 +44,23 @@
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/PowerMonitorNode.h"
 #include "LabSound/extended/PWMNode.h"
-#include "LabSound/extended/SoundBuffer.h"
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SampledInstrumentNode.h"
 #include "LabSound/extended/RecorderNode.h"
+#include "LabSound/extended/AudioFileReader.h"
 
 #include <functional>
 #include <string>
 
 namespace lab
 {
-    std::shared_ptr<AudioContext> MakeAudioContext();
-    std::shared_ptr<AudioContext> MakeOfflineAudioContext(const int millisecondsToRun);
-    std::shared_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, size_t frames, float sample_rate);
-    void CleanupAudioContext(std::shared_ptr<AudioContext> context);
-    void AcquireLocksForContext(const std::string id, std::shared_ptr<AudioContext> & ctx, std::function<void(ContextGraphLock & g, ContextRenderLock & r)> callback);
+    // These are convenience functions with straightforward definitions. Most of the samples use them, but they are not strictly required. 
+    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext();
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sample_rate);
 }
 
 #endif

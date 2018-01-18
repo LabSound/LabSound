@@ -25,7 +25,6 @@ struct AudioDestination
 
     // Sample-rate conversion may happen in AudioDestination to the hardware sample-rate
     virtual float sampleRate() const = 0;
-    static float hardwareSampleRate();
 
     // maxChannelCount() returns the total number of output channels of the audio hardware.
     // A value of 0 indicates that the number of channels cannot be configured and

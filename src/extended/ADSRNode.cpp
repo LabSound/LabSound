@@ -6,8 +6,8 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/core/AudioBus.h"
 
-#include "internal/AudioBus.h"
 #include "internal/VectorMath.h"
 
 #include <limits>
@@ -25,7 +25,7 @@ namespace lab
 
     public:
 
-        ADSRNodeInternal(float sampleRate) : AudioProcessor(sampleRate, 2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
+        ADSRNodeInternal() : AudioProcessor(2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
         {
             m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
             m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);
@@ -48,7 +48,7 @@ namespace lab
             if (!numberOfChannels())
                 return;
 
-            std::shared_ptr<lab::AudioContext> c = r.contextPtr();
+            auto c = r.context();
 
             if (m_noteOnTime >= 0)
             {
@@ -62,12 +62,12 @@ namespace lab
 
                 m_attackTimeTarget = m_noteOnTime + m_attackTime->value(r);
 
-                m_attackSteps = m_attackTime->value(r) * sampleRate();
+                m_attackSteps = m_attackTime->value(r) * r.context()->sampleRate();
                 m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
 
                 m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
 
-                m_decaySteps = m_decayTime->value(r) * sampleRate();
+                m_decaySteps = m_decayTime->value(r) * r.context()->sampleRate();
                 m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
 
                 m_releaseSteps = 0;
@@ -136,8 +136,8 @@ namespace lab
 
         virtual void reset() override { }
 
-        virtual double tailTime() const override { return 0; }
-        virtual double latencyTime() const override { return 0; }
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         void noteOn(double now)
         {
@@ -152,7 +152,7 @@ namespace lab
             if (m_noteOffTime == std::numeric_limits<double>::max())
             {
                 m_noteOffTime = now + m_releaseTime->value(r);
-                m_releaseSteps = m_releaseTime->value(r) * sampleRate();
+                m_releaseSteps = m_releaseTime->value(r) * r.context()->sampleRate();
                 m_releaseStepSize = -m_sustainLevel->value(r) / m_releaseSteps;
             }
         }
@@ -188,13 +188,11 @@ namespace lab
     // Public ADSRNode //
     /////////////////////
 
-    ADSRNode::ADSRNode(float sampleRate) : lab::AudioBasicProcessorNode(sampleRate)
+    ADSRNode::ADSRNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ADSRNodeInternal(sampleRate));
+        m_processor.reset(new ADSRNodeInternal());
 
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
-
-        setNodeType(lab::NodeTypeADSR);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
