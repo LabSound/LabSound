@@ -18,5 +18,7 @@ function(_set_Cxx17 proj)
 endfunction()
 
 function(_set_compile_options proj)
-	target_compile_options(${proj} PRIVATE /arch:AVX /Zi )
+    if (WIN32)
+        target_compile_options(${proj} PRIVATE /arch:AVX /Zi )
+    endif()
 endfunction()

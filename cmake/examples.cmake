@@ -1,5 +1,5 @@
 
-project(LavbSoundExamples)
+project(LabSoundExamples)
 
 set(src "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp")
 

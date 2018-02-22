@@ -1,6 +1,8 @@
 
 #-------------------------------------------------------------------------------
 
+include(CXXHelpers)
+
 project(libopus)
 
 set(      third_opus
@@ -86,8 +88,11 @@ add_library(libopus STATIC
 
 _set_Cxx17(libopus)
 _set_compile_options(libopus)
-_disable_warning(4244)
-_disable_warning(4018)
+
+if (WIN32)
+    _disable_warning(4244)
+    _disable_warning(4018)
+endif()
 
 target_include_directories(libopus PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libogg/include
@@ -159,8 +164,11 @@ add_library(libnyquist STATIC
 
 _set_Cxx17(libnyquist)
 _set_compile_options(libnyquist)
-_disable_warning(4244)
-_disable_warning(4018)
+
+if (WIN32)
+    _disable_warning(4244)
+    _disable_warning(4018)
+endif()
 
 target_include_directories(libnyquist PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/include
@@ -169,6 +177,7 @@ target_include_directories(libnyquist PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/flac/src/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libogg/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/include
+    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/src
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/celt
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/libopus/include
