@@ -29,34 +29,36 @@ AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, float sampl
 {
     m_sampleRate = sampleRate;
     m_renderBus.setSampleRate(m_sampleRate);
+    dac.reset(new RtAudio()); // XXX
     configure();
 }
 
 AudioDestinationWin::~AudioDestinationWin()
 {
-    if (dac.isStreamOpen())
-        dac.closeStream();
+    dac.release(); // XXX
+    /* if (dac.isStreamOpen())
+        dac.closeStream(); */
 }
 
 void AudioDestinationWin::configure()
 {
-    if (dac.getDeviceCount() < 1)
+    if (dac->getDeviceCount() < 1)
     {
         LOG_ERROR("No audio devices available");
     }
 
-    dac.showWarnings(true);
+    dac->showWarnings(true);
 
     RtAudio::StreamParameters outputParams;
-    outputParams.deviceId = dac.getDefaultOutputDevice();
+    outputParams.deviceId = dac->getDefaultOutputDevice();
     outputParams.nChannels = 2;
     outputParams.firstChannel = 0;
 
-	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+	auto deviceInfo = dac->getDeviceInfo(outputParams.deviceId);
 	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
-    inputParams.deviceId = dac.getDefaultInputDevice();
+    inputParams.deviceId = dac->getDefaultInputDevice();
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
 
@@ -67,7 +69,7 @@ void AudioDestinationWin::configure()
 
     try
     {
-        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac->openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
@@ -79,7 +81,7 @@ void AudioDestinationWin::start()
 {
     try
     {
-        dac.startStream();
+        dac->startStream();
         m_isPlaying = true;
     }
     catch (RtAudioError & e)
@@ -92,7 +94,7 @@ void AudioDestinationWin::stop()
 {
     try
     {
-        dac.stopStream();
+        // dac->stopStream(); // XXX
         m_isPlaying = false;
     }
     catch (RtAudioError & e)

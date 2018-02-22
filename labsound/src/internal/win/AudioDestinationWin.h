@@ -42,9 +42,9 @@ private:
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
-    bool m_isPlaying = false;;
+    bool m_isPlaying = false;
 
-    RtAudio dac;
+    std::unique_ptr<RtAudio> dac; // XXX
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 
