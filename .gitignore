@@ -100,3 +100,7 @@ xcuserdata/
 # Sublime Edit
 *.sublime-workspace
 
+node_modules
+*.db
+*.db-shm
+*.db-wal
