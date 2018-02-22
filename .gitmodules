@@ -1,0 +1,3 @@
+[submodule "labsound/third_party/libnyquist"]
+	path = labsound/third_party/libnyquist
+	url = https://github.com/modulesio/libnyquist.git
