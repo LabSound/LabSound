@@ -4,6 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include "LabSound/extended/LabSound.h"
+#include <AudioContext.h>
 #include <HTMLAudioElement.h>
 
 using namespace std;
@@ -19,6 +20,7 @@ void Init(Handle<Object> exports) {
 
   defaultAudioContext = lab::MakeRealtimeAudioContext();
   
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate));
   exports->Set(JS_STR("HTMLAudioElement"), HTMLAudioElement::Initialize(isolate));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
