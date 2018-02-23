@@ -20,7 +20,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioDest
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   Nan::SetMethod(proto,"close", Close);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
-  Nan::SetAccessor(proto, JS_STR("destination"), DestinationGetter);
+  Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRateGetter);
   
   Local<Function> ctorFn = ctor->GetFunction();
 
@@ -44,9 +44,13 @@ void AudioContext::Resume() {
 NAN_METHOD(AudioContext::New) {
   Nan::HandleScope scope;
 
-  AudioContext *audioContext = new AudioContext();
   Local<Object> audioContextObj = info.This();
+  AudioContext *audioContext = new AudioContext();
   audioContext->Wrap(audioContextObj);
+  
+  Local<Function> audioDestinationNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioDestinationNode")));
+  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(0, nullptr);
+  audioContextObj->Set(JS_STR("destination"), audioDestinationNodeObj);
 
   info.GetReturnValue().Set(audioContextObj);
 }
@@ -78,17 +82,10 @@ NAN_GETTER(AudioContext::CurrentTimeGetter) {
   info.GetReturnValue().Set(JS_NUM(defaultAudioContext->currentTime()));
 }
 
-NAN_GETTER(AudioContext::DestinationGetter) {
+NAN_GETTER(AudioContext::SampleRateGetter) {
   Nan::HandleScope scope;
 
-  AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(info.This());
-  if (audioContext->destination.IsEmpty()) {
-    Local<Function> audioDestinationNodeConstructor = Local<Function>::Cast(info.This()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioDestinationNode")));
-    Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(0, nullptr);
-    audioContext->destination.Reset(audioDestinationNodeObj);
-  }
-
-  info.GetReturnValue().Set(Nan::New(audioContext->destination));
+  info.GetReturnValue().Set(JS_NUM(defaultAudioContext->sampleRate()));
 }
 
 }

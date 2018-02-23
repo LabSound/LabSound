@@ -27,13 +27,12 @@ protected:
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
   static NAN_GETTER(CurrentTimeGetter);
-  static NAN_GETTER(DestinationGetter);
+  static NAN_GETTER(SampleRateGetter);
 
   AudioContext();
   ~AudioContext();
 
 protected:
-  Nan::Persistent<Object> destination;
 };
 
 }
