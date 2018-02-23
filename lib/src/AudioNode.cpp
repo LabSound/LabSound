@@ -3,7 +3,7 @@
 
 namespace webaudio {
 
-AudioNode::AudioNode() : channelCountMode(""), channelInterpretation("") {}
+AudioNode::AudioNode() {}
 
 AudioNode::~AudioNode() {}
 
@@ -147,8 +147,10 @@ NAN_GETTER(AudioNode::NumberOfInputsGetter) {
   Nan::HandleScope scope;
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
+  
+  unsigned int numberOfInputs = audioNode->audioNode->numberOfInputs();
 
-  info.GetReturnValue().Set(JS_INT(audioNode->numberOfInputs));
+  info.GetReturnValue().Set(JS_INT(numberOfInputs));
 }
 
 NAN_GETTER(AudioNode::NumberOfOutputsGetter) {
@@ -156,7 +158,9 @@ NAN_GETTER(AudioNode::NumberOfOutputsGetter) {
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
 
-  info.GetReturnValue().Set(JS_INT(audioNode->numberOfOutputs));
+  unsigned int numberOfOutputs = audioNode->audioNode->numberOfOutputs();
+
+  info.GetReturnValue().Set(JS_INT(numberOfOutputs));
 }
 
 NAN_GETTER(AudioNode::ChannelCountGetter) {
@@ -164,7 +168,9 @@ NAN_GETTER(AudioNode::ChannelCountGetter) {
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
 
-  info.GetReturnValue().Set(JS_INT(audioNode->channelCount));
+  unsigned int channelCount = audioNode->audioNode->channelCount();
+  
+  info.GetReturnValue().Set(JS_INT(channelCount));
 }
 
 NAN_GETTER(AudioNode::ChannelCountModeGetter) {
@@ -172,7 +178,28 @@ NAN_GETTER(AudioNode::ChannelCountModeGetter) {
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
 
-  info.GetReturnValue().Set(JS_STR(audioNode->channelCountMode));
+  lab::ChannelCountMode channelCountMode = audioNode->audioNode->channelCountMode();
+  Local<String> result;
+  switch (channelCountMode) {
+    case lab::ChannelCountMode::Max: {
+      result = Nan::New<String>("max").ToLocalChecked();
+      break;
+    }
+    case lab::ChannelCountMode::ClampedMax: {
+      result = Nan::New<String>("clamped-max").ToLocalChecked();
+      break;
+    }
+    case lab::ChannelCountMode::Explicit: {
+      result = Nan::New<String>("explicit").ToLocalChecked();
+      break;
+    }
+    default: {
+      result = Nan::New<String>("").ToLocalChecked();
+      break;
+    }
+  }
+
+  info.GetReturnValue().Set(result);
 }
 
 NAN_GETTER(AudioNode::ChannelInterpretationGetter) {
@@ -180,7 +207,24 @@ NAN_GETTER(AudioNode::ChannelInterpretationGetter) {
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
 
-  info.GetReturnValue().Set(JS_STR(audioNode->channelInterpretation));
+  lab::ChannelInterpretation channelInterpretation = audioNode->audioNode->channelInterpretation();
+  Local<String> result;
+  switch (channelInterpretation) {
+    case lab::ChannelInterpretation::Speakers: {
+      result = Nan::New<String>("speakers").ToLocalChecked();
+      break;
+    }
+    case lab::ChannelInterpretation::Discrete: {
+      result = Nan::New<String>("discrete").ToLocalChecked();
+      break;
+    }
+    default: {
+      result = Nan::New<String>("").ToLocalChecked();
+      break;
+    }
+  }
+
+  info.GetReturnValue().Set(result);
 }
 
 }

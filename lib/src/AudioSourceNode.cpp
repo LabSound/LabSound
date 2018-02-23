@@ -40,11 +40,6 @@ NAN_METHOD(AudioSourceNode::New) {
     audioSourceNode->Wrap(audioSourceNodeObj);
 
     audioSourceNode->context.Reset(audioContextObj);
-    audioSourceNode->numberOfInputs = 0; // XXX these can be pure accessors
-    audioSourceNode->numberOfOutputs = 1;
-    audioSourceNode->channelCount = 2;
-    audioSourceNode->channelCountMode = "explicit";
-    audioSourceNode->channelInterpretation = "speakers";
     audioSourceNode->audioNode = audio->audioNode;
 
     info.GetReturnValue().Set(audioSourceNodeObj);

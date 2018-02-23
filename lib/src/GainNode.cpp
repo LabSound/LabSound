@@ -42,11 +42,6 @@ NAN_METHOD(GainNode::New) {
     gainNode->Wrap(gainNodeObj);
 
     gainNode->context.Reset(audioContextObj);
-    gainNode->numberOfInputs = 0; // XXX these can be pure accessors
-    gainNode->numberOfOutputs = 1;
-    gainNode->channelCount = 2;
-    gainNode->channelCountMode = "explicit";
-    gainNode->channelInterpretation = "speakers";
     gainNode->audioNode = std::make_shared<lab::GainNode>();
 
     Local<Function> audioParamConstructor = Local<Function>::Cast(gainNodeObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioParam")));

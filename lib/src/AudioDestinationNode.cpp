@@ -41,11 +41,6 @@ NAN_METHOD(AudioDestinationNode::New) {
     audioDestinationNode->Wrap(audioDestinationNodeObj);
 
     audioDestinationNode->context.Reset(audioContextObj);
-    audioDestinationNode->numberOfInputs = 1;
-    audioDestinationNode->numberOfOutputs = 0;
-    audioDestinationNode->channelCount = 2;
-    audioDestinationNode->channelCountMode = "explicit";
-    audioDestinationNode->channelInterpretation = "speakers";
     audioDestinationNode->audioNode = labAudioContext->destination();
 
     info.GetReturnValue().Set(audioDestinationNodeObj);
