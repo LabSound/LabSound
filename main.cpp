@@ -12,6 +12,7 @@
 #include <GainNode.h>
 #include <AnalyserNode.h>
 #include <PannerNode.h>
+#include <StereoPannerNode.h>
 #include <AudioContext.h>
 
 using namespace std;
@@ -42,7 +43,9 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("AnalyserNode"), analyserNodeCons);
   Local<Value> pannerNodeCons = PannerNode::Initialize(isolate, fakeAudioParamCons);
   exports->Set(JS_STR("PannerNode"), pannerNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons));
+  Local<Value> stereoPannerNodeCons = StereoPannerNode::Initialize(isolate, audioParamCons);
+  exports->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, stereoPannerNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

@@ -35,6 +35,7 @@ protected:
   shared_ptr<lab::AudioParam> audioParam;
 
   friend class GainNode;
+  friend class StereoPannerNode;
 };
 
 }

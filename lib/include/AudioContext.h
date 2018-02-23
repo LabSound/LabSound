@@ -11,6 +11,7 @@
 #include <GainNode.h>
 #include <AnalyserNode.h>
 #include <PannerNode.h>
+#include <StereoPannerNode.h>
 
 using namespace std;
 using namespace v8;
@@ -20,13 +21,16 @@ namespace webaudio {
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons);
   void Close();
   Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
   void CreateMediaStreamSource();
   void CreateMediaStreamDestination();
   void CreateMediaStreamTrackSource();
   Local<Object> CreateGain(Local<Function> gainNodeConstructor, Local<Object> audioContextObj);
+  Local<Object> CreateAnalyser(Local<Function> analyserNodeConstructor, Local<Object> audioContextObj);
+  Local<Object> CreatePanner(Local<Function> pannerNodeConstructor, Local<Object> audioContextObj);
+  Local<Object> CreateStereoPanner(Local<Function> stereoPannerNodeConstructor, Local<Object> audioContextObj);
   void Suspend();
   void Resume();
 
@@ -40,6 +44,7 @@ protected:
   static NAN_METHOD(CreateGain);
   static NAN_METHOD(CreateAnalyser);
   static NAN_METHOD(CreatePanner);
+  static NAN_METHOD(CreateStereoPanner);
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
   static NAN_GETTER(CurrentTimeGetter);

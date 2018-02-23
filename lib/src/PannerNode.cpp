@@ -1,7 +1,7 @@
 #include <PannerNode.h>
 
 namespace webaudio {
-  
+
 enum ModelType {
   ModelLinear = 0,
   ModelInverse = 1,
@@ -56,8 +56,8 @@ NAN_METHOD(PannerNode::New) {
     pannerNode->Wrap(pannerNodeObj);
 
     shared_ptr<lab::PannerNode> labPannerNode = make_shared<lab::PannerNode>(defaultAudioContext->sampleRate(), PannerNode::path);
-    
-    pannerNode->context.Reset(pannerNodeObj);
+
+    pannerNode->context.Reset(audioContextObj);
     pannerNode->audioNode = labPannerNode;
 
     Local<Function> fakeAudioParamConstructor = Local<Function>::Cast(pannerNodeObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("FakeAudioParam")));
@@ -66,27 +66,27 @@ NAN_METHOD(PannerNode::New) {
     FakeAudioParam *positionXAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionXAudioParamObj);
     positionXAudioParam->getter = [&]() { return labPannerNode->position().x; };
     pannerNodeObj->Set(JS_STR("positionX"), positionXAudioParamObj);
-    
+
     Local<Object> positionYAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *positionYAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionYAudioParamObj);
     positionYAudioParam->getter = [&]() { return labPannerNode->position().y; };
     pannerNodeObj->Set(JS_STR("positionY"), positionYAudioParamObj);
-    
+
     Local<Object> positionZAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *positionZAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionZAudioParamObj);
     positionZAudioParam->getter = [&]() { return labPannerNode->position().z; };
     pannerNodeObj->Set(JS_STR("positionZ"), positionZAudioParamObj);
-    
+
     Local<Object> orientationXAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationXAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationXAudioParamObj);
     orientationXAudioParam->getter = [&]() { return labPannerNode->orientation().x; };
     pannerNodeObj->Set(JS_STR("orientationX"), orientationXAudioParamObj);
-    
+
     Local<Object> orientationYAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationYAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationYAudioParamObj);
     orientationYAudioParam->getter = [&]() { return labPannerNode->orientation().y; };
     pannerNodeObj->Set(JS_STR("orientationY"), orientationYAudioParamObj);
-    
+
     Local<Object> orientationZAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationZAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationZAudioParamObj);
     orientationZAudioParam->getter = [&]() { return labPannerNode->orientation().z; };

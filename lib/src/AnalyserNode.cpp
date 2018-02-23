@@ -22,8 +22,6 @@ Handle<Object> AnalyserNode::Initialize(Isolate *isolate) {
 
   Local<Function> ctorFn = ctor->GetFunction();
 
-  // ctorFn->Set(JS_STR("AudioParam"), audioParamCons);
-
   return scope.Escape(ctorFn);
 }
 
@@ -51,12 +49,6 @@ NAN_METHOD(AnalyserNode::New) {
 
     analyserNode->context.Reset(audioContextObj);
     analyserNode->audioNode = make_shared<lab::AnalyserNode>(2048);
-
-    /* Local<Function> audioParamConstructor = Local<Function>::Cast(gainNodeObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioParam")));
-    Local<Object> gainAudioParamObj = audioParamConstructor->NewInstance(0, nullptr);
-    AudioParam *gainAudioParam = ObjectWrap::Unwrap<AudioParam>(gainAudioParamObj);
-    gainAudioParam->audioParam = (*(shared_ptr<lab::GainNode> *)(&gainNode->audioNode))->gain();
-    analyserNodeObj->Set(JS_STR("gain"), gainAudioParamObj); */
 
     info.GetReturnValue().Set(analyserNodeObj);
   } else {
