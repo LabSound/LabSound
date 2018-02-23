@@ -6,7 +6,7 @@ AudioContext::AudioContext() : audioContext(defaultAudioContext.get()) {}
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -16,13 +16,14 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSour
 
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-  Nan::SetMethod(proto,"close", Close);
-  Nan::SetMethod(proto,"createMediaElementSource", CreateMediaElementSource);
-  Nan::SetMethod(proto,"createMediaStreamSource", CreateMediaStreamSource);
-  Nan::SetMethod(proto,"createMediaStreamDestination", CreateMediaStreamDestination);
-  Nan::SetMethod(proto,"createMediaStreamTrackSource", CreateMediaStreamTrackSource);
-  Nan::SetMethod(proto,"createGain", CreateGain);
-  Nan::SetMethod(proto,"createAnalyser", CreateAnalyser);
+  Nan::SetMethod(proto, "close", Close);
+  Nan::SetMethod(proto, "createMediaElementSource", CreateMediaElementSource);
+  Nan::SetMethod(proto, "createMediaStreamSource", CreateMediaStreamSource);
+  Nan::SetMethod(proto, "createMediaStreamDestination", CreateMediaStreamDestination);
+  Nan::SetMethod(proto, "createMediaStreamTrackSource", CreateMediaStreamTrackSource);
+  Nan::SetMethod(proto, "createGain", CreateGain);
+  Nan::SetMethod(proto, "createAnalyser", CreateAnalyser);
+  Nan::SetMethod(proto, "createPanner", CreatePanner);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
   Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRateGetter);
 
@@ -32,6 +33,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSour
   ctorFn->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
   ctorFn->Set(JS_STR("GainNode"), gainNodeCons);
   ctorFn->Set(JS_STR("AnalyserNode"), analyserNodeCons);
+  ctorFn->Set(JS_STR("PannerNode"), pannerNodeCons);
 
   return scope.Escape(ctorFn);
 }
@@ -166,6 +168,18 @@ NAN_METHOD(AudioContext::CreateAnalyser) {
   Local<Object> analyserNodeObj = audioContext->CreateGain(analyserNodeConstructor, audioContextObj);
 
   info.GetReturnValue().Set(analyserNodeObj);
+}
+
+NAN_METHOD(AudioContext::CreatePanner) {
+  Nan::HandleScope scope;
+
+  Local<Object> audioContextObj = info.This();
+  AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+
+  Local<Function> pannerNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("PannerNode")));
+  Local<Object> pannerNodeObj = audioContext->CreateGain(pannerNodeConstructor, audioContextObj);
+
+  info.GetReturnValue().Set(pannerNodeObj);
 }
 
 NAN_METHOD(AudioContext::Suspend) {

@@ -10,6 +10,7 @@
 #include <Audio.h>
 #include <GainNode.h>
 #include <AnalyserNode.h>
+#include <PannerNode.h>
 
 using namespace std;
 using namespace v8;
@@ -19,7 +20,7 @@ namespace webaudio {
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons);
   void Close();
   Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
   void CreateMediaStreamSource();
@@ -38,6 +39,7 @@ protected:
   static NAN_METHOD(CreateMediaStreamTrackSource);
   static NAN_METHOD(CreateGain);
   static NAN_METHOD(CreateAnalyser);
+  static NAN_METHOD(CreatePanner);
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
   static NAN_GETTER(CurrentTimeGetter);

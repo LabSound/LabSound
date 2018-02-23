@@ -5,11 +5,14 @@
 #include <algorithm>
 #include "LabSound/extended/LabSound.h"
 #include <Audio.h>
-#include <AudioContext.h>
+#include <AudioParam.h>
+#include <FakeAudioParam.h>
 #include <AudioSourceNode.h>
 #include <AudioDestinationNode.h>
 #include <GainNode.h>
 #include <AnalyserNode.h>
+#include <PannerNode.h>
+#include <AudioContext.h>
 
 using namespace std;
 using namespace v8;
@@ -27,6 +30,8 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("Audio"), Audio::Initialize(isolate));
   Local<Value> audioParamCons = AudioParam::Initialize(isolate);
   exports->Set(JS_STR("AudioParam"), audioParamCons);
+  Local<Value> fakeAudioParamCons = FakeAudioParam::Initialize(isolate);
+  exports->Set(JS_STR("FakeAudioParam"), fakeAudioParamCons);
   Local<Value> audioSourceNodeCons = AudioSourceNode::Initialize(isolate);
   exports->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   Local<Value> audioDestinationNodeCons = AudioDestinationNode::Initialize(isolate);
@@ -35,7 +40,9 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("GainNode"), gainNodeCons);
   Local<Value> analyserNodeCons = AnalyserNode::Initialize(isolate);
   exports->Set(JS_STR("AnalyserNode"), analyserNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons));
+  Local<Value> pannerNodeCons = PannerNode::Initialize(isolate, fakeAudioParamCons);
+  exports->Set(JS_STR("PannerNode"), pannerNodeCons);
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 
