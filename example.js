@@ -2,19 +2,19 @@ const path = require('path');
 const fs = require('fs');
 const WebAudio = require('.');
 console.log('got web audio', WebAudio);
-const {HTMLAudioElement} = WebAudio;
+const {Audio} = WebAudio;
 
 fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
   if (!err) {
     console.log('create');
-    const audioNode = new HTMLAudioElement();
+    const audio = new Audio();
     console.log('load');
-    audioNode.load(data, 'wav');
+    audio.load(data, 'wav');
     console.log('play');
-    audioNode.play();
+    audio.play();
     console.log('set timeout');
     setTimeout(() => {
-      audioNode.pause();
+      audio.pause();
 
       setTimeout(() => {}, 1000);
     }, 2000);

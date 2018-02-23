@@ -1,19 +1,19 @@
-#include <HTMLAudioElement.h>
+#include <Audio.h>
 #include <memory>
 #include <algorithm>
 
 namespace webaudio {
 
-HTMLAudioElement::HTMLAudioElement() {}
-HTMLAudioElement::~HTMLAudioElement() {}
+Audio::Audio() {}
+Audio::~Audio() {}
 
-Handle<Object> HTMLAudioElement::Initialize(Isolate *isolate) {
+Handle<Object> Audio::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
   
   // constructor
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
-  ctor->SetClassName(JS_STR("HTMLAudioElement"));
+  ctor->SetClassName(JS_STR("Audio"));
   
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
@@ -28,18 +28,18 @@ Handle<Object> HTMLAudioElement::Initialize(Isolate *isolate) {
   return scope.Escape(ctorFn);
 }
 
-NAN_METHOD(HTMLAudioElement::New) {
+NAN_METHOD(Audio::New) {
   Nan::HandleScope scope;
 
-  HTMLAudioElement *audioElement = new HTMLAudioElement();
-  Local<Object> audioElementObj = info.This();
-  audioElement->Wrap(audioElementObj);
+  Audio *audio = new Audio();
+  Local<Object> audioObj = info.This();
+  audio->Wrap(audioObj);
 
-  info.GetReturnValue().Set(audioElementObj);
+  info.GetReturnValue().Set(audioObj);
 }
 
-void HTMLAudioElement::Load(uint8_t *bufferValue, size_t bufferLength, const char *extensionValue) {
-  lab::ContextRenderLock lock(defaultAudioContext.get(), "HTMLAudioElement::Load");
+void Audio::Load(uint8_t *bufferValue, size_t bufferLength, const char *extensionValue) {
+  lab::ContextRenderLock lock(defaultAudioContext.get(), "Audio::Load");
 
   vector<uint8_t> buffer(bufferLength);
   memcpy(buffer.data(), bufferValue, bufferLength);
@@ -54,57 +54,57 @@ void HTMLAudioElement::Load(uint8_t *bufferValue, size_t bufferLength, const cha
   defaultAudioContext->connect(defaultAudioContext->destination(), audioNode, 0, 0); // XXX make this node connection manual
 }
 
-void HTMLAudioElement::Play() {
+void Audio::Play() {
   audioNode->start(0);
 }
 
-void HTMLAudioElement::Pause() {
+void Audio::Pause() {
   audioNode->stop(0);
 }
 
-NAN_METHOD(HTMLAudioElement::Load) {
+NAN_METHOD(Audio::Load) {
   if (info[0]->IsTypedArray() && info[1]->IsString()) {
-    HTMLAudioElement *audioElement = ObjectWrap::Unwrap<HTMLAudioElement>(info.This());
+    Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
 
     Local<ArrayBufferView> arrayBufferView = Local<ArrayBufferView>::Cast(info[0]);
     Local<ArrayBuffer> arrayBuffer = arrayBufferView->Buffer();
     v8::String::Utf8Value extensionValue(info[1]->ToString());
     
-    audioElement->Load((uint8_t *)arrayBuffer->GetContents().Data() + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength(), *extensionValue);
+    audio->Load((uint8_t *)arrayBuffer->GetContents().Data() + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength(), *extensionValue);
   } else {
     Nan::ThrowError("invalid arguments");
   }
 }
 
-NAN_METHOD(HTMLAudioElement::Play) {
-  HTMLAudioElement *audioElement = ObjectWrap::Unwrap<HTMLAudioElement>(info.This());
-  audioElement->Play();
+NAN_METHOD(Audio::Play) {
+  Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
+  audio->Play();
 }
 
-NAN_METHOD(HTMLAudioElement::Pause) {
-  HTMLAudioElement *audioElement = ObjectWrap::Unwrap<HTMLAudioElement>(info.This());
-  audioElement->Pause();
+NAN_METHOD(Audio::Pause) {
+  Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
+  audio->Pause();
 }
 
-NAN_GETTER(HTMLAudioElement::CurrentTimeGetter) {
+NAN_GETTER(Audio::CurrentTimeGetter) {
   Nan::HandleScope scope;
   
-  HTMLAudioElement *audioElement = ObjectWrap::Unwrap<HTMLAudioElement>(info.This());
+  Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
 
   double now = defaultAudioContext->currentTime();
-  double startTime = audioElement->audioNode->startTime();
-  double duration = audioElement->audioNode->duration();
+  double startTime = audio->audioNode->startTime();
+  double duration = audio->audioNode->duration();
   double currentTime = std::min<double>(std::max<double>(startTime - now, 0), duration);
 
   info.GetReturnValue().Set(JS_NUM(currentTime));
 }
 
-NAN_GETTER(HTMLAudioElement::DurationGetter) {
+NAN_GETTER(Audio::DurationGetter) {
   Nan::HandleScope scope;
   
-  HTMLAudioElement *audioElement = ObjectWrap::Unwrap<HTMLAudioElement>(info.This());
+  Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
 
-  double duration = audioElement->audioNode->duration();
+  double duration = audio->audioNode->duration();
 
   info.GetReturnValue().Set(JS_NUM(duration));
 }

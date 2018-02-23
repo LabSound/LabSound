@@ -4,7 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include "LabSound/extended/LabSound.h"
-#include <HTMLAudioElement.h>
+#include <Audio.h>
 #include <AudioContext.h>
 #include <AudioDestinationNode.h>
 
@@ -21,7 +21,7 @@ void Init(Handle<Object> exports) {
 
   defaultAudioContext = lab::MakeRealtimeAudioContext();
   
-  exports->Set(JS_STR("HTMLAudioElement"), HTMLAudioElement::Initialize(isolate));
+  exports->Set(JS_STR("Audio"), Audio::Initialize(isolate));
   Local<Value> audioDestinationNodeCons = AudioDestinationNode::Initialize(isolate);
   exports->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
   exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioDestinationNodeCons));

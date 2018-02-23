@@ -7,6 +7,7 @@
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
 #include <globals.h>
+#include <Audio.h>
 
 using namespace std;
 using namespace v8;
@@ -18,12 +19,20 @@ class AudioContext : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioDestinationNodeCons);
   void Close();
+  Local<Object> CreateMediaElementSource(Audio *audio);
+  void CreateMediaStreamSource();
+  void CreateMediaStreamDestination();
+  void CreateMediaStreamTrackSource();
   void Suspend();
   void Resume();
 
 protected:
   static NAN_METHOD(New);
   static NAN_METHOD(Close);
+  static NAN_METHOD(CreateMediaElementSource);
+  static NAN_METHOD(CreateMediaStreamSource);
+  static NAN_METHOD(CreateMediaStreamDestination);
+  static NAN_METHOD(CreateMediaStreamTrackSource);
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
   static NAN_GETTER(CurrentTimeGetter);

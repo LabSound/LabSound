@@ -14,7 +14,7 @@ using namespace node;
 
 namespace webaudio {
 
-class HTMLAudioElement : public ObjectWrap {
+class Audio : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
   void Load(uint8_t *bufferValue, size_t bufferLength, const char *extensionValue);
@@ -29,8 +29,8 @@ protected:
   static NAN_GETTER(CurrentTimeGetter);
   static NAN_GETTER(DurationGetter);
 
-  HTMLAudioElement();
-  ~HTMLAudioElement();
+  Audio();
+  ~Audio();
 
 private:
   shared_ptr<lab::AudioBus> audioBus;
