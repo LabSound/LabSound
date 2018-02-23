@@ -5,6 +5,7 @@
 namespace webaudio {
 
 AudioDestinationNode::AudioDestinationNode() {}
+
 AudioDestinationNode::~AudioDestinationNode() {}
 
 Handle<Object> AudioDestinationNode::Initialize(Isolate *isolate) {
@@ -17,11 +18,16 @@ Handle<Object> AudioDestinationNode::Initialize(Isolate *isolate) {
   
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-  Nan::SetAccessor(proto, JS_STR("maxChannelCount"), MaxChannelCountGetter);
+  AudioNode::InitializePrototype(proto);
+  AudioDestinationNode::InitializePrototype(proto);
   
   Local<Function> ctorFn = ctor->GetFunction();
 
   return scope.Escape(ctorFn);
+}
+
+void AudioDestinationNode::InitializePrototype(Local<ObjectTemplate> proto) {
+  Nan::SetAccessor(proto, JS_STR("maxChannelCount"), MaxChannelCountGetter);
 }
 
 NAN_METHOD(AudioDestinationNode::New) {
@@ -30,6 +36,13 @@ NAN_METHOD(AudioDestinationNode::New) {
   AudioDestinationNode *audioDestinationNode = new AudioDestinationNode();
   Local<Object> audioDestinationNodeObj = info.This();
   audioDestinationNode->Wrap(audioDestinationNodeObj);
+
+  audioDestinationNode->context.Reset(audioDestinationNodeObj);
+  audioDestinationNode->numberOfInputs = 1;
+  audioDestinationNode->numberOfOutputs = 0;
+  audioDestinationNode->channelCount = 2;
+  audioDestinationNode->channelCountMode = "explicit";
+  audioDestinationNode->channelInterpretation = "speakers";
 
   info.GetReturnValue().Set(audioDestinationNodeObj);
 }

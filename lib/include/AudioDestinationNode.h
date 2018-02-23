@@ -18,6 +18,7 @@ namespace webaudio {
 class AudioDestinationNode : public AudioNode {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
+  static void InitializePrototype(Local<ObjectTemplate> proto);
 
 protected:
   static NAN_METHOD(New);
@@ -26,7 +27,7 @@ protected:
   AudioDestinationNode();
   ~AudioDestinationNode();
 
-private:
+protected:
 };
 
 }

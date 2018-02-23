@@ -7,7 +7,6 @@
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
 #include <globals.h>
-#include <AudioDestinationNode.h>
 
 using namespace std;
 using namespace v8;
@@ -33,7 +32,7 @@ protected:
   AudioContext();
   ~AudioContext();
 
-private:
+protected:
   Nan::Persistent<Object> destination;
 };
 
