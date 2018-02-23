@@ -53,6 +53,7 @@ protected:
   friend class AudioDestinationNode;
   friend class GainNode;
   friend class AudioParam;
+  friend class AudioAnalyser;
 };
 
 }

@@ -1,5 +1,5 @@
-#ifndef _AUDIO_GAIN_NODE_H_
-#define _AUDIO_GAIN_NODE_H_
+#ifndef _GAIN_NODE_H_
+#define _GAIN_NODE_H_
 
 #include <v8.h>
 #include <node.h>

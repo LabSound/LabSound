@@ -17,9 +17,9 @@ Handle<Object> Audio::Initialize(Isolate *isolate) {
   
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-  Nan::SetMethod(proto,"load", Load);
-  Nan::SetMethod(proto,"play", Play);
-  Nan::SetMethod(proto,"pause", Pause);
+  Nan::SetMethod(proto, "load", Load);
+  Nan::SetMethod(proto, "play", Play);
+  Nan::SetMethod(proto, "pause", Pause);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
   Nan::SetAccessor(proto, JS_STR("duration"), DurationGetter);
   
@@ -50,7 +50,6 @@ void Audio::Load(uint8_t *bufferValue, size_t bufferLength, const char *extensio
   audioNode.reset(new lab::SampledAudioNode());
   audioNode->setBus(lock, audioBus);
   
-  // defaultAudioContext->connect(defaultAudioContext->destination(), audioNode, 0, 0); // XXX make this node connection manual
   defaultAudioContext->connect(defaultAudioContext->destination(), audioNode, 0, 0); // XXX make this node connection manual
 }
 
