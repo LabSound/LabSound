@@ -14,7 +14,9 @@ function(_disable_warning flag)
 endfunction()
 
 function(_set_Cxx17 proj)
+    if(APPLE OR WIN32)
 	target_compile_features(${proj} INTERFACE cxx_std_17)
+    endif()
 endfunction()
 
 function(_set_compile_options proj)
