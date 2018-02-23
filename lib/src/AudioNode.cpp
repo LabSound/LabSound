@@ -51,7 +51,11 @@ NAN_METHOD(AudioNode::Connect) {
   if (info[0]->IsObject()) {
     Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
 
-    if (constructorName->StrictEquals(JS_STR("AudioSourceNode")) || constructorName->StrictEquals(JS_STR("AudioDestinationNode"))) {
+    if (
+      constructorName->StrictEquals(JS_STR("AudioSourceNode")) ||
+      constructorName->StrictEquals(JS_STR("AudioDestinationNode")) ||
+      constructorName->StrictEquals(JS_STR("GainNode"))
+    ) {
       unsigned int outputIndex = info[1]->IsNumber() ? info[1]->Uint32Value() : 0;
       unsigned int inputIndex = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
 
@@ -104,7 +108,11 @@ NAN_METHOD(AudioNode::Disconnect) {
     if (info[0]->IsObject()) {
       Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
 
-      if (constructorName->StrictEquals(JS_STR("AudioSourceNode")) || constructorName->StrictEquals(JS_STR("AudioDestinationNode"))) {
+      if (
+        constructorName->StrictEquals(JS_STR("AudioSourceNode")) ||
+        constructorName->StrictEquals(JS_STR("AudioDestinationNode")) ||
+        constructorName->StrictEquals(JS_STR("GainNode"))
+      ) {
         AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
         shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
         
