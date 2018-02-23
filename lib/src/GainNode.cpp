@@ -7,7 +7,7 @@ GainNode::GainNode() {}
 
 GainNode::~GainNode() {}
 
-Handle<Object> GainNode::Initialize(Isolate *isolate, Local<Object> audioParamCons) {
+Handle<Object> GainNode::Initialize(Isolate *isolate, Local<Value> audioParamCons) {
   Nan::EscapableHandleScope scope;
   
   // constructor

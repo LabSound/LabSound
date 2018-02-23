@@ -8,6 +8,7 @@
 #include <AudioContext.h>
 #include <AudioSourceNode.h>
 #include <AudioDestinationNode.h>
+#include <GainNode.h>
 
 using namespace std;
 using namespace v8;
@@ -23,11 +24,15 @@ void Init(Handle<Object> exports) {
   defaultAudioContext = lab::MakeRealtimeAudioContext();
   
   exports->Set(JS_STR("Audio"), Audio::Initialize(isolate));
+  Local<Value> audioParamCons = AudioParam::Initialize(isolate);
+  exports->Set(JS_STR("AudioParam"), audioParamCons);
   Local<Value> audioSourceNodeCons = AudioSourceNode::Initialize(isolate);
   exports->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   Local<Value> audioDestinationNodeCons = AudioDestinationNode::Initialize(isolate);
   exports->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons));
+  Local<Value> gainNodeCons = GainNode::Initialize(isolate, audioParamCons);
+  exports->Set(JS_STR("GainNode"), gainNodeCons);
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

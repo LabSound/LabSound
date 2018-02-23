@@ -1,5 +1,5 @@
-#ifndef _AUDIO_SOURCE_NODE_H_
-#define _AUDIO_SOURCE_NODE_H_
+#ifndef _AUDIO_GAIN_NODE_H_
+#define _AUDIO_GAIN_NODE_H_
 
 #include <v8.h>
 #include <node.h>
@@ -18,7 +18,7 @@ namespace webaudio {
 
 class GainNode : public AudioNode {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, Local<Object> audioParamCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioParamCons);
   static void InitializePrototype(Local<ObjectTemplate> proto);
 
 protected:
