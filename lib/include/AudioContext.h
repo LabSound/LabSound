@@ -48,6 +48,8 @@ protected:
   friend class AudioNode;
   friend class AudioSourceNode;
   friend class AudioDestinationNode;
+  friend class GainNode;
+  friend class AudioParam;
 };
 
 }
