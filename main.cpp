@@ -9,6 +9,7 @@
 #include <AudioSourceNode.h>
 #include <AudioDestinationNode.h>
 #include <GainNode.h>
+#include <AnalyserNode.h>
 
 using namespace std;
 using namespace v8;
@@ -32,7 +33,9 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
   Local<Value> gainNodeCons = GainNode::Initialize(isolate, audioParamCons);
   exports->Set(JS_STR("GainNode"), gainNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons));
+  Local<Value> analyserNodeCons = AnalyserNode::Initialize(isolate);
+  exports->Set(JS_STR("AnalyserNode"), analyserNodeCons);
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

@@ -6,7 +6,7 @@ AudioContext::AudioContext() : audioContext(defaultAudioContext.get()) {}
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -22,6 +22,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSour
   Nan::SetMethod(proto,"createMediaStreamDestination", CreateMediaStreamDestination);
   Nan::SetMethod(proto,"createMediaStreamTrackSource", CreateMediaStreamTrackSource);
   Nan::SetMethod(proto,"createGain", CreateGain);
+  Nan::SetMethod(proto,"createAnalyser", CreateAnalyser);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
   Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRateGetter);
 
@@ -30,6 +31,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSour
   ctorFn->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   ctorFn->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
   ctorFn->Set(JS_STR("GainNode"), gainNodeCons);
+  ctorFn->Set(JS_STR("AnalyserNode"), analyserNodeCons);
 
   return scope.Escape(ctorFn);
 }
@@ -152,6 +154,18 @@ NAN_METHOD(AudioContext::CreateGain) {
   Local<Object> gainNodeObj = audioContext->CreateGain(gainNodeConstructor, audioContextObj);
 
   info.GetReturnValue().Set(gainNodeObj);
+}
+
+NAN_METHOD(AudioContext::CreateAnalyser) {
+  Nan::HandleScope scope;
+
+  Local<Object> audioContextObj = info.This();
+  AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+
+  Local<Function> analyserNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AnalyserNode")));
+  Local<Object> analyserNodeObj = audioContext->CreateGain(analyserNodeConstructor, audioContextObj);
+
+  info.GetReturnValue().Set(analyserNodeObj);
 }
 
 NAN_METHOD(AudioContext::Suspend) {
