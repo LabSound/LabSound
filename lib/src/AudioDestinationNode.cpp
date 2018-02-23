@@ -1,6 +1,4 @@
 #include <AudioDestinationNode.h>
-#include <memory>
-#include <algorithm>
 
 namespace webaudio {
 
@@ -33,18 +31,27 @@ void AudioDestinationNode::InitializePrototype(Local<ObjectTemplate> proto) {
 NAN_METHOD(AudioDestinationNode::New) {
   Nan::HandleScope scope;
 
-  AudioDestinationNode *audioDestinationNode = new AudioDestinationNode();
-  Local<Object> audioDestinationNodeObj = info.This();
-  audioDestinationNode->Wrap(audioDestinationNodeObj);
+  if (info[0]->IsObject() && info[0]->IsObject() && info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioContext"))) {
+    Local<Object> audioContextObj = Local<Object>::Cast(info[0]);
+    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+    lab::AudioContext *labAudioContext = audioContext->audioContext;
+    
+    AudioDestinationNode *audioDestinationNode = new AudioDestinationNode();
+    Local<Object> audioDestinationNodeObj = info.This();
+    audioDestinationNode->Wrap(audioDestinationNodeObj);
 
-  audioDestinationNode->context.Reset(audioDestinationNodeObj);
-  audioDestinationNode->numberOfInputs = 1;
-  audioDestinationNode->numberOfOutputs = 0;
-  audioDestinationNode->channelCount = 2;
-  audioDestinationNode->channelCountMode = "explicit";
-  audioDestinationNode->channelInterpretation = "speakers";
+    audioDestinationNode->context.Reset(audioContextObj);
+    audioDestinationNode->numberOfInputs = 1;
+    audioDestinationNode->numberOfOutputs = 0;
+    audioDestinationNode->channelCount = 2;
+    audioDestinationNode->channelCountMode = "explicit";
+    audioDestinationNode->channelInterpretation = "speakers";
+    audioDestinationNode->audioNode = labAudioContext->destination();
 
-  info.GetReturnValue().Set(audioDestinationNodeObj);
+    info.GetReturnValue().Set(audioDestinationNodeObj);
+  } else {
+    Nan::ThrowError("invalid arguments");
+  }
 }
 
 NAN_GETTER(AudioDestinationNode::MaxChannelCountGetter) {

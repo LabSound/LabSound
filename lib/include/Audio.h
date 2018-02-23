@@ -35,6 +35,8 @@ protected:
 private:
   shared_ptr<lab::AudioBus> audioBus;
   shared_ptr<lab::SampledAudioNode> audioNode;
+
+  friend class AudioSourceNode;
 };
 
 }

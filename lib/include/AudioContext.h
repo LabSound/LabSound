@@ -17,9 +17,9 @@ namespace webaudio {
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioDestinationNodeCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons);
   void Close();
-  Local<Object> CreateMediaElementSource(Audio *audio);
+  Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
   void CreateMediaStreamSource();
   void CreateMediaStreamDestination();
   void CreateMediaStreamTrackSource();
@@ -42,6 +42,12 @@ protected:
   ~AudioContext();
 
 protected:
+  lab::AudioContext *audioContext;
+  
+  friend class Audio;
+  friend class AudioNode;
+  friend class AudioSourceNode;
+  friend class AudioDestinationNode;
 };
 
 }

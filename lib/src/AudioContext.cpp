@@ -2,11 +2,11 @@
 
 namespace webaudio {
 
-AudioContext::AudioContext() {}
+AudioContext::AudioContext() : audioContext(defaultAudioContext.get()) {}
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioDestinationNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons) {
   Nan::EscapableHandleScope scope;
   
   // constructor
@@ -26,6 +26,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioDest
   
   Local<Function> ctorFn = ctor->GetFunction();
 
+  ctorFn->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   ctorFn->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
 
   return scope.Escape(ctorFn);
@@ -35,8 +36,14 @@ void AudioContext::Close() {
   Nan::ThrowError("AudioContext::Close: not implemented"); // TODO
 }
 
-Local<Object> AudioContext::CreateMediaElementSource(Audio *audio) {
-  return Nan::New<Object>(); // XXX
+Local<Object> AudioContext::CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj) {
+  Local<Value> argv[] = {
+    mediaElement,
+    audioContextObj,
+  };
+  Local<Object> audioSourceNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  
+  return audioSourceNodeObj;
 }
 
 void AudioContext::CreateMediaStreamSource() {
@@ -71,7 +78,10 @@ NAN_METHOD(AudioContext::New) {
   audioContext->Wrap(audioContextObj);
   
   Local<Function> audioDestinationNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioDestinationNode")));
-  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(0, nullptr);
+  Local<Value> argv[] = {
+    audioContextObj,
+  };
+  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
   audioContextObj->Set(JS_STR("destination"), audioDestinationNodeObj);
 
   info.GetReturnValue().Set(audioContextObj);
@@ -87,11 +97,12 @@ NAN_METHOD(AudioContext::Close) {
 NAN_METHOD(AudioContext::CreateMediaElementSource) {
   Nan::HandleScope scope;
 
-  if (info[0]->BooleanValue() && info[0]->IsObject() && info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("Audio"))) {
-    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(info.This());
+  if (info[0]->IsObject() && info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("Audio"))) {
+    Local<Object> audioContextObj = info.This();
+    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
 
-    Audio *audio = ObjectWrap::Unwrap<Audio>(Local<Object>::Cast(info[0]));
-    Local<Object> audioNodeObj = audioContext->CreateMediaElementSource(audio);
+    Local<Function> audioDestinationNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioSourceNode")));
+    Local<Object> audioNodeObj = audioContext->CreateMediaElementSource(audioDestinationNodeConstructor, Local<Object>::Cast(info[0]), audioContextObj);
 
     info.GetReturnValue().Set(audioNodeObj);
   } else {

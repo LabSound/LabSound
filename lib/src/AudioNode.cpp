@@ -9,16 +9,16 @@ AudioNode::~AudioNode() {}
 
 Handle<Object> AudioNode::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
-  
+
   // constructor
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
   ctor->SetClassName(JS_STR("AudioNode"));
-  
+
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   AudioNode::InitializePrototype(proto);
-  
+
   Local<Function> ctorFn = ctor->GetFunction();
 
   return scope.Escape(ctorFn);
@@ -48,15 +48,88 @@ NAN_METHOD(AudioNode::New) {
 NAN_METHOD(AudioNode::Connect) {
   Nan::HandleScope scope;
 
-  // XXX
-  // info.GetReturnValue().Set(audioDestinationNodeObj);
+  if (info[0]->IsObject()) {
+    Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
+
+    if (constructorName->StrictEquals(JS_STR("AudioSourceNode")) || constructorName->StrictEquals(JS_STR("AudioDestinationNode"))) {
+      unsigned int outputIndex = info[1]->IsNumber() ? info[1]->Uint32Value() : 0;
+      unsigned int inputIndex = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
+
+      AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
+      shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
+
+      AudioNode *argAudioNode = ObjectWrap::Unwrap<AudioNode>(Local<Object>::Cast(info[0]));
+      shared_ptr<lab::AudioNode> dstAudioNode = argAudioNode->audioNode;
+
+      Local<Object> audioContextObj = Nan::New(audioNode->context);
+      AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+      lab::AudioContext *labAudioContext = audioContext->audioContext;
+
+      try {
+        labAudioContext->connect(dstAudioNode, srcAudioNode, outputIndex, inputIndex);
+      } catch (const std::exception &e) {
+        return Nan::ThrowError(e.what());
+      } catch (...) {
+        return Nan::ThrowError("unknown exception");
+      }
+
+      info.GetReturnValue().Set(info[0]);
+    } else {
+      Nan::ThrowError("AudioNode::Connect: invalid arguments");
+    }
+  } else {
+    Nan::ThrowError("AudioNode::Connect: invalid arguments");
+  }
 }
 
 NAN_METHOD(AudioNode::Disconnect) {
   Nan::HandleScope scope;
 
-  // XXX
-  // info.GetReturnValue().Set(audioDestinationNodeObj);
+  if (info.Length() == 0) {
+    AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
+    shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
+    
+    Local<Object> audioContextObj = Nan::New(audioNode->context);
+    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+    lab::AudioContext *labAudioContext = audioContext->audioContext;
+    
+    try {
+      labAudioContext->disconnect(nullptr, srcAudioNode);
+    } catch (const std::exception &e) {
+      return Nan::ThrowError(e.what());
+    } catch (...) {
+      return Nan::ThrowError("unknown exception");
+    }
+  } else {
+    if (info[0]->IsObject()) {
+      Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
+
+      if (constructorName->StrictEquals(JS_STR("AudioSourceNode")) || constructorName->StrictEquals(JS_STR("AudioDestinationNode"))) {
+        AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
+        shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
+        
+        AudioNode *argAudioNode = ObjectWrap::Unwrap<AudioNode>(Local<Object>::Cast(info[0]));
+        shared_ptr<lab::AudioNode> dstAudioNode = argAudioNode->audioNode;
+
+        Local<Object> audioContextObj = Nan::New(audioNode->context);
+        AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+        lab::AudioContext *labAudioContext = audioContext->audioContext;
+        try {
+          labAudioContext->disconnect(dstAudioNode, srcAudioNode);
+        } catch (const std::exception &e) {
+          return Nan::ThrowError(e.what());
+        } catch (...) {
+          return Nan::ThrowError("unknown exception");
+        }
+
+        info.GetReturnValue().Set(info[0]);
+      } else {
+        Nan::ThrowError("AudioNode::Disconnect: invalid arguments");
+      }
+    } else {
+      Nan::ThrowError("AudioNode::Disconnect: invalid arguments");
+    }
+  }
 }
 
 NAN_GETTER(AudioNode::ContextGetter) {

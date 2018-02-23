@@ -6,6 +6,7 @@
 #include "LabSound/extended/LabSound.h"
 #include <Audio.h>
 #include <AudioContext.h>
+#include <AudioSourceNode.h>
 #include <AudioDestinationNode.h>
 
 using namespace std;
@@ -22,9 +23,11 @@ void Init(Handle<Object> exports) {
   defaultAudioContext = lab::MakeRealtimeAudioContext();
   
   exports->Set(JS_STR("Audio"), Audio::Initialize(isolate));
+  Local<Value> audioSourceNodeCons = AudioSourceNode::Initialize(isolate);
+  exports->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   Local<Value> audioDestinationNodeCons = AudioDestinationNode::Initialize(isolate);
   exports->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioDestinationNodeCons));
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

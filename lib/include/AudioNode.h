@@ -41,6 +41,8 @@ protected:
   unsigned int channelCount;
   const char *channelCountMode;
   const char *channelInterpretation;
+
+  shared_ptr<lab::AudioNode> audioNode;
 };
 
 }
