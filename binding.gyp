@@ -4,9 +4,11 @@
       'target_name': 'webaudio',
       'sources': [
         'main.cpp',
+        '<(module_root_dir)/lib/src/*.cpp',
       ],
       'include_dirs': [
         "<!(node -e \"require('nan')\")",
+        '<(module_root_dir)/lib/include',
         '<(module_root_dir)/labsound/include',
       ],
       'conditions': [
