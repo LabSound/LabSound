@@ -7,6 +7,7 @@
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
 #include <globals.h>
+#include <AudioDestinationNode.h>
 
 using namespace std;
 using namespace v8;
@@ -16,7 +17,7 @@ namespace webaudio {
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioDestinationNodeCons);
   void Close();
   void Suspend();
   void Resume();
@@ -27,11 +28,13 @@ protected:
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
   static NAN_GETTER(CurrentTimeGetter);
+  static NAN_GETTER(DestinationGetter);
 
   AudioContext();
   ~AudioContext();
 
 private:
+  Nan::Persistent<Object> destination;
 };
 
 }
