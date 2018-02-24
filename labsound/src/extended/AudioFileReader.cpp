@@ -11,6 +11,7 @@
 #include "libnyquist/AudioDecoder.h"
 
 #include <mutex>
+#include <cstring>
 
 namespace detail
 {
