@@ -17,6 +17,10 @@
             '-lLabSound',
             '-llibnyquist',
             '-llibopus',
+            # '-ljack',
+            '-lasound',
+            # '-lpulse',
+            # '-lpulse-simple',
           ],
           'library_dirs': [
             '<(module_root_dir)/labsound/bin',
