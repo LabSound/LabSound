@@ -76,6 +76,7 @@ set(      third_nyquist_src
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDependencies.c"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDecoder.cpp"
+    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/OpusDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/RiffUtils.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/VorbisDecoder.cpp"
@@ -87,11 +88,12 @@ set(      third_nyquist_src
 file(GLOB third_musepack_dec "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcdec/*")
 file(GLOB third_musepack_enc "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcenc/*")
 file(GLOB third_wavpack      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/src/*")
+file(GLOB third_mobplug      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/libmodplug/src/*")
 
 add_library(libnyquist STATIC 
     ${third_nyquist_h} ${third_nyquist_src}
     ${third_musepack_dec} ${third_musepack_enc}
-    ${third_wavpack})
+    ${third_wavpack} ${third_mobplug})
 
 _set_Cxx17(libnyquist)
 _set_compile_options(libnyquist)
