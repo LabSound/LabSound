@@ -105,7 +105,7 @@ target_include_directories(libnyquist PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/include
     ${LABSOUND_ROOT}/third_party/libnyquist/include/libnyquist
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party
-    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/flac/src/include
+    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/FLAC/src/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libogg/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/src
