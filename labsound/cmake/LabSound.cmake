@@ -7,7 +7,6 @@ file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
-file(GLOB third_WTF         "${LABSOUND_ROOT}/third_party/WTF/*")
 file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
 if (APPLE)
@@ -28,7 +27,7 @@ add_library(LabSound STATIC
 	${labsnd_extended_h} ${labsnd_extended}
 	${labsnd_int_h} ${labsnd_int_src}
 	${labsnd_int_platform} ${labsnd_intsrc_platform}
- 	${third_WTF} ${third_rtaudio} ${third_kissfft}
+ 	${third_rtaudio} ${third_kissfft}
  )
 
 _set_Cxx17(LabSound)
@@ -83,7 +82,6 @@ source_group(src\\core FILES ${labsnd_core})
 source_group(src\\extended FILES ${labsnd_extended})
 source_group(src\\internal FILES ${labsnd_int_h})
 source_group(src\\internal\\src FILES ${labsnd_int_src})
-source_group(third_party\\WTF FILES ${third_WTF})
 source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
 source_group(src\\internal\\platform FILES ${labsnd_int_platform})
