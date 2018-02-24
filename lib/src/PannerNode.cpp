@@ -64,38 +64,38 @@ NAN_METHOD(PannerNode::New) {
 
     Local<Object> positionXAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *positionXAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionXAudioParamObj);
-    positionXAudioParam->getter = [=]() { return labPannerNode->position().x; };
-    positionXAudioParam->setter = [=](float x) { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(x, position.y, position.z); };
+    positionXAudioParam->getter = [=]() -> float { return labPannerNode->position().x; };
+    positionXAudioParam->setter = [=](float x) -> void { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(x, position.y, position.z); };
     pannerNodeObj->Set(JS_STR("positionX"), positionXAudioParamObj);
 
     Local<Object> positionYAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *positionYAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionYAudioParamObj);
-    positionYAudioParam->getter = [=]() { return labPannerNode->position().y; };
-    positionYAudioParam->setter = [=](float y) { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(position.x, y, position.z); };
+    positionYAudioParam->getter = [=]() -> float { return labPannerNode->position().y; };
+    positionYAudioParam->setter = [=](float y) -> void { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(position.x, y, position.z); };
     pannerNodeObj->Set(JS_STR("positionY"), positionYAudioParamObj);
 
     Local<Object> positionZAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *positionZAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(positionZAudioParamObj);
-    positionZAudioParam->getter = [=]() { return labPannerNode->position().z; };
-    positionYAudioParam->setter = [=](float z) { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(position.x, position.y, z); };
+    positionZAudioParam->getter = [=]() -> float { return labPannerNode->position().z; };
+    positionYAudioParam->setter = [=](float z) -> void { lab::FloatPoint3D position = labPannerNode->position(); labPannerNode->setPosition(position.x, position.y, z); };
     pannerNodeObj->Set(JS_STR("positionZ"), positionZAudioParamObj);
 
     Local<Object> orientationXAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationXAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationXAudioParamObj);
-    orientationXAudioParam->getter = [=]() { return labPannerNode->orientation().x; };
-    orientationXAudioParam->setter = [=](float x) { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(x, orientation.y, orientation.z); };
+    orientationXAudioParam->getter = [=]() -> float { return labPannerNode->orientation().x; };
+    orientationXAudioParam->setter = [=](float x) -> void { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(x, orientation.y, orientation.z); };
     pannerNodeObj->Set(JS_STR("orientationX"), orientationXAudioParamObj);
 
     Local<Object> orientationYAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationYAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationYAudioParamObj);
-    orientationYAudioParam->getter = [=]() { return labPannerNode->orientation().y; };
-    orientationYAudioParam->setter = [=](float y) { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(orientation.x, y, orientation.z); };
+    orientationYAudioParam->getter = [=]() -> float { return labPannerNode->orientation().y; };
+    orientationYAudioParam->setter = [=](float y) -> void { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(orientation.x, y, orientation.z); };
     pannerNodeObj->Set(JS_STR("orientationY"), orientationYAudioParamObj);
 
     Local<Object> orientationZAudioParamObj = fakeAudioParamConstructor->NewInstance(0, nullptr);
     FakeAudioParam *orientationZAudioParam = ObjectWrap::Unwrap<FakeAudioParam>(orientationZAudioParamObj);
-    orientationZAudioParam->getter = [=]() { return labPannerNode->orientation().z; };
-    orientationZAudioParam->setter = [=](float z) { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(orientation.x, orientation.y, z); };
+    orientationZAudioParam->getter = [=]() -> float { return labPannerNode->orientation().z; };
+    orientationZAudioParam->setter = [=](float z) -> void { lab::FloatPoint3D orientation = labPannerNode->orientation(); labPannerNode->setOrientation(orientation.x, orientation.y, z); };
     pannerNodeObj->Set(JS_STR("orientationZ"), orientationZAudioParamObj);
 
     info.GetReturnValue().Set(pannerNodeObj);
