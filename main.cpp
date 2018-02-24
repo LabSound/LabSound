@@ -33,6 +33,8 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("AudioParam"), audioParamCons);
   Local<Value> fakeAudioParamCons = FakeAudioParam::Initialize(isolate);
   exports->Set(JS_STR("FakeAudioParam"), fakeAudioParamCons);
+  Local<Value> audioListenerCons = AudioListener::Initialize(isolate, fakeAudioParamCons);
+  exports->Set(JS_STR("AudioListener"), audioListenerCons);
   Local<Value> audioSourceNodeCons = AudioSourceNode::Initialize(isolate);
   exports->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   Local<Value> audioDestinationNodeCons = AudioDestinationNode::Initialize(isolate);
@@ -45,7 +47,7 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("PannerNode"), pannerNodeCons);
   Local<Value> stereoPannerNodeCons = StereoPannerNode::Initialize(isolate, audioParamCons);
   exports->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, stereoPannerNodeCons));
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioListenerCons, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, stereoPannerNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

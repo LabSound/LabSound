@@ -6,7 +6,7 @@ AudioContext::AudioContext() : audioContext(defaultAudioContext.get()) {}
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -30,6 +30,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioSour
 
   Local<Function> ctorFn = ctor->GetFunction();
 
+  ctorFn->Set(JS_STR("AudioListener"), audioListenerCons);
   ctorFn->Set(JS_STR("AudioSourceNode"), audioSourceNodeCons);
   ctorFn->Set(JS_STR("AudioDestinationNode"), audioDestinationNodeCons);
   ctorFn->Set(JS_STR("GainNode"), gainNodeCons);
@@ -122,11 +123,18 @@ NAN_METHOD(AudioContext::New) {
   audioContext->Wrap(audioContextObj);
 
   Local<Function> audioDestinationNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioDestinationNode")));
-  Local<Value> argv[] = {
+  Local<Value> argv1[] = {
     audioContextObj,
   };
-  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
   audioContextObj->Set(JS_STR("destination"), audioDestinationNodeObj);
+  
+  Local<Function> audioListenerConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioListener")));
+  Local<Value> argv2[] = {
+    audioContextObj,
+  };
+  Local<Object> audioListenerObj = audioListenerConstructor->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
+  audioContextObj->Set(JS_STR("listener"), audioListenerObj);
 
   info.GetReturnValue().Set(audioContextObj);
 }

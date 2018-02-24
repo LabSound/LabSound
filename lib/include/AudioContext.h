@@ -12,6 +12,7 @@
 #include <AnalyserNode.h>
 #include <PannerNode.h>
 #include <StereoPannerNode.h>
+#include <AudioListener.h>
 
 using namespace std;
 using namespace v8;
@@ -21,7 +22,7 @@ namespace webaudio {
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons);
   void Close();
   Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
   void CreateMediaStreamSource();
@@ -57,6 +58,7 @@ protected:
   lab::AudioContext *audioContext;
   
   friend class Audio;
+  friend class AudioListener;
   friend class AudioNode;
   friend class AudioSourceNode;
   friend class AudioDestinationNode;

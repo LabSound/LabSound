@@ -35,6 +35,7 @@ protected:
   function<float()> getter;
   function<void(float)> setter;
 
+  friend class AudioListener;
   friend class PannerNode;
 };
 
