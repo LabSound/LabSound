@@ -90,11 +90,12 @@ set(      third_nyquist_src
 file(GLOB third_musepack_dec "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcdec/*")
 file(GLOB third_musepack_enc "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcenc/*")
 file(GLOB third_wavpack      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/src/*")
+file(GLOB third_modplug      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/libmodplug/src/*")
 
 add_library(libnyquist STATIC
     ${third_nyquist_h} ${third_nyquist_src}
     ${third_musepack_dec} ${third_musepack_enc}
-    ${third_wavpack})
+    ${third_wavpack} ${third_modplug})
 
 _set_Cxx17(libnyquist)
 _set_compile_options(libnyquist)
@@ -108,7 +109,7 @@ target_include_directories(libnyquist PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/include
     ${LABSOUND_ROOT}/third_party/libnyquist/include/libnyquist
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party
-    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/flac/src/include
+    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/FLAC/src/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libogg/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/libvorbis/src
