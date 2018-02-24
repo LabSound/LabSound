@@ -23,7 +23,6 @@ include(CXXDefaults)
 include(Packages)
 include(cmake/libnyquist.cmake)
 include(cmake/LabSound.cmake)
-include(cmake/examples.cmake)
 
 set(CMAKE_BUILD_TYPE Release)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
