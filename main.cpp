@@ -27,6 +27,11 @@ void Init(Handle<Object> exports) {
   Isolate *isolate = Isolate::GetCurrent();
 
   defaultAudioContext = lab::MakeRealtimeAudioContext();
+
+  atexit([]() {
+    std::cout << "at exit" << "\n";
+    defaultAudioContext.reset();
+  });
   
   exports->Set(JS_STR("Audio"), Audio::Initialize(isolate));
   Local<Value> audioParamCons = AudioParam::Initialize(isolate);
