@@ -64,6 +64,9 @@ ipch/
 *.cachefile
 win.vs2015/LabSound.VC.*
 
+# Visual Studio Code
+.vs/
+
 # Visual Studio profiler
 *.psess
 *.vsp
