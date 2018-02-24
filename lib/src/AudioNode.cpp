@@ -71,13 +71,15 @@ NAN_METHOD(AudioNode::Connect) {
       AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
       lab::AudioContext *labAudioContext = audioContext->audioContext;
 
-      try {
+      // try {
         labAudioContext->connect(dstAudioNode, srcAudioNode, outputIndex, inputIndex);
-      } catch (const std::exception &e) {
-        return Nan::ThrowError(e.what());
+      /* } catch (const std::exception &e) {
+        Nan::ThrowError(e.what());
+        return;
       } catch (...) {
-        return Nan::ThrowError("unknown exception");
-      }
+        Nan::ThrowError("unknown exception");
+        return;
+      } */
 
       info.GetReturnValue().Set(info[0]);
     } else {
@@ -99,13 +101,15 @@ NAN_METHOD(AudioNode::Disconnect) {
     AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
     lab::AudioContext *labAudioContext = audioContext->audioContext;
     
-    try {
+    // try {
       labAudioContext->disconnect(nullptr, srcAudioNode);
-    } catch (const std::exception &e) {
-      return Nan::ThrowError(e.what());
+    /* } catch (const std::exception &e) {
+      Nan::ThrowError(e.what());
+      return;
     } catch (...) {
-      return Nan::ThrowError("unknown exception");
-    }
+      Nan::ThrowError("unknown exception");
+      return;
+    } */
   } else {
     if (info[0]->IsObject()) {
       Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
@@ -126,13 +130,15 @@ NAN_METHOD(AudioNode::Disconnect) {
         Local<Object> audioContextObj = Nan::New(audioNode->context);
         AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
         lab::AudioContext *labAudioContext = audioContext->audioContext;
-        try {
+        // try {
           labAudioContext->disconnect(dstAudioNode, srcAudioNode);
-        } catch (const std::exception &e) {
-          return Nan::ThrowError(e.what());
+        /* } catch (const std::exception &e) {
+          Nan::ThrowError(e.what());
+          return;
         } catch (...) {
-          return Nan::ThrowError("unknown exception");
-        }
+          Nan::ThrowError("unknown exception");
+          return;
+        } */
 
         info.GetReturnValue().Set(info[0]);
       } else {
