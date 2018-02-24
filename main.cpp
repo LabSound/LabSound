@@ -29,7 +29,6 @@ void Init(Handle<Object> exports) {
   defaultAudioContext = lab::MakeRealtimeAudioContext();
 
   atexit([]() {
-    std::cout << "at exit" << "\n";
     defaultAudioContext.reset();
   });
   
