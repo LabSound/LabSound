@@ -4,7 +4,7 @@
       'target_name': 'webaudio',
       'sources': [
         'main.cpp',
-        '<(module_root_dir)/lib/src/*.cpp',
+        "<!@(node -p \"require('fs').readdirSync('./lib/src').map(f=>'lib/src/'+f).join(' ')\")"
       ],
       'include_dirs': [
         "<!(node -e \"require('nan')\")",
@@ -12,6 +12,16 @@
         '<(module_root_dir)/labsound/include',
       ],
       'conditions': [
+        ['OS=="linux"', {
+          'libraries': [
+            '-lLabSound',
+            '-llibnyquist',
+            '-llibopus',
+          ],
+          'library_dirs': [
+            '<(module_root_dir)/labsound/bin',
+          ],
+        }],
         ['OS=="win"', {
           'libraries': [
             'LabSound.lib',
