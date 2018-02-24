@@ -20,6 +20,9 @@ if (APPLE)
 elseif (WIN32)
 	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/win/*")
 	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/win/*")
+elseif (UNIX)
+	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/linux/*")
+	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/linux/*")
 endif()
 
 add_library(LabSound STATIC 
