@@ -44,7 +44,7 @@ AudioContext::~AudioContext()
         graphUpdateThread.join();
     }
 
-    //std::unique_lock<std::mutex> lk(m_updateMutex); // do we need this? 
+    //std::unique_lock<std::mutex> lk(m_updateMutex); // do we need this?
 
     uninitialize();
 
@@ -54,7 +54,7 @@ AudioContext::~AudioContext()
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
 #endif
-    
+
     ASSERT(!m_isInitialized);
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
@@ -107,7 +107,7 @@ void AudioContext::uninitialize()
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
-    
+
     updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
 
     m_isInitialized = false;
@@ -136,7 +136,7 @@ void AudioContext::handleAutomaticSources()
     {
         if ((*i)->hasFinished())
         {
-            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0); 
+            pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0);
             i = automaticSources.erase(i);
             if (i == automaticSources.end()) break;
         }
@@ -198,18 +198,18 @@ void AudioContext::update()
     const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
     const int graphTickDurationUs = graphTickDurationMs * 1000.f;  // = ~5550us
 
-    while (updateThreadShouldRun && graphKeepAlive > 0)
+    while (updateThreadShouldRun || graphKeepAlive > 0)
     {
         // A `unique_lock` automatically acquires a lock on construction. The purpose of
-        // this mutex is to synchronize updates to the graph from the main thread, 
-        // primarily through `connect(...)` and `disconnect(...)`. 
+        // this mutex is to synchronize updates to the graph from the main thread,
+        // primarily through `connect(...)` and `disconnect(...)`.
         std::unique_lock<std::mutex> lk;
 
         if (!m_isOfflineContext)
-        {   
+        {
             lk = std::unique_lock<std::mutex>(m_updateMutex);
-            // A condition variable is used to notify this thread that a graph update is pending 
-            // in one of the queues. 
+            // A condition variable is used to notify this thread that a graph update is pending
+            // in one of the queues.
 
             // graph needs to tick to complete
             if ((currentTime() + graphKeepAlive) > currentTime())
@@ -297,7 +297,7 @@ void AudioContext::update()
                     if (connection.duration > 0)
                     {
                         connection.duration -= delta;
-                        skippedConnections.push_back(connection); 
+                        skippedConnections.push_back(connection);
                         continue;
                     }
 
@@ -331,7 +331,7 @@ void AudioContext::update()
                 }
             }
 
-            // We have incompletely connected nodes, so next time the thread ticks we can re-check them 
+            // We have incompletely connected nodes, so next time the thread ticks we can re-check them
             for (auto & sc : skippedConnections)
             {
                 pendingNodeConnections.push(sc);
@@ -391,45 +391,45 @@ void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t frame
         m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
 }
 
-void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> node) 
-{ 
-    m_destinationNode = node; 
+void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> node)
+{
+    m_destinationNode = node;
 }
 
-std::shared_ptr<AudioDestinationNode> AudioContext::destination() 
-{ 
-    return m_destinationNode; 
+std::shared_ptr<AudioDestinationNode> AudioContext::destination()
+{
+    return m_destinationNode;
 }
 
-bool AudioContext::isOfflineContext() 
-{ 
-    return m_isOfflineContext; 
+bool AudioContext::isOfflineContext()
+{
+    return m_isOfflineContext;
 }
 
-size_t AudioContext::currentSampleFrame() const 
-{ 
-    return m_destinationNode->currentSampleFrame(); 
+size_t AudioContext::currentSampleFrame() const
+{
+    return m_destinationNode->currentSampleFrame();
 }
 
-double AudioContext::currentTime() const 
-{  
+double AudioContext::currentTime() const
+{
     return m_destinationNode->currentTime();
 }
 
-float AudioContext::sampleRate() const 
-{  
+float AudioContext::sampleRate() const
+{
     ASSERT(m_destinationNode);
     return m_destinationNode->sampleRate();
 }
 
-AudioListener & AudioContext::listener() 
-{ 
-    return *m_listener.get(); 
+AudioListener & AudioContext::listener()
+{
+    return *m_listener.get();
 }
 
-unsigned long AudioContext::activeSourceCount() const 
-{ 
-    return static_cast<unsigned long>(m_activeSourceCount); 
+unsigned long AudioContext::activeSourceCount() const
+{
+    return static_cast<unsigned long>(m_activeSourceCount);
 }
 
 void AudioContext::startRendering()
