@@ -56,8 +56,6 @@ set_target_properties(LabSound
 
 set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 
-target_compile_definitions(LabSound PRIVATE WTF_USE_WEBAUDIO_KISSFFT=1)
-
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
 endif()

@@ -42,7 +42,7 @@ private:
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
-    bool m_isPlaying = false;;
+    bool m_isPlaying = false;
 
     RtAudio dac;
 };

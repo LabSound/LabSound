@@ -41,7 +41,7 @@
 #define ARM_NEON_INTRINSICS 1
 #endif
 
-#if defined(LABSOUND_PLATFORM_OSX)
+#if defined(LABSOUND_PLATFORM_OSX) || defined(LABSOUND_PLATFORM_LINUX)
 #include <math.h>
 #include <cmath>
 #endif

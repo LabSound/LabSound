@@ -17,6 +17,7 @@
 #include <mutex>
 #include <string>
 #include <condition_variable>
+#include <functional>
 
 namespace lab
 {

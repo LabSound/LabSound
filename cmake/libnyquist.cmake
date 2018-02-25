@@ -1,7 +1,7 @@
 
 #-------------------------------------------------------------------------------
 
-include(CXXhelpers)
+include(CXXHelpers)
 
 project(libopus)
 
