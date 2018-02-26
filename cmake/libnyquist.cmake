@@ -73,7 +73,7 @@ set(      third_nyquist_src
     "${LABSOUND_ROOT}/third_party/libnyquist/src/Common.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModPlugDecoder.cpp"
+    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDependencies.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDependencies.c"
