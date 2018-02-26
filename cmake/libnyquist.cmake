@@ -1,7 +1,7 @@
 
 #-------------------------------------------------------------------------------
 
-include(CXXHelpers)
+include(CXXhelpers)
 
 project(libopus)
 
@@ -15,7 +15,7 @@ file(GLOB third_opus_src
 
 add_library(libopus STATIC ${third_opus_src})
 
-_set_Cxx17(libopus)
+_set_CxxVer(libopus)
 _set_compile_options(libopus)
 
 if (WIN32)
@@ -73,7 +73,7 @@ set(      third_nyquist_src
     "${LABSOUND_ROOT}/third_party/libnyquist/src/Common.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModPlugDecoder.cpp"
+    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDependencies.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDependencies.c"
@@ -97,7 +97,7 @@ add_library(libnyquist STATIC
     ${third_musepack_dec} ${third_musepack_enc}
     ${third_wavpack} ${third_modplug})
 
-_set_Cxx17(libnyquist)
+_set_CxxVer(libnyquist)
 _set_compile_options(libnyquist)
 
 if (WIN32)
