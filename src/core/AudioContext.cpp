@@ -198,6 +198,8 @@ void AudioContext::update()
     const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
     const int graphTickDurationUs = graphTickDurationMs * 1000.f;  // = ~5550us
 
+    // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
+    // finish) even updateThreadShouldRun has been signaled.
     while (updateThreadShouldRun || graphKeepAlive > 0)
     {
         // A `unique_lock` automatically acquires a lock on construction. The purpose of

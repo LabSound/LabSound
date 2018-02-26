@@ -87,20 +87,16 @@ set(      third_nyquist_src
     "${LABSOUND_ROOT}/third_party/libnyquist/src/WavPackDecoder.cpp"
     "${LABSOUND_ROOT}/third_party/libnyquist/src/WavPackDependencies.c"
 )
-file(GLOB third_musepack_dec "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcdec/*")
-file(GLOB third_musepack_enc "${LABSOUND_ROOT}/third_party/libnyquist/third_party/musepack/libmpcenc/*")
-file(GLOB third_wavpack      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/src/*")
-file(GLOB third_modplug      "${LABSOUND_ROOT}/third_party/libnyquist/third_party/libmodplug/src/*")
 
 add_library(libnyquist STATIC
-    ${third_nyquist_h} ${third_nyquist_src}
-    ${third_musepack_dec} ${third_musepack_enc}
-    ${third_wavpack} ${third_modplug})
+    ${third_nyquist_h} ${third_nyquist_src})
 
 _set_CxxVer(libnyquist)
 _set_compile_options(libnyquist)
 
 if (WIN32)
+    target_compile_definitions(libnyquist PRIVATE MODPLUG_STATIC)
+
     _disable_warning(4244)
     _disable_warning(4018)
 endif()
