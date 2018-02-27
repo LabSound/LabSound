@@ -30,6 +30,7 @@
 [Oo]bj/
 x64/
 build/
+build-*
 
 *_i.c
 *_p.c
@@ -103,3 +104,5 @@ xcuserdata/
 # Sublime Edit
 *.sublime-workspace
 
+# Qmake user file
+*.pro.user
