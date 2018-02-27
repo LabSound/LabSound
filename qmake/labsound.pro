@@ -7,6 +7,8 @@ CONFIG += c++11 staticlib
 TEMPLATE = lib
 TARGET = labsound
 
+DEFINES -= UNICODE
+DEFINES += OPUS_BUILD USE_ALLOCA
 
 INCLUDEPATH += \
 	$$PWD/../include \
@@ -47,7 +49,6 @@ $$PWD/../third_party/libnyquist/third_party/wavpack/include \
 $$PWD/../third_party/libnyquist/src
 
 
-
 win32 {
 	
 	contains(QMAKE_TARGET.arch, x86_64) { # x64
@@ -56,7 +57,7 @@ win32 {
 		DESTDIR = $$PWD/../build/bin-win32
 	}
 	
-	DEFINES += __WINDOWS_WASAPI__=1
+	DEFINES += __WINDOWS_WASAPI__=1 MODPLUG_STATIC
 	
 	SOURCES += $$files($$PWD/../src/internal/src/win/*.cpp)
 	SOURCES += $$PWD/../third_party/rtaudio/src/RtAudio.cpp
