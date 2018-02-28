@@ -2,12 +2,12 @@ CONFIG(debug, debug|release): CONFIG -= release
 else: CONFIG -= debug
 
 QT -= core gui
-CONFIG += c++11
+CONFIG += c++11 console
 
 TEMPLATE = app
 TARGET = examples
 
-LIBS += -llabsound
+LIBS += -llabsound -llibnyquist
 
 DEFINES -= UNICODE
 
@@ -19,6 +19,8 @@ INCLUDEPATH += \
 	$$PWD/../third_party/libnyquist/include
 
 win32 {
+	
+	LIBS += -lwinmm -lole32 -luser32 -lgdi32
 	
 	contains(QMAKE_TARGET.arch, x86_64) { # x64
 		DESTDIR = $$PWD/../build/bin-win64
