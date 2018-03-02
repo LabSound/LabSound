@@ -73,7 +73,7 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
     return detail::LoadInternal(audioData, mixToMono);
 }
 
-std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
+std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     nqr::AudioData * audioData = new nqr::AudioData();
