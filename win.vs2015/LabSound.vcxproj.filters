@@ -327,12 +327,6 @@
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\AudioBuffer.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\LabSound\core\AudioBufferSourceNode.h">
-      <Filter>LabSound\core\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\LabSound\core\AudioContext.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
@@ -471,12 +465,6 @@
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\AudioBuffer.cpp">
-      <Filter>LabSound\core\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\core\AudioBufferSourceNode.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\AudioContext.cpp">
