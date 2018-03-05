@@ -61,9 +61,8 @@ namespace detail
       }
     }
 
-    bool AppData::set(std::vector<uint8_t> &memory) {
+    bool AppData::set(std::vector<uint8_t> &memory, std::string *error) {
       data = std::move(memory);
-      // data = memory;
       resetState();
 
       // open video
@@ -71,13 +70,17 @@ namespace detail
       io_ctx = avio_alloc_context((unsigned char *)av_malloc(kBufferSize), kBufferSize, 0, this, bufferRead, NULL, bufferSeek);
       fmt_ctx->pb = io_ctx;
       if (avformat_open_input(&fmt_ctx, "memory input", NULL, NULL) < 0) {
-        // std::cout << "failed to open input" << std::endl;
+        if (error) {
+          *error = "failed to open input";
+        }
         return false;
       }
 
       // find stream info
       if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
-        // std::cout << "failed to get stream info" << std::endl;
+        if (error) {
+          *error = "failed to get stream info";
+        }
         return false;
       }
 
@@ -95,7 +98,9 @@ namespace detail
       }
 
       if (stream_idx == -1) {
-        // std::cout << "failed to find video stream" << std::endl;
+        if (error) {
+          *error = "failed to find stream";
+        }
         return false;
       }
 
@@ -105,13 +110,17 @@ namespace detail
       // find the decoder
       decoder = avcodec_find_decoder(codec_ctx->codec_id);
       if (decoder == NULL) {
-        // std::cout << "failed to find decoder" << std::endl;
+        if (error) {
+          *error = "failed to find decoder";
+        }
         return false;
       }
 
       // open the decoder
       if (avcodec_open2(codec_ctx, decoder, NULL) < 0) {
-        // std::cout << "failed to open codec" << std::endl;
+        if (error) {
+          *error = "failed to open codec";
+        }
         return false;
       }
 
@@ -153,7 +162,7 @@ namespace detail
       }
     }
 
-    PlanesVector AppData::read() {
+    PlanesVector AppData::read(std::string *error) {
       size_t numChannels = codec_ctx->channels;
       PlanesVector planes(numChannels);
       for (size_t i = 0; i < numChannels; i++) {
@@ -174,6 +183,9 @@ namespace detail
           if (ret == AVERROR_EOF) {
             break;
           } else if (ret < 0) {
+            if (error) {
+              *error = "packet read error";
+            }
             av_free_packet(&packet);
             return PlanesVector();
           } else {
@@ -186,6 +198,9 @@ namespace detail
           int frame_finished = 0;
 
           if (avcodec_decode_audio4(codec_ctx, av_frame, &frame_finished, &packet) < 0) {
+            if (error) {
+              *error = "failed to decode packet";
+            }
             av_free_packet(&packet);
             return PlanesVector();
           }
@@ -229,6 +244,10 @@ namespace detail
         } else {
           av_free_packet(&packet);
 
+          if (!planes[0].size()) {
+            *error = "stream had no samples";
+          }
+
           return planes;
         }
       }
@@ -238,11 +257,11 @@ namespace detail
       return codec_ctx->sample_rate;
     }
 
-    std::unique_ptr<lab::AudioBus> LoadInternal(std::vector<uint8_t> &buffer, bool mixToMono)
+    std::unique_ptr<lab::AudioBus> LoadInternal(std::vector<uint8_t> &buffer, bool mixToMono, std::string *error)
     {
         AppData appData;
-        if (!appData.set(buffer)) return nullptr; // takes ownership
-        auto planes = appData.read();
+        if (!appData.set(buffer, error)) return nullptr; // takes ownership
+        auto planes = appData.read(error);
 
         const size_t numChannels = planes.size();
         if (!numChannels) return nullptr;
@@ -289,18 +308,18 @@ namespace lab
 
 std::mutex g_fileIOMutex;
     
-std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono)
+std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono, std::string *error)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     std::ifstream inputStream(filePath);
     std::istream_iterator<unsigned char> start(inputStream), end;
     std::vector<unsigned char> buffer(start, end);
-    return detail::LoadInternal(buffer, mixToMono);
+    return detail::LoadInternal(buffer, mixToMono, error);
 }
 
-std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, std::string extension, bool mixToMono)
+std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, bool mixToMono, std::string *error)
 {
-    return detail::LoadInternal(buffer, mixToMono);
+    return detail::LoadInternal(buffer, mixToMono, error);
 }
     
 } // end namespace lab

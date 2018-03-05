@@ -60,10 +60,10 @@ namespace detail {
     ~AppData();
 
     void resetState();
-    bool set(std::vector<uint8_t> &memory);
+    bool set(std::vector<uint8_t> &memory, std::string *error = nullptr);
     static int bufferRead(void *opaque, unsigned char *buf, int buf_size);
     static int64_t bufferSeek(void *opaque, int64_t offset, int whence);
-    PlanesVector read();
+    PlanesVector read(std::string *error = nullptr);
     float getSampleRate();
 
   public:
@@ -83,8 +83,8 @@ namespace detail {
   };
 }
 namespace lab {
-  std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono);
-  std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> & buffer, std::string extension, bool mixToMono);
+  std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono, std::string *error = nullptr);
+  std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, bool mixToMono, std::string *error = nullptr);
 }
 
 #endif
