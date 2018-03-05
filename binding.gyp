@@ -13,6 +13,11 @@
       ],
       'conditions': [
         ['OS=="linux"', {
+          'library_dirs': [
+            '<(module_root_dir)/labsound/bin',
+            '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/linux',
+            '<(module_root_dir)/labsound/third_party/libnyquist/build/Release',
+          ],
           'libraries': [
             '-lLabSound',
             '-llibnyquist',
@@ -21,9 +26,14 @@
             '-lasound',
             # '-lpulse',
             # '-lpulse-simple',
+            '-lavformat',
+            '-lavcodec',
+            '-lavutil',
+            '-lswscale',
+            '-lswresample',
           ],
-          'library_dirs': [
-            '<(module_root_dir)/labsound/bin',
+          'ldflags': [
+            '-Wl,-Bsymbolic',
           ],
         }],
         ['OS=="win"', {
