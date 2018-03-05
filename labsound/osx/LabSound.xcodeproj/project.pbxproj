@@ -7,298 +7,308 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		08567C291B61D09D00EB6C0D /* BPMDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08567C271B61D09D00EB6C0D /* BPMDelay.cpp */; };
-		08567C2A1B61D09D00EB6C0D /* PingPongDelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */; };
-		08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */; };
-		08650BD61AD6225900D19E38 /* AudioDSPKernelProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */; };
-		08650BD91AD6225900D19E38 /* AudioResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB01AD6225900D19E38 /* AudioResampler.cpp */; };
-		08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */; };
-		08650BDB1AD6225900D19E38 /* AudioUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB21AD6225900D19E38 /* AudioUtilities.cpp */; };
-		08650BDC1AD6225900D19E38 /* Biquad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB31AD6225900D19E38 /* Biquad.cpp */; };
-		08650BDD1AD6225900D19E38 /* BiquadDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB41AD6225900D19E38 /* BiquadDSPKernel.cpp */; };
-		08650BDE1AD6225900D19E38 /* BiquadProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB51AD6225900D19E38 /* BiquadProcessor.cpp */; };
-		08650BDF1AD6225900D19E38 /* Cone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB61AD6225900D19E38 /* Cone.cpp */; };
-		08650BE01AD6225900D19E38 /* DelayDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB71AD6225900D19E38 /* DelayDSPKernel.cpp */; };
-		08650BE11AD6225900D19E38 /* DelayProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB81AD6225900D19E38 /* DelayProcessor.cpp */; };
-		08650BE21AD6225900D19E38 /* DirectConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BB91AD6225900D19E38 /* DirectConvolver.cpp */; };
-		08650BE31AD6225900D19E38 /* Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBA1AD6225900D19E38 /* Distance.cpp */; };
-		08650BE41AD6225900D19E38 /* DynamicsCompressor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBB1AD6225900D19E38 /* DynamicsCompressor.cpp */; };
-		08650BE51AD6225900D19E38 /* DynamicsCompressorKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBC1AD6225900D19E38 /* DynamicsCompressorKernel.cpp */; };
-		08650BE61AD6225900D19E38 /* EqualPowerPanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBD1AD6225900D19E38 /* EqualPowerPanner.cpp */; };
-		08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */; };
-		08650BE81AD6225900D19E38 /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BBF1AD6225900D19E38 /* FFTFrame.cpp */; };
-		08650BE91AD6225900D19E38 /* FFTFrameKissFFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */; };
-		08650BEB1AD6225900D19E38 /* HRTFDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */; };
-		08650BEC1AD6225900D19E38 /* HRTFDatabaseLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */; };
-		08650BED1AD6225900D19E38 /* HRTFElevation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC41AD6225900D19E38 /* HRTFElevation.cpp */; };
-		08650BEE1AD6225900D19E38 /* HRTFKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC51AD6225900D19E38 /* HRTFKernel.cpp */; };
-		08650BEF1AD6225900D19E38 /* HRTFPanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC61AD6225900D19E38 /* HRTFPanner.cpp */; };
-		08650BF01AD6225900D19E38 /* MultiChannelResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC71AD6225900D19E38 /* MultiChannelResampler.cpp */; };
-		08650BF21AD6225900D19E38 /* Reverb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BC91AD6225900D19E38 /* Reverb.cpp */; };
-		08650BF31AD6225900D19E38 /* ReverbAccumulationBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCA1AD6225900D19E38 /* ReverbAccumulationBuffer.cpp */; };
-		08650BF41AD6225900D19E38 /* ReverbConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCB1AD6225900D19E38 /* ReverbConvolver.cpp */; };
-		08650BF51AD6225900D19E38 /* ReverbConvolverStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCC1AD6225900D19E38 /* ReverbConvolverStage.cpp */; };
-		08650BF61AD6225900D19E38 /* ReverbInputBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCD1AD6225900D19E38 /* ReverbInputBuffer.cpp */; };
-		08650BF71AD6225900D19E38 /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCE1AD6225900D19E38 /* SincResampler.cpp */; };
-		08650BF81AD6225900D19E38 /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BCF1AD6225900D19E38 /* VectorMath.cpp */; };
-		08650BF91AD6225900D19E38 /* WaveShaperDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD01AD6225900D19E38 /* WaveShaperDSPKernel.cpp */; };
-		08650BFA1AD6225900D19E38 /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */; };
-		08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BD21AD6225900D19E38 /* ZeroPole.cpp */; };
-		08650C021AD622A400D19E38 /* AudioDestinationMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */; };
-		08650C041AD622A400D19E38 /* FFTFrameMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C001AD622A400D19E38 /* FFTFrameMac.cpp */; };
-		08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C451AD6239000D19E38 /* ADSRNode.cpp */; };
-		08650C561AD6239000D19E38 /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C461AD6239000D19E38 /* ClipNode.cpp */; };
-		08650C571AD6239000D19E38 /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C471AD6239000D19E38 /* DiodeNode.cpp */; };
-		08650C581AD6239000D19E38 /* LabSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C481AD6239000D19E38 /* LabSound.cpp */; };
-		08650C591AD6239000D19E38 /* NoiseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C491AD6239000D19E38 /* NoiseNode.cpp */; };
-		08650C5B1AD6239000D19E38 /* PeakCompNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */; };
-		08650C5C1AD6239000D19E38 /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */; };
-		08650C5D1AD6239000D19E38 /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4D1AD6239000D19E38 /* PWMNode.cpp */; };
-		08650C5E1AD6239000D19E38 /* RecorderNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4E1AD6239000D19E38 /* RecorderNode.cpp */; };
-		08650C5F1AD6239000D19E38 /* SampledInstrumentNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C4F1AD6239000D19E38 /* SampledInstrumentNode.cpp */; };
-		08650C601AD6239000D19E38 /* SfxrNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C501AD6239000D19E38 /* SfxrNode.cpp */; };
-		08650C621AD6239000D19E38 /* SpatializationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C521AD6239000D19E38 /* SpatializationNode.cpp */; };
-		08650C631AD6239000D19E38 /* SpectralMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C531AD6239000D19E38 /* SpectralMonitorNode.cpp */; };
-		08650C641AD6239000D19E38 /* SupersawNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650C541AD6239000D19E38 /* SupersawNode.cpp */; };
-		08650CD51AD6241A00D19E38 /* AnalyserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CB61AD6241A00D19E38 /* AnalyserNode.cpp */; };
-		08650CD61AD6241A00D19E38 /* AudioBasicInspectorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CB71AD6241A00D19E38 /* AudioBasicInspectorNode.cpp */; };
-		08650CD71AD6241A00D19E38 /* AudioBasicProcessorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CB81AD6241A00D19E38 /* AudioBasicProcessorNode.cpp */; };
-		08650CDA1AD6241A00D19E38 /* AudioContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CBB1AD6241A00D19E38 /* AudioContext.cpp */; };
-		08650CDB1AD6241A00D19E38 /* AudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CBC1AD6241A00D19E38 /* AudioDestinationNode.cpp */; };
-		08650CDD1AD6241A00D19E38 /* AudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CBE1AD6241A00D19E38 /* AudioNode.cpp */; };
-		08650CDE1AD6241A00D19E38 /* AudioNodeInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CBF1AD6241A00D19E38 /* AudioNodeInput.cpp */; };
-		08650CDF1AD6241A00D19E38 /* AudioNodeOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC01AD6241A00D19E38 /* AudioNodeOutput.cpp */; };
-		08650CE01AD6241A00D19E38 /* AudioParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC11AD6241A00D19E38 /* AudioParam.cpp */; };
-		08650CE11AD6241A00D19E38 /* AudioParamTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC21AD6241A00D19E38 /* AudioParamTimeline.cpp */; };
-		08650CE21AD6241A00D19E38 /* AudioScheduledSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC31AD6241A00D19E38 /* AudioScheduledSourceNode.cpp */; };
-		08650CE31AD6241A00D19E38 /* AudioSummingJunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC41AD6241A00D19E38 /* AudioSummingJunction.cpp */; };
-		08650CE41AD6241A00D19E38 /* BiquadFilterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC51AD6241A00D19E38 /* BiquadFilterNode.cpp */; };
-		08650CE51AD6241A00D19E38 /* ChannelMergerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC61AD6241A00D19E38 /* ChannelMergerNode.cpp */; };
-		08650CE61AD6241A00D19E38 /* ChannelSplitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC71AD6241A00D19E38 /* ChannelSplitterNode.cpp */; };
-		08650CE71AD6241A00D19E38 /* ConvolverNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC81AD6241A00D19E38 /* ConvolverNode.cpp */; };
-		08650CE81AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CC91AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp */; };
-		08650CE91AD6241A00D19E38 /* DelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCA1AD6241A00D19E38 /* DelayNode.cpp */; };
-		08650CEA1AD6241A00D19E38 /* DynamicsCompressorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */; };
-		08650CEB1AD6241A00D19E38 /* GainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCC1AD6241A00D19E38 /* GainNode.cpp */; };
-		08650CED1AD6241A00D19E38 /* AudioHardwareSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCE1AD6241A00D19E38 /* AudioHardwareSourceNode.cpp */; };
-		08650CEE1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */; };
-		08650CEF1AD6241A00D19E38 /* OscillatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */; };
-		08650CF01AD6241A00D19E38 /* PannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD11AD6241A00D19E38 /* PannerNode.cpp */; };
-		08650CF11AD6241A00D19E38 /* RealtimeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */; };
-		08650CF21AD6241A00D19E38 /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */; };
-		08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CD41AD6241A00D19E38 /* WaveTable.cpp */; };
 		08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF61AD6248400D19E38 /* kiss_fft.cpp */; };
 		08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CF71AD6248400D19E38 /* kiss_fftr.cpp */; };
 		08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */; };
 		08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08650CFC1AD6249B00D19E38 /* fftsg.cpp */; };
-		08C25E841ADE1DB40097D572 /* StereoPannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */; };
-		DA12233A200D88DD00AB1504 /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122337200D88DD00AB1504 /* AudioBus.cpp */; };
-		DA12233B200D88DD00AB1504 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122338200D88DD00AB1504 /* AudioChannel.cpp */; };
-		DA12233C200D88DD00AB1504 /* SampledAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA122339200D88DD00AB1504 /* SampledAudioNode.cpp */; };
-		E28FC138200DDFF60057982C /* AudioFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E28FC137200DDFF60057982C /* AudioFileReader.cpp */; };
-		E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */; };
+		0AA1EF1E204DB1970074707B /* PannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE93204DB1970074707B /* PannerNode.cpp */; };
+		0AA1EF1F204DB1970074707B /* AudioHardwareSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE94204DB1970074707B /* AudioHardwareSourceNode.cpp */; };
+		0AA1EF20204DB1970074707B /* WaveTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE95204DB1970074707B /* WaveTable.cpp */; };
+		0AA1EF21204DB1970074707B /* WaveShaperNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE96204DB1970074707B /* WaveShaperNode.cpp */; };
+		0AA1EF22204DB1970074707B /* SampledAudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE97204DB1970074707B /* SampledAudioNode.cpp */; };
+		0AA1EF23204DB1970074707B /* AudioNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE98204DB1970074707B /* AudioNode.cpp */; };
+		0AA1EF24204DB1970074707B /* GainNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE99204DB1970074707B /* GainNode.cpp */; };
+		0AA1EF25204DB1970074707B /* RealtimeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9A204DB1970074707B /* RealtimeAnalyser.cpp */; };
+		0AA1EF26204DB1970074707B /* AudioBasicInspectorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9B204DB1970074707B /* AudioBasicInspectorNode.cpp */; };
+		0AA1EF27204DB1970074707B /* AudioNodeOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9C204DB1970074707B /* AudioNodeOutput.cpp */; };
+		0AA1EF28204DB1970074707B /* DelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9D204DB1970074707B /* DelayNode.cpp */; };
+		0AA1EF29204DB1970074707B /* AudioParamTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9E204DB1970074707B /* AudioParamTimeline.cpp */; };
+		0AA1EF2A204DB1970074707B /* AudioScheduledSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EE9F204DB1970074707B /* AudioScheduledSourceNode.cpp */; };
+		0AA1EF2B204DB1970074707B /* AudioNodeInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA0204DB1970074707B /* AudioNodeInput.cpp */; };
+		0AA1EF2C204DB1970074707B /* StereoPannerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA1204DB1970074707B /* StereoPannerNode.cpp */; };
+		0AA1EF2D204DB1970074707B /* AudioSummingJunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA2204DB1970074707B /* AudioSummingJunction.cpp */; };
+		0AA1EF2E204DB1970074707B /* DefaultAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA3204DB1970074707B /* DefaultAudioDestinationNode.cpp */; };
+		0AA1EF2F204DB1970074707B /* BiquadFilterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA4204DB1970074707B /* BiquadFilterNode.cpp */; };
+		0AA1EF30204DB1970074707B /* AudioBasicProcessorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA5204DB1970074707B /* AudioBasicProcessorNode.cpp */; };
+		0AA1EF31204DB1970074707B /* OscillatorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA6204DB1970074707B /* OscillatorNode.cpp */; };
+		0AA1EF32204DB1970074707B /* AudioBus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA7204DB1970074707B /* AudioBus.cpp */; };
+		0AA1EF33204DB1970074707B /* DynamicsCompressorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA8204DB1970074707B /* DynamicsCompressorNode.cpp */; };
+		0AA1EF34204DB1970074707B /* OfflineAudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEA9204DB1970074707B /* OfflineAudioDestinationNode.cpp */; };
+		0AA1EF35204DB1970074707B /* ChannelMergerNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAA204DB1970074707B /* ChannelMergerNode.cpp */; };
+		0AA1EF36204DB1970074707B /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAB204DB1970074707B /* AudioChannel.cpp */; };
+		0AA1EF37204DB1970074707B /* AudioDestinationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAC204DB1970074707B /* AudioDestinationNode.cpp */; };
+		0AA1EF38204DB1970074707B /* AnalyserNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAD204DB1970074707B /* AnalyserNode.cpp */; };
+		0AA1EF39204DB1970074707B /* AudioContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAE204DB1970074707B /* AudioContext.cpp */; };
+		0AA1EF3A204DB1970074707B /* ConvolverNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEAF204DB1970074707B /* ConvolverNode.cpp */; };
+		0AA1EF3B204DB1970074707B /* AudioParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEB0204DB1970074707B /* AudioParam.cpp */; };
+		0AA1EF3C204DB1970074707B /* ChannelSplitterNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEB1204DB1970074707B /* ChannelSplitterNode.cpp */; };
+		0AA1EF3D204DB1970074707B /* HRTFDatabaseLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE0204DB1970074707B /* HRTFDatabaseLoader.cpp */; };
+		0AA1EF3E204DB1970074707B /* DelayDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE1204DB1970074707B /* DelayDSPKernel.cpp */; };
+		0AA1EF3F204DB1970074707B /* BiquadDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE2204DB1970074707B /* BiquadDSPKernel.cpp */; };
+		0AA1EF40204DB1970074707B /* VectorMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE3204DB1970074707B /* VectorMath.cpp */; };
+		0AA1EF41204DB1970074707B /* ZeroPole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE4204DB1970074707B /* ZeroPole.cpp */; };
+		0AA1EF42204DB1970074707B /* HRTFKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE5204DB1970074707B /* HRTFKernel.cpp */; };
+		0AA1EF43204DB1970074707B /* AudioUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE6204DB1970074707B /* AudioUtilities.cpp */; };
+		0AA1EF44204DB1970074707B /* FFTFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE7204DB1970074707B /* FFTFrame.cpp */; };
+		0AA1EF45204DB1970074707B /* FFTFrameKissFFT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE8204DB1970074707B /* FFTFrameKissFFT.cpp */; };
+		0AA1EF46204DB1970074707B /* SincResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEE9204DB1970074707B /* SincResampler.cpp */; };
+		0AA1EF47204DB1970074707B /* AudioDestinationWin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEEB204DB1970074707B /* AudioDestinationWin.cpp */; };
+		0AA1EF48204DB1970074707B /* HRTFDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEEC204DB1970074707B /* HRTFDatabase.cpp */; };
+		0AA1EF49204DB1970074707B /* WaveShaperProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEED204DB1970074707B /* WaveShaperProcessor.cpp */; };
+		0AA1EF4A204DB1970074707B /* ReverbInputBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEEE204DB1970074707B /* ReverbInputBuffer.cpp */; };
+		0AA1EF4B204DB1970074707B /* ReverbAccumulationBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEEF204DB1970074707B /* ReverbAccumulationBuffer.cpp */; };
+		0AA1EF4C204DB1970074707B /* DynamicsCompressorKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF0204DB1970074707B /* DynamicsCompressorKernel.cpp */; };
+		0AA1EF4D204DB1970074707B /* AudioResamplerKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF1204DB1970074707B /* AudioResamplerKernel.cpp */; };
+		0AA1EF4E204DB1970074707B /* DelayProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF2204DB1970074707B /* DelayProcessor.cpp */; };
+		0AA1EF4F204DB1970074707B /* AudioDestinationMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF4204DB1970074707B /* AudioDestinationMac.cpp */; };
+		0AA1EF50204DB1970074707B /* FFTFrameMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF5204DB1970074707B /* FFTFrameMac.cpp */; };
+		0AA1EF51204DB1970074707B /* Cone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF6204DB1970074707B /* Cone.cpp */; };
+		0AA1EF52204DB1970074707B /* DirectConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF7204DB1970074707B /* DirectConvolver.cpp */; };
+		0AA1EF53204DB1970074707B /* DynamicsCompressor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF8204DB1970074707B /* DynamicsCompressor.cpp */; };
+		0AA1EF54204DB1970074707B /* ReverbConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEF9204DB1970074707B /* ReverbConvolver.cpp */; };
+		0AA1EF55204DB1970074707B /* AudioDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEFA204DB1970074707B /* AudioDSPKernel.cpp */; };
+		0AA1EF56204DB1970074707B /* Biquad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEFB204DB1970074707B /* Biquad.cpp */; };
+		0AA1EF57204DB1970074707B /* AudioDestinationLinux.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEFD204DB1970074707B /* AudioDestinationLinux.cpp */; };
+		0AA1EF58204DB1970074707B /* BiquadProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEFE204DB1970074707B /* BiquadProcessor.cpp */; };
+		0AA1EF59204DB1970074707B /* HRTFPanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EEFF204DB1970074707B /* HRTFPanner.cpp */; };
+		0AA1EF5A204DB1970074707B /* HRTFElevation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF00204DB1970074707B /* HRTFElevation.cpp */; };
+		0AA1EF5B204DB1970074707B /* Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF01204DB1970074707B /* Distance.cpp */; };
+		0AA1EF5C204DB1970074707B /* AudioResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF02204DB1970074707B /* AudioResampler.cpp */; };
+		0AA1EF5D204DB1970074707B /* Reverb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF03204DB1970074707B /* Reverb.cpp */; };
+		0AA1EF5E204DB1970074707B /* MultiChannelResampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF04204DB1970074707B /* MultiChannelResampler.cpp */; };
+		0AA1EF5F204DB1970074707B /* WaveShaperDSPKernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF05204DB1970074707B /* WaveShaperDSPKernel.cpp */; };
+		0AA1EF60204DB1970074707B /* EqualPowerPanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF06204DB1970074707B /* EqualPowerPanner.cpp */; };
+		0AA1EF61204DB1970074707B /* AudioDSPKernelProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF07204DB1970074707B /* AudioDSPKernelProcessor.cpp */; };
+		0AA1EF62204DB1970074707B /* ReverbConvolverStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF08204DB1970074707B /* ReverbConvolverStage.cpp */; };
+		0AA1EF63204DB1970074707B /* FFTConvolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF09204DB1970074707B /* FFTConvolver.cpp */; };
+		0AA1EF64204DB1970074707B /* SpatializationNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF0B204DB1970074707B /* SpatializationNode.cpp */; };
+		0AA1EF65204DB1970074707B /* PowerMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF0C204DB1970074707B /* PowerMonitorNode.cpp */; };
+		0AA1EF66204DB1970074707B /* LabSound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF0D204DB1970074707B /* LabSound.cpp */; };
+		0AA1EF67204DB1970074707B /* PWMNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF0E204DB1970074707B /* PWMNode.cpp */; };
+		0AA1EF68204DB1970074707B /* SampledInstrumentNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF0F204DB1970074707B /* SampledInstrumentNode.cpp */; };
+		0AA1EF69204DB1970074707B /* SupersawNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF10204DB1970074707B /* SupersawNode.cpp */; };
+		0AA1EF6A204DB1970074707B /* NoiseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF11204DB1970074707B /* NoiseNode.cpp */; };
+		0AA1EF6C204DB1970074707B /* DiodeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF13204DB1970074707B /* DiodeNode.cpp */; };
+		0AA1EF6D204DB1970074707B /* AudioFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF14204DB1970074707B /* AudioFileReader.cpp */; };
+		0AA1EF6E204DB1970074707B /* SpectralMonitorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF15204DB1970074707B /* SpectralMonitorNode.cpp */; };
+		0AA1EF6F204DB1970074707B /* RecorderNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF16204DB1970074707B /* RecorderNode.cpp */; };
+		0AA1EF70204DB1970074707B /* SfxrNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF17204DB1970074707B /* SfxrNode.cpp */; };
+		0AA1EF71204DB1970074707B /* BPMDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF18204DB1970074707B /* BPMDelay.cpp */; };
+		0AA1EF72204DB1970074707B /* ClipNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF19204DB1970074707B /* ClipNode.cpp */; };
+		0AA1EF73204DB1970074707B /* ADSRNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1A204DB1970074707B /* ADSRNode.cpp */; };
+		0AA1EF74204DB1970074707B /* PingPongDelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1B204DB1970074707B /* PingPongDelayNode.cpp */; };
+		0AA1EF75204DB1970074707B /* PeakCompNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1C204DB1970074707B /* PeakCompNode.cpp */; };
+		0AA1EF76204DB1970074707B /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1D204DB1970074707B /* FunctionNode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08567C241B61D04F00EB6C0D /* BPMDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BPMDelay.h; path = ../include/LabSound/extended/BPMDelay.h; sourceTree = SOURCE_ROOT; };
-		08567C251B61D04F00EB6C0D /* PingPongDelayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PingPongDelayNode.h; path = ../include/LabSound/extended/PingPongDelayNode.h; sourceTree = SOURCE_ROOT; };
-		08567C261B61D06400EB6C0D /* Util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Util.h; path = ../include/LabSound/extended/Util.h; sourceTree = SOURCE_ROOT; };
-		08567C271B61D09D00EB6C0D /* BPMDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BPMDelay.cpp; path = ../src/extended/BPMDelay.cpp; sourceTree = SOURCE_ROOT; };
-		08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PingPongDelayNode.cpp; path = ../src/extended/PingPongDelayNode.cpp; sourceTree = SOURCE_ROOT; };
 		085F34DF1ADCD9B800FEADC5 /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../third_party/WTF/Compiler.h; sourceTree = "<group>"; };
 		085F34E01ADCD9B800FEADC5 /* CPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = ../third_party/WTF/CPU.h; sourceTree = "<group>"; };
 		085F34E11ADCD9B800FEADC5 /* MathExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
 		085F34E21ADCD9B800FEADC5 /* Platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../third_party/WTF/Platform.h; sourceTree = "<group>"; };
-		08650A221AD61FE800D19E38 /* Assertions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Assertions.h; path = ../src/internal/Assertions.h; sourceTree = "<group>"; };
-		08650A251AD61FE800D19E38 /* AudioDestination.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestination.h; path = ../src/internal/AudioDestination.h; sourceTree = "<group>"; };
-		08650A271AD61FE800D19E38 /* AudioDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernel.h; path = ../src/internal/AudioDSPKernel.h; sourceTree = "<group>"; };
-		08650A281AD61FE800D19E38 /* AudioDSPKernelProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDSPKernelProcessor.h; path = ../src/internal/AudioDSPKernelProcessor.h; sourceTree = "<group>"; };
-		08650A2C1AD61FE800D19E38 /* AudioResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResampler.h; path = ../src/internal/AudioResampler.h; sourceTree = "<group>"; };
-		08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioResamplerKernel.h; path = ../src/internal/AudioResamplerKernel.h; sourceTree = "<group>"; };
-		08650A2E1AD61FE800D19E38 /* AudioUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioUtilities.h; path = ../src/internal/AudioUtilities.h; sourceTree = "<group>"; };
-		08650A2F1AD61FE800D19E38 /* Biquad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Biquad.h; path = ../src/internal/Biquad.h; sourceTree = "<group>"; };
-		08650A301AD61FE800D19E38 /* BiquadDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BiquadDSPKernel.h; path = ../src/internal/BiquadDSPKernel.h; sourceTree = "<group>"; };
-		08650A311AD61FE800D19E38 /* BiquadProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BiquadProcessor.h; path = ../src/internal/BiquadProcessor.h; sourceTree = "<group>"; };
-		08650A321AD61FE800D19E38 /* Cone.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cone.h; path = ../src/internal/Cone.h; sourceTree = "<group>"; };
-		08650A341AD61FE800D19E38 /* DelayDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DelayDSPKernel.h; path = ../src/internal/DelayDSPKernel.h; sourceTree = "<group>"; };
-		08650A351AD61FE800D19E38 /* DelayProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DelayProcessor.h; path = ../src/internal/DelayProcessor.h; sourceTree = "<group>"; };
-		08650A361AD61FE800D19E38 /* DenormalDisabler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DenormalDisabler.h; path = ../src/internal/DenormalDisabler.h; sourceTree = "<group>"; };
-		08650A371AD61FE800D19E38 /* DirectConvolver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DirectConvolver.h; path = ../src/internal/DirectConvolver.h; sourceTree = "<group>"; };
-		08650A381AD61FE800D19E38 /* Distance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Distance.h; path = ../src/internal/Distance.h; sourceTree = "<group>"; };
-		08650A391AD61FE800D19E38 /* DynamicsCompressor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DynamicsCompressor.h; path = ../src/internal/DynamicsCompressor.h; sourceTree = "<group>"; };
-		08650A3A1AD61FE800D19E38 /* DynamicsCompressorKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DynamicsCompressorKernel.h; path = ../src/internal/DynamicsCompressorKernel.h; sourceTree = "<group>"; };
-		08650A3B1AD61FE800D19E38 /* EqualPowerPanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EqualPowerPanner.h; path = ../src/internal/EqualPowerPanner.h; sourceTree = "<group>"; };
-		08650A3C1AD61FE800D19E38 /* FFTConvolver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FFTConvolver.h; path = ../src/internal/FFTConvolver.h; sourceTree = "<group>"; };
-		08650A3D1AD61FE800D19E38 /* FFTFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FFTFrame.h; path = ../src/internal/FFTFrame.h; sourceTree = "<group>"; };
-		08650A3F1AD61FE800D19E38 /* HRTFDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HRTFDatabase.h; path = ../src/internal/HRTFDatabase.h; sourceTree = "<group>"; };
-		08650A401AD61FE800D19E38 /* HRTFDatabaseLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HRTFDatabaseLoader.h; path = ../src/internal/HRTFDatabaseLoader.h; sourceTree = "<group>"; };
-		08650A411AD61FE800D19E38 /* HRTFElevation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HRTFElevation.h; path = ../src/internal/HRTFElevation.h; sourceTree = "<group>"; };
-		08650A421AD61FE800D19E38 /* HRTFKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HRTFKernel.h; path = ../src/internal/HRTFKernel.h; sourceTree = "<group>"; };
-		08650A431AD61FE800D19E38 /* HRTFPanner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HRTFPanner.h; path = ../src/internal/HRTFPanner.h; sourceTree = "<group>"; };
-		08650A441AD61FE800D19E38 /* MultiChannelResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MultiChannelResampler.h; path = ../src/internal/MultiChannelResampler.h; sourceTree = "<group>"; };
-		08650A451AD61FE800D19E38 /* Panner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Panner.h; path = ../src/internal/Panner.h; sourceTree = "<group>"; };
-		08650A461AD61FE800D19E38 /* Reverb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Reverb.h; path = ../src/internal/Reverb.h; sourceTree = "<group>"; };
-		08650A471AD61FE800D19E38 /* ReverbAccumulationBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReverbAccumulationBuffer.h; path = ../src/internal/ReverbAccumulationBuffer.h; sourceTree = "<group>"; };
-		08650A481AD61FE800D19E38 /* ReverbConvolver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReverbConvolver.h; path = ../src/internal/ReverbConvolver.h; sourceTree = "<group>"; };
-		08650A491AD61FE800D19E38 /* ReverbConvolverStage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReverbConvolverStage.h; path = ../src/internal/ReverbConvolverStage.h; sourceTree = "<group>"; };
-		08650A4A1AD61FE800D19E38 /* ReverbInputBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ReverbInputBuffer.h; path = ../src/internal/ReverbInputBuffer.h; sourceTree = "<group>"; };
-		08650A4B1AD61FE800D19E38 /* SincResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SincResampler.h; path = ../src/internal/SincResampler.h; sourceTree = "<group>"; };
-		08650A4C1AD61FE800D19E38 /* VectorMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VectorMath.h; path = ../src/internal/VectorMath.h; sourceTree = "<group>"; };
-		08650A4D1AD61FE800D19E38 /* WaveShaperDSPKernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WaveShaperDSPKernel.h; path = ../src/internal/WaveShaperDSPKernel.h; sourceTree = "<group>"; };
-		08650A4E1AD61FE800D19E38 /* WaveShaperProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WaveShaperProcessor.h; path = ../src/internal/WaveShaperProcessor.h; sourceTree = "<group>"; };
-		08650A4F1AD61FE800D19E38 /* ZeroPole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ZeroPole.h; path = ../src/internal/ZeroPole.h; sourceTree = "<group>"; };
-		08650A511AD61FFB00D19E38 /* AudioDestinationMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestinationMac.h; path = ../src/internal/mac/AudioDestinationMac.h; sourceTree = "<group>"; };
-		08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernel.cpp; path = ../src/internal/src/AudioDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDSPKernelProcessor.cpp; path = ../src/internal/src/AudioDSPKernelProcessor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB01AD6225900D19E38 /* AudioResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioResampler.cpp; path = ../src/internal/src/AudioResampler.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioResamplerKernel.cpp; path = ../src/internal/src/AudioResamplerKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB21AD6225900D19E38 /* AudioUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioUtilities.cpp; path = ../src/internal/src/AudioUtilities.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB31AD6225900D19E38 /* Biquad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Biquad.cpp; path = ../src/internal/src/Biquad.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB41AD6225900D19E38 /* BiquadDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiquadDSPKernel.cpp; path = ../src/internal/src/BiquadDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB51AD6225900D19E38 /* BiquadProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiquadProcessor.cpp; path = ../src/internal/src/BiquadProcessor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB61AD6225900D19E38 /* Cone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cone.cpp; path = ../src/internal/src/Cone.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB71AD6225900D19E38 /* DelayDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DelayDSPKernel.cpp; path = ../src/internal/src/DelayDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB81AD6225900D19E38 /* DelayProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DelayProcessor.cpp; path = ../src/internal/src/DelayProcessor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BB91AD6225900D19E38 /* DirectConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirectConvolver.cpp; path = ../src/internal/src/DirectConvolver.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBA1AD6225900D19E38 /* Distance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Distance.cpp; path = ../src/internal/src/Distance.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBB1AD6225900D19E38 /* DynamicsCompressor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicsCompressor.cpp; path = ../src/internal/src/DynamicsCompressor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBC1AD6225900D19E38 /* DynamicsCompressorKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicsCompressorKernel.cpp; path = ../src/internal/src/DynamicsCompressorKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBD1AD6225900D19E38 /* EqualPowerPanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EqualPowerPanner.cpp; path = ../src/internal/src/EqualPowerPanner.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTConvolver.cpp; path = ../src/internal/src/FFTConvolver.cpp; sourceTree = SOURCE_ROOT; };
-		08650BBF1AD6225900D19E38 /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrame.cpp; path = ../src/internal/src/FFTFrame.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameKissFFT.cpp; path = ../src/internal/src/FFTFrameKissFFT.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFDatabase.cpp; path = ../src/internal/src/HRTFDatabase.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFDatabaseLoader.cpp; path = ../src/internal/src/HRTFDatabaseLoader.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC41AD6225900D19E38 /* HRTFElevation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFElevation.cpp; path = ../src/internal/src/HRTFElevation.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC51AD6225900D19E38 /* HRTFKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFKernel.cpp; path = ../src/internal/src/HRTFKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC61AD6225900D19E38 /* HRTFPanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HRTFPanner.cpp; path = ../src/internal/src/HRTFPanner.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC71AD6225900D19E38 /* MultiChannelResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiChannelResampler.cpp; path = ../src/internal/src/MultiChannelResampler.cpp; sourceTree = SOURCE_ROOT; };
-		08650BC91AD6225900D19E38 /* Reverb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Reverb.cpp; path = ../src/internal/src/Reverb.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCA1AD6225900D19E38 /* ReverbAccumulationBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbAccumulationBuffer.cpp; path = ../src/internal/src/ReverbAccumulationBuffer.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCB1AD6225900D19E38 /* ReverbConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbConvolver.cpp; path = ../src/internal/src/ReverbConvolver.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCC1AD6225900D19E38 /* ReverbConvolverStage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbConvolverStage.cpp; path = ../src/internal/src/ReverbConvolverStage.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCD1AD6225900D19E38 /* ReverbInputBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReverbInputBuffer.cpp; path = ../src/internal/src/ReverbInputBuffer.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCE1AD6225900D19E38 /* SincResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SincResampler.cpp; path = ../src/internal/src/SincResampler.cpp; sourceTree = SOURCE_ROOT; };
-		08650BCF1AD6225900D19E38 /* VectorMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VectorMath.cpp; path = ../src/internal/src/VectorMath.cpp; sourceTree = SOURCE_ROOT; };
-		08650BD01AD6225900D19E38 /* WaveShaperDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperDSPKernel.cpp; path = ../src/internal/src/WaveShaperDSPKernel.cpp; sourceTree = SOURCE_ROOT; };
-		08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperProcessor.cpp; path = ../src/internal/src/WaveShaperProcessor.cpp; sourceTree = SOURCE_ROOT; };
-		08650BD21AD6225900D19E38 /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZeroPole.cpp; path = ../src/internal/src/ZeroPole.cpp; sourceTree = SOURCE_ROOT; };
-		08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDestinationMac.cpp; path = ../src/internal/src/mac/AudioDestinationMac.cpp; sourceTree = SOURCE_ROOT; };
-		08650C001AD622A400D19E38 /* FFTFrameMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FFTFrameMac.cpp; path = ../src/internal/src/mac/FFTFrameMac.cpp; sourceTree = SOURCE_ROOT; };
-		08650C451AD6239000D19E38 /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ADSRNode.cpp; path = ../src/extended/ADSRNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C461AD6239000D19E38 /* ClipNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClipNode.cpp; path = ../src/extended/ClipNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C471AD6239000D19E38 /* DiodeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DiodeNode.cpp; path = ../src/extended/DiodeNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C481AD6239000D19E38 /* LabSound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LabSound.cpp; path = ../src/extended/LabSound.cpp; sourceTree = SOURCE_ROOT; };
-		08650C491AD6239000D19E38 /* NoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NoiseNode.cpp; path = ../src/extended/NoiseNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakCompNode.cpp; path = ../src/extended/PeakCompNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PowerMonitorNode.cpp; path = ../src/extended/PowerMonitorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4D1AD6239000D19E38 /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PWMNode.cpp; path = ../src/extended/PWMNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4E1AD6239000D19E38 /* RecorderNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RecorderNode.cpp; path = ../src/extended/RecorderNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C4F1AD6239000D19E38 /* SampledInstrumentNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampledInstrumentNode.cpp; path = ../src/extended/SampledInstrumentNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C501AD6239000D19E38 /* SfxrNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SfxrNode.cpp; path = ../src/extended/SfxrNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C521AD6239000D19E38 /* SpatializationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpatializationNode.cpp; path = ../src/extended/SpatializationNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C531AD6239000D19E38 /* SpectralMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpectralMonitorNode.cpp; path = ../src/extended/SpectralMonitorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C541AD6239000D19E38 /* SupersawNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SupersawNode.cpp; path = ../src/extended/SupersawNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650C7A1AD623C400D19E38 /* ADSRNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ADSRNode.h; path = ../include/LabSound/extended/ADSRNode.h; sourceTree = SOURCE_ROOT; };
-		08650C7B1AD623C400D19E38 /* AudioContextLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioContextLock.h; path = ../include/LabSound/extended/AudioContextLock.h; sourceTree = SOURCE_ROOT; };
-		08650C7C1AD623C400D19E38 /* ClipNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ClipNode.h; path = ../include/LabSound/extended/ClipNode.h; sourceTree = SOURCE_ROOT; };
-		08650C7D1AD623C400D19E38 /* DiodeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DiodeNode.h; path = ../include/LabSound/extended/DiodeNode.h; sourceTree = SOURCE_ROOT; };
-		08650C7F1AD623C400D19E38 /* LabSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LabSound.h; path = ../include/LabSound/extended/LabSound.h; sourceTree = SOURCE_ROOT; };
-		08650C801AD623C400D19E38 /* Logging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Logging.h; path = ../include/LabSound/extended/Logging.h; sourceTree = SOURCE_ROOT; };
-		08650C811AD623C400D19E38 /* NoiseNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NoiseNode.h; path = ../include/LabSound/extended/NoiseNode.h; sourceTree = SOURCE_ROOT; };
-		08650C831AD623C400D19E38 /* PeakCompNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PeakCompNode.h; path = ../include/LabSound/extended/PeakCompNode.h; sourceTree = SOURCE_ROOT; };
-		08650C841AD623C400D19E38 /* PowerMonitorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PowerMonitorNode.h; path = ../include/LabSound/extended/PowerMonitorNode.h; sourceTree = SOURCE_ROOT; };
-		08650C851AD623C400D19E38 /* PWMNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PWMNode.h; path = ../include/LabSound/extended/PWMNode.h; sourceTree = SOURCE_ROOT; };
-		08650C861AD623C400D19E38 /* RealtimeAnalyser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RealtimeAnalyser.h; path = ../include/LabSound/extended/RealtimeAnalyser.h; sourceTree = SOURCE_ROOT; };
-		08650C871AD623C400D19E38 /* RecorderNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecorderNode.h; path = ../include/LabSound/extended/RecorderNode.h; sourceTree = SOURCE_ROOT; };
-		08650C881AD623C400D19E38 /* SampledInstrumentNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SampledInstrumentNode.h; path = ../include/LabSound/extended/SampledInstrumentNode.h; sourceTree = SOURCE_ROOT; };
-		08650C891AD623C400D19E38 /* SfxrNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SfxrNode.h; path = ../include/LabSound/extended/SfxrNode.h; sourceTree = SOURCE_ROOT; };
-		08650C8B1AD623C400D19E38 /* SpatializationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpatializationNode.h; path = ../include/LabSound/extended/SpatializationNode.h; sourceTree = SOURCE_ROOT; };
-		08650C8C1AD623C400D19E38 /* SpectralMonitorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpectralMonitorNode.h; path = ../include/LabSound/extended/SpectralMonitorNode.h; sourceTree = SOURCE_ROOT; };
-		08650C8E1AD623C400D19E38 /* SupersawNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SupersawNode.h; path = ../include/LabSound/extended/SupersawNode.h; sourceTree = SOURCE_ROOT; };
-		08650C8F1AD623E300D19E38 /* AnalyserNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AnalyserNode.h; path = ../include/LabSound/core/AnalyserNode.h; sourceTree = SOURCE_ROOT; };
-		08650C901AD623E300D19E38 /* AudioArray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioArray.h; path = ../include/LabSound/core/AudioArray.h; sourceTree = SOURCE_ROOT; };
-		08650C911AD623E300D19E38 /* AudioBasicInspectorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioBasicInspectorNode.h; path = ../include/LabSound/core/AudioBasicInspectorNode.h; sourceTree = SOURCE_ROOT; };
-		08650C921AD623E300D19E38 /* AudioBasicProcessorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioBasicProcessorNode.h; path = ../include/LabSound/core/AudioBasicProcessorNode.h; sourceTree = SOURCE_ROOT; };
-		08650C951AD623E300D19E38 /* AudioContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioContext.h; path = ../include/LabSound/core/AudioContext.h; sourceTree = SOURCE_ROOT; };
-		08650C961AD623E300D19E38 /* AudioDestinationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioDestinationNode.h; path = ../include/LabSound/core/AudioDestinationNode.h; sourceTree = SOURCE_ROOT; };
-		08650C971AD623E300D19E38 /* AudioIOCallback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioIOCallback.h; path = ../include/LabSound/core/AudioIOCallback.h; sourceTree = SOURCE_ROOT; };
-		08650C981AD623E300D19E38 /* AudioListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioListener.h; path = ../include/LabSound/core/AudioListener.h; sourceTree = SOURCE_ROOT; };
-		08650C991AD623E300D19E38 /* AudioNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioNode.h; path = ../include/LabSound/core/AudioNode.h; sourceTree = SOURCE_ROOT; };
-		08650C9A1AD623E300D19E38 /* AudioNodeInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioNodeInput.h; path = ../include/LabSound/core/AudioNodeInput.h; sourceTree = SOURCE_ROOT; };
-		08650C9B1AD623E300D19E38 /* AudioNodeOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioNodeOutput.h; path = ../include/LabSound/core/AudioNodeOutput.h; sourceTree = SOURCE_ROOT; };
-		08650C9C1AD623E300D19E38 /* AudioParam.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioParam.h; path = ../include/LabSound/core/AudioParam.h; sourceTree = SOURCE_ROOT; };
-		08650C9D1AD623E300D19E38 /* AudioParamTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioParamTimeline.h; path = ../include/LabSound/core/AudioParamTimeline.h; sourceTree = SOURCE_ROOT; };
-		08650C9E1AD623E300D19E38 /* AudioProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioProcessor.h; path = ../include/LabSound/core/AudioProcessor.h; sourceTree = SOURCE_ROOT; };
-		08650C9F1AD623E300D19E38 /* AudioScheduledSourceNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioScheduledSourceNode.h; path = ../include/LabSound/core/AudioScheduledSourceNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA01AD623E300D19E38 /* AudioSourceNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioSourceNode.h; path = ../include/LabSound/core/AudioSourceNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA11AD623E300D19E38 /* AudioSourceProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioSourceProvider.h; path = ../include/LabSound/core/AudioSourceProvider.h; sourceTree = SOURCE_ROOT; };
-		08650CA21AD623E300D19E38 /* AudioSummingJunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioSummingJunction.h; path = ../include/LabSound/core/AudioSummingJunction.h; sourceTree = SOURCE_ROOT; };
-		08650CA31AD623E300D19E38 /* BiquadFilterNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BiquadFilterNode.h; path = ../include/LabSound/core/BiquadFilterNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA41AD623E300D19E38 /* ChannelMergerNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ChannelMergerNode.h; path = ../include/LabSound/core/ChannelMergerNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA51AD623E300D19E38 /* ChannelSplitterNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ChannelSplitterNode.h; path = ../include/LabSound/core/ChannelSplitterNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA61AD623E300D19E38 /* ConcurrentQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ConcurrentQueue.h; path = ../include/LabSound/core/ConcurrentQueue.h; sourceTree = SOURCE_ROOT; };
-		08650CA71AD623E300D19E38 /* ConvolverNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ConvolverNode.h; path = ../include/LabSound/core/ConvolverNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA81AD623E300D19E38 /* DefaultAudioDestinationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DefaultAudioDestinationNode.h; path = ../include/LabSound/core/DefaultAudioDestinationNode.h; sourceTree = SOURCE_ROOT; };
-		08650CA91AD623E300D19E38 /* DelayNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DelayNode.h; path = ../include/LabSound/core/DelayNode.h; sourceTree = SOURCE_ROOT; };
-		08650CAA1AD623E300D19E38 /* DynamicsCompressorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DynamicsCompressorNode.h; path = ../include/LabSound/core/DynamicsCompressorNode.h; sourceTree = SOURCE_ROOT; };
-		08650CAB1AD623E300D19E38 /* FloatPoint3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FloatPoint3D.h; path = ../include/LabSound/core/FloatPoint3D.h; sourceTree = SOURCE_ROOT; };
-		08650CAC1AD623E300D19E38 /* GainNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GainNode.h; path = ../include/LabSound/core/GainNode.h; sourceTree = SOURCE_ROOT; };
-		08650CAF1AD623E300D19E38 /* AudioHardwareSourceNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioHardwareSourceNode.h; path = ../include/LabSound/core/AudioHardwareSourceNode.h; sourceTree = SOURCE_ROOT; };
-		08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OfflineAudioDestinationNode.h; path = ../include/LabSound/core/OfflineAudioDestinationNode.h; sourceTree = SOURCE_ROOT; };
-		08650CB11AD623E300D19E38 /* OscillatorNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscillatorNode.h; path = ../include/LabSound/core/OscillatorNode.h; sourceTree = SOURCE_ROOT; };
-		08650CB21AD623E300D19E38 /* PannerNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PannerNode.h; path = ../include/LabSound/core/PannerNode.h; sourceTree = SOURCE_ROOT; };
-		08650CB31AD623E300D19E38 /* WaveShaperNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WaveShaperNode.h; path = ../include/LabSound/core/WaveShaperNode.h; sourceTree = SOURCE_ROOT; };
-		08650CB41AD623E300D19E38 /* WaveTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WaveTable.h; path = ../include/LabSound/core/WaveTable.h; sourceTree = SOURCE_ROOT; };
-		08650CB51AD623E300D19E38 /* WindowFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WindowFunctions.h; path = ../include/LabSound/core/WindowFunctions.h; sourceTree = SOURCE_ROOT; };
-		08650CB61AD6241A00D19E38 /* AnalyserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AnalyserNode.cpp; path = ../src/core/AnalyserNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CB71AD6241A00D19E38 /* AudioBasicInspectorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioBasicInspectorNode.cpp; path = ../src/core/AudioBasicInspectorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CB81AD6241A00D19E38 /* AudioBasicProcessorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioBasicProcessorNode.cpp; path = ../src/core/AudioBasicProcessorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CBB1AD6241A00D19E38 /* AudioContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioContext.cpp; path = ../src/core/AudioContext.cpp; sourceTree = SOURCE_ROOT; };
-		08650CBC1AD6241A00D19E38 /* AudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDestinationNode.cpp; path = ../src/core/AudioDestinationNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CBE1AD6241A00D19E38 /* AudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioNode.cpp; path = ../src/core/AudioNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CBF1AD6241A00D19E38 /* AudioNodeInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioNodeInput.cpp; path = ../src/core/AudioNodeInput.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC01AD6241A00D19E38 /* AudioNodeOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioNodeOutput.cpp; path = ../src/core/AudioNodeOutput.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC11AD6241A00D19E38 /* AudioParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioParam.cpp; path = ../src/core/AudioParam.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC21AD6241A00D19E38 /* AudioParamTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioParamTimeline.cpp; path = ../src/core/AudioParamTimeline.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC31AD6241A00D19E38 /* AudioScheduledSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioScheduledSourceNode.cpp; path = ../src/core/AudioScheduledSourceNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC41AD6241A00D19E38 /* AudioSummingJunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioSummingJunction.cpp; path = ../src/core/AudioSummingJunction.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC51AD6241A00D19E38 /* BiquadFilterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BiquadFilterNode.cpp; path = ../src/core/BiquadFilterNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC61AD6241A00D19E38 /* ChannelMergerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChannelMergerNode.cpp; path = ../src/core/ChannelMergerNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC71AD6241A00D19E38 /* ChannelSplitterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ChannelSplitterNode.cpp; path = ../src/core/ChannelSplitterNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC81AD6241A00D19E38 /* ConvolverNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConvolverNode.cpp; path = ../src/core/ConvolverNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CC91AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DefaultAudioDestinationNode.cpp; path = ../src/core/DefaultAudioDestinationNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCA1AD6241A00D19E38 /* DelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DelayNode.cpp; path = ../src/core/DelayNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DynamicsCompressorNode.cpp; path = ../src/core/DynamicsCompressorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCC1AD6241A00D19E38 /* GainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GainNode.cpp; path = ../src/core/GainNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCE1AD6241A00D19E38 /* AudioHardwareSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioHardwareSourceNode.cpp; path = ../src/core/AudioHardwareSourceNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OfflineAudioDestinationNode.cpp; path = ../src/core/OfflineAudioDestinationNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OscillatorNode.cpp; path = ../src/core/OscillatorNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CD11AD6241A00D19E38 /* PannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PannerNode.cpp; path = ../src/core/PannerNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RealtimeAnalyser.cpp; path = ../src/core/RealtimeAnalyser.cpp; sourceTree = SOURCE_ROOT; };
-		08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveShaperNode.cpp; path = ../src/core/WaveShaperNode.cpp; sourceTree = SOURCE_ROOT; };
-		08650CD41AD6241A00D19E38 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WaveTable.cpp; path = ../src/core/WaveTable.cpp; sourceTree = SOURCE_ROOT; };
 		08650CF61AD6248400D19E38 /* kiss_fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fft.cpp; path = ../third_party/kissfft/src/kiss_fft.cpp; sourceTree = "<group>"; };
 		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
 		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
 		08650CFC1AD6249B00D19E38 /* fftsg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fftsg.cpp; path = ../third_party/ooura/src/fftsg.cpp; sourceTree = "<group>"; };
-		08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StereoPannerNode.cpp; path = ../src/core/StereoPannerNode.cpp; sourceTree = SOURCE_ROOT; };
-		08C25E861ADE1DF50097D572 /* StereoPannerNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = StereoPannerNode.h; path = ../include/LabSound/core/StereoPannerNode.h; sourceTree = SOURCE_ROOT; };
+		0AA1EE93204DB1970074707B /* PannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PannerNode.cpp; sourceTree = "<group>"; };
+		0AA1EE94204DB1970074707B /* AudioHardwareSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioHardwareSourceNode.cpp; sourceTree = "<group>"; };
+		0AA1EE95204DB1970074707B /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
+		0AA1EE96204DB1970074707B /* WaveShaperNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperNode.cpp; sourceTree = "<group>"; };
+		0AA1EE97204DB1970074707B /* SampledAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampledAudioNode.cpp; sourceTree = "<group>"; };
+		0AA1EE98204DB1970074707B /* AudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioNode.cpp; sourceTree = "<group>"; };
+		0AA1EE99204DB1970074707B /* GainNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GainNode.cpp; sourceTree = "<group>"; };
+		0AA1EE9A204DB1970074707B /* RealtimeAnalyser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RealtimeAnalyser.cpp; sourceTree = "<group>"; };
+		0AA1EE9B204DB1970074707B /* AudioBasicInspectorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioBasicInspectorNode.cpp; sourceTree = "<group>"; };
+		0AA1EE9C204DB1970074707B /* AudioNodeOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioNodeOutput.cpp; sourceTree = "<group>"; };
+		0AA1EE9D204DB1970074707B /* DelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayNode.cpp; sourceTree = "<group>"; };
+		0AA1EE9E204DB1970074707B /* AudioParamTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioParamTimeline.cpp; sourceTree = "<group>"; };
+		0AA1EE9F204DB1970074707B /* AudioScheduledSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioScheduledSourceNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA0204DB1970074707B /* AudioNodeInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioNodeInput.cpp; sourceTree = "<group>"; };
+		0AA1EEA1204DB1970074707B /* StereoPannerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StereoPannerNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA2204DB1970074707B /* AudioSummingJunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioSummingJunction.cpp; sourceTree = "<group>"; };
+		0AA1EEA3204DB1970074707B /* DefaultAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DefaultAudioDestinationNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA4204DB1970074707B /* BiquadFilterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiquadFilterNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA5204DB1970074707B /* AudioBasicProcessorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioBasicProcessorNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA6204DB1970074707B /* OscillatorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscillatorNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA7204DB1970074707B /* AudioBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioBus.cpp; sourceTree = "<group>"; };
+		0AA1EEA8204DB1970074707B /* DynamicsCompressorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicsCompressorNode.cpp; sourceTree = "<group>"; };
+		0AA1EEA9204DB1970074707B /* OfflineAudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OfflineAudioDestinationNode.cpp; sourceTree = "<group>"; };
+		0AA1EEAA204DB1970074707B /* ChannelMergerNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChannelMergerNode.cpp; sourceTree = "<group>"; };
+		0AA1EEAB204DB1970074707B /* AudioChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioChannel.cpp; sourceTree = "<group>"; };
+		0AA1EEAC204DB1970074707B /* AudioDestinationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDestinationNode.cpp; sourceTree = "<group>"; };
+		0AA1EEAD204DB1970074707B /* AnalyserNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnalyserNode.cpp; sourceTree = "<group>"; };
+		0AA1EEAE204DB1970074707B /* AudioContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioContext.cpp; sourceTree = "<group>"; };
+		0AA1EEAF204DB1970074707B /* ConvolverNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvolverNode.cpp; sourceTree = "<group>"; };
+		0AA1EEB0204DB1970074707B /* AudioParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioParam.cpp; sourceTree = "<group>"; };
+		0AA1EEB1204DB1970074707B /* ChannelSplitterNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChannelSplitterNode.cpp; sourceTree = "<group>"; };
+		0AA1EEB3204DB1970074707B /* Cone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cone.h; sourceTree = "<group>"; };
+		0AA1EEB4204DB1970074707B /* Reverb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reverb.h; sourceTree = "<group>"; };
+		0AA1EEB5204DB1970074707B /* MultiChannelResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiChannelResampler.h; sourceTree = "<group>"; };
+		0AA1EEB6204DB1970074707B /* DelayProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelayProcessor.h; sourceTree = "<group>"; };
+		0AA1EEB7204DB1970074707B /* Biquad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Biquad.h; sourceTree = "<group>"; };
+		0AA1EEB8204DB1970074707B /* Panner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Panner.h; sourceTree = "<group>"; };
+		0AA1EEB9204DB1970074707B /* ReverbAccumulationBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReverbAccumulationBuffer.h; sourceTree = "<group>"; };
+		0AA1EEBA204DB1970074707B /* EqualPowerPanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EqualPowerPanner.h; sourceTree = "<group>"; };
+		0AA1EEBB204DB1970074707B /* AudioResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioResampler.h; sourceTree = "<group>"; };
+		0AA1EEBC204DB1970074707B /* Distance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Distance.h; sourceTree = "<group>"; };
+		0AA1EEBD204DB1970074707B /* Assertions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Assertions.h; sourceTree = "<group>"; };
+		0AA1EEBE204DB1970074707B /* FFTConvolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTConvolver.h; sourceTree = "<group>"; };
+		0AA1EEBF204DB1970074707B /* AudioDSPKernelProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDSPKernelProcessor.h; sourceTree = "<group>"; };
+		0AA1EEC1204DB1970074707B /* AudioDestinationWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestinationWin.h; sourceTree = "<group>"; };
+		0AA1EEC2204DB1970074707B /* ReverbConvolverStage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReverbConvolverStage.h; sourceTree = "<group>"; };
+		0AA1EEC3204DB1970074707B /* DelayDSPKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelayDSPKernel.h; sourceTree = "<group>"; };
+		0AA1EEC4204DB1970074707B /* HRTFKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRTFKernel.h; sourceTree = "<group>"; };
+		0AA1EEC5204DB1970074707B /* DynamicsCompressorKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicsCompressorKernel.h; sourceTree = "<group>"; };
+		0AA1EEC6204DB1970074707B /* VectorMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorMath.h; sourceTree = "<group>"; };
+		0AA1EEC7204DB1970074707B /* DenormalDisabler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DenormalDisabler.h; sourceTree = "<group>"; };
+		0AA1EEC8204DB1970074707B /* HRTFDatabaseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRTFDatabaseLoader.h; sourceTree = "<group>"; };
+		0AA1EEC9204DB1970074707B /* WaveShaperDSPKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveShaperDSPKernel.h; sourceTree = "<group>"; };
+		0AA1EECB204DB1970074707B /* AudioDestinationMac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestinationMac.h; sourceTree = "<group>"; };
+		0AA1EECC204DB1970074707B /* ZeroPole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZeroPole.h; sourceTree = "<group>"; };
+		0AA1EECD204DB1970074707B /* ReverbInputBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReverbInputBuffer.h; sourceTree = "<group>"; };
+		0AA1EECE204DB1970074707B /* FFTFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFrame.h; sourceTree = "<group>"; };
+		0AA1EECF204DB1970074707B /* SincResampler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SincResampler.h; sourceTree = "<group>"; };
+		0AA1EED1204DB1970074707B /* AudioDestinationLinux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestinationLinux.h; sourceTree = "<group>"; };
+		0AA1EED2204DB1970074707B /* BiquadDSPKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiquadDSPKernel.h; sourceTree = "<group>"; };
+		0AA1EED3204DB1970074707B /* HRTFDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRTFDatabase.h; sourceTree = "<group>"; };
+		0AA1EED4204DB1970074707B /* HRTFPanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRTFPanner.h; sourceTree = "<group>"; };
+		0AA1EED5204DB1970074707B /* ReverbConvolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReverbConvolver.h; sourceTree = "<group>"; };
+		0AA1EED6204DB1970074707B /* AudioUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioUtilities.h; sourceTree = "<group>"; };
+		0AA1EED7204DB1970074707B /* BiquadProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiquadProcessor.h; sourceTree = "<group>"; };
+		0AA1EED8204DB1970074707B /* AudioDSPKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDSPKernel.h; sourceTree = "<group>"; };
+		0AA1EED9204DB1970074707B /* DynamicsCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicsCompressor.h; sourceTree = "<group>"; };
+		0AA1EEDA204DB1970074707B /* HRTFElevation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HRTFElevation.h; sourceTree = "<group>"; };
+		0AA1EEDB204DB1970074707B /* AudioResamplerKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioResamplerKernel.h; sourceTree = "<group>"; };
+		0AA1EEDC204DB1970074707B /* DirectConvolver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirectConvolver.h; sourceTree = "<group>"; };
+		0AA1EEDD204DB1970074707B /* AudioDestination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestination.h; sourceTree = "<group>"; };
+		0AA1EEDE204DB1970074707B /* WaveShaperProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveShaperProcessor.h; sourceTree = "<group>"; };
+		0AA1EEE0204DB1970074707B /* HRTFDatabaseLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HRTFDatabaseLoader.cpp; sourceTree = "<group>"; };
+		0AA1EEE1204DB1970074707B /* DelayDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayDSPKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEE2204DB1970074707B /* BiquadDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiquadDSPKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEE3204DB1970074707B /* VectorMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorMath.cpp; sourceTree = "<group>"; };
+		0AA1EEE4204DB1970074707B /* ZeroPole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZeroPole.cpp; sourceTree = "<group>"; };
+		0AA1EEE5204DB1970074707B /* HRTFKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HRTFKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEE6204DB1970074707B /* AudioUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioUtilities.cpp; sourceTree = "<group>"; };
+		0AA1EEE7204DB1970074707B /* FFTFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrame.cpp; sourceTree = "<group>"; };
+		0AA1EEE8204DB1970074707B /* FFTFrameKissFFT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrameKissFFT.cpp; sourceTree = "<group>"; };
+		0AA1EEE9204DB1970074707B /* SincResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SincResampler.cpp; sourceTree = "<group>"; };
+		0AA1EEEB204DB1970074707B /* AudioDestinationWin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDestinationWin.cpp; sourceTree = "<group>"; };
+		0AA1EEEC204DB1970074707B /* HRTFDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HRTFDatabase.cpp; sourceTree = "<group>"; };
+		0AA1EEED204DB1970074707B /* WaveShaperProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperProcessor.cpp; sourceTree = "<group>"; };
+		0AA1EEEE204DB1970074707B /* ReverbInputBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReverbInputBuffer.cpp; sourceTree = "<group>"; };
+		0AA1EEEF204DB1970074707B /* ReverbAccumulationBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReverbAccumulationBuffer.cpp; sourceTree = "<group>"; };
+		0AA1EEF0204DB1970074707B /* DynamicsCompressorKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicsCompressorKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEF1204DB1970074707B /* AudioResamplerKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioResamplerKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEF2204DB1970074707B /* DelayProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DelayProcessor.cpp; sourceTree = "<group>"; };
+		0AA1EEF4204DB1970074707B /* AudioDestinationMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDestinationMac.cpp; sourceTree = "<group>"; };
+		0AA1EEF5204DB1970074707B /* FFTFrameMac.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFrameMac.cpp; sourceTree = "<group>"; };
+		0AA1EEF6204DB1970074707B /* Cone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cone.cpp; sourceTree = "<group>"; };
+		0AA1EEF7204DB1970074707B /* DirectConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectConvolver.cpp; sourceTree = "<group>"; };
+		0AA1EEF8204DB1970074707B /* DynamicsCompressor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicsCompressor.cpp; sourceTree = "<group>"; };
+		0AA1EEF9204DB1970074707B /* ReverbConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReverbConvolver.cpp; sourceTree = "<group>"; };
+		0AA1EEFA204DB1970074707B /* AudioDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDSPKernel.cpp; sourceTree = "<group>"; };
+		0AA1EEFB204DB1970074707B /* Biquad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Biquad.cpp; sourceTree = "<group>"; };
+		0AA1EEFD204DB1970074707B /* AudioDestinationLinux.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDestinationLinux.cpp; sourceTree = "<group>"; };
+		0AA1EEFE204DB1970074707B /* BiquadProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BiquadProcessor.cpp; sourceTree = "<group>"; };
+		0AA1EEFF204DB1970074707B /* HRTFPanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HRTFPanner.cpp; sourceTree = "<group>"; };
+		0AA1EF00204DB1970074707B /* HRTFElevation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HRTFElevation.cpp; sourceTree = "<group>"; };
+		0AA1EF01204DB1970074707B /* Distance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Distance.cpp; sourceTree = "<group>"; };
+		0AA1EF02204DB1970074707B /* AudioResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioResampler.cpp; sourceTree = "<group>"; };
+		0AA1EF03204DB1970074707B /* Reverb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Reverb.cpp; sourceTree = "<group>"; };
+		0AA1EF04204DB1970074707B /* MultiChannelResampler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MultiChannelResampler.cpp; sourceTree = "<group>"; };
+		0AA1EF05204DB1970074707B /* WaveShaperDSPKernel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveShaperDSPKernel.cpp; sourceTree = "<group>"; };
+		0AA1EF06204DB1970074707B /* EqualPowerPanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EqualPowerPanner.cpp; sourceTree = "<group>"; };
+		0AA1EF07204DB1970074707B /* AudioDSPKernelProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDSPKernelProcessor.cpp; sourceTree = "<group>"; };
+		0AA1EF08204DB1970074707B /* ReverbConvolverStage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReverbConvolverStage.cpp; sourceTree = "<group>"; };
+		0AA1EF09204DB1970074707B /* FFTConvolver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTConvolver.cpp; sourceTree = "<group>"; };
+		0AA1EF0B204DB1970074707B /* SpatializationNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpatializationNode.cpp; sourceTree = "<group>"; };
+		0AA1EF0C204DB1970074707B /* PowerMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PowerMonitorNode.cpp; sourceTree = "<group>"; };
+		0AA1EF0D204DB1970074707B /* LabSound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LabSound.cpp; sourceTree = "<group>"; };
+		0AA1EF0E204DB1970074707B /* PWMNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PWMNode.cpp; sourceTree = "<group>"; };
+		0AA1EF0F204DB1970074707B /* SampledInstrumentNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampledInstrumentNode.cpp; sourceTree = "<group>"; };
+		0AA1EF10204DB1970074707B /* SupersawNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SupersawNode.cpp; sourceTree = "<group>"; };
+		0AA1EF11204DB1970074707B /* NoiseNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NoiseNode.cpp; sourceTree = "<group>"; };
+		0AA1EF12204DB1970074707B /* PdNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PdNode.cpp; sourceTree = "<group>"; };
+		0AA1EF13204DB1970074707B /* DiodeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DiodeNode.cpp; sourceTree = "<group>"; };
+		0AA1EF14204DB1970074707B /* AudioFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioFileReader.cpp; sourceTree = "<group>"; };
+		0AA1EF15204DB1970074707B /* SpectralMonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SpectralMonitorNode.cpp; sourceTree = "<group>"; };
+		0AA1EF16204DB1970074707B /* RecorderNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RecorderNode.cpp; sourceTree = "<group>"; };
+		0AA1EF17204DB1970074707B /* SfxrNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SfxrNode.cpp; sourceTree = "<group>"; };
+		0AA1EF18204DB1970074707B /* BPMDelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BPMDelay.cpp; sourceTree = "<group>"; };
+		0AA1EF19204DB1970074707B /* ClipNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClipNode.cpp; sourceTree = "<group>"; };
+		0AA1EF1A204DB1970074707B /* ADSRNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ADSRNode.cpp; sourceTree = "<group>"; };
+		0AA1EF1B204DB1970074707B /* PingPongDelayNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PingPongDelayNode.cpp; sourceTree = "<group>"; };
+		0AA1EF1C204DB1970074707B /* PeakCompNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeakCompNode.cpp; sourceTree = "<group>"; };
+		0AA1EF1D204DB1970074707B /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FunctionNode.cpp; sourceTree = "<group>"; };
+		0AA1EF7A204DB2540074707B /* DefaultAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultAudioDestinationNode.h; sourceTree = "<group>"; };
+		0AA1EF7B204DB2540074707B /* FloatPoint3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FloatPoint3D.h; sourceTree = "<group>"; };
+		0AA1EF7C204DB2540074707B /* AudioNodeInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioNodeInput.h; sourceTree = "<group>"; };
+		0AA1EF7D204DB2540074707B /* AudioArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioArray.h; sourceTree = "<group>"; };
+		0AA1EF7E204DB2540074707B /* AudioContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioContext.h; sourceTree = "<group>"; };
+		0AA1EF7F204DB2540074707B /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synthesis.h; sourceTree = "<group>"; };
+		0AA1EF80204DB2540074707B /* AudioParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioParam.h; sourceTree = "<group>"; };
+		0AA1EF81204DB2540074707B /* AudioBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioBus.h; sourceTree = "<group>"; };
+		0AA1EF82204DB2540074707B /* DelayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DelayNode.h; sourceTree = "<group>"; };
+		0AA1EF83204DB2540074707B /* WaveTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveTable.h; sourceTree = "<group>"; };
+		0AA1EF84204DB2540074707B /* BiquadFilterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BiquadFilterNode.h; sourceTree = "<group>"; };
+		0AA1EF85204DB2540074707B /* OfflineAudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfflineAudioDestinationNode.h; sourceTree = "<group>"; };
+		0AA1EF86204DB2540074707B /* AudioHardwareSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioHardwareSourceNode.h; sourceTree = "<group>"; };
+		0AA1EF87204DB2540074707B /* ChannelMergerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChannelMergerNode.h; sourceTree = "<group>"; };
+		0AA1EF88204DB2540074707B /* AudioIOCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioIOCallback.h; sourceTree = "<group>"; };
+		0AA1EF89204DB2540074707B /* AudioParamTimeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioParamTimeline.h; sourceTree = "<group>"; };
+		0AA1EF8A204DB2540074707B /* AudioChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioChannel.h; sourceTree = "<group>"; };
+		0AA1EF8B204DB2540074707B /* AudioSummingJunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioSummingJunction.h; sourceTree = "<group>"; };
+		0AA1EF8C204DB2540074707B /* PannerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PannerNode.h; sourceTree = "<group>"; };
+		0AA1EF8D204DB2540074707B /* StereoPannerNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StereoPannerNode.h; sourceTree = "<group>"; };
+		0AA1EF8E204DB2540074707B /* WindowFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowFunctions.h; sourceTree = "<group>"; };
+		0AA1EF8F204DB2540074707B /* AnalyserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnalyserNode.h; sourceTree = "<group>"; };
+		0AA1EF90204DB2540074707B /* SampledAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampledAudioNode.h; sourceTree = "<group>"; };
+		0AA1EF91204DB2540074707B /* AudioBasicInspectorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioBasicInspectorNode.h; sourceTree = "<group>"; };
+		0AA1EF92204DB2540074707B /* Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
+		0AA1EF93204DB2540074707B /* AudioProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioProcessor.h; sourceTree = "<group>"; };
+		0AA1EF94204DB2540074707B /* WaveShaperNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveShaperNode.h; sourceTree = "<group>"; };
+		0AA1EF95204DB2540074707B /* AudioScheduledSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioScheduledSourceNode.h; sourceTree = "<group>"; };
+		0AA1EF96204DB2540074707B /* AudioNodeOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioNodeOutput.h; sourceTree = "<group>"; };
+		0AA1EF97204DB2540074707B /* GainNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GainNode.h; sourceTree = "<group>"; };
+		0AA1EF98204DB2540074707B /* Mixing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mixing.h; sourceTree = "<group>"; };
+		0AA1EF99204DB2540074707B /* AudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioNode.h; sourceTree = "<group>"; };
+		0AA1EF9A204DB2540074707B /* AudioSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioSourceNode.h; sourceTree = "<group>"; };
+		0AA1EF9B204DB2540074707B /* AudioSourceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioSourceProvider.h; sourceTree = "<group>"; };
+		0AA1EF9C204DB2540074707B /* ConvolverNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvolverNode.h; sourceTree = "<group>"; };
+		0AA1EF9D204DB2540074707B /* OscillatorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscillatorNode.h; sourceTree = "<group>"; };
+		0AA1EF9E204DB2540074707B /* AudioListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioListener.h; sourceTree = "<group>"; };
+		0AA1EF9F204DB2540074707B /* AudioBasicProcessorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioBasicProcessorNode.h; sourceTree = "<group>"; };
+		0AA1EFA0204DB2540074707B /* DynamicsCompressorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicsCompressorNode.h; sourceTree = "<group>"; };
+		0AA1EFA1204DB2540074707B /* AudioDestinationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioDestinationNode.h; sourceTree = "<group>"; };
+		0AA1EFA2204DB2540074707B /* ChannelSplitterNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChannelSplitterNode.h; sourceTree = "<group>"; };
+		0AA1EFA3204DB2540074707B /* ConcurrentQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConcurrentQueue.h; sourceTree = "<group>"; };
+		0AA1EFA5204DB2540074707B /* AudioFileReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioFileReader.h; sourceTree = "<group>"; };
+		0AA1EFA6204DB2540074707B /* ADSRNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADSRNode.h; sourceTree = "<group>"; };
+		0AA1EFA7204DB2540074707B /* RecorderNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecorderNode.h; sourceTree = "<group>"; };
+		0AA1EFA8204DB2540074707B /* BPMDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BPMDelay.h; sourceTree = "<group>"; };
+		0AA1EFA9204DB2540074707B /* PowerMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PowerMonitorNode.h; sourceTree = "<group>"; };
+		0AA1EFAA204DB2540074707B /* SupersawNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SupersawNode.h; sourceTree = "<group>"; };
+		0AA1EFAB204DB2540074707B /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
+		0AA1EFAC204DB2540074707B /* LabSound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabSound.h; sourceTree = "<group>"; };
+		0AA1EFAD204DB2540074707B /* DiodeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiodeNode.h; sourceTree = "<group>"; };
+		0AA1EFAE204DB2540074707B /* PdNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PdNode.h; sourceTree = "<group>"; };
+		0AA1EFAF204DB2540074707B /* NoiseNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoiseNode.h; sourceTree = "<group>"; };
+		0AA1EFB0204DB2540074707B /* ClipNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClipNode.h; sourceTree = "<group>"; };
+		0AA1EFB1204DB2540074707B /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		0AA1EFB2204DB2540074707B /* SpectralMonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpectralMonitorNode.h; sourceTree = "<group>"; };
+		0AA1EFB3204DB2540074707B /* RealtimeAnalyser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RealtimeAnalyser.h; sourceTree = "<group>"; };
+		0AA1EFB4204DB2540074707B /* FunctionNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionNode.h; sourceTree = "<group>"; };
+		0AA1EFB5204DB2540074707B /* SpatializationNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpatializationNode.h; sourceTree = "<group>"; };
+		0AA1EFB6204DB2540074707B /* PeakCompNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeakCompNode.h; sourceTree = "<group>"; };
+		0AA1EFB7204DB2540074707B /* PingPongDelayNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PingPongDelayNode.h; sourceTree = "<group>"; };
+		0AA1EFB8204DB2540074707B /* AudioContextLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioContextLock.h; sourceTree = "<group>"; };
+		0AA1EFB9204DB2540074707B /* SampledInstrumentNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampledInstrumentNode.h; sourceTree = "<group>"; };
+		0AA1EFBA204DB2540074707B /* PWMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMNode.h; sourceTree = "<group>"; };
+		0AA1EFBB204DB2540074707B /* SfxrNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SfxrNode.h; sourceTree = "<group>"; };
 		5E7C563C0F0D44784695726E /* liblabsound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblabsound.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA122334200D889400AB1504 /* SampledAudioNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SampledAudioNode.h; path = ../include/LabSound/core/SampledAudioNode.h; sourceTree = SOURCE_ROOT; };
-		DA122335200D889400AB1504 /* AudioChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioChannel.h; path = ../include/LabSound/core/AudioChannel.h; sourceTree = SOURCE_ROOT; };
-		DA122336200D889500AB1504 /* AudioBus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioBus.h; path = ../include/LabSound/core/AudioBus.h; sourceTree = SOURCE_ROOT; };
-		DA122337200D88DD00AB1504 /* AudioBus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioBus.cpp; path = ../src/core/AudioBus.cpp; sourceTree = SOURCE_ROOT; };
-		DA122338200D88DD00AB1504 /* AudioChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioChannel.cpp; path = ../src/core/AudioChannel.cpp; sourceTree = SOURCE_ROOT; };
-		DA122339200D88DD00AB1504 /* SampledAudioNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampledAudioNode.cpp; path = ../src/core/SampledAudioNode.cpp; sourceTree = SOURCE_ROOT; };
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		E28522711A64231C003F1CA7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
-		E28FC137200DDFF60057982C /* AudioFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioFileReader.cpp; path = ../extended/AudioFileReader.cpp; sourceTree = "<group>"; };
-		E2D4FE501AF55198001B7E6C /* FunctionNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FunctionNode.h; path = ../include/LabSound/extended/FunctionNode.h; sourceTree = SOURCE_ROOT; };
-		E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FunctionNode.cpp; path = ../src/extended/FunctionNode.cpp; sourceTree = SOURCE_ROOT; };
-		E2D4FE531AF55DFA001B7E6C /* Synthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synthesis.h; path = ../include/LabSound/core/Synthesis.h; sourceTree = SOURCE_ROOT; };
-		E2DA35631AE006480092A03D /* Mixing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mixing.h; path = ../include/LabSound/core/Mixing.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -323,6 +333,7 @@
 		082FE01C19C6009400046275 /* third_party */ = {
 			isa = PBXGroup;
 			children = (
+				0AA1EE8A204DB1360074707B /* node-native-video-deps */,
 				085F34DE1ADCD9AE00FEADC5 /* WTF */,
 				082FDF2019C6002C00046275 /* STK */,
 				08D67A061972E9860061116A /* kissfft */,
@@ -341,190 +352,6 @@
 			name = WTF;
 			sourceTree = "<group>";
 		};
-		08650A001AD081DB00D19E38 /* Internal */ = {
-			isa = PBXGroup;
-			children = (
-				E2D5CE821A19B3D200B031C8 /* include */,
-				E2FB8747183D20E100A5A764 /* src */,
-			);
-			name = Internal;
-			path = ../src/platform;
-			sourceTree = "<group>";
-		};
-		08650A1C1AD61F7200D19E38 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				08650A1E1AD61F8200D19E38 /* include */,
-				08650A1F1AD61F8800D19E38 /* src */,
-			);
-			name = core;
-			sourceTree = "<group>";
-		};
-		08650A1D1AD61F7900D19E38 /* extended */ = {
-			isa = PBXGroup;
-			children = (
-				08650A211AD61F9100D19E38 /* include */,
-				08650A201AD61F8D00D19E38 /* src */,
-			);
-			name = extended;
-			sourceTree = "<group>";
-		};
-		08650A1E1AD61F8200D19E38 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				DA122336200D889500AB1504 /* AudioBus.h */,
-				DA122335200D889400AB1504 /* AudioChannel.h */,
-				DA122334200D889400AB1504 /* SampledAudioNode.h */,
-				08650C8F1AD623E300D19E38 /* AnalyserNode.h */,
-				08650C901AD623E300D19E38 /* AudioArray.h */,
-				08650C911AD623E300D19E38 /* AudioBasicInspectorNode.h */,
-				08650C921AD623E300D19E38 /* AudioBasicProcessorNode.h */,
-				08650C951AD623E300D19E38 /* AudioContext.h */,
-				08650C961AD623E300D19E38 /* AudioDestinationNode.h */,
-				08650C971AD623E300D19E38 /* AudioIOCallback.h */,
-				08650C981AD623E300D19E38 /* AudioListener.h */,
-				08650C991AD623E300D19E38 /* AudioNode.h */,
-				08650C9A1AD623E300D19E38 /* AudioNodeInput.h */,
-				08650C9B1AD623E300D19E38 /* AudioNodeOutput.h */,
-				08650C9C1AD623E300D19E38 /* AudioParam.h */,
-				08650C9D1AD623E300D19E38 /* AudioParamTimeline.h */,
-				08650C9E1AD623E300D19E38 /* AudioProcessor.h */,
-				08650C9F1AD623E300D19E38 /* AudioScheduledSourceNode.h */,
-				08650CA01AD623E300D19E38 /* AudioSourceNode.h */,
-				08650CA11AD623E300D19E38 /* AudioSourceProvider.h */,
-				08650CA21AD623E300D19E38 /* AudioSummingJunction.h */,
-				08650CA31AD623E300D19E38 /* BiquadFilterNode.h */,
-				08650CA41AD623E300D19E38 /* ChannelMergerNode.h */,
-				08650CA51AD623E300D19E38 /* ChannelSplitterNode.h */,
-				08650CA61AD623E300D19E38 /* ConcurrentQueue.h */,
-				08650CA71AD623E300D19E38 /* ConvolverNode.h */,
-				08650CA81AD623E300D19E38 /* DefaultAudioDestinationNode.h */,
-				08650CA91AD623E300D19E38 /* DelayNode.h */,
-				08650CAA1AD623E300D19E38 /* DynamicsCompressorNode.h */,
-				08650CAB1AD623E300D19E38 /* FloatPoint3D.h */,
-				08650CAC1AD623E300D19E38 /* GainNode.h */,
-				08650CAF1AD623E300D19E38 /* AudioHardwareSourceNode.h */,
-				08C25E861ADE1DF50097D572 /* StereoPannerNode.h */,
-				E2DA35631AE006480092A03D /* Mixing.h */,
-				08650CB01AD623E300D19E38 /* OfflineAudioDestinationNode.h */,
-				08650CB11AD623E300D19E38 /* OscillatorNode.h */,
-				08650CB21AD623E300D19E38 /* PannerNode.h */,
-				E2D4FE531AF55DFA001B7E6C /* Synthesis.h */,
-				08650CB31AD623E300D19E38 /* WaveShaperNode.h */,
-				08650CB41AD623E300D19E38 /* WaveTable.h */,
-				08650CB51AD623E300D19E38 /* WindowFunctions.h */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		08650A1F1AD61F8800D19E38 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				DA122337200D88DD00AB1504 /* AudioBus.cpp */,
-				DA122338200D88DD00AB1504 /* AudioChannel.cpp */,
-				DA122339200D88DD00AB1504 /* SampledAudioNode.cpp */,
-				08650CB61AD6241A00D19E38 /* AnalyserNode.cpp */,
-				08650CB71AD6241A00D19E38 /* AudioBasicInspectorNode.cpp */,
-				08650CB81AD6241A00D19E38 /* AudioBasicProcessorNode.cpp */,
-				08650CBB1AD6241A00D19E38 /* AudioContext.cpp */,
-				08650CBC1AD6241A00D19E38 /* AudioDestinationNode.cpp */,
-				08650CBE1AD6241A00D19E38 /* AudioNode.cpp */,
-				08650CBF1AD6241A00D19E38 /* AudioNodeInput.cpp */,
-				08650CC01AD6241A00D19E38 /* AudioNodeOutput.cpp */,
-				08650CC11AD6241A00D19E38 /* AudioParam.cpp */,
-				08650CC21AD6241A00D19E38 /* AudioParamTimeline.cpp */,
-				08650CC31AD6241A00D19E38 /* AudioScheduledSourceNode.cpp */,
-				08650CC41AD6241A00D19E38 /* AudioSummingJunction.cpp */,
-				08650CC51AD6241A00D19E38 /* BiquadFilterNode.cpp */,
-				08650CC61AD6241A00D19E38 /* ChannelMergerNode.cpp */,
-				08650CC71AD6241A00D19E38 /* ChannelSplitterNode.cpp */,
-				08650CC81AD6241A00D19E38 /* ConvolverNode.cpp */,
-				08650CCE1AD6241A00D19E38 /* AudioHardwareSourceNode.cpp */,
-				08650CC91AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp */,
-				08650CCF1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp */,
-				08650CCA1AD6241A00D19E38 /* DelayNode.cpp */,
-				08650CCB1AD6241A00D19E38 /* DynamicsCompressorNode.cpp */,
-				08650CCC1AD6241A00D19E38 /* GainNode.cpp */,
-				08650CD01AD6241A00D19E38 /* OscillatorNode.cpp */,
-				08650CD11AD6241A00D19E38 /* PannerNode.cpp */,
-				08650CD21AD6241A00D19E38 /* RealtimeAnalyser.cpp */,
-				08C25E831ADE1DB40097D572 /* StereoPannerNode.cpp */,
-				08650CD31AD6241A00D19E38 /* WaveShaperNode.cpp */,
-				08650CD41AD6241A00D19E38 /* WaveTable.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		08650A201AD61F8D00D19E38 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E28FC137200DDFF60057982C /* AudioFileReader.cpp */,
-				08650C451AD6239000D19E38 /* ADSRNode.cpp */,
-				08650C461AD6239000D19E38 /* ClipNode.cpp */,
-				08650C471AD6239000D19E38 /* DiodeNode.cpp */,
-				08567C271B61D09D00EB6C0D /* BPMDelay.cpp */,
-				08567C281B61D09D00EB6C0D /* PingPongDelayNode.cpp */,
-				E2D4FE511AF5529A001B7E6C /* FunctionNode.cpp */,
-				08650C481AD6239000D19E38 /* LabSound.cpp */,
-				08650C491AD6239000D19E38 /* NoiseNode.cpp */,
-				08650C4B1AD6239000D19E38 /* PeakCompNode.cpp */,
-				08650C4C1AD6239000D19E38 /* PowerMonitorNode.cpp */,
-				08650C4D1AD6239000D19E38 /* PWMNode.cpp */,
-				08650C4E1AD6239000D19E38 /* RecorderNode.cpp */,
-				08650C4F1AD6239000D19E38 /* SampledInstrumentNode.cpp */,
-				08650C501AD6239000D19E38 /* SfxrNode.cpp */,
-				08650C521AD6239000D19E38 /* SpatializationNode.cpp */,
-				08650C531AD6239000D19E38 /* SpectralMonitorNode.cpp */,
-				08650C541AD6239000D19E38 /* SupersawNode.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		08650A211AD61F9100D19E38 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				08567C241B61D04F00EB6C0D /* BPMDelay.h */,
-				08567C251B61D04F00EB6C0D /* PingPongDelayNode.h */,
-				08650C7A1AD623C400D19E38 /* ADSRNode.h */,
-				08650C7B1AD623C400D19E38 /* AudioContextLock.h */,
-				08650C7C1AD623C400D19E38 /* ClipNode.h */,
-				08650C7D1AD623C400D19E38 /* DiodeNode.h */,
-				08567C261B61D06400EB6C0D /* Util.h */,
-				E2D4FE501AF55198001B7E6C /* FunctionNode.h */,
-				08650C7F1AD623C400D19E38 /* LabSound.h */,
-				08650C801AD623C400D19E38 /* Logging.h */,
-				08650C811AD623C400D19E38 /* NoiseNode.h */,
-				08650C831AD623C400D19E38 /* PeakCompNode.h */,
-				08650C841AD623C400D19E38 /* PowerMonitorNode.h */,
-				08650C851AD623C400D19E38 /* PWMNode.h */,
-				08650C861AD623C400D19E38 /* RealtimeAnalyser.h */,
-				08650C871AD623C400D19E38 /* RecorderNode.h */,
-				08650C881AD623C400D19E38 /* SampledInstrumentNode.h */,
-				08650C891AD623C400D19E38 /* SfxrNode.h */,
-				08650C8B1AD623C400D19E38 /* SpatializationNode.h */,
-				08650C8C1AD623C400D19E38 /* SpectralMonitorNode.h */,
-				08650C8E1AD623C400D19E38 /* SupersawNode.h */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		08650A501AD61FF400D19E38 /* mac */ = {
-			isa = PBXGroup;
-			children = (
-				08650A511AD61FFB00D19E38 /* AudioDestinationMac.h */,
-			);
-			name = mac;
-			sourceTree = "<group>";
-		};
-		08650BFC1AD6229B00D19E38 /* mac */ = {
-			isa = PBXGroup;
-			children = (
-				08650BFE1AD622A400D19E38 /* AudioDestinationMac.cpp */,
-				08650C001AD622A400D19E38 /* FFTFrameMac.cpp */,
-			);
-			name = mac;
-			sourceTree = "<group>";
-		};
 		08D67A061972E9860061116A /* kissfft */ = {
 			isa = PBXGroup;
 			children = (
@@ -533,6 +360,376 @@
 				08650CFC1AD6249B00D19E38 /* fftsg.cpp */,
 			);
 			name = kissfft;
+			sourceTree = "<group>";
+		};
+		0AA1EE8A204DB1360074707B /* node-native-video-deps */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EE8B204DB1400074707B /* include */,
+			);
+			path = "node-native-video-deps";
+			sourceTree = "<group>";
+		};
+		0AA1EE8B204DB1400074707B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EE8F204DB14A0074707B /* libavcodec */,
+				0AA1EE90204DB14A0074707B /* libavformat */,
+				0AA1EE8D204DB14A0074707B /* libavutil */,
+				0AA1EE8E204DB14A0074707B /* libswresample */,
+				0AA1EE8C204DB1490074707B /* libswscale */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		0AA1EE8C204DB1490074707B /* libswscale */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = libswscale;
+			sourceTree = "<group>";
+		};
+		0AA1EE8D204DB14A0074707B /* libavutil */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = libavutil;
+			sourceTree = "<group>";
+		};
+		0AA1EE8E204DB14A0074707B /* libswresample */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = libswresample;
+			sourceTree = "<group>";
+		};
+		0AA1EE8F204DB14A0074707B /* libavcodec */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = libavcodec;
+			sourceTree = "<group>";
+		};
+		0AA1EE90204DB14A0074707B /* libavformat */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = libavformat;
+			sourceTree = "<group>";
+		};
+		0AA1EE91204DB1970074707B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EE92204DB1970074707B /* core */,
+				0AA1EEB2204DB1970074707B /* internal */,
+				0AA1EF0A204DB1970074707B /* extended */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+		0AA1EE92204DB1970074707B /* core */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EE93204DB1970074707B /* PannerNode.cpp */,
+				0AA1EE94204DB1970074707B /* AudioHardwareSourceNode.cpp */,
+				0AA1EE95204DB1970074707B /* WaveTable.cpp */,
+				0AA1EE96204DB1970074707B /* WaveShaperNode.cpp */,
+				0AA1EE97204DB1970074707B /* SampledAudioNode.cpp */,
+				0AA1EE98204DB1970074707B /* AudioNode.cpp */,
+				0AA1EE99204DB1970074707B /* GainNode.cpp */,
+				0AA1EE9A204DB1970074707B /* RealtimeAnalyser.cpp */,
+				0AA1EE9B204DB1970074707B /* AudioBasicInspectorNode.cpp */,
+				0AA1EE9C204DB1970074707B /* AudioNodeOutput.cpp */,
+				0AA1EE9D204DB1970074707B /* DelayNode.cpp */,
+				0AA1EE9E204DB1970074707B /* AudioParamTimeline.cpp */,
+				0AA1EE9F204DB1970074707B /* AudioScheduledSourceNode.cpp */,
+				0AA1EEA0204DB1970074707B /* AudioNodeInput.cpp */,
+				0AA1EEA1204DB1970074707B /* StereoPannerNode.cpp */,
+				0AA1EEA2204DB1970074707B /* AudioSummingJunction.cpp */,
+				0AA1EEA3204DB1970074707B /* DefaultAudioDestinationNode.cpp */,
+				0AA1EEA4204DB1970074707B /* BiquadFilterNode.cpp */,
+				0AA1EEA5204DB1970074707B /* AudioBasicProcessorNode.cpp */,
+				0AA1EEA6204DB1970074707B /* OscillatorNode.cpp */,
+				0AA1EEA7204DB1970074707B /* AudioBus.cpp */,
+				0AA1EEA8204DB1970074707B /* DynamicsCompressorNode.cpp */,
+				0AA1EEA9204DB1970074707B /* OfflineAudioDestinationNode.cpp */,
+				0AA1EEAA204DB1970074707B /* ChannelMergerNode.cpp */,
+				0AA1EEAB204DB1970074707B /* AudioChannel.cpp */,
+				0AA1EEAC204DB1970074707B /* AudioDestinationNode.cpp */,
+				0AA1EEAD204DB1970074707B /* AnalyserNode.cpp */,
+				0AA1EEAE204DB1970074707B /* AudioContext.cpp */,
+				0AA1EEAF204DB1970074707B /* ConvolverNode.cpp */,
+				0AA1EEB0204DB1970074707B /* AudioParam.cpp */,
+				0AA1EEB1204DB1970074707B /* ChannelSplitterNode.cpp */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		0AA1EEB2204DB1970074707B /* internal */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEB3204DB1970074707B /* Cone.h */,
+				0AA1EEB4204DB1970074707B /* Reverb.h */,
+				0AA1EEB5204DB1970074707B /* MultiChannelResampler.h */,
+				0AA1EEB6204DB1970074707B /* DelayProcessor.h */,
+				0AA1EEB7204DB1970074707B /* Biquad.h */,
+				0AA1EEB8204DB1970074707B /* Panner.h */,
+				0AA1EEB9204DB1970074707B /* ReverbAccumulationBuffer.h */,
+				0AA1EEBA204DB1970074707B /* EqualPowerPanner.h */,
+				0AA1EEBB204DB1970074707B /* AudioResampler.h */,
+				0AA1EEBC204DB1970074707B /* Distance.h */,
+				0AA1EEBD204DB1970074707B /* Assertions.h */,
+				0AA1EEBE204DB1970074707B /* FFTConvolver.h */,
+				0AA1EEBF204DB1970074707B /* AudioDSPKernelProcessor.h */,
+				0AA1EEC0204DB1970074707B /* win */,
+				0AA1EEC2204DB1970074707B /* ReverbConvolverStage.h */,
+				0AA1EEC3204DB1970074707B /* DelayDSPKernel.h */,
+				0AA1EEC4204DB1970074707B /* HRTFKernel.h */,
+				0AA1EEC5204DB1970074707B /* DynamicsCompressorKernel.h */,
+				0AA1EEC6204DB1970074707B /* VectorMath.h */,
+				0AA1EEC7204DB1970074707B /* DenormalDisabler.h */,
+				0AA1EEC8204DB1970074707B /* HRTFDatabaseLoader.h */,
+				0AA1EEC9204DB1970074707B /* WaveShaperDSPKernel.h */,
+				0AA1EECA204DB1970074707B /* mac */,
+				0AA1EECC204DB1970074707B /* ZeroPole.h */,
+				0AA1EECD204DB1970074707B /* ReverbInputBuffer.h */,
+				0AA1EECE204DB1970074707B /* FFTFrame.h */,
+				0AA1EECF204DB1970074707B /* SincResampler.h */,
+				0AA1EED0204DB1970074707B /* linux */,
+				0AA1EED2204DB1970074707B /* BiquadDSPKernel.h */,
+				0AA1EED3204DB1970074707B /* HRTFDatabase.h */,
+				0AA1EED4204DB1970074707B /* HRTFPanner.h */,
+				0AA1EED5204DB1970074707B /* ReverbConvolver.h */,
+				0AA1EED6204DB1970074707B /* AudioUtilities.h */,
+				0AA1EED7204DB1970074707B /* BiquadProcessor.h */,
+				0AA1EED8204DB1970074707B /* AudioDSPKernel.h */,
+				0AA1EED9204DB1970074707B /* DynamicsCompressor.h */,
+				0AA1EEDA204DB1970074707B /* HRTFElevation.h */,
+				0AA1EEDB204DB1970074707B /* AudioResamplerKernel.h */,
+				0AA1EEDC204DB1970074707B /* DirectConvolver.h */,
+				0AA1EEDD204DB1970074707B /* AudioDestination.h */,
+				0AA1EEDE204DB1970074707B /* WaveShaperProcessor.h */,
+				0AA1EEDF204DB1970074707B /* src */,
+			);
+			path = internal;
+			sourceTree = "<group>";
+		};
+		0AA1EEC0204DB1970074707B /* win */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEC1204DB1970074707B /* AudioDestinationWin.h */,
+			);
+			path = win;
+			sourceTree = "<group>";
+		};
+		0AA1EECA204DB1970074707B /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EECB204DB1970074707B /* AudioDestinationMac.h */,
+			);
+			path = mac;
+			sourceTree = "<group>";
+		};
+		0AA1EED0204DB1970074707B /* linux */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EED1204DB1970074707B /* AudioDestinationLinux.h */,
+			);
+			path = linux;
+			sourceTree = "<group>";
+		};
+		0AA1EEDF204DB1970074707B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEE0204DB1970074707B /* HRTFDatabaseLoader.cpp */,
+				0AA1EEE1204DB1970074707B /* DelayDSPKernel.cpp */,
+				0AA1EEE2204DB1970074707B /* BiquadDSPKernel.cpp */,
+				0AA1EEE3204DB1970074707B /* VectorMath.cpp */,
+				0AA1EEE4204DB1970074707B /* ZeroPole.cpp */,
+				0AA1EEE5204DB1970074707B /* HRTFKernel.cpp */,
+				0AA1EEE6204DB1970074707B /* AudioUtilities.cpp */,
+				0AA1EEE7204DB1970074707B /* FFTFrame.cpp */,
+				0AA1EEE8204DB1970074707B /* FFTFrameKissFFT.cpp */,
+				0AA1EEE9204DB1970074707B /* SincResampler.cpp */,
+				0AA1EEEA204DB1970074707B /* win */,
+				0AA1EEEC204DB1970074707B /* HRTFDatabase.cpp */,
+				0AA1EEED204DB1970074707B /* WaveShaperProcessor.cpp */,
+				0AA1EEEE204DB1970074707B /* ReverbInputBuffer.cpp */,
+				0AA1EEEF204DB1970074707B /* ReverbAccumulationBuffer.cpp */,
+				0AA1EEF0204DB1970074707B /* DynamicsCompressorKernel.cpp */,
+				0AA1EEF1204DB1970074707B /* AudioResamplerKernel.cpp */,
+				0AA1EEF2204DB1970074707B /* DelayProcessor.cpp */,
+				0AA1EEF3204DB1970074707B /* mac */,
+				0AA1EEF6204DB1970074707B /* Cone.cpp */,
+				0AA1EEF7204DB1970074707B /* DirectConvolver.cpp */,
+				0AA1EEF8204DB1970074707B /* DynamicsCompressor.cpp */,
+				0AA1EEF9204DB1970074707B /* ReverbConvolver.cpp */,
+				0AA1EEFA204DB1970074707B /* AudioDSPKernel.cpp */,
+				0AA1EEFB204DB1970074707B /* Biquad.cpp */,
+				0AA1EEFC204DB1970074707B /* linux */,
+				0AA1EEFE204DB1970074707B /* BiquadProcessor.cpp */,
+				0AA1EEFF204DB1970074707B /* HRTFPanner.cpp */,
+				0AA1EF00204DB1970074707B /* HRTFElevation.cpp */,
+				0AA1EF01204DB1970074707B /* Distance.cpp */,
+				0AA1EF02204DB1970074707B /* AudioResampler.cpp */,
+				0AA1EF03204DB1970074707B /* Reverb.cpp */,
+				0AA1EF04204DB1970074707B /* MultiChannelResampler.cpp */,
+				0AA1EF05204DB1970074707B /* WaveShaperDSPKernel.cpp */,
+				0AA1EF06204DB1970074707B /* EqualPowerPanner.cpp */,
+				0AA1EF07204DB1970074707B /* AudioDSPKernelProcessor.cpp */,
+				0AA1EF08204DB1970074707B /* ReverbConvolverStage.cpp */,
+				0AA1EF09204DB1970074707B /* FFTConvolver.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		0AA1EEEA204DB1970074707B /* win */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEEB204DB1970074707B /* AudioDestinationWin.cpp */,
+			);
+			path = win;
+			sourceTree = "<group>";
+		};
+		0AA1EEF3204DB1970074707B /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEF4204DB1970074707B /* AudioDestinationMac.cpp */,
+				0AA1EEF5204DB1970074707B /* FFTFrameMac.cpp */,
+			);
+			path = mac;
+			sourceTree = "<group>";
+		};
+		0AA1EEFC204DB1970074707B /* linux */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EEFD204DB1970074707B /* AudioDestinationLinux.cpp */,
+			);
+			path = linux;
+			sourceTree = "<group>";
+		};
+		0AA1EF0A204DB1970074707B /* extended */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EF0B204DB1970074707B /* SpatializationNode.cpp */,
+				0AA1EF0C204DB1970074707B /* PowerMonitorNode.cpp */,
+				0AA1EF0D204DB1970074707B /* LabSound.cpp */,
+				0AA1EF0E204DB1970074707B /* PWMNode.cpp */,
+				0AA1EF0F204DB1970074707B /* SampledInstrumentNode.cpp */,
+				0AA1EF10204DB1970074707B /* SupersawNode.cpp */,
+				0AA1EF11204DB1970074707B /* NoiseNode.cpp */,
+				0AA1EF12204DB1970074707B /* PdNode.cpp */,
+				0AA1EF13204DB1970074707B /* DiodeNode.cpp */,
+				0AA1EF14204DB1970074707B /* AudioFileReader.cpp */,
+				0AA1EF15204DB1970074707B /* SpectralMonitorNode.cpp */,
+				0AA1EF16204DB1970074707B /* RecorderNode.cpp */,
+				0AA1EF17204DB1970074707B /* SfxrNode.cpp */,
+				0AA1EF18204DB1970074707B /* BPMDelay.cpp */,
+				0AA1EF19204DB1970074707B /* ClipNode.cpp */,
+				0AA1EF1A204DB1970074707B /* ADSRNode.cpp */,
+				0AA1EF1B204DB1970074707B /* PingPongDelayNode.cpp */,
+				0AA1EF1C204DB1970074707B /* PeakCompNode.cpp */,
+				0AA1EF1D204DB1970074707B /* FunctionNode.cpp */,
+			);
+			path = extended;
+			sourceTree = "<group>";
+		};
+		0AA1EF77204DB2540074707B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EF78204DB2540074707B /* LabSound */,
+			);
+			name = include;
+			path = ../include;
+			sourceTree = "<group>";
+		};
+		0AA1EF78204DB2540074707B /* LabSound */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EF79204DB2540074707B /* core */,
+				0AA1EFA4204DB2540074707B /* extended */,
+			);
+			path = LabSound;
+			sourceTree = "<group>";
+		};
+		0AA1EF79204DB2540074707B /* core */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EF7A204DB2540074707B /* DefaultAudioDestinationNode.h */,
+				0AA1EF7B204DB2540074707B /* FloatPoint3D.h */,
+				0AA1EF7C204DB2540074707B /* AudioNodeInput.h */,
+				0AA1EF7D204DB2540074707B /* AudioArray.h */,
+				0AA1EF7E204DB2540074707B /* AudioContext.h */,
+				0AA1EF7F204DB2540074707B /* Synthesis.h */,
+				0AA1EF80204DB2540074707B /* AudioParam.h */,
+				0AA1EF81204DB2540074707B /* AudioBus.h */,
+				0AA1EF82204DB2540074707B /* DelayNode.h */,
+				0AA1EF83204DB2540074707B /* WaveTable.h */,
+				0AA1EF84204DB2540074707B /* BiquadFilterNode.h */,
+				0AA1EF85204DB2540074707B /* OfflineAudioDestinationNode.h */,
+				0AA1EF86204DB2540074707B /* AudioHardwareSourceNode.h */,
+				0AA1EF87204DB2540074707B /* ChannelMergerNode.h */,
+				0AA1EF88204DB2540074707B /* AudioIOCallback.h */,
+				0AA1EF89204DB2540074707B /* AudioParamTimeline.h */,
+				0AA1EF8A204DB2540074707B /* AudioChannel.h */,
+				0AA1EF8B204DB2540074707B /* AudioSummingJunction.h */,
+				0AA1EF8C204DB2540074707B /* PannerNode.h */,
+				0AA1EF8D204DB2540074707B /* StereoPannerNode.h */,
+				0AA1EF8E204DB2540074707B /* WindowFunctions.h */,
+				0AA1EF8F204DB2540074707B /* AnalyserNode.h */,
+				0AA1EF90204DB2540074707B /* SampledAudioNode.h */,
+				0AA1EF91204DB2540074707B /* AudioBasicInspectorNode.h */,
+				0AA1EF92204DB2540074707B /* Macros.h */,
+				0AA1EF93204DB2540074707B /* AudioProcessor.h */,
+				0AA1EF94204DB2540074707B /* WaveShaperNode.h */,
+				0AA1EF95204DB2540074707B /* AudioScheduledSourceNode.h */,
+				0AA1EF96204DB2540074707B /* AudioNodeOutput.h */,
+				0AA1EF97204DB2540074707B /* GainNode.h */,
+				0AA1EF98204DB2540074707B /* Mixing.h */,
+				0AA1EF99204DB2540074707B /* AudioNode.h */,
+				0AA1EF9A204DB2540074707B /* AudioSourceNode.h */,
+				0AA1EF9B204DB2540074707B /* AudioSourceProvider.h */,
+				0AA1EF9C204DB2540074707B /* ConvolverNode.h */,
+				0AA1EF9D204DB2540074707B /* OscillatorNode.h */,
+				0AA1EF9E204DB2540074707B /* AudioListener.h */,
+				0AA1EF9F204DB2540074707B /* AudioBasicProcessorNode.h */,
+				0AA1EFA0204DB2540074707B /* DynamicsCompressorNode.h */,
+				0AA1EFA1204DB2540074707B /* AudioDestinationNode.h */,
+				0AA1EFA2204DB2540074707B /* ChannelSplitterNode.h */,
+				0AA1EFA3204DB2540074707B /* ConcurrentQueue.h */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		0AA1EFA4204DB2540074707B /* extended */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EFA5204DB2540074707B /* AudioFileReader.h */,
+				0AA1EFA6204DB2540074707B /* ADSRNode.h */,
+				0AA1EFA7204DB2540074707B /* RecorderNode.h */,
+				0AA1EFA8204DB2540074707B /* BPMDelay.h */,
+				0AA1EFA9204DB2540074707B /* PowerMonitorNode.h */,
+				0AA1EFAA204DB2540074707B /* SupersawNode.h */,
+				0AA1EFAB204DB2540074707B /* Logging.h */,
+				0AA1EFAC204DB2540074707B /* LabSound.h */,
+				0AA1EFAD204DB2540074707B /* DiodeNode.h */,
+				0AA1EFAE204DB2540074707B /* PdNode.h */,
+				0AA1EFAF204DB2540074707B /* NoiseNode.h */,
+				0AA1EFB0204DB2540074707B /* ClipNode.h */,
+				0AA1EFB1204DB2540074707B /* Util.h */,
+				0AA1EFB2204DB2540074707B /* SpectralMonitorNode.h */,
+				0AA1EFB3204DB2540074707B /* RealtimeAnalyser.h */,
+				0AA1EFB4204DB2540074707B /* FunctionNode.h */,
+				0AA1EFB5204DB2540074707B /* SpatializationNode.h */,
+				0AA1EFB6204DB2540074707B /* PeakCompNode.h */,
+				0AA1EFB7204DB2540074707B /* PingPongDelayNode.h */,
+				0AA1EFB8204DB2540074707B /* AudioContextLock.h */,
+				0AA1EFB9204DB2540074707B /* SampledInstrumentNode.h */,
+				0AA1EFBA204DB2540074707B /* PWMNode.h */,
+				0AA1EFBB204DB2540074707B /* SfxrNode.h */,
+			);
+			path = extended;
 			sourceTree = "<group>";
 		};
 		331016163E6A35550C430842 /* Products */ = {
@@ -546,8 +743,8 @@
 		418D348C736A6C4408BC04A4 /* LabSound */ = {
 			isa = PBXGroup;
 			children = (
-				E2FB873F183D20E100A5A764 /* LabSound */,
-				08650A001AD081DB00D19E38 /* Internal */,
+				0AA1EF77204DB2540074707B /* include */,
+				0AA1EE91204DB1970074707B /* src */,
 				082FE01C19C6009400046275 /* third_party */,
 				E285226E1A6422F6003F1CA7 /* config */,
 				331016163E6A35550C430842 /* Products */,
@@ -563,107 +760,6 @@
 				E28522711A64231C003F1CA7 /* Release.xcconfig */,
 			);
 			path = config;
-			sourceTree = "<group>";
-		};
-		E2D5CE821A19B3D200B031C8 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				08650A501AD61FF400D19E38 /* mac */,
-				08650A221AD61FE800D19E38 /* Assertions.h */,
-				08650A251AD61FE800D19E38 /* AudioDestination.h */,
-				08650A271AD61FE800D19E38 /* AudioDSPKernel.h */,
-				08650A281AD61FE800D19E38 /* AudioDSPKernelProcessor.h */,
-				08650A2C1AD61FE800D19E38 /* AudioResampler.h */,
-				08650A2D1AD61FE800D19E38 /* AudioResamplerKernel.h */,
-				08650A2E1AD61FE800D19E38 /* AudioUtilities.h */,
-				08650A2F1AD61FE800D19E38 /* Biquad.h */,
-				08650A301AD61FE800D19E38 /* BiquadDSPKernel.h */,
-				08650A311AD61FE800D19E38 /* BiquadProcessor.h */,
-				08650A321AD61FE800D19E38 /* Cone.h */,
-				08650A341AD61FE800D19E38 /* DelayDSPKernel.h */,
-				08650A351AD61FE800D19E38 /* DelayProcessor.h */,
-				08650A361AD61FE800D19E38 /* DenormalDisabler.h */,
-				08650A371AD61FE800D19E38 /* DirectConvolver.h */,
-				08650A381AD61FE800D19E38 /* Distance.h */,
-				08650A391AD61FE800D19E38 /* DynamicsCompressor.h */,
-				08650A3A1AD61FE800D19E38 /* DynamicsCompressorKernel.h */,
-				08650A3B1AD61FE800D19E38 /* EqualPowerPanner.h */,
-				08650A3C1AD61FE800D19E38 /* FFTConvolver.h */,
-				08650A3D1AD61FE800D19E38 /* FFTFrame.h */,
-				08650A3F1AD61FE800D19E38 /* HRTFDatabase.h */,
-				08650A401AD61FE800D19E38 /* HRTFDatabaseLoader.h */,
-				08650A411AD61FE800D19E38 /* HRTFElevation.h */,
-				08650A421AD61FE800D19E38 /* HRTFKernel.h */,
-				08650A431AD61FE800D19E38 /* HRTFPanner.h */,
-				08650A441AD61FE800D19E38 /* MultiChannelResampler.h */,
-				08650A451AD61FE800D19E38 /* Panner.h */,
-				08650A461AD61FE800D19E38 /* Reverb.h */,
-				08650A471AD61FE800D19E38 /* ReverbAccumulationBuffer.h */,
-				08650A481AD61FE800D19E38 /* ReverbConvolver.h */,
-				08650A491AD61FE800D19E38 /* ReverbConvolverStage.h */,
-				08650A4A1AD61FE800D19E38 /* ReverbInputBuffer.h */,
-				08650A4B1AD61FE800D19E38 /* SincResampler.h */,
-				08650A4C1AD61FE800D19E38 /* VectorMath.h */,
-				08650A4D1AD61FE800D19E38 /* WaveShaperDSPKernel.h */,
-				08650A4E1AD61FE800D19E38 /* WaveShaperProcessor.h */,
-				08650A4F1AD61FE800D19E38 /* ZeroPole.h */,
-			);
-			name = include;
-			path = ../../include;
-			sourceTree = "<group>";
-		};
-		E2FB873F183D20E100A5A764 /* LabSound */ = {
-			isa = PBXGroup;
-			children = (
-				08650A1C1AD61F7200D19E38 /* core */,
-				08650A1D1AD61F7900D19E38 /* extended */,
-			);
-			name = LabSound;
-			path = ../src/platform;
-			sourceTree = "<group>";
-		};
-		E2FB8747183D20E100A5A764 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				08650BFC1AD6229B00D19E38 /* mac */,
-				08650BAC1AD6225900D19E38 /* AudioDSPKernel.cpp */,
-				08650BAD1AD6225900D19E38 /* AudioDSPKernelProcessor.cpp */,
-				08650BB01AD6225900D19E38 /* AudioResampler.cpp */,
-				08650BB11AD6225900D19E38 /* AudioResamplerKernel.cpp */,
-				08650BB21AD6225900D19E38 /* AudioUtilities.cpp */,
-				08650BB31AD6225900D19E38 /* Biquad.cpp */,
-				08650BB41AD6225900D19E38 /* BiquadDSPKernel.cpp */,
-				08650BB51AD6225900D19E38 /* BiquadProcessor.cpp */,
-				08650BB61AD6225900D19E38 /* Cone.cpp */,
-				08650BB71AD6225900D19E38 /* DelayDSPKernel.cpp */,
-				08650BB81AD6225900D19E38 /* DelayProcessor.cpp */,
-				08650BB91AD6225900D19E38 /* DirectConvolver.cpp */,
-				08650BBA1AD6225900D19E38 /* Distance.cpp */,
-				08650BBB1AD6225900D19E38 /* DynamicsCompressor.cpp */,
-				08650BBC1AD6225900D19E38 /* DynamicsCompressorKernel.cpp */,
-				08650BBD1AD6225900D19E38 /* EqualPowerPanner.cpp */,
-				08650BBE1AD6225900D19E38 /* FFTConvolver.cpp */,
-				08650BBF1AD6225900D19E38 /* FFTFrame.cpp */,
-				08650BC01AD6225900D19E38 /* FFTFrameKissFFT.cpp */,
-				08650BC21AD6225900D19E38 /* HRTFDatabase.cpp */,
-				08650BC31AD6225900D19E38 /* HRTFDatabaseLoader.cpp */,
-				08650BC41AD6225900D19E38 /* HRTFElevation.cpp */,
-				08650BC51AD6225900D19E38 /* HRTFKernel.cpp */,
-				08650BC61AD6225900D19E38 /* HRTFPanner.cpp */,
-				08650BC71AD6225900D19E38 /* MultiChannelResampler.cpp */,
-				08650BC91AD6225900D19E38 /* Reverb.cpp */,
-				08650BCA1AD6225900D19E38 /* ReverbAccumulationBuffer.cpp */,
-				08650BCB1AD6225900D19E38 /* ReverbConvolver.cpp */,
-				08650BCC1AD6225900D19E38 /* ReverbConvolverStage.cpp */,
-				08650BCD1AD6225900D19E38 /* ReverbInputBuffer.cpp */,
-				08650BCE1AD6225900D19E38 /* SincResampler.cpp */,
-				08650BCF1AD6225900D19E38 /* VectorMath.cpp */,
-				08650BD01AD6225900D19E38 /* WaveShaperDSPKernel.cpp */,
-				08650BD11AD6225900D19E38 /* WaveShaperProcessor.cpp */,
-				08650BD21AD6225900D19E38 /* ZeroPole.cpp */,
-			);
-			name = src;
-			path = audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -725,96 +821,98 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08650BDF1AD6225900D19E38 /* Cone.cpp in Sources */,
-				08650BD91AD6225900D19E38 /* AudioResampler.cpp in Sources */,
-				08650BE11AD6225900D19E38 /* DelayProcessor.cpp in Sources */,
-				08650BDE1AD6225900D19E38 /* BiquadProcessor.cpp in Sources */,
-				08650C5E1AD6239000D19E38 /* RecorderNode.cpp in Sources */,
-				08650CEF1AD6241A00D19E38 /* OscillatorNode.cpp in Sources */,
-				08650BFB1AD6225900D19E38 /* ZeroPole.cpp in Sources */,
-				08C25E841ADE1DB40097D572 /* StereoPannerNode.cpp in Sources */,
-				08650BF51AD6225900D19E38 /* ReverbConvolverStage.cpp in Sources */,
+				0AA1EF70204DB1970074707B /* SfxrNode.cpp in Sources */,
+				0AA1EF48204DB1970074707B /* HRTFDatabase.cpp in Sources */,
+				0AA1EF41204DB1970074707B /* ZeroPole.cpp in Sources */,
+				0AA1EF47204DB1970074707B /* AudioDestinationWin.cpp in Sources */,
+				0AA1EF29204DB1970074707B /* AudioParamTimeline.cpp in Sources */,
+				0AA1EF55204DB1970074707B /* AudioDSPKernel.cpp in Sources */,
+				0AA1EF53204DB1970074707B /* DynamicsCompressor.cpp in Sources */,
 				08650CF91AD6248400D19E38 /* kiss_fftr.cpp in Sources */,
-				08650BF71AD6225900D19E38 /* SincResampler.cpp in Sources */,
-				08650BE61AD6225900D19E38 /* EqualPowerPanner.cpp in Sources */,
-				08650BFA1AD6225900D19E38 /* WaveShaperProcessor.cpp in Sources */,
-				08650BE21AD6225900D19E38 /* DirectConvolver.cpp in Sources */,
-				08650CE01AD6241A00D19E38 /* AudioParam.cpp in Sources */,
-				08650C551AD6239000D19E38 /* ADSRNode.cpp in Sources */,
+				0AA1EF76204DB1970074707B /* FunctionNode.cpp in Sources */,
+				0AA1EF5C204DB1970074707B /* AudioResampler.cpp in Sources */,
+				0AA1EF4A204DB1970074707B /* ReverbInputBuffer.cpp in Sources */,
+				0AA1EF61204DB1970074707B /* AudioDSPKernelProcessor.cpp in Sources */,
+				0AA1EF24204DB1970074707B /* GainNode.cpp in Sources */,
+				0AA1EF66204DB1970074707B /* LabSound.cpp in Sources */,
+				0AA1EF3F204DB1970074707B /* BiquadDSPKernel.cpp in Sources */,
+				0AA1EF27204DB1970074707B /* AudioNodeOutput.cpp in Sources */,
+				0AA1EF3E204DB1970074707B /* DelayDSPKernel.cpp in Sources */,
+				0AA1EF35204DB1970074707B /* ChannelMergerNode.cpp in Sources */,
 				08650CFB1AD6249200D19E38 /* STKInlineCompile.cpp in Sources */,
-				08650BE71AD6225900D19E38 /* FFTConvolver.cpp in Sources */,
-				08650BEF1AD6225900D19E38 /* HRTFPanner.cpp in Sources */,
-				08650CE81AD6241A00D19E38 /* DefaultAudioDestinationNode.cpp in Sources */,
-				08650BF21AD6225900D19E38 /* Reverb.cpp in Sources */,
-				08650C5C1AD6239000D19E38 /* PowerMonitorNode.cpp in Sources */,
-				08650BF41AD6225900D19E38 /* ReverbConvolver.cpp in Sources */,
-				08650C641AD6239000D19E38 /* SupersawNode.cpp in Sources */,
-				08650C021AD622A400D19E38 /* AudioDestinationMac.cpp in Sources */,
-				08567C291B61D09D00EB6C0D /* BPMDelay.cpp in Sources */,
-				08650C041AD622A400D19E38 /* FFTFrameMac.cpp in Sources */,
-				08650BE91AD6225900D19E38 /* FFTFrameKissFFT.cpp in Sources */,
-				DA12233A200D88DD00AB1504 /* AudioBus.cpp in Sources */,
-				08650C601AD6239000D19E38 /* SfxrNode.cpp in Sources */,
-				08650CED1AD6241A00D19E38 /* AudioHardwareSourceNode.cpp in Sources */,
-				08650CDA1AD6241A00D19E38 /* AudioContext.cpp in Sources */,
-				08650BF81AD6225900D19E38 /* VectorMath.cpp in Sources */,
+				0AA1EF63204DB1970074707B /* FFTConvolver.cpp in Sources */,
+				0AA1EF6F204DB1970074707B /* RecorderNode.cpp in Sources */,
+				0AA1EF5B204DB1970074707B /* Distance.cpp in Sources */,
+				0AA1EF31204DB1970074707B /* OscillatorNode.cpp in Sources */,
+				0AA1EF6D204DB1970074707B /* AudioFileReader.cpp in Sources */,
+				0AA1EF2B204DB1970074707B /* AudioNodeInput.cpp in Sources */,
+				0AA1EF3B204DB1970074707B /* AudioParam.cpp in Sources */,
+				0AA1EF42204DB1970074707B /* HRTFKernel.cpp in Sources */,
+				0AA1EF69204DB1970074707B /* SupersawNode.cpp in Sources */,
+				0AA1EF25204DB1970074707B /* RealtimeAnalyser.cpp in Sources */,
+				0AA1EF64204DB1970074707B /* SpatializationNode.cpp in Sources */,
 				08650CFD1AD6249B00D19E38 /* fftsg.cpp in Sources */,
-				08650CD61AD6241A00D19E38 /* AudioBasicInspectorNode.cpp in Sources */,
-				08650CE91AD6241A00D19E38 /* DelayNode.cpp in Sources */,
-				08650CE41AD6241A00D19E38 /* BiquadFilterNode.cpp in Sources */,
-				08650BD51AD6225900D19E38 /* AudioDSPKernel.cpp in Sources */,
-				08650BDC1AD6225900D19E38 /* Biquad.cpp in Sources */,
-				08650C571AD6239000D19E38 /* DiodeNode.cpp in Sources */,
-				08650BE81AD6225900D19E38 /* FFTFrame.cpp in Sources */,
-				08650CF21AD6241A00D19E38 /* WaveShaperNode.cpp in Sources */,
-				DA12233B200D88DD00AB1504 /* AudioChannel.cpp in Sources */,
-				08650CF01AD6241A00D19E38 /* PannerNode.cpp in Sources */,
-				08650CE71AD6241A00D19E38 /* ConvolverNode.cpp in Sources */,
-				08650C561AD6239000D19E38 /* ClipNode.cpp in Sources */,
-				08650BDD1AD6225900D19E38 /* BiquadDSPKernel.cpp in Sources */,
-				08650C5F1AD6239000D19E38 /* SampledInstrumentNode.cpp in Sources */,
-				08650CD71AD6241A00D19E38 /* AudioBasicProcessorNode.cpp in Sources */,
-				08650CE31AD6241A00D19E38 /* AudioSummingJunction.cpp in Sources */,
-				08650CF11AD6241A00D19E38 /* RealtimeAnalyser.cpp in Sources */,
-				08650C5B1AD6239000D19E38 /* PeakCompNode.cpp in Sources */,
-				08650CDB1AD6241A00D19E38 /* AudioDestinationNode.cpp in Sources */,
-				08650C631AD6239000D19E38 /* SpectralMonitorNode.cpp in Sources */,
-				08650CDD1AD6241A00D19E38 /* AudioNode.cpp in Sources */,
-				08650BE51AD6225900D19E38 /* DynamicsCompressorKernel.cpp in Sources */,
+				0AA1EF6C204DB1970074707B /* DiodeNode.cpp in Sources */,
+				0AA1EF58204DB1970074707B /* BiquadProcessor.cpp in Sources */,
+				0AA1EF43204DB1970074707B /* AudioUtilities.cpp in Sources */,
+				0AA1EF5F204DB1970074707B /* WaveShaperDSPKernel.cpp in Sources */,
+				0AA1EF2D204DB1970074707B /* AudioSummingJunction.cpp in Sources */,
+				0AA1EF75204DB1970074707B /* PeakCompNode.cpp in Sources */,
+				0AA1EF5A204DB1970074707B /* HRTFElevation.cpp in Sources */,
+				0AA1EF21204DB1970074707B /* WaveShaperNode.cpp in Sources */,
+				0AA1EF52204DB1970074707B /* DirectConvolver.cpp in Sources */,
+				0AA1EF65204DB1970074707B /* PowerMonitorNode.cpp in Sources */,
+				0AA1EF1E204DB1970074707B /* PannerNode.cpp in Sources */,
+				0AA1EF30204DB1970074707B /* AudioBasicProcessorNode.cpp in Sources */,
+				0AA1EF33204DB1970074707B /* DynamicsCompressorNode.cpp in Sources */,
+				0AA1EF59204DB1970074707B /* HRTFPanner.cpp in Sources */,
+				0AA1EF5D204DB1970074707B /* Reverb.cpp in Sources */,
+				0AA1EF62204DB1970074707B /* ReverbConvolverStage.cpp in Sources */,
+				0AA1EF38204DB1970074707B /* AnalyserNode.cpp in Sources */,
+				0AA1EF32204DB1970074707B /* AudioBus.cpp in Sources */,
+				0AA1EF37204DB1970074707B /* AudioDestinationNode.cpp in Sources */,
+				0AA1EF34204DB1970074707B /* OfflineAudioDestinationNode.cpp in Sources */,
+				0AA1EF40204DB1970074707B /* VectorMath.cpp in Sources */,
+				0AA1EF5E204DB1970074707B /* MultiChannelResampler.cpp in Sources */,
+				0AA1EF49204DB1970074707B /* WaveShaperProcessor.cpp in Sources */,
 				08650CF81AD6248400D19E38 /* kiss_fft.cpp in Sources */,
-				08650CEB1AD6241A00D19E38 /* GainNode.cpp in Sources */,
-				08650BDA1AD6225900D19E38 /* AudioResamplerKernel.cpp in Sources */,
-				08650BE01AD6225900D19E38 /* DelayDSPKernel.cpp in Sources */,
-				08567C2A1B61D09D00EB6C0D /* PingPongDelayNode.cpp in Sources */,
-				08650BD61AD6225900D19E38 /* AudioDSPKernelProcessor.cpp in Sources */,
-				08650CF31AD6241A00D19E38 /* WaveTable.cpp in Sources */,
-				08650CE21AD6241A00D19E38 /* AudioScheduledSourceNode.cpp in Sources */,
-				08650CD51AD6241A00D19E38 /* AnalyserNode.cpp in Sources */,
-				E2D4FE521AF5529A001B7E6C /* FunctionNode.cpp in Sources */,
-				08650CEE1AD6241A00D19E38 /* OfflineAudioDestinationNode.cpp in Sources */,
-				08650CDE1AD6241A00D19E38 /* AudioNodeInput.cpp in Sources */,
-				08650CE11AD6241A00D19E38 /* AudioParamTimeline.cpp in Sources */,
-				08650C5D1AD6239000D19E38 /* PWMNode.cpp in Sources */,
-				08650C581AD6239000D19E38 /* LabSound.cpp in Sources */,
-				08650BED1AD6225900D19E38 /* HRTFElevation.cpp in Sources */,
-				08650BEC1AD6225900D19E38 /* HRTFDatabaseLoader.cpp in Sources */,
-				08650BEE1AD6225900D19E38 /* HRTFKernel.cpp in Sources */,
-				DA12233C200D88DD00AB1504 /* SampledAudioNode.cpp in Sources */,
-				08650BF91AD6225900D19E38 /* WaveShaperDSPKernel.cpp in Sources */,
-				08650C591AD6239000D19E38 /* NoiseNode.cpp in Sources */,
-				08650BE41AD6225900D19E38 /* DynamicsCompressor.cpp in Sources */,
-				08650CE51AD6241A00D19E38 /* ChannelMergerNode.cpp in Sources */,
-				08650BF01AD6225900D19E38 /* MultiChannelResampler.cpp in Sources */,
-				08650BF31AD6225900D19E38 /* ReverbAccumulationBuffer.cpp in Sources */,
-				08650BE31AD6225900D19E38 /* Distance.cpp in Sources */,
-				08650BF61AD6225900D19E38 /* ReverbInputBuffer.cpp in Sources */,
-				08650BEB1AD6225900D19E38 /* HRTFDatabase.cpp in Sources */,
-				08650C621AD6239000D19E38 /* SpatializationNode.cpp in Sources */,
-				08650CDF1AD6241A00D19E38 /* AudioNodeOutput.cpp in Sources */,
-				08650BDB1AD6225900D19E38 /* AudioUtilities.cpp in Sources */,
-				08650CE61AD6241A00D19E38 /* ChannelSplitterNode.cpp in Sources */,
-				08650CEA1AD6241A00D19E38 /* DynamicsCompressorNode.cpp in Sources */,
-				E28FC138200DDFF60057982C /* AudioFileReader.cpp in Sources */,
+				0AA1EF67204DB1970074707B /* PWMNode.cpp in Sources */,
+				0AA1EF44204DB1970074707B /* FFTFrame.cpp in Sources */,
+				0AA1EF72204DB1970074707B /* ClipNode.cpp in Sources */,
+				0AA1EF28204DB1970074707B /* DelayNode.cpp in Sources */,
+				0AA1EF54204DB1970074707B /* ReverbConvolver.cpp in Sources */,
+				0AA1EF45204DB1970074707B /* FFTFrameKissFFT.cpp in Sources */,
+				0AA1EF4C204DB1970074707B /* DynamicsCompressorKernel.cpp in Sources */,
+				0AA1EF20204DB1970074707B /* WaveTable.cpp in Sources */,
+				0AA1EF71204DB1970074707B /* BPMDelay.cpp in Sources */,
+				0AA1EF26204DB1970074707B /* AudioBasicInspectorNode.cpp in Sources */,
+				0AA1EF4D204DB1970074707B /* AudioResamplerKernel.cpp in Sources */,
+				0AA1EF4E204DB1970074707B /* DelayProcessor.cpp in Sources */,
+				0AA1EF73204DB1970074707B /* ADSRNode.cpp in Sources */,
+				0AA1EF2F204DB1970074707B /* BiquadFilterNode.cpp in Sources */,
+				0AA1EF51204DB1970074707B /* Cone.cpp in Sources */,
+				0AA1EF46204DB1970074707B /* SincResampler.cpp in Sources */,
+				0AA1EF2A204DB1970074707B /* AudioScheduledSourceNode.cpp in Sources */,
+				0AA1EF50204DB1970074707B /* FFTFrameMac.cpp in Sources */,
+				0AA1EF1F204DB1970074707B /* AudioHardwareSourceNode.cpp in Sources */,
+				0AA1EF39204DB1970074707B /* AudioContext.cpp in Sources */,
+				0AA1EF2C204DB1970074707B /* StereoPannerNode.cpp in Sources */,
+				0AA1EF6A204DB1970074707B /* NoiseNode.cpp in Sources */,
+				0AA1EF3D204DB1970074707B /* HRTFDatabaseLoader.cpp in Sources */,
+				0AA1EF2E204DB1970074707B /* DefaultAudioDestinationNode.cpp in Sources */,
+				0AA1EF60204DB1970074707B /* EqualPowerPanner.cpp in Sources */,
+				0AA1EF22204DB1970074707B /* SampledAudioNode.cpp in Sources */,
+				0AA1EF23204DB1970074707B /* AudioNode.cpp in Sources */,
+				0AA1EF74204DB1970074707B /* PingPongDelayNode.cpp in Sources */,
+				0AA1EF6E204DB1970074707B /* SpectralMonitorNode.cpp in Sources */,
+				0AA1EF57204DB1970074707B /* AudioDestinationLinux.cpp in Sources */,
+				0AA1EF4F204DB1970074707B /* AudioDestinationMac.cpp in Sources */,
+				0AA1EF4B204DB1970074707B /* ReverbAccumulationBuffer.cpp in Sources */,
+				0AA1EF3C204DB1970074707B /* ChannelSplitterNode.cpp in Sources */,
+				0AA1EF68204DB1970074707B /* SampledInstrumentNode.cpp in Sources */,
+				0AA1EF56204DB1970074707B /* Biquad.cpp in Sources */,
+				0AA1EF36204DB1970074707B /* AudioChannel.cpp in Sources */,
+				0AA1EF3A204DB1970074707B /* ConvolverNode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,7 +932,7 @@
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
 					"$(PROJECT_DIR)/../third_party/STK",
-					"$(PROJECT_DIR)/../third_party/libnyquist/include",
+					"$(PROJECT_DIR)/../third_party/node-native-video-deps/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -857,7 +955,7 @@
 					"$(PROJECT_DIR)/../src",
 					"$(PROJECT_DIR)/../third_party",
 					"$(PROJECT_DIR)/../third_party/STK",
-					"$(PROJECT_DIR)/../third_party/libnyquist/include",
+					"$(PROJECT_DIR)/../third_party/node-native-video-deps/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
