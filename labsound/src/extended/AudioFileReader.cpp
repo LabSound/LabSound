@@ -10,6 +10,7 @@
 
 #include <mutex>
 #include <cstring>
+#include <algorithm>
 
 namespace detail
 {
