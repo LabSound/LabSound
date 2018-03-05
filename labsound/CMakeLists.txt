@@ -21,7 +21,6 @@ set(CMAKE_MODULE_PATH
 include(Utilities)
 include(CXXDefaults)
 include(Packages)
-include(cmake/libnyquist.cmake)
 include(cmake/LabSound.cmake)
 
 set(CMAKE_BUILD_TYPE Release)
