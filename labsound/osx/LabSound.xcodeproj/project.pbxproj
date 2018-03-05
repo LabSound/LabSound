@@ -99,13 +99,11 @@
 		0AA1EF74204DB1970074707B /* PingPongDelayNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1B204DB1970074707B /* PingPongDelayNode.cpp */; };
 		0AA1EF75204DB1970074707B /* PeakCompNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1C204DB1970074707B /* PeakCompNode.cpp */; };
 		0AA1EF76204DB1970074707B /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1D204DB1970074707B /* FunctionNode.cpp */; };
+		0AA1EFC8204DFA410074707B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0AA1EFC4204DFA410074707B /* LICENSE */; };
+		0AA1EFC9204DFA410074707B /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EFC7204DFA410074707B /* RtAudio.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		085F34DF1ADCD9B800FEADC5 /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../third_party/WTF/Compiler.h; sourceTree = "<group>"; };
-		085F34E01ADCD9B800FEADC5 /* CPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CPU.h; path = ../third_party/WTF/CPU.h; sourceTree = "<group>"; };
-		085F34E11ADCD9B800FEADC5 /* MathExtras.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MathExtras.h; path = ../third_party/WTF/MathExtras.h; sourceTree = "<group>"; };
-		085F34E21ADCD9B800FEADC5 /* Platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = ../third_party/WTF/Platform.h; sourceTree = "<group>"; };
 		08650CF61AD6248400D19E38 /* kiss_fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fft.cpp; path = ../third_party/kissfft/src/kiss_fft.cpp; sourceTree = "<group>"; };
 		08650CF71AD6248400D19E38 /* kiss_fftr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = kiss_fftr.cpp; path = ../third_party/kissfft/src/kiss_fftr.cpp; sourceTree = "<group>"; };
 		08650CFA1AD6249200D19E38 /* STKInlineCompile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = STKInlineCompile.cpp; path = ../third_party/STK/src/STKInlineCompile.cpp; sourceTree = "<group>"; };
@@ -305,6 +303,9 @@
 		0AA1EFB9204DB2540074707B /* SampledInstrumentNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampledInstrumentNode.h; sourceTree = "<group>"; };
 		0AA1EFBA204DB2540074707B /* PWMNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWMNode.h; sourceTree = "<group>"; };
 		0AA1EFBB204DB2540074707B /* SfxrNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SfxrNode.h; sourceTree = "<group>"; };
+		0AA1EFC4204DFA410074707B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		0AA1EFC5204DFA410074707B /* RtAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtAudio.h; sourceTree = "<group>"; };
+		0AA1EFC7204DFA410074707B /* RtAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtAudio.cpp; sourceTree = "<group>"; };
 		5E7C563C0F0D44784695726E /* liblabsound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblabsound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -333,23 +334,12 @@
 		082FE01C19C6009400046275 /* third_party */ = {
 			isa = PBXGroup;
 			children = (
+				0AA1EFC3204DFA410074707B /* rtaudio */,
 				0AA1EE8A204DB1360074707B /* node-native-video-deps */,
-				085F34DE1ADCD9AE00FEADC5 /* WTF */,
 				082FDF2019C6002C00046275 /* STK */,
 				08D67A061972E9860061116A /* kissfft */,
 			);
 			name = third_party;
-			sourceTree = "<group>";
-		};
-		085F34DE1ADCD9AE00FEADC5 /* WTF */ = {
-			isa = PBXGroup;
-			children = (
-				085F34DF1ADCD9B800FEADC5 /* Compiler.h */,
-				085F34E01ADCD9B800FEADC5 /* CPU.h */,
-				085F34E11ADCD9B800FEADC5 /* MathExtras.h */,
-				085F34E21ADCD9B800FEADC5 /* Platform.h */,
-			);
-			name = WTF;
 			sourceTree = "<group>";
 		};
 		08D67A061972E9860061116A /* kissfft */ = {
@@ -732,6 +722,25 @@
 			path = extended;
 			sourceTree = "<group>";
 		};
+		0AA1EFC3204DFA410074707B /* rtaudio */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EFC4204DFA410074707B /* LICENSE */,
+				0AA1EFC5204DFA410074707B /* RtAudio.h */,
+				0AA1EFC6204DFA410074707B /* src */,
+			);
+			name = rtaudio;
+			path = ../third_party/rtaudio;
+			sourceTree = "<group>";
+		};
+		0AA1EFC6204DFA410074707B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0AA1EFC7204DFA410074707B /* RtAudio.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		331016163E6A35550C430842 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -811,6 +820,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0AA1EFC8204DFA410074707B /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -900,6 +910,7 @@
 				0AA1EF6A204DB1970074707B /* NoiseNode.cpp in Sources */,
 				0AA1EF3D204DB1970074707B /* HRTFDatabaseLoader.cpp in Sources */,
 				0AA1EF2E204DB1970074707B /* DefaultAudioDestinationNode.cpp in Sources */,
+				0AA1EFC9204DFA410074707B /* RtAudio.cpp in Sources */,
 				0AA1EF60204DB1970074707B /* EqualPowerPanner.cpp in Sources */,
 				0AA1EF22204DB1970074707B /* SampledAudioNode.cpp in Sources */,
 				0AA1EF23204DB1970074707B /* AudioNode.cpp in Sources */,
@@ -939,6 +950,7 @@
 					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx",
 				);
 				PRODUCT_NAME = labsound;
+				USE_HEADERMAP = NO;
 			};
 			name = Release;
 		};
@@ -962,6 +974,7 @@
 					"$(PROJECT_DIR)/../third_party/libnyquist/bin/osx",
 				);
 				PRODUCT_NAME = labsound;
+				USE_HEADERMAP = NO;
 			};
 			name = Debug;
 		};
