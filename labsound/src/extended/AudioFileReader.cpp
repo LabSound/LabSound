@@ -8,53 +8,277 @@
 
 #include "LabSound/extended/AudioFileReader.h"
 
-#include "libnyquist/AudioDecoder.h"
-
 #include <mutex>
 #include <cstring>
 
 namespace detail
 {
-    std::unique_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono)
+    const size_t kBufferSize = 4 * 1024;
+    const size_t kPlaneBufferSize = 512 * 1024;
+    const AVPixelFormat kPixelFormat = AV_PIX_FMT_RGBA;
+
+    AppData::AppData() :
+      dataPos(0),
+      fmt_ctx(nullptr), io_ctx(nullptr), stream_idx(-1), audio_stream(nullptr), codec_ctx(nullptr), decoder(nullptr), av_frame(nullptr), swr_ctx(nullptr)
     {
-        size_t numSamples = audioData->samples.size();
+      av_init_packet(&packet);
+      packet.data = nullptr;
+      packet.size = 0;
+      for (size_t i = 0; i < SWR_CH_MAX; i++) {
+        sr_planes[i] = nullptr;
+      }
+      sr_planes[0] = (uint8_t *)malloc(kPlaneBufferSize);
+      sr_planes[1] = (uint8_t *)malloc(kPlaneBufferSize);
+    }
+    AppData::~AppData() {
+      resetState();
+      free(sr_planes[0]);
+      free(sr_planes[1]);
+    }
+
+    void AppData::resetState() {
+      if (av_frame) {
+        av_free(av_frame);
+        av_frame = nullptr;
+      }
+      if (codec_ctx) {
+        avcodec_close(codec_ctx);
+        codec_ctx = nullptr;
+      }
+      if (fmt_ctx) {
+        avformat_free_context(fmt_ctx);
+        fmt_ctx = nullptr;
+      }
+      if (io_ctx) {
+        av_free(io_ctx->buffer);
+        av_free(io_ctx);
+        io_ctx = nullptr;
+      }
+      if (swr_ctx) {
+        swr_free(&swr_ctx);
+        swr_ctx = nullptr;
+      }
+    }
+
+    bool AppData::set(std::vector<uint8_t> &memory) {
+      data = std::move(memory);
+      // data = memory;
+      resetState();
+
+      // open video
+      fmt_ctx = avformat_alloc_context();
+      io_ctx = avio_alloc_context((unsigned char *)av_malloc(kBufferSize), kBufferSize, 0, this, bufferRead, NULL, bufferSeek);
+      fmt_ctx->pb = io_ctx;
+      if (avformat_open_input(&fmt_ctx, "memory input", NULL, NULL) < 0) {
+        // std::cout << "failed to open input" << std::endl;
+        return false;
+      }
+
+      // find stream info
+      if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+        // std::cout << "failed to get stream info" << std::endl;
+        return false;
+      }
+
+      // dump debug info
+      // av_dump_format(fmt_ctx, 0, argv[1], 0);
+
+       // find the video stream
+      for (unsigned int i = 0; i < fmt_ctx->nb_streams; ++i)
+      {
+          if (fmt_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+          {
+              stream_idx = i;
+              break;
+          }
+      }
+
+      if (stream_idx == -1) {
+        // std::cout << "failed to find video stream" << std::endl;
+        return false;
+      }
+
+      audio_stream = fmt_ctx->streams[stream_idx];
+      codec_ctx = audio_stream->codec;
+
+      // find the decoder
+      decoder = avcodec_find_decoder(codec_ctx->codec_id);
+      if (decoder == NULL) {
+        // std::cout << "failed to find decoder" << std::endl;
+        return false;
+      }
+
+      // open the decoder
+      if (avcodec_open2(codec_ctx, decoder, NULL) < 0) {
+        // std::cout << "failed to open codec" << std::endl;
+        return false;
+      }
+
+      // allocate the audio frames
+      av_frame = av_frame_alloc();
+
+      return true;
+    }
+
+    int AppData::bufferRead(void *opaque, unsigned char *buf, int buf_size) {
+      AppData *appData = (AppData *)opaque;
+      int64_t readLength = std::min<int64_t>(buf_size, appData->data.size() - appData->dataPos);
+      if (readLength > 0) {
+        memcpy(buf, appData->data.data() + appData->dataPos, readLength);
+        appData->dataPos += readLength;
+        return readLength;
+      } else {
+        return AVERROR_EOF;
+      }
+    }
+    int64_t AppData::bufferSeek(void *opaque, int64_t offset, int whence) {
+      AppData *appData = (AppData *)opaque;
+      if (whence == AVSEEK_SIZE) {
+        return appData->data.size();
+      } else {
+        int64_t newPos;
+        if (whence == SEEK_SET) {
+          newPos = offset;
+        } else if (whence == SEEK_CUR) {
+          newPos = appData->dataPos + offset;
+        } else if (whence == SEEK_END) {
+          newPos = appData->data.size() + offset;
+        } else {
+          newPos = offset;
+        }
+        newPos = std::min<int64_t>(std::max<int64_t>(newPos, 0), appData->data.size() - appData->dataPos);
+        appData->dataPos = newPos;
+        return newPos;
+      }
+    }
+
+    PlanesVector AppData::read() {
+      size_t numChannels = codec_ctx->channels;
+      PlanesVector planes(numChannels);
+      for (size_t i = 0; i < numChannels; i++) {
+        planes[i].reserve(8 * 1024 / sizeof(float));
+      }
+
+      for (;;) {
+        bool packetOk = false;
+        bool packetValid = false;
+        while (!packetValid || packet.stream_index != stream_idx) {
+          if (packetValid) {
+            av_free_packet(&packet);
+            packetValid = false;
+          }
+
+          int ret = av_read_frame(fmt_ctx, &packet);
+          packetValid = true;
+          if (ret == AVERROR_EOF) {
+            break;
+          } else if (ret < 0) {
+            av_free_packet(&packet);
+            return PlanesVector();
+          } else {
+            packetOk = true;
+            break;
+          }
+        }
+        // we have a valid packet at this point
+        if (packetOk) {
+          int frame_finished = 0;
+
+          if (avcodec_decode_audio4(codec_ctx, av_frame, &frame_finished, &packet) < 0) {
+            av_free_packet(&packet);
+            return PlanesVector();
+          }
+
+          if (frame_finished) {
+            if (!swr_ctx) {
+              // allocate the resampler
+              int channel_layout = codec_ctx->channels == 2 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO;
+              swr_ctx = swr_alloc_set_opts(
+                nullptr,
+                channel_layout,
+                AV_SAMPLE_FMT_FLTP,
+                codec_ctx->sample_rate,
+                channel_layout,
+                codec_ctx->sample_fmt,
+                codec_ctx->sample_rate,
+                0,
+                nullptr
+              );
+              swr_init(swr_ctx);
+            }
+
+            swr_convert(swr_ctx, sr_planes, av_frame->nb_samples, (const uint8_t **)av_frame->extended_data, av_frame->nb_samples);
+
+            const size_t numSamples = av_frame->nb_samples;
+            for (size_t i = 0; i < numChannels; i++) {
+              Plane &plane = planes[i];
+              plane.resize(plane.size() + numSamples);
+              float *frameStart = plane.data() + plane.size() - numSamples;
+              memcpy(frameStart, sr_planes[i], numSamples * sizeof(float));
+            }
+
+            av_free_packet(&packet);
+
+            continue;
+          } else {
+            av_free_packet(&packet);
+
+            continue;
+          }
+        } else {
+          av_free_packet(&packet);
+
+          return planes;
+        }
+      }
+    }
+
+    float AppData::getSampleRate() {
+      return codec_ctx->sample_rate;
+    }
+
+    std::unique_ptr<lab::AudioBus> LoadInternal(std::vector<uint8_t> &buffer, bool mixToMono)
+    {
+        AppData appData;
+        if (!appData.set(buffer)) return nullptr; // takes ownership
+        auto planes = appData.read();
+
+        const size_t numChannels = planes.size();
+        if (!numChannels) return nullptr;
+
+        const size_t numSamples = planes[0].size();
         if (!numSamples) return nullptr;
 
-        size_t length = int(numSamples / audioData->channelCount);
-        const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
-        
-        std::vector<float> planarSamples(numSamples);
+        const size_t busChannelCount = mixToMono ? 1 : numChannels;
 
         // Create AudioBus where we'll put the PCM audio data
-        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, length));
-        audioBus->setSampleRate(audioData->sampleRate);
+        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, numSamples));
+        audioBus->setSampleRate(appData.getSampleRate());
         
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
-        nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), length, audioData->channelCount, length);
+        // nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numSamples, numChannels, numSamples);
         
         // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
         // because we've already deinterleaved
-        if (audioData->channelCount == 2 && mixToMono)
+        if (numChannels == 2 && mixToMono)
         {
-            float * destinationMono = audioBus->channel(0)->mutableData();
-            float * leftSamples = planarSamples.data();
-            float * rightSamples = planarSamples.data() + length;
+            float *destinationMono = audioBus->channel(0)->mutableData();
+            float *leftSamples = planes[0].data();
+            float *rightSamples = planes[1].data();
             
-            for (size_t i = 0; i < length; i++)
+            for (size_t i = 0; i < numSamples; i++)
             {
                 destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
             }
         }
         else
         {
-            for (size_t i = 0; i < busChannelCount; ++i)
+            for (size_t i = 0; i < busChannelCount; i++)
             {
-                std::memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * length), length * sizeof(float));
+                memcpy(audioBus->channel(i)->mutableData(), planes[i].data(), numSamples * sizeof(float));
             }
         }
-        
-        delete audioData;
-        
+
         return audioBus;
     }
 }
@@ -62,23 +286,20 @@ namespace detail
 namespace lab
 {
 
-nqr::NyquistIO nyquistFileIO;
 std::mutex g_fileIOMutex;
     
-std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
+std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    nqr::AudioData * audioData = new nqr::AudioData();
-    nyquistFileIO.Load(audioData, std::string(filePath));
-    return detail::LoadInternal(audioData, mixToMono);
+    std::ifstream inputStream(filePath);
+    std::istream_iterator<unsigned char> start(inputStream), end;
+    std::vector<unsigned char> buffer(start, end);
+    return detail::LoadInternal(buffer, mixToMono);
 }
 
-std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
+std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, std::string extension, bool mixToMono)
 {
-    std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    nqr::AudioData * audioData = new nqr::AudioData();
-    nyquistFileIO.Load(audioData, extension, buffer);
-    return detail::LoadInternal(audioData, mixToMono);
+    return detail::LoadInternal(buffer, mixToMono);
 }
     
 } // end namespace lab
