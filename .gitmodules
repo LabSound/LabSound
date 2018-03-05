@@ -1,3 +1,6 @@
 [submodule "labsound/third_party/libnyquist"]
 	path = labsound/third_party/libnyquist
 	url = https://github.com/modulesio/libnyquist.git
+[submodule "labsound/node-native-video-deps"]
+	path = labsound/third_party/node-native-video-deps
+	url = https://github.com/modulesio/node-native-video-deps.git
