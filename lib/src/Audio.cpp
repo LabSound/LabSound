@@ -38,15 +38,13 @@ NAN_METHOD(Audio::New) {
   info.GetReturnValue().Set(audioObj);
 }
 
-void Audio::Load(uint8_t *bufferValue, size_t bufferLength, const char *extensionValue) {
+void Audio::Load(uint8_t *bufferValue, size_t bufferLength) {
   lab::ContextRenderLock lock(defaultAudioContext.get(), "Audio::Load");
 
   vector<uint8_t> buffer(bufferLength);
   memcpy(buffer.data(), bufferValue, bufferLength);
-  
-  string extension(extensionValue);
 
-  audioBus = lab::MakeBusFromMemory(buffer, extension, false);
+  audioBus = lab::MakeBusFromMemory(buffer, false);
   audioNode.reset(new lab::SampledAudioNode());
   audioNode->setBus(lock, audioBus);
   
@@ -62,14 +60,13 @@ void Audio::Pause() {
 }
 
 NAN_METHOD(Audio::Load) {
-  if (info[0]->IsTypedArray() && info[1]->IsString()) {
+  if (info[0]->IsTypedArray()) {
     Audio *audio = ObjectWrap::Unwrap<Audio>(info.This());
 
     Local<ArrayBufferView> arrayBufferView = Local<ArrayBufferView>::Cast(info[0]);
     Local<ArrayBuffer> arrayBuffer = arrayBufferView->Buffer();
-    v8::String::Utf8Value extensionValue(info[1]->ToString());
     
-    audio->Load((uint8_t *)arrayBuffer->GetContents().Data() + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength(), *extensionValue);
+    audio->Load((uint8_t *)arrayBuffer->GetContents().Data() + arrayBufferView->ByteOffset(), arrayBufferView->ByteLength());
   } else {
     Nan::ThrowError("invalid arguments");
   }
