@@ -21,7 +21,7 @@ AudioContext::AudioContext() {
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons, Local<Value> scriptProcessorNodeCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -40,6 +40,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioList
   Nan::SetMethod(proto, "createAnalyser", CreateAnalyser);
   Nan::SetMethod(proto, "createPanner", CreatePanner);
   Nan::SetMethod(proto, "createStereoPanner", CreateStereoPanner);
+  Nan::SetMethod(proto, "createScriptProcessor", CreateScriptProcessor);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
   Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRateGetter);
 
@@ -52,6 +53,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioList
   ctorFn->Set(JS_STR("AnalyserNode"), analyserNodeCons);
   ctorFn->Set(JS_STR("PannerNode"), pannerNodeCons);
   ctorFn->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
+  ctorFn->Set(JS_STR("ScriptProcessorNode"), scriptProcessorNodeCons);
 
   return scope.Escape(ctorFn);
 }
@@ -122,6 +124,15 @@ Local<Object> AudioContext::CreateStereoPanner(Local<Function> stereoPannerNodeC
   Local<Object> stereoPannerNodeObj = stereoPannerNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
 
   return stereoPannerNodeObj;
+}
+
+Local<Object> AudioContext::CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, Local<Object> audioContextObj) {
+  Local<Value> argv[] = {
+    audioContextObj,
+  };
+  Local<Object> scriptProcessorNodeObj = scriptProcessorNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+
+  return scriptProcessorNodeObj;
 }
 
 void AudioContext::Suspend() {
@@ -263,6 +274,18 @@ NAN_METHOD(AudioContext::CreateStereoPanner) {
   Local<Object> stereoPannerNodeObj = audioContext->CreateStereoPanner(stereoPannerNodeConstructor, audioContextObj);
 
   info.GetReturnValue().Set(stereoPannerNodeObj);
+}
+
+NAN_METHOD(AudioContext::CreateScriptProcessor) {
+  Nan::HandleScope scope;
+
+  Local<Object> audioContextObj = info.This();
+  AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+
+  Local<Function> scriptProcessorNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("ScriptProcessorNode")));
+  Local<Object> scriptProcessorNodeObj = audioContext->CreateScriptProcessor(scriptProcessorNodeConstructor, audioContextObj);
+
+  info.GetReturnValue().Set(scriptProcessorNodeObj);
 }
 
 NAN_METHOD(AudioContext::Suspend) {
