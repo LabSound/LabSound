@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
 
+// microphone
 const audioContext = new AudioContext();
 const microphoneMediaStream = new MicrophoneMediaStream();
 const audioCtx = new AudioContext();
@@ -10,17 +11,36 @@ audioSourceNode.connect(audioCtx.destination);
 
 setTimeout(() => {}, 100000000);
 
-/* fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
+/* // audio clip
+fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
   if (!err) {
     console.log('create');
 
-    const audio = new Audio();
+    class HTMLAudioElement {
+      constructor(audio) {
+        this.audio = audio;
+      }
+      
+      play() {
+        this.audio.play();
+      }
+      
+      pause() {
+        this.audio.pause();
+      }
+
+      get data() {
+        return this.audio.data;
+      }
+      set data(data) {}
+    }
+    const audioElement = new HTMLAudioElement(new Audio());
 
     console.log('load');
 
-    audio.load(data, 'wav');
+    audioElement.audio.load(data, 'wav');
     
-    const audioSourceNode = audioContext.createMediaElementSource(audio);
+    const audioSourceNode = audioContext.createMediaElementSource(audioElement);
     const gainNode = audioContext.createGain();
     gainNode.connect(audioContext.destination);
     const pannerNode = audioContext.createPanner();
@@ -29,12 +49,12 @@ setTimeout(() => {}, 100000000);
 
     console.log('play');
 
-    audio.play();
+    audioElement.play();
 
     console.log('set timeout');
 
     setTimeout(() => {
-      audio.pause();
+      audioElement.pause();
 
       setTimeout(() => {}, 1000);
     }, 2000);
