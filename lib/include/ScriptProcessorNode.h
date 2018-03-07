@@ -17,7 +17,7 @@ namespace lab {
 
 class ScriptProcessor : public AudioProcessor {
 public:
-  ScriptProcessor(vector<function<void(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> &kernels);
+  ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessor();
 
   virtual void initialize() override;
@@ -28,12 +28,12 @@ public:
   virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
-  vector<function<void(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> m_kernels;
+  function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> m_kernel;
 };
 
 class ScriptProcessorNode : public AudioBasicProcessorNode {
 public:
-  ScriptProcessorNode(vector<function<void(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> &kernels);
+  ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessorNode();
 };
 
@@ -52,10 +52,14 @@ protected:
   ScriptProcessorNode();
   ~ScriptProcessorNode();
 
-  static void Process(lab::ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess);
+  static NAN_GETTER(OnAudioProcessGetter);
+  static NAN_SETTER(OnAudioProcessSetter);
+
+  void Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess);
 
 protected:
   std::shared_ptr<lab::ScriptProcessorNode> audioNode;
+  Nan::Persistent<Function> onAudioProcess;
 };
 
 }

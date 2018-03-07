@@ -3,7 +3,7 @@
 
 namespace lab {
 
-ScriptProcessor::ScriptProcessor(vector<function<void(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> &kernels) : AudioProcessor(kernels.size()), m_kernels(std::move(kernels)) {}
+ScriptProcessor::ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioProcessor(numChannels), m_kernel(kernel) {}
 ScriptProcessor::~ScriptProcessor() {
   if (isInitialized()) {
     uninitialize();
@@ -20,15 +20,21 @@ void ScriptProcessor::process(ContextRenderLock& r, const AudioBus* source, Audi
     return;
   }
 
-  bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() && source->numberOfChannels() == m_kernels.size();
+  bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels();
   // ASSERT(channelCountMatches);
   if (!channelCountMatches) {
     return;
   }
 
-  for (unsigned i = 0; i < m_kernels.size(); ++i) {
-    m_kernels[i](r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
+  size_t numChannels = source->numberOfChannels();
+  vector<const float*> sources(numChannels);
+  vector<float*> destinations(numChannels);
+  for (unsigned i = 0; i < numChannels; ++i) {
+    sources[i] = source->channel(i)->data();
+    destinations[i] = destination->channel(i)->mutableData();
   }
+
+  m_kernel(r, sources, destinations, framesToProcess);
 }
 void ScriptProcessor::initialize() {}
 void ScriptProcessor::uninitialize() {}
@@ -40,8 +46,8 @@ double ScriptProcessor::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
 
-ScriptProcessorNode::ScriptProcessorNode(vector<function<void(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> &kernels) : AudioBasicProcessorNode() {
-  m_processor.reset(new ScriptProcessor(kernels));
+ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioBasicProcessorNode() {
+  m_processor.reset(new ScriptProcessor(numChannels, std::move(kernel)));
 
   initialize();
 }
@@ -74,7 +80,7 @@ Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
 }
 
 void ScriptProcessorNode::InitializePrototype(Local<ObjectTemplate> proto) {
-  // nothing
+  Nan::SetAccessor(proto, JS_STR("onaudioprocess"), OnAudioProcessGetter, OnAudioProcessSetter);
 }
 
 NAN_METHOD(ScriptProcessorNode::New) {
@@ -87,11 +93,11 @@ NAN_METHOD(ScriptProcessorNode::New) {
     Local<Object> scriptProcessorNodeObj = info.This();
     scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
-    vector<function<void(lab::ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)>> kernels{
-      ScriptProcessorNode::Process,
-      ScriptProcessorNode::Process,
-    };
-    scriptProcessorNode->audioNode.reset(new lab::ScriptProcessorNode(kernels));
+    scriptProcessorNode->audioNode.reset(new lab::ScriptProcessorNode(2, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+      scriptProcessorNode->Process(r, sources, destinations, framesToProcess);
+    }));
+
+    scriptProcessorNodeObj->Set(JS_STR("onaudioprocess"), Nan::Null());
 
     info.GetReturnValue().Set(scriptProcessorNodeObj);
   } else {
@@ -99,8 +105,37 @@ NAN_METHOD(ScriptProcessorNode::New) {
   }
 }
 
-void ScriptProcessorNode::Process(lab::ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess) {
-  memcpy(destination, source, framesToProcess * sizeof(float));
+NAN_GETTER(ScriptProcessorNode::OnAudioProcessGetter) {
+  Nan::HandleScope scope;
+
+  ScriptProcessorNode *scriptProcessorNode = ObjectWrap::Unwrap<ScriptProcessorNode>(info.This());
+
+  Local<Function> onAudioProcessLocal = Nan::New(scriptProcessorNode->onAudioProcess);
+  info.GetReturnValue().Set(onAudioProcessLocal);
+}
+
+NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
+  Nan::HandleScope scope;
+
+  if (value->IsFunction()) {
+    ScriptProcessorNode *scriptProcessorNode = ObjectWrap::Unwrap<ScriptProcessorNode>(info.This());
+
+    Local<Function> onAudioProcessLocal = Local<Function>::Cast(value);
+    scriptProcessorNode->onAudioProcess.Reset(onAudioProcessLocal);
+  } else {
+    Nan::ThrowError("onaudioprocess: invalid arguments");
+  }
+}
+
+void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+  if (!onAudioProcess.IsEmpty()) {
+    Local<Function> onAudioProcessLocal = Nan::New(onAudioProcess);
+    // XXX
+  } else {
+    for (size_t i = 0; i < sources.size(); i++) {
+      memcpy(destinations[i], sources[i], framesToProcess * sizeof(float));
+    }
+  }
 }
 
 }
