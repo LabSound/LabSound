@@ -3,11 +3,12 @@ const fs = require('fs');
 const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
 
 const audioContext = new AudioContext();
-
 const microphoneMediaStream = new MicrophoneMediaStream();
 const audioCtx = new AudioContext();
-const audioSourceNode = audioCtx.createMediaStreamSource(stream);
+const audioSourceNode = audioCtx.createMediaStreamSource(microphoneMediaStream);
 audioSourceNode.connect(audioCtx.destination);
+
+setTimeout(() => {}, 100000000);
 
 /* fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
   if (!err) {
