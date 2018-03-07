@@ -41,6 +41,24 @@ public:
 
 namespace webaudio {
 
+class AudioProcessingEvent : public ObjectWrap {
+public:
+  static Handle<Object> Initialize(Isolate *isolate);
+
+protected:
+  static NAN_METHOD(New);
+
+  AudioProcessingEvent(Local<Array> sources, Local<Array> destinations, uint32_t numFrames);
+  ~AudioProcessingEvent();
+
+  static NAN_GETTER(NumberOfInputChannelsGetter);
+  static NAN_GETTER(NumberOfOutputChannelsGetter);
+
+  Nan::Persistent<Array> sources;
+  Nan::Persistent<Array> destinations;
+  uint32_t numFrames;
+};
+
 class ScriptProcessorNode : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
@@ -59,6 +77,7 @@ protected:
 
 protected:
   std::shared_ptr<lab::ScriptProcessorNode> audioNode;
+  Nan::Persistent<Function> audioProcessingEventConstructor;
   Nan::Persistent<Function> onAudioProcess;
 };
 
