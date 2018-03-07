@@ -10,6 +10,7 @@
         "<!(node -e \"require('nan')\")",
         '<(module_root_dir)/lib/include',
         '<(module_root_dir)/labsound/include',
+        '<(module_root_dir)/labsound/third_party/node-native-video-deps/include',
       ],
       'conditions': [
         ['OS=="linux"', {
@@ -34,16 +35,36 @@
           ],
         }],
         ['OS=="win"', {
-          'libraries': [
-            'LabSound.lib',
-            'libnyquist.lib',
-          ],
           'library_dirs': [
             '<(module_root_dir)/labsound/build/x64/Release',
-            '<(module_root_dir)/labsound/win.vs2017/x64/Release',
+            '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win',
+          ],
+          'libraries': [
+            'LabSound.lib',
+            'avformat.lib',
+            'avcodec.lib',
+            'avutil.lib',
+            'swscale.lib',
+            'swresample.lib',
+          ],
+          'copies': [
+            {
+              'destination': '<(module_root_dir)/build/Release/',
+              'files': [
+                '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win/avformat-58.dll',
+                '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win/avcodec-58.dll',
+                '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win/avutil-56.dll',
+                '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win/swscale-5.dll',
+                '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/win/swresample-3.dll',
+              ]
+            }
           ],
         }],
         ['OS=="mac"', {
+        'library_dirs': [
+            '<(module_root_dir)/labsound/bin',
+            '<(module_root_dir)/labsound/third_party/node-native-video-deps/lib/macos',
+          ],
           'libraries': [
             '-framework Cocoa',
             '-framework Accelerate',
@@ -51,20 +72,11 @@
             '-framework AudioUnit',
             '-framework AudioToolbox',
             '-llabsound',
-            '-lnyquist',
           ],
           'library_dirs': [
             '<(module_root_dir)/labsound/osx/build/Release',
-            '<(module_root_dir)/labsound/third_party/libnyquist/build/Release',
           ],
         }],
-      ],
-      'copies': [
-        {
-          'destination': '<(module_root_dir)/build/Release/',
-          'files': [
-          ]
-        }
       ],
     }
   ]
