@@ -1,10 +1,15 @@
 const path = require('path');
 const fs = require('fs');
-const {AudioContext, Audio} = require('.');
+const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
 
 const audioContext = new AudioContext();
 
-fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
+const microphoneMediaStream = new MicrophoneMediaStream();
+const audioCtx = new AudioContext();
+const audioSourceNode = audioCtx.createMediaStreamSource(stream);
+audioSourceNode.connect(audioCtx.destination);
+
+/* fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
   if (!err) {
     console.log('create');
 
@@ -35,4 +40,4 @@ fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-
   } else {
     throw err;
   }
-});
+}); */
