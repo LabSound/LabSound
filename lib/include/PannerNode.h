@@ -6,9 +6,9 @@
 #include <nan.h>
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
-#include <globals.h>
 #include <AudioNode.h>
 #include <FakeAudioParam.h>
+#include <AudioContext.h>
 
 using namespace std;
 using namespace v8;

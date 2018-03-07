@@ -6,7 +6,7 @@
 #include <nan.h>
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
-#include <globals.h>
+#include <AudioContext.h>
 
 using namespace std;
 using namespace v8;
@@ -28,6 +28,8 @@ protected:
   static NAN_METHOD(Pause);
   static NAN_GETTER(CurrentTimeGetter);
   static NAN_GETTER(DurationGetter);
+  static NAN_GETTER(LoopGetter);
+  static NAN_SETTER(LoopSetter);
 
   Audio();
   ~Audio();

@@ -45,14 +45,14 @@ NAN_METHOD(AudioDestinationNode::New) {
 
     info.GetReturnValue().Set(audioDestinationNodeObj);
   } else {
-    Nan::ThrowError("invalid arguments");
+    Nan::ThrowError("AudioDestinationNode: invalid arguments");
   }
 }
 
 NAN_GETTER(AudioDestinationNode::MaxChannelCountGetter) {
   Nan::HandleScope scope;
   
-  info.GetReturnValue().Set(JS_INT(defaultAudioContext->maxNumberOfChannels));
+  info.GetReturnValue().Set(JS_INT(getDefaultAudioContext()->maxNumberOfChannels));
 }
 
 }

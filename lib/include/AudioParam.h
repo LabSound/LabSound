@@ -7,7 +7,7 @@
 #include <string>
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
-#include <globals.h>
+#include <AudioContext.h>
 
 using namespace std;
 using namespace v8;
@@ -27,6 +27,13 @@ protected:
   static NAN_GETTER(MinValueGetter);
   static NAN_GETTER(ValueGetter);
   static NAN_SETTER(ValueSetter);
+  static NAN_METHOD(SetValueAtTime);
+  static NAN_METHOD(LinearRampToValueAtTime);
+  static NAN_METHOD(ExponentialRampToValueAtTime);
+  static NAN_METHOD(SetTargetAtTime);
+  static NAN_METHOD(SetValueCurveAtTime);
+  static NAN_METHOD(CancelScheduledValues);
+  static NAN_METHOD(CancelAndHoldAtTime);
 
   AudioParam();
   ~AudioParam();

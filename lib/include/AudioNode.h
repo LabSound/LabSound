@@ -7,7 +7,6 @@
 #include <string>
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
-#include <globals.h>
 
 using namespace std;
 using namespace v8;

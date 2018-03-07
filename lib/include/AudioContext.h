@@ -6,26 +6,31 @@
 #include <nan.h>
 #include "LabSound/extended/LabSound.h"
 #include <defines.h>
-#include <globals.h>
 #include <Audio.h>
+#include <AudioNode.h>
+#include <AudioSourceNode.h>
+#include <AudioDestinationNode.h>
 #include <GainNode.h>
 #include <AnalyserNode.h>
 #include <PannerNode.h>
 #include <StereoPannerNode.h>
 #include <AudioListener.h>
+#include <MicrophoneMediaStream.h>
 
 using namespace std;
 using namespace v8;
 using namespace node;
 
 namespace webaudio {
+  
+lab::AudioContext *getDefaultAudioContext();
 
 class AudioContext : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons);
   void Close();
   Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
-  void CreateMediaStreamSource();
+  Local<Object> CreateMediaStreamSource(Local<Function> audioSourceNodeConstructor, Local<Object> mediaStream, Local<Object> audioContextObj);
   void CreateMediaStreamDestination();
   void CreateMediaStreamTrackSource();
   Local<Object> CreateGain(Local<Function> gainNodeConstructor, Local<Object> audioContextObj);
