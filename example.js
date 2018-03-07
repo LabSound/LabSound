@@ -15,8 +15,11 @@ fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-
     audio.load(data, 'wav');
     
     const audioSourceNode = audioContext.createMediaElementSource(audio);
-    const audioDestinationNode = audioContext.destination;
-    audioSourceNode.connect(audioDestinationNode, 0, 0);
+    const gainNode = audioContext.createGain();
+    gainNode.connect(audioContext.destination);
+    const pannerNode = audioContext.createPanner();
+    pannerNode.connect(gainNode);
+    audioSourceNode.connect(pannerNode);
 
     console.log('play');
 
