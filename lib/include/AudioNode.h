@@ -36,8 +36,8 @@ protected:
 protected:
   Nan::Persistent<Object> context;
   shared_ptr<lab::AudioNode> audioNode;
-  vector<Nan::Persistent<Object>> inputAudioNodes;
-  vector<Nan::Persistent<Object>> outputAudioNodes;
+  Nan::Persistent<Array> inputAudioNodes;
+  Nan::Persistent<Array> outputAudioNodes;
 };
 
 }

@@ -3,7 +3,7 @@
 
 namespace webaudio {
 
-AudioNode::AudioNode() {}
+AudioNode::AudioNode() : inputAudioNodes(Nan::New<Array>(0)), outputAudioNodes(Nan::New<Array>(0)) {}
 
 AudioNode::~AudioNode() {}
 
@@ -85,8 +85,8 @@ NAN_METHOD(AudioNode::Connect) {
         return;
       } */
 
-      srcAudioNode->outputAudioNodes[outputIndex].Reset(dstAudioNodeObj);
-      dstAudioNode->inputAudioNodes[inputIndex].Reset(srcAudioNodeObj);
+      Nan::New(srcAudioNode->outputAudioNodes)->Set(outputIndex, dstAudioNodeObj);
+      Nan::New(dstAudioNode->inputAudioNodes)->Set(inputIndex, srcAudioNodeObj);
 
       info.GetReturnValue().Set(info[0]);
     } else {
@@ -104,11 +104,11 @@ NAN_METHOD(AudioNode::Disconnect) {
     Local<Object> srcAudioNodeObj = info.This();
     AudioNode *srcAudioNode = ObjectWrap::Unwrap<AudioNode>(srcAudioNodeObj);
     shared_ptr<lab::AudioNode> srcLabAudioNode = srcAudioNode->audioNode;
-    
+
     Local<Object> audioContextObj = Nan::New(srcAudioNode->context);
     AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
     lab::AudioContext *labAudioContext = audioContext->audioContext;
-    
+
     // try {
       labAudioContext->disconnect(nullptr, srcLabAudioNode);
     /* } catch (const std::exception &e) {
@@ -119,18 +119,29 @@ NAN_METHOD(AudioNode::Disconnect) {
       return;
     } */
 
-    for (Nan::Persistent<Object> &outputAudioNodePersistent : srcAudioNode->outputAudioNodes) {
-      if (!outputAudioNodePersistent.IsEmpty()) {
-        Local<Object> outputAudioNodeObj = Nan::New(outputAudioNodePersistent);
+    Local<Array> outputAudioNodes = Nan::New(srcAudioNode->outputAudioNodes);
+    Local<Array> inputAudioNodes = Nan::New(srcAudioNode->inputAudioNodes);
+    size_t numOutputAudioNodes = outputAudioNodes->Length();
+    size_t numInputAudioNodes = inputAudioNodes->Length();
+    for (size_t i = 0; i < numOutputAudioNodes; i++) {
+      Local<Value> outputAudioNode = outputAudioNodes->Get(i);
+
+      if (outputAudioNode->BooleanValue()) {
+        Local<Object> outputAudioNodeObj = Local<Object>::Cast(outputAudioNode);
         AudioNode *outputAudioNode = ObjectWrap::Unwrap<AudioNode>(outputAudioNodeObj);
-        for (Nan::Persistent<Object> &inputAudioNodePersistent : outputAudioNode->inputAudioNodes) {
-          Local<Object> inputAudioNodeObj = Nan::New(inputAudioNodePersistent);
-          AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
-          if (inputAudioNode == srcAudioNode) {
-            inputAudioNodePersistent.Reset();
+
+        for (size_t j = 0; j < numInputAudioNodes; j++) {
+          Local<Value> inputAudioNode = inputAudioNodes->Get(j);
+
+          if (inputAudioNode->BooleanValue()) {
+            Local<Object> inputAudioNodeObj = Local<Object>::Cast(inputAudioNode);
+            AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
+            if (inputAudioNode == srcAudioNode) {
+              inputAudioNodes->Set(j, Nan::Null());
+            }
           }
         }
-        outputAudioNodePersistent.Reset();
+        outputAudioNodes->Set(i, Nan::Null());
       }
     }
   } else {
@@ -167,19 +178,31 @@ NAN_METHOD(AudioNode::Disconnect) {
           return;
         } */
 
-        for (Nan::Persistent<Object> &outputAudioNodePersistent : srcAudioNode->outputAudioNodes) {
-          if (!outputAudioNodePersistent.IsEmpty()) {
-            Local<Object> outputAudioNodeObj = Nan::New(outputAudioNodePersistent);
+        Local<Array> outputAudioNodes = Nan::New(srcAudioNode->outputAudioNodes);
+        Local<Array> inputAudioNodes = Nan::New(srcAudioNode->inputAudioNodes);
+        size_t numOutputAudioNodes = outputAudioNodes->Length();
+        size_t numInputAudioNodes = inputAudioNodes->Length();
+        for (size_t i = 0; i < numOutputAudioNodes; i++) {
+          Local<Value> outputAudioNode = outputAudioNodes->Get(i);
+
+          if (outputAudioNode->BooleanValue()) {
+            Local<Object> outputAudioNodeObj = Local<Object>::Cast(outputAudioNode);
             AudioNode *outputAudioNode = ObjectWrap::Unwrap<AudioNode>(outputAudioNodeObj);
+
             if (outputAudioNode == dstAudioNode) {
-              for (Nan::Persistent<Object> &inputAudioNodePersistent : outputAudioNode->inputAudioNodes) {
-                Local<Object> inputAudioNodeObj = Nan::New(inputAudioNodePersistent);
-                AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
-                if (inputAudioNode == srcAudioNode) {
-                  inputAudioNodePersistent.Reset();
+              for (size_t j = 0; j < numInputAudioNodes; j++) {
+                Local<Value> inputAudioNode = inputAudioNodes->Get(j);
+
+                if (inputAudioNode->BooleanValue()) {
+                  Local<Object> inputAudioNodeObj = Local<Object>::Cast(inputAudioNode);
+                  AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
+                  
+                  if (inputAudioNode == srcAudioNode) {
+                    inputAudioNodes->Set(j, Nan::Null());
+                  }
                 }
               }
-              outputAudioNodePersistent.Reset();
+              outputAudioNodes->Set(i, Nan::Null());
             }
           }
         }
@@ -209,7 +232,7 @@ NAN_GETTER(AudioNode::NumberOfInputsGetter) {
   Nan::HandleScope scope;
 
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
-  
+
   unsigned int numberOfInputs = audioNode->audioNode->numberOfInputs();
 
   info.GetReturnValue().Set(JS_INT(numberOfInputs));
@@ -231,7 +254,7 @@ NAN_GETTER(AudioNode::ChannelCountGetter) {
   AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
 
   unsigned int channelCount = audioNode->audioNode->channelCount();
-  
+
   info.GetReturnValue().Set(JS_INT(channelCount));
 }
 
