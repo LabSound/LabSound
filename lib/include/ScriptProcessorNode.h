@@ -65,6 +65,8 @@ class ScriptProcessorNode : public AudioMultiProcessorNode {
 public:
   ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessorNode();
+
+protected:
 };
 
 }
@@ -120,13 +122,19 @@ protected:
 
   static NAN_GETTER(OnAudioProcessGetter);
   static NAN_SETTER(OnAudioProcessSetter);
+  void ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess);
+  static void ProcessInMainThread(uv_async_t *handle);
 
-  void Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess);
-
-protected:
   Nan::Persistent<Function> audioBufferConstructor;
   Nan::Persistent<Function> audioProcessingEventConstructor;
   Nan::Persistent<Function> onAudioProcess;
+
+  uv_async_t threadAsync;
+  uv_sem_t threadSemaphore;
+  static ScriptProcessorNode *threadScriptProcessorNode;
+  static vector<const float*> *threadSources;
+  static vector<float*> *threadDestinations;
+  static size_t threadFramesToProcess;
 };
 
 }

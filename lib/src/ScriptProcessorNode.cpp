@@ -3,7 +3,7 @@
 
 namespace lab {
 
-ScriptProcessor::ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioProcessor(numChannels), m_kernel(kernel) {}
+ScriptProcessor::ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioProcessor(numChannels), m_kernel(std::move(kernel)) {}
 ScriptProcessor::~ScriptProcessor() {
   if (isInitialized()) {
     uninitialize();
@@ -80,7 +80,7 @@ void AudioMultiProcessorNode::uninitialize()
 void AudioMultiProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destinationBus = output(0)->bus(r);
-    
+
     if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
         destinationBus->zero();
     else {
@@ -116,16 +116,16 @@ void AudioMultiProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
         return;
 
     unsigned numberOfChannels = input->numberOfChannels(r);
-    
+
     bool mustPropagate = false;
     for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
         mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
     }
-    
+
     if (mustPropagate) {
         // Re-initialize the processor with the new channel count.
         processor()->setNumberOfChannels(numberOfChannels);
-        
+
         uninitialize();
         for (size_t i = 0; i < numberOfOutputs(); ++i) {
             // This will propagate the channel count to any nodes connected further down the chain...
@@ -133,7 +133,7 @@ void AudioMultiProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
         }
         initialize();
     }
-    
+
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 unsigned AudioMultiProcessorNode::numberOfChannels()
@@ -148,9 +148,9 @@ double AudioMultiProcessorNode::latencyTime(ContextRenderLock & r) const
 {
     return m_processor->latencyTime(r);
 }
-AudioProcessor * AudioMultiProcessorNode::processor() 
-{ 
-    return m_processor.get(); 
+AudioProcessor * AudioMultiProcessorNode::processor()
+{
+    return m_processor.get();
 }
 
 ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioMultiProcessorNode(numChannels) {
@@ -189,14 +189,14 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
 NAN_METHOD(AudioBuffer::New) {
   Nan::HandleScope scope;
 
-  if (info[0]->IsArray() && info[1]->IsNumber()) {
+  if (info[0]->IsArray()) {
     Local<Array> buffers = Local<Array>::Cast(info[0]);
 
     AudioBuffer *audioBuffer = new AudioBuffer(buffers);
     Local<Object> audioBufferObj = info.This();
     audioBuffer->Wrap(audioBufferObj);
   } else {
-    Nan::ThrowError("AudioProcessingEvent:New: invalid arguments");
+    Nan::ThrowError("AudioBuffer:New: invalid arguments");
   }
 }
 NAN_GETTER(AudioBuffer::Length) {
@@ -337,8 +337,14 @@ NAN_GETTER(AudioProcessingEvent::NumberOfOutputChannelsGetter) {
   info.GetReturnValue().Set(numberOfChannels);
 }
 
-ScriptProcessorNode::ScriptProcessorNode() {}
-ScriptProcessorNode::~ScriptProcessorNode() {}
+ScriptProcessorNode::ScriptProcessorNode() {
+  uv_async_init(uv_default_loop(), &threadAsync, ProcessInMainThread);
+  uv_sem_init(&threadSemaphore, 0);
+}
+ScriptProcessorNode::~ScriptProcessorNode() {
+  uv_close((uv_handle_t *)&threadAsync, nullptr);
+  uv_sem_destroy(&threadSemaphore);
+}
 Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
 
@@ -372,7 +378,7 @@ NAN_METHOD(ScriptProcessorNode::New) {
     uint32_t bufferSize = info[0]->Uint32Value();
     uint32_t numberOfInputChannels = info[1]->Uint32Value();
     uint32_t numberOfOutputChannels = info[2]->Uint32Value();
-    
+
     if (numberOfInputChannels == numberOfOutputChannels) {
       Local<Object> audioContextObj = Local<Object>::Cast(info[3]);
 
@@ -381,13 +387,14 @@ NAN_METHOD(ScriptProcessorNode::New) {
       scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
       scriptProcessorNode->context.Reset(audioContextObj);
-      scriptProcessorNode->audioNode.reset(new lab::ScriptProcessorNode(numberOfInputChannels, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-        scriptProcessorNode->Process(r, sources, destinations, framesToProcess);
-      }));
+      lab::ScriptProcessorNode *labScriptProcessorNode = new lab::ScriptProcessorNode(numberOfInputChannels, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+        scriptProcessorNode->ProcessInAudioThread(r, sources, destinations, framesToProcess);
+      });
+      scriptProcessorNode->audioNode.reset(labScriptProcessorNode);
 
-      Local<Function> audioBufferConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
+      Local<Function> audioBufferConstructor = Local<Function>::Cast(scriptProcessorNodeObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
       scriptProcessorNode->audioBufferConstructor.Reset(audioBufferConstructor);
-      Local<Function> audioProcessingEventConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioProcessingEvent")));
+      Local<Function> audioProcessingEventConstructor = Local<Function>::Cast(scriptProcessorNodeObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioProcessingEvent")));
       scriptProcessorNode->audioProcessingEventConstructor.Reset(audioProcessingEventConstructor);
 
       info.GetReturnValue().Set(scriptProcessorNodeObj);
@@ -418,63 +425,93 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
     scriptProcessorNode->onAudioProcess.Reset();
   }
 }
-void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-  // XXX needs to run on the main thread
-  
-  if (!onAudioProcess.IsEmpty()) {
-    Local<Function> onAudioProcessLocal = Nan::New(onAudioProcess);
 
-    Local<Array> sourcesArray = Nan::New<Array>(sources.size());
-    for (size_t i = 0; i < sources.size(); i++) {
-      const float *source = sources[i];
-      Local<ArrayBuffer> sourceArrayBuffer = ArrayBuffer::New(Isolate::GetCurrent(), (void *)source, framesToProcess * sizeof(float));
-      Local<Float32Array> sourceFloat32Array = Float32Array::New(sourceArrayBuffer, 0, framesToProcess);
-      sourcesArray->Set(i, sourceFloat32Array);
-    }
-    Local<Function> audioBufferConstructorFn = Nan::New(audioBufferConstructor);
-    Local<Value> argv1[] = {
-      sourcesArray,
-    };
-    Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+  threadScriptProcessorNode = this;
+  threadSources = &sources;
+  threadDestinations = &destinations;
+  threadFramesToProcess = framesToProcess;
 
-    Local<Array> destinationsArray = Nan::New<Array>(destinations.size());
-    for (size_t i = 0; i < destinations.size(); i++) {
-      float *destination = destinations[i];
-      Local<ArrayBuffer> destinationArrayBuffer = ArrayBuffer::New(Isolate::GetCurrent(), destination, framesToProcess * sizeof(float));
-      Local<Float32Array> destinationFloat32Array = Float32Array::New(destinationArrayBuffer, 0, framesToProcess);
-      destinationsArray->Set(i, destinationFloat32Array);
-    }
-    Local<Value> argv2[] = {
-      destinationsArray,
-    };
-    Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
+  uv_async_send(&threadAsync);
+  uv_sem_wait(&threadSemaphore);
 
-    Local<Function> audioProcessingEventConstructorFn = Nan::New(audioProcessingEventConstructor);
-    Local<Value> argv3[] = {
-      inputBuffer,
-      outputBuffer,
-      JS_INT((uint32_t)framesToProcess)
-    };
-    Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(sizeof(argv3)/sizeof(argv3[0]), argv3);
+  threadScriptProcessorNode = nullptr;
+  threadSources = nullptr;
+  threadDestinations = nullptr;
+  threadFramesToProcess = 0;
+}
 
-    Local<Value> argv4[] = {
-      audioProcessingEventObj,
-    };
-    onAudioProcessLocal->Call(Nan::Null(), sizeof(argv4)/sizeof(argv4[0]), argv4);
+void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
+  ScriptProcessorNode *self = threadScriptProcessorNode;
+  vector<const float*> &sources = *threadSources;
+  vector<float*> &destinations = *threadDestinations;
+  size_t framesToProcess = threadFramesToProcess;
 
-    for (size_t i = 0; i < sourcesArray->Length(); i++) {
-      Local<Float32Array> sourceFloat32Array = Local<Float32Array>::Cast(sourcesArray->Get(i));
-      sourceFloat32Array->Buffer()->Neuter();
-    }
-    for (size_t i = 0; i < destinationsArray->Length(); i++) {
-      Local<Float32Array> destinationFloat32Array = Local<Float32Array>::Cast(destinationsArray->Get(i));
-      destinationFloat32Array->Buffer()->Neuter();
-    }
-  } else {
-    for (size_t i = 0; i < sources.size(); i++) {
-      memcpy(destinations[i], sources[i], framesToProcess * sizeof(float));
+  {
+    Nan::HandleScope scope;
+
+    if (!self->onAudioProcess.IsEmpty()) {
+      Local<Function> onAudioProcessLocal = Nan::New(self->onAudioProcess);
+
+      Local<Array> sourcesArray = Nan::New<Array>(sources.size());
+      for (size_t i = 0; i < sources.size(); i++) {
+        const float *source = sources[i];
+        Local<ArrayBuffer> sourceArrayBuffer = ArrayBuffer::New(Isolate::GetCurrent(), (void *)source, framesToProcess * sizeof(float));
+        Local<Float32Array> sourceFloat32Array = Float32Array::New(sourceArrayBuffer, 0, framesToProcess);
+        sourcesArray->Set(i, sourceFloat32Array);
+      }
+      Local<Function> audioBufferConstructorFn = Nan::New(self->audioBufferConstructor);
+      Local<Value> argv1[] = {
+        sourcesArray,
+      };
+      Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+
+      Local<Array> destinationsArray = Nan::New<Array>(destinations.size());
+      for (size_t i = 0; i < destinations.size(); i++) {
+        float *destination = destinations[i];
+        Local<ArrayBuffer> destinationArrayBuffer = ArrayBuffer::New(Isolate::GetCurrent(), destination, framesToProcess * sizeof(float));
+        Local<Float32Array> destinationFloat32Array = Float32Array::New(destinationArrayBuffer, 0, framesToProcess);
+        destinationsArray->Set(i, destinationFloat32Array);
+      }
+      Local<Value> argv2[] = {
+        destinationsArray,
+      };
+      Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
+
+      Local<Function> audioProcessingEventConstructorFn = Nan::New(self->audioProcessingEventConstructor);
+      Local<Value> argv3[] = {
+        inputBuffer,
+        outputBuffer,
+        JS_INT((uint32_t)framesToProcess)
+      };
+      Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(sizeof(argv3)/sizeof(argv3[0]), argv3);
+
+      Local<Value> argv4[] = {
+        audioProcessingEventObj,
+      };
+      onAudioProcessLocal->Call(Nan::Null(), sizeof(argv4)/sizeof(argv4[0]), argv4);
+
+      for (size_t i = 0; i < sourcesArray->Length(); i++) {
+        Local<Float32Array> sourceFloat32Array = Local<Float32Array>::Cast(sourcesArray->Get(i));
+        sourceFloat32Array->Buffer()->Neuter();
+      }
+      for (size_t i = 0; i < destinationsArray->Length(); i++) {
+        Local<Float32Array> destinationFloat32Array = Local<Float32Array>::Cast(destinationsArray->Get(i));
+        destinationFloat32Array->Buffer()->Neuter();
+      }
+    } else {
+      for (size_t i = 0; i < sources.size(); i++) {
+        memcpy(destinations[i], sources[i], framesToProcess * sizeof(float));
+      }
     }
   }
+
+  uv_sem_post(&self->threadSemaphore);
 }
+
+ScriptProcessorNode *ScriptProcessorNode::threadScriptProcessorNode = nullptr;
+vector<const float*> *ScriptProcessorNode::threadSources = nullptr;
+vector<float*> *ScriptProcessorNode::threadDestinations = nullptr;
+size_t ScriptProcessorNode::threadFramesToProcess = 0;
 
 }
