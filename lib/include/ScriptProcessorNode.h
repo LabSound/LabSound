@@ -101,12 +101,13 @@ public:
   void InitializePrototype(Local<ObjectTemplate> proto);
 
 protected:
-  static NAN_METHOD(New);
-  static NAN_GETTER(BufferGetter);
-  static NAN_SETTER(BufferSetter);
-
   AudioBufferSourceNode();
   ~AudioBufferSourceNode();
+  
+  static NAN_METHOD(New);
+  static NAN_METHOD(Start);
+  static NAN_GETTER(BufferGetter);
+  static NAN_SETTER(BufferSetter);
   
   Nan::Persistent<Object> buffer;
 };

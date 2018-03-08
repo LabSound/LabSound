@@ -323,6 +323,7 @@ Handle<Object> AudioBufferSourceNode::Initialize(Isolate *isolate) {
 }
 void AudioBufferSourceNode::InitializePrototype(Local<ObjectTemplate> proto) {
   Nan::SetAccessor(proto, JS_STR("buffer"), BufferGetter, BufferSetter);
+  Nan::SetMethod(proto, "start", Start);
 }
 NAN_METHOD(AudioBufferSourceNode::New) {
   Nan::HandleScope scope;
@@ -341,6 +342,12 @@ NAN_METHOD(AudioBufferSourceNode::New) {
     Nan::ThrowError("AudioBufferSourceNode:New: invalid arguments");
   }
 }
+NAN_METHOD(AudioBufferSourceNode::Start) {
+  Nan::HandleScope scope;
+
+  AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
+  ((lab::SampledAudioNode *)audioBufferSourceNode->audioNode.get())->start(0);
+}
 NAN_GETTER(AudioBufferSourceNode::BufferGetter) {
   Nan::HandleScope scope;
 
@@ -353,7 +360,7 @@ NAN_SETTER(AudioBufferSourceNode::BufferSetter) {
 
   if (value->IsObject() && value->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioBuffer"))) {
     AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
-    
+
     Local<Object> buffer = Local<Object>::Cast(value);
     audioBufferSourceNode->buffer.Reset(buffer);
   } else {
