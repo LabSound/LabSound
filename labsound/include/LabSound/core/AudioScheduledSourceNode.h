@@ -63,7 +63,7 @@ protected:
                               size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess);
 
     // Called when we have no more sound to play or the noteOff/stop() time has been reached.
-    void finish(ContextRenderLock&);
+    virtual void finish(ContextRenderLock&);
 
     PlaybackState m_playbackState;
 

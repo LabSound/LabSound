@@ -17,7 +17,7 @@ class AudioContext;
 class AudioBus;
 
 // This should  be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
-class SampledAudioNode final : public AudioScheduledSourceNode
+class SampledAudioNode : public AudioScheduledSourceNode
 {
 
 public:
