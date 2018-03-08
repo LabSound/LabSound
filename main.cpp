@@ -53,13 +53,15 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
   Local<Value> audioBufferCons = AudioBuffer::Initialize(isolate);
   exports->Set(JS_STR("AudioBuffer"), audioBufferCons);
+  Local<Value> audioBufferSourceNodeCons = AudioBufferSourceNode::Initialize(isolate);
+  exports->Set(JS_STR("AudioBufferSourceNode"), audioBufferSourceNodeCons);
   Local<Value> audioProcessingEventCons = AudioProcessingEvent::Initialize(isolate);
   exports->Set(JS_STR("AudioProcessingEvent"), audioProcessingEventCons);
   Local<Value> scriptProcessorNodeCons = ScriptProcessorNode::Initialize(isolate, audioBufferCons, audioProcessingEventCons);
   exports->Set(JS_STR("ScriptProcessorNode"), scriptProcessorNodeCons);
   Local<Value> microphoneMediaStreamCons = MicrophoneMediaStream::Initialize(isolate);
   exports->Set(JS_STR("MicrophoneMediaStream"), microphoneMediaStreamCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioListenerCons, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, stereoPannerNodeCons, audioBufferCons, audioProcessingEventCons, scriptProcessorNodeCons));
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioListenerCons, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, stereoPannerNodeCons, audioBufferCons, audioBufferSourceNodeCons, audioProcessingEventCons, scriptProcessorNodeCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 

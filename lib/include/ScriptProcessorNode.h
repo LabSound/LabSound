@@ -95,6 +95,22 @@ protected:
   friend class ScriptProcessorNode;
 };
 
+class AudioBufferSourceNode : public AudioNode {
+public:
+  static Handle<Object> Initialize(Isolate *isolate);
+  void InitializePrototype(Local<ObjectTemplate> proto);
+
+protected:
+  static NAN_METHOD(New);
+  static NAN_GETTER(BufferGetter);
+  static NAN_SETTER(BufferSetter);
+
+  AudioBufferSourceNode();
+  ~AudioBufferSourceNode();
+  
+  Nan::Persistent<Object> buffer;
+};
+
 class AudioProcessingEvent : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate);

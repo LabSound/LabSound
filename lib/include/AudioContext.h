@@ -28,7 +28,7 @@ lab::AudioContext *getDefaultAudioContext();
 
 class AudioContext : public ObjectWrap {
 public:
-  static Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons, Local<Value> stereoPannerNodeCons, Local<Value> scriptProcessorNodeCons);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> audioBufferCons, Local<Value> audioBufferSourceNodeCons, Local<Value> audioProcessingEventCons, Local<Value> stereoPannerNodeCons, Local<Value> scriptProcessorNodeCons);
   void Close();
   Local<Object> CreateMediaElementSource(Local<Function> audioDestinationNodeConstructor, Local<Object> mediaElement, Local<Object> audioContextObj);
   Local<Object> CreateMediaStreamSource(Local<Function> audioSourceNodeConstructor, Local<Object> mediaStream, Local<Object> audioContextObj);
@@ -39,6 +39,7 @@ public:
   Local<Object> CreatePanner(Local<Function> pannerNodeConstructor, Local<Object> audioContextObj);
   Local<Object> CreateStereoPanner(Local<Function> stereoPannerNodeConstructor, Local<Object> audioContextObj);
   Local<Object> CreateBuffer(Local<Function> audioBufferConstructor, uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels);
+  Local<Object> CreateBufferSource(Local<Function> audioBufferSourceNodeConstructor, Local<Object> audioContextObj);
   Local<Object> CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, Local<Object> audioContextObj);
   void Suspend();
   void Resume();
@@ -55,6 +56,7 @@ protected:
   static NAN_METHOD(CreatePanner);
   static NAN_METHOD(CreateStereoPanner);
   static NAN_METHOD(CreateBuffer);
+  static NAN_METHOD(CreateBufferSource);
   static NAN_METHOD(CreateScriptProcessor);
   static NAN_METHOD(Suspend);
   static NAN_METHOD(Resume);
