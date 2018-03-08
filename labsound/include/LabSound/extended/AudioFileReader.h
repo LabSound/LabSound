@@ -23,6 +23,9 @@ extern "C" {
 
 #define SWR_CH_MAX 64
 
+typedef std::vector<float, default_init_allocator<float>> Plane;
+typedef std::vector<Plane> PlanesVector;
+
 namespace detail {
   // Allocator adaptor that interposes construct() calls to
   // convert value initialization into default initialization.
@@ -50,9 +53,6 @@ namespace detail {
                      ptr, std::forward<Args>(args)...);
     }
   };
-
-  typedef std::vector<float, default_init_allocator<float>> Plane;
-  typedef std::vector<Plane> PlanesVector;
 
   class AppData {
   public:
