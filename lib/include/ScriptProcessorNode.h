@@ -48,16 +48,16 @@ public:
 protected:
   static NAN_METHOD(New);
 
-  AudioBuffer(Local<Array> buffers, uint32_t numFrames);
+  AudioBuffer(Local<Array> buffers);
   ~AudioBuffer();
 
+  static NAN_GETTER(Length);
   static NAN_GETTER(NumberOfChannels);
   static NAN_METHOD(GetChannelData);
   static NAN_METHOD(CopyFromChannel);
   static NAN_METHOD(CopyToChannel);
 
   Nan::Persistent<Array> buffers;
-  uint32_t numFrames;
 };
 
 class AudioProcessingEvent : public ObjectWrap {
@@ -67,7 +67,7 @@ public:
 protected:
   static NAN_METHOD(New);
 
-  AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer, uint32_t numFrames);
+  AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer);
   ~AudioProcessingEvent();
 
   static NAN_GETTER(NumberOfInputChannelsGetter);
@@ -75,7 +75,6 @@ protected:
 
   Nan::Persistent<Object> inputBuffer;
   Nan::Persistent<Object> outputBuffer;
-  uint32_t numFrames;
 };
 
 class ScriptProcessorNode : public ObjectWrap {

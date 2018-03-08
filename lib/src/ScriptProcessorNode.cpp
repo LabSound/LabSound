@@ -57,7 +57,7 @@ ScriptProcessorNode::~ScriptProcessorNode() {}
 
 namespace webaudio {
 
-AudioBuffer::AudioBuffer(Local<Array> buffers, uint32_t numFrames) : buffers(buffers), numFrames(numFrames) {}
+AudioBuffer::AudioBuffer(Local<Array> buffers) : buffers(buffers) {}
 AudioBuffer::~AudioBuffer() {}
 Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
@@ -69,6 +69,7 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
+  Nan::SetAccessor(proto, JS_STR("length"), Length);
   Nan::SetAccessor(proto, JS_STR("numberOfChannels"), NumberOfChannels);
   Nan::SetMethod(proto, "getChannelData", GetChannelData);
   Nan::SetMethod(proto, "copyFromChannel", CopyFromChannel);
@@ -83,13 +84,26 @@ NAN_METHOD(AudioBuffer::New) {
 
   if (info[0]->IsArray() && info[1]->IsNumber()) {
     Local<Array> buffers = Local<Array>::Cast(info[0]);
-    uint32_t numFrames = info[1]->Uint32Value();
 
-    AudioBuffer *audioBuffer = new AudioBuffer(buffers, numFrames);
+    AudioBuffer *audioBuffer = new AudioBuffer(buffers);
     Local<Object> audioBufferObj = info.This();
     audioBuffer->Wrap(audioBufferObj);
   } else {
     Nan::ThrowError("AudioProcessingEvent:New: invalid arguments");
+  }
+}
+NAN_GETTER(AudioBuffer::Length) {
+  Nan::HandleScope scope;
+
+  AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+  Local<Array> buffers = Nan::New(audioBuffer->buffers);
+  if (buffers->Length() > 0) {
+    Local<Float32Array> firstBuffer = Local<Float32Array>::Cast(buffers->Get(0));
+    uint32_t numFrames = firstBuffer->Length();
+
+    info.GetReturnValue().Set(JS_INT(numFrames));
+  } else {
+    info.GetReturnValue().Set(JS_INT(0));
   }
 }
 NAN_GETTER(AudioBuffer::NumberOfChannels) {
@@ -166,7 +180,7 @@ NAN_METHOD(AudioBuffer::CopyToChannel) {
   }
 }
 
-AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer, uint32_t numFrames) : inputBuffer(inputBuffer), outputBuffer(outputBuffer), numFrames(numFrames) {}
+AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer) : inputBuffer(inputBuffer), outputBuffer(outputBuffer) {}
 AudioProcessingEvent::~AudioProcessingEvent() {}
 Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
@@ -188,12 +202,11 @@ Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
 NAN_METHOD(AudioProcessingEvent::New) {
   Nan::HandleScope scope;
 
-  if (info[0]->IsObject() && info[1]->IsObject() && info[2]->IsNumber()) {
+  if (info[0]->IsObject() && info[1]->IsObject()) {
     Local<Object> inputBuffer = Local<Object>::Cast(info[0]);
     Local<Object> outputBuffer = Local<Object>::Cast(info[1]);
-    uint32_t numFrames = info[2]->Uint32Value();
 
-    AudioProcessingEvent *audioProcessingEvent = new AudioProcessingEvent(inputBuffer, outputBuffer, numFrames);
+    AudioProcessingEvent *audioProcessingEvent = new AudioProcessingEvent(inputBuffer, outputBuffer);
     Local<Object> audioProcessingEventObj = info.This();
     audioProcessingEvent->Wrap(audioProcessingEventObj);
   } else {
