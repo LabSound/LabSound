@@ -342,6 +342,15 @@ void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*
       audioProcessingEventObj,
     };
     onAudioProcessLocal->Call(Nan::Null(), sizeof(argv4)/sizeof(argv4[0]), argv4);
+
+    for (size_t i = 0; i < sourcesArray->Length(); i++) {
+      Local<Float32Array> sourceFloat32Array = Local<Float32Array>::Cast(sourcesArray->Get(i));
+      sourceFloat32Array->Buffer()->Neuter();
+    }
+    for (size_t i = 0; i < destinationsArray->Length(); i++) {
+      Local<Float32Array> destinationFloat32Array = Local<Float32Array>::Cast(destinationsArray->Get(i));
+      destinationFloat32Array->Buffer()->Neuter();
+    }
   } else {
     for (size_t i = 0; i < sources.size(); i++) {
       memcpy(destinations[i], sources[i], framesToProcess * sizeof(float));
