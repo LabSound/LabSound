@@ -102,6 +102,8 @@ protected:
   AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer);
   ~AudioProcessingEvent();
 
+  static NAN_GETTER(InputBufferGetter);
+  static NAN_GETTER(OutputBufferGetter);
   static NAN_GETTER(NumberOfInputChannelsGetter);
   static NAN_GETTER(NumberOfOutputChannelsGetter);
 

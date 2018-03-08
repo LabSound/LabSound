@@ -299,6 +299,8 @@ Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
 
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
+  Nan::SetAccessor(proto, JS_STR("inputBuffer"), InputBufferGetter);
+  Nan::SetAccessor(proto, JS_STR("outputBuffer"), OutputBufferGetter);
   Nan::SetAccessor(proto, JS_STR("numberOfInputChannels"), NumberOfInputChannelsGetter);
   Nan::SetAccessor(proto, JS_STR("numberOfOutputChannels"), NumberOfOutputChannelsGetter);
 
@@ -319,6 +321,20 @@ NAN_METHOD(AudioProcessingEvent::New) {
   } else {
     Nan::ThrowError("AudioProcessingEvent:New: invalid arguments");
   }
+}
+NAN_GETTER(AudioProcessingEvent::InputBufferGetter) {
+  Nan::HandleScope scope;
+
+  AudioProcessingEvent *audioProcessingEvent = ObjectWrap::Unwrap<AudioProcessingEvent>(info.This());
+  Local<Object> inputBufferObj = Nan::New(audioProcessingEvent->inputBuffer);
+  info.GetReturnValue().Set(inputBufferObj);
+}
+NAN_GETTER(AudioProcessingEvent::OutputBufferGetter) {
+  Nan::HandleScope scope;
+
+  AudioProcessingEvent *audioProcessingEvent = ObjectWrap::Unwrap<AudioProcessingEvent>(info.This());
+  Local<Object> outputBufferObj = Nan::New(audioProcessingEvent->outputBuffer);
+  info.GetReturnValue().Set(outputBufferObj);
 }
 NAN_GETTER(AudioProcessingEvent::NumberOfInputChannelsGetter) {
   Nan::HandleScope scope;
