@@ -6,8 +6,13 @@ const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
 const audioContext = new AudioContext();
 const microphoneMediaStream = new MicrophoneMediaStream();
 const audioCtx = new AudioContext();
-const audioSourceNode = audioCtx.createMediaStreamSource(microphoneMediaStream);
-audioSourceNode.connect(audioCtx.destination);
+const microphoneSourceNode = audioCtx.createMediaStreamSource(microphoneMediaStream);
+const scriptProcessorNode = audioCtx.createScriptProcessor();
+scriptProcessorNode.onaudioprocess = e => {
+  console.log('got event', e);
+};
+microphoneSourceNode.connect(scriptProcessorNode);
+scriptProcessorNode.connect(audioCtx.destination);
 
 setTimeout(() => {}, 100000000);
 
