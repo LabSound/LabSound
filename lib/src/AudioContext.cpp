@@ -21,7 +21,7 @@ AudioContext::AudioContext() {
 
 AudioContext::~AudioContext() {}
 
-Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> stereoPannerNodeCons, Local<Value> scriptProcessorNodeCons) {
+Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioListenerCons, Local<Value> audioSourceNodeCons, Local<Value> audioDestinationNodeCons, Local<Value> gainNodeCons, Local<Value> analyserNodeCons, Local<Value> pannerNodeCons, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons, Local<Value> stereoPannerNodeCons, Local<Value> scriptProcessorNodeCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -40,6 +40,7 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioList
   Nan::SetMethod(proto, "createAnalyser", CreateAnalyser);
   Nan::SetMethod(proto, "createPanner", CreatePanner);
   Nan::SetMethod(proto, "createStereoPanner", CreateStereoPanner);
+  Nan::SetMethod(proto, "createBuffer", CreateBuffer);
   Nan::SetMethod(proto, "createScriptProcessor", CreateScriptProcessor);
   Nan::SetAccessor(proto, JS_STR("currentTime"), CurrentTimeGetter);
   Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRateGetter);
@@ -53,6 +54,8 @@ Handle<Object> AudioContext::Initialize(Isolate *isolate, Local<Value> audioList
   ctorFn->Set(JS_STR("AnalyserNode"), analyserNodeCons);
   ctorFn->Set(JS_STR("PannerNode"), pannerNodeCons);
   ctorFn->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
+  ctorFn->Set(JS_STR("AudioBuffer"), audioBufferCons);
+  ctorFn->Set(JS_STR("AudioProcessingEvent"), audioProcessingEventCons);
   ctorFn->Set(JS_STR("ScriptProcessorNode"), scriptProcessorNodeCons);
 
   return scope.Escape(ctorFn);
@@ -124,6 +127,17 @@ Local<Object> AudioContext::CreateStereoPanner(Local<Function> stereoPannerNodeC
   Local<Object> stereoPannerNodeObj = stereoPannerNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
 
   return stereoPannerNodeObj;
+}
+
+Local<Object> AudioContext::CreateBuffer(Local<Function> audioBufferConstructor, uint32_t numOfChannels, uint32_t length, uint32_t sampleRate) {
+  Local<Value> argv[] = {
+    JS_INT(numOfChannels),
+    JS_INT(length),
+    JS_INT(sampleRate),
+  };
+  Local<Object> audioBufferObj = audioBufferConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+
+  return audioBufferObj;
 }
 
 Local<Object> AudioContext::CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, Local<Object> audioContextObj) {
@@ -277,6 +291,26 @@ NAN_METHOD(AudioContext::CreateStereoPanner) {
   Local<Object> stereoPannerNodeObj = audioContext->CreateStereoPanner(stereoPannerNodeConstructor, audioContextObj);
 
   info.GetReturnValue().Set(stereoPannerNodeObj);
+}
+
+NAN_METHOD(AudioContext::CreateBuffer) {
+  Nan::HandleScope scope;
+
+  if (info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber()) {
+    uint32_t numOfChannels = info[0]->Uint32Value();
+    uint32_t length = info[1]->Uint32Value();
+    uint32_t sampleRate = info[2]->Uint32Value();
+
+    Local<Object> audioContextObj = info.This();
+    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+
+    Local<Function> audioBufferConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
+    Local<Object> audioBufferObj = audioContext->CreateBuffer(audioBufferConstructor, numOfChannels, length, sampleRate);
+
+    info.GetReturnValue().Set(audioBufferObj);
+  } else {
+    Nan::ThrowError("invalid arguments");
+  }
 }
 
 NAN_METHOD(AudioContext::CreateScriptProcessor) {

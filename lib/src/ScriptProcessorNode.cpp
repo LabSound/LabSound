@@ -164,7 +164,7 @@ ScriptProcessorNode::~ScriptProcessorNode() {}
 
 namespace webaudio {
 
-AudioBuffer::AudioBuffer(Local<Array> buffers) : buffers(buffers) {}
+AudioBuffer::AudioBuffer(uint32_t sampleRate, Local<Array> buffers) : sampleRate(sampleRate), buffers(buffers) {}
 AudioBuffer::~AudioBuffer() {}
 Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
@@ -189,10 +189,23 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
 NAN_METHOD(AudioBuffer::New) {
   Nan::HandleScope scope;
 
-  if (info[0]->IsArray()) {
-    Local<Array> buffers = Local<Array>::Cast(info[0]);
+  if (info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber()) {
+    uint32_t numOfChannels = info[0]->Uint32Value();
+    uint32_t length = info[1]->Uint32Value();
+    uint32_t sampleRate = info[2]->Uint32Value();
+    Local<Array> buffers;
+    if (info[3]->IsArray()) {
+      buffers = Local<Array>::Cast(info[3]);
+    } else {
+      buffers = Nan::New<Array>(numOfChannels);
+      for (size_t i = 0; i < numOfChannels; i++) {
+        Local<ArrayBuffer> arrayBuffer = ArrayBuffer::New(Isolate::GetCurrent(), length * sizeof(float));
+        Local<Float32Array> float32Array = Float32Array::New(arrayBuffer, 0, length);
+        buffers->Set(i, float32Array);
+      }
+    }
 
-    AudioBuffer *audioBuffer = new AudioBuffer(buffers);
+    AudioBuffer *audioBuffer = new AudioBuffer(sampleRate, buffers);
     Local<Object> audioBufferObj = info.This();
     audioBuffer->Wrap(audioBufferObj);
   } else {
@@ -361,7 +374,7 @@ ScriptProcessorNode::~ScriptProcessorNode() {
   uv_close((uv_handle_t *)&threadAsync, nullptr);
   uv_sem_destroy(&threadSemaphore);
 }
-Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
+Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons) {
   Nan::EscapableHandleScope scope;
 
   // constructor
@@ -376,8 +389,8 @@ Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
 
   Local<Function> ctorFn = ctor->GetFunction();
 
-  ctorFn->Set(JS_STR("AudioBuffer"), AudioBuffer::Initialize(isolate));
-  ctorFn->Set(JS_STR("AudioProcessingEvent"), AudioProcessingEvent::Initialize(isolate));
+  ctorFn->Set(JS_STR("AudioBuffer"), audioBufferCons);
+  ctorFn->Set(JS_STR("AudioProcessingEvent"), audioProcessingEventCons);
 
   return scope.Escape(ctorFn);
 }
@@ -469,6 +482,9 @@ void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
     if (!self->onAudioProcess.IsEmpty()) {
       Local<Function> onAudioProcessLocal = Nan::New(self->onAudioProcess);
 
+      Local<Object> audioContextObj = Nan::New(self->context);
+      AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+
       Local<Array> sourcesArray = Nan::New<Array>(sources.size());
       for (size_t i = 0; i < sources.size(); i++) {
         const float *source = sources[i];
@@ -478,6 +494,9 @@ void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
       }
       Local<Function> audioBufferConstructorFn = Nan::New(self->audioBufferConstructor);
       Local<Value> argv1[] = {
+        JS_INT((uint32_t)sources.size()),
+        JS_INT((uint32_t)framesToProcess),
+        JS_INT((uint32_t)audioContext->audioContext->sampleRate()),
         sourcesArray,
       };
       Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
@@ -490,6 +509,9 @@ void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
         destinationsArray->Set(i, destinationFloat32Array);
       }
       Local<Value> argv2[] = {
+        JS_INT((uint32_t)sources.size()),
+        JS_INT((uint32_t)framesToProcess),
+        JS_INT((uint32_t)audioContext->audioContext->sampleRate()),
         destinationsArray,
       };
       Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);

@@ -80,7 +80,7 @@ public:
 protected:
   static NAN_METHOD(New);
 
-  AudioBuffer(Local<Array> buffers);
+  AudioBuffer(uint32_t sampleRate, Local<Array> buffers);
   ~AudioBuffer();
 
   static NAN_GETTER(Length);
@@ -89,7 +89,10 @@ protected:
   static NAN_METHOD(CopyFromChannel);
   static NAN_METHOD(CopyToChannel);
 
+  uint32_t sampleRate;
   Nan::Persistent<Array> buffers;
+
+  friend class ScriptProcessorNode;
 };
 
 class AudioProcessingEvent : public ObjectWrap {
@@ -113,7 +116,7 @@ protected:
 
 class ScriptProcessorNode : public AudioNode {
 public:
-  static Handle<Object> Initialize(Isolate *isolate);
+  static Handle<Object> Initialize(Isolate *isolate, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons);
   static void InitializePrototype(Local<ObjectTemplate> proto);
 
 protected:
