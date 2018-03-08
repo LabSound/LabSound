@@ -10,6 +10,9 @@ const microphoneSourceNode = audioCtx.createMediaStreamSource(microphoneMediaStr
 const scriptProcessorNode = audioCtx.createScriptProcessor();
 scriptProcessorNode.onaudioprocess = e => {
   console.log('got event', e.inputBuffer.getChannelData(0).slice(0, 4));
+  // console.log('got event', e.inputBuffer.getChannelData(1));
+  // e.outputBuffer.getChannelData(0).fill(0);
+  // e.outputBuffer.copyToChannel(e.inputBuffer.getChannelData(0), 0);
 };
 microphoneSourceNode.connect(scriptProcessorNode);
 scriptProcessorNode.connect(audioCtx.destination);
