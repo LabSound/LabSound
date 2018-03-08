@@ -72,6 +72,7 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Nan::SetAccessor(proto, JS_STR("numberOfChannels"), NumberOfChannels);
   Nan::SetMethod(proto, "getChannelData", GetChannelData);
   Nan::SetMethod(proto, "copyFromChannel", CopyFromChannel);
+  Nan::SetMethod(proto, "copyToChannel", CopyToChannel);
   
   Local<Function> ctorFn = ctor->GetFunction();
 
@@ -127,7 +128,7 @@ NAN_METHOD(AudioBuffer::CopyFromChannel) {
 
     if (channelData->BooleanValue()) {
       Local<Float32Array> channelDataFloat32Array = Local<Float32Array>::Cast(channelData);
-      uint32_t offset = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
+      uint32_t offset = std::min<uint32_t>(info[2]->IsNumber() ? info[2]->Uint32Value() : 0, channelDataFloat32Array->Length());
       size_t copyLength = std::min<size_t>(channelDataFloat32Array->Length() - offset, destinationFloat32Array->Length());
       for (size_t i = 0; i < copyLength; i++) {
         destinationFloat32Array->Set(i, channelDataFloat32Array->Get(offset + i));
@@ -137,6 +138,31 @@ NAN_METHOD(AudioBuffer::CopyFromChannel) {
     }
   } else {
     Nan::ThrowError("AudioBuffer:CopyFromChannel: invalid arguments");
+  }
+}
+NAN_METHOD(AudioBuffer::CopyToChannel) {
+  Nan::HandleScope scope;
+
+  if (info[0]->IsFloat32Array() && info[1]->IsNumber()) {
+    Local<Float32Array> sourceFloat32Array = Local<Float32Array>::Cast(info[0]);
+    uint32_t channelIndex = info[1]->Uint32Value();
+
+    AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+    Local<Array> buffers = Nan::New(audioBuffer->buffers);
+    Local<Value> channelData = buffers->Get(channelIndex);
+
+    if (channelData->BooleanValue()) {
+      Local<Float32Array> channelDataFloat32Array = Local<Float32Array>::Cast(channelData);
+      uint32_t offset = std::min<uint32_t>(info[2]->IsNumber() ? info[2]->Uint32Value() : 0, channelDataFloat32Array->Length());
+      size_t copyLength = std::min<size_t>(channelDataFloat32Array->Length() - offset, sourceFloat32Array->Length());
+      for (size_t i = 0; i < copyLength; i++) {
+        channelDataFloat32Array->Set(offset + i, sourceFloat32Array->Get(i));
+      }
+    } else {
+      Nan::ThrowError("AudioBuffer:CopyToChannel: invalid channel index");
+    }
+  } else {
+    Nan::ThrowError("AudioBuffer:CopyToChannel: invalid arguments");
   }
 }
 
