@@ -106,6 +106,7 @@ protected:
   
   static NAN_METHOD(New);
   static NAN_METHOD(Start);
+  static NAN_METHOD(Stop);
   static NAN_GETTER(BufferGetter);
   static NAN_SETTER(BufferSetter);
   

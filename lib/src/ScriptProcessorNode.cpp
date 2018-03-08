@@ -324,6 +324,7 @@ Handle<Object> AudioBufferSourceNode::Initialize(Isolate *isolate) {
 void AudioBufferSourceNode::InitializePrototype(Local<ObjectTemplate> proto) {
   Nan::SetAccessor(proto, JS_STR("buffer"), BufferGetter, BufferSetter);
   Nan::SetMethod(proto, "start", Start);
+  Nan::SetMethod(proto, "stop", Stop);
 }
 NAN_METHOD(AudioBufferSourceNode::New) {
   Nan::HandleScope scope;
@@ -347,6 +348,12 @@ NAN_METHOD(AudioBufferSourceNode::Start) {
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
   ((lab::SampledAudioNode *)audioBufferSourceNode->audioNode.get())->start(0);
+}
+NAN_METHOD(AudioBufferSourceNode::Stop) {
+  Nan::HandleScope scope;
+
+  AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
+  ((lab::SampledAudioNode *)audioBufferSourceNode->audioNode.get())->stop(0);
 }
 NAN_GETTER(AudioBufferSourceNode::BufferGetter) {
   Nan::HandleScope scope;
