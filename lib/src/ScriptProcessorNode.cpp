@@ -71,6 +71,7 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   Nan::SetAccessor(proto, JS_STR("numberOfChannels"), NumberOfChannels);
   Nan::SetMethod(proto, "getChannelData", GetChannelData);
+  Nan::SetMethod(proto, "copyFromChannel", CopyFromChannel);
   
   Local<Function> ctorFn = ctor->GetFunction();
 
@@ -111,6 +112,31 @@ NAN_METHOD(AudioBuffer::GetChannelData) {
     info.GetReturnValue().Set(channelData);
   } else {
     Nan::ThrowError("AudioBuffer:GetChannelData: invalid arguments");
+  }
+}
+NAN_METHOD(AudioBuffer::CopyFromChannel) {
+  Nan::HandleScope scope;
+
+  if (info[0]->IsFloat32Array() && info[1]->IsNumber()) {
+    Local<Float32Array> destinationFloat32Array = Local<Float32Array>::Cast(info[0]);
+    uint32_t channelIndex = info[1]->Uint32Value();
+
+    AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+    Local<Array> buffers = Nan::New(audioBuffer->buffers);
+    Local<Value> channelData = buffers->Get(channelIndex);
+
+    if (channelData->BooleanValue()) {
+      Local<Float32Array> channelDataFloat32Array = Local<Float32Array>::Cast(channelData);
+      uint32_t offset = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
+      size_t copyLength = std::min<size_t>(channelDataFloat32Array->Length() - offset, destinationFloat32Array->Length());
+      for (size_t i = 0; i < copyLength; i++) {
+        destinationFloat32Array->Set(i, channelDataFloat32Array->Get(offset + i));
+      }
+    } else {
+      Nan::ThrowError("AudioBuffer:CopyFromChannel: invalid channel index");
+    }
+  } else {
+    Nan::ThrowError("AudioBuffer:CopyFromChannel: invalid arguments");
   }
 }
 

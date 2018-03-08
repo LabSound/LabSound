@@ -53,6 +53,7 @@ protected:
 
   static NAN_GETTER(NumberOfChannels);
   static NAN_METHOD(GetChannelData);
+  static NAN_METHOD(CopyFromChannel);
 
   Nan::Persistent<Array> buffers;
   uint32_t numFrames;
