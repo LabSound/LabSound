@@ -51,7 +51,7 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("PannerNode"), pannerNodeCons);
   Local<Value> stereoPannerNodeCons = StereoPannerNode::Initialize(isolate, audioParamCons);
   exports->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
-  Local<Value> scriptProcessorNodeCons = StereoPannerNode::Initialize(isolate, audioParamCons);
+  Local<Value> scriptProcessorNodeCons = ScriptProcessorNode::Initialize(isolate);
   exports->Set(JS_STR("ScriptProcessorNode"), scriptProcessorNodeCons);
   Local<Value> microphoneMediaStreamCons = MicrophoneMediaStream::Initialize(isolate);
   exports->Set(JS_STR("MicrophoneMediaStream"), microphoneMediaStreamCons);
