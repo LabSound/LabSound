@@ -126,8 +126,11 @@ Local<Object> AudioContext::CreateStereoPanner(Local<Function> stereoPannerNodeC
   return stereoPannerNodeObj;
 }
 
-Local<Object> AudioContext::CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, Local<Object> audioContextObj) {
+Local<Object> AudioContext::CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, Local<Object> audioContextObj) {
   Local<Value> argv[] = {
+    JS_INT(bufferSize),
+    JS_INT(numberOfInputChannels),
+    JS_INT(numberOfOutputChannels),
     audioContextObj,
   };
   Local<Object> scriptProcessorNodeObj = scriptProcessorNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
@@ -279,11 +282,15 @@ NAN_METHOD(AudioContext::CreateStereoPanner) {
 NAN_METHOD(AudioContext::CreateScriptProcessor) {
   Nan::HandleScope scope;
 
+  uint32_t bufferSize = info[0]->IsNumber() ? info[0]->Uint32Value() : 256;
+  uint32_t numberOfInputChannels = info[1]->IsNumber() ? info[1]->Uint32Value() : 2;
+  uint32_t numberOfOutputChannels = info[2]->IsNumber() ? info[2]->Uint32Value() : 2;
+
   Local<Object> audioContextObj = info.This();
   AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
 
   Local<Function> scriptProcessorNodeConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("ScriptProcessorNode")));
-  Local<Object> scriptProcessorNodeObj = audioContext->CreateScriptProcessor(scriptProcessorNodeConstructor, audioContextObj);
+  Local<Object> scriptProcessorNodeObj = audioContext->CreateScriptProcessor(scriptProcessorNodeConstructor, bufferSize, numberOfInputChannels, numberOfOutputChannels, audioContextObj);
 
   info.GetReturnValue().Set(scriptProcessorNodeObj);
 }

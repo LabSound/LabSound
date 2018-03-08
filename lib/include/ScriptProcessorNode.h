@@ -31,7 +31,37 @@ protected:
   function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> m_kernel;
 };
 
-class ScriptProcessorNode : public AudioBasicProcessorNode {
+class AudioMultiProcessorNode : public AudioNode {
+public:
+
+    AudioMultiProcessorNode(unsigned int numChannels);
+    virtual ~AudioMultiProcessorNode() {}
+
+    // AudioNode
+    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock&) override;
+    virtual void initialize() override;
+    virtual void uninitialize() override;
+
+    // Called in the main thread when the number of channels for the input may have changed.
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
+
+    // Returns the number of channels for both the input and the output.
+    unsigned numberOfChannels();
+
+protected:
+
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
+
+    AudioProcessor * processor();
+
+    std::unique_ptr<AudioProcessor> m_processor;
+
+};
+
+class ScriptProcessorNode : public AudioMultiProcessorNode {
 public:
   ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessorNode();
@@ -77,7 +107,7 @@ protected:
   Nan::Persistent<Object> outputBuffer;
 };
 
-class ScriptProcessorNode : public ObjectWrap {
+class ScriptProcessorNode : public AudioNode {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
   static void InitializePrototype(Local<ObjectTemplate> proto);
@@ -94,7 +124,6 @@ protected:
   void Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess);
 
 protected:
-  std::shared_ptr<lab::ScriptProcessorNode> audioNode;
   Nan::Persistent<Function> audioBufferConstructor;
   Nan::Persistent<Function> audioProcessingEventConstructor;
   Nan::Persistent<Function> onAudioProcess;

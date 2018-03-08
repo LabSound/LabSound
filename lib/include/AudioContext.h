@@ -38,7 +38,7 @@ public:
   Local<Object> CreateAnalyser(Local<Function> analyserNodeConstructor, Local<Object> audioContextObj);
   Local<Object> CreatePanner(Local<Function> pannerNodeConstructor, Local<Object> audioContextObj);
   Local<Object> CreateStereoPanner(Local<Function> stereoPannerNodeConstructor, Local<Object> audioContextObj);
-  Local<Object> CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, Local<Object> audioContextObj);
+  Local<Object> CreateScriptProcessor(Local<Function> scriptProcessorNodeConstructor, uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, Local<Object> audioContextObj);
   void Suspend();
   void Resume();
 

@@ -36,8 +36,12 @@ void ScriptProcessor::process(ContextRenderLock& r, const AudioBus* source, Audi
 
   m_kernel(r, sources, destinations, framesToProcess);
 }
-void ScriptProcessor::initialize() {}
-void ScriptProcessor::uninitialize() {}
+void ScriptProcessor::initialize() {
+  m_initialized = true;
+}
+void ScriptProcessor::uninitialize() {
+  m_initialized = false;
+}
 void ScriptProcessor::reset() {}
 double ScriptProcessor::tailTime(ContextRenderLock & r) const {
   return 0;
@@ -46,7 +50,110 @@ double ScriptProcessor::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
 
-ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioBasicProcessorNode() {
+AudioMultiProcessorNode::AudioMultiProcessorNode(unsigned int numChannels) : AudioNode()
+{
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
+
+    // The subclass must create m_processor.
+}
+void AudioMultiProcessorNode::initialize()
+{
+    if (isInitialized())
+        return;
+
+    // ASSERT(processor());
+    processor()->initialize();
+
+    AudioNode::initialize();
+}
+void AudioMultiProcessorNode::uninitialize()
+{
+    if (!isInitialized())
+        return;
+
+    // ASSERT(processor());
+    processor()->uninitialize();
+
+    AudioNode::uninitialize();
+}
+void AudioMultiProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
+{
+    AudioBus* destinationBus = output(0)->bus(r);
+    
+    if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
+        destinationBus->zero();
+    else {
+        AudioBus* sourceBus = input(0)->bus(r);
+
+        // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
+        if (!input(0)->isConnected())
+            sourceBus->zero();
+
+        processor()->process(r, sourceBus, destinationBus, framesToProcess);
+    }
+}
+// Nice optimization in the very common case allowing for "in-place" processing
+void AudioMultiProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+{
+    // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
+    input(0)->pull(r, output(0)->bus(r), framesToProcess);
+}
+void AudioMultiProcessorNode::reset(ContextRenderLock&)
+{
+    if (processor())
+        processor()->reset();
+}
+// As soon as we know the channel count of our input, we can lazily initialize.
+// Sometimes this may be called more than once with different channel counts, in which case we must safely
+// uninitialize and then re-initialize with the new channel count.
+void AudioMultiProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+{
+    if (input != this->input(0).get())
+        return;
+
+    if (!processor())
+        return;
+
+    unsigned numberOfChannels = input->numberOfChannels(r);
+    
+    bool mustPropagate = false;
+    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
+        mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
+    }
+    
+    if (mustPropagate) {
+        // Re-initialize the processor with the new channel count.
+        processor()->setNumberOfChannels(numberOfChannels);
+        
+        uninitialize();
+        for (size_t i = 0; i < numberOfOutputs(); ++i) {
+            // This will propagate the channel count to any nodes connected further down the chain...
+            output(i)->setNumberOfChannels(r, numberOfChannels);
+        }
+        initialize();
+    }
+    
+    AudioNode::checkNumberOfChannelsForInput(r, input);
+}
+unsigned AudioMultiProcessorNode::numberOfChannels()
+{
+    return output(0)->numberOfChannels();
+}
+double AudioMultiProcessorNode::tailTime(ContextRenderLock & r) const
+{
+    return m_processor->tailTime(r);
+}
+double AudioMultiProcessorNode::latencyTime(ContextRenderLock & r) const
+{
+    return m_processor->latencyTime(r);
+}
+AudioProcessor * AudioMultiProcessorNode::processor() 
+{ 
+    return m_processor.get(); 
+}
+
+ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioMultiProcessorNode(numChannels) {
   m_processor.reset(new ScriptProcessor(numChannels, std::move(kernel)));
 
   initialize();
@@ -61,12 +168,12 @@ AudioBuffer::AudioBuffer(Local<Array> buffers) : buffers(buffers) {}
 AudioBuffer::~AudioBuffer() {}
 Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
-  
+
   // constructor
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
   ctor->SetClassName(JS_STR("AudioBuffer"));
-  
+
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   Nan::SetAccessor(proto, JS_STR("length"), Length);
@@ -74,7 +181,7 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
   Nan::SetMethod(proto, "getChannelData", GetChannelData);
   Nan::SetMethod(proto, "copyFromChannel", CopyFromChannel);
   Nan::SetMethod(proto, "copyToChannel", CopyToChannel);
-  
+
   Local<Function> ctorFn = ctor->GetFunction();
 
   return scope.Escape(ctorFn);
@@ -184,17 +291,17 @@ AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Obje
 AudioProcessingEvent::~AudioProcessingEvent() {}
 Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
-  
+
   // constructor
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
   ctor->SetClassName(JS_STR("AudioProcessingEvent"));
-  
+
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   Nan::SetAccessor(proto, JS_STR("numberOfInputChannels"), NumberOfInputChannelsGetter);
   Nan::SetAccessor(proto, JS_STR("numberOfOutputChannels"), NumberOfOutputChannelsGetter);
-  
+
   Local<Function> ctorFn = ctor->GetFunction();
 
   return scope.Escape(ctorFn);
@@ -234,17 +341,17 @@ ScriptProcessorNode::ScriptProcessorNode() {}
 ScriptProcessorNode::~ScriptProcessorNode() {}
 Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
-  
+
   // constructor
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
   ctor->SetClassName(JS_STR("ScriptProcessorNode"));
-  
+
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   AudioNode::InitializePrototype(proto);
   ScriptProcessorNode::InitializePrototype(proto);
-  
+
   Local<Function> ctorFn = ctor->GetFunction();
 
   ctorFn->Set(JS_STR("AudioBuffer"), AudioBuffer::Initialize(isolate));
@@ -258,27 +365,37 @@ void ScriptProcessorNode::InitializePrototype(Local<ObjectTemplate> proto) {
 NAN_METHOD(ScriptProcessorNode::New) {
   Nan::HandleScope scope;
 
-  if (info[0]->IsObject() && info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioContext"))) {
-    Local<Object> audioContextObj = Local<Object>::Cast(info[0]);
+  if (
+    info[0]->IsNumber() && info[1]->IsNumber() && info[2]->IsNumber() &&
+    info[3]->IsObject() && info[3]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioContext"))
+  ) {
+    uint32_t bufferSize = info[0]->Uint32Value();
+    uint32_t numberOfInputChannels = info[1]->Uint32Value();
+    uint32_t numberOfOutputChannels = info[2]->Uint32Value();
+    
+    if (numberOfInputChannels == numberOfOutputChannels) {
+      Local<Object> audioContextObj = Local<Object>::Cast(info[3]);
 
-    ScriptProcessorNode *scriptProcessorNode = new ScriptProcessorNode();
-    Local<Object> scriptProcessorNodeObj = info.This();
-    scriptProcessorNode->Wrap(scriptProcessorNodeObj);
+      ScriptProcessorNode *scriptProcessorNode = new ScriptProcessorNode();
+      Local<Object> scriptProcessorNodeObj = info.This();
+      scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
-    Local<Function> audioBufferConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
-    scriptProcessorNode->audioBufferConstructor.Reset(audioBufferConstructor);
-    Local<Function> audioProcessingEventConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioProcessingEvent")));
-    scriptProcessorNode->audioProcessingEventConstructor.Reset(audioProcessingEventConstructor);
+      scriptProcessorNode->context.Reset(audioContextObj);
+      scriptProcessorNode->audioNode.reset(new lab::ScriptProcessorNode(numberOfInputChannels, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+        scriptProcessorNode->Process(r, sources, destinations, framesToProcess);
+      }));
 
-    scriptProcessorNode->audioNode.reset(new lab::ScriptProcessorNode(2, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-      scriptProcessorNode->Process(r, sources, destinations, framesToProcess);
-    }));
+      Local<Function> audioBufferConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
+      scriptProcessorNode->audioBufferConstructor.Reset(audioBufferConstructor);
+      Local<Function> audioProcessingEventConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioProcessingEvent")));
+      scriptProcessorNode->audioProcessingEventConstructor.Reset(audioProcessingEventConstructor);
 
-    scriptProcessorNodeObj->Set(JS_STR("onaudioprocess"), Nan::Null());
-
-    info.GetReturnValue().Set(scriptProcessorNodeObj);
+      info.GetReturnValue().Set(scriptProcessorNodeObj);
+    } else {
+      Nan::ThrowError("ScriptProcessorNode: numberOfInputChannels and numberOfOutputChannels do not match");
+    }
   } else {
-    Nan::ThrowError("invalid arguments");
+    Nan::ThrowError("ScriptProcessorNode: invalid arguments");
   }
 }
 NAN_GETTER(ScriptProcessorNode::OnAudioProcessGetter) {
@@ -292,16 +409,18 @@ NAN_GETTER(ScriptProcessorNode::OnAudioProcessGetter) {
 NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
   Nan::HandleScope scope;
 
-  if (value->IsFunction()) {
-    ScriptProcessorNode *scriptProcessorNode = ObjectWrap::Unwrap<ScriptProcessorNode>(info.This());
+  ScriptProcessorNode *scriptProcessorNode = ObjectWrap::Unwrap<ScriptProcessorNode>(info.This());
 
+  if (value->IsFunction()) {
     Local<Function> onAudioProcessLocal = Local<Function>::Cast(value);
     scriptProcessorNode->onAudioProcess.Reset(onAudioProcessLocal);
   } else {
-    Nan::ThrowError("onaudioprocess: invalid arguments");
+    scriptProcessorNode->onAudioProcess.Reset();
   }
 }
 void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+  // XXX needs to run on the main thread
+  
   if (!onAudioProcess.IsEmpty()) {
     Local<Function> onAudioProcessLocal = Nan::New(onAudioProcess);
 
