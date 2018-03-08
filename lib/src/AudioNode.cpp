@@ -56,7 +56,9 @@ NAN_METHOD(AudioNode::Connect) {
       constructorName->StrictEquals(JS_STR("AudioDestinationNode")) ||
       constructorName->StrictEquals(JS_STR("GainNode")) ||
       constructorName->StrictEquals(JS_STR("AnalyserNode")) ||
-      constructorName->StrictEquals(JS_STR("PannerNode"))
+      constructorName->StrictEquals(JS_STR("PannerNode")) ||
+      constructorName->StrictEquals(JS_STR("StereoPannerNode")) ||
+      constructorName->StrictEquals(JS_STR("ScriptProcessorNode"))
     ) {
       unsigned int outputIndex = info[1]->IsNumber() ? info[1]->Uint32Value() : 0;
       unsigned int inputIndex = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
@@ -119,7 +121,9 @@ NAN_METHOD(AudioNode::Disconnect) {
         constructorName->StrictEquals(JS_STR("AudioDestinationNode")) ||
         constructorName->StrictEquals(JS_STR("GainNode")) ||
         constructorName->StrictEquals(JS_STR("AnalyserNode")) ||
-        constructorName->StrictEquals(JS_STR("PannerNode"))
+        constructorName->StrictEquals(JS_STR("PannerNode")) ||
+        constructorName->StrictEquals(JS_STR("StereoPannerNode")) ||
+        constructorName->StrictEquals(JS_STR("ScriptProcessorNode"))
       ) {
         AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
         shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
