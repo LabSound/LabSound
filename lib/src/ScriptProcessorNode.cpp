@@ -57,7 +57,64 @@ ScriptProcessorNode::~ScriptProcessorNode() {}
 
 namespace webaudio {
 
-AudioProcessingEvent::AudioProcessingEvent(Local<Array> sources, Local<Array> destinations, uint32_t numFrames) : sources(sources), destinations(destinations), numFrames(numFrames) {}
+AudioBuffer::AudioBuffer(Local<Array> buffers, uint32_t numFrames) : buffers(buffers), numFrames(numFrames) {}
+AudioBuffer::~AudioBuffer() {}
+Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
+  Nan::EscapableHandleScope scope;
+  
+  // constructor
+  Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
+  ctor->InstanceTemplate()->SetInternalFieldCount(1);
+  ctor->SetClassName(JS_STR("AudioBuffer"));
+  
+  // prototype
+  Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
+  Nan::SetAccessor(proto, JS_STR("numberOfChannels"), NumberOfChannels);
+  Nan::SetMethod(proto, "getChannelData", GetChannelData);
+  
+  Local<Function> ctorFn = ctor->GetFunction();
+
+  return scope.Escape(ctorFn);
+}
+NAN_METHOD(AudioBuffer::New) {
+  Nan::HandleScope scope;
+
+  if (info[0]->IsArray() && info[1]->IsNumber()) {
+    Local<Array> buffers = Local<Array>::Cast(info[0]);
+    uint32_t numFrames = info[1]->Uint32Value();
+
+    AudioBuffer *audioBuffer = new AudioBuffer(buffers, numFrames);
+    Local<Object> audioBufferObj = info.This();
+    audioBuffer->Wrap(audioBufferObj);
+  } else {
+    Nan::ThrowError("AudioProcessingEvent:New: invalid arguments");
+  }
+}
+NAN_GETTER(AudioBuffer::NumberOfChannels) {
+  Nan::HandleScope scope;
+
+  AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+  Local<Array> buffers = Nan::New(audioBuffer->buffers);
+
+  info.GetReturnValue().Set(JS_INT(buffers->Length()));
+}
+NAN_METHOD(AudioBuffer::GetChannelData) {
+  Nan::HandleScope scope;
+
+  if (info[0]->IsNumber()) {
+    uint32_t channelIndex = info[0]->Uint32Value();
+
+    AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+    Local<Array> buffers = Nan::New(audioBuffer->buffers);
+    Local<Value> channelData = buffers->Get(channelIndex);
+
+    info.GetReturnValue().Set(channelData);
+  } else {
+    Nan::ThrowError("AudioBuffer:GetChannelData: invalid arguments");
+  }
+}
+
+AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer, uint32_t numFrames) : inputBuffer(inputBuffer), outputBuffer(outputBuffer), numFrames(numFrames) {}
 AudioProcessingEvent::~AudioProcessingEvent() {}
 Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
   Nan::EscapableHandleScope scope;
@@ -79,12 +136,12 @@ Handle<Object> AudioProcessingEvent::Initialize(Isolate *isolate) {
 NAN_METHOD(AudioProcessingEvent::New) {
   Nan::HandleScope scope;
 
-  if (info[0]->IsArray() && info[1]->IsArray() && info[2]->IsNumber()) {
-    Local<Array> sourcesArray = Local<Array>::Cast(info[0]);
-    Local<Array> destinationsArray = Local<Array>::Cast(info[1]);
+  if (info[0]->IsObject() && info[1]->IsObject() && info[2]->IsNumber()) {
+    Local<Object> inputBuffer = Local<Object>::Cast(info[0]);
+    Local<Object> outputBuffer = Local<Object>::Cast(info[1]);
     uint32_t numFrames = info[2]->Uint32Value();
 
-    AudioProcessingEvent *audioProcessingEvent = new AudioProcessingEvent(sourcesArray, destinationsArray, numFrames);
+    AudioProcessingEvent *audioProcessingEvent = new AudioProcessingEvent(inputBuffer, outputBuffer, numFrames);
     Local<Object> audioProcessingEventObj = info.This();
     audioProcessingEvent->Wrap(audioProcessingEventObj);
   } else {
@@ -95,15 +152,17 @@ NAN_GETTER(AudioProcessingEvent::NumberOfInputChannelsGetter) {
   Nan::HandleScope scope;
 
   AudioProcessingEvent *audioProcessingEvent = ObjectWrap::Unwrap<AudioProcessingEvent>(info.This());
-  Local<Array> sources = Nan::New(audioProcessingEvent->sources);
-  info.GetReturnValue().Set(JS_INT(sources->Length()));
+  Local<Object> inputBufferObj = Nan::New(audioProcessingEvent->inputBuffer);
+  Local<Value> numberOfChannels = inputBufferObj->Get(JS_STR("numberOfChannels"));
+  info.GetReturnValue().Set(numberOfChannels);
 }
 NAN_GETTER(AudioProcessingEvent::NumberOfOutputChannelsGetter) {
   Nan::HandleScope scope;
 
   AudioProcessingEvent *audioProcessingEvent = ObjectWrap::Unwrap<AudioProcessingEvent>(info.This());
-  Local<Array> destinations = Nan::New(audioProcessingEvent->destinations);
-  info.GetReturnValue().Set(JS_INT(destinations->Length()));
+  Local<Object> outpuctBufferObj = Nan::New(audioProcessingEvent->outputBuffer);
+  Local<Value> numberOfChannels = outpuctBufferObj->Get(JS_STR("numberOfChannels"));
+  info.GetReturnValue().Set(numberOfChannels);
 }
 
 ScriptProcessorNode::ScriptProcessorNode() {}
@@ -123,6 +182,7 @@ Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate) {
   
   Local<Function> ctorFn = ctor->GetFunction();
 
+  ctorFn->Set(JS_STR("AudioBuffer"), AudioBuffer::Initialize(isolate));
   ctorFn->Set(JS_STR("AudioProcessingEvent"), AudioProcessingEvent::Initialize(isolate));
 
   return scope.Escape(ctorFn);
@@ -140,6 +200,8 @@ NAN_METHOD(ScriptProcessorNode::New) {
     Local<Object> scriptProcessorNodeObj = info.This();
     scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
+    Local<Function> audioBufferConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioBuffer")));
+    scriptProcessorNode->audioBufferConstructor.Reset(audioBufferConstructor);
     Local<Function> audioProcessingEventConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioProcessingEvent")));
     scriptProcessorNode->audioProcessingEventConstructor.Reset(audioProcessingEventConstructor);
 
@@ -185,6 +247,12 @@ void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*
       Local<Float32Array> sourceFloat32Array = Float32Array::New(sourceArrayBuffer, 0, framesToProcess);
       sourcesArray->Set(i, sourceFloat32Array);
     }
+    Local<Function> audioBufferConstructorFn = Nan::New(audioBufferConstructor);
+    Local<Value> argv1[] = {
+      sourcesArray,
+    };
+    Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+
     Local<Array> destinationsArray = Nan::New<Array>(destinations.size());
     for (size_t i = 0; i < destinations.size(); i++) {
       float *destination = destinations[i];
@@ -192,19 +260,23 @@ void ScriptProcessorNode::Process(lab::ContextRenderLock& r, vector<const float*
       Local<Float32Array> destinationFloat32Array = Float32Array::New(destinationArrayBuffer, 0, framesToProcess);
       destinationsArray->Set(i, destinationFloat32Array);
     }
+    Local<Value> argv2[] = {
+      destinationsArray,
+    };
+    Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
 
     Local<Function> audioProcessingEventConstructorFn = Nan::New(audioProcessingEventConstructor);
-    Local<Value> argv1[] = {
-      sourcesArray,
-      destinationsArray,
+    Local<Value> argv3[] = {
+      inputBuffer,
+      outputBuffer,
       JS_INT((uint32_t)framesToProcess)
     };
-    Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+    Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(sizeof(argv3)/sizeof(argv3[0]), argv3);
 
-    Local<Value> argv2[] = {
+    Local<Value> argv4[] = {
       audioProcessingEventObj,
     };
-    onAudioProcessLocal->Call(Nan::Null(), sizeof(argv2)/sizeof(argv2[0]), argv2);
+    onAudioProcessLocal->Call(Nan::Null(), sizeof(argv4)/sizeof(argv4[0]), argv4);
   } else {
     for (size_t i = 0; i < sources.size(); i++) {
       memcpy(destinations[i], sources[i], framesToProcess * sizeof(float));

@@ -41,6 +41,23 @@ public:
 
 namespace webaudio {
 
+class AudioBuffer : public ObjectWrap {
+public:
+  static Handle<Object> Initialize(Isolate *isolate);
+
+protected:
+  static NAN_METHOD(New);
+
+  AudioBuffer(Local<Array> buffers, uint32_t numFrames);
+  ~AudioBuffer();
+
+  static NAN_GETTER(NumberOfChannels);
+  static NAN_METHOD(GetChannelData);
+
+  Nan::Persistent<Array> buffers;
+  uint32_t numFrames;
+};
+
 class AudioProcessingEvent : public ObjectWrap {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
@@ -48,14 +65,14 @@ public:
 protected:
   static NAN_METHOD(New);
 
-  AudioProcessingEvent(Local<Array> sources, Local<Array> destinations, uint32_t numFrames);
+  AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer, uint32_t numFrames);
   ~AudioProcessingEvent();
 
   static NAN_GETTER(NumberOfInputChannelsGetter);
   static NAN_GETTER(NumberOfOutputChannelsGetter);
 
-  Nan::Persistent<Array> sources;
-  Nan::Persistent<Array> destinations;
+  Nan::Persistent<Object> inputBuffer;
+  Nan::Persistent<Object> outputBuffer;
   uint32_t numFrames;
 };
 
@@ -77,6 +94,7 @@ protected:
 
 protected:
   std::shared_ptr<lab::ScriptProcessorNode> audioNode;
+  Nan::Persistent<Function> audioBufferConstructor;
   Nan::Persistent<Function> audioProcessingEventConstructor;
   Nan::Persistent<Function> onAudioProcess;
 };
