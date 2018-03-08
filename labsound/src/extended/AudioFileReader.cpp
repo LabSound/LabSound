@@ -323,5 +323,42 @@ std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, bool m
 {
     return detail::LoadInternal(buffer, mixToMono, error);
 }
+
+std::unique_ptr<AudioBus> MakeBusFromRawBuffer(size_t sampleRate, PlanesVector &planes, bool mixToMono, std::string *error)
+{
+  const size_t numChannels = planes.size();
+  const size_t busChannelCount = mixToMono ? 1 : numChannels;
+  const size_t numSamples = planes.size() > 0 ? planes[0].size() : 0;
+
+  // Create AudioBus where we'll put the PCM audio data
+  std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, numSamples));
+  audioBus->setSampleRate(sampleRate);
+
+  // Deinterleave stereo into LabSound/WebAudio planar channel layout
+  // nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numSamples, numChannels, numSamples);
+
+  // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
+  // because we've already deinterleaved
+  if (numChannels == 2 && mixToMono)
+  {
+      float *destinationMono = audioBus->channel(0)->mutableData();
+      float *leftSamples = planes[0].data();
+      float *rightSamples = planes[1].data();
+
+      for (size_t i = 0; i < numSamples; i++)
+      {
+          destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
+      }
+  }
+  else
+  {
+      for (size_t i = 0; i < busChannelCount; i++)
+      {
+          memcpy(audioBus->channel(i)->mutableData(), planes[i].data(), numSamples * sizeof(float));
+      }
+  }
+
+  return audioBus;
+}
     
 } // end namespace lab

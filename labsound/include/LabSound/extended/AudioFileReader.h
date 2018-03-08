@@ -85,6 +85,7 @@ namespace detail {
 namespace lab {
   std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono, std::string *error = nullptr);
   std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, bool mixToMono, std::string *error = nullptr);
+  std::unique_ptr<AudioBus> MakeBusFromRawBuffer(size_t sampleRate, PlanesVector &buffers, bool mixToMono, std::string *error);
 }
 
 #endif
