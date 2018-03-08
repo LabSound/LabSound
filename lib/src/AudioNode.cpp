@@ -63,18 +63,20 @@ NAN_METHOD(AudioNode::Connect) {
       unsigned int outputIndex = info[1]->IsNumber() ? info[1]->Uint32Value() : 0;
       unsigned int inputIndex = info[2]->IsNumber() ? info[2]->Uint32Value() : 0;
 
-      AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
-      shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
+      Local<Object> srcAudioNodeObj = info.This();
+      AudioNode *srcAudioNode = ObjectWrap::Unwrap<AudioNode>(srcAudioNodeObj);
+      shared_ptr<lab::AudioNode> srcLabAudioNode = srcAudioNode->audioNode;
 
-      AudioNode *argAudioNode = ObjectWrap::Unwrap<AudioNode>(Local<Object>::Cast(info[0]));
-      shared_ptr<lab::AudioNode> dstAudioNode = argAudioNode->audioNode;
+      Local<Object> dstAudioNodeObj = Local<Object>::Cast(info[0]);
+      AudioNode *dstAudioNode = ObjectWrap::Unwrap<AudioNode>(Local<Object>::Cast(dstAudioNodeObj));
+      shared_ptr<lab::AudioNode> dstLabAudioNode = dstAudioNode->audioNode;
 
-      Local<Object> audioContextObj = Nan::New(audioNode->context);
+      Local<Object> audioContextObj = Nan::New(srcAudioNode->context);
       AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
       lab::AudioContext *labAudioContext = audioContext->audioContext;
 
       // try {
-        labAudioContext->connect(dstAudioNode, srcAudioNode, outputIndex, inputIndex);
+        labAudioContext->connect(dstLabAudioNode, srcLabAudioNode, outputIndex, inputIndex);
       /* } catch (const std::exception &e) {
         Nan::ThrowError(e.what());
         return;
@@ -82,6 +84,9 @@ NAN_METHOD(AudioNode::Connect) {
         Nan::ThrowError("unknown exception");
         return;
       } */
+
+      srcAudioNode->outputAudioNodes[outputIndex].Reset(dstAudioNodeObj);
+      dstAudioNode->inputAudioNodes[inputIndex].Reset(srcAudioNodeObj);
 
       info.GetReturnValue().Set(info[0]);
     } else {
@@ -96,15 +101,16 @@ NAN_METHOD(AudioNode::Disconnect) {
   Nan::HandleScope scope;
 
   if (info.Length() == 0) {
-    AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
-    shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
+    Local<Object> srcAudioNodeObj = info.This();
+    AudioNode *srcAudioNode = ObjectWrap::Unwrap<AudioNode>(srcAudioNodeObj);
+    shared_ptr<lab::AudioNode> srcLabAudioNode = srcAudioNode->audioNode;
     
-    Local<Object> audioContextObj = Nan::New(audioNode->context);
+    Local<Object> audioContextObj = Nan::New(srcAudioNode->context);
     AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
     lab::AudioContext *labAudioContext = audioContext->audioContext;
     
     // try {
-      labAudioContext->disconnect(nullptr, srcAudioNode);
+      labAudioContext->disconnect(nullptr, srcLabAudioNode);
     /* } catch (const std::exception &e) {
       Nan::ThrowError(e.what());
       return;
@@ -112,6 +118,21 @@ NAN_METHOD(AudioNode::Disconnect) {
       Nan::ThrowError("unknown exception");
       return;
     } */
+
+    for (Nan::Persistent<Object> &outputAudioNodePersistent : srcAudioNode->outputAudioNodes) {
+      if (!outputAudioNodePersistent.IsEmpty()) {
+        Local<Object> outputAudioNodeObj = Nan::New(outputAudioNodePersistent);
+        AudioNode *outputAudioNode = ObjectWrap::Unwrap<AudioNode>(outputAudioNodeObj);
+        for (Nan::Persistent<Object> &inputAudioNodePersistent : outputAudioNode->inputAudioNodes) {
+          Local<Object> inputAudioNodeObj = Nan::New(inputAudioNodePersistent);
+          AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
+          if (inputAudioNode == srcAudioNode) {
+            inputAudioNodePersistent.Reset();
+          }
+        }
+        outputAudioNodePersistent.Reset();
+      }
+    }
   } else {
     if (info[0]->IsObject()) {
       Local<Value> constructorName = info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"));
@@ -125,17 +146,19 @@ NAN_METHOD(AudioNode::Disconnect) {
         constructorName->StrictEquals(JS_STR("StereoPannerNode")) ||
         constructorName->StrictEquals(JS_STR("ScriptProcessorNode"))
       ) {
-        AudioNode *audioNode = ObjectWrap::Unwrap<AudioNode>(info.This());
-        shared_ptr<lab::AudioNode> srcAudioNode = audioNode->audioNode;
-        
-        AudioNode *argAudioNode = ObjectWrap::Unwrap<AudioNode>(Local<Object>::Cast(info[0]));
-        shared_ptr<lab::AudioNode> dstAudioNode = argAudioNode->audioNode;
+        Local<Object> srcAudioNodeObj = info.This();
+        AudioNode *srcAudioNode = ObjectWrap::Unwrap<AudioNode>(srcAudioNodeObj);
+        shared_ptr<lab::AudioNode> srcLabAudioNode = srcAudioNode->audioNode;
 
-        Local<Object> audioContextObj = Nan::New(audioNode->context);
+        Local<Object> dstAudioNodeObj = Local<Object>::Cast(info[0]);
+        AudioNode *dstAudioNode = ObjectWrap::Unwrap<AudioNode>(dstAudioNodeObj);
+        shared_ptr<lab::AudioNode> dstLabAudioNode = dstAudioNode->audioNode;
+
+        Local<Object> audioContextObj = Nan::New(srcAudioNode->context);
         AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
         lab::AudioContext *labAudioContext = audioContext->audioContext;
         // try {
-          labAudioContext->disconnect(dstAudioNode, srcAudioNode);
+          labAudioContext->disconnect(dstLabAudioNode, srcLabAudioNode);
         /* } catch (const std::exception &e) {
           Nan::ThrowError(e.what());
           return;
@@ -143,6 +166,23 @@ NAN_METHOD(AudioNode::Disconnect) {
           Nan::ThrowError("unknown exception");
           return;
         } */
+
+        for (Nan::Persistent<Object> &outputAudioNodePersistent : srcAudioNode->outputAudioNodes) {
+          if (!outputAudioNodePersistent.IsEmpty()) {
+            Local<Object> outputAudioNodeObj = Nan::New(outputAudioNodePersistent);
+            AudioNode *outputAudioNode = ObjectWrap::Unwrap<AudioNode>(outputAudioNodeObj);
+            if (outputAudioNode == dstAudioNode) {
+              for (Nan::Persistent<Object> &inputAudioNodePersistent : outputAudioNode->inputAudioNodes) {
+                Local<Object> inputAudioNodeObj = Nan::New(inputAudioNodePersistent);
+                AudioNode *inputAudioNode = ObjectWrap::Unwrap<AudioNode>(inputAudioNodeObj);
+                if (inputAudioNode == srcAudioNode) {
+                  inputAudioNodePersistent.Reset();
+                }
+              }
+              outputAudioNodePersistent.Reset();
+            }
+          }
+        }
 
         info.GetReturnValue().Set(info[0]);
       } else {
