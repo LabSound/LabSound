@@ -73,6 +73,7 @@ protected:
   friend class GainNode;
   friend class AudioParam;
   friend class AudioAnalyser;
+  friend class ScriptProcessorNode;
 };
 
 }
