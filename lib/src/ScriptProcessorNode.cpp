@@ -50,6 +50,14 @@ double ScriptProcessor::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
 
+AudioBufferSourceNode::AudioBufferSourceNode(function<void()> &&finishedCallback) : finishedCallback(std::move(finishedCallback)) {}
+AudioBufferSourceNode::~AudioBufferSourceNode() {}
+void AudioBufferSourceNode::finish(ContextRenderLock &r) {
+  SampledAudioNode::finish(r);
+
+  finishedCallback();
+}
+
 AudioMultiProcessorNode::AudioMultiProcessorNode(unsigned int numChannels) : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
