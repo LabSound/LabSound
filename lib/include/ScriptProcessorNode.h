@@ -31,16 +31,6 @@ protected:
   function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> m_kernel;
 };
 
-class FinishableSourceNode : public SampledAudioNode {
-public:
-  FinishableSourceNode(function<void()> &&finishedCallback);
-  ~FinishableSourceNode();
-protected:
-  virtual void finish(ContextRenderLock &r);
-
-  function<void()> finishedCallback;
-};
-
 class AudioMultiProcessorNode : public AudioNode {
 public:
 
