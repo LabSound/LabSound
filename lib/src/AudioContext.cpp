@@ -179,15 +179,15 @@ NAN_METHOD(AudioContext::New) {
   if (!threadInitialized) {
     uv_async_init(uv_default_loop(), &threadAsync, RunInMainThread);
     uv_sem_init(&threadSemaphore, 0);
-    
+
     atexit([]{
       uv_close((uv_handle_t *)&threadAsync, nullptr);
       uv_sem_destroy(&threadSemaphore);
     });
-    
+
     threadInitialized = true;
   }
-  
+
   Nan::HandleScope scope;
 
   Local<Object> audioContextObj = info.This();
@@ -396,6 +396,14 @@ function<void()> threadFn;
 uv_async_t threadAsync;
 uv_sem_t threadSemaphore;
 bool threadInitialized = false;
+void QueueOnMainThread(function<void()> &&newThreadFn) {
+  threadFn = std::move(newThreadFn);
+
+  uv_async_send(&threadAsync);
+  uv_sem_wait(&threadSemaphore);
+
+  threadFn = function<void()>();
+}
 void RunInMainThread(uv_async_t *handle) {
   threadFn();
   uv_sem_post(&threadSemaphore);

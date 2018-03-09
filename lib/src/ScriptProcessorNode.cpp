@@ -310,12 +310,7 @@ NAN_METHOD(AudioBuffer::CopyToChannel) {
 
 AudioBufferSourceNode::AudioBufferSourceNode() {
   audioNode.reset(new lab::FinishableSourceNode([this](){
-    threadFn = std::bind(ProcessInMainThread, this);
-
-    uv_async_send(&threadAsync);
-    uv_sem_wait(&threadSemaphore);
-    
-    threadFn = function<void()>();
+    QueueOnMainThread(std::bind(ProcessInMainThread, this));
   }));
 }
 AudioBufferSourceNode::~AudioBufferSourceNode() {}
@@ -563,12 +558,7 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
 }
 
 void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-  threadFn = std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess);
-
-  uv_async_send(&threadAsync);
-  uv_sem_wait(&threadSemaphore);
-  
-  threadFn = function<void()>();
+  QueueOnMainThread(std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
 }
 
 void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess) {
