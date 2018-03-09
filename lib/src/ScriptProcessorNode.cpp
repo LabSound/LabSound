@@ -377,12 +377,39 @@ NAN_SETTER(AudioBufferSourceNode::BufferSetter) {
   Nan::HandleScope scope;
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
+  Local<Object> audioContextObj = Nan::New(audioBufferSourceNode->context);
+  AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
 
   if (value->IsObject() && value->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioBuffer"))) {
-    Local<Object> buffer = Local<Object>::Cast(value);
-    audioBufferSourceNode->buffer.Reset(buffer);
+    Local<Object> audioBufferObj = Local<Object>::Cast(value);
+    audioBufferSourceNode->buffer.Reset(audioBufferObj);
+
+    AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(audioBufferObj);
+    Local<Array> buffers = Nan::New(audioBuffer->buffers);
+    size_t numChannels = buffers->Length();
+    size_t numFrames = numChannels > 0 ? Local<Float32Array>::Cast(buffers->Get(0))->Length() : 0;
+
+    unique_ptr<float *[]> frames(new float*[numChannels]);
+    for (size_t i = 0; i < numChannels; i++) {
+      Local<Float32Array> bufferFramesFloat32Array = Local<Float32Array>::Cast(buffers->Get(i));
+      size_t numBufferFrames = bufferFramesFloat32Array->Length();
+      Local<ArrayBuffer> bufferFramesArrayBuffer = bufferFramesFloat32Array->Buffer();
+      frames[i] = (float *)((unsigned char *)bufferFramesArrayBuffer->GetContents().Data() + bufferFramesFloat32Array->ByteOffset());
+    }
+
+    shared_ptr<lab::AudioBus> audioBus(lab::MakeBusFromRawBuffer(audioContext->audioContext->sampleRate(), numChannels, numFrames, frames.get(), false).release());
+
+    {
+      lab::ContextRenderLock lock(audioContext->audioContext, "AudioBufferSourceNode::buffer");
+      ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->setBus(lock, audioBus);
+    }
   } else {
     audioBufferSourceNode->buffer.Reset();
+
+    {
+      lab::ContextRenderLock lock(audioContext->audioContext, "AudioBufferSourceNode::buffer");
+      ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->setBus(lock, nullptr);
+    }
   }
 }
 NAN_GETTER(AudioBufferSourceNode::OnEndGetter) {
@@ -556,11 +583,9 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
     scriptProcessorNode->onAudioProcess.Reset();
   }
 }
-
 void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
   QueueOnMainThread(std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
 }
-
 void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess) {
   {
     Nan::HandleScope scope;

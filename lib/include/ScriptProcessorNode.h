@@ -102,6 +102,7 @@ protected:
   uint32_t sampleRate;
   Nan::Persistent<Array> buffers;
 
+  friend class AudioBufferSourceNode;
   friend class ScriptProcessorNode;
 };
 
