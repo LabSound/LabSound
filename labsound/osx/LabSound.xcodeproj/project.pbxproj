@@ -101,6 +101,8 @@
 		0AA1EF76204DB1970074707B /* FunctionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EF1D204DB1970074707B /* FunctionNode.cpp */; };
 		0AA1EFC8204DFA410074707B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 0AA1EFC4204DFA410074707B /* LICENSE */; };
 		0AA1EFC9204DFA410074707B /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EFC7204DFA410074707B /* RtAudio.cpp */; };
+		0AA1EFCC205245E00074707B /* ScriptProcessorNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EFCA205245E00074707B /* ScriptProcessorNode.cpp */; };
+		0AA1EFCD205245E00074707B /* FinishableSourceNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA1EFCB205245E00074707B /* FinishableSourceNode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -306,6 +308,10 @@
 		0AA1EFC4204DFA410074707B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		0AA1EFC5204DFA410074707B /* RtAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RtAudio.h; sourceTree = "<group>"; };
 		0AA1EFC7204DFA410074707B /* RtAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RtAudio.cpp; sourceTree = "<group>"; };
+		0AA1EFCA205245E00074707B /* ScriptProcessorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScriptProcessorNode.cpp; sourceTree = "<group>"; };
+		0AA1EFCB205245E00074707B /* FinishableSourceNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FinishableSourceNode.cpp; sourceTree = "<group>"; };
+		0AA1EFCE205245F50074707B /* FinishableSourceNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FinishableSourceNode.h; sourceTree = "<group>"; };
+		0AA1EFCF205245F60074707B /* ScriptProcessorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptProcessorNode.h; sourceTree = "<group>"; };
 		5E7C563C0F0D44784695726E /* liblabsound.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblabsound.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E285226F1A642304003F1CA7 /* LabSound.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LabSound.xcconfig; sourceTree = "<group>"; };
 		E28522701A642310003F1CA7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -421,6 +427,8 @@
 		0AA1EE92204DB1970074707B /* core */ = {
 			isa = PBXGroup;
 			children = (
+				0AA1EFCB205245E00074707B /* FinishableSourceNode.cpp */,
+				0AA1EFCA205245E00074707B /* ScriptProcessorNode.cpp */,
 				0AA1EE93204DB1970074707B /* PannerNode.cpp */,
 				0AA1EE94204DB1970074707B /* AudioHardwareSourceNode.cpp */,
 				0AA1EE95204DB1970074707B /* WaveTable.cpp */,
@@ -646,6 +654,8 @@
 		0AA1EF79204DB2540074707B /* core */ = {
 			isa = PBXGroup;
 			children = (
+				0AA1EFCE205245F50074707B /* FinishableSourceNode.h */,
+				0AA1EFCF205245F60074707B /* ScriptProcessorNode.h */,
 				0AA1EF7A204DB2540074707B /* DefaultAudioDestinationNode.h */,
 				0AA1EF7B204DB2540074707B /* FloatPoint3D.h */,
 				0AA1EF7C204DB2540074707B /* AudioNodeInput.h */,
@@ -857,6 +867,7 @@
 				0AA1EF6D204DB1970074707B /* AudioFileReader.cpp in Sources */,
 				0AA1EF2B204DB1970074707B /* AudioNodeInput.cpp in Sources */,
 				0AA1EF3B204DB1970074707B /* AudioParam.cpp in Sources */,
+				0AA1EFCD205245E00074707B /* FinishableSourceNode.cpp in Sources */,
 				0AA1EF42204DB1970074707B /* HRTFKernel.cpp in Sources */,
 				0AA1EF69204DB1970074707B /* SupersawNode.cpp in Sources */,
 				0AA1EF25204DB1970074707B /* RealtimeAnalyser.cpp in Sources */,
@@ -882,6 +893,7 @@
 				0AA1EF32204DB1970074707B /* AudioBus.cpp in Sources */,
 				0AA1EF37204DB1970074707B /* AudioDestinationNode.cpp in Sources */,
 				0AA1EF34204DB1970074707B /* OfflineAudioDestinationNode.cpp in Sources */,
+				0AA1EFCC205245E00074707B /* ScriptProcessorNode.cpp in Sources */,
 				0AA1EF40204DB1970074707B /* VectorMath.cpp in Sources */,
 				0AA1EF5E204DB1970074707B /* MultiChannelResampler.cpp in Sources */,
 				0AA1EF49204DB1970074707B /* WaveShaperProcessor.cpp in Sources */,
