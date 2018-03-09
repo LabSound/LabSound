@@ -50,9 +50,9 @@ double ScriptProcessor::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
 
-AudioBufferSourceNode::AudioBufferSourceNode(function<void()> &&finishedCallback) : finishedCallback(std::move(finishedCallback)) {}
-AudioBufferSourceNode::~AudioBufferSourceNode() {}
-void AudioBufferSourceNode::finish(ContextRenderLock &r) {
+FinishableSourceNode::FinishableSourceNode(function<void()> &&finishedCallback) : finishedCallback(std::move(finishedCallback)) {}
+FinishableSourceNode::~FinishableSourceNode() {}
+void FinishableSourceNode::finish(ContextRenderLock &r) {
   SampledAudioNode::finish(r);
 
   finishedCallback();
@@ -309,9 +309,13 @@ NAN_METHOD(AudioBuffer::CopyToChannel) {
 }
 
 AudioBufferSourceNode::AudioBufferSourceNode() {
-  AudioBufferSourceNode *audioBufferSourceNode = this;
-  audioNode.reset(new lab::AudioBufferSourceNode([audioBufferSourceNode](){
-    // XXX
+  audioNode.reset(new lab::FinishableSourceNode([this](){
+    threadFn = std::bind(ProcessInMainThread, this);
+
+    uv_async_send(&threadAsync);
+    uv_sem_wait(&threadSemaphore);
+    
+    threadFn = function<void()>();
   }));
 }
 AudioBufferSourceNode::~AudioBufferSourceNode() {}
@@ -359,13 +363,13 @@ NAN_METHOD(AudioBufferSourceNode::Start) {
   Nan::HandleScope scope;
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
-  ((lab::AudioBufferSourceNode *)audioBufferSourceNode->audioNode.get())->start(0);
+  ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->start(0);
 }
 NAN_METHOD(AudioBufferSourceNode::Stop) {
   Nan::HandleScope scope;
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
-  ((lab::AudioBufferSourceNode *)audioBufferSourceNode->audioNode.get())->stop(0);
+  ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->stop(0);
 }
 NAN_GETTER(AudioBufferSourceNode::BufferGetter) {
   Nan::HandleScope scope;
@@ -404,6 +408,9 @@ NAN_SETTER(AudioBufferSourceNode::OnEndSetter) {
   } else {
     audioBufferSourceNode->onend.Reset();
   }
+}
+void AudioBufferSourceNode::ProcessInMainThread(AudioBufferSourceNode *self) {
+  // XXX
 }
 
 AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer) : inputBuffer(inputBuffer), outputBuffer(outputBuffer) {}
@@ -472,14 +479,8 @@ NAN_GETTER(AudioProcessingEvent::NumberOfOutputChannelsGetter) {
   info.GetReturnValue().Set(numberOfChannels);
 }
 
-ScriptProcessorNode::ScriptProcessorNode() {
-  uv_async_init(uv_default_loop(), &threadAsync, ProcessInMainThread);
-  uv_sem_init(&threadSemaphore, 0);
-}
-ScriptProcessorNode::~ScriptProcessorNode() {
-  uv_close((uv_handle_t *)&threadAsync, nullptr);
-  uv_sem_destroy(&threadSemaphore);
-}
+ScriptProcessorNode::ScriptProcessorNode() {}
+ScriptProcessorNode::~ScriptProcessorNode() {}
 Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons) {
   Nan::EscapableHandleScope scope;
 
@@ -562,26 +563,15 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
 }
 
 void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-  threadScriptProcessorNode = this;
-  threadSources = &sources;
-  threadDestinations = &destinations;
-  threadFramesToProcess = framesToProcess;
+  threadFn = std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess);
 
   uv_async_send(&threadAsync);
   uv_sem_wait(&threadSemaphore);
-
-  threadScriptProcessorNode = nullptr;
-  threadSources = nullptr;
-  threadDestinations = nullptr;
-  threadFramesToProcess = 0;
+  
+  threadFn = function<void()>();
 }
 
-void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
-  ScriptProcessorNode *self = threadScriptProcessorNode;
-  vector<const float*> &sources = *threadSources;
-  vector<float*> &destinations = *threadDestinations;
-  size_t framesToProcess = threadFramesToProcess;
-
+void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess) {
   {
     Nan::HandleScope scope;
 
@@ -649,13 +639,6 @@ void ScriptProcessorNode::ProcessInMainThread(uv_async_t *handle) {
       }
     }
   }
-
-  uv_sem_post(&self->threadSemaphore);
 }
-
-ScriptProcessorNode *ScriptProcessorNode::threadScriptProcessorNode = nullptr;
-vector<const float*> *ScriptProcessorNode::threadSources = nullptr;
-vector<float*> *ScriptProcessorNode::threadDestinations = nullptr;
-size_t ScriptProcessorNode::threadFramesToProcess = 0;
 
 }

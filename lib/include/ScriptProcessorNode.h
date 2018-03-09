@@ -31,10 +31,10 @@ protected:
   function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> m_kernel;
 };
 
-class AudioBufferSourceNode : public SampledAudioNode {
+class FinishableSourceNode : public SampledAudioNode {
 public:
-  AudioBufferSourceNode(function<void()> &&finishedCallback);
-  ~AudioBufferSourceNode();
+  FinishableSourceNode(function<void()> &&finishedCallback);
+  ~FinishableSourceNode();
 protected:
   virtual void finish(ContextRenderLock &r);
 
@@ -121,6 +121,7 @@ protected:
   static NAN_SETTER(BufferSetter);
   static NAN_GETTER(OnEndGetter);
   static NAN_SETTER(OnEndSetter);
+  static void ProcessInMainThread(AudioBufferSourceNode *self);
 
   Nan::Persistent<Object> buffer;
   Nan::Persistent<Function> onend;
@@ -159,18 +160,11 @@ protected:
   static NAN_GETTER(OnAudioProcessGetter);
   static NAN_SETTER(OnAudioProcessSetter);
   void ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess);
-  static void ProcessInMainThread(uv_async_t *handle);
+  static void ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess);
 
   Nan::Persistent<Function> audioBufferConstructor;
   Nan::Persistent<Function> audioProcessingEventConstructor;
   Nan::Persistent<Function> onAudioProcess;
-
-  uv_async_t threadAsync;
-  uv_sem_t threadSemaphore;
-  static ScriptProcessorNode *threadScriptProcessorNode;
-  static vector<const float*> *threadSources;
-  static vector<float*> *threadDestinations;
-  static size_t threadFramesToProcess;
 };
 
 }
