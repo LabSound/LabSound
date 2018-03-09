@@ -180,6 +180,7 @@ NAN_METHOD(AudioBufferSourceNode::New) {
 
   if (info[0]->IsObject() && info[0]->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioContext"))) {
     Local<Object> audioContextObj = Local<Object>::Cast(info[0]);
+    AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
 
     AudioBufferSourceNode *audioBufferSourceNode = new AudioBufferSourceNode();
     Local<Object> audioBufferSourceNodeObj = info.This();
@@ -217,6 +218,7 @@ NAN_SETTER(AudioBufferSourceNode::BufferSetter) {
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
   Local<Object> audioContextObj = Nan::New(audioBufferSourceNode->context);
   AudioContext *audioContext = ObjectWrap::Unwrap<AudioContext>(audioContextObj);
+  lab::FinishableSourceNode *audioNode = (lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get();
 
   if (value->IsObject() && value->ToObject()->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("name"))->StrictEquals(JS_STR("AudioBuffer"))) {
     Local<Object> audioBufferObj = Local<Object>::Cast(value);
@@ -239,14 +241,16 @@ NAN_SETTER(AudioBufferSourceNode::BufferSetter) {
 
     {
       lab::ContextRenderLock lock(audioContext->audioContext, "AudioBufferSourceNode::buffer");
-      ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->setBus(lock, audioBus);
+      audioNode->reset(lock);
+      audioNode->setBus(lock, audioBus);
     }
   } else {
     audioBufferSourceNode->buffer.Reset();
 
     {
       lab::ContextRenderLock lock(audioContext->audioContext, "AudioBufferSourceNode::buffer");
-      ((lab::FinishableSourceNode *)audioBufferSourceNode->audioNode.get())->setBus(lock, nullptr);
+      audioNode->reset(lock);
+      audioNode->setBus(lock, nullptr);
     }
   }
 }
