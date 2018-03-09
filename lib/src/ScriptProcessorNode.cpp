@@ -15,6 +15,7 @@ Handle<Object> AudioBuffer::Initialize(Isolate *isolate) {
 
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
+  Nan::SetAccessor(proto, JS_STR("sampleRate"), SampleRate);
   Nan::SetAccessor(proto, JS_STR("length"), Length);
   Nan::SetAccessor(proto, JS_STR("numberOfChannels"), NumberOfChannels);
   Nan::SetMethod(proto, "getChannelData", GetChannelData);
@@ -50,6 +51,12 @@ NAN_METHOD(AudioBuffer::New) {
   } else {
     Nan::ThrowError("AudioBuffer:New: invalid arguments");
   }
+}
+NAN_GETTER(AudioBuffer::SampleRate) {
+  Nan::HandleScope scope;
+
+  AudioBuffer *audioBuffer = ObjectWrap::Unwrap<AudioBuffer>(info.This());
+  info.GetReturnValue().Set(JS_INT(audioBuffer->sampleRate));
 }
 NAN_GETTER(AudioBuffer::Length) {
   Nan::HandleScope scope;

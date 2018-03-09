@@ -25,6 +25,7 @@ protected:
   AudioBuffer(uint32_t sampleRate, Local<Array> buffers);
   ~AudioBuffer();
 
+  static NAN_GETTER(SampleRate);
   static NAN_GETTER(Length);
   static NAN_GETTER(NumberOfChannels);
   static NAN_METHOD(GetChannelData);
