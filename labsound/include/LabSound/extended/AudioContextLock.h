@@ -91,6 +91,32 @@ namespace lab
         AudioContext * context() { return m_context; }
     };
 
+    class ContextRenderUnlock
+    {
+        AudioContext * m_context;
+
+    public:
+        
+        ContextRenderUnlock(AudioContext * context)
+        {
+            if (context)
+            {
+                context->m_renderLock.unlock();
+                m_context = context;
+            }
+        }
+        
+        ~ContextRenderUnlock()
+        {
+            if (m_context)
+            {
+                m_context->m_renderLock.lock();
+            }
+        }
+        
+        AudioContext * context() { return m_context; }
+    };
+
 } // end namespace lab
 
 #endif
