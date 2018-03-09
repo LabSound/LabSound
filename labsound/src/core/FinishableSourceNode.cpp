@@ -15,7 +15,7 @@ FinishableSourceNode::FinishableSourceNode(std::function<void(ContextRenderLock 
 FinishableSourceNode::~FinishableSourceNode() {}
 void FinishableSourceNode::finish(ContextRenderLock &r) {
   SampledAudioNode::finish(r);
-  finishedCallback(ContextRenderLock &r);
+  finishedCallback(r);
 }
 
 } // namespace lab

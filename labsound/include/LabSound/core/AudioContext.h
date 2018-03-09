@@ -31,12 +31,14 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
+class ContextRenderUnlock;
 
 class AudioContext
 {
     
     friend class ContextGraphLock;
     friend class ContextRenderLock;
+    friend class ContextRenderUnlock;
     
 public:
 
