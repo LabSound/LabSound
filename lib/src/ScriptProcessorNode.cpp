@@ -21,13 +21,29 @@ double ScriptProcessorNode::tailTime(ContextRenderLock & r) const {
 double ScriptProcessorNode::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
+void ScriptProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
+{
+    AudioBus* destinationBus = output(0)->bus(r);
+
+    if (!isInitialized() || !kernel)
+        destinationBus->zero();
+    else {
+        AudioBus* sourceBus = input(0)->bus(r);
+
+        // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
+        if (!input(0)->isConnected())
+            sourceBus->zero();
+
+        process(r, sourceBus, destinationBus, framesToProcess);
+    }
+}
 void ScriptProcessorNode::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess) {
   // ASSERT(source && destination);
   if (!source || !destination) {
     return;
   }
 
-  if (!isInitialized()) {
+  if (!isInitialized() || !kernel) {
     destination->zero();
     return;
   }
