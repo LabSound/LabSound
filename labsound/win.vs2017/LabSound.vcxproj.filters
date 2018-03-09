@@ -2376,6 +2376,9 @@
     <ClInclude Include="..\third_party\node-native-video-deps\include\libswscale\version.h">
       <Filter>third_party\node-native-video-deps\include\libswscale</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\FinishableSourceNode.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -2641,6 +2644,9 @@
     </ClCompile>
     <ClCompile Include="..\src\extended\AudioFileReader.cpp">
       <Filter>LabSound\extended\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\FinishableSourceNode.cpp">
+      <Filter>LabSound\core\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

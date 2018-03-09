@@ -25,6 +25,7 @@
     <ClInclude Include="..\include\LabSound\core\AudioBasicProcessorNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioBus.h" />
     <ClInclude Include="..\include\LabSound\core\AudioChannel.h" />
+    <ClInclude Include="..\include\LabSound\core\FinishableSourceNode.h" />
     <ClInclude Include="..\include\LabSound\core\Macros.h" />
     <ClInclude Include="..\include\LabSound\core\SampledAudioNode.h" />
     <ClInclude Include="..\include\LabSound\core\AudioContext.h" />
@@ -794,6 +795,7 @@
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBus.cpp" />
     <ClCompile Include="..\src\core\AudioChannel.cpp" />
+    <ClCompile Include="..\src\core\FinishableSourceNode.cpp" />
     <ClCompile Include="..\src\core\SampledAudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />
