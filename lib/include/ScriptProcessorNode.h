@@ -42,7 +42,7 @@ protected:
 class AudioBufferSourceNode : public AudioNode {
 public:
   static Handle<Object> Initialize(Isolate *isolate);
-  void InitializePrototype(Local<ObjectTemplate> proto);
+  static void InitializePrototype(Local<ObjectTemplate> proto);
 
 protected:
   AudioBufferSourceNode();

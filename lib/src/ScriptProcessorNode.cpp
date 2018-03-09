@@ -163,7 +163,7 @@ Handle<Object> AudioBufferSourceNode::Initialize(Isolate *isolate) {
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
   AudioNode::InitializePrototype(proto);
-  ScriptProcessorNode::InitializePrototype(proto);
+  AudioBufferSourceNode::InitializePrototype(proto);
 
   Local<Function> ctorFn = ctor->GetFunction();
 
