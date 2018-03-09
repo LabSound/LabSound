@@ -24,6 +24,7 @@ public:
   void process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
   virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
   virtual void reset(ContextRenderLock&) override;
+  virtual void checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input) override;
 
 protected:
   virtual double tailTime(ContextRenderLock & r) const override;

@@ -15,6 +15,32 @@ void ScriptProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProces
   input(0)->pull(r, output(0)->bus(r), framesToProcess);
 }
 void ScriptProcessorNode::reset(ContextRenderLock &r) {}
+// As soon as we know the channel count of our input, we can lazily initialize.
+// Sometimes this may be called more than once with different channel counts, in which case we must safely
+// uninitialize and then re-initialize with the new channel count.
+void ScriptProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+{
+    if (input != this->input(0).get())
+        return;
+
+    unsigned numberOfChannels = input->numberOfChannels(r);
+
+    bool mustPropagate = false;
+    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
+        mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
+    }
+
+    if (mustPropagate) {
+        uninitialize();
+        for (size_t i = 0; i < numberOfOutputs(); ++i) {
+            // This will propagate the channel count to any nodes connected further down the chain...
+            output(i)->setNumberOfChannels(r, numberOfChannels);
+        }
+        initialize();
+    }
+
+    AudioNode::checkNumberOfChannelsForInput(r, input);
+}
 double ScriptProcessorNode::tailTime(ContextRenderLock & r) const {
   return 0;
 }
