@@ -11,12 +11,12 @@ using namespace std;
 
 namespace lab {
 
-FinishableSourceNode::FinishableSourceNode(std::function<void()> &&finishedCallback) : finishedCallback(std::move(finishedCallback)) {}
+FinishableSourceNode::FinishableSourceNode(std::function<void(ContextRenderLock &r)> &&finishedCallback) : finishedCallback(std::move(finishedCallback)) {}
 FinishableSourceNode::~FinishableSourceNode() {}
 void FinishableSourceNode::finish(ContextRenderLock &r) {
   SampledAudioNode::finish(r);
-
-  finishedCallback();
+  finishedCallback(ContextRenderLock &r);
 }
+
 } // namespace lab
 
