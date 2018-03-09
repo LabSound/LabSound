@@ -2379,6 +2379,9 @@
     <ClInclude Include="..\include\LabSound\core\FinishableSourceNode.h">
       <Filter>LabSound\core\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\LabSound\core\ScriptProcessorNode.h">
+      <Filter>LabSound\core\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
@@ -2646,6 +2649,9 @@
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\core\FinishableSourceNode.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\core\ScriptProcessorNode.cpp">
       <Filter>LabSound\core\src</Filter>
     </ClCompile>
   </ItemGroup>

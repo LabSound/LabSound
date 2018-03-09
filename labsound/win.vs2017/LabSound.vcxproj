@@ -56,6 +56,7 @@
     <ClInclude Include="..\include\LabSound\core\OfflineAudioDestinationNode.h" />
     <ClInclude Include="..\include\LabSound\core\OscillatorNode.h" />
     <ClInclude Include="..\include\LabSound\core\PannerNode.h" />
+    <ClInclude Include="..\include\LabSound\core\ScriptProcessorNode.h" />
     <ClInclude Include="..\include\LabSound\core\StereoPannerNode.h" />
     <ClInclude Include="..\include\LabSound\core\WaveShaperNode.h" />
     <ClInclude Include="..\include\LabSound\core\WaveTable.h" />
@@ -819,6 +820,7 @@
     <ClCompile Include="..\src\core\OscillatorNode.cpp" />
     <ClCompile Include="..\src\core\PannerNode.cpp" />
     <ClCompile Include="..\src\core\RealtimeAnalyser.cpp" />
+    <ClCompile Include="..\src\core\ScriptProcessorNode.cpp" />
     <ClCompile Include="..\src\core\StereoPannerNode.cpp" />
     <ClCompile Include="..\src\core\WaveShaperNode.cpp" />
     <ClCompile Include="..\src\core\WaveTable.cpp" />
