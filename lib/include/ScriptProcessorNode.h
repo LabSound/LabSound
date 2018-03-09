@@ -15,58 +15,21 @@ using namespace node;
 
 namespace lab {
 
-class ScriptProcessor : public AudioProcessor {
-public:
-  ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
-  virtual ~ScriptProcessor();
-
-  virtual void initialize() override;
-  virtual void uninitialize() override;
-  virtual void process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
-  virtual void reset() override;
-  virtual double tailTime(ContextRenderLock & r) const override;
-  virtual double latencyTime(ContextRenderLock & r) const override;
-
-protected:
-  function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> m_kernel;
-};
-
-class AudioMultiProcessorNode : public AudioNode {
-public:
-
-    AudioMultiProcessorNode(unsigned int numChannels);
-    virtual ~AudioMultiProcessorNode() {}
-
-    // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
-    virtual void initialize() override;
-    virtual void uninitialize() override;
-
-    // Called in the main thread when the number of channels for the input may have changed.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
-
-    // Returns the number of channels for both the input and the output.
-    unsigned numberOfChannels();
-
-protected:
-
-    virtual double tailTime(ContextRenderLock & r) const override;
-    virtual double latencyTime(ContextRenderLock & r) const override;
-
-    AudioProcessor * processor();
-
-    std::unique_ptr<AudioProcessor> m_processor;
-
-};
-
-class ScriptProcessorNode : public AudioMultiProcessorNode {
+class ScriptProcessorNode : public AudioNode {
 public:
   ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessorNode();
 
+  virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+  void process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
+  virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
+  virtual void reset(ContextRenderLock&) override;
+
 protected:
+  virtual double tailTime(ContextRenderLock & r) const override;
+  virtual double latencyTime(ContextRenderLock & r) const override;
+
+  function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> kernel;
 };
 
 }

@@ -3,13 +3,25 @@
 
 namespace lab {
 
-ScriptProcessor::ScriptProcessor(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioProcessor(numChannels), m_kernel(std::move(kernel)) {}
-ScriptProcessor::~ScriptProcessor() {
-  if (isInitialized()) {
-    uninitialize();
-  }
+ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : kernel(std::move(kernel)) {
+  addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+  addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
+
+  initialize();
 }
-void ScriptProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess) {
+ScriptProcessorNode::~ScriptProcessorNode() {}
+void ScriptProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess) {
+  // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
+  input(0)->pull(r, output(0)->bus(r), framesToProcess);
+}
+void ScriptProcessorNode::reset(ContextRenderLock &r) {}
+double ScriptProcessorNode::tailTime(ContextRenderLock & r) const {
+  return 0;
+}
+double ScriptProcessorNode::latencyTime(ContextRenderLock & r) const {
+  return 0;
+}
+void ScriptProcessorNode::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess) {
   // ASSERT(source && destination);
   if (!source || !destination) {
     return;
@@ -34,131 +46,8 @@ void ScriptProcessor::process(ContextRenderLock& r, const AudioBus* source, Audi
     destinations[i] = destination->channel(i)->mutableData();
   }
 
-  m_kernel(r, sources, destinations, framesToProcess);
+  kernel(r, sources, destinations, framesToProcess);
 }
-void ScriptProcessor::initialize() {
-  m_initialized = true;
-}
-void ScriptProcessor::uninitialize() {
-  m_initialized = false;
-}
-void ScriptProcessor::reset() {}
-double ScriptProcessor::tailTime(ContextRenderLock & r) const {
-  return 0;
-}
-double ScriptProcessor::latencyTime(ContextRenderLock & r) const {
-  return 0;
-}
-
-AudioMultiProcessorNode::AudioMultiProcessorNode(unsigned int numChannels) : AudioNode()
-{
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
-
-    // The subclass must create m_processor.
-}
-void AudioMultiProcessorNode::initialize()
-{
-    if (isInitialized())
-        return;
-
-    // ASSERT(processor());
-    processor()->initialize();
-
-    AudioNode::initialize();
-}
-void AudioMultiProcessorNode::uninitialize()
-{
-    if (!isInitialized())
-        return;
-
-    // ASSERT(processor());
-    processor()->uninitialize();
-
-    AudioNode::uninitialize();
-}
-void AudioMultiProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
-{
-    AudioBus* destinationBus = output(0)->bus(r);
-
-    if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
-        destinationBus->zero();
-    else {
-        AudioBus* sourceBus = input(0)->bus(r);
-
-        // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
-        if (!input(0)->isConnected())
-            sourceBus->zero();
-
-        processor()->process(r, sourceBus, destinationBus, framesToProcess);
-    }
-}
-// Nice optimization in the very common case allowing for "in-place" processing
-void AudioMultiProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
-{
-    // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(r), framesToProcess);
-}
-void AudioMultiProcessorNode::reset(ContextRenderLock&)
-{
-    if (processor())
-        processor()->reset();
-}
-// As soon as we know the channel count of our input, we can lazily initialize.
-// Sometimes this may be called more than once with different channel counts, in which case we must safely
-// uninitialize and then re-initialize with the new channel count.
-void AudioMultiProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
-{
-    if (input != this->input(0).get())
-        return;
-
-    if (!processor())
-        return;
-
-    unsigned numberOfChannels = input->numberOfChannels(r);
-
-    bool mustPropagate = false;
-    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
-        mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
-    }
-
-    if (mustPropagate) {
-        // Re-initialize the processor with the new channel count.
-        processor()->setNumberOfChannels(numberOfChannels);
-
-        uninitialize();
-        for (size_t i = 0; i < numberOfOutputs(); ++i) {
-            // This will propagate the channel count to any nodes connected further down the chain...
-            output(i)->setNumberOfChannels(r, numberOfChannels);
-        }
-        initialize();
-    }
-
-    AudioNode::checkNumberOfChannelsForInput(r, input);
-}
-unsigned AudioMultiProcessorNode::numberOfChannels()
-{
-    return output(0)->numberOfChannels();
-}
-double AudioMultiProcessorNode::tailTime(ContextRenderLock & r) const
-{
-    return m_processor->tailTime(r);
-}
-double AudioMultiProcessorNode::latencyTime(ContextRenderLock & r) const
-{
-    return m_processor->latencyTime(r);
-}
-AudioProcessor * AudioMultiProcessorNode::processor()
-{
-    return m_processor.get();
-}
-
-ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel) : AudioMultiProcessorNode(numChannels) {
-  m_processor.reset(new ScriptProcessor(numChannels, std::move(kernel)));
-
-  initialize();
-}
-ScriptProcessorNode::~ScriptProcessorNode() {}
 
 }
 
