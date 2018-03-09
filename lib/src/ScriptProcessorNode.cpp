@@ -147,8 +147,8 @@ NAN_METHOD(AudioBuffer::CopyToChannel) {
 }
 
 AudioBufferSourceNode::AudioBufferSourceNode() {
-  audioNode.reset(new lab::FinishableSourceNode([this](){
-    QueueOnMainThread(std::bind(ProcessInMainThread, this));
+  audioNode.reset(new lab::FinishableSourceNode([this](lab::ContextRenderLock &r){
+    QueueOnMainThread(r, std::bind(ProcessInMainThread, this));
   }));
 }
 AudioBufferSourceNode::~AudioBufferSourceNode() {}
@@ -425,7 +425,7 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
   }
 }
 void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-  QueueOnMainThread(std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
+  QueueOnMainThread(r, std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
 }
 void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess) {
   {

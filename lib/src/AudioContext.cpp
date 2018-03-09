@@ -396,11 +396,14 @@ function<void()> threadFn;
 uv_async_t threadAsync;
 uv_sem_t threadSemaphore;
 bool threadInitialized = false;
-void QueueOnMainThread(function<void()> &&newThreadFn) {
+void QueueOnMainThread(lab::ContextRenderLock &r, function<void()> &&newThreadFn) {
   threadFn = std::move(newThreadFn);
 
-  uv_async_send(&threadAsync);
-  uv_sem_wait(&threadSemaphore);
+  {
+    lab::ContextRenderUnlock contextUnlock(r.context());
+    uv_async_send(&threadAsync);
+    uv_sem_wait(&threadSemaphore);
+  }
 
   threadFn = function<void()>();
 }
