@@ -432,7 +432,10 @@ NAN_SETTER(AudioBufferSourceNode::OnEndSetter) {
   }
 }
 void AudioBufferSourceNode::ProcessInMainThread(AudioBufferSourceNode *self) {
-  // XXX
+  if (!self->onend.IsEmpty()) {
+    Local<Function> onend = Nan::New(self->onend);
+    onend->Call(Nan::Null(), 0, nullptr);
+  }
 }
 
 AudioProcessingEvent::AudioProcessingEvent(Local<Object> inputBuffer, Local<Object> outputBuffer) : inputBuffer(inputBuffer), outputBuffer(outputBuffer) {}
