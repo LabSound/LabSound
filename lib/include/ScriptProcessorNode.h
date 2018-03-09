@@ -13,28 +13,6 @@ using namespace std;
 using namespace v8;
 using namespace node;
 
-namespace lab {
-
-class ScriptProcessorNode : public AudioNode {
-public:
-  ScriptProcessorNode(unsigned int numChannels, function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> &&kernel);
-  virtual ~ScriptProcessorNode();
-
-  virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-  void process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
-  virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
-  virtual void reset(ContextRenderLock&) override;
-  virtual void checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input) override;
-
-protected:
-  virtual double tailTime(ContextRenderLock & r) const override;
-  virtual double latencyTime(ContextRenderLock & r) const override;
-
-  function<void(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess)> kernel;
-};
-
-}
-
 namespace webaudio {
 
 class AudioBuffer : public ObjectWrap {

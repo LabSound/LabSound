@@ -30,6 +30,7 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/FinishableSourceNode.h"
+#include "LabSound/core/ScriptProcessorNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"
