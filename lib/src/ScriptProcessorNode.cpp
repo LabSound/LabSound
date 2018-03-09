@@ -270,6 +270,8 @@ NAN_SETTER(AudioBufferSourceNode::OnEndedSetter) {
   }
 }
 void AudioBufferSourceNode::ProcessInMainThread(AudioBufferSourceNode *self) {
+  Nan::HandleScope scope;
+
   if (!self->onended.IsEmpty()) {
     Local<Function> onended = Nan::New(self->onended);
     onended->Call(Nan::Null(), 0, nullptr);
