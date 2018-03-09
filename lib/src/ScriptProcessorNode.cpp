@@ -25,7 +25,7 @@ void ScriptProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destinationBus = output(0)->bus(r);
 
-    if (!isInitialized() || !kernel)
+    if (!isInitialized())
         destinationBus->zero();
     else {
         AudioBus* sourceBus = input(0)->bus(r);
@@ -43,7 +43,7 @@ void ScriptProcessorNode::process(ContextRenderLock& r, const AudioBus* source, 
     return;
   }
 
-  if (!isInitialized() || !kernel) {
+  if (!isInitialized()) {
     destination->zero();
     return;
   }
