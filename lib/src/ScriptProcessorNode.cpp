@@ -333,7 +333,7 @@ Handle<Object> AudioBufferSourceNode::Initialize(Isolate *isolate) {
 }
 void AudioBufferSourceNode::InitializePrototype(Local<ObjectTemplate> proto) {
   Nan::SetAccessor(proto, JS_STR("buffer"), BufferGetter, BufferSetter);
-  Nan::SetAccessor(proto, JS_STR("onend"), OnEndGetter, OnEndSetter);
+  Nan::SetAccessor(proto, JS_STR("onended"), OnEndedGetter, OnEndedSetter);
   Nan::SetMethod(proto, "start", Start);
   Nan::SetMethod(proto, "stop", Stop);
 }
@@ -412,29 +412,29 @@ NAN_SETTER(AudioBufferSourceNode::BufferSetter) {
     }
   }
 }
-NAN_GETTER(AudioBufferSourceNode::OnEndGetter) {
+NAN_GETTER(AudioBufferSourceNode::OnEndedGetter) {
   Nan::HandleScope scope;
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
-  Local<Function> onend = Nan::New(audioBufferSourceNode->onend);
-  info.GetReturnValue().Set(onend);
+  Local<Function> onended = Nan::New(audioBufferSourceNode->onended);
+  info.GetReturnValue().Set(onended);
 }
-NAN_SETTER(AudioBufferSourceNode::OnEndSetter) {
+NAN_SETTER(AudioBufferSourceNode::OnEndedSetter) {
   Nan::HandleScope scope;
 
   AudioBufferSourceNode *audioBufferSourceNode = ObjectWrap::Unwrap<AudioBufferSourceNode>(info.This());
 
   if (value->IsFunction()) {
-    Local<Function> onend = Local<Function>::Cast(value);
-    audioBufferSourceNode->onend.Reset(onend);
+    Local<Function> onended = Local<Function>::Cast(value);
+    audioBufferSourceNode->onended.Reset(onended);
   } else {
-    audioBufferSourceNode->onend.Reset();
+    audioBufferSourceNode->onended.Reset();
   }
 }
 void AudioBufferSourceNode::ProcessInMainThread(AudioBufferSourceNode *self) {
-  if (!self->onend.IsEmpty()) {
-    Local<Function> onend = Nan::New(self->onend);
-    onend->Call(Nan::Null(), 0, nullptr);
+  if (!self->onended.IsEmpty()) {
+    Local<Function> onended = Nan::New(self->onended);
+    onended->Call(Nan::Null(), 0, nullptr);
   }
 }
 

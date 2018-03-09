@@ -120,12 +120,12 @@ protected:
   static NAN_METHOD(Stop);
   static NAN_GETTER(BufferGetter);
   static NAN_SETTER(BufferSetter);
-  static NAN_GETTER(OnEndGetter);
-  static NAN_SETTER(OnEndSetter);
+  static NAN_GETTER(OnEndedGetter);
+  static NAN_SETTER(OnEndedSetter);
   static void ProcessInMainThread(AudioBufferSourceNode *self);
 
   Nan::Persistent<Object> buffer;
-  Nan::Persistent<Function> onend;
+  Nan::Persistent<Function> onended;
 };
 
 class AudioProcessingEvent : public ObjectWrap {
