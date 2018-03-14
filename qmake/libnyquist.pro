@@ -12,7 +12,6 @@ DEFINES += OPUS_BUILD USE_ALLOCA
 
 
 # Platform-dependent
-
 win32 {
 	
 	contains(QMAKE_TARGET.arch, x86_64) { # x64
@@ -29,6 +28,9 @@ win32 {
 	DEFINES += __OS_WINDOWS__ __LITTLE_ENDIAN__
 	
 	QMAKE_CXXFLAGS += /arch:AVX /Zi
+	QMAKE_LFLAGS += /NODEFAULTLIB:MSVCRT /OPT:REF
+	QMAKE_CFLAGS_RELEASE = -O2 -MT
+	QMAKE_CXXFLAGS_RELEASE = -O2 -MT
 	
 } else:macx {
 	

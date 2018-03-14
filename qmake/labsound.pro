@@ -37,6 +37,9 @@ win32 {
 	SOURCES += $$PWD/../third_party/STK/src/STKInlineCompile.cpp
 	
 	QMAKE_CXXFLAGS += /arch:AVX /Zi
+	QMAKE_LFLAGS += /NODEFAULTLIB:MSVCRT /OPT:REF
+	QMAKE_CFLAGS_RELEASE = -O2 -MT
+	QMAKE_CXXFLAGS_RELEASE = -O2 -MT
 	
 } else:macx {
 	
