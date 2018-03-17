@@ -26,11 +26,11 @@ namespace lab
         return inputNode;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext()
+    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(float sample_rate)
     {
         LOG("Initialize Realtime Context");
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-        ctx->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(ctx.get(), 44100));
+        ctx->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(ctx.get(), sample_rate));
         ctx->lazyInitialize();
         return ctx;
     }
