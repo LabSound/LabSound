@@ -24,6 +24,7 @@ win32 {
 	
 	QMAKE_CFLAGS_RELEASE = -O2 -MT
 	QMAKE_CXXFLAGS_RELEASE = -O2 -MT
+	QMAKE_CXXFLAGS_WARN_ON -= -w34100
 	
 	contains(QMAKE_TARGET.arch, x86_64) { # x64
 		DESTDIR = $$PWD/../build/bin-win64
