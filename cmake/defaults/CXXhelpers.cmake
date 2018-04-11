@@ -13,10 +13,6 @@ function(_disable_warning flag)
     set(_LAB_CXX_WARNING_FLAGS ${_LAB_CXX_WARNING_FLAGS} PARENT_SCOPE)
 endfunction()
 
-function(_set_CxxVer proj)
-	target_compile_features(${proj} INTERFACE cxx_std_11)
-endfunction()
-
 function(_set_compile_options proj)
     if (WIN32)
         target_compile_options(${proj} PRIVATE /arch:AVX /Zi )

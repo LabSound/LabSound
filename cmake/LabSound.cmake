@@ -30,7 +30,7 @@ add_library(LabSound STATIC
  	${third_rtaudio} ${third_kissfft}
  )
 
-_set_CxxVer(LabSound)
+set_cxx_version(LabSound)
 _set_compile_options(LabSound)
 
 target_include_directories(LabSound PUBLIC

@@ -15,7 +15,7 @@ file(GLOB third_opus_src
 
 add_library(libopus STATIC ${third_opus_src})
 
-_set_CxxVer(libopus)
+set_cxx_version(libopus)
 _set_compile_options(libopus)
 
 if (WIN32)
@@ -91,7 +91,7 @@ set(      third_nyquist_src
 add_library(libnyquist STATIC
     ${third_nyquist_h} ${third_nyquist_src})
 
-_set_CxxVer(libnyquist)
+set_cxx_version(libnyquist)
 _set_compile_options(libnyquist)
 
 if (WIN32)

@@ -5,7 +5,7 @@ set(src "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp")
 
 add_executable(example ${src})
 
-_set_CxxVer(example)
+set_cxx_version(example)
 _set_compile_options(example)
 
 
