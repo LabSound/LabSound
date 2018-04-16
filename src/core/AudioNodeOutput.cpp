@@ -108,7 +108,11 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, siz
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_inPlaceBus = useInPlaceBus ? inPlaceBus : 0;
     
-    node()->processIfNecessary(r, framesToProcess);
+    auto n = node();
+    if (!n)
+        return bus(r);
+
+    n->processIfNecessary(r, framesToProcess);
     return bus(r);
 }
 

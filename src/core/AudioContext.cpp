@@ -16,6 +16,8 @@
 #include "internal/AudioDestination.h"
 #include "internal/Assertions.h"
 
+#include "readerwriterqueue/readerwriterqueue.h"
+
 #include <stdio.h>
 #include <queue>
 #include <assert.h>
@@ -23,17 +25,29 @@
 namespace lab
 {
 
+struct AudioContext::Internals
+{
+    Internals(bool a) : autoDispatchEvents(a) {}
+    ~Internals() = default;
+
+    moodycamel::ReaderWriterQueue<std::function<void()>> enqueuedEvents;
+    bool autoDispatchEvents;
+};
+
 const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
 
 // Constructor for realtime rendering
-AudioContext::AudioContext(bool isOffline) : m_isOfflineContext(isOffline)
+AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
+: m_isOfflineContext(isOffline)
+, m_internal(std::make_unique<Internals>(autoDispatchEvents))
 {
     m_listener.reset(new AudioListener());
 }
 
 AudioContext::~AudioContext()
 {
-    LOG("Begin AudioContext::~AudioContext()");
+    // LOG can block.
+    //LOG("Begin AudioContext::~AudioContext()");
 
     if (!isOfflineContext()) graphKeepAlive = 0.25f;
 
@@ -118,11 +132,6 @@ bool AudioContext::isInitialized() const
     return m_isInitialized;
 }
 
-void AudioContext::incrementConnectionCount()
-{
-    ++m_connectionCount;
-}
-
 void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
 {
     std::lock_guard<std::mutex> lock(m_updateMutex);
@@ -196,7 +205,7 @@ void AudioContext::update()
 
     const float frameSizeMs = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
-    const int graphTickDurationUs = graphTickDurationMs * 1000.f;  // = ~5550us
+    const int graphTickDurationUs = static_cast<int>(graphTickDurationMs * 1000.f);  // = ~5550us
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
@@ -225,12 +234,15 @@ void AudioContext::update()
             }
         }
 
+        if (m_internal->autoDispatchEvents)
+            dispatchEvents();
+
         {
             ContextGraphLock gLock(this, "AudioContext::Update()");
 
             const double now = currentTime();
-            const float delta = (now - lastGraphUpdateTime);
-            lastGraphUpdateTime = now;
+            const float delta = static_cast<float>(now - lastGraphUpdateTime);
+            lastGraphUpdateTime = static_cast<float>(now);
             graphKeepAlive -= delta;
 
             //std::cout << now << std::endl;
@@ -255,7 +267,7 @@ void AudioContext::update()
                 {
                 case ConnectionType::Connect:
                 {
-                    // requue this node if the scheduled time is > 100ms away
+                    // requeue this node if the scheduled time is > 100ms away
                     if (connection.destination && connection.destination->isScheduledNode())
                     {
                         AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
@@ -370,6 +382,11 @@ void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
 
 void AudioContext::updateAutomaticPullNodes()
 {
+    /// @TODO this seems like work for the update thread.
+    /// m_automaticPullNodesNeedUpdating can go away in favor of
+    /// add and remove doing a cv.notify.
+    // m_automaticPullNodes should be an add/remove vector
+    // m_renderingAutomaticPullNodes should be the actual live vector
     if (m_automaticPullNodesNeedUpdating)
     {
         std::lock_guard<std::mutex> lock(m_updateMutex);
@@ -391,6 +408,22 @@ void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t frame
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
         m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+}
+
+void AudioContext::enqueueEvent(std::function<void()>& fn)
+{
+    m_internal->enqueuedEvents.enqueue(fn);
+    cv.notify_all();    // processing thread must dispatch events
+}
+
+void AudioContext::dispatchEvents()
+{
+    std::function<void()> event_fn;
+    while (m_internal->enqueuedEvents.try_dequeue(event_fn))
+    {
+        if (event_fn)
+            event_fn();
+    }
 }
 
 void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> node)

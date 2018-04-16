@@ -106,13 +106,6 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     if (!ac)
         return;
 
-    if (m_connectionCount != ac->connectionCount())
-    {
-        m_connectionCount = ac->connectionCount();
-        // Recursively go through all nodes connected to us.
-        // notifyAudioSourcesConnectedToNode(r, this); // @tofix - dimitri commented out
-    }
-
     AudioNode::pullInputs(r, framesToProcess);
 }
 

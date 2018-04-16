@@ -18,25 +18,25 @@ namespace lab {
 // A distance effect will attenuate the gain as the position moves away from the listener.
 // A cone effect will attenuate the gain as the orientation moves away from the listener.
 // All of these effects follow the OpenAL specification very closely.
-    
+
 class DistanceEffect;
 class ConeEffect;
 class AudioBus;
 class Panner;
 class HRTFDatabaseLoader;
-    
-class PannerNode : public AudioNode 
+
+class PannerNode : public AudioNode
 {
 
 public:
 
-    enum 
+    enum
     {
         LINEAR_DISTANCE = 0,
         INVERSE_DISTANCE = 1,
         EXPONENTIAL_DISTANCE = 2,
     };
-    
+
     PannerNode(const float sampleRate, const std::string & searchPath = "");
     virtual ~PannerNode();
 
@@ -99,7 +99,7 @@ public:
 protected:
 
     std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
-    
+
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock & r);
 
@@ -123,7 +123,6 @@ protected:
     std::unique_ptr<ConeEffect> m_coneEffect;
 
     float m_lastGain = -1.0f;
-    unsigned m_connectionCount = 0;
     float m_sampleRate;
 };
 

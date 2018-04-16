@@ -20,11 +20,11 @@ struct PeakCompressorApp : public LabSoundExampleApp
 
         {
             ContextRenderLock r(context.get(), "PeakCompressorApp");
-            
+
             filter = std::make_shared<BiquadFilterNode>();
             filter->setType(BiquadFilterNode::LOWPASS);
             filter->frequency()->setValue(2800.0f);
-            
+
             peakComp = std::make_shared<PeakCompNode>();
             context->connect(peakComp, filter, 0, 0);
             context->connect(context->destination(), peakComp, 0, 0);
@@ -43,13 +43,13 @@ struct PeakCompressorApp : public LabSoundExampleApp
             for (int bar = 0; bar < 2; bar++)
             {
                 float time = startTime + bar * 8 * eighthNoteTime;
-                
+
                 schedule_node(kick, filter, time);
                 schedule_node(kick, filter, time + 4 * eighthNoteTime);
 
                 schedule_node(snare, filter, time + 2 * eighthNoteTime);
                 schedule_node(snare, filter, time + 6 * eighthNoteTime);
-                
+
                 for (int i = 0; i < 8; ++i)
                 {
                     schedule_node(hihat, filter, time + i * eighthNoteTime);
@@ -57,8 +57,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
             }
         }
 
-        
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        Wait(std::chrono::seconds(10));
 
         // Scheduled nodes need to be explicitly cleaned up before the context
         for (auto s : samples)

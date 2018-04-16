@@ -557,7 +557,7 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
     }
 
     if (sourceBus->isSilent()) {
-        std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, sourceBus->length() / sampleRateRatio));
+        std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, static_cast<size_t>(sourceBus->length() / sampleRateRatio)));
         silentBus->setSampleRate(newSampleRate);
         return silentBus;
     }

@@ -16,8 +16,8 @@
 #include <mutex>
 
 using namespace std;
- 
-namespace lab 
+
+namespace lab
 {
 
 AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction(), m_node(node)
@@ -35,25 +35,21 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
 {
     if (!junction || !toOutput || !junction->node())
         return;
-    
+
     // return if input is already connected to this output.
     if (junction->isConnected(toOutput))
         return;
 
     toOutput->addInput(g, junction);
     junction->junctionConnectOutput(toOutput);
-    
-    // Inform context that a connection has been made.
-    ASSERT(g.context());
-    g.context()->incrementConnectionCount();
 }
 
 void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
     if (!junction || !junction->node() || !toOutput) return;
-    
-    if (junction->isConnected(toOutput)) 
+
+    if (junction->isConnected(toOutput))
     {
         junction->junctionDisconnectOutput(toOutput);
         toOutput->removeInput(g, junction);
@@ -78,12 +74,12 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
-    
+
     if (mode == ChannelCountMode::Explicit)
     {
         return node()->channelCount();
     }
-   
+
     // Find the number of channels of the connection with the largest number of channels.
     unsigned maxChannels = 1; // one channel is the minimum allowed
 
@@ -101,7 +97,7 @@ unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     {
         maxChannels = min(maxChannels, static_cast<unsigned>(node()->channelCount()));
     }
-    
+
     return maxChannels;
 }
 
@@ -109,7 +105,7 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
     // note: The webkit sources check for max, but I can't see how that's correct
-    
+
     // @tofix - did I miss part of the merge?
     if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
     {
@@ -134,7 +130,7 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
     ASSERT(summingBus);
     if (!summingBus)
         return;
-        
+
     summingBus->zero();
 
     for (int i = 0; i < c; ++i)
@@ -144,7 +140,7 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
         {
             // Render audio from this output.
             AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
-            
+
             // Sum, with unity-gain.
             summingBus->sumFrom(*connectionBus);
         }
@@ -153,11 +149,11 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
 
 AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
-    
+
     updateRenderingState(r);
-    
+
     int c = numberOfRenderingConnections(r);
-    
+
     // Handle single connection case.
     if (c == 1)
     {
@@ -179,10 +175,10 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
         internalSummingBus->zero();
         return internalSummingBus;
     }
-    
+
     // Handle multiple connections case
 	sumAllConnections(r, internalSummingBus, framesToProcess);
-    
+
     return internalSummingBus;
 }
 

@@ -21,19 +21,19 @@ struct ValidationApp : public LabSoundExampleApp
 
     void PlayExample()
     {
-        
+
         std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
         std::array<int, 8> naturalMinorScale = {0, 2, 3, 5, 7, 9, 11, 12};
         std::array<int, 6> pentatonicMajor = { 0, 2, 4, 7, 9, 12 };
         std::array<int, 8> pentatonicMinor = { 0, 3, 5, 7, 10, 12 };
         std::array<int, 8> delayTimes = { 266, 533, 399 };
-    
+
         auto randomFloat = std::uniform_real_distribution<float>(0, 1);
         auto randomScaleDegree = std::uniform_int_distribution<int>(0, pentatonicMajor.size() - 1);
         auto randomTimeIndex = std::uniform_int_distribution<int>(0, delayTimes.size() - 1);
-        
+
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
-        
+
         auto context = lab::MakeRealtimeAudioContext();
         auto ac = context.get();
 
@@ -43,7 +43,7 @@ struct ValidationApp : public LabSoundExampleApp
 
         {
             ContextRenderLock r(ac, "Validator");
-            
+
             pingping->BuildSubgraph(context);
             pingping->SetFeedback(0.5f);
             pingping->SetDelayIndex(lab::TempoSync::TS_8);
@@ -55,11 +55,7 @@ struct ValidationApp : public LabSoundExampleApp
             ac->connect(pingping->input, audioClipNode, 0, 0);
             audioClipNode->start(0.0f);
         }
-     
-        const int seconds = 10;
-        for (int i = 0; i < seconds; i++)
-        {
-          std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
+
+        Wait(std::chrono::seconds(10));
     }
 };

@@ -13,7 +13,6 @@ class AudioBus;
 
 class AudioScheduledSourceNode : public AudioSourceNode 
 {
-
 public:
 
     // These are the possible states an AudioScheduledSourceNode can be in:
@@ -49,6 +48,8 @@ public:
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const override { return true; }
 
+    void setOnEnded(std::function<void()> fn) { m_onEnded = fn; }
+
 protected:
 
     // Get frame information for the current time quantum.
@@ -65,6 +66,9 @@ protected:
     // Called when we have no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock&);
 
+    // this is the base declaration
+    virtual void clearPannerNode() {}
+
     PlaybackState m_playbackState;
 
     // m_startTime is the time to start playing based on the context's timeline (0 or a time less than the context's current time means "now").
@@ -75,8 +79,7 @@ protected:
     // has been reached.
     double m_endTime; // in seconds
 
-    // this is the base declaration
-    virtual void clearPannerNode() {}
+    std::function<void()> m_onEnded;
 };
 
 } // namespace lab

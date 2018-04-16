@@ -7,53 +7,54 @@
 
 #include "ExampleBaseApp.h"
 
-#include "Simple.h"
-#include "PeakCompressor.h"
-#include "LiveGraphUpdate.h"
-#include "RenderOffline.h"
 #include "ConvolutionReverb.h"
-#include "RedAlert.h"
+#include "EventsApp.h"
 #include "Groove.h"
 #include "InfiniteFM.h"
-#include "Tremolo.h"
-#include "StereoPanning.h"
-#include "Spatialization.h"
-#include "Validation.h"
+#include "LiveGraphUpdate.h"
 #include "MicrophoneDalek.h"
 #include "MicrophoneLoopback.h"
 #include "MicrophoneReverb.h"
+#include "PeakCompressor.h"
+#include "RedAlert.h"
+#include "RenderOffline.h"
+#include "Simple.h"
+#include "Spatialization.h"
+#include "StereoPanning.h"
+#include "Tremolo.h"
+#include "Validation.h"
 
-SimpleApp g_simpleExample;
-PeakCompressorApp g_peakCompressor;
-LiveGraphUpdateApp g_liveGraphUpdateApp;
-OfflineRenderApp g_offlineRenderApp;
 ConvolutionReverbApp g_convolutionReverbExample;
-RedAlertApp g_redAlert;
+EventsApp g_eventsApp;
 GrooveApp g_grooveExample;
 InfiniteFMApp g_infiniteFM;
-TremoloApp g_tremolo;
-StereoPanningApp g_stereoPanning;
-SpatializationApp g_spatialization;
-ValidationApp g_validation;
+LiveGraphUpdateApp g_liveGraphUpdateApp;
 MicrophoneDalekApp g_microphoneDalekApp;
 MicrophoneLoopbackApp g_microphoneLoopback;
 MicrophoneReverbApp g_microphoneReverb;
+OfflineRenderApp g_offlineRenderApp;
+PeakCompressorApp g_peakCompressor;
+RedAlertApp g_redAlert;
+SimpleApp g_simpleExample;
+SpatializationApp g_spatialization;
+StereoPanningApp g_stereoPanning;
+TremoloApp g_tremolo;
+ValidationApp g_validation;
 
-// Windows users will need to set a valid working directory for the LabSoundExamples project, for instance $(ProjectDir)../../assets
-int main (int argc, char *argv[])
+// Windows users will need to set a valid working directory for the
+// LabSoundExamples project, for instance $(ProjectDir)../../assets
+
+constexpr int iterations = 1;
+
+int main (int argc, char *argv[]) try
 {
-    try
-    {
-        for (int i = 0; i < 48; ++i)
-        {
-            g_liveGraphUpdateApp.PlayExample();
-        }
-
-    }
-    catch (const std::exception & e)
-    {
-        std::cout << "Uncaught fatal exception: " << e.what() << std::endl;
-    }
+    for (int i = 0; i < iterations; ++i)
+        g_grooveExample.PlayExample();
 
     return 0;
+}
+catch (const std::exception & e)
+{
+    std::cerr << "Uncaught fatal exception: " << e.what() << std::endl;
+    return 1;
 }

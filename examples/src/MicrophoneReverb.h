@@ -38,7 +38,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
                 context->connect(recorder, wetGain, 0, 0);
             }
 
-            std::this_thread::sleep_for(std::chrono::seconds(10));
+            Wait(std::chrono::seconds(10));
 
             recorder->stopRecording();
             context->removeAutomaticPullNode(recorder);

@@ -9,14 +9,14 @@ struct SpatializationApp : public LabSoundExampleApp
     void PlayExample()
     {
         auto context = lab::MakeRealtimeAudioContext();
-        
+
         std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/trainrolling.wav", false);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
         std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf"); // note search path
 
         {
             ContextRenderLock r(context.get(), "spatialization");
-            
+
             panner->setPanningModel(PanningMode::HRTF);
             context->connect(context->destination(), panner, 0, 0);
 
@@ -24,7 +24,7 @@ struct SpatializationApp : public LabSoundExampleApp
             context->connect(panner, audioClipNode, 0, 0);
             audioClipNode->start(0.0f);
         }
-        
+
         if (audioClipNode)
         {
             audioClipNode->setLoop(true);
@@ -41,7 +41,7 @@ struct SpatializationApp : public LabSoundExampleApp
                 // listener at (0, 0, 0) it abruptly switches from left to right.
                 panner->setPosition(x, 0.1f, 0.1f);
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                Wait(std::chrono::milliseconds(10));
             }
         }
         else

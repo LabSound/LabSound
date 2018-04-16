@@ -18,37 +18,37 @@
 #include <string>
 
 using namespace std;
- 
-namespace lab 
+
+namespace lab
 {
 
 // The range of elevations for the IRCAM impulse responses varies depending on azimuth, but the minimum elevation appears to always be -45.
 static int maxElevations[] =
 {
         // Azimuth
-    90, // 0  
-    45, // 15 
-    60, // 30 
-    45, // 45 
-    75, // 60 
-    45, // 75 
-    60, // 90 
-    45, // 105 
-    75, // 120 
-    45, // 135 
-    60, // 150 
-    45, // 165 
-    75, // 180 
-    45, // 195 
-    60, // 210 
-    45, // 225 
-    75, // 240 
-    45, // 255 
-    60, // 270 
-    45, // 285 
-    75, // 300 
-    45, // 315 
-    60, // 330 
+    90, // 0
+    45, // 15
+    60, // 30
+    45, // 45
+    75, // 60
+    45, // 75
+    60, // 90
+    45, // 105
+    75, // 120
+    45, // 135
+    60, // 150
+    45, // 165
+    75, // 180
+    45, // 195
+    60, // 210
+    45, // 225
+    75, // 240
+    45, // 255
+    60, // 270
+    45, // 285
+    75, // 300
+    45, // 315
+    60, // 330
     45  // 345
 };
 
@@ -68,21 +68,21 @@ bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(HRTFDatabaseInf
 
     if (!success)
         return false;
-        
+
     // And symmetric version
     int symmetricAzimuth = !azimuth ? 0 : 360 - azimuth;
-                                                              
+
     std::shared_ptr<HRTFKernel> kernelL2;
     std::shared_ptr<HRTFKernel> kernelR2;
 
     success = calculateKernelsForAzimuthElevation(info, symmetricAzimuth, elevation, kernelL2, kernelR2);
 
     if (!success) return false;
-        
+
     // Notice L/R reversal in symmetric version.
     kernelL = MakeInterpolatedKernel(kernelL1.get(), kernelR2.get(), 0.5f);
     kernelR = MakeInterpolatedKernel(kernelR1.get(), kernelL2.get(), 0.5f);
-    
+
     return true;
 }
 
@@ -98,27 +98,27 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     bool isElevationGood = elevation >= -45 && elevation <= 90 && (elevation / 15) * 15 == elevation;
     ASSERT(isElevationGood);
     if (!isElevationGood) return false;
-    
+
     // Construct the resource name from the subject name, azimuth, and elevation, for example:
     // "IRC_Composite_C_R0195_T015_P000"
     int positiveElevation = elevation < 0 ? elevation + 360 : elevation;
 
     char tempStr[16];
-    
+
     // Located in $searchPath / [format] .wav
     // @tofix - this assumes we want to open this path and read via libnyquist fopen.
     // ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
-    
-    std::unique_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
 
-    if (!impulseResponse.get())
+    auto impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
+
+    if (!impulseResponse)
     {
         std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
         return false;
     }
-    
+
     uint32_t responseLength = impulseResponse->length();
     uint32_t expectedLength = static_cast<uint32_t>(256 * (info->sampleRate / 44100.0));
 
@@ -130,7 +130,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     {
         return false;
     }
-    
+
     AudioChannel * leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
     AudioChannel * rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
 
@@ -138,7 +138,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     const uint32_t fftSize = HRTFPanner::fftSizeForSampleRate(info->sampleRate);
     kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, info->sampleRate);
     kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, info->sampleRate);
-    
+
     return true;
 }
 
@@ -149,13 +149,13 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(HRTFDatabaseInfo 
 
     if (!isElevationGood)
         return nullptr;
-        
+
     std::unique_ptr<HRTFKernelList> kernelListL = std::unique_ptr<HRTFKernelList>(new HRTFKernelList(NumberOfTotalAzimuths));
     std::unique_ptr<HRTFKernelList> kernelListR = std::unique_ptr<HRTFKernelList>(new HRTFKernelList(NumberOfTotalAzimuths));
 
     // Load convolution kernels from HRTF files.
     int interpolatedIndex = 0;
-    for (uint32_t rawIndex = 0; rawIndex < NumberOfRawAzimuths; ++rawIndex) 
+    for (uint32_t rawIndex = 0; rawIndex < NumberOfRawAzimuths; ++rawIndex)
     {
         // Don't let elevation exceed maximum for this azimuth.
         int maxElevation = maxElevations[rawIndex];
@@ -164,17 +164,17 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(HRTFDatabaseInfo 
         bool success = calculateKernelsForAzimuthElevation(info, rawIndex * AzimuthSpacing, actualElevation, kernelListL->at(interpolatedIndex), kernelListR->at(interpolatedIndex));
         if (!success)
             return nullptr;
-            
+
         interpolatedIndex += InterpolationFactor;
     }
 
     // Now go back and interpolate intermediate azimuth values.
-    for (uint32_t i = 0; i < NumberOfTotalAzimuths; i += InterpolationFactor) 
+    for (uint32_t i = 0; i < NumberOfTotalAzimuths; i += InterpolationFactor)
     {
         int j = (i + InterpolationFactor) % NumberOfTotalAzimuths;
 
         // Create the interpolated convolution kernels and delays.
-        for (uint32_t jj = 1; jj < InterpolationFactor; ++jj) 
+        for (uint32_t jj = 1; jj < InterpolationFactor; ++jj)
         {
             float x = float(jj) / float(InterpolationFactor); // interpolate from 0 -> 1
 
@@ -182,7 +182,7 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(HRTFDatabaseInfo 
             (*kernelListR)[i + jj] = MakeInterpolatedKernel(kernelListR->at(i).get(), kernelListR->at(j).get(), x);
         }
     }
-    
+
     return std::unique_ptr<HRTFElevation>(new HRTFElevation(info, std::move(kernelListL), std::move(kernelListR), elevation));
 }
 
@@ -191,9 +191,9 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createByInterpolatingSlices(HRTFDa
     ASSERT(hrtfElevation1 && hrtfElevation2);
     if (!hrtfElevation1 || !hrtfElevation2)
         return nullptr;
-        
+
     ASSERT(x >= 0.0 && x < 1.0);
-    
+
     std::unique_ptr<HRTFKernelList> kernelListL = std::unique_ptr<HRTFKernelList>(new HRTFKernelList(NumberOfTotalAzimuths));
     std::unique_ptr<HRTFKernelList> kernelListR = std::unique_ptr<HRTFKernelList>(new HRTFKernelList(NumberOfTotalAzimuths));
 
@@ -201,9 +201,9 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createByInterpolatingSlices(HRTFDa
     HRTFKernelList * kernelListR1 = hrtfElevation1->kernelListR();
     HRTFKernelList * kernelListL2 = hrtfElevation2->kernelListL();
     HRTFKernelList * kernelListR2 = hrtfElevation2->kernelListR();
-    
+
     // Interpolate kernels of corresponding azimuths of the two elevations.
-    for (uint32_t i = 0; i < NumberOfTotalAzimuths; ++i) 
+    for (uint32_t i = 0; i < NumberOfTotalAzimuths; ++i)
     {
         (*kernelListL)[i] = MakeInterpolatedKernel(kernelListL1->at(i).get(), kernelListL2->at(i).get(), x);
         (*kernelListR)[i] = MakeInterpolatedKernel(kernelListR1->at(i).get(), kernelListR2->at(i).get(), x);
@@ -211,7 +211,7 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createByInterpolatingSlices(HRTFDa
 
     // Interpolate elevation angle.
     double angle = (1.0 - x) * hrtfElevation1->elevationAngle() + x * hrtfElevation2->elevationAngle();
-    
+
     return std::unique_ptr<HRTFElevation>(new HRTFElevation(info, std::move(kernelListL), std::move(kernelListR), (int) angle));
 }
 
@@ -223,7 +223,7 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
     {
         azimuthBlend = 0.0;
     }
-    
+
     unsigned numKernels = m_kernelListL->size();
 
     bool isIndexGood = azimuthIndex < numKernels;
@@ -234,7 +234,7 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
         kernelR = 0;
         return;
     }
-    
+
     // Return the left and right kernels.
     kernelL = m_kernelListL->at(azimuthIndex).get();
     kernelR = m_kernelListR->at(azimuthIndex).get();

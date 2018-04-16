@@ -13,8 +13,8 @@
 
 namespace lab
 {
-    std::unique_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono);
-    std::unique_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono);
+    std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono);
+    std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono);
 }
 
 #endif

@@ -34,10 +34,10 @@ class ContextRenderLock;
 
 class AudioContext
 {
-    
+
     friend class ContextGraphLock;
     friend class ContextRenderLock;
-    
+
 public:
 
     // Somewhat arbitrary and could be increased if necessary
@@ -47,7 +47,7 @@ public:
     std::string m_graphLocker;
     std::string m_renderLocker;
 
-    AudioContext(bool isOffline);
+    explicit AudioContext(bool isOffline, bool autoDispatchEvents = true);
     ~AudioContext();
 
     bool isInitialized() const;
@@ -84,24 +84,25 @@ public:
     void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-    // Only an AudioDestinationNode should call this. 
+    // Only an AudioDestinationNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
-    
-    // Keeps track of the number of connections made.
-    void incrementConnectionCount();
-    
-    unsigned connectionCount() const { return m_connectionCount;}
-    
+
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
 
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
-    
+
     // Necessary to call when using an OfflineAudioDestinationNode
     void startRendering();
     std::function<void()> offlineRenderCompleteCallback;
+
+    // event dispatching will be called automatically, depending on constructor
+    // argument. If not automatically dispatching, it is the user's responsibility
+    // to call dispatchEvents often enough to satisfy the user's needs.
+    void enqueueEvent(std::function<void()>&);
+    void dispatchEvents();
 
 private:
 
@@ -123,7 +124,6 @@ private:
 
     // Number of SampledAudioNode that are active (playing).
     std::atomic<int> m_activeSourceCount;
-    std::atomic<int> m_connectionCount;
 
     void uninitialize();
 
@@ -133,11 +133,16 @@ private:
     std::shared_ptr<AudioDestinationNode> m_destinationNode;
     std::shared_ptr<AudioListener> m_listener;
 
+    // @TODO migrate most of the internal datastructures such as PendingConnection
+    // into Internals as there's no need to expose these at all.
+    struct Internals;
+    std::unique_ptr<Internals> m_internal;
+
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
 
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
-    
+
     enum class ConnectionType : int
     {
         Disconnect = 0,
@@ -174,7 +179,7 @@ private:
             return ap2->startTime() < ap1->startTime();
         }
     };
-    
+
     std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
     std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, uint32_t>> pendingParamConnections;
 };

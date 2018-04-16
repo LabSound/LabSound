@@ -38,7 +38,7 @@ std::vector<std::vector<int>> chords = { {7, 12, 17, 10}, {10, 15, 19, 24} };
 
 float quickSin(float x, float t)
 {
-    return std::sin(2.0f * M_PI * t * x);
+    return std::sin(2.0f * float(M_PI) * t * x);
 }
 
 float quickSaw(float x, float t)
@@ -98,42 +98,42 @@ struct MoogFilter
     float y2 = 0;
     float y3 = 0;
     float y4 = 0;
-    
+
     float oldx = 0;
     float oldy1 = 0;
     float oldy2 = 0;
     float oldy3 = 0;
-    
+
     float p, k, t1, t2, r, x;
-    
+
     const float sampleRate = 44100.00f;
-    
+
     float process(double cutoff, double resonance, double sample)
     {
         cutoff = 2.0 * cutoff / sampleRate;
-        
+
         p = cutoff * (1.8 - 0.8 * cutoff);
         k = 2.0 * std::sin(cutoff * M_PI * 0.5) - 1.0;
         t1 = (1.0 - p) * 1.386249;
         t2 = 12.0 + t1 * t1;
         r = resonance * (t2 + 6.0 * t1) / (t2 - 6.0 * t1);
-        
+
         x = sample - r * y4;
-        
+
         // Four cascaded one-pole filters (bilinear transform)
         y1 =  x * p + oldx  * p - k * y1;
         y2 = y1 * p + oldy1 * p - k * y2;
         y3 = y2 * p + oldy2 * p - k * y3;
         y4 = y3 * p + oldy3 * p - k * y4;
-        
+
         // Clipping band-limited sigmoid
         y4 -= (y4 * y4 * y4) / 6.0;
-        
+
         oldx = x;
         oldy1 = y1;
         oldy2 = y2;
         oldy3 = y3;
-        
+
         return y4;
     }
 };
@@ -150,39 +150,38 @@ struct GrooveApp : public LabSoundExampleApp
     void PlayExample()
     {
         auto context = lab::MakeRealtimeAudioContext();
-        
+
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<GainNode> masterGain;
         std::shared_ptr<ADSRNode> envelope;
-        
-        float songLenSeconds = 16.0f;
-        
+
+        float songLenSeconds = 2.0f;
         {
             float elapsedTime = 0.0f;
-            
+
             envelope = std::make_shared<ADSRNode>();
             envelope->set(6.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
-        
+
             float lfo_a, lfo_b, lfo_c;
             float bassWaveform, percussiveWaveform, bassSample;
             float padWaveform, padSample;
             float kickWaveform, kickSample;
             float synthWaveform, synthPercussive, synthDegradedWaveform, synthSample;
-            
+
             grooveBox = std::make_shared<FunctionNode>(2);
             grooveBox->setFunction([&](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
                 double dt = 1.0 / r.context()->sampleRate(); // time duration of one sample
                 double now = self->now();
-                
+
                 int nextMeasure = int((now / 2)) % bassline.size();
                 auto bm = bassline[nextMeasure];
-                
+
                 int nextNote =  int((now * 4)) % bm.size();
                 float bn = note(bm[nextNote], 0);
-                
+
                 auto p = chords[int(now / 4) % chords.size()];
-                
+
                 auto mn = note(melody[int(now * 3) % melody.size()], int(2 - (now * 3)) % 4);
 
                 for (size_t i = 0; i < framesToProcess; ++i)
@@ -195,43 +194,39 @@ struct GrooveApp : public LabSoundExampleApp
                     bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
                     percussiveWaveform = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
                     bassSample = lp_a[channel].process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform);
-                   
+
                     // Pad
                     padWaveform = 5.1f * quickSaw(note(p[0], 1.f), now) + 3.9f * quickSaw(note(p[1], 2.f), now) + 4.0f * quickSaw(note(p[2], 1.f), now) + 3.0f * quickSqr(note(p[3], 0.0f), now);
                     padSample = 1.0f - ((quickSin(2.0f, now) * 0.28f) + 0.5f) * fasthp_c[channel](0.5f, lp_c[channel].process(1100.f + (lfo_a * 150.f), 0.05f, padWaveform * 0.03f));
-                    
+
                     // Kick
                     kickWaveform = hardClip(0.37f, quickSin(note(7.0f, -1.f), now)) * 2.0f + hardClip(0.07f, quickSaw(note(7.03f,-1.0f), now * 0.2f)) * 4.00f;
                     kickSample = quickSaw(2.f, now) * 0.054f + fastlp_a[channel](240.0f, perc(hardClip(0.6f, kickWaveform), 54.f, fmod(now, 0.5f), now)) * 2.f;
-                    
+
                     // Synth
                     synthWaveform = quickSaw(mn, now + 1.0f) + quickSqr(mn * 2.02f, now) * 0.4f + quickSqr(mn * 3.f, now + 2.f);
                     synthPercussive = lp_b[channel].process(3200.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f) * 1.8f;
                     synthDegradedWaveform = synthPercussive * quickSin(note(5.0f, 2.0f), now);
                     synthSample = 0.4f * synthPercussive + 0.05f * synthDegradedWaveform;
-                    
+
                     // Mixer
                     samples[i] = (0.66 * hardClip(0.65f, bassSample)) + (0.50 * padSample) + (0.66 * synthSample) + (2.75 * kickSample);
-                    
+
                     now += dt;
                 }
-                
+
                 elapsedTime += now;
-                
+
             });
-            
+
             grooveBox->start(0);
             envelope->noteOn(0.0);
-            
+
             context->connect(envelope, grooveBox, 0, 0);
             context->connect(context->destination(), envelope, 0, 0);
         }
-        
-        int nowInSeconds = 0;
-        while(nowInSeconds < songLenSeconds)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            nowInSeconds += 1;
-        }
+
+        Wait(std::chrono::seconds(1 + (int) songLenSeconds));
+        context.reset();
     }
 };
