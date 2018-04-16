@@ -18,9 +18,9 @@ namespace lab
     , m_velocityX(std::make_shared<AudioParam>("velocityX", 0.f, -1000.f, 1000.f))
     , m_velocityY(std::make_shared<AudioParam>("velocityY", 0.f, -1000.f, 1000.f))
     , m_velocityZ(std::make_shared<AudioParam>("velocityZ", 0.f, -1000.f, 1000.f))
-    , m_positionX(std::make_shared<AudioParam>("positionX", 0.f, -10000.f, 10000.f))
-    , m_positionY(std::make_shared<AudioParam>("positionY", 0.f, -10000.f, 10000.f))
-    , m_positionZ(std::make_shared<AudioParam>("positionZ", 0.f, -10000.f, 10000.f))
+    , m_positionX(std::make_shared<AudioParam>("positionX", 0.f, -1.e6f, 1.e6f))
+    , m_positionY(std::make_shared<AudioParam>("positionY", 0.f, -1.e6f, 1.e6f))
+    , m_positionZ(std::make_shared<AudioParam>("positionZ", 0.f, -1.e6f, 1.e6f))
     {
     }
 
