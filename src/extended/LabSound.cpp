@@ -65,8 +65,8 @@ namespace lab
 // Logging Utilities //
 ///////////////////////
 
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
+#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
+# define _CRT_SECURE_NO_WARNINGS
 #endif
 
 void LabSoundLog(const char* file, int line, const char* fmt, ...)

@@ -58,11 +58,11 @@ namespace lab {
 
     class SpatializationNode : public PannerNode 
     {
-
     public:
 
         SpatializationNode(float sampleRate);
-        virtual ~SpatializationNode();
+        virtual ~SpatializationNode() = default;
+
         void setOccluders(OccludersPtr ptr);
         
     private:
