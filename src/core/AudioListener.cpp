@@ -42,7 +42,7 @@ namespace lab
     {
         m_positionX->setValue(position.x);
         m_positionY->setValue(position.y);
-        m_positionY->setValue(position.z);
+        m_positionZ->setValue(position.z);
     }
 
     void AudioListener::setVelocity(const FloatPoint3D &velocity)

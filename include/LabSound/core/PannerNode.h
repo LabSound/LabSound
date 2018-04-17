@@ -27,6 +27,15 @@ class HRTFDatabaseLoader;
 
 class PannerNode : public AudioNode
 {
+    std::shared_ptr<AudioParam> m_forwardX;
+    std::shared_ptr<AudioParam> m_forwardY;
+    std::shared_ptr<AudioParam> m_forwardZ;
+    std::shared_ptr<AudioParam> m_velocityX;
+    std::shared_ptr<AudioParam> m_velocityY;
+    std::shared_ptr<AudioParam> m_velocityZ;
+    std::shared_ptr<AudioParam> m_positionX;
+    std::shared_ptr<AudioParam> m_positionY;
+    std::shared_ptr<AudioParam> m_positionZ;
 
 public:
 
@@ -52,16 +61,24 @@ public:
     void setPanningModel(PanningMode m);
 
     // Position
-    FloatPoint3D position() const { return m_position; }
-    void setPosition(float x, float y, float z) { m_position = { x, y, z }; }
+    void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
+    void setPosition(const FloatPoint3D& position);
+    std::shared_ptr<AudioParam> positionX() const { return m_positionX; }
+    std::shared_ptr<AudioParam> positionY() const { return m_positionY; }
+    std::shared_ptr<AudioParam> positionZ() const { return m_positionZ; }
 
-    // Orientation
-    FloatPoint3D orientation() const { return m_orientation; }
-    void setOrientation(float x, float y, float z) { m_orientation = { x, y, z }; }
+    // Forward
+    void setForward(const FloatPoint3D& fwd);
+    std::shared_ptr<AudioParam> forwardX() const { return m_forwardX; }
+    std::shared_ptr<AudioParam> forwardY() const { return m_forwardY; }
+    std::shared_ptr<AudioParam> forwardZ() const { return m_forwardZ; }
 
     // Velocity
-    FloatPoint3D velocity() const { return m_velocity; }
-    void setVelocity(float x, float y, float z) { m_velocity = { x, y, z }; }
+    void setVelocity(float x, float y, float z) { setVelocity(FloatPoint3D(x, y, z)); }
+    void setVelocity(const FloatPoint3D &velocity);
+    std::shared_ptr<AudioParam> velocityX() const { return m_velocityX; }
+    std::shared_ptr<AudioParam> velocityY() const { return m_velocityY; }
+    std::shared_ptr<AudioParam> velocityZ() const { return m_velocityZ; }
 
     // Distance parameters
     unsigned short distanceModel();
@@ -111,10 +128,6 @@ protected:
     std::unique_ptr<Panner> m_panner;
 
     PanningMode m_panningModel;
-
-    FloatPoint3D m_position{ 0, 0, 0 };
-    FloatPoint3D m_orientation{ 0, 0, 0 };
-    FloatPoint3D m_velocity{ 0, 0, 0 };
 
     std::shared_ptr<AudioParam> m_distanceGain;
     std::shared_ptr<AudioParam> m_coneGain;

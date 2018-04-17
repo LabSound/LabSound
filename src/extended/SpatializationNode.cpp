@@ -88,12 +88,17 @@ namespace lab
         
         AudioListener & listener = r.context()->listener();
 
-        FloatPoint3D pos = {
+        FloatPoint3D fwd = {
             listener.forwardX()->value(r),
             listener.forwardY()->value(r),
             listener.forwardZ()->value(r) };
 
-        float occlusionAttenuation = occluders ? occluders->occlusion(m_position, pos) : 1.0f;
+        FloatPoint3D pos = {
+            positionX()->value(r),
+            positionY()->value(r),
+            positionZ()->value(r) };
+
+        float occlusionAttenuation = occluders ? occluders->occlusion(pos, fwd) : 1.0f;
         return occlusionAttenuation * PannerNode::distanceConeGain(r);
     }
 }

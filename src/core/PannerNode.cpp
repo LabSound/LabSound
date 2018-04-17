@@ -29,7 +29,17 @@ static void fixNANs(double & x)
     if (std::isnan(double(x)) || std::isinf(x)) x = 0.0;
 }
 
-PannerNode::PannerNode(const float sampleRate, const std::string & searchPath) : AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
+PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
+: AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
+, m_forwardX(std::make_shared<AudioParam>("forwardX", 0.f, -1.f, 1.f))
+, m_forwardY(std::make_shared<AudioParam>("forwardY", 0.f, -1.f, 1.f))
+, m_forwardZ(std::make_shared<AudioParam>("forwardZ", 0.f, -1.f, 1.f))
+, m_velocityX(std::make_shared<AudioParam>("velocityX", 0.f, -1000.f, 1000.f))
+, m_velocityY(std::make_shared<AudioParam>("velocityY", 0.f, -1000.f, 1000.f))
+, m_velocityZ(std::make_shared<AudioParam>("velocityZ", 0.f, -1000.f, 1000.f))
+, m_positionX(std::make_shared<AudioParam>("positionX", 0.f, -1.e6f, 1.e6f))
+, m_positionY(std::make_shared<AudioParam>("positionY", 0.f, -1.e6f, 1.e6f))
+, m_positionZ(std::make_shared<AudioParam>("positionZ", 0.f, -1.e6f, 1.e6f))
 {
     if (searchPath.length())
     {
@@ -96,6 +106,28 @@ void PannerNode::uninitialize()
 
     AudioNode::uninitialize();
 }
+
+void PannerNode::setForward(const FloatPoint3D& fwd)
+{
+    m_forwardX->setValue(fwd.x);
+    m_forwardY->setValue(fwd.y);
+    m_forwardZ->setValue(fwd.z);
+}
+
+void PannerNode::setPosition(const FloatPoint3D &position)
+{
+    m_positionX->setValue(position.x);
+    m_positionY->setValue(position.y);
+    m_positionZ->setValue(position.z);
+}
+
+void PannerNode::setVelocity(const FloatPoint3D &velocity)
+{
+    m_velocityX->setValue(velocity.x);
+    m_velocityY->setValue(velocity.y);
+    m_velocityZ->setValue(velocity.z);
+}
+
 
 void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
@@ -219,8 +251,13 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
                                         listener.positionX()->value(r),
                                         listener.positionY()->value(r),
                                         listener.positionZ()->value(r) };
-                                        
-    FloatPoint3D sourceListener = normalize(m_position - listenerPosition);
+
+    FloatPoint3D sourceListener = {
+                                        positionX()->value(r),
+                                        positionY()->value(r),
+                                        positionZ()->value(r) };
+
+    sourceListener = normalize(sourceListener - listenerPosition);
 
     if (is_zero(sourceListener))
     {
@@ -291,8 +328,11 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
     {
         double speedOfSound = listener.speedOfSound()->value(r);
 
-        const FloatPoint3D& sourceVelocity = m_velocity;
-        const FloatPoint3D& listenerVelocity = {
+        const FloatPoint3D sourceVelocity = {
+                                                    velocityX()->value(r),
+                                                    velocityY()->value(r),
+                                                    velocityZ()->value(r) };
+        const FloatPoint3D listenerVelocity = {
                                                     listener.velocityX()->value(r),
                                                     listener.velocityY()->value(r),
                                                     listener.velocityZ()->value(r) };
@@ -309,7 +349,12 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
                                                     listener.positionY()->value(r),
                                                     listener.positionZ()->value(r) };
 
-            FloatPoint3D sourceToListener = m_position - listenerPosition;
+            FloatPoint3D sourceToListener = {
+                                                    positionX()->value(r),
+                                                    positionY()->value(r),
+                                                    positionZ()->value(r) };
+
+            sourceToListener = sourceToListener - listenerPosition;
 
             double sourceListenerMagnitude = magnitude(sourceToListener);
 
@@ -346,14 +391,26 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
                                                     listener.positionY()->value(r),
                                                     listener.positionZ()->value(r) };
 
-    double listenerDistance = magnitude(m_position - listenerPosition); // "distanceTo"
+    FloatPoint3D position = {
+                                                    positionX()->value(r),
+                                                    positionY()->value(r),
+                                                    positionZ()->value(r) };
+
+
+    double listenerDistance = magnitude(position - listenerPosition); // "distanceTo"
 
     double distanceGain = m_distanceEffect->gain(listenerDistance);
 
     m_distanceGain->setValue(static_cast<float>(distanceGain));
 
     // FIXME: could optimize by caching coneGain
-    double coneGain = m_coneEffect->gain(m_position, m_orientation, listenerPosition);
+
+    FloatPoint3D orientation = {
+                                                    forwardX()->value(r),
+                                                    forwardY()->value(r),
+                                                    forwardZ()->value(r) };
+
+    double coneGain = m_coneEffect->gain(position, orientation, listenerPosition);
 
     m_coneGain->setValue(static_cast<float>(coneGain));
 
