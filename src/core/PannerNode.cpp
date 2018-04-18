@@ -24,16 +24,17 @@ using namespace std;
 
 namespace lab {
 
-static void fixNANs(double & x)
+template <typename T>
+static void fixNANs(T& x)
 {
-    if (std::isnan(double(x)) || std::isinf(x)) x = 0.0;
+    if (std::isnan(T(x)) || std::isinf(x)) x = T(0);
 }
 
 PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
 : AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
-, m_forwardX(std::make_shared<AudioParam>("forwardX", 0.f, -1.f, 1.f))
-, m_forwardY(std::make_shared<AudioParam>("forwardY", 0.f, -1.f, 1.f))
-, m_forwardZ(std::make_shared<AudioParam>("forwardZ", 0.f, -1.f, 1.f))
+, m_orientationX(std::make_shared<AudioParam>("orientationX", 0.f, -1.f, 1.f))
+, m_orientationY(std::make_shared<AudioParam>("orientationY", 0.f, -1.f, 1.f))
+, m_orientationZ(std::make_shared<AudioParam>("orientationZ", 0.f, -1.f, 1.f))
 , m_velocityX(std::make_shared<AudioParam>("velocityX", 0.f, -1000.f, 1000.f))
 , m_velocityY(std::make_shared<AudioParam>("velocityY", 0.f, -1000.f, 1000.f))
 , m_velocityZ(std::make_shared<AudioParam>("velocityZ", 0.f, -1000.f, 1000.f))
@@ -107,11 +108,11 @@ void PannerNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void PannerNode::setForward(const FloatPoint3D& fwd)
+void PannerNode::setOrientation(const FloatPoint3D& fwd)
 {
-    m_forwardX->setValue(fwd.x);
-    m_forwardY->setValue(fwd.y);
-    m_forwardZ->setValue(fwd.z);
+    m_orientationX->setValue(fwd.x);
+    m_orientationY->setValue(fwd.y);
+    m_orientationZ->setValue(fwd.z);
 }
 
 void PannerNode::setPosition(const FloatPoint3D &position)
@@ -406,9 +407,9 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     // FIXME: could optimize by caching coneGain
 
     FloatPoint3D orientation = {
-                                                    forwardX()->value(r),
-                                                    forwardY()->value(r),
-                                                    forwardZ()->value(r) };
+                                                    orientationX()->value(r),
+                                                    orientationY()->value(r),
+                                                    orientationZ()->value(r) };
 
     double coneGain = m_coneEffect->gain(position, orientation, listenerPosition);
 

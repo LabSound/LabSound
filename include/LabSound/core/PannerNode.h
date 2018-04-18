@@ -27,9 +27,9 @@ class HRTFDatabaseLoader;
 
 class PannerNode : public AudioNode
 {
-    std::shared_ptr<AudioParam> m_forwardX;
-    std::shared_ptr<AudioParam> m_forwardY;
-    std::shared_ptr<AudioParam> m_forwardZ;
+    std::shared_ptr<AudioParam> m_orientationX;
+    std::shared_ptr<AudioParam> m_orientationY;
+    std::shared_ptr<AudioParam> m_orientationZ;
     std::shared_ptr<AudioParam> m_velocityX;
     std::shared_ptr<AudioParam> m_velocityY;
     std::shared_ptr<AudioParam> m_velocityZ;
@@ -68,10 +68,10 @@ public:
     std::shared_ptr<AudioParam> positionZ() const { return m_positionZ; }
 
     // Forward
-    void setForward(const FloatPoint3D& fwd);
-    std::shared_ptr<AudioParam> forwardX() const { return m_forwardX; }
-    std::shared_ptr<AudioParam> forwardY() const { return m_forwardY; }
-    std::shared_ptr<AudioParam> forwardZ() const { return m_forwardZ; }
+    void setOrientation(const FloatPoint3D& fwd);
+    std::shared_ptr<AudioParam> orientationX() const { return m_orientationX; }
+    std::shared_ptr<AudioParam> orientationY() const { return m_orientationY; }
+    std::shared_ptr<AudioParam> orientationZ() const { return m_orientationZ; }
 
     // Velocity
     void setVelocity(float x, float y, float z) { setVelocity(FloatPoint3D(x, y, z)); }
