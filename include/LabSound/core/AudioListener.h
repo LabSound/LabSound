@@ -49,6 +49,9 @@ namespace lab
             setUpVector(FloatPoint3D(upX, upY, upZ));
         }
 
+        // Forward represents the horizontal position of the listener's forward
+        // direction in the same cartesian coordinate sytem as the position
+        // values. The forward and up values are linearly independent of each other.
         void setForward(const FloatPoint3D& fwd);
         std::shared_ptr<AudioParam> forwardX() const { return m_forwardX; }
         std::shared_ptr<AudioParam> forwardY() const { return m_forwardY; }

@@ -67,7 +67,10 @@ public:
     std::shared_ptr<AudioParam> positionY() const { return m_positionY; }
     std::shared_ptr<AudioParam> positionZ() const { return m_positionZ; }
 
-    // Forward
+    // The orientation property indicates the X component of the direction in
+    // which the audio source is facing, in cartesian space. The complete
+    // vector is defined by the position of the audio source, and the direction
+    // in which it is facing.
     void setOrientation(const FloatPoint3D& fwd);
     std::shared_ptr<AudioParam> orientationX() const { return m_orientationX; }
     std::shared_ptr<AudioParam> orientationY() const { return m_orientationY; }
