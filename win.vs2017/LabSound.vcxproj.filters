@@ -620,5 +620,8 @@
     <ClCompile Include="..\src\extended\AudioFileReader.cpp">
       <Filter>LabSound\extended\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\core\AudioListener.cpp">
+      <Filter>LabSound\core\src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -108,27 +108,26 @@ void PannerNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void PannerNode::setOrientation(const FloatPoint3D& fwd)
+void PannerNode::setOrientation(const FloatPoint3D & fwd)
 {
     m_orientationX->setValue(fwd.x);
     m_orientationY->setValue(fwd.y);
     m_orientationZ->setValue(fwd.z);
 }
 
-void PannerNode::setPosition(const FloatPoint3D &position)
+void PannerNode::setPosition(const FloatPoint3D & position)
 {
     m_positionX->setValue(position.x);
     m_positionY->setValue(position.y);
     m_positionZ->setValue(position.z);
 }
 
-void PannerNode::setVelocity(const FloatPoint3D &velocity)
+void PannerNode::setVelocity(const FloatPoint3D & velocity)
 {
     m_velocityX->setValue(velocity.x);
     m_velocityY->setValue(velocity.y);
     m_velocityZ->setValue(velocity.z);
 }
-
 
 void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {

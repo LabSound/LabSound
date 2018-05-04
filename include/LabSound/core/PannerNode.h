@@ -62,7 +62,8 @@ public:
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }
-    void setPosition(const FloatPoint3D& position);
+    void setPosition(const FloatPoint3D & position);
+
     std::shared_ptr<AudioParam> positionX() const { return m_positionX; }
     std::shared_ptr<AudioParam> positionY() const { return m_positionY; }
     std::shared_ptr<AudioParam> positionZ() const { return m_positionZ; }

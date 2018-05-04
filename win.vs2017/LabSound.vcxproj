@@ -127,6 +127,7 @@
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBus.cpp" />
     <ClCompile Include="..\src\core\AudioChannel.cpp" />
+    <ClCompile Include="..\src\core\AudioListener.cpp" />
     <ClCompile Include="..\src\core\SampledAudioNode.cpp" />
     <ClCompile Include="..\src\core\AudioContext.cpp" />
     <ClCompile Include="..\src\core\AudioDestinationNode.cpp" />

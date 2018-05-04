@@ -28,7 +28,7 @@ struct SpatializationApp : public LabSoundExampleApp
         if (audioClipNode)
         {
             audioClipNode->setLoop(true);
-            context->listener().setPosition(0, 0, 0);
+            context->listener().setPosition({ 0, 0, 0 });
             panner->setVelocity(4, 0, 0);
 
             const int seconds = 10;
@@ -39,7 +39,7 @@ struct SpatializationApp : public LabSoundExampleApp
 
                 // Put position a +up && +front, because if it goes right through the
                 // listener at (0, 0, 0) it abruptly switches from left to right.
-                panner->setPosition(x, 0.1f, 0.1f);
+                panner->setPosition({ x, 0.1f, 0.1f });
 
                 Wait(std::chrono::milliseconds(10));
             }
