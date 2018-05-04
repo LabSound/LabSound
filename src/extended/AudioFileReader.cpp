@@ -26,7 +26,7 @@ namespace detail
         std::vector<float> planarSamples(numSamples);
 
         // Create AudioBus where we'll put the PCM audio data
-        std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, length));
+        std::shared_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, length));
         audioBus->setSampleRate((float) audioData->sampleRate);
 
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
