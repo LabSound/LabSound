@@ -37,17 +37,16 @@ struct AudioContext::Internals
 const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
 
 // Constructor for realtime rendering
-AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
-: m_isOfflineContext(isOffline)
-, m_internal(std::make_unique<Internals>(autoDispatchEvents))
+AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) : m_isOfflineContext(isOffline)
 {
+    m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
 }
 
 AudioContext::~AudioContext()
 {
     // LOG can block.
-    //LOG("Begin AudioContext::~AudioContext()");
+    // LOG("Begin AudioContext::~AudioContext()");
 
     if (!isOfflineContext()) graphKeepAlive = 0.25f;
 
@@ -245,8 +244,6 @@ void AudioContext::update()
             lastGraphUpdateTime = static_cast<float>(now);
             graphKeepAlive -= delta;
 
-            //std::cout << now << std::endl;
-
             // Satisfy parameter connections
             while (!pendingParamConnections.empty())
             {
@@ -385,8 +382,8 @@ void AudioContext::updateAutomaticPullNodes()
     /// @TODO this seems like work for the update thread.
     /// m_automaticPullNodesNeedUpdating can go away in favor of
     /// add and remove doing a cv.notify.
-    // m_automaticPullNodes should be an add/remove vector
-    // m_renderingAutomaticPullNodes should be the actual live vector
+    /// m_automaticPullNodes should be an add/remove vector
+    /// m_renderingAutomaticPullNodes should be the actual live vector
     if (m_automaticPullNodesNeedUpdating)
     {
         std::lock_guard<std::mutex> lock(m_updateMutex);
