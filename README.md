@@ -31,25 +31,25 @@ The engine is packaged as a batteries-included static library meant for integrat
 
 # Platforms
 
-LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback on desktop platforms. The repository hosts maintained project files for Visual Studio 2013, Visual Studio 2015, and XCode 7. While not presently supported, LabSound has been shown to run on other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES).
+LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback on desktop platforms. The repository hosts maintained project files for Visual Studio 2017, XCode 8, and CMake. While not actively supported, LabSound has been shown to run on other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES).
 
 # Building
 
-Users of LabSound are expected to compile LabSound from source. While most dependencies are included as code in the repository, libnyquist is bundled as a git submodule so it is recommended that new users clone the repository with the `--recursive` option.
+Users of LabSound are expected to compile LabSound from source. While most dependencies are included as code in the repository, libnyquist is bundled as a git submodule so it is required that new users clone the repository with the `--recursive` option.
 
 The submodules can be fetched after a clone with `git submodule update --init --recursive`
 
-Compiling LabSound and libnyquist requires a recent C++11 compiler.
+LabSound and libnyquist require a C++11 compiler.
 
 # Building with Cmake
 
-Cmake can be used as an alternative to the vcproj and xcodeproj files bundled with the LabSound source distribution.
+CMake can be used as an alternative to the vcproj and xcodeproj files bundled with the LabSound source distribution.
 
-LabSound has a CMakeLists.txt at the root directory, and all the associated cmake files are in the `cmake/` subfolder. A cmake based build will work out of the box on Windows, it is not yet tested on other platforms. If you use the cmake build, it will build everything to a folder named `../local/` cmake build directory. As always with cmake, it is recommended that you do an out-of-source build.
+LabSound has a `CMakeLists.txt` at the root directory, and all the associated CMake files are in the `cmake/` subfolder. A CMake based build will work out of the box on Windows, it is not yet tested on other platforms. If you use the CMake build, it will build everything to a folder named `../local/` build directory. As always with CMake, it is recommended that you do an out-of-source build.
 
 # Examples
 
-LabSound is bundled with approximately 20 single-file samples. Project files can be found in the `examples/` subfolder. A separate repository hosts [more sample applications](https://github.com/LabSound/samples) that require additional dependencies.
+LabSound is bundled with approximately 20 single-file samples. Project files can be found in the `examples/` subfolder.
 
 # Using the Library
 
