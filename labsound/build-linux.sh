@@ -1,7 +1,7 @@
 #!/bin/bash
 
-pushd ./third_party/node-native-video-deps
-npm install
+pushd ..
+npm install native-video-deps
 popd
 
 cmake .
