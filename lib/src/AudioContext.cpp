@@ -72,7 +72,7 @@ Local<Object> AudioContext::CreateMediaElementSource(Local<Function> audioDestin
     mediaElement,
     audioContextObj,
   };
-  Local<Object> audioSourceNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> audioSourceNodeObj = audioDestinationNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return audioSourceNodeObj;
 }
@@ -82,7 +82,7 @@ Local<Object> AudioContext::CreateMediaStreamSource(Local<Function> audioSourceN
     mediaStream,
     audioContextObj,
   };
-  Local<Object> audioSourceNodeObj = audioSourceNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> audioSourceNodeObj = audioSourceNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return audioSourceNodeObj;
 }
@@ -99,7 +99,7 @@ Local<Object> AudioContext::CreateGain(Local<Function> gainNodeConstructor, Loca
   Local<Value> argv[] = {
     audioContextObj,
   };
-  Local<Object> gainNodeObj = gainNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> gainNodeObj = gainNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return gainNodeObj;
 }
@@ -108,7 +108,7 @@ Local<Object> AudioContext::CreateAnalyser(Local<Function> analyserNodeConstruct
   Local<Value> argv[] = {
     audioContextObj,
   };
-  Local<Object> analyserNodeObj = analyserNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> analyserNodeObj = analyserNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return analyserNodeObj;
 }
@@ -117,7 +117,7 @@ Local<Object> AudioContext::CreatePanner(Local<Function> pannerNodeConstructor, 
   Local<Value> argv[] = {
     audioContextObj,
   };
-  Local<Object> pannerNodeObj = pannerNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> pannerNodeObj = pannerNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return pannerNodeObj;
 }
@@ -126,7 +126,7 @@ Local<Object> AudioContext::CreateStereoPanner(Local<Function> stereoPannerNodeC
   Local<Value> argv[] = {
     audioContextObj,
   };
-  Local<Object> stereoPannerNodeObj = stereoPannerNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> stereoPannerNodeObj = stereoPannerNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return stereoPannerNodeObj;
 }
@@ -137,7 +137,7 @@ Local<Object> AudioContext::CreateBuffer(Local<Function> audioBufferConstructor,
     JS_INT(length),
     JS_INT(sampleRate),
   };
-  Local<Object> audioBufferObj = audioBufferConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> audioBufferObj = audioBufferConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return audioBufferObj;
 }
@@ -146,7 +146,7 @@ Local<Object> AudioContext::CreateBufferSource(Local<Function> audioBufferSource
   Local<Value> argv[] = {
     audioContextObj,
   };
-  Local<Object> audioBufferObj = audioBufferSourceNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> audioBufferObj = audioBufferSourceNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return audioBufferObj;
 }
@@ -158,7 +158,7 @@ Local<Object> AudioContext::CreateScriptProcessor(Local<Function> scriptProcesso
     JS_INT(numberOfOutputChannels),
     audioContextObj,
   };
-  Local<Object> scriptProcessorNodeObj = scriptProcessorNodeConstructor->NewInstance(sizeof(argv)/sizeof(argv[0]), argv);
+  Local<Object> scriptProcessorNodeObj = scriptProcessorNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv)/sizeof(argv[0]), argv).ToLocalChecked();
 
   return scriptProcessorNodeObj;
 }
@@ -198,14 +198,14 @@ NAN_METHOD(AudioContext::New) {
   Local<Value> argv1[] = {
     audioContextObj,
   };
-  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+  Local<Object> audioDestinationNodeObj = audioDestinationNodeConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv1)/sizeof(argv1[0]), argv1).ToLocalChecked();
   audioContextObj->Set(JS_STR("destination"), audioDestinationNodeObj);
 
   Local<Function> audioListenerConstructor = Local<Function>::Cast(audioContextObj->Get(JS_STR("constructor"))->ToObject()->Get(JS_STR("AudioListener")));
   Local<Value> argv2[] = {
     audioContextObj,
   };
-  Local<Object> audioListenerObj = audioListenerConstructor->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
+  Local<Object> audioListenerObj = audioListenerConstructor->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv2)/sizeof(argv2[0]), argv2).ToLocalChecked();
   audioContextObj->Set(JS_STR("listener"), audioListenerObj);
 
   info.GetReturnValue().Set(audioContextObj);

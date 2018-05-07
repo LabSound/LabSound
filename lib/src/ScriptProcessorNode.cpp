@@ -457,7 +457,7 @@ void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<
         JS_INT((uint32_t)audioContext->audioContext->sampleRate()),
         sourcesArray,
       };
-      Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv1)/sizeof(argv1[0]), argv1);
+      Local<Object> inputBuffer = audioBufferConstructorFn->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv1)/sizeof(argv1[0]), argv1).ToLocalChecked();
 
       Local<Array> destinationsArray = Nan::New<Array>(destinations.size());
       for (size_t i = 0; i < destinations.size(); i++) {
@@ -472,7 +472,7 @@ void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<
         JS_INT((uint32_t)audioContext->audioContext->sampleRate()),
         destinationsArray,
       };
-      Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(sizeof(argv2)/sizeof(argv2[0]), argv2);
+      Local<Object> outputBuffer = audioBufferConstructorFn->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv2)/sizeof(argv2[0]), argv2).ToLocalChecked();
 
       Local<Function> audioProcessingEventConstructorFn = Nan::New(self->audioProcessingEventConstructor);
       Local<Value> argv3[] = {
@@ -480,7 +480,7 @@ void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<
         outputBuffer,
         JS_INT((uint32_t)framesToProcess)
       };
-      Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(sizeof(argv3)/sizeof(argv3[0]), argv3);
+      Local<Object> audioProcessingEventObj = audioProcessingEventConstructorFn->NewInstance(Isolate::GetCurrent()->GetCurrentContext(), sizeof(argv3)/sizeof(argv3[0]), argv3).ToLocalChecked();
 
       Local<Value> argv4[] = {
         audioProcessingEventObj,
