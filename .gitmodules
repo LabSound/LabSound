@@ -1,3 +1,0 @@
-[submodule "labsound/node-native-video-deps"]
-	path = labsound/third_party/node-native-video-deps
-	url = https://github.com/modulesio/node-native-video-deps.git
