@@ -43,7 +43,7 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libnyquist/include
-    ${LABSOUND_ROOT}/third_party/node-native-video-deps/include)
+    ${LABSOUND_ROOT}/../node_modules/native-video-deps/include)
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
