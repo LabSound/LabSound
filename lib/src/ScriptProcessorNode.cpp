@@ -397,7 +397,7 @@ NAN_METHOD(ScriptProcessorNode::New) {
       scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
       scriptProcessorNode->context.Reset(audioContextObj);
-      lab::ScriptProcessorNode *labScriptProcessorNode = new lab::ScriptProcessorNode(lab::AudioNode::ProcessingSizeInFrames, numberOfInputChannels, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
+      lab::ScriptProcessorNode *labScriptProcessorNode = new lab::ScriptProcessorNode(numberOfInputChannels, [scriptProcessorNode](lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
         scriptProcessorNode->ProcessInAudioThread(r, sources, destinations, framesToProcess);
       });
       scriptProcessorNode->audioNode.reset(labScriptProcessorNode);
