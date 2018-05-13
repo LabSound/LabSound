@@ -4,6 +4,47 @@ const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
 
 // microphone
 const audioContext = new AudioContext();
+const mediaStream = new MicrophoneMediaStream();
+const audioCtx = new AudioContext();
+const microphoneSourceNode = audioCtx.createMediaStreamSource(mediaStream);
+
+const buffers = [];
+
+const scriptProcessorNode = audioCtx.createScriptProcessor(256, 1, 1);
+scriptProcessorNode.onaudioprocess = e => {
+  const float32Array = e.inputBuffer.getChannelData(0);
+
+  const audioMessage = new Float32Array(float32Array.length);
+  audioMessage.set(float32Array);
+  buffers.push(audioMessage);
+
+  // console.log('process');
+
+  e.outputBuffer.getChannelData(0).fill(0);
+};
+microphoneSourceNode.connect(scriptProcessorNode);
+scriptProcessorNode.connect(audioCtx.destination);
+
+const scriptProcessorNode2 = audioCtx.createScriptProcessor(256, 1, 1);
+scriptProcessorNode2.onaudioprocess = e => {
+  if (buffers.length >= 2) {
+    e.outputBuffer.copyToChannel(buffers.shift(), 0);
+  } else {
+    e.outputBuffer.getChannelData(0).fill(0);
+  }
+};
+const microphoneSourceNode2 = audioCtx.createMediaStreamSource(mediaStream);
+microphoneSourceNode2.connect(scriptProcessorNode2);
+scriptProcessorNode2.connect(audioCtx.destination);
+
+setTimeout(() => {}, 100000000);
+
+/* const path = require('path');
+const fs = require('fs');
+const {AudioContext, Audio, MicrophoneMediaStream} = require('.');
+
+// microphone
+const audioContext = new AudioContext();
 const microphoneMediaStream = new MicrophoneMediaStream();
 const audioCtx = new AudioContext();
 const microphoneSourceNode = audioCtx.createMediaStreamSource(microphoneMediaStream);
@@ -40,7 +81,7 @@ const _flushBuffer = () => {
   }
 };
 
-setTimeout(() => {}, 100000000);
+setTimeout(() => {}, 100000000); */
 
 /* // audio clip
 fs.readFile(path.join(__dirname, 'labsound', 'assets', 'samples', 'stereo-music-clip.wav'), (err, data) => {
