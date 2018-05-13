@@ -20,10 +20,10 @@ using namespace std;
 namespace lab 
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction(), m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) : AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, processingSizeInFrames));
 }
 
 AudioNodeInput::~AudioNodeInput()

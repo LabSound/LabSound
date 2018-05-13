@@ -16,7 +16,7 @@ namespace lab {
 
 class ScriptProcessorNode : public AudioNode {
 public:
-  ScriptProcessorNode(unsigned int numChannels, std::function<void(lab::ContextRenderLock& r, std::vector<const float*> sources, std::vector<float*> destinations, size_t framesToProcess)> &&kernel);
+  ScriptProcessorNode(unsigned int bufferSize, unsigned int numChannels, std::function<void(lab::ContextRenderLock& r, std::vector<const float*> sources, std::vector<float*> destinations, size_t framesToProcess)> &&kernel);
   virtual ~ScriptProcessorNode();
 
   virtual void process(ContextRenderLock&, size_t framesToProcess) override;

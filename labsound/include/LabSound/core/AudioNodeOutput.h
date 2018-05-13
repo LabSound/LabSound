@@ -23,7 +23,7 @@ class AudioNodeOutput
 public:
 
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
-    AudioNodeOutput(AudioNode*, unsigned numberOfChannels);
+    AudioNodeOutput(AudioNode *audioNode, unsigned numberOfChannels, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeOutput();
 
     // Can be called from any thread.

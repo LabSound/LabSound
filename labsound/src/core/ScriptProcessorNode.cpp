@@ -11,9 +11,9 @@ using namespace std;
 
 namespace lab {
 
-ScriptProcessorNode::ScriptProcessorNode(unsigned int numChannels, std::function<void(lab::ContextRenderLock& r, std::vector<const float*> sources, std::vector<float*> destinations, size_t framesToProcess)> &&kernel) : kernel(std::move(kernel)) {
-  addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-  addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
+ScriptProcessorNode::ScriptProcessorNode(unsigned int bufferSize, unsigned int numChannels, std::function<void(lab::ContextRenderLock& r, std::vector<const float*> sources, std::vector<float*> destinations, size_t framesToProcess)> &&kernel) : kernel(std::move(kernel)) {
+  addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this, bufferSize)));
+  addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels, bufferSize)));
 
   initialize();
 }

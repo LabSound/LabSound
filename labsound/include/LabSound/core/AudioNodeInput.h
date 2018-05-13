@@ -24,7 +24,7 @@ class AudioNodeInput : public AudioSummingJunction
 
 public:
 
-    explicit AudioNodeInput(AudioNode*);
+    explicit AudioNodeInput(AudioNode *audioNode, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeInput();
 
     // AudioSummingJunction
