@@ -348,7 +348,11 @@ NAN_GETTER(AudioProcessingEvent::NumberOfOutputChannelsGetter) {
   info.GetReturnValue().Set(numberOfChannels);
 }
 
-ScriptProcessorNode::ScriptProcessorNode() {}
+ScriptProcessorNode::ScriptProcessorNode(uint32_t bufferSize, uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels) : bufferSize(bufferSize), numberOfInputChannels(numberOfInputChannels), numberOfOutputChannels(numberOfOutputChannels), bufferIndex(0) {
+  for (size_t i = 0; i < numberOfInputChannels; i++) {
+    buffers.emplace_back((size_t)bufferSize);
+  }
+}
 ScriptProcessorNode::~ScriptProcessorNode() {}
 Handle<Object> ScriptProcessorNode::Initialize(Isolate *isolate, Local<Value> audioBufferCons, Local<Value> audioProcessingEventCons) {
   Nan::EscapableHandleScope scope;
@@ -387,7 +391,7 @@ NAN_METHOD(ScriptProcessorNode::New) {
     if (numberOfInputChannels == numberOfOutputChannels) {
       Local<Object> audioContextObj = Local<Object>::Cast(info[3]);
 
-      ScriptProcessorNode *scriptProcessorNode = new ScriptProcessorNode();
+      ScriptProcessorNode *scriptProcessorNode = new ScriptProcessorNode(bufferSize, numberOfInputChannels, numberOfOutputChannels);
       Local<Object> scriptProcessorNodeObj = info.This();
       scriptProcessorNode->Wrap(scriptProcessorNodeObj);
 
@@ -431,7 +435,18 @@ NAN_SETTER(ScriptProcessorNode::OnAudioProcessSetter) {
   }
 }
 void ScriptProcessorNode::ProcessInAudioThread(lab::ContextRenderLock& r, vector<const float*> sources, vector<float*> destinations, size_t framesToProcess) {
-  QueueOnMainThread(r, std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
+  for (size_t i = 0; i < sources.size(); i++) {
+    const float *source = sources[i];
+    float *buffer = buffers[i].data() + bufferIndex;
+    memcpy(buffer, source, framesToProcess * sizeof(float));
+  }
+  bufferIndex += framesToProcess;
+
+  if (bufferIndex >= bufferSize) {
+    QueueOnMainThread(r, std::bind(ProcessInMainThread, this, sources, destinations, framesToProcess));
+
+    bufferIndex = 0;
+  }
 }
 void ScriptProcessorNode::ProcessInMainThread(ScriptProcessorNode *self, vector<const float*> &sources, vector<float*> &destinations, size_t framesToProcess) {
   {
