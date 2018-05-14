@@ -313,10 +313,14 @@ std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono, 
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     std::ifstream inputStream(filePath, std::ios::binary|std::ios::ate);
     std::ifstream::pos_type size = inputStream.tellg();
-    std::vector<unsigned char> buffer(size);
-    inputStream.seekg(0, std::ios::beg);
-    inputStream.read((char *)buffer.data(), size);
-    return detail::LoadInternal(buffer, mixToMono, error);
+    if (size >= 0) {
+      std::vector<unsigned char> buffer(size);
+      inputStream.seekg(0, std::ios::beg);
+      inputStream.read((char *)buffer.data(), size);
+      return detail::LoadInternal(buffer, mixToMono, error);
+    } else {
+      return nullptr;
+    }
 }
 
 std::unique_ptr<AudioBus> MakeBusFromMemory(std::vector<uint8_t> &buffer, bool mixToMono, std::string *error)
