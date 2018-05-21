@@ -55,6 +55,9 @@ double ScriptProcessorNode::tailTime(ContextRenderLock & r) const {
 double ScriptProcessorNode::latencyTime(ContextRenderLock & r) const {
   return 0;
 }
+bool ScriptProcessorNode::propagatesSilence(ContextRenderLock & r) const {
+  return false;
+}
 void ScriptProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
     AudioBus* destinationBus = output(0)->bus(r);

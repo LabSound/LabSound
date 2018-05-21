@@ -28,6 +28,7 @@ public:
 protected:
   virtual double tailTime(ContextRenderLock & r) const override;
   virtual double latencyTime(ContextRenderLock & r) const override;
+  virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
   std::function<void(lab::ContextRenderLock& r, std::vector<const float*> sources, std::vector<float*> destinations, size_t framesToProcess)> kernel;
 };
