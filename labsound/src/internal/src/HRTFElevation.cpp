@@ -120,7 +120,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     }
     
     uint32_t responseLength = impulseResponse->length();
-    uint32_t expectedLength = static_cast<uint32_t>(256 * (info->sampleRate / 44100.0));
+    // uint32_t expectedLength = static_cast<uint32_t>(256 * (info->sampleRate / 44100.0));
+    uint32_t expectedLength = 256;
 
     // Check number of channels and length.  For now these are fixed and known.
     bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == 2;
