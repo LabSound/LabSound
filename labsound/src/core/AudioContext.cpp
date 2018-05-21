@@ -198,7 +198,7 @@ void AudioContext::update()
     const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
     const int graphTickDurationUs = graphTickDurationMs * 1000.f;  // = ~5550us
 
-    while (updateThreadShouldRun && graphKeepAlive > 0)
+    while (updateThreadShouldRun || graphKeepAlive > 0)
     {
         // A `unique_lock` automatically acquires a lock on construction. The purpose of
         // this mutex is to synchronize updates to the graph from the main thread, 
