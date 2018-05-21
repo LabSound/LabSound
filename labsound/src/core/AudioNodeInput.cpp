@@ -113,7 +113,10 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
     // @tofix - did I miss part of the merge?
     if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
     {
-        return renderingOutput(r, 0)->bus(r);
+        std::shared_ptr<AudioNodeOutput> output = renderingOutput(r, 0);
+        if (output) {
+          return output->bus(r);
+        }
     }
 
     // Multiple connections case (or no connections).
