@@ -2,6 +2,16 @@
 #include <memory>
 #include <algorithm>
 
+#include <rtaudio/RtAudio.h>
+
+using namespace v8;
+
+#define JS_STR(...) Nan::New<v8::String>(__VA_ARGS__).ToLocalChecked()
+#define JS_INT(val) Nan::New<v8::Integer>(val)
+#define JS_NUM(val) Nan::New<v8::Number>(val)
+#define JS_FLOAT(val) Nan::New<v8::Number>(val)
+#define JS_BOOL(val) Nan::New<v8::Boolean>(val)
+
 namespace webaudio {
 
 Audio::Audio() : audioNode(new lab::SampledAudioNode()) {}
@@ -15,6 +25,7 @@ Handle<Object> Audio::Initialize(Isolate *isolate) {
   Local<FunctionTemplate> ctor = Nan::New<FunctionTemplate>(New);
   ctor->InstanceTemplate()->SetInternalFieldCount(1);
   ctor->SetClassName(JS_STR("Audio"));
+  Nan::SetMethod(ctor, "getDevices", GetDevices);
 
   // prototype
   Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
@@ -28,6 +39,55 @@ Handle<Object> Audio::Initialize(Isolate *isolate) {
   Local<Function> ctorFn = ctor->GetFunction();
 
   return scope.Escape(ctorFn);
+}
+
+NAN_METHOD(Audio::GetDevices) {
+  RtAudio audio;
+  size_t n = audio.getDeviceCount();
+
+  Local<Object> lst = Array::New(Isolate::GetCurrent());
+  size_t i = 0;
+  for (size_t i = 0; i < n; i++) {
+    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+    Local<Object> obj = Object::New(Isolate::GetCurrent());
+    lst->Set(i, obj);
+    obj->Set(JS_STR("name"), JS_STR(info.name.c_str()));
+    obj->Set(JS_STR("outputChannels"), JS_NUM(info.outputChannels));
+    obj->Set(JS_STR("inputChannels"), JS_NUM(info.inputChannels));
+    obj->Set(JS_STR("duplexChannels"), JS_NUM(info.duplexChannels));
+    obj->Set(JS_STR("isDefaultOutput"), JS_BOOL(info.isDefaultOutput));
+    obj->Set(JS_STR("isDefaultInput"), JS_BOOL(info.isDefaultInput));
+    obj->Set(JS_STR("preferredSampleRate"), JS_NUM(info.preferredSampleRate));
+    {
+      Local<Object> sampleRates = Array::New(Isolate::GetCurrent());
+      size_t j = 0;
+      for (auto rate : info.sampleRates) {
+        sampleRates->Set(j++, JS_NUM(rate));
+      }
+      obj->Set(JS_STR("sampleRates"), sampleRates);
+    }
+    {
+      Local<Object> nativeFormats = Array::New(Isolate::GetCurrent());
+      size_t j = 0;
+      if (info.nativeFormats & RTAUDIO_SINT8) {
+        nativeFormats->Set(j++, JS_STR("int8"));
+      }
+      if (info.nativeFormats & RTAUDIO_SINT16) {
+        nativeFormats->Set(j++, JS_STR("int16"));
+      }
+      if (info.nativeFormats & RTAUDIO_SINT32) {
+        nativeFormats->Set(j++, JS_STR("int32"));
+      }
+      if (info.nativeFormats & RTAUDIO_FLOAT32) {
+        nativeFormats->Set(j++, JS_STR("float32"));
+      }
+      if (info.nativeFormats & RTAUDIO_FLOAT64) {
+        nativeFormats->Set(j++, JS_STR("float64"));
+      }
+      obj->Set(JS_STR("nativeFormats"), nativeFormats);
+    }
+  }
+  info.GetReturnValue().Set(lst);
 }
 
 NAN_METHOD(Audio::New) {

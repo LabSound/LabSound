@@ -191,7 +191,7 @@ NAN_METHOD(AudioContext::New) {
 
   Local<Object> options = info[0]->IsObject() ? Local<Object>::Cast(info[0]) : Nan::New<Object>();
   Local<Value> sampleRateValue = options->Get(JS_STR("sampleRate"));
-  float sampleRate = sampleRateValue.IsNumber() ? sampleRateValue->NumberValue() : lab::DefaultSampleRate;
+  float sampleRate = sampleRateValue->IsNumber() ? sampleRateValue->NumberValue() : lab::DefaultSampleRate;
 
   Local<Object> audioContextObj = info.This();
   AudioContext *audioContext = new AudioContext(sampleRate);
