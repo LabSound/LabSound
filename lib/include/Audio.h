@@ -22,6 +22,7 @@ public:
   void Pause();
 
 protected:
+  static NAN_METHOD(GetDevices);
   static NAN_METHOD(New);
   static NAN_METHOD(Load);
   static NAN_METHOD(Play);

@@ -10,6 +10,7 @@
         "<!(node -e \"require('nan')\")",
         '<(module_root_dir)/lib/include',
         '<(module_root_dir)/labsound/include',
+        '<(module_root_dir)/labsound/third_party',
         "<!(node -e \"console.log(require.resolve('native-video-deps').slice(0, -9) + '/include')\")",
       ],
       'conditions': [
