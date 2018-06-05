@@ -68,9 +68,11 @@ void AudioSummingJunction::junctionConnectOutput(std::shared_ptr<AudioNodeOutput
     
     std::lock_guard<std::mutex> lock(junctionMutex);
 
-    for (std::vector<std::weak_ptr<AudioNodeOutput>>::iterator i = m_connectedOutputs.begin(); i != m_connectedOutputs.end(); ++i)
+    for (std::vector<std::weak_ptr<AudioNodeOutput>>::iterator i = m_connectedOutputs.begin(); i != m_connectedOutputs.end();)
         if (i->expired())
             i = m_connectedOutputs.erase(i);
+        else
+            i++;
     
     for (auto i : m_connectedOutputs)
         if (i.lock() == o)
