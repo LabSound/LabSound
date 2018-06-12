@@ -369,9 +369,14 @@ void SampledAudioNode::startGrain(double when, double grainOffset, double grainD
     m_startRequested = true;
 }
 
-float SampledAudioNode::duration() const 
-{ 
-    return m_sourceBus->length() / m_sourceBus->sampleRate(); 
+float SampledAudioNode::duration() 
+{
+  std::shared_ptr<AudioBus> bus = getBus();
+  if (bus) {
+    return bus->length() / bus->sampleRate();
+  } else {
+    return 0;
+  }
 }
 
 double SampledAudioNode::totalPitchRate(ContextRenderLock & r)

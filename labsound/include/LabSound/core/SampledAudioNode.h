@@ -40,7 +40,7 @@ public:
     void startGrain(double when, double grainOffset);
     void startGrain(double when, double grainOffset, double grainDuration);
 
-    float duration() const;
+    float duration();
 
     bool loop() const { return m_isLooping; }
     void setLoop(bool looping) { m_isLooping = looping; }
