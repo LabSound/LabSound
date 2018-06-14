@@ -13,6 +13,7 @@
 #include <AnalyserNode.h>
 #include <PannerNode.h>
 #include <StereoPannerNode.h>
+#include <OscillatorNode.h>
 #include <AudioContext.h>
 
 using namespace std;
@@ -51,6 +52,8 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("PannerNode"), pannerNodeCons);
   Local<Value> stereoPannerNodeCons = StereoPannerNode::Initialize(isolate, audioParamCons);
   exports->Set(JS_STR("StereoPannerNode"), stereoPannerNodeCons);
+  Local<Value> oscillatorNodeCons = OscillatorNode::Initialize(isolate, audioParamCons);
+  exports->Set(JS_STR("OscillatorNode"), oscillatorNodeCons);
   Local<Value> audioBufferCons = AudioBuffer::Initialize(isolate);
   exports->Set(JS_STR("AudioBuffer"), audioBufferCons);
   Local<Value> audioBufferSourceNodeCons = AudioBufferSourceNode::Initialize(isolate);
@@ -61,7 +64,7 @@ void Init(Handle<Object> exports) {
   exports->Set(JS_STR("ScriptProcessorNode"), scriptProcessorNodeCons);
   Local<Value> microphoneMediaStreamCons = MicrophoneMediaStream::Initialize(isolate);
   exports->Set(JS_STR("MicrophoneMediaStream"), microphoneMediaStreamCons);
-  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioListenerCons, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, audioBufferCons, audioBufferSourceNodeCons, audioProcessingEventCons, stereoPannerNodeCons, scriptProcessorNodeCons, microphoneMediaStreamCons));
+  exports->Set(JS_STR("AudioContext"), AudioContext::Initialize(isolate, audioListenerCons, audioSourceNodeCons, audioDestinationNodeCons, gainNodeCons, analyserNodeCons, pannerNodeCons, audioBufferCons, audioBufferSourceNodeCons, audioProcessingEventCons, stereoPannerNodeCons, oscillatorNodeCons, scriptProcessorNodeCons, microphoneMediaStreamCons));
 }
 NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 
