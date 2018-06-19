@@ -102,7 +102,7 @@ float AudioParam::finalValue(ContextRenderLock& r)
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values, unsigned numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values, size_t numberOfValues)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)

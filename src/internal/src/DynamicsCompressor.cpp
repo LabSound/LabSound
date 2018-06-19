@@ -100,7 +100,7 @@ void DynamicsCompressor::setEmphasisParameters(float gain, float anchorFreq, flo
     setEmphasisStageParameters(3, gain, anchorFreq / (filterStageRatio * filterStageRatio * filterStageRatio));
 }
 
-void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus, unsigned framesToProcess)
+void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus, size_t framesToProcess)
 {
     // Though numberOfChannels is retrived from destinationBus, we still name it numberOfChannels instead of numberOfDestinationChannels.
     // It's because we internally match sourceChannels's size to destinationBus by channel up/down mix. Thus we need numberOfChannels

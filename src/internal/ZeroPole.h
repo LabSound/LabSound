@@ -19,7 +19,7 @@ public:
 
     ZeroPole() { }
 
-    void process(const float *source, float *destination, unsigned framesToProcess);
+    void process(const float *source, float *destination, size_t framesToProcess);
 
     // Reset filter state.
     void reset() { m_lastX = 0; m_lastY = 0; }

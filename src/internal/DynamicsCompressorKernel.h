@@ -29,7 +29,7 @@ public:
                  const float * sourceChannels[],
                  float * destinationChannels[],
                  unsigned numberOfChannels,
-                 unsigned framesToProcess,
+                 size_t framesToProcess,
 
                  float dbThreshold,
                  float dbKnee,

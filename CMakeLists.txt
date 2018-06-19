@@ -1,5 +1,7 @@
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.11)
+
+include_guard()
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -14,9 +16,9 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 set(CMAKE_MODULE_PATH
-    ${CMAKE_SOURCE_DIR}/cmake/defaults
-    ${CMAKE_SOURCE_DIR}/cmake/modules
-    ${CMAKE_SOURCE_DIR}/cmake/macros)
+    ${LABSOUND_ROOT}/cmake/defaults
+    ${LABSOUND_ROOT}/cmake/modules
+    ${LABSOUND_ROOT}/cmake/macros)
 
 include(Utilities)
 include(CXXDefaults)
