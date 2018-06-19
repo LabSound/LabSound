@@ -67,26 +67,7 @@ source_group(src\\ FILES ${third_opus_src})
 project(libnyquist)
 
 file(GLOB third_nyquist_h   "${LABSOUND_ROOT}/third_party/libnyquist/include/libnyquist/*")
-set(      third_nyquist_src
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/AudioDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/CafDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/Common.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/FlacDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/ModplugDependencies.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/MusepackDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/OpusDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/OpusDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/RiffUtils.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/VorbisDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/VorbisDependencies.c"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/WavDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/WavEncoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/WavPackDecoder.cpp"
-    "${LABSOUND_ROOT}/third_party/libnyquist/src/WavPackDependencies.c"
-)
+file(GLOB third_nyquist_src "${LABSOUND_ROOT}/third_party/libnyquist/src/*")
 
 add_library(libnyquist STATIC
     ${third_nyquist_h} ${third_nyquist_src})

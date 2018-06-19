@@ -318,7 +318,7 @@ void AudioContext::update()
                     }
                     else if (connection.destination)
                     {
-                        for (size_t out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                        for (unsigned int out = 0; out < connection.destination->numberOfOutputs(); ++out)
                         {
                             auto output = connection.destination->output(out);
                             if (!output) continue;
@@ -328,7 +328,7 @@ void AudioContext::update()
                     }
                     else if (connection.source)
                     {
-                        for (size_t out = 0; out < connection.source->numberOfOutputs(); ++out)
+                        for (unsigned int out = 0; out < connection.source->numberOfOutputs(); ++out)
                         {
                             auto output = connection.source->output(out);
                             if (!output) continue;

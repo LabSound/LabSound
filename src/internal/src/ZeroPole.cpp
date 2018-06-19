@@ -8,7 +8,7 @@
 namespace lab 
 {
 
-void ZeroPole::process(const float *source, float *destination, unsigned framesToProcess)
+void ZeroPole::process(const float *source, float *destination, size_t framesToProcess)
 {
     float zero = m_zero;
     float pole = m_pole;
