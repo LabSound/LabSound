@@ -97,10 +97,10 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
 {
     unsigned numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
 
-    bool isInputGood = inputBus &&  numInputChannels >= 1 && numInputChannels <= 2;
+    bool isInputGood = inputBus &&  numInputChannels >= CHANNELS_MONO && numInputChannels <= CHANNELS_STEREO;
     ASSERT(isInputGood);
 
-    bool isOutputGood = outputBus && outputBus->numberOfChannels() == 2 && framesToProcess <= outputBus->length();
+    bool isOutputGood = outputBus && outputBus->numberOfChannels() == CHANNELS_STEREO && framesToProcess <= outputBus->length();
     ASSERT(isOutputGood);
 
     if (!isInputGood || !isOutputGood)
@@ -134,11 +134,11 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     // Normally, we'll just be dealing with mono sources.
     // If we have a stereo input, implement stereo panning with left source processed by left HRTF, and right source by right HRTF.
     const AudioChannel * inputChannelL = inputBus->channelByType(Channel::Left);
-    const AudioChannel * inputChannelR = numInputChannels > 1 ? inputBus->channelByType(Channel::Right) : 0;
+    const AudioChannel * inputChannelR = numInputChannels > CHANNELS_MONO ? inputBus->channelByType(Channel::Right) : 0;
 
     // Get source and destination pointers.
     const float * sourceL = inputChannelL->data();
-    const float * sourceR = numInputChannels > 1 ? inputChannelR->data() : sourceL;
+    const float * sourceR = numInputChannels > CHANNELS_MONO ? inputChannelR->data() : sourceL;
 
     float * destinationL = outputBus->channelByType(Channel::Left)->mutableData();
     float * destinationR = outputBus->channelByType(Channel::Right)->mutableData();

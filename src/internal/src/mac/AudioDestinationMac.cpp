@@ -10,7 +10,25 @@
 
 #include <CoreAudio/AudioHardware.h>
 
-namespace lab {
+#include <rtaudio/RtAudio.h>
+
+namespace lab
+{
+
+static int
+NumDefaultOutputChannels() {
+  RtAudio audio;
+  size_t n = audio.getDeviceCount();
+
+  size_t i = 0;
+  for (size_t i = 0; i < n; i++) {
+    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+    if (info.isDefaultOutput) {
+      return info.outputChannels;
+    }
+  }
+  return 2;
+}
 
 const int kBufferSize = 128;
 const float kLowThreshold = -1;
@@ -174,7 +192,7 @@ unsigned long AudioDestination::maxChannelCount()
     // of channels of the device. Also see corresponding FIXME in create().
     // There is a small amount of code which assumes stereo in AudioDestinationMac which
     // can be upgraded.
-    return 0;
+    return NumDefaultOutputChannels();
 }
     
 AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, unsigned channels, float sampleRate)
@@ -272,10 +290,9 @@ void AudioDestinationMac::stop()
 OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioData)
 {
     AudioBuffer* buffers = ioData->mBuffers;
-
     unsigned n = channelCount();
     for (unsigned i = 0; i < n; ++i) {
-       m_renderBus.setChannelMemory(i, (float*)buffers[i].mData, numberOfFrames);
+      m_renderBus.setChannelMemory(i, (float*)buffers[i].mData, numberOfFrames);
     }
 
     //@tofix - add support for local/live audio input.

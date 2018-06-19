@@ -9,8 +9,26 @@
 #include "LabSound/core/AudioIOCallback.h"
 #include "LabSound/extended/Logging.h"
 
+#include <rtaudio/RtAudio.h>
+
 namespace lab
 {
+
+static int
+NumDefaultOutputChannels() {
+  RtAudio audio;
+  size_t n = audio.getDeviceCount();
+
+  size_t i = 0;
+  for (size_t i = 0; i < n; i++) {
+    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+    if (info.isDefaultOutput) {
+      printf("%d channels\n", info.outputChannels);
+      return info.outputChannels;
+    }
+  }
+  return 2;
+}
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
@@ -22,7 +40,7 @@ AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallbac
 
 unsigned long AudioDestination::maxChannelCount()
 {
-    return 2;
+    return NumDefaultOutputChannels();
 }
 
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned numChannels, float sampleRate) 
@@ -38,7 +56,8 @@ AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned nu
 
 AudioDestinationWin::~AudioDestinationWin()
 {
-    if (dac.isStreamOpen())
+    //dac.release(); // XXX
+     if (dac.isStreamOpen())
         dac.closeStream();
 }
 

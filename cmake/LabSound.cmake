@@ -20,9 +20,9 @@ if (APPLE)
 elseif (WIN32)
 	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/win/*")
 	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/win/*")
-else ()
-    file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/linux/*")
-    file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/linux/*")
+elseif (UNIX)
+	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/linux/*")
+	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/linux/*")
 endif()
 
 add_library(LabSound STATIC
@@ -33,7 +33,7 @@ add_library(LabSound STATIC
  	${third_rtaudio} ${third_kissfft}
  )
 
-set_cxx_version(LabSound)
+_set_Cxx17(LabSound)
 _set_compile_options(LabSound)
 
 target_include_directories(LabSound PUBLIC
