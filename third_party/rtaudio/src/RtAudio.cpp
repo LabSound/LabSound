@@ -8122,7 +8122,7 @@ RtAudio::DeviceInfo RtApiPulse::getDeviceInfo( unsigned int /*device*/ )
   for ( const unsigned int *sr = SUPPORTED_SAMPLERATES; *sr; ++sr )
     info.sampleRates.push_back( *sr );
 
-  info.preferredSampleRate = 48000;
+  info.preferredSampleRate = 44800;
   info.nativeFormats = RTAUDIO_SINT16 | RTAUDIO_SINT32 | RTAUDIO_FLOAT32;
 
   return info;

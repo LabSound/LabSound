@@ -93,7 +93,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
         // at a sub-sample position since it will degrade the quality.
         // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
         // Since playbackRate == 1 is very common, it's worth considering quality.
-        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, m_sourceBus->sampleRate());
+        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, getBus()->sampleRate());
         m_startRequested = false;
     }
 
@@ -122,7 +122,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 }
 
 // Returns true if we're finished.
-bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus * bus, unsigned index, size_t framesToProcess)
+bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus* bus, unsigned index, size_t framesToProcess)
 {
     if (!loop()) 
     {
@@ -144,16 +144,16 @@ bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, 
     return false;
 }
 
-bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, unsigned destinationFrameOffset, size_t numberOfFrames)
+bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
 {
     if (!r.context())
         return false;
 
-    // Basic sanity checking
-    ASSERT(bus);
-    ASSERT(getBus());
-    if (!bus || !getBus())
+    auto srcBus = getBus();
+
+    if (!bus || !srcBus)
         return false;
+
 
     unsigned numChannels = numberOfChannels(r);
     unsigned busNumberOfChannels = bus->numberOfChannels();
@@ -179,8 +179,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
     // Offset the pointers to the correct offset frame.
     unsigned writeIndex = destinationFrameOffset;
 
-    size_t bufferLength = getBus()->length();
-    double bufferSampleRate = getBus()->sampleRate();
+    size_t bufferLength = srcBus->length();
+    double bufferSampleRate = srcBus->sampleRate();
 
     // Avoid converting from time to sample-frames twice by computing
     // the grain end time first before computing the sample frame.
@@ -207,8 +207,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
     if (loop() && (m_loopStart || m_loopEnd) && m_loopStart >= 0 && m_loopEnd > 0 && m_loopStart < m_loopEnd) 
     {
         // Convert from seconds to sample-frames.
-        double loopStartFrame = m_loopStart * getBus()->sampleRate();
-        double loopEndFrame = m_loopEnd * getBus()->sampleRate();
+        double loopStartFrame = m_loopStart * srcBus->sampleRate();
+        double loopEndFrame = m_loopEnd * srcBus->sampleRate();
 
         virtualEndFrame = std::min(loopEndFrame, virtualEndFrame);
         virtualDeltaFrames = virtualEndFrame - loopStartFrame;
@@ -243,7 +243,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
 
             for (unsigned i = 0; i < numChannels; ++i)
             {
-                memcpy(bus->channel(i)->mutableData() + writeIndex, m_sourceBus->channel(i)->data() + readIndex, sizeof(float) * framesThisTime);
+                memcpy(bus->channel(i)->mutableData() + writeIndex, srcBus->channel(i)->data() + readIndex, sizeof(float) * framesThisTime);
             }
 
             writeIndex += framesThisTime;
@@ -288,7 +288,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, u
             for (unsigned i = 0; i < numChannels; ++i) 
             {
                 float * destination = bus->channel(i)->mutableData();
-                const float * source = m_sourceBus->channel(i)->data();
+                const float * source = srcBus->channel(i)->data();
 
                 double sample1 = source[readIndex];
                 double sample2 = source[readIndex2];
@@ -370,8 +370,12 @@ void SampledAudioNode::startGrain(double when, double grainOffset, double grainD
 }
 
 float SampledAudioNode::duration() const 
-{ 
-    return m_sourceBus->length() / m_sourceBus->sampleRate(); 
+{
+    auto bus = getBus();
+    if (!bus)
+        return 0;
+
+    return bus->length() / bus->sampleRate(); 
 }
 
 double SampledAudioNode::totalPitchRate(ContextRenderLock & r)

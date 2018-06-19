@@ -40,7 +40,7 @@ public:
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
     void getFrequencyResponse(ContextRenderLock&,
-                              int nFrequencies,
+                              size_t nFrequencies,
                               const float* frequencyHz,
                               float* magResponse,
                               float* phaseResponse);

@@ -21,7 +21,7 @@ class AudioDestinationWin : public AudioDestination
 
 public:
 
-    AudioDestinationWin(AudioIOCallback &, float sampleRate);
+    AudioDestinationWin(AudioIOCallback &, unsigned numChannels, float sampleRate);
     virtual ~AudioDestinationWin();
 
     virtual void start() override;
@@ -41,6 +41,7 @@ private:
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
+    unsigned m_numChannels;
     float m_sampleRate;
     bool m_isPlaying = false;
 

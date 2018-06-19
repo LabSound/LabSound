@@ -110,6 +110,19 @@ AudioChannel* AudioBus::channelByType(Channel channelType)
         case Channel::SurroundRight: return channel(static_cast<int>(channelType));
         default: return 0;
         }
+
+    case 8: // 7.1
+        switch (channelType) {
+        case Channel::Left:
+        case Channel::Right:
+        case Channel::Center:
+        case Channel::LFE:
+        case Channel::SurroundLeft:
+        case Channel::SurroundRight:
+        case Channel::BackLeft:
+        case Channel::BackRight: return channel(static_cast<int>(channelType));
+        default: return 0;
+        }
     }
     
     ASSERT_NOT_REACHED();
@@ -276,6 +289,20 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
         // Handle 5.1 -> mono case.
         zero();
         speakersSumFrom5_1_ToMono(sourceBus);
+    } else if (numberOfDestinationChannels == 8 && numberOfSourceChannels == 1) {
+        // Handle mono -> 7.1 case, copy mono channel to center.
+        channelByType(Channel::Center)->copyFrom(sourceBus.channel(0));
+        channelByType(Channel::Left)->zero();
+        channelByType(Channel::Right)->zero();
+        channelByType(Channel::LFE)->zero();
+        channelByType(Channel::SurroundLeft)->zero();
+        channelByType(Channel::SurroundRight)->zero();
+        channelByType(Channel::BackLeft)->zero();
+        channelByType(Channel::BackRight)->zero();
+    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 8) {
+        // Handle 7.1 -> mono case.
+        zero();
+        speakersSumFrom7_1_ToMono(sourceBus);
     } else {
         // Fallback for unknown combinations.
         discreteCopyFrom(sourceBus);
@@ -312,6 +339,12 @@ void AudioBus::speakersSumFrom(const AudioBus& sourceBus)
     } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 6) {
         // Handle 5.1 -> mono case.
         speakersSumFrom5_1_ToMono(sourceBus);
+    } else if (numberOfDestinationChannels == 8 && numberOfSourceChannels == 1) {
+        // Handle mono -> 7.1 case, sum mono channel into center.
+        channelByType(Channel::Center)->sumFrom(sourceBus.channel(0));
+    } else if (numberOfDestinationChannels == 1 && numberOfSourceChannels == 8) {
+        // Handle 7.1 -> mono case.
+        speakersSumFrom7_1_ToMono(sourceBus);
     } else {
         // Fallback for unknown combinations.
         discreteSumFrom(sourceBus);
@@ -341,6 +374,45 @@ void AudioBus::speakersSumFrom5_1_ToMono(const AudioBus& sourceBus)
     
     // Sum in SL and SR.
     vadd(sourceSL, 1, sourceSR, 1, tempData, 1, length());
+    scale = 0.5;
+    vsmul(tempData, 1, &scale, tempData, 1, length());
+    vadd(tempData, 1, destination, 1, destination, 1, length());
+    
+    // Sum in center.
+    vadd(sourceC, 1, destination, 1, destination, 1, length());
+}
+
+void AudioBus::speakersSumFrom7_1_ToMono(const AudioBus& sourceBus)
+{
+    AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
+    
+    const float* sourceL = sourceBusSafe.channelByType(Channel::Left)->data();
+    const float* sourceR = sourceBusSafe.channelByType(Channel::Right)->data();
+    const float* sourceC = sourceBusSafe.channelByType(Channel::Center)->data();
+    const float* sourceSL = sourceBusSafe.channelByType(Channel::SurroundLeft)->data();
+    const float* sourceSR = sourceBusSafe.channelByType(Channel::SurroundRight)->data();
+    const float* sourceBL = sourceBusSafe.channelByType(Channel::BackLeft)->data();
+    const float* sourceBR = sourceBusSafe.channelByType(Channel::BackRight)->data();
+    
+    float* destination = channelByType(Channel::Left)->mutableData();
+    
+    AudioFloatArray temp(length());
+    float* tempData = temp.data();
+    
+    // Sum in L and R.
+    vadd(sourceL, 1, sourceR, 1, tempData, 1, length());
+    float scale = 0.7071f;
+    vsmul(tempData, 1, &scale, tempData, 1, length());
+    vadd(tempData, 1, destination, 1, destination, 1, length());
+    
+    // Sum in SL and SR.
+    vadd(sourceSL, 1, sourceSR, 1, tempData, 1, length());
+    scale = 0.5;
+    vsmul(tempData, 1, &scale, tempData, 1, length());
+    vadd(tempData, 1, destination, 1, destination, 1, length());
+    
+    // Sum in BL and BR.
+    vadd(sourceBL, 1, sourceBR, 1, tempData, 1, length());
     scale = 0.5;
     vsmul(tempData, 1, &scale, tempData, 1, length());
     vadd(tempData, 1, destination, 1, destination, 1, length());
@@ -604,18 +676,22 @@ std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceB
     case 1:
         // Simply create an exact copy.
         return AudioBus::createBufferFromRange(sourceBus, 0, sourceBus->length());
-    case 2:
+    default:
         {
             unsigned n = sourceBus->length();
+            unsigned m = sourceBus->numberOfChannels();
             std::unique_ptr<AudioBus> destinationBus(new AudioBus(1, n));
-
-            const float* sourceL = sourceBus->channelByType(Channel::Left)->data();
-            const float* sourceR = sourceBus->channelByType(Channel::Right)->data();
             float* destination = destinationBus->channel(0)->mutableData();
         
             // Do the mono mixdown.
-            for (unsigned i = 0; i < n; ++i)
-                destination[i] = (sourceL[i] + sourceR[i]) / 2;
+            for (unsigned i = 0; i < n; ++i) {
+              destination[i] = 0.0;
+              for (unsigned j = 0; j < m; ++j) {
+                const float* source = sourceBus->channel(j)->data();
+                destination[j] += source[j];
+              }
+              destination[i] /= m;
+            }
 
             destinationBus->clearSilentFlag();
             destinationBus->setSampleRate(sourceBus->sampleRate());    

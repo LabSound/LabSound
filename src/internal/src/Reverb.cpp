@@ -207,6 +207,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
     } else {
         // Handle gracefully any unexpected / unsupported matrixing
         // FIXME: add code for 5.1 support...
+        // FIXME: add code for 7.1 support...
         destinationBus->zero();
     }
 }

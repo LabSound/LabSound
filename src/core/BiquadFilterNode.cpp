@@ -38,7 +38,7 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
     if (!frequencyHz.size() || !magResponse.size() || !phaseResponse.size())
         return;
 
-    int n = std::min(frequencyHz.size(),
+    size_t n = std::min(frequencyHz.size(),
                      std::min(magResponse.size(), phaseResponse.size()));
 
     if (n) 

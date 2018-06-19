@@ -489,7 +489,7 @@ void Biquad::setAllpassPole(const complex<double> &pole)
     setZeroPolePairs(zero, pole);
 }
 
-void Biquad::getFrequencyResponse(int nFrequencies,
+void Biquad::getFrequencyResponse(size_t nFrequencies,
                                   const float* frequency,
                                   float* magResponse,
                                   float* phaseResponse)
@@ -517,7 +517,7 @@ void Biquad::getFrequencyResponse(int nFrequencies,
     double a1 = m_a1;
     double a2 = m_a2;
     
-    for (int k = 0; k < nFrequencies; ++k) {
+    for (size_t k = 0; k < nFrequencies; ++k) {
         double omega = -piDouble * frequency[k];
         complex<double> z = complex<double>(cos(omega), sin(omega));
         complex<double> numerator = b0 + (b1 + b2 * z) * z;

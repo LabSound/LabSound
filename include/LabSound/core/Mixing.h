@@ -25,6 +25,8 @@ namespace lab
         LFE = 3,
         SurroundLeft = 4,
         SurroundRight = 5,
+        BackLeft = 6,
+        BackRight = 7
     };
     
     enum class ChannelCountMode

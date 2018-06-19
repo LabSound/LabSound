@@ -52,7 +52,7 @@ public:
     // Filter response at a set of n frequencies. The magnitude and
     // phase response are returned in magResponse and phaseResponse.
     // The phase response is in radians.
-    void getFrequencyResponse(int nFrequencies,
+    void getFrequencyResponse(size_t nFrequencies,
                               const float* frequency,
                               float* magResponse,
                               float* phaseResponse);
