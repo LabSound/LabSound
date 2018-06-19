@@ -2,8 +2,8 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef AudioDestinationWin_h
-#define AudioDestinationWin_h
+#ifndef AudioDestinationLinux_h
+#define AudioDestinationLinux_h
 
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioBus.h"
@@ -16,13 +16,13 @@
 
 namespace lab {
 
-class AudioDestinationWin : public AudioDestination 
+class AudioDestinationLinux : public AudioDestination 
 { 
 
 public:
 
-    AudioDestinationWin(AudioIOCallback &, unsigned numChannels, float sampleRate);
-    virtual ~AudioDestinationWin();
+    AudioDestinationLinux(AudioIOCallback &, float sampleRate);
+    virtual ~AudioDestinationLinux();
 
     virtual void start() override;
     virtual void stop() override;
@@ -41,11 +41,10 @@ private:
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
-    unsigned m_numChannels;
     float m_sampleRate;
     bool m_isPlaying = false;
 
-    RtAudio dac;
+    std::unique_ptr<RtAudio> dac; // XXX
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 

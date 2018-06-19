@@ -1,5 +1,5 @@
 
-include(CXXhelpers)
+include(CXXHelpers)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     include(gccdefaults)

@@ -26,14 +26,12 @@ namespace lab
 
     public:
 
-        LocalAudioInputProvider() : m_sourceBus(2, AudioNode::ProcessingSizeInFrames) // FIXME: handle non-stereo local input.
+        LocalAudioInputProvider(unsigned channelCount) : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
         {
-
         }
         
         virtual ~LocalAudioInputProvider() 
-        {
-        
+        {        
         }
 
         void set(AudioBus* bus)
@@ -52,14 +50,15 @@ namespace lab
     };
 
     
-AudioDestinationNode::AudioDestinationNode(AudioContext * context, float sampleRate) : m_context(context), m_sampleRate(sampleRate), m_currentSampleFrame(0)
+AudioDestinationNode::AudioDestinationNode(AudioContext * context, unsigned channelCount, float sampleRate) 
+: m_context(context), m_sampleRate(sampleRate), m_currentSampleFrame(0)
 {
-    m_localAudioInputProvider = new LocalAudioInputProvider();
+    m_localAudioInputProvider = new LocalAudioInputProvider(channelCount);
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
     // Node-specific default mixing rules.
-    m_channelCount = 2;
+    m_channelCount = channelCount;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
     

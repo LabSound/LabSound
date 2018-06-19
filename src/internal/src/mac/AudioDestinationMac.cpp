@@ -10,7 +10,25 @@
 
 #include <CoreAudio/AudioHardware.h>
 
-namespace lab {
+#include <rtaudio/RtAudio.h>
+
+namespace lab
+{
+
+static int
+NumDefaultOutputChannels() {
+  RtAudio audio;
+  size_t n = audio.getDeviceCount();
+
+  size_t i = 0;
+  for (size_t i = 0; i < n; i++) {
+    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+    if (info.isDefaultOutput) {
+      return info.outputChannels;
+    }
+  }
+  return 2;
+}
 
 const int kBufferSize = 128;
 const float kLowThreshold = -1;
@@ -59,7 +77,7 @@ public:
         
     }
     
-    void configure(const AudioStreamBasicDescription& outDesc, UInt32 bufferSize)
+    void configure(const AudioStreamBasicDescription& outDesc, unsigned channelCount, UInt32 bufferSize)
     {
         // enable IO on input
         UInt32 param = 1;
@@ -129,7 +147,7 @@ public:
         result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &outDesc, param);
         ASSERT(!result);
         
-        m_audioBus = new AudioBus(2, bufferSize, true);
+        m_audioBus = new AudioBus(channelCount, bufferSize, true);
         
         m_buffers = (AudioBufferList*) malloc(offsetof(AudioBufferList, mBuffers[0]) + sizeof(AudioBuffer) * outDesc.mChannelsPerFrame);
         m_buffers->mNumberBuffers = outDesc.mChannelsPerFrame;
@@ -165,7 +183,7 @@ public:
 
 AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, unsigned numberOfOutputChannels, float sampleRate)
 {
-    return new AudioDestinationMac(callback, sampleRate);
+    return new AudioDestinationMac(callback, numberOfOutputChannels, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -174,13 +192,13 @@ unsigned long AudioDestination::maxChannelCount()
     // of channels of the device. Also see corresponding FIXME in create().
     // There is a small amount of code which assumes stereo in AudioDestinationMac which
     // can be upgraded.
-    return 0;
+    return NumDefaultOutputChannels();
 }
     
-AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, float sampleRate)
+AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, unsigned channels, float sampleRate)
     : m_outputUnit(0)
     , m_callback(callback)
-    , m_renderBus(2, kBufferSize, false)
+    , m_renderBus(channels, kBufferSize, false)
     , m_sampleRate(sampleRate)
     , m_isPlaying(false)
     , m_input(new Input()) // LabSound
@@ -230,7 +248,7 @@ void AudioDestinationMac::configure()
     streamFormat.mFormatID = kAudioFormatLinearPCM;
     streamFormat.mFormatFlags = kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
     streamFormat.mBitsPerChannel = 8 * sizeof(Float32);
-    streamFormat.mChannelsPerFrame = 2;
+    streamFormat.mChannelsPerFrame = channelCount();
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = sizeof(Float32);
     streamFormat.mBytesPerFrame = sizeof(Float32);
@@ -243,7 +261,7 @@ void AudioDestinationMac::configure()
     result = AudioUnitSetProperty(m_outputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Output, 0, (void*)&bufferSize, sizeof(bufferSize));
     ASSERT(!result);
     
-    m_input->configure(streamFormat, bufferSize);
+    m_input->configure(streamFormat, m_renderBus->channelCount(), bufferSize);
 }
 
 void AudioDestinationMac::start()
@@ -272,8 +290,10 @@ void AudioDestinationMac::stop()
 OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioData)
 {
     AudioBuffer* buffers = ioData->mBuffers;
-    m_renderBus.setChannelMemory(0, (float*)buffers[0].mData, numberOfFrames);
-    m_renderBus.setChannelMemory(1, (float*)buffers[1].mData, numberOfFrames);
+    unsigned n = channelCount();
+    for (unsigned i = 0; i < n; ++i) {
+      m_renderBus.setChannelMemory(i, (float*)buffers[i].mData, numberOfFrames);
+    }
 
     //@tofix - add support for local/live audio input.
     m_callback.render(m_input->m_audioBus, &m_renderBus, numberOfFrames);

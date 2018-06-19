@@ -7,7 +7,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext(2);
 
         std::shared_ptr<AudioBus> kick = MakeBusFromFile("samples/kick.wav", false);
         std::shared_ptr<AudioBus> hihat = MakeBusFromFile("samples/hihat.wav", false);
