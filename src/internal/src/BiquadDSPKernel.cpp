@@ -101,7 +101,7 @@ void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* 
 }
 
 void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
-                                           int nFrequencies,
+                                           size_t nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
                                            float* phaseResponse)
@@ -117,7 +117,7 @@ void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
 
     // Convert from frequency in Hz to normalized frequency (0 -> 1),
     // with 1 equal to the Nyquist frequency.
-    for (int k = 0; k < nFrequencies; ++k)
+    for (size_t k = 0; k < nFrequencies; ++k)
         frequency[k] = static_cast<float>(frequencyHz[k] / nyquist);
 
     // We want to get the final values of the coefficients and compute

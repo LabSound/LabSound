@@ -30,7 +30,7 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);
-    std::shared_ptr<AudioBus> getBus() { return m_sourceBus; }
+    std::shared_ptr<AudioBus> getBus() const { return m_sourceBus; }
 
     // numberOfChannels() returns the number of output channels. This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.

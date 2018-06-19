@@ -17,7 +17,7 @@ class OfflineAudioDestinationNode final : public AudioDestinationNode
     
 public:
     
-    OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
+    OfflineAudioDestinationNode(AudioContext* context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
     virtual ~OfflineAudioDestinationNode();
     
     virtual void initialize();
