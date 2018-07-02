@@ -372,7 +372,7 @@ void SfxrNode::Sfxr::ResetSample(bool restart)
         if(fltdmp>0.8f) fltdmp=0.8f;
         fltphp=0.0f;
         flthp=pow(p_hpf_freq, 2.0f)*0.1f;
-        flthp_d=1.0+p_hpf_ramp*0.0003f;
+        flthp_d=1.0f+p_hpf_ramp*0.0003f;
         // reset vibrato
         vib_phase=0.0f;
         vib_speed=pow(p_vib_speed, 2.0f)*0.01f;
