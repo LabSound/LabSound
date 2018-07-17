@@ -4,6 +4,7 @@
 
 #include "internal/ZeroPole.h"
 #include "internal/DenormalDisabler.h"
+#include <stddef.h>
 
 namespace lab 
 {
