@@ -5,6 +5,8 @@
 #ifndef ZeroPole_h
 #define ZeroPole_h
 
+#include <cstddef>
+
 namespace lab {
 
 // ZeroPole is a simple filter with one zero and one pole.
