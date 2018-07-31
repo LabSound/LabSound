@@ -142,6 +142,11 @@ void AudioScheduledSourceNode::stop(double when)
     m_endTime = when;
 }
 
+void AudioScheduledSourceNode::reset(ContextRenderLock&) {
+    m_playbackState = UNSCHEDULED_STATE;
+    m_endTime = UnknownTime;
+}
+
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
     m_playbackState = FINISHED_STATE;

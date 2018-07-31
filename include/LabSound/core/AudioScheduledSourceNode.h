@@ -42,7 +42,7 @@ public:
 
     bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
 
-    virtual void reset(ContextRenderLock&) override { m_playbackState = UNSCHEDULED_STATE; }
+    virtual void reset(ContextRenderLock&) override;
 
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
