@@ -8055,7 +8055,9 @@ static void *alsaCallbackHandler( void *ptr )
 #endif
 
   while ( *isRunning == true ) {
+#ifndef LUMIN
     pthread_testcancel();
+#endif
     object->callbackEvent();
   }
 
