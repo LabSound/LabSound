@@ -1,0 +1,29 @@
+# include (CMakeForceCompiler)
+
+set(CMAKE_SYSTEM_NAME Linux)
+
+SET(CMAKE_CROSSCOMPILING TRUE)
+
+set(CMAKE_SYSROOT /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin)
+set(CMAKE_STAGING_PREFIX /tmp/stage)
+include_directories(/mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin/stl/libc++/include)
+include_directories(${CMAKE_SOURCE_DIR}/third_party)
+
+set(CMAKE_C_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang)
+set(CMAKE_CXX_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang++)
+set(CMAKE_LINKER  /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-ld)
+set(CMAKE_AR /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-ar CACHE FILEPATH "Archiver")
+# set(CMAKE_C_ARCHIVE_CREATE /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-ar)
+# set(CMAKE_CXX_ARCHIVE_CREATE /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-ar)
+set(CMAKE_RANLIB /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-ranlib)
+
+# set(CMAKE_FORCE_C_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang Clang)
+# set(CMAKE_FORCE_CXX_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang++ Clang)
+
+set(CMAKE_C_COMPILER_WORKS TRUE CACHE INTERNAL "")
+set(CMAKE_CXX_COMPILER_WORKS TRUE CACHE INTERNAL "")
+
+# set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
+# set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+# set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+# set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE NEVER)
