@@ -16,8 +16,8 @@
 
 namespace lab {
 
-class AudioDestinationWin : public AudioDestination 
-{ 
+class AudioDestinationWin : public AudioDestination
+{
 
 public:
 
@@ -27,7 +27,6 @@ public:
     virtual void start() override;
     virtual void stop() override;
 
-    bool isPlaying() override { return m_isPlaying; }
     float sampleRate() const override { return m_sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
@@ -43,12 +42,11 @@ private:
 
     unsigned m_numChannels;
     float m_sampleRate;
-    bool m_isPlaying = false;
 
     RtAudio dac;
 };
 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 
+int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );
 
 } // namespace lab
 

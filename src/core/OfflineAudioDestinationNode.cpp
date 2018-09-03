@@ -94,7 +94,7 @@ void OfflineAudioDestinationNode::offlineRender()
         return;
 
     // Break up the render target into smaller "render quantize" sized pieces.
-    size_t framesToProcess = (m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize;
+    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize);
 
     while (framesToProcess > 0)
     {

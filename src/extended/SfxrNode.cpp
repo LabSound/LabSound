@@ -439,11 +439,11 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
             if(p_freq_limit>0.0f)
                 playing_sample=false;
         }
-        float rfperiod=fperiod;
+        float rfperiod = static_cast<float>(fperiod);
         if(vib_amp>0.0f)
         {
             vib_phase+=vib_speed;
-            rfperiod=fperiod*(1.0+sin(vib_phase)*vib_amp);
+            rfperiod = static_cast<float>(fperiod*(1.0+sin(vib_phase)*vib_amp));
         }
         period=(int)rfperiod;
         if(period<8) period=8;
@@ -577,9 +577,6 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
         }
     }
 }
-
-#pragma mark _______________________
-#pragma mark Node Interface
 
 namespace lab {
 
@@ -743,9 +740,6 @@ namespace lab {
     }
 
 
-#pragma mark ____________________________________
-#pragma mark Some default sounds
-
     // parameters for default sounds found here -
     // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
 
@@ -755,12 +749,12 @@ namespace lab {
 
         // Envelope
         _attack->setValue(0);
-        _sustainTime->setValue(0.3);
+        _sustainTime->setValue(0.3f);
         _sustainPunch->setValue(0);
-        _decayTime->setValue(0.4);
+        _decayTime->setValue(0.4f);
 
         // Tone
-        _startFrequency->setValue(0.3);
+        _startFrequency->setValue(0.3f);
         _minFrequency->setValue(0);
         _slide->setValue(0);
         _deltaSlide->setValue(0);
@@ -792,8 +786,8 @@ namespace lab {
         _hpFilterCutoffSweep->setValue(0);
 
         // Sample parameters
-        sfxr->sound_vol = 0.5;
-        sfxr->wav_freq = 44100;
+        sfxr->sound_vol = 0.5f;
+        sfxr->wav_freq = 44100.f;
         sfxr->wav_bits = 16;
     }
 

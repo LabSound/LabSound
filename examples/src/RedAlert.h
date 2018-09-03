@@ -8,7 +8,7 @@ struct RedAlertApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(2);
+        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
 
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;

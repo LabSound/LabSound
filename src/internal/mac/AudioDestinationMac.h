@@ -20,7 +20,6 @@ public:
 
     virtual void start();
     virtual void stop();
-    bool isPlaying() { return m_isPlaying; }
 
     float sampleRate() const { return m_sampleRate; }
 
@@ -37,8 +36,7 @@ private:
     AudioBus m_renderBus;
 
     float m_sampleRate;
-    bool m_isPlaying;
-    
+
     class Input; // LabSound
     Input* m_input; // LabSound
 };

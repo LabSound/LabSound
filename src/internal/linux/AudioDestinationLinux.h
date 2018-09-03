@@ -16,8 +16,8 @@
 
 namespace lab {
 
-class AudioDestinationLinux : public AudioDestination 
-{ 
+class AudioDestinationLinux : public AudioDestination
+{
 
 public:
 
@@ -27,7 +27,6 @@ public:
     virtual void start() override;
     virtual void stop() override;
 
-    bool isPlaying() override { return m_isPlaying; }
     float sampleRate() const override { return m_sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
@@ -42,12 +41,11 @@ private:
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
     float m_sampleRate;
-    bool m_isPlaying = false;
 
     std::unique_ptr<RtAudio> dac; // XXX
 };
 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 
+int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );
 
 } // namespace lab
 

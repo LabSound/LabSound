@@ -8,7 +8,7 @@ struct StereoPanningApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(2);
+        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/trainrolling.wav", false);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();

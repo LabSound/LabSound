@@ -15,19 +15,22 @@ namespace lab
 {
 
 static int
-NumDefaultOutputChannels() {
-  RtAudio audio;
-  size_t n = audio.getDeviceCount();
+NumDefaultOutputChannels()
+{
+    RtAudio audio;
+    size_t n = audio.getDeviceCount();
 
-  size_t i = 0;
-  for (size_t i = 0; i < n; i++) {
-    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
-    if (info.isDefaultOutput) {
-      printf("%d channels\n", info.outputChannels);
-      return info.outputChannels;
+    size_t i = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+        if (info.isDefaultOutput)
+        {
+            //printf("%d channels\n", info.outputChannels);
+            return info.outputChannels;
+        }
     }
-  }
-  return 2;
+    return 2;
 }
 
 const float kLowThreshold = -1.0f;
@@ -43,7 +46,7 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned numChannels, float sampleRate) 
+AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned numChannels, float sampleRate)
 : m_callback(callback)
 , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 , m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
@@ -103,7 +106,6 @@ void AudioDestinationWin::start()
     try
     {
         dac.startStream();
-        m_isPlaying = true;
     }
     catch (RtAudioError & e)
     {
@@ -116,7 +118,6 @@ void AudioDestinationWin::stop()
     try
     {
         dac.stopStream();
-        m_isPlaying = false;
     }
     catch (RtAudioError & e)
     {
@@ -142,7 +143,7 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
         m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
     }
 
-    // Source Bus :: Destination Bus 
+    // Source Bus :: Destination Bus
     m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])

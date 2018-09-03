@@ -17,18 +17,21 @@ namespace lab
 {
 
 static int
-NumDefaultOutputChannels() {
-  RtAudio audio;
-  size_t n = audio.getDeviceCount();
+NumDefaultOutputChannels()
+{
+    RtAudio audio;
+    size_t n = audio.getDeviceCount();
 
-  size_t i = 0;
-  for (size_t i = 0; i < n; i++) {
-    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
-    if (info.isDefaultOutput) {
-      return info.outputChannels;
+    size_t i = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+        if (info.isDefaultOutput)
+        {
+            return info.outputChannels;
+        }
     }
-  }
-  return 2;
+    return 2;
 }
 
 const float kLowThreshold = -1.0f;
@@ -101,7 +104,6 @@ void AudioDestinationLinux::start()
     try
     {
         dac->startStream();
-        m_isPlaying = true;
     }
     catch (RtAudioError & e)
     {
@@ -114,7 +116,6 @@ void AudioDestinationLinux::stop()
     try
     {
         // dac->stopStream(); // XXX
-        m_isPlaying = false;
     }
     catch (RtAudioError & e)
     {
@@ -131,8 +132,8 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
     {
-        m_renderBus.setChannelMemory(0, myOutputBufferOfFloats, numberOfFrames);
-        m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (numberOfFrames), numberOfFrames);
+        for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
+            m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (i * numberOfFrames), numberOfFrames);
     }
 
     if (m_inputBus.isFirstTime())
@@ -140,7 +141,7 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
         m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
     }
 
-    // Source Bus :: Destination Bus 
+    // Source Bus :: Destination Bus
     m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])

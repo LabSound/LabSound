@@ -31,7 +31,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(2);
+        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;

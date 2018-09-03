@@ -16,24 +16,27 @@ namespace lab
 {
 
 static int
-NumDefaultOutputChannels() {
-  RtAudio audio;
-  size_t n = audio.getDeviceCount();
+NumDefaultOutputChannels()
+{
+    RtAudio audio;
+    size_t n = audio.getDeviceCount();
 
-  size_t i = 0;
-  for (size_t i = 0; i < n; i++) {
-    RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
-    if (info.isDefaultOutput) {
-      return info.outputChannels;
+    size_t i = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+        if (info.isDefaultOutput)
+        {
+            return info.outputChannels;
+        }
     }
-  }
-  return 2;
+    return 2;
 }
 
 const int kBufferSize = 128;
 const float kLowThreshold = -1;
 const float kHighThreshold = 1;
-    
+
 //LabSound start
 class AudioDestinationMac::Input
 {
@@ -57,38 +60,38 @@ public:
         comp = AudioComponentFindNext(0, &desc);
 
         ASSERT(comp);
-        
+
         OSStatus result = AudioComponentInstanceNew(comp, &m_inputUnit);
         ASSERT(!result);
-        
+
         result = AudioUnitInitialize(m_inputUnit);
         ASSERT(!result);
     }
-    
+
     ~Input()
     {
         if (m_inputUnit)
             AudioComponentInstanceDispose(m_inputUnit);
-        
+
         free(m_buffers);
 
         if (m_audioBus)
             delete m_audioBus;
-        
+
     }
-    
+
     void configure(const AudioStreamBasicDescription& outDesc, unsigned channelCount, UInt32 bufferSize)
     {
         // enable IO on input
         UInt32 param = 1;
         OSErr result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &param, sizeof(UInt32));
         ASSERT(!result);
-        
+
         // disable IO on output
         param = 0;
         result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &param, sizeof(UInt32));
         ASSERT(!result);
-        
+
 #if !TARGET_OS_IPHONE
         // set to use default device
         AudioDeviceID deviceId = kAudioObjectUnknown;
@@ -106,18 +109,18 @@ public:
                                             &deviceIdSize,
                                             &deviceId);
         ASSERT(!result);
-        
+
         result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &deviceId, sizeof(AudioDeviceID));
         ASSERT(!result);
 #endif
-        
+
         // configure the callback
         AURenderCallbackStruct callback;
         callback.inputProc = inputCallback;
         callback.inputProcRefCon = this;
         result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, 0, &callback, sizeof(AURenderCallbackStruct));
         ASSERT(!result);
-        
+
         // make the input buffer size match the output buffer size
         UInt32 bufferSizeVal = bufferSize;
 #if TARGET_OS_IPHONE
@@ -126,11 +129,11 @@ public:
         result = AudioUnitSetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &bufferSizeVal, sizeof(bufferSizeVal));
 #endif
         ASSERT(!result);
-        
+
         // Initialize the AudioUnit
         result = AudioUnitInitialize(m_inputUnit);
         ASSERT(!result);
-        
+
         // get Size of IO Buffers
         UInt32 sampleCount;
         param = sizeof(UInt32);
@@ -140,15 +143,15 @@ public:
         result = AudioUnitGetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
 #endif
         ASSERT(!result);
-        
+
         // The AudioUnit can do format conversions, so match the input configuration to the output.
         //// if this doesn't work try it the other way around - set up the input desc and force the output to match
         param = sizeof(AudioStreamBasicDescription);
         result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &outDesc, param);
         ASSERT(!result);
-        
+
         m_audioBus = new AudioBus(channelCount, bufferSize, true);
-        
+
         m_buffers = (AudioBufferList*) malloc(offsetof(AudioBufferList, mBuffers[0]) + sizeof(AudioBuffer) * outDesc.mChannelsPerFrame);
         m_buffers->mNumberBuffers = outDesc.mChannelsPerFrame;
         for (uint32_t i = 0; i < m_buffers->mNumberBuffers; ++i) {
@@ -157,7 +160,7 @@ public:
             m_buffers->mBuffers[i].mData = m_audioBus->channel(i)->mutableData();
         }
     }
-    
+
     static OSStatus inputCallback(void* inRefCon,
                                   AudioUnitRenderActionFlags* ioActionFlags,
                                   const AudioTimeStamp* inTimeStamp,
@@ -166,15 +169,15 @@ public:
     {
         Input* input = reinterpret_cast<Input*>( inRefCon );
         OSStatus result = AudioUnitRender(input->m_inputUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, input->m_buffers);
-        
+
         if (result != noErr)
             for (uint32_t i = 0; i < input->m_buffers->mNumberBuffers; ++i) {
                 input->m_audioBus->channel(i)->zero();
             }
-        
+
         return noErr;
     }
-    
+
     AudioUnit m_inputUnit;
     AudioBufferList* m_buffers;
     AudioBus* m_audioBus;
@@ -194,13 +197,12 @@ unsigned long AudioDestination::maxChannelCount()
     // can be upgraded.
     return NumDefaultOutputChannels();
 }
-    
+
 AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, unsigned channels, float sampleRate)
     : m_outputUnit(0)
     , m_callback(callback)
     , m_renderBus(channels, kBufferSize, false)
     , m_sampleRate(sampleRate)
-    , m_isPlaying(false)
     , m_input(new Input()) // LabSound
 {
     // Open and initialize DefaultOutputUnit
@@ -229,7 +231,7 @@ AudioDestinationMac::~AudioDestinationMac()
 {
     if (m_outputUnit)
         AudioComponentInstanceDispose(m_outputUnit);
-    
+
     delete m_input; // LabSound
 }
 
@@ -260,7 +262,7 @@ void AudioDestinationMac::configure()
     UInt32 bufferSize = kBufferSize;
     result = AudioUnitSetProperty(m_outputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Output, 0, (void*)&bufferSize, sizeof(bufferSize));
     ASSERT(!result);
-    
+
     m_input->configure(streamFormat, m_renderBus->channelCount(), bufferSize);
 }
 
@@ -268,22 +270,18 @@ void AudioDestinationMac::start()
 {
     OSStatus result = AudioOutputUnitStart(m_outputUnit);
 
-    if (!result)
-        m_isPlaying = true;
-    
     // LabSound
     result = AudioOutputUnitStart(m_input->m_inputUnit);
+    /// @TODO test result
 }
 
 void AudioDestinationMac::stop()
 {
     OSStatus result = AudioOutputUnitStop(m_outputUnit);
 
-    if (!result)
-        m_isPlaying = false;
-
     // LabSound
     result = AudioOutputUnitStop(m_input->m_inputUnit);
+    /// @TODO test result
 }
 
 // Pulls on our provider to get rendered audio stream.

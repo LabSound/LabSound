@@ -489,7 +489,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
         return;
     }
 
-    unsigned numberOfChannels = m_channels.size();
+    size_t numberOfChannels = m_channels.size();
     ASSERT(numberOfChannels <= MaxBusChannels);
 
     if (numberOfChannels > MaxBusChannels)

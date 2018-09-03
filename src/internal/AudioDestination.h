@@ -21,7 +21,6 @@ struct AudioDestination
 
     virtual void start() = 0;
     virtual void stop() = 0;
-    virtual bool isPlaying() = 0;
 
     // Sample-rate conversion may happen in AudioDestination to the hardware sample-rate
     virtual float sampleRate() const = 0;
