@@ -819,7 +819,7 @@ namespace lab {
             _waveType->setValue(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3 + frnd(0.6));
-            _minFrequency->setValue(frnd(0.1));
+            _minFrequency->setValue(frnd(0.1f));
             _slide->setValue(-0.35 - frnd(0.3));
         } else {
             _startFrequency->setValue(0.5 + frnd(0.5));
@@ -919,7 +919,7 @@ namespace lab {
         _startFrequency->setValue(0.2 + frnd(0.6));
         _slide->setValue(-0.3 - frnd(0.4));
         _attack->setValue(0);
-        _sustainTime->setValue(frnd(0.1));
+        _sustainTime->setValue(frnd(0.1f));
         _decayTime->setValue(0.1 + frnd(0.2));
         if (rnd(1))
             _hpFilterCutoff->setValue(frnd(0.3));
@@ -950,34 +950,34 @@ namespace lab {
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2 + frnd(0.4));
         _attack->setValue(0);
-        _sustainTime->setValue(0.1 + frnd(0.1));
+        _sustainTime->setValue(0.1 + frnd(0.1f));
         _decayTime->setValue(frnd(0.2));
         _hpFilterCutoff->setValue(0.1);
     }
 
     /// @TODO remove need for context lock see above
     void SfxrNode::mutate(ContextRenderLock& r) {
-        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1f) - 0.05f);
     }
 
     /// @TODO remove need for context lock see above
