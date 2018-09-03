@@ -56,10 +56,14 @@
 
 namespace lab
 {
+    const unsigned DefaultChannelCount = 2;
+    const float DefaultSampleRate = 44100;
+
     // These are convenience functions with straightforward definitions. Most of the samples use them, but they are not strictly required. 
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
-    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(float sample_rate = 44100.f);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(float recordTimeMilliseconds);
+
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(int numChannels, float sample_rate = 44100.f);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sample_rate);
 }
 

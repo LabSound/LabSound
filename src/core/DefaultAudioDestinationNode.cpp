@@ -12,10 +12,11 @@
 
 namespace lab {
     
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext * context, const float sampleRate) : AudioDestinationNode(context, sampleRate)
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context, unsigned channelCount, const float sampleRate) 
+: AudioDestinationNode(context, channelCount, sampleRate)
 {
     // Node-specific default mixing rules.
-    m_channelCount = 2;
+    m_channelCount = channelCount;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 }

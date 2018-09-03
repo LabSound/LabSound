@@ -58,7 +58,7 @@ static float calculateNormalizationScale(AudioBus* response)
         scale *= GainCalibrationSampleRate / response->sampleRate();
 
     // True-stereo compensation
-    if (response->numberOfChannels() == 4)
+    if (response->numberOfChannels() == CHANNELS_QUAD)
         scale *= 0.5f;
 
     return scale;
@@ -106,7 +106,7 @@ void Reverb::initialize(AudioBus* impulseResponseBuffer, size_t renderSliceSize,
 
     // For "True" stereo processing we allocate a temporary buffer to avoid repeatedly allocating it in the process() method.
     // It can be bad to allocate memory in a real-time thread.
-    if (numResponseChannels == 4)
+    if (numResponseChannels == CHANNELS_QUAD)
         m_tempBuffer = std::unique_ptr<AudioBus>(new AudioBus(2, MaxFrameSize));
 }
 
@@ -122,7 +122,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         return;
 
     // For now only handle mono or stereo output
-    if (destinationBus->numberOfChannels() > 2) 
+    if (destinationBus->numberOfChannels() > CHANNELS_STEREO) 
     {
         destinationBus->zero();
         return;
@@ -136,13 +136,13 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
     size_t numOutputChannels = destinationBus->numberOfChannels();
     size_t numReverbChannels = m_convolvers.size();
 
-    if (numInputChannels == 2 && numReverbChannels == 2 && numOutputChannels == 2) {
+    if (numInputChannels == CHANNELS_STEREO && numReverbChannels == CHANNELS_STEREO && numOutputChannels == CHANNELS_STEREO) {
         // 2 -> 2 -> 2
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
         m_convolvers[1]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
-    } else if (numInputChannels == 2 && numReverbChannels == 1 && numOutputChannels == 2) {
+    } else if (numInputChannels == CHANNELS_STEREO && numReverbChannels == CHANNELS_MONO && numOutputChannels == CHANNELS_STEREO) {
         // LabSound added this case, should submit it back to WebKit after it's known to work correctly
         // because the initialize method says that a mono-IR is expected to work with a stero in/out setup
         // 2 -> 1 -> 2
@@ -150,13 +150,13 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
         m_convolvers[0]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
-    } else  if (numInputChannels == 1 && numOutputChannels == 2 && numReverbChannels == 2) {
+    } else  if (numInputChannels == CHANNELS_MONO && numOutputChannels == CHANNELS_STEREO && numReverbChannels == CHANNELS_STEREO) {
         // 1 -> 2 -> 2
         for (int i = 0; i < 2; ++i) {
             AudioChannel* destinationChannel = destinationBus->channel(i);
             m_convolvers[i]->process(r, sourceChannelL, destinationChannel, framesToProcess);
         }
-    } else if (numInputChannels == 1 && numReverbChannels == 1 && numOutputChannels == 2) {
+    } else if (numInputChannels == CHANNELS_MONO && numReverbChannels == CHANNELS_MONO && numOutputChannels == CHANNELS_STEREO) {
         // 1 -> 1 -> 2
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
 
@@ -167,10 +167,10 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         if (!isCopySafe)
             return;
         memcpy(destinationChannelR->mutableData(), destinationChannelL->data(), sizeof(float) * framesToProcess);
-    } else if (numInputChannels == 1 && numReverbChannels == 1 && numOutputChannels == 1) {
+    } else if (numInputChannels == CHANNELS_MONO && numReverbChannels == CHANNELS_MONO && numOutputChannels == CHANNELS_MONO) {
         // 1 -> 1 -> 1
         m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
-    } else if (numInputChannels == 2 && numReverbChannels == 4 && numOutputChannels == 2) {
+    } else if (numInputChannels == CHANNELS_STEREO && numReverbChannels == CHANNELS_QUAD && numOutputChannels == CHANNELS_STEREO) {
         // 2 -> 4 -> 2 ("True" stereo)
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
@@ -187,7 +187,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         m_convolvers[3]->process(r, sourceChannelR, tempChannelR, framesToProcess);
 
         destinationBus->sumFrom(*m_tempBuffer);
-    } else if (numInputChannels == 1 && numReverbChannels == 4 && numOutputChannels == 2) {
+    } else if (numInputChannels == CHANNELS_MONO && numReverbChannels == CHANNELS_QUAD && numOutputChannels == CHANNELS_STEREO) {
         // 1 -> 4 -> 2 (Processing mono with "True" stereo impulse response)
         // This is an inefficient use of a four-channel impulse response, but we should handle the case.
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
@@ -207,6 +207,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
     } else {
         // Handle gracefully any unexpected / unsupported matrixing
         // FIXME: add code for 5.1 support...
+        // FIXME: add code for 7.1 support...
         destinationBus->zero();
     }
 }

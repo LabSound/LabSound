@@ -12,6 +12,7 @@ file(GLOB third_opus_src
     "${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk/*.c"
     "${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk/float/*.c"
 )
+list(FILTER third_opus_src EXCLUDE REGEX ".*demo.c$")
 
 add_library(libopus STATIC ${third_opus_src})
 

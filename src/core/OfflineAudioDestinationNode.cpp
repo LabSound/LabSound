@@ -18,7 +18,8 @@ namespace lab {
     
 const size_t renderQuantumSize = 128;    
 
-OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels) : AudioDestinationNode(context, sampleRate),
+OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels) 
+: AudioDestinationNode(context, numChannels, sampleRate),
     m_numChannels(numChannels),
     m_lengthSeconds(lengthSeconds) 
 {
@@ -93,7 +94,7 @@ void OfflineAudioDestinationNode::offlineRender()
         return;
 
     // Break up the render target into smaller "render quantize" sized pieces.
-    size_t framesToProcess = (m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize;
+    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize);
 
     while (framesToProcess > 0)
     {

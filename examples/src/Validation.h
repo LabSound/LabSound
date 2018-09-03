@@ -29,12 +29,12 @@ struct ValidationApp : public LabSoundExampleApp
         std::array<int, 8> delayTimes = { 266, 533, 399 };
 
         auto randomFloat = std::uniform_real_distribution<float>(0, 1);
-        auto randomScaleDegree = std::uniform_int_distribution<int>(0, pentatonicMajor.size() - 1);
+        auto randomScaleDegree = std::uniform_int_distribution<int>(0, int(pentatonicMajor.size()) - 1);
         auto randomTimeIndex = std::uniform_int_distribution<int>(0, delayTimes.size() - 1);
 
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
 
-        auto context = lab::MakeRealtimeAudioContext();
+        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
         auto ac = context.get();
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/cello_pluck/cello_pluck_As0.wav", false);

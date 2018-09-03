@@ -5,6 +5,7 @@
 
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Mixing.h"
 
 #include "LabSound/extended/AudioFileReader.h"
 
@@ -34,7 +35,7 @@ namespace detail
 
         // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
         // because we've already deinterleaved
-        if (audioData->channelCount == 2 && mixToMono)
+        if (audioData->channelCount == lab::CHANNELS_STEREO && mixToMono)
         {
             float * destinationMono = audioBus->channel(0)->mutableData();
             float * leftSamples = planarSamples.data();
