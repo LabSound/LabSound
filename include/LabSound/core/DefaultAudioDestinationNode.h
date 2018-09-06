@@ -20,7 +20,7 @@ class DefaultAudioDestinationNode final : public AudioDestinationNode
     
 public:
 
-    DefaultAudioDestinationNode(AudioContext * context, const float sampleRate);
+    DefaultAudioDestinationNode(AudioContext* context, unsigned channelCount, const float sampleRate);
     virtual ~DefaultAudioDestinationNode();
     
     virtual void initialize() override;
