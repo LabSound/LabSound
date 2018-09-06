@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Mixing.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -23,7 +24,7 @@ namespace lab
 AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) : AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, processingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(CHANNELS_MONO, processingSizeInFrames));
 }
 
 AudioNodeInput::~AudioNodeInput()

@@ -23,7 +23,7 @@ OfflineAudioDestinationNode::OfflineAudioDestinationNode(AudioContext * context,
     m_numChannels(numChannels),
     m_lengthSeconds(lengthSeconds) 
 {
-    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(numChannels, renderQuantumSize));
+    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, renderQuantumSize));
 }
 
 OfflineAudioDestinationNode::~OfflineAudioDestinationNode()

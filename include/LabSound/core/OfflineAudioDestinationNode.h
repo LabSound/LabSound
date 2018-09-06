@@ -20,8 +20,8 @@ public:
     OfflineAudioDestinationNode(AudioContext* context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
     virtual ~OfflineAudioDestinationNode();
     
-    virtual void initialize();
-    virtual void uninitialize();
+    virtual void initialize() override;
+    virtual void uninitialize() override;
 
     virtual void startRendering() override;
     

@@ -51,7 +51,7 @@ namespace lab
 
     
 AudioDestinationNode::AudioDestinationNode(AudioContext * context, unsigned channelCount, float sampleRate) 
-: m_context(context), m_sampleRate(sampleRate), m_currentSampleFrame(0)
+: m_currentSampleFrame(0), m_sampleRate(sampleRate), m_context(context)
 {
     m_localAudioInputProvider = new LocalAudioInputProvider(channelCount);
 
