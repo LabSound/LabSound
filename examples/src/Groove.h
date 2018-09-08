@@ -149,7 +149,7 @@ struct GrooveApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<GainNode> masterGain;

@@ -11,7 +11,7 @@ struct LiveGraphUpdateApp : public LabSoundExampleApp
         std::shared_ptr<GainNode> gain;
 
         {
-            std::unique_ptr<AudioContext> context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+            std::unique_ptr<AudioContext> context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
             {
                 oscillator1 = std::make_shared<OscillatorNode>(context->sampleRate());

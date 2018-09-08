@@ -7,7 +7,7 @@ struct SimpleApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<SampledAudioNode> musicClipNode;

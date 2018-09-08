@@ -7,7 +7,7 @@ struct TremoloApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;

@@ -29,12 +29,17 @@ namespace lab
         BackRight = 7
     };
 
-    static const int CHANNELS_MONO = 1;
-    static const int CHANNELS_STEREO = 2;
-    static const int CHANNELS_QUAD = 4;
-    static const int CHANNELS_5_0 = 5;
-    static const int CHANNELS_5_1 = 6;
-    static const int CHANNELS_7_1 = 8;
+    namespace Channels
+    {
+        enum : int {
+            Mono = 1,
+            Stereo = 2,
+            Quad = 4,
+            Surround_5_0 = 5,
+            Surround_5_1 = 6,
+            Surround_7_1 = 8
+        };
+    };
     
     enum class ChannelCountMode
     {

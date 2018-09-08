@@ -69,19 +69,19 @@ AudioChannel* AudioBus::channelByType(Channel channelType)
         return 0;
     
     switch (numberOfChannels()) {
-    case CHANNELS_MONO:
+    case Channels::Mono:
         if (channelType == Channel::Mono || channelType == Channel::Left || channelType == Channel::First)
             return channel(static_cast<int>(Channel::Left));
         return 0;
 
-    case CHANNELS_STEREO:
+    case Channels::Stereo:
         switch (channelType) {
         case Channel::Left:
         case Channel::Right: return channel(static_cast<int>(channelType));
         default: return 0;
         }
 
-    case CHANNELS_QUAD:
+    case Channels::Quad:
         switch (channelType) {
         case Channel::Left:
         case Channel::Right:
@@ -90,7 +90,7 @@ AudioChannel* AudioBus::channelByType(Channel channelType)
         default: return 0;
         }
 
-    case CHANNELS_5_0:
+    case Channels::Surround_5_0:
         switch (channelType) {
         case Channel::Left:
         case Channel::Right:
@@ -100,7 +100,7 @@ AudioChannel* AudioBus::channelByType(Channel channelType)
         default: return 0;
         }
 
-    case CHANNELS_5_1:
+    case Channels::Surround_5_1:
         switch (channelType) {
         case Channel::Left:
         case Channel::Right:
@@ -111,7 +111,7 @@ AudioChannel* AudioBus::channelByType(Channel channelType)
         default: return 0;
         }
 
-    case CHANNELS_7_1:
+    case Channels::Surround_7_1:
         switch (channelType) {
         case Channel::Left:
         case Channel::Right:
@@ -260,13 +260,13 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
     
-    if (numberOfDestinationChannels == CHANNELS_STEREO && numberOfSourceChannels == CHANNELS_MONO) {
+    if (numberOfDestinationChannels == Channels::Stereo && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> stereo case (for now simply copy mono channel into both left and right)
         // FIXME: Really we should apply an equal-power scaling factor here, since we're effectively panning center...
         const AudioChannel* sourceChannel = sourceBus.channel(0);
         channelByType(Channel::Left)->copyFrom(sourceChannel);
         channelByType(Channel::Right)->copyFrom(sourceChannel);
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_STEREO) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Stereo) {
         // Handle stereo -> mono case. output = 0.5 * (input.L + input.R).
         AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
         
@@ -277,7 +277,7 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
         vadd(sourceL, 1, sourceR, 1, destination, 1, length());
         float scale = 0.5;
         vsmul(destination, 1, &scale, destination, 1, length());
-    } else if (numberOfDestinationChannels == CHANNELS_5_1 && numberOfSourceChannels == CHANNELS_MONO) {
+    } else if (numberOfDestinationChannels == Channels::Surround_5_1 && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> 5.1 case, copy mono channel to center.
         channelByType(Channel::Center)->copyFrom(sourceBus.channel(0));
         channelByType(Channel::Left)->zero();
@@ -285,11 +285,11 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
         channelByType(Channel::LFE)->zero();
         channelByType(Channel::SurroundLeft)->zero();
         channelByType(Channel::SurroundRight)->zero();
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_5_1) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Surround_5_1) {
         // Handle 5.1 -> mono case.
         zero();
         speakersSumFrom5_1_ToMono(sourceBus);
-    } else if (numberOfDestinationChannels == CHANNELS_7_1 && numberOfSourceChannels == CHANNELS_MONO) {
+    } else if (numberOfDestinationChannels == Channels::Surround_7_1 && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> 7.1 case, copy mono channel to center.
         channelByType(Channel::Center)->copyFrom(sourceBus.channel(0));
         channelByType(Channel::Left)->zero();
@@ -299,7 +299,7 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
         channelByType(Channel::SurroundRight)->zero();
         channelByType(Channel::BackLeft)->zero();
         channelByType(Channel::BackRight)->zero();
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_7_1) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Surround_7_1) {
         // Handle 7.1 -> mono case.
         zero();
         speakersSumFrom7_1_ToMono(sourceBus);
@@ -318,12 +318,12 @@ void AudioBus::speakersSumFrom(const AudioBus& sourceBus)
     unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
     unsigned numberOfDestinationChannels = numberOfChannels();
     
-    if (numberOfDestinationChannels == CHANNELS_STEREO && numberOfSourceChannels == CHANNELS_MONO) {
+    if (numberOfDestinationChannels == Channels::Stereo && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> stereo case (summing mono channel into both left and right).
         const AudioChannel* sourceChannel = sourceBus.channel(0);
         channelByType(Channel::Left)->sumFrom(sourceChannel);
         channelByType(Channel::Right)->sumFrom(sourceChannel);
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_STEREO) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Stereo) {
         // Handle stereo -> mono case. output += 0.5 * (input.L + input.R).
         AudioBus& sourceBusSafe = const_cast<AudioBus&>(sourceBus);
         
@@ -334,16 +334,16 @@ void AudioBus::speakersSumFrom(const AudioBus& sourceBus)
         float scale = 0.5;
         vsma(sourceL, 1, &scale, destination, 1, length());
         vsma(sourceR, 1, &scale, destination, 1, length());
-    } else if (numberOfDestinationChannels == CHANNELS_5_1 && numberOfSourceChannels == CHANNELS_MONO) {
+    } else if (numberOfDestinationChannels == Channels::Surround_5_1 && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> 5.1 case, sum mono channel into center.
         channelByType(Channel::Center)->sumFrom(sourceBus.channel(0));
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_5_1) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Surround_5_1) {
         // Handle 5.1 -> mono case.
         speakersSumFrom5_1_ToMono(sourceBus);
-    } else if (numberOfDestinationChannels == CHANNELS_7_1 && numberOfSourceChannels == CHANNELS_MONO) {
+    } else if (numberOfDestinationChannels == Channels::Surround_7_1 && numberOfSourceChannels == Channels::Mono) {
         // Handle mono -> 7.1 case, sum mono channel into center.
         channelByType(Channel::Center)->sumFrom(sourceBus.channel(0));
-    } else if (numberOfDestinationChannels == CHANNELS_MONO && numberOfSourceChannels == CHANNELS_7_1) {
+    } else if (numberOfDestinationChannels == Channels::Mono && numberOfSourceChannels == Channels::Surround_7_1) {
         // Handle 7.1 -> mono case.
         speakersSumFrom7_1_ToMono(sourceBus);
     } else {
@@ -580,7 +580,7 @@ void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, f
 {
     // Make sure we're processing from the same type of bus.
     // We *are* able to process from mono -> stereo
-    if (sourceBus.numberOfChannels() != CHANNELS_MONO && !topologyMatches(sourceBus)) {
+    if (sourceBus.numberOfChannels() != Channels::Mono && !topologyMatches(sourceBus)) {
         ASSERT_NOT_REACHED();
         return;
     }
@@ -617,7 +617,7 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
     double sampleRateRatio = sourceSampleRate / destinationSampleRate;
     unsigned numberOfSourceChannels = sourceBus->numberOfChannels();
 
-    if (numberOfSourceChannels == CHANNELS_MONO)
+    if (numberOfSourceChannels == Channels::Mono)
         mixToMono = false; // already mono
         
     if (sourceSampleRate == destinationSampleRate) {
@@ -671,17 +671,17 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
 std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceBus)
 {
     if (sourceBus->isSilent())
-        return std::unique_ptr<AudioBus>(new AudioBus(CHANNELS_MONO, sourceBus->length()));
+        return std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, sourceBus->length()));
 
     switch (sourceBus->numberOfChannels()) {
-    case CHANNELS_MONO:
+    case Channels::Mono:
         // Simply create an exact copy.
         return AudioBus::createBufferFromRange(sourceBus, 0, sourceBus->length());
     default:
         {
             unsigned n = sourceBus->length();
             unsigned m = sourceBus->numberOfChannels();
-            std::unique_ptr<AudioBus> destinationBus(new AudioBus(CHANNELS_MONO, n));
+            std::unique_ptr<AudioBus> destinationBus(new AudioBus(Channels::Mono, n));
             float* destination = destinationBus->channel(0)->mutableData();
         
             // Do the mono mixdown.

@@ -34,7 +34,7 @@ struct ValidationApp : public LabSoundExampleApp
 
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
 
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto ac = context.get();
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/cello_pluck/cello_pluck_As0.wav", false);

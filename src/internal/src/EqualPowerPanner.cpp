@@ -31,14 +31,14 @@ void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*eleva
 {
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, r.context()->sampleRate());
 
-    bool isInputSafe = inputBus && (inputBus->numberOfChannels() == CHANNELS_MONO || inputBus->numberOfChannels() == CHANNELS_STEREO) && framesToProcess <= inputBus->length();
+    bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
     ASSERT(isInputSafe);
     if (!isInputSafe)
         return;
 
     unsigned numberOfInputChannels = inputBus->numberOfChannels();
 
-    bool isOutputSafe = outputBus && outputBus->numberOfChannels() == CHANNELS_STEREO && framesToProcess <= outputBus->length();
+    bool isOutputSafe = outputBus && outputBus->numberOfChannels() == Channels::Stereo && framesToProcess <= outputBus->length();
     ASSERT(isOutputSafe);
     if (!isOutputSafe)
         return;

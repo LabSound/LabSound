@@ -35,7 +35,7 @@ namespace detail
 
         // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
         // because we've already deinterleaved
-        if (audioData->channelCount == lab::CHANNELS_STEREO && mixToMono)
+        if (audioData->channelCount == lab::Channels::Stereo && mixToMono)
         {
             float * destinationMono = audioBus->channel(0)->mutableData();
             float * leftSamples = planarSamples.data();

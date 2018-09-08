@@ -24,7 +24,7 @@ namespace lab
 AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) : AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(CHANNELS_MONO, processingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, processingSizeInFrames));
 }
 
 AudioNodeInput::~AudioNodeInput()

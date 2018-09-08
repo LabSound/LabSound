@@ -7,7 +7,7 @@ struct ConvolutionReverbApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
         std::shared_ptr<AudioBus> voiceClip = MakeBusFromFile("samples/voice.ogg", false);

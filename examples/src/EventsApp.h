@@ -7,7 +7,7 @@ struct EventsApp : public LabSoundExampleApp
 {
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
         auto gain = std::make_shared<GainNode>();
         gain->gain()->setValue(0.0625f);

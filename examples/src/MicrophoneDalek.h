@@ -12,7 +12,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
     // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
     void PlayExample()
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::CHANNELS_STEREO);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
 #ifndef USE_LIVE
         std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/voice.ogg", false);

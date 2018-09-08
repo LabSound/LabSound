@@ -52,7 +52,7 @@ public:
 
     bool isInitialized() const;
 
-    // External users shouldn't use this; it should be called by LabSound::MakeRealtimeAudioContext(lab::CHANNELS_STEREO)
+    // External users shouldn't use this; it should be called by LabSound::MakeRealtimeAudioContext(lab::Channels::Stereo)
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
