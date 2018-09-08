@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Mixing.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -20,10 +21,10 @@ using namespace std;
 namespace lab
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode* node) : AudioSummingJunction(), m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) : AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(1, AudioNode::ProcessingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(CHANNELS_MONO, processingSizeInFrames));
 }
 
 AudioNodeInput::~AudioNodeInput()
@@ -109,7 +110,10 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
     // @tofix - did I miss part of the merge?
     if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
     {
-        return renderingOutput(r, 0)->bus(r);
+        std::shared_ptr<AudioNodeOutput> output = renderingOutput(r, 0);
+        if (output) {
+          return output->bus(r);
+        }
     }
 
     // Multiple connections case (or no connections).

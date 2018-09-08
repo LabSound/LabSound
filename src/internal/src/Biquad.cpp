@@ -62,7 +62,7 @@ void Biquad::process(const float* sourceP, float* destP, size_t framesToProcess)
     while (n--) {
         // FIXME: this can be optimized by pipelining the multiply adds...
         float x = *sourceP++;
-        float y = b0*x + b1*x1 + b2*x2 - a1*y1 - a2*y2;
+        float y = static_cast<float>(b0*x + b1*x1 + b2*x2 - a1*y1 - a2*y2);
 
         *destP++ = y;
 
@@ -489,7 +489,7 @@ void Biquad::setAllpassPole(const complex<double> &pole)
     setZeroPolePairs(zero, pole);
 }
 
-void Biquad::getFrequencyResponse(int nFrequencies,
+void Biquad::getFrequencyResponse(size_t nFrequencies,
                                   const float* frequency,
                                   float* magResponse,
                                   float* phaseResponse)
@@ -517,7 +517,7 @@ void Biquad::getFrequencyResponse(int nFrequencies,
     double a1 = m_a1;
     double a2 = m_a2;
     
-    for (int k = 0; k < nFrequencies; ++k) {
+    for (size_t k = 0; k < nFrequencies; ++k) {
         double omega = -piDouble * frequency[k];
         complex<double> z = complex<double>(cos(omega), sin(omega));
         complex<double> numerator = b0 + (b1 + b2 * z) * z;

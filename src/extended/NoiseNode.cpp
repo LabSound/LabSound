@@ -78,7 +78,7 @@ namespace lab {
                     pink4 = 0.55000f * pink4 + white * 0.5329522f;
                     pink5 = -0.7616f * pink5 - white * 0.0168980f;
                     *destP++ = (pink0 + pink1 + pink2 + pink3 + pink4 + pink5 + pink6 + (white * 0.5362f)) * 0.11f; // .11 roughly compensates gain
-                    pink6 = white * 0.115926;
+                    pink6 = white * 0.115926f;
                 }
                 break;
             case BROWN:

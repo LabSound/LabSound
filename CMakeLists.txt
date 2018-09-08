@@ -5,10 +5,6 @@ include_guard()
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
-# enforce an out-of-build root.
-# CBB: control with a cached variable
-set(LOCAL_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../local")
-
 # override cmake install prefix if it's not set,
 # per: http://public.kitware.com/pipermail/cmake/2010-December/041135.html
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

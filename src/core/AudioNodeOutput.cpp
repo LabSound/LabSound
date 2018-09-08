@@ -24,7 +24,7 @@ namespace
    std::mutex outputMutex;
 }
 
-AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
+AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels, size_t processingSizeInFrames)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
@@ -34,7 +34,7 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
     
-    m_internalBus.reset(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
+    m_internalBus.reset(new AudioBus(numberOfChannels, processingSizeInFrames));
 }
 
 AudioNodeOutput::~AudioNodeOutput()

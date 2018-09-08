@@ -372,7 +372,7 @@ void SfxrNode::Sfxr::ResetSample(bool restart)
         if(fltdmp>0.8f) fltdmp=0.8f;
         fltphp=0.0f;
         flthp=pow(p_hpf_freq, 2.0f)*0.1f;
-        flthp_d=1.0+p_hpf_ramp*0.0003f;
+        flthp_d=1.0f+p_hpf_ramp*0.0003f;
         // reset vibrato
         vib_phase=0.0f;
         vib_speed=pow(p_vib_speed, 2.0f)*0.01f;
@@ -439,11 +439,11 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
             if(p_freq_limit>0.0f)
                 playing_sample=false;
         }
-        float rfperiod=fperiod;
+        float rfperiod = static_cast<float>(fperiod);
         if(vib_amp>0.0f)
         {
             vib_phase+=vib_speed;
-            rfperiod=fperiod*(1.0+sin(vib_phase)*vib_amp);
+            rfperiod = static_cast<float>(fperiod*(1.0+sin(vib_phase)*vib_amp));
         }
         period=(int)rfperiod;
         if(period<8) period=8;
@@ -578,8 +578,8 @@ void SfxrNode::Sfxr::SynthSample(int length, float* buffer, FILE* file)
     }
 }
 
-#pragma mark _______________________
-#pragma mark Node Interface
+// _______________________
+// Node Interface
 
 namespace lab {
 
@@ -743,8 +743,8 @@ namespace lab {
     }
 
 
-#pragma mark ____________________________________
-#pragma mark Some default sounds
+// ____________________________________
+// Some default sounds
 
     // parameters for default sounds found here -
     // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
@@ -755,12 +755,12 @@ namespace lab {
 
         // Envelope
         _attack->setValue(0);
-        _sustainTime->setValue(0.3);
+        _sustainTime->setValue(0.3f);
         _sustainPunch->setValue(0);
-        _decayTime->setValue(0.4);
+        _decayTime->setValue(0.4f);
 
         // Tone
-        _startFrequency->setValue(0.3);
+        _startFrequency->setValue(0.3f);
         _minFrequency->setValue(0);
         _slide->setValue(0);
         _deltaSlide->setValue(0);
@@ -792,8 +792,8 @@ namespace lab {
         _hpFilterCutoffSweep->setValue(0);
 
         // Sample parameters
-        sfxr->sound_vol = 0.5;
-        sfxr->wav_freq = 44100;
+        sfxr->sound_vol = 0.5f;
+        sfxr->wav_freq = 44100.f;
         sfxr->wav_bits = 16;
     }
 
@@ -819,7 +819,7 @@ namespace lab {
             _waveType->setValue(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3 + frnd(0.6));
-            _minFrequency->setValue(frnd(0.1));
+            _minFrequency->setValue(frnd(0.1f));
             _slide->setValue(-0.35 - frnd(0.3));
         } else {
             _startFrequency->setValue(0.5 + frnd(0.5));
@@ -919,7 +919,7 @@ namespace lab {
         _startFrequency->setValue(0.2 + frnd(0.6));
         _slide->setValue(-0.3 - frnd(0.4));
         _attack->setValue(0);
-        _sustainTime->setValue(frnd(0.1));
+        _sustainTime->setValue(frnd(0.1f));
         _decayTime->setValue(0.1 + frnd(0.2));
         if (rnd(1))
             _hpFilterCutoff->setValue(frnd(0.3));
@@ -950,34 +950,34 @@ namespace lab {
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2 + frnd(0.4));
         _attack->setValue(0);
-        _sustainTime->setValue(0.1 + frnd(0.1));
+        _sustainTime->setValue(0.1 + frnd(0.1f));
         _decayTime->setValue(frnd(0.2));
         _hpFilterCutoff->setValue(0.1);
     }
 
     /// @TODO remove need for context lock see above
     void SfxrNode::mutate(ContextRenderLock& r) {
-        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1) - 0.05);
-        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1) - 0.05);
+        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1f) - 0.05f);
+        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1f) - 0.05f);
     }
 
     /// @TODO remove need for context lock see above

@@ -74,7 +74,7 @@ namespace lab
             
             if (m_mixToMono)
             {
-                if (numberOfChannels == 1)
+                if (numberOfChannels == CHANNELS_MONO)
                 {
                     for (size_t i = 0; i < framesToProcess; ++i)
                     {

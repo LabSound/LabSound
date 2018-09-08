@@ -12,6 +12,7 @@ file(GLOB third_opus_src
     "${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk/*.c"
     "${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk/float/*.c"
 )
+list(FILTER third_opus_src EXCLUDE REGEX ".*demo.c$")
 
 add_library(libopus STATIC ${third_opus_src})
 
@@ -31,12 +32,6 @@ target_include_directories(libopus PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/opusfile/src/include
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/opus/silk/float)
-
-if (MSVC_IDE)
-    # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
-    #set_target_properties(libnyquist PROPERTIES PREFIX "../")
-    set_target_properties(libopus PROPERTIES IMPORT_PREFIX "../")
-endif()
 
 target_compile_definitions(libopus PRIVATE OPUS_BUILD)
 target_compile_definitions(libopus PRIVATE USE_ALLOCA)
@@ -61,6 +56,42 @@ install (TARGETS libopus DESTINATION lib)
 
 source_group(src\\ FILES ${third_opus_src})
 
+
+#-------------------------------------------------------------------------------
+
+project(libwavpack)
+
+file(GLOB third_wavpack_src
+    "${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/include/wavpack.h"
+    "${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/src/*.c"
+)
+
+add_library(libwavpack STATIC ${third_wavpack_src})
+
+_set_compile_options(libopus)
+
+target_include_directories(libwavpack PUBLIC
+    ${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/include)
+
+set_target_properties(libwavpack
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+set_target_properties(libwavpack PROPERTIES OUTPUT_NAME_DEBUG libwavpack_d)
+
+install (TARGETS libwavpack
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin)
+
+install (TARGETS libwavpack DESTINATION lib)
+
+# folders
+
+source_group(src\\ FILES ${third_wavpack_src})
 
 #-------------------------------------------------------------------------------
 
@@ -115,7 +146,8 @@ set_target_properties(libnyquist
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-target_link_libraries(libnyquist libopus)
+target_link_libraries(libnyquist
+    libopus libwavpack)
 
 install (TARGETS libnyquist
     LIBRARY DESTINATION lib

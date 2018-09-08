@@ -48,14 +48,14 @@ public:
     {
         unsigned numberOfInputChannels = inputBus->numberOfChannels();
 
-        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == 1 || inputBus->numberOfChannels() == 2) && framesToProcess <= inputBus->length();
+        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == CHANNELS_MONO || inputBus->numberOfChannels() == CHANNELS_STEREO) && framesToProcess <= inputBus->length();
 
         ASSERT(isInputSafe);
 
         if (!isInputSafe)
             return;
 
-        bool isOutputSafe = outputBus && outputBus->numberOfChannels() == 2 && framesToProcess <= outputBus->length();
+        bool isOutputSafe = outputBus && outputBus->numberOfChannels() == CHANNELS_STEREO && framesToProcess <= outputBus->length();
 
         ASSERT(isOutputSafe);
 
@@ -63,7 +63,7 @@ public:
             return;
 
         const float* sourceL = inputBus->channel(0)->data();
-        const float* sourceR = numberOfInputChannels > 1 ? inputBus->channel(1)->data() : sourceL;
+        const float* sourceR = numberOfInputChannels > CHANNELS_MONO ? inputBus->channel(1)->data() : sourceL;
 
         float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
         float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
@@ -75,7 +75,7 @@ public:
         int n = framesToProcess;
 
         // For mono source case.
-        if (numberOfInputChannels == 1)
+        if (numberOfInputChannels == CHANNELS_MONO)
         {
             while (n--)
             {
@@ -129,14 +129,14 @@ public:
     {
         unsigned numberOfInputChannels = inputBus->numberOfChannels();
 
-        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == 1 || inputBus->numberOfChannels() == 2) && framesToProcess <= inputBus->length();
+        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == CHANNELS_MONO || inputBus->numberOfChannels() == CHANNELS_STEREO) && framesToProcess <= inputBus->length();
 
         ASSERT(isInputSafe);
 
         if (!isInputSafe)
             return;
 
-        bool isOutputSafe = outputBus && outputBus->numberOfChannels() == 2 && framesToProcess <= outputBus->length();
+        bool isOutputSafe = outputBus && outputBus->numberOfChannels() == CHANNELS_STEREO && framesToProcess <= outputBus->length();
 
         ASSERT(isOutputSafe);
 
@@ -144,7 +144,7 @@ public:
             return;
 
         const float* sourceL = inputBus->channel(0)->data();
-        const float* sourceR = numberOfInputChannels > 1 ? inputBus->channel(1)->data() : sourceL;
+        const float* sourceR = numberOfInputChannels > CHANNELS_MONO ? inputBus->channel(1)->data() : sourceL;
 
         float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
         float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
@@ -166,7 +166,7 @@ public:
         int n = framesToProcess;
 
         // For mono source case.
-        if (numberOfInputChannels == 1)
+        if (numberOfInputChannels == CHANNELS_MONO)
         {
             while (n--)
             {

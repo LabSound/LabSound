@@ -56,9 +56,8 @@ public:
 
         if (m_audioBus)
             delete m_audioBus;
-        
     }
-    
+
     void configure(const AudioStreamBasicDescription& outDesc, UInt32 bufferSize)
     {
         // enable IO on input
@@ -165,7 +164,7 @@ public:
 
 AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, unsigned numberOfOutputChannels, float sampleRate)
 {
-    return new AudioDestinationMac(callback, sampleRate);
+    return new AudioDestinationMac(callback, numberOfOutputChannels, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -182,7 +181,6 @@ AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, float sample
     , m_callback(callback)
     , m_renderBus(2, kBufferSize, false)
     , m_sampleRate(sampleRate)
-    , m_isPlaying(false)
     , m_input(new Input()) // LabSound
 {
     // Open and initialize DefaultOutputUnit
@@ -249,9 +247,6 @@ void AudioDestinationMac::configure()
 void AudioDestinationMac::start()
 {
     OSStatus result = AudioOutputUnitStart(m_outputUnit);
-
-    if (!result)
-        m_isPlaying = true;
     
     // LabSound
     result = AudioOutputUnitStart(m_input->m_inputUnit);
@@ -260,9 +255,6 @@ void AudioDestinationMac::start()
 void AudioDestinationMac::stop()
 {
     OSStatus result = AudioOutputUnitStop(m_outputUnit);
-
-    if (!result)
-        m_isPlaying = false;
 
     // LabSound
     result = AudioOutputUnitStop(m_input->m_inputUnit);

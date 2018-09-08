@@ -90,7 +90,7 @@ void BiquadProcessor::setType(FilterType type)
 }
 
 void BiquadProcessor::getFrequencyResponse(ContextRenderLock& r,
-                                           int nFrequencies,
+                                           size_t nFrequencies,
                                            const float* frequencyHz,
                                            float* magResponse,
                                            float* phaseResponse)

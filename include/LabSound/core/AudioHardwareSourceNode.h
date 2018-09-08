@@ -36,7 +36,7 @@ private:
 
     AudioSourceProvider * m_audioSourceProvider;
 
-    unsigned m_sourceNumberOfChannels;
+    size_t m_sourceNumberOfChannels;
 };
 
 } // namespace lab
