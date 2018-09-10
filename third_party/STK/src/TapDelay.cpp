@@ -68,10 +68,13 @@ void TapDelay :: setTapDelays( std::vector<unsigned long> taps )
       handleError( StkError::WARNING ); return;
     }
 
+#if 0
+      /// @TODO taps[i] is unsigned, what was intended here?
     if ( taps[i] < 0 ) {
       oStream_ << "TapDelay::setDelay: argument (" << taps[i] << ") less than zero!\n";
       handleError( StkError::WARNING ); return;
     }
+#endif
   }
 
   if ( taps.size() != outPoint_.size() ) {
