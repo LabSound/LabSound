@@ -5,7 +5,7 @@
 #include "LabSound/core/AudioIOCallback.h"
 
 #include "internal/Assertions.h"
-#include "internal/mac/AudioDestinationMac.h"
+#include "AudioDestinationDarwin.h"
 #include "internal/VectorMath.h"
 
 #include <CoreAudio/AudioHardware.h>
@@ -15,7 +15,7 @@ namespace lab {
 const int kBufferSize = 128;
 const float kLowThreshold = -1;
 const float kHighThreshold = 1;
-    
+
 //LabSound start
 class AudioDestinationMac::Input
 {
@@ -37,7 +37,7 @@ public:
         desc.componentFlags = 0;
         desc.componentFlagsMask = 0;
         comp = AudioComponentFindNext(0, &desc);
-
+        
         ASSERT(comp);
         
         OSStatus result = AudioComponentInstanceNew(comp, &m_inputUnit);
@@ -53,11 +53,12 @@ public:
             AudioComponentInstanceDispose(m_inputUnit);
         
         free(m_buffers);
-
+        
         if (m_audioBus)
             delete m_audioBus;
+        
     }
-
+    
     void configure(const AudioStreamBasicDescription& outDesc, UInt32 bufferSize)
     {
         // enable IO on input
@@ -175,33 +176,33 @@ unsigned long AudioDestination::maxChannelCount()
     // can be upgraded.
     return 0;
 }
-    
-AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, float sampleRate)
-    : m_outputUnit(0)
-    , m_callback(callback)
-    , m_renderBus(2, kBufferSize, false)
-    , m_sampleRate(sampleRate)
-    , m_input(new Input()) // LabSound
+
+AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, unsigned channelCount, float sampleRate)
+: m_outputUnit(0)
+, m_callback(callback)
+, m_renderBus(2, kBufferSize, false)
+, m_sampleRate(sampleRate)
+, m_input(new Input()) // LabSound
 {
     // Open and initialize DefaultOutputUnit
     AudioComponent comp;
     AudioComponentDescription desc;
-
+    
     desc.componentType = kAudioUnitType_Output;
     desc.componentSubType = kAudioUnitSubType_DefaultOutput;
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
     comp = AudioComponentFindNext(0, &desc);
-
+    
     ASSERT(comp);
-
+    
     OSStatus result = AudioComponentInstanceNew(comp, &m_outputUnit);
     ASSERT(!result);
-
+    
     result = AudioUnitInitialize(m_outputUnit);
     ASSERT(!result);
-
+    
     configure();
 }
 
@@ -221,7 +222,7 @@ void AudioDestinationMac::configure()
     input.inputProcRefCon = this;
     OSStatus result = AudioUnitSetProperty(m_outputUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Global, 0, &input, sizeof(input));
     ASSERT(!result);
-
+    
     // Set stream format
     AudioStreamBasicDescription streamFormat;
     streamFormat.mSampleRate = m_sampleRate;
@@ -232,10 +233,10 @@ void AudioDestinationMac::configure()
     streamFormat.mFramesPerPacket = 1;
     streamFormat.mBytesPerPacket = sizeof(Float32);
     streamFormat.mBytesPerFrame = sizeof(Float32);
-
+    
     result = AudioUnitSetProperty(m_outputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, (void*)&streamFormat, sizeof(AudioStreamBasicDescription));
     ASSERT(!result);
-
+    
     // Set the buffer frame size.
     UInt32 bufferSize = kBufferSize;
     result = AudioUnitSetProperty(m_outputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Output, 0, (void*)&bufferSize, sizeof(bufferSize));
@@ -255,7 +256,7 @@ void AudioDestinationMac::start()
 void AudioDestinationMac::stop()
 {
     OSStatus result = AudioOutputUnitStop(m_outputUnit);
-
+    
     // LabSound
     result = AudioOutputUnitStop(m_input->m_inputUnit);
 }
@@ -266,16 +267,16 @@ OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioD
     AudioBuffer* buffers = ioData->mBuffers;
     m_renderBus.setChannelMemory(0, (float*)buffers[0].mData, numberOfFrames);
     m_renderBus.setChannelMemory(1, (float*)buffers[1].mData, numberOfFrames);
-
+    
     //@tofix - add support for local/live audio input.
     m_callback.render(m_input->m_audioBus, &m_renderBus, numberOfFrames);
-
+    
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i) {
         AudioChannel* channel = m_renderBus.channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
-
+    
     return noErr;
 }
 

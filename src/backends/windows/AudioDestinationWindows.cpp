@@ -2,9 +2,7 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-// Author: https://github.com/shawwn
-
-#include "internal/linux/AudioDestinationLinux.h"
+#include "AudioDestinationWindows.h"
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioNode.h"
@@ -28,6 +26,7 @@ NumDefaultOutputChannels()
         RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
         if (info.isDefaultOutput)
         {
+            //printf("%d channels\n", info.outputChannels);
             return info.outputChannels;
         }
     }
@@ -39,7 +38,7 @@ const float kHighThreshold = 1.0f;
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, unsigned numberOfOutputChannels, float sampleRate)
 {
-    return new AudioDestinationLinux(callback, numberOfOutputChannels, sampleRate);
+    return new AudioDestinationWin(callback, numberOfOutputChannels, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -47,40 +46,43 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, unsigned numberOfOutputChannels, float sampleRate) : m_callback(callback)
+AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned numChannels, float sampleRate)
+: m_callback(callback)
+, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
+, m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
 {
+    m_numChannels = numChannels;
     m_sampleRate = sampleRate;
     m_renderBus.setSampleRate(m_sampleRate);
-    dac.reset(new RtAudio()); // XXX
     configure();
 }
 
-AudioDestinationLinux::~AudioDestinationLinux()
+AudioDestinationWin::~AudioDestinationWin()
 {
-    dac.release(); // XXX
-    /* if (dac.isStreamOpen())
-        dac.closeStream(); */
+    //dac.release(); // XXX
+     if (dac.isStreamOpen())
+        dac.closeStream();
 }
 
-void AudioDestinationLinux::configure()
+void AudioDestinationWin::configure()
 {
-    if (dac->getDeviceCount() < 1)
+    if (dac.getDeviceCount() < 1)
     {
         LOG_ERROR("No audio devices available");
     }
 
-    dac->showWarnings(true);
+    dac.showWarnings(true);
 
     RtAudio::StreamParameters outputParams;
-    outputParams.deviceId = dac->getDefaultOutputDevice();
-    outputParams.nChannels = channelCount();
+    outputParams.deviceId = dac.getDefaultOutputDevice();
+    outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-    auto deviceInfo = dac->getDeviceInfo(outputParams.deviceId);
-    LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
+	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
-    inputParams.deviceId = dac->getDefaultInputDevice();
+    inputParams.deviceId = dac.getDefaultInputDevice();
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
 
@@ -91,7 +93,7 @@ void AudioDestinationLinux::configure()
 
     try
     {
-        dac->openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
@@ -99,11 +101,11 @@ void AudioDestinationLinux::configure()
     }
 }
 
-void AudioDestinationLinux::start()
+void AudioDestinationWin::start()
 {
     try
     {
-        dac->startStream();
+        dac.startStream();
     }
     catch (RtAudioError & e)
     {
@@ -111,11 +113,11 @@ void AudioDestinationLinux::start()
     }
 }
 
-void AudioDestinationLinux::stop()
+void AudioDestinationWin::stop()
 {
     try
     {
-        // dac->stopStream(); // XXX
+        dac.stopStream();
     }
     catch (RtAudioError & e)
     {
@@ -124,7 +126,7 @@ void AudioDestinationLinux::stop()
 }
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
+void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
     float *myOutputBufferOfFloats = (float*) outputBuffer;
     float *myInputBufferOfFloats = (float*) inputBuffer;
@@ -132,8 +134,8 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
     {
-        for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
-            m_renderBus.setChannelMemory(1, myOutputBufferOfFloats + (i * numberOfFrames), numberOfFrames);
+        for (int i = 0; i < m_numChannels; ++i)
+            m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
     }
 
     if (m_inputBus.isFirstTime())
@@ -157,9 +159,10 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     float *fBufOut = (float*) outputBuffer;
 
     // Buffer is nBufferFrames * channels
+    // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationLinux * audioDestination = static_cast<AudioDestinationLinux*>(userData);
+    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin*>(userData);
 
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 

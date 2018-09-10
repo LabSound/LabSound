@@ -10,28 +10,21 @@ file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
 if (APPLE)
-	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/mac/*")
-	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/mac/*")
+    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
 elseif (WIN32)
-	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/win/*")
-	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/win/*")
+    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
+    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 elseif (UNIX)
-	file(GLOB labsnd_int_platform     "${LABSOUND_ROOT}/src/internal/linux/*")
-	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/linux/*")
-endif()
-
-# should be option
-set(USE_RTAUDIO 1)
-if (USE_RTAUDIO)
+    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/linux/*")
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 endif()
 
 add_library(LabSound STATIC
-	${labsnd_core_h} ${labsnd_core}
-	${labsnd_extended_h} ${labsnd_extended}
-	${labsnd_int_h} ${labsnd_int_src}
-	${labsnd_int_platform} ${labsnd_intsrc_platform}
- 	${third_rtaudio} ${third_kissfft}
+    ${labsnd_core_h} ${labsnd_core}
+    ${labsnd_extended_h} ${labsnd_extended}
+    ${labsnd_int_h} ${labsnd_int_src}
+    ${labsnd_backend}
+    ${third_rtaudio} ${third_kissfft}
  )
 
 _set_Cxx17(LabSound)
