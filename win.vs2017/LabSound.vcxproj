@@ -80,6 +80,7 @@
     <ClInclude Include="..\include\LabSound\extended\SpectralMonitorNode.h" />
     <ClInclude Include="..\include\LabSound\extended\SupersawNode.h" />
     <ClInclude Include="..\include\LabSound\extended\Util.h" />
+    <ClInclude Include="..\src\backends\windows\AudioDestinationWindows.h" />
     <ClInclude Include="..\src\internal\Assertions.h" />
     <ClInclude Include="..\src\internal\AudioDestination.h" />
     <ClInclude Include="..\src\internal\AudioDSPKernel.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\backends\windows\AudioDestinationWindows.cpp" />
     <ClCompile Include="..\src\core\AnalyserNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicInspectorNode.cpp" />
     <ClCompile Include="..\src\core\AudioBasicProcessorNode.cpp" />
@@ -205,7 +207,6 @@
     <ClCompile Include="..\src\internal\src\VectorMath.cpp" />
     <ClCompile Include="..\src\internal\src\WaveShaperDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\WaveShaperProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp" />
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fft.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fftr.cpp" />

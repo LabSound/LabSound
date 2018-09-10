@@ -119,7 +119,7 @@
     <ClInclude Include="..\src\internal\VectorMath.h" />
     <ClInclude Include="..\src\internal\WaveShaperDSPKernel.h" />
     <ClInclude Include="..\src\internal\WaveShaperProcessor.h" />
-    <ClInclude Include="..\src\internal\win\AudioDestinationWin.h" />
+    <ClInclude Include="..\src\backends\windows\AudioDestinationWindows.h" />
     <ClInclude Include="..\src\internal\ZeroPole.h" />
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp" />
   </ItemGroup>
@@ -206,7 +206,7 @@
     <ClCompile Include="..\src\internal\src\VectorMath.cpp" />
     <ClCompile Include="..\src\internal\src\WaveShaperDSPKernel.cpp" />
     <ClCompile Include="..\src\internal\src\WaveShaperProcessor.cpp" />
-    <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp" />
+    <ClCompile Include="..\src\backends\windows\AudioDestinationWindows.cpp" />
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fft.cpp" />
     <ClCompile Include="..\third_party\kissfft\src\kiss_fftr.cpp" />

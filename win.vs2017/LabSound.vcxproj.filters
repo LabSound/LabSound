@@ -49,6 +49,9 @@
     <Filter Include="Internal\include\win">
       <UniqueIdentifier>{68550797-02f0-4776-a97f-c04c7f36b83e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="backend">
+      <UniqueIdentifier>{3e0cf88a-c81a-494b-b353-a1d5e102420d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\third_party\kissfft\_kiss_fft_guts.hpp">
@@ -354,11 +357,11 @@
     <ClInclude Include="..\include\LabSound\extended\AudioFileReader.h">
       <Filter>LabSound\extended\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\backends\windows\AudioDestinationWindows.h">
+      <Filter>backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
-      <Filter>Internal\src\win</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp">
       <Filter>Internal\src</Filter>
     </ClCompile>
@@ -622,6 +625,9 @@
     </ClCompile>
     <ClCompile Include="..\src\core\AudioListener.cpp">
       <Filter>LabSound\core\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\backends\windows\AudioDestinationWindows.cpp">
+      <Filter>backend</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
