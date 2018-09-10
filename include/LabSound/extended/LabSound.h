@@ -54,17 +54,18 @@
 #include <functional>
 #include <string>
 
+#define LABSOUND_DEFAULT_SAMPLERATE 44100.0f
+#define LABSOUND_DEFAULT_CHANNELS (uint32_t) lab::Channels::Stereo
+
 namespace lab
 {
-    const unsigned DefaultChannelCount = 2;
-    const float DefaultSampleRate = 44100;
-
-    // These are convenience functions with straightforward definitions. Most of the samples use them, but they are not strictly required. 
+    // These are convenience functions with straightforward definitions. 
+	// Most of the samples use them, but they are not strictly required. 
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
 
-    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(int numChannels, float sample_rate = 44100.f);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sample_rate);
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate = LABSOUND_DEFAULT_SAMPLERATE);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sample_rate);
 }
 
 #endif

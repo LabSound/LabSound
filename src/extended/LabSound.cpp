@@ -26,7 +26,7 @@ namespace lab
         return inputNode;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(int numChannels, float sample_rate)
+    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate)
     {
         LOG("Initialize Realtime Context");
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
@@ -35,21 +35,19 @@ namespace lab
         return ctx;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds)
     {
         LOG("Initialize Offline Context");
 
-        // @tofix - hardcoded parameters
-        const float sampleRate = 44100;
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
+        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
         ctx->lazyInitialize();
         return ctx;
     }
 
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(int numChannels, float recordTimeMilliseconds, float sampleRate)
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sampleRate)
     {
         LOG("Initialize Offline Context");
 
