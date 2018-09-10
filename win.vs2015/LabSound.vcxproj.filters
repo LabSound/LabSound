@@ -168,7 +168,7 @@
     <ClInclude Include="..\src\internal\ReverbConvolverStage.h">
       <Filter>Internal\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\internal\win\AudioDestinationWin.h">
+    <ClInclude Include="..\src\backends\windows\AudioDestinationWindows.h">
       <Filter>Internal\include\win</Filter>
     </ClInclude>
     <ClInclude Include="..\src\internal\BiquadDSPKernel.h">
@@ -368,7 +368,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\internal\src\win\AudioDestinationWin.cpp">
+    <ClCompile Include="..\src\backends\windows\AudioDestinationWindows.cpp">
       <Filter>Internal\src\win</Filter>
     </ClCompile>
     <ClCompile Include="..\src\internal\src\ZeroPole.cpp">
