@@ -48,8 +48,6 @@ namespace lab
             if (!numberOfChannels())
                 return;
 
-            auto c = r.context();
-
             if (m_noteOnTime >= 0)
             {
                 if (m_currentGain > 0)
