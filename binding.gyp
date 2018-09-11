@@ -11,7 +11,7 @@
         '<(module_root_dir)/lib/include',
         '<(module_root_dir)/labsound/include',
         '<(module_root_dir)/labsound/third_party',
-        "<!(node -e \"console.log(require.resolve('native-video-deps').slice(0, -9) + '/include')\")",
+        "<!(node -e \"console.log(require.resolve('native-video-deps').slice(0, -9) + '/include')\")"
       ],
       'conditions': [
         ['OS=="linux"', {
@@ -73,6 +73,11 @@
             '-framework AudioUnit',
             '-framework AudioToolbox',
             '-llabsound',
+            '-lavcodec',
+            '-lavformat',
+            '-lswscale',
+            '-lavresample',
+            '-lavutil'
           ],
           'library_dirs': [
             '<(module_root_dir)/labsound/bin',
