@@ -12,6 +12,10 @@
 #include <cstring>
 #include <algorithm>
 
+/**
+ * Original LabSound decoder used libnyquist which did not have as wide codec support as ffmpeg.
+ * This fork uses ffmpeg.
+ */
 namespace detail
 {
     const size_t kBufferSize = 4 * 1024;
@@ -69,7 +73,7 @@ namespace detail
       fmt_ctx = avformat_alloc_context();
       io_ctx = avio_alloc_context((unsigned char *)av_malloc(kBufferSize), kBufferSize, 0, this, bufferRead, NULL, bufferSeek);
       fmt_ctx->pb = io_ctx;
-      if (avformat_open_input(&fmt_ctx, "memory input", NULL, NULL) < 0) {
+      if (avformat_open_input(&fmt_ctx, "memory input", NULL, NULL) != 0) {
         if (error) {
           *error = "failed to open input";
         }
@@ -141,6 +145,10 @@ namespace detail
         return AVERROR_EOF;
       }
     }
+
+    /**
+     * Tell ffmpeg how to seek through the buffer.
+     */
     int64_t AppData::bufferSeek(void *opaque, int64_t offset, int whence) {
       AppData *appData = (AppData *)opaque;
       if (whence == AVSEEK_SIZE) {
@@ -156,7 +164,8 @@ namespace detail
         } else {
           newPos = offset;
         }
-        newPos = std::min<int64_t>(std::max<int64_t>(newPos, 0), appData->data.size() - appData->dataPos);
+
+        newPos = std::min<int64_t>(std::max<int64_t>(newPos, 0), appData->data.size());
         appData->dataPos = newPos;
         return newPos;
       }
@@ -274,10 +283,10 @@ namespace detail
         // Create AudioBus where we'll put the PCM audio data
         std::unique_ptr<lab::AudioBus> audioBus(new lab::AudioBus(busChannelCount, numSamples));
         audioBus->setSampleRate(appData.getSampleRate());
-        
+
         // Deinterleave stereo into LabSound/WebAudio planar channel layout
         // nqr::DeinterleaveChannels(audioData->samples.data(), planarSamples.data(), numSamples, numChannels, numSamples);
-        
+
         // Mix to mono if stereo -- easier to do in place instead of using libnyquist helper functions
         // because we've already deinterleaved
         if (numChannels == 2 && mixToMono)
@@ -285,7 +294,7 @@ namespace detail
             float *destinationMono = audioBus->channel(0)->mutableData();
             float *leftSamples = planes[0].data();
             float *rightSamples = planes[1].data();
-            
+
             for (size_t i = 0; i < numSamples; i++)
             {
                 destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
@@ -307,7 +316,7 @@ namespace lab
 {
 
 std::mutex g_fileIOMutex;
-    
+
 std::unique_ptr<AudioBus> MakeBusFromFile(const char *filePath, bool mixToMono, std::string *error)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
@@ -362,5 +371,5 @@ std::unique_ptr<AudioBus> MakeBusFromRawBuffer(size_t sampleRate, size_t numChan
 
   return audioBus;
 }
-    
+
 } // end namespace lab
