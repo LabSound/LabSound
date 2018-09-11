@@ -25,8 +25,8 @@ elseif (UNIX)
 	file(GLOB labsnd_intsrc_platform  "${LABSOUND_ROOT}/src/internal/src/linux/*")
 endif()
 
-add_library(LabSound STATIC 
-	${labsnd_core_h} ${labsnd_core} 
+add_library(LabSound STATIC
+	${labsnd_core_h} ${labsnd_core}
 	${labsnd_extended_h} ${labsnd_extended}
 	${labsnd_int_h} ${labsnd_int_src}
 	${labsnd_int_platform} ${labsnd_intsrc_platform}
@@ -42,7 +42,6 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
-    ${LABSOUND_ROOT}/third_party/libnyquist/include
     ${LABSOUND_ROOT}/../node_modules/native-video-deps/include)
 
 if (MSVC_IDE)
@@ -64,7 +63,7 @@ if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
 endif()
 
-target_link_libraries(LabSound libnyquist)
+target_link_libraries(LabSound)
 
 install (TARGETS LabSound
     LIBRARY DESTINATION lib

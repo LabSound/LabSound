@@ -75,7 +75,7 @@
             '-llabsound',
           ],
           'library_dirs': [
-            '<(module_root_dir)/labsound/osx/build/Release',
+            '<(module_root_dir)/labsound/bin',
           ],
         }],
       ],
