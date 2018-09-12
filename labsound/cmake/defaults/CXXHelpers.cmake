@@ -31,7 +31,7 @@ function(_set_compile_options proj)
         if("${LUMIN}" STREQUAL "1")
           # nothing
         else()
-          target_compile_definitions(${proj} __LINUX_ALSA__=1)
+          target_compile_definitions(${proj} PRIVATE __LINUX_ALSA__=1)
         endif()
         # target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1 WEBAUDIO_KISSFFT=1 __LINUX_PULSE__=1)
     endif()
