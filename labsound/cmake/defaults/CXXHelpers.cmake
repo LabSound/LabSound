@@ -29,7 +29,7 @@ function(_set_compile_options proj)
         # target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1 WEBAUDIO_KISSFFT=1 __UNIX_JACK__=1)
         target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1 WEBAUDIO_KISSFFT=1)
         if("${LUMIN}" STREQUAL "1")
-          # nothing
+          target_compile_options(${proj} PRIVATE -std=c++14)
         else()
           target_compile_definitions(${proj} PRIVATE __LINUX_ALSA__=1)
         endif()
