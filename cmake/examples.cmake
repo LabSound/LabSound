@@ -9,14 +9,14 @@ set_cxx_version(LabSoundExample)
 _set_compile_options(LabSoundExample)
 
 
-if (APPLE)
+if(APPLE)
     set(DARWIN_LIBS
         "-framework AudioToolbox"
         "-framework AudioUnit"
         "-framework Accelerate"
         "-framework CoreAudio"
         "-framework Cocoa")
-ENDIF (APPLE)
+ENDIF(APPLE)
 
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 
@@ -25,4 +25,5 @@ set_target_properties(LabSoundExample PROPERTIES
 
 set_property(TARGET LabSoundExample PROPERTY FOLDER "examples")
 
-install (TARGETS LabSoundExample RUNTIME DESTINATION ${PROJECT_BINARY_DIR}/bin)
+install(TARGETS LabSoundExample
+    RUNTIME DESTINATION ${PROJECT_BINARY_DIR}/bin)

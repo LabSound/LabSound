@@ -20,11 +20,12 @@ elseif (UNIX)
 endif()
 
 add_library(LabSound STATIC
-    ${labsnd_core_h} ${labsnd_core}
+    ${labsnd_core_h}     ${labsnd_core}
     ${labsnd_extended_h} ${labsnd_extended}
-    ${labsnd_int_h} ${labsnd_int_src}
+    ${labsnd_int_h}      ${labsnd_int_src}
     ${labsnd_backend}
-    ${third_rtaudio} ${third_kissfft}
+    ${third_rtaudio}
+    ${third_kissfft}
  )
 
 _set_Cxx17(LabSound)
@@ -41,7 +42,6 @@ target_include_directories(LabSound PRIVATE
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
-    #set_target_properties(LabSound PROPERTIES PREFIX "../")
     set_target_properties(LabSound PROPERTIES IMPORT_PREFIX "../")
 endif()
 
@@ -60,12 +60,10 @@ endif()
 
 target_link_libraries(LabSound libnyquist)
 
-install (TARGETS LabSound
+install(TARGETS LabSound
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin)
-
-install (TARGETS LabSound DESTINATION lib)
 
 install(FILES ${labsnd_core_h}
         DESTINATION include/LabSound/core)

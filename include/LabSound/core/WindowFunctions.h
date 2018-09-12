@@ -6,19 +6,10 @@
 #include <vector>
 #include <cmath>
 
-#ifndef PI
-    #define PI 3.14159265358979323846
-#endif
-
-#ifndef TWO_PI
-    #define TWO_PI 6.28318530717958647693
-#endif
-
-#ifndef M_TWO_PI
-    #define M_TWO_PI 6.28318530717958647693
-#endif
-
 namespace lab {
+
+    static const float Pi = 3.14159265358979323846f;
+    static const float TwoPi = 6.28318530717958647693f;
     
     enum WindowType {
         window_rectangle,
@@ -48,35 +39,35 @@ namespace lab {
 
             case window_hamming: {
                 for (int i = 0; i< bSize; i++) {
-                    buffer[i] *= 0.54 - 0.46 * cos(TWO_PI * i / ( bSize));
+                    buffer[i] *= 0.54f - 0.46f * cos(TwoPi * i / ( bSize));
                 }
             }
             break;
 
             case window_hanning: {
                 for (int i = 0; i< bSize; i++) {
-                    buffer[i] *= 0.5 - (0.5 * cos(TWO_PI * i / ( bSize)));
+                    buffer[i] *= 0.5f - (0.5f * cos(TwoPi * i / ( bSize)));
                 }
             }
             break;
 
             case window_hanningz: {
                 for (int i = 0; i< bSize; i++) {
-                    buffer[i] *= 0.5 * (1.0 - cos(TWO_PI * i / ( bSize)));
+                    buffer[i] *= 0.5f * (1.0f - cos(TwoPi * i / ( bSize)));
                 }
             }
             break;
 
             case window_blackman: {
                 for (int i= 0; i < bSize; i++) {
-                    buffer[i] *= 0.42 - 0.50 * cos(TWO_PI * i / (bSize - 1.0)) + 0.08 * cos(4.0 * TWO_PI * i / (bSize - 1.0));
+                    buffer[i] *= 0.42f - 0.50f * cos(TwoPi * i / (bSize - 1.0f)) + 0.08f * cos(4.0f * TwoPi * i / (bSize - 1.0f));
                 }
             }
             break;
 
             case window_blackman_harris: {
                 for (int i = 0; i < bSize; i++) {
-                    buffer[i] *= 0.35875 - 0.48829 * cos(TWO_PI * i / (bSize - 1.0)) + 0.14128 * cos(2.0 * TWO_PI * i / (bSize - 1.0)) - 0.01168 * cos(3.0*TWO_PI*i/( bSize - 1.0));
+                    buffer[i] *= 0.35875f - 0.48829f * cos(TwoPi * i / (bSize - 1.0f)) + 0.14128f * cos(2.0f * TwoPi * i / (bSize - 1.0f)) - 0.01168f * cos(3.0f*TwoPi*i/( bSize - 1.0f));
                 }
             }
             break;
@@ -94,21 +85,21 @@ namespace lab {
                 
             case window_welch: {
                 for (int i = 0; i < bSize; i++) {
-                    buffer[i] *= 1.0 - sqrt((2.0 * i - bSize) / (bSize + 1.0));
+                    buffer[i] *= 1.0f - sqrt((2.0f * i - bSize) / (bSize + 1.0f));
                 }
             }
             break;
                 
             case window_bartlett: {
                 for (int i = 0; i < bSize; i++) {
-                    buffer[i] *= 1.0 - fabs(2.0 * (i / bSize) - 1.0);
+                    buffer[i] *= 1.0f - abs(2.0f * (i / bSize) - 1.0f);
                 }
             }
             break; 
                 
             case window_parzen: {
                 for (int i = 0; i < bSize; i++) {
-                    buffer[i] *= 1.0 - fabs((2.0 * i - bSize) / ( bSize + 1.0));
+                    buffer[i] *= 1.0f - abs((2.0f * i - bSize) / ( bSize + 1.0f));
                 }
             }
             break;

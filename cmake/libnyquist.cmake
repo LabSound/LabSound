@@ -1,7 +1,7 @@
 
 #-------------------------------------------------------------------------------
 
-include(CXXhelpers)
+include(CXXHelpers)
 
 project(libopus)
 
@@ -45,12 +45,10 @@ set_target_properties(libopus
 
 set_target_properties(libopus PROPERTIES OUTPUT_NAME_DEBUG libopus_d)
 
-install (TARGETS libopus
+install(TARGETS libopus
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin)
-
-install (TARGETS libopus DESTINATION lib)
 
 # folders
 
@@ -82,12 +80,10 @@ set_target_properties(libwavpack
 
 set_target_properties(libwavpack PROPERTIES OUTPUT_NAME_DEBUG libwavpack_d)
 
-install (TARGETS libwavpack
+install(TARGETS libwavpack
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin)
-
-install (TARGETS libwavpack DESTINATION lib)
 
 # folders
 
@@ -106,7 +102,7 @@ add_library(libnyquist STATIC
 set_cxx_version(libnyquist)
 _set_compile_options(libnyquist)
 
-if (WIN32)
+if(WIN32)
     target_compile_definitions(libnyquist PRIVATE MODPLUG_STATIC)
 
     _disable_warning(4244)
@@ -131,7 +127,7 @@ target_include_directories(libnyquist PRIVATE
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/include
     ${LABSOUND_ROOT}/third_party/libnyquist/src)
 
-if (MSVC_IDE)
+if(MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
     #set_target_properties(libnyquist PROPERTIES PREFIX "../")
     set_target_properties(libnyquist PROPERTIES IMPORT_PREFIX "../")
@@ -149,12 +145,10 @@ set_target_properties(libnyquist
 target_link_libraries(libnyquist
     libopus libwavpack)
 
-install (TARGETS libnyquist
+install(TARGETS libnyquist
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin)
-
-install (TARGETS libnyquist DESTINATION lib)
 
 # folders
 
