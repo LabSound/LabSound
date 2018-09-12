@@ -19,7 +19,7 @@ static int NumDefaultOutputChannels()
     RtAudio audio;
     uint32_t n = audio.getDeviceCount();
 
-	uint32_t i = 0;
+    uint32_t i = 0;
     for (uint32_t i = 0; i < n; i++)
     {
         RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
@@ -77,8 +77,8 @@ void AudioDestinationWin::configure()
     outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
-	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
+    auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = dac.getDefaultInputDevice();
@@ -133,10 +133,10 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
     {
-		for (uint32_t i = 0; i < m_numChannels; ++i)
-		{
-			m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
-		}
+        for (uint32_t i = 0; i < m_numChannels; ++i)
+        {
+            m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
+        }
     }
 
     if (m_inputBus.isFirstTime())
