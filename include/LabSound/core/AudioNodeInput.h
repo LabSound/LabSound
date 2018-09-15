@@ -36,8 +36,8 @@ public:
     static void connect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
     static void disconnect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
 
-    // pull() processes all of the AudioNodes connected to us.
-    // In the case of multiple connections it sums the result into an internal summing bus.
+    // pull() processes all of the AudioNodes connected to this NodeInput.
+    // In the case of multiple connections, the result is summed onto the internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
     AudioBus* pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);

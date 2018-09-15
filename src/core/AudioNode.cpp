@@ -16,7 +16,7 @@
 using namespace std;
 
 namespace lab {
-    
+
 AudioNode::AudioNode() = default;
 AudioNode::~AudioNode() = default;
 
@@ -28,11 +28,6 @@ void AudioNode::initialize()
 void AudioNode::uninitialize()
 {
     m_isInitialized = false;
-}
-
-void AudioNode::lazyInitialize()
-{
-    if (!isInitialized()) initialize();
 }
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
@@ -70,10 +65,10 @@ void AudioNode::setChannelCount(ContextGraphLock & g, unsigned long channelCount
     {
         throw std::invalid_argument("No context specified");
     }
-    
+
     if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels)
     {
-        if (m_channelCount != channelCount) 
+        if (m_channelCount != channelCount)
         {
             m_channelCount = channelCount;
             if (m_channelCountMode != ChannelCountMode::Max)
@@ -81,7 +76,7 @@ void AudioNode::setChannelCount(ContextGraphLock & g, unsigned long channelCount
         }
         return;
     }
-    
+
     throw std::logic_error("Should not be reached");
 }
 
@@ -108,7 +103,7 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
         input->changedOutputs(g);
     }
 }
-    
+
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
     if (!isInitialized()) return;
@@ -116,7 +111,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
     auto ac = r.context();
 
     if (!ac) return;
-    
+
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
     // The first time we're called during this time slice we process, but after that we don't want to re-process,
@@ -163,7 +158,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
 
                 m_disconnectSchedule = new_schedule;
             }
-         
+
             new_schedule = 1.f;
             if (m_connectSchedule < 1)
             {
@@ -183,7 +178,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
 
                 m_connectSchedule = new_schedule;
             }
-            
+
             unsilenceOutputs(r);
         }
     }
@@ -212,7 +207,7 @@ bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
     ASSERT(r.context());
-    
+
     // Process all of the AudioNodes connected to our inputs.
     for (auto & in : m_inputs)
     {

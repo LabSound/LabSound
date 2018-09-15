@@ -29,7 +29,6 @@ AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) :
 
 AudioNodeInput::~AudioNodeInput()
 {
-
 }
 
 void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
@@ -129,10 +128,7 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
 {
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
     int c = numberOfRenderingConnections(r);
-    ASSERT(c > 1);
-
-    ASSERT(summingBus);
-    if (!summingBus)
+    if (c < 1 || !summingBus)
         return;
 
     summingBus->zero();
@@ -153,7 +149,6 @@ void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBu
 
 AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
-
     updateRenderingState(r);
 
     int c = numberOfRenderingConnections(r);
@@ -161,29 +156,28 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // Handle single connection case.
     if (c == 1)
     {
-        // The output will optimize processing using inPlaceBus if it's able.
+        // If this input is simply passing data through, then immediately delegate the pull request to it.
         auto output = renderingOutput(r, 0);
         if (output)
         {
              return output->pull(r, inPlaceBus, framesToProcess);
         }
-        c = 0; // invoke the silence case
+
+        c = 0; // if there's a single input, but it has no output; treat this input as silent.
     }
 
-    AudioBus* internalSummingBus = this->internalSummingBus(r);
-
+    AudioBus* internalSummingBusPtr = internalSummingBus(r);
     if (c == 0)
     {
-        // At least, generate silence if we're not connected to anything.
-        // FIXME: if we wanted to get fancy, we could propagate a 'silent hint' here to optimize the downstream graph processing.
-        internalSummingBus->zero();
-        return internalSummingBus;
+        // Generate silence if we're not connected to anything.
+        /// @TODO a possible optimization is to flag silence and propagate it to consumers of this input.
+        internalSummingBusPtr->zero();
+        return internalSummingBusPtr;
     }
 
-    // Handle multiple connections case
-	sumAllConnections(r, internalSummingBus, framesToProcess);
-
-    return internalSummingBus;
+    // There are multiple connectsion to process.
+	sumAllConnections(r, internalSummingBusPtr, framesToProcess);
+    return internalSummingBusPtr;
 }
 
 } // namespace lab

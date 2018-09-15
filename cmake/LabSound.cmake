@@ -72,11 +72,10 @@ install(FILES ${labsnd_extended_h}
 
 source_group(include\\core FILES ${labsnd_core_h})
 source_group(include\\extended FILES ${labsnd_extended_h})
+source_group(src\\backends FILES ${labsnd_backend})
 source_group(src\\core FILES ${labsnd_core})
 source_group(src\\extended FILES ${labsnd_extended})
 source_group(src\\internal FILES ${labsnd_int_h})
 source_group(src\\internal\\src FILES ${labsnd_int_src})
 source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
-source_group(src\\internal\\platform FILES ${labsnd_int_platform})
-source_group(src\\internal\\platform\\src\\platform FILES ${labsnd_intsrc_platform})

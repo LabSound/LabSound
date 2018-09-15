@@ -224,7 +224,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         double time2 = nextEvent ? nextEvent->time() : endTime + 1;
 
         double deltaTime = time2 - time1;
-        float k = deltaTime > 0 ? 1 / deltaTime : 0;
+        float k = static_cast<float>(deltaTime > 0 ? 1 / deltaTime : 0);
         double sampleFrameTimeIncr = 1 / sampleRate;
 
         double fillToTime = std::min(endTime, time2);
@@ -236,7 +236,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         // First handle linear and exponential ramps which require looking ahead to the next event.
         if (nextEventType == ParamEvent::LinearRampToValue) {
             for (; writeIndex < fillToFrame; ++writeIndex) {
-                float x = (currentTime - time1) * k;
+                float x = static_cast<float>(currentTime - time1) * k;
                 value = (1 - x) * value1 + x * value2;
                 values[writeIndex] = value;
                 currentTime += sampleFrameTimeIncr;
@@ -247,7 +247,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                 for (; writeIndex < fillToFrame; ++writeIndex)
                     values[writeIndex] = value;
             } else {
-                float numSampleFrames = deltaTime * sampleRate;
+                float numSampleFrames = static_cast<float>(deltaTime * sampleRate);
                 // The value goes exponentially from value1 to value2 in a duration of deltaTime seconds (corresponding to numSampleFrames).
                 // Compute the per-sample multiplier.
                 float multiplier = powf(value2 / value1, 1 / numSampleFrames);
@@ -309,7 +309,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     
                     // How much to step the curve index for each frame.  This is basically the term
                     // (N - 1)/Td in the specification.
-                    double curvePointsPerFrame = (numberOfCurvePoints - 1) / duration / sampleRate;
+                    float curvePointsPerFrame = static_cast<float>((numberOfCurvePoints - 1) / duration / sampleRate);
 
                     if (curve.size() == 0 || !curveData || !numberOfCurvePoints || duration <= 0 || sampleRate <= 0)
                     {
@@ -323,7 +323,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     // Save old values and recalculate information based on the curve's duration
                     // instead of the next event time.
                     unsigned nextEventFillToFrame = fillToFrame;
-                    float nextEventFillToTime = fillToTime;
+                    double nextEventFillToTime = fillToTime;
                     fillToTime = std::min(endTime, time1 + duration);
                     
                     // |fillToTime| can be greater than |startTime| when the end of the
@@ -341,7 +341,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     if (time1 < currentTime) {
                         // Index somewhere in the middle of the curve data.
                         // Don't use timeToSampleFrame() since we want the exact floating-point frame.
-                        float frameOffset = (currentTime - time1) * sampleRate;
+                        float frameOffset = static_cast<float>((currentTime - time1) * sampleRate);
                         curveVirtualIndex = curvePointsPerFrame * frameOffset;
                     }
 

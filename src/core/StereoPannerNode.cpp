@@ -152,7 +152,7 @@ public:
         if (!sourceL || !sourceR || !destinationL || !destinationR)
             return;
 
-        float targetPan = clampTo(panValue, -1.0, 1.0);
+        float targetPan = clampTo(panValue, -1.f, 1.f);
 
         // Don't de-zipper on first render call.
         if (m_isFirstRender)

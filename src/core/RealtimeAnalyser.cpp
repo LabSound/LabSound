@@ -114,7 +114,7 @@ void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus, size_t fr
             source = bus->channel(i)->data();
             VectorMath::vadd(dest, 1, source, 1, dest, 1, framesToProcess);
         }
-        const float scale =  1.0 / numberOfChannels;
+        const float scale =  1.f / numberOfChannels;
         VectorMath::vsmul(dest, 1, &scale, dest, 1, framesToProcess);
     }
 
