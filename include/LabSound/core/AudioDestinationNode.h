@@ -38,7 +38,7 @@ public:
     size_t currentSampleFrame() const { return m_currentSampleFrame; }
     double currentTime() const;
 
-    virtual unsigned numberOfChannels() const { return m_channelCount; }
+    virtual size_t numberOfChannels() const { return m_channelCount; }
 
     virtual void startRendering() = 0;
 

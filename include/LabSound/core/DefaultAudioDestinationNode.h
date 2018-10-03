@@ -28,7 +28,7 @@ public:
     virtual void startRendering() override;
     
     unsigned maxChannelCount() const;
-    virtual void setChannelCount(ContextGraphLock &, unsigned long) override;
+    virtual void setChannelCount(ContextGraphLock &, size_t) override;
 };
 
 } // namespace lab

@@ -18,7 +18,7 @@ using namespace VectorMath;
 
 const unsigned MaxBusChannels = 32;
 
-AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_length(length)
+AudioBus::AudioBus(size_t numberOfChannels, size_t length, bool allocate) : m_length(length)
 {
     ASSERT(numberOfChannels <= MaxBusChannels);
     if (numberOfChannels > MaxBusChannels) return;
@@ -32,7 +32,7 @@ AudioBus::AudioBus(unsigned numberOfChannels, size_t length, bool allocate) : m_
     }
 }
 
-void AudioBus::setChannelMemory(unsigned channelIndex, float * storage, size_t length)
+void AudioBus::setChannelMemory(size_t channelIndex, float * storage, size_t length)
 {
     if (channelIndex < m_channels.size()) 
     {
@@ -49,7 +49,7 @@ void AudioBus::resizeSmaller(size_t newLength)
 		m_length = newLength;
 	}
 
-	for (unsigned i = 0; i < m_channels.size(); ++i)
+	for (size_t i = 0; i < m_channels.size(); ++i)
 	{
 		m_channels[i]->resizeSmaller(newLength);
 	}
@@ -57,7 +57,7 @@ void AudioBus::resizeSmaller(size_t newLength)
 
 void AudioBus::zero()
 {
-	for (unsigned i = 0; i < m_channels.size(); ++i)
+	for (size_t i = 0; i < m_channels.size(); ++i)
 	{
 		m_channels[i]->zero();
 	}
@@ -155,10 +155,10 @@ bool AudioBus::topologyMatches(const AudioBus& bus) const
     return true;
 }
 
-std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* sourceBuffer, unsigned startFrame, unsigned endFrame)
+std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* sourceBuffer, size_t startFrame, size_t endFrame)
 {
     size_t numberOfSourceFrames = sourceBuffer->length();
-    unsigned numberOfChannels = sourceBuffer->numberOfChannels();
+    size_t numberOfChannels = sourceBuffer->numberOfChannels();
 
     // Sanity checking
     bool isRangeSafe = startFrame < endFrame && endFrame <= numberOfSourceFrames;
@@ -174,7 +174,7 @@ std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* source
     std::unique_ptr<AudioBus> audioBus(new AudioBus(numberOfChannels, rangeLength));
     audioBus->setSampleRate(sourceBuffer->sampleRate());
 
-	for (unsigned i = 0; i < numberOfChannels; ++i)
+	for (size_t i = 0; i < numberOfChannels; ++i)
 	{
 		audioBus->channel(i)->copyFromRange(sourceBuffer->channel(i), startFrame, endFrame);
 	}
@@ -185,7 +185,7 @@ std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* source
 float AudioBus::maxAbsValue() const
 {
     float max = 0.0f;
-    for (unsigned i = 0; i < numberOfChannels(); ++i) 
+    for (size_t i = 0; i < numberOfChannels(); ++i) 
 	{
         max = std::max(max, channel(i)->maxAbsValue());
     }
@@ -201,7 +201,7 @@ void AudioBus::normalize()
 
 void AudioBus::scale(float scale)
 {
-	for (unsigned i = 0; i < numberOfChannels(); ++i)
+	for (size_t i = 0; i < numberOfChannels(); ++i)
 	{
 		channel(i)->scale(scale);
 	}
@@ -214,12 +214,12 @@ void AudioBus::copyFrom(const AudioBus& sourceBus, ChannelInterpretation channel
 {
     if (&sourceBus == this) return;
 
-    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    unsigned numberOfDestinationChannels = numberOfChannels();
+    size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    size_t numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) 
 	{
-		for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+		for (size_t i = 0; i < numberOfSourceChannels; ++i)
 		{
 			channel(i)->copyFrom(sourceBus.channel(i));
 		}
@@ -240,12 +240,12 @@ void AudioBus::sumFrom(const AudioBus &sourceBus, ChannelInterpretation channelI
 {
     if (&sourceBus == this) return;
     
-    unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    unsigned numberOfDestinationChannels = numberOfChannels();
+    size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    size_t numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels == numberOfSourceChannels) 
     {
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+        for (size_t i = 0; i < numberOfSourceChannels; ++i)
         {
              channel(i)->sumFrom(sourceBus.channel(i));
         }
@@ -267,8 +267,8 @@ void AudioBus::speakersCopyFrom(const AudioBus& sourceBus)
     // FIXME: Implement down mixing 5.1 to stereo.
     // https://bugs.webkit.org/show_bug.cgi?id=79192
     
-    const unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    const unsigned numberOfDestinationChannels = numberOfChannels();
+    const size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    const size_t numberOfDestinationChannels = numberOfChannels();
     
     if (numberOfDestinationChannels == Channels::Stereo && numberOfSourceChannels == Channels::Mono) 
 	{
@@ -337,8 +337,8 @@ void AudioBus::speakersSumFrom(const AudioBus& sourceBus)
     // FIXME: Implement down mixing 5.1 && 7.1 to stereo.
     // https://bugs.webkit.org/show_bug.cgi?id=79192
     
-    const unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    const unsigned numberOfDestinationChannels = numberOfChannels();
+    const size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    const size_t numberOfDestinationChannels = numberOfChannels();
     
     if (numberOfDestinationChannels == Channels::Stereo && numberOfSourceChannels == Channels::Mono)
 	{
@@ -459,13 +459,13 @@ void AudioBus::speakersSumFrom7_1_ToMono(const AudioBus& sourceBus)
 
 void AudioBus::discreteCopyFrom(const AudioBus & sourceBus)
 {
-    const unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    const unsigned numberOfDestinationChannels = numberOfChannels();
+    const size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    const size_t numberOfDestinationChannels = numberOfChannels();
     
     if (numberOfDestinationChannels < numberOfSourceChannels) 
     {
         // Down-mix by copying channels and dropping the remaining.
-        for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
+        for (size_t i = 0; i < numberOfDestinationChannels; ++i)
         {
             channel(i)->copyFrom(sourceBus.channel(i));
         }
@@ -473,12 +473,12 @@ void AudioBus::discreteCopyFrom(const AudioBus & sourceBus)
     else if (numberOfDestinationChannels > numberOfSourceChannels)
     {
         // Up-mix by copying as many channels as we have, then zeroing remaining channels.
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i)
+        for (size_t i = 0; i < numberOfSourceChannels; ++i)
         {
             channel(i)->copyFrom(sourceBus.channel(i));
         }
 
-        for (unsigned i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
+        for (size_t i = numberOfSourceChannels; i < numberOfDestinationChannels; ++i)
         {
             channel(i)->zero();
         }
@@ -487,13 +487,13 @@ void AudioBus::discreteCopyFrom(const AudioBus & sourceBus)
 
 void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
 {
-    const unsigned numberOfSourceChannels = sourceBus.numberOfChannels();
-    const unsigned numberOfDestinationChannels = numberOfChannels();
+    const size_t numberOfSourceChannels = sourceBus.numberOfChannels();
+    const size_t numberOfDestinationChannels = numberOfChannels();
 
     if (numberOfDestinationChannels < numberOfSourceChannels) 
     {
         // Down-mix by summing channels and dropping the remaining.
-        for (unsigned i = 0; i < numberOfDestinationChannels; ++i)
+        for (size_t i = 0; i < numberOfDestinationChannels; ++i)
         {
             channel(i)->sumFrom(sourceBus.channel(i));
         }
@@ -501,7 +501,7 @@ void AudioBus::discreteSumFrom(const AudioBus& sourceBus)
     else if (numberOfDestinationChannels > numberOfSourceChannels)
     {
         // Up-mix by summing as many channels as we have.
-        for (unsigned i = 0; i < numberOfSourceChannels; ++i) 
+        for (size_t i = 0; i < numberOfSourceChannels; ++i) 
         {
             channel(i)->sumFrom(sourceBus.channel(i));
         }
@@ -600,7 +600,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     // Apply constant gain after de-zippering has converged on target gain.
     if (framesToDezipper < framesToProcess) 
     {
-        for (unsigned channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex)
+        for (size_t channelIndex = 0; channelIndex < numberOfChannels; ++channelIndex)
         {
             vsmul(sources[channelIndex], 1, &gain, destinations[channelIndex], 1, framesToProcess - framesToDezipper);
         }        
@@ -610,7 +610,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     *lastMixGain = gain;
 }
 
-void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, float* gainValues, unsigned numberOfGainValues)
+void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, float* gainValues, size_t numberOfGainValues)
 {
     // Make sure we're processing from the same type of bus.
     // We *are* able to process from mono -> stereo
@@ -634,7 +634,7 @@ void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, f
 
     // We handle both the 1 -> N and N -> N case here.
     const float * source = sourceBus.channel(0)->data();
-    for (unsigned channelIndex = 0; channelIndex < numberOfChannels(); ++channelIndex) 
+    for (size_t channelIndex = 0; channelIndex < numberOfChannels(); ++channelIndex) 
 	{
 		if (sourceBus.numberOfChannels() == numberOfChannels())
 		{
@@ -655,9 +655,9 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
 	}
 
     double sourceSampleRate = sourceBus->sampleRate();
-    double destinationSampleRate = newSampleRate;
+    float destinationSampleRate = static_cast<float>(newSampleRate);
     double sampleRateRatio = sourceSampleRate / destinationSampleRate;
-    unsigned numberOfSourceChannels = sourceBus->numberOfChannels();
+    size_t numberOfSourceChannels = sourceBus->numberOfChannels();
 
 	if (numberOfSourceChannels == Channels::Mono)
 	{
@@ -695,15 +695,15 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
     }
 
     // Calculate destination length based on the sample-rates.
-    int sourceLength = resamplerSourceBus->length();
-    int destinationLength = sourceLength / sampleRateRatio;
+    size_t sourceLength = resamplerSourceBus->length();
+    size_t destinationLength = static_cast<size_t>(sourceLength / sampleRateRatio);
 
     // Create destination bus with same number of channels.
-    unsigned numberOfDestinationChannels = resamplerSourceBus->numberOfChannels();
+    size_t numberOfDestinationChannels = resamplerSourceBus->numberOfChannels();
     std::unique_ptr<AudioBus> destinationBus(new AudioBus(numberOfDestinationChannels, destinationLength));
 
     // Sample-rate convert each channel.
-    for (unsigned i = 0; i < numberOfDestinationChannels; ++i) 
+    for (size_t i = 0; i < numberOfDestinationChannels; ++i) 
 	{
         const float* source = resamplerSourceBus->channel(i)->data();
         float* destination = destinationBus->channel(i)->mutableData();
@@ -731,17 +731,17 @@ std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus* sourceB
         return AudioBus::createBufferFromRange(sourceBus, 0, sourceBus->length());
     default:
         {
-            const unsigned n = sourceBus->length();
-            const unsigned m = sourceBus->numberOfChannels();
+            const size_t n = sourceBus->length();
+            const size_t m = sourceBus->numberOfChannels();
             std::unique_ptr<AudioBus> destinationBus(new AudioBus(Channels::Mono, n));
             float * destination = destinationBus->channel(0)->mutableData();
         
 			// Do the mono mixdown.
-			for (unsigned i = 0; i < n; ++i) 
+			for (size_t i = 0; i < n; ++i) 
 			{
 				destination[i] = 0.0;
 
-				for (unsigned j = 0; j < m; ++j) 
+				for (size_t j = 0; j < m; ++j) 
 				{
 					const float* source = sourceBus->channel(j)->data();
 					destination[j] += source[j];

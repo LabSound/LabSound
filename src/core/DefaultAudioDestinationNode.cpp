@@ -63,7 +63,7 @@ unsigned DefaultAudioDestinationNode::maxChannelCount() const
     return AudioDestination::maxChannelCount();
 }
 
-void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, unsigned long channelCount)
+void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, size_t channelCount)
 {
     // The channelCount for the input to this node controls the actual number of channels we
     // send to the audio hardware. It can only be set depending on the maximum number of
@@ -76,7 +76,7 @@ void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, unsigned 
         throw std::invalid_argument("Max channel count invalid");
     }
     
-    unsigned long oldChannelCount = this->channelCount();
+    size_t oldChannelCount = this->channelCount();
     AudioNode::setChannelCount(g, channelCount);
     
     if (this->channelCount() != oldChannelCount && isInitialized())

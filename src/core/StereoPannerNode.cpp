@@ -46,7 +46,7 @@ public:
     // Handle sample-accurate panning by AudioParam automation.
     virtual void panWithSampleAccurateValues(const AudioBus* inputBus, AudioBus* outputBus, const float* panValues, size_t framesToProcess)
     {
-        unsigned numberOfInputChannels = inputBus->numberOfChannels();
+        size_t numberOfInputChannels = inputBus->numberOfChannels();
 
         bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
 
@@ -72,7 +72,7 @@ public:
             return;
 
         double gainL, gainR, panRadian;
-        int n = framesToProcess;
+        size_t n = framesToProcess;
 
         // For mono source case.
         if (numberOfInputChannels == Channels::Mono)
@@ -127,7 +127,7 @@ public:
     // Handle de-zippered panning to a target value.
     virtual void panToTargetValue(const AudioBus* inputBus, AudioBus* outputBus, float panValue, size_t framesToProcess)
     {
-        unsigned numberOfInputChannels = inputBus->numberOfChannels();
+        size_t numberOfInputChannels = inputBus->numberOfChannels();
 
         bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
 
@@ -163,7 +163,7 @@ public:
 
         double gainL, gainR, panRadian;
         const double smoothingConstant = m_smoothingConstant;
-        int n = framesToProcess;
+        size_t n = framesToProcess;
 
         // For mono source case.
         if (numberOfInputChannels == Channels::Mono)

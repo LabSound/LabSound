@@ -39,7 +39,7 @@ target_compile_definitions(libopus PRIVATE USE_ALLOCA)
 set_target_properties(libopus
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
@@ -66,7 +66,9 @@ file(GLOB third_wavpack_src
 
 add_library(libwavpack STATIC ${third_wavpack_src})
 
-_set_compile_options(libopus)
+message(XXX, "${third_wavpack_src}")
+
+_set_compile_options(libwavpack)
 
 target_include_directories(libwavpack PUBLIC
     ${LABSOUND_ROOT}/third_party/libnyquist/third_party/wavpack/include)
@@ -74,7 +76,7 @@ target_include_directories(libwavpack PUBLIC
 set_target_properties(libwavpack
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
@@ -138,7 +140,7 @@ set_target_properties(libnyquist PROPERTIES OUTPUT_NAME_DEBUG libnyquist_d)
 set_target_properties(libnyquist
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
@@ -154,6 +156,3 @@ install(TARGETS libnyquist
 
 source_group(include\\libnyquist FILES ${third_nyquist_h})
 source_group(src FILES ${third_nyquist_src})
-source_group(third_party\\musepack\\ FILES ${third_musepack_enc} ${third_musepack_dec})
-source_group(third_party\\wavpack\\ FILES ${third_wavpack})
-source_group(third_party\\opus\\ FILES ${third_opus_src})

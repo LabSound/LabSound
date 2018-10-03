@@ -33,18 +33,18 @@ public:
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
     // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
     // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
-    AudioBus(unsigned numberOfChannels, size_t length, bool allocate = true);
+    AudioBus(size_t numberOfChannels, size_t length, bool allocate = true);
 
     // Tells the given channel to use an externally allocated buffer.
-    void setChannelMemory(unsigned channelIndex, float* storage, size_t length);
+    void setChannelMemory(size_t channelIndex, float* storage, size_t length);
 
     // Channels
-    unsigned numberOfChannels() const { return (unsigned) m_channels.size(); }
+    size_t numberOfChannels() const { return m_channels.size(); }
 
     // Use this when looping over channels
-    AudioChannel * channel(int channel) { return m_channels[channel].get(); }
+    AudioChannel * channel(size_t channel) { return m_channels[channel].get(); }
 
-    const AudioChannel* channel(int channel) const 
+    const AudioChannel * channel(size_t channel) const 
     {
         return const_cast<AudioBus*>(this)->m_channels[channel].get(); 
     }
@@ -78,7 +78,7 @@ public:
 
     // Creates a new buffer from a range in the source buffer.
     // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, unsigned startFrame, unsigned endFrame);
+    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, size_t startFrame, size_t endFrame);
 
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
@@ -108,7 +108,7 @@ public:
     void copyWithGainFrom(const AudioBus &sourceBus, float* lastMixGain, float targetGain);
 
     // Copies the sourceBus by scaling with sample-accurate gain values.
-    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float* gainValues, unsigned numberOfGainValues);
+    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float* gainValues, size_t numberOfGainValues);
 
     // Returns maximum absolute value across all channels (useful for normalization).
     float maxAbsValue() const;

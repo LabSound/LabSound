@@ -75,8 +75,8 @@ public:
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
-    void calculateFinalValues(ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate);
-    void calculateTimelineValues(ContextRenderLock& r, float* values, unsigned numberOfValues);
+    void calculateFinalValues(ContextRenderLock& r, float* values, size_t numberOfValues, bool sampleAccurate);
+    void calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues);
 
     std::string m_name;
     double m_value;

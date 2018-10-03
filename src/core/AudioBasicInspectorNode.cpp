@@ -31,7 +31,7 @@ void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     if (input != this->input(0).get())
         return;
     
-    unsigned numberOfChannels = input->numberOfChannels(r);
+    size_t numberOfChannels = input->numberOfChannels(r);
 
     if (numberOfChannels != output(0)->numberOfChannels()) {
         // This will propagate the channel count to any nodes connected further downstream in the graph.
