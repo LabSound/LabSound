@@ -66,8 +66,6 @@ file(GLOB third_wavpack_src
 
 add_library(libwavpack STATIC ${third_wavpack_src})
 
-message(XXX, "${third_wavpack_src}")
-
 _set_compile_options(libwavpack)
 
 target_include_directories(libwavpack PUBLIC
