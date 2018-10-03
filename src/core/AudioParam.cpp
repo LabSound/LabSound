@@ -111,7 +111,7 @@ void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* valu
     calculateFinalValues(r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsigned numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_t numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -169,7 +169,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, unsig
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, unsigned numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues)
 {
     // Calculate values for this render quantum.
     // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).

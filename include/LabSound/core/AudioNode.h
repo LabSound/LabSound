@@ -72,11 +72,11 @@ public:
 
     bool isInitialized() const { return m_isInitialized; }
 
-    unsigned int numberOfInputs() const { return (unsigned int) m_inputs.size(); }
-    unsigned int numberOfOutputs() const { return (unsigned int) m_outputs.size(); }
+    size_t numberOfInputs() const { return m_inputs.size(); }
+    size_t numberOfOutputs() const { return m_outputs.size(); }
 
-    std::shared_ptr<AudioNodeInput> input(unsigned index);
-    std::shared_ptr<AudioNodeOutput> output(unsigned index);
+    std::shared_ptr<AudioNodeInput> input(size_t index);
+    std::shared_ptr<AudioNodeOutput> output(size_t index);
 
     // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
@@ -105,8 +105,8 @@ public:
     void silenceOutputs(ContextRenderLock&);
     void unsilenceOutputs(ContextRenderLock&);
 
-    unsigned long channelCount();
-    virtual void setChannelCount(ContextGraphLock & g, unsigned long count);
+    size_t channelCount();
+    virtual void setChannelCount(ContextGraphLock & g, size_t count);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
@@ -173,7 +173,7 @@ private:
 protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
-    unsigned m_channelCount;
+    size_t m_channelCount;
     float m_sampleRate;
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };

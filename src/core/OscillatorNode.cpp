@@ -239,7 +239,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;
-    int n = nonSilentFramesToProcess;
+    size_t n = nonSilentFramesToProcess;
 
     while (n--) {
         unsigned readIndex = static_cast<unsigned>(virtualReadIndex);

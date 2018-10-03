@@ -63,7 +63,7 @@ void AudioNodeInput::didUpdate(ContextRenderLock& r)
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
-    unsigned numberOfInputChannels = numberOfChannels(r);
+    size_t numberOfInputChannels = numberOfChannels(r);
 
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
@@ -71,7 +71,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
+size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
 
@@ -81,7 +81,7 @@ unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     }
 
     // Find the number of channels of the connection with the largest number of channels.
-    unsigned maxChannels = 1; // one channel is the minimum allowed
+    size_t maxChannels = 1; // one channel is the minimum allowed
 
     int c = numberOfRenderingConnections(r);
     for (int i = 0; i < c; ++i)
@@ -95,7 +95,7 @@ unsigned AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 
     if (mode == ChannelCountMode::ClampedMax)
     {
-        maxChannels = min(maxChannels, static_cast<unsigned>(node()->channelCount()));
+        maxChannels = min(maxChannels, node()->channelCount());
     }
 
     return maxChannels;
@@ -127,7 +127,7 @@ AudioBus* AudioNodeInput::internalSummingBus(ContextRenderLock& r)
 void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
 {
     // We shouldn't be calling this method if there's only one connection, since it's less efficient.
-    int c = numberOfRenderingConnections(r);
+    size_t c = numberOfRenderingConnections(r);
     if (c < 1 || !summingBus)
         return;
 
@@ -151,7 +151,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
 {
     updateRenderingState(r);
 
-    int c = numberOfRenderingConnections(r);
+    size_t c = numberOfRenderingConnections(r);
 
     // Handle single connection case.
     if (c == 1)

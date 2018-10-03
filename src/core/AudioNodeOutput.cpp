@@ -24,7 +24,7 @@ namespace
    std::mutex outputMutex;
 }
 
-AudioNodeOutput::AudioNodeOutput(AudioNode* node, unsigned numberOfChannels, size_t processingSizeInFrames)
+AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels, size_t processingSizeInFrames)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
@@ -42,7 +42,7 @@ AudioNodeOutput::~AudioNodeOutput()
 
 }
 
-void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, unsigned numberOfChannels)
+void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, size_t numberOfChannels)
 {
     ASSERT(r.context());
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
@@ -122,22 +122,22 @@ AudioBus* AudioNodeOutput::bus(ContextRenderLock& r) const
     return m_inPlaceBus ? m_inPlaceBus : m_internalBus.get();
 }
 
-unsigned AudioNodeOutput::fanOutCount()
+size_t AudioNodeOutput::fanOutCount()
 {
     return m_inputs.size();
 }
 
-unsigned AudioNodeOutput::paramFanOutCount()
+size_t AudioNodeOutput::paramFanOutCount()
 {
     return m_params.size();
 }
 
-unsigned AudioNodeOutput::renderingFanOutCount() const
+size_t AudioNodeOutput::renderingFanOutCount() const
 {
     return m_renderingFanOutCount;
 }
 
-unsigned AudioNodeOutput::renderingParamFanOutCount() const
+size_t AudioNodeOutput::renderingParamFanOutCount() const
 {
     return m_renderingParamFanOutCount;
 }

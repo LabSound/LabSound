@@ -83,10 +83,10 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     if (!processor())
         return;
 
-    unsigned numberOfChannels = input->numberOfChannels(r);
+    size_t numberOfChannels = input->numberOfChannels(r);
     
     bool mustPropagate = false;
-    for (unsigned int i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
+    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
         mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
     }
     
@@ -105,7 +105,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-unsigned AudioBasicProcessorNode::numberOfChannels()
+size_t AudioBasicProcessorNode::numberOfChannels()
 {
     return output(0)->numberOfChannels();
 }

@@ -51,7 +51,7 @@ public:
 
     // The number of channels of the connection with the largest number of channels.
     // Only valid during render quantum because it is dependent on the active bus
-    unsigned numberOfChannels(ContextRenderLock&) const;
+    size_t numberOfChannels(ContextRenderLock&) const;
     
 private:
 

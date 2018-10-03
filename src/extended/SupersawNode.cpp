@@ -64,7 +64,7 @@ namespace lab
 
         void update(ContextRenderLock & r, bool okayToReallocate)
         {
-            int currentN = saws.size();
+            size_t currentN = saws.size();
             int n = int(sawCount->value(r) + 0.5f);
 
             auto context = r.context();

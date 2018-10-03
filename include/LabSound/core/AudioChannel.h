@@ -90,7 +90,7 @@ public:
     void copyFrom(const AudioChannel* sourceChannel);
 
     // Copies the given range from the source channel.
-    void copyFromRange(const AudioChannel* sourceChannel, unsigned startFrame, unsigned endFrame);
+    void copyFromRange(const AudioChannel* sourceChannel, size_t startFrame, size_t endFrame);
 
     // Sums (with unity gain) from the source channel.
     void sumFrom(const AudioChannel* sourceChannel);

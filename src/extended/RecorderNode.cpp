@@ -59,9 +59,9 @@ namespace lab
         if (m_recording)
         {
             std::vector<const float*> channels;
-            unsigned numberOfChannels = bus->numberOfChannels();
+            size_t numberOfChannels = bus->numberOfChannels();
             
-            for (unsigned int i = 0; i < numberOfChannels; ++i)
+            for (size_t i = 0; i < numberOfChannels; ++i)
             {
                 channels.push_back(bus->channel(i)->data());
             }

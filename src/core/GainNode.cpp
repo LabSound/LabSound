@@ -83,7 +83,7 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
     if (input != this->input(0).get())
         return;
 
-    unsigned numberOfChannels = input->numberOfChannels(r);
+    size_t numberOfChannels = input->numberOfChannels(r);
 
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels())
     {

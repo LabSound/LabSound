@@ -53,7 +53,7 @@ namespace lab {
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
-        int n = nonSilentFramesToProcess;
+        size_t n = nonSilentFramesToProcess;
 
         switch (m_type) {
                 // reference: http://noisehack.com/generate-noise-web-audio-api/

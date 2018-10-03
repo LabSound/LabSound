@@ -37,8 +37,8 @@ public:
     // Resets filter state
     virtual void reset() = 0;
 
-    void setNumberOfChannels(unsigned n) { m_numberOfChannels = n; }
-    unsigned numberOfChannels() const { return m_numberOfChannels; }
+    void setNumberOfChannels(size_t n) { m_numberOfChannels = n; }
+    size_t numberOfChannels() const { return m_numberOfChannels; }
 
     bool isInitialized() const { return m_initialized; }
 
@@ -47,7 +47,7 @@ public:
 
 protected:
     bool m_initialized = false;
-    unsigned m_numberOfChannels;
+    size_t m_numberOfChannels;
 };
 
 } // namespace lab

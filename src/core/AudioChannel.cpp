@@ -43,7 +43,7 @@ void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
     memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
 }
 
-void AudioChannel::copyFromRange(const AudioChannel* sourceChannel, unsigned startFrame, unsigned endFrame)
+void AudioChannel::copyFromRange(const AudioChannel* sourceChannel, size_t startFrame, size_t endFrame)
 {
     // Check that range is safe for reading from sourceChannel.
     bool isRangeSafe = sourceChannel && startFrame < endFrame && endFrame <= sourceChannel->length();

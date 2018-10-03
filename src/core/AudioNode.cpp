@@ -41,32 +41,32 @@ void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 }
 
 // safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeInput> AudioNode::input(unsigned i)
+std::shared_ptr<AudioNodeInput> AudioNode::input(size_t i)
 {
     if (i < m_inputs.size()) return m_inputs[i];
     return nullptr;
 }
 
 // safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeOutput> AudioNode::output(unsigned i)
+std::shared_ptr<AudioNodeOutput> AudioNode::output(size_t i)
 {
     if (i < m_outputs.size()) return m_outputs[i];
     return nullptr;
 }
 
-unsigned long AudioNode::channelCount()
+size_t AudioNode::channelCount()
 {
     return m_channelCount;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock & g, unsigned long channelCount)
+void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
 {
     if (!g.context())
     {
         throw std::invalid_argument("No context specified");
     }
 
-    if (channelCount > 0 && channelCount <= AudioContext::maxNumberOfChannels)
+    if (channelCount <= AudioContext::maxNumberOfChannels)
     {
         if (m_channelCount != channelCount)
         {

@@ -108,9 +108,9 @@ void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus, size_t fr
     memcpy(dest, source, sizeof(float) * framesToProcess);
 
     // Sum all channels in one if numberOfChannels > 1.
-    unsigned numberOfChannels = bus->numberOfChannels();
+    unsigned int numberOfChannels = bus->numberOfChannels();
     if (numberOfChannels > 1) {
-        for (unsigned i = 1; i < numberOfChannels; i++) {
+        for (size_t i = 1; i < numberOfChannels; i++) {
             source = bus->channel(i)->data();
             VectorMath::vadd(dest, 1, source, 1, dest, 1, framesToProcess);
         }
@@ -133,7 +133,7 @@ void RealtimeAnalyser::doFFTAnalysis()
     float* tempP = temporaryBuffer.data();
 
     // Take the previous fftSize values from the input buffer and copy into the temporary buffer.
-    unsigned writeIndex = m_writeIndex;
+    size_t writeIndex = m_writeIndex;
     if (writeIndex < fftSize) 
     {
         memcpy(tempP, inputBuffer + writeIndex - fftSize + InputBufferSize, sizeof(*tempP) * (fftSize - writeIndex));
@@ -187,7 +187,7 @@ void RealtimeAnalyser::getFloatFrequencyData(std::vector<float>& destinationArra
     size_t len = min(sourceLength, destinationArray.size());
     if (len > 0) {
         const float* source = magnitudeBuffer().data();
-        for (unsigned i = 0; i < len; ++i) {
+        for (size_t i = 0; i < len; ++i) {
             float linearValue = source[i];
             double dbMag = !linearValue ? minDecibels : AudioUtilities::linearToDecibels(linearValue);
             destinationArray[i] = float(dbMag);
@@ -210,7 +210,7 @@ void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t>& destinationArr
         const double minDecibels = m_minDecibels;
 
         const float* source = magnitudeBuffer().data();
-        for (unsigned i = 0; i < len; ++i) {
+        for (size_t i = 0; i < len; ++i) {
             float linearValue = source[i];
             double dbMag = !linearValue ? minDecibels : AudioUtilities::linearToDecibels(linearValue);
             
@@ -243,9 +243,9 @@ void RealtimeAnalyser::getFloatTimeDomainData(std::vector<float>& destinationArr
             return;
         
         float* inputBuffer = m_inputBuffer.data();
-        unsigned writeIndex = m_writeIndex;
+        size_t writeIndex = m_writeIndex;
         
-        for (unsigned i = 0; i < len; ++i)
+        for (size_t i = 0; i < len; ++i)
             // Buffer access is protected due to modulo operation.
             destinationArray[i] = inputBuffer[(i + writeIndex - fftSize + InputBufferSize) % InputBufferSize];
     }
@@ -266,9 +266,9 @@ void RealtimeAnalyser::getByteTimeDomainData(std::vector<uint8_t>& destinationAr
             return;
 
         float* inputBuffer = m_inputBuffer.data();
-        unsigned writeIndex = m_writeIndex;
+        size_t writeIndex = m_writeIndex;
 
-        for (unsigned i = 0; i < len; ++i) {
+        for (size_t i = 0; i < len; ++i) {
             // Buffer access is protected due to modulo operation.
             float value = inputBuffer[(i + writeIndex - fftSize + InputBufferSize) % InputBufferSize];
 

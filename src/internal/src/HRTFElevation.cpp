@@ -119,8 +119,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
         return false;
     }
 
-    uint32_t responseLength = impulseResponse->length();
-    uint32_t expectedLength = static_cast<uint32_t>(256 * (info->sampleRate / 44100.0));
+    size_t responseLength = impulseResponse->length();
+    size_t expectedLength = static_cast<size_t>(256 * (info->sampleRate / 44100.0));
 
     // Check number of channels and length.  For now these are fixed and known.
     bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == Channels::Stereo;
@@ -135,7 +135,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     AudioChannel * rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
 
     // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
-    const uint32_t fftSize = HRTFPanner::fftSizeForSampleRate(info->sampleRate);
+    const size_t fftSize = HRTFPanner::fftSizeForSampleRate(info->sampleRate);
     kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, info->sampleRate);
     kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, info->sampleRate);
 
