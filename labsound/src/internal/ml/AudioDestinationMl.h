@@ -18,13 +18,13 @@
 
 namespace lab {
 
-class AudioDestinationLinux : public AudioDestination 
+class AudioDestinationMl : public AudioDestination 
 { 
 
 public:
 
-    AudioDestinationLinux(AudioIOCallback &, float sampleRate);
-    virtual ~AudioDestinationLinux();
+    AudioDestinationMl(AudioIOCallback &, float sampleRate);
+    virtual ~AudioDestinationMl();
 
     virtual void start() override;
     virtual void stop() override;
@@ -37,7 +37,7 @@ public:
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
-private:
+// protected:
 
     // void configure();
 
@@ -55,13 +55,13 @@ private:
     MLAudioBufferFormat outputAudioBufferFormat;
     MLAudioBufferFormat inputAudioBufferFormat;
     size_t nBufferFrames;
-    std::vector<float> outputBuffer(nBufferFrames);
-    std::vector<float> inputBuffer(nBufferFrames);
+    std::vector<float> outputBuffer;
+    std::vector<float> inputBuffer;
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData ); 
 
 } // namespace lab
 
-#endif // AudioDestinationWin_h
+#endif // AAudioDestinationMl_h
 
