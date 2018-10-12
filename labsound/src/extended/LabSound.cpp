@@ -20,7 +20,11 @@ namespace lab
 
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r)
     {
-        AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
+        std::shared_ptr<AudioDestinationNode> destination = r.context()->destination();
+        if (!destination->isRecording()) {
+          destination->startRecording();
+        }
+        AudioSourceProvider * provider = destination->localAudioInputProvider();
         std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
         inputNode->setFormat(r, 1, r.context()->sampleRate());
         return inputNode;
