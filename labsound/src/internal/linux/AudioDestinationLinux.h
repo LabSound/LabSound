@@ -26,8 +26,11 @@ public:
 
     virtual void start() override;
     virtual void stop() override;
+    virtual void startRecording() override;
+    virtual void stopRecording() override;
 
     bool isPlaying() override { return m_isPlaying; }
+    bool isRecording() override { return m_isRecording; }
     float sampleRate() const override { return m_sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
@@ -43,6 +46,7 @@ private:
 
     float m_sampleRate;
     bool m_isPlaying = false;
+    bool m_isRecording = false;
 
     std::unique_ptr<RtAudio> dac; // XXX
 };

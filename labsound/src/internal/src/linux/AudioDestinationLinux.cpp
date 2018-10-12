@@ -103,6 +103,16 @@ void AudioDestinationLinux::stop()
     }
 }
 
+void AudioDestinationLinux::startRecording()
+{
+  m_isRecording = true;
+}
+
+void AudioDestinationLinux::stopRecording()
+{
+  m_isRecording = false;
+}
+
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
