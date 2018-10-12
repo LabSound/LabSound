@@ -3,6 +3,7 @@
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/DefaultAudioDestinationNode.h"
+#include "AudioDestination.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -20,13 +21,20 @@ namespace lab
 
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r)
     {
-        std::shared_ptr<AudioDestinationNode> destination = r.context()->destination();
-        if (!destination->isRecording()) {
-          destination->startRecording();
+        std::shared_ptr<AudioDestinationNode> destinationNode = r.context()->destination();
+
+        {
+          DefaultAudioDestinationNode *defaultDestinationNode = (DefaultAudioDestinationNode *)(destinationNode.get());
+          AudioDestination *destination = defaultDestinationNode->destination();
+          if (!destination->isRecording()) {
+            destination->startRecording();
+          }
         }
-        AudioSourceProvider * provider = destination->localAudioInputProvider();
+
+        AudioSourceProvider * provider = destinationNode->localAudioInputProvider();
         std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
         inputNode->setFormat(r, 1, r.context()->sampleRate());
+
         return inputNode;
     }
 
