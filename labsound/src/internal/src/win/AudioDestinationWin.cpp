@@ -103,6 +103,16 @@ void AudioDestinationWin::stop()
     }
 }
 
+void AudioDestinationWin::startRecording()
+{
+  m_isRecording = true;
+}
+
+void AudioDestinationWin::stopRecording()
+{
+  m_isRecording = false;
+}
+
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
