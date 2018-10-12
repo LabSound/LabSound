@@ -28,8 +28,8 @@ public:
 
     virtual void start() override;
     virtual void stop() override;
-    virtual void start() override;
-    virtual void stop() override;
+    virtual void startRecording() override;
+    virtual void stopRecording() override;
 
     bool isPlaying() override { return m_isPlaying; }
     bool isRecording() override { return m_isRecording; }
