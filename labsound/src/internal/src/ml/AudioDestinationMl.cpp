@@ -38,7 +38,7 @@ void outputBufferCallback(MLHandle handle, void *callback_context) {
       }
 
       for (size_t i = 0; i < audioDestination->inputBuffer.size(); i++) {
-        audioDestination->inputBuffer[i] = (float)(((uint16_t *)inputMlBuffer.ptr)[i]);
+        audioDestination->inputBuffer[i] = (float)(((uint16_t *)inputMlBuffer.ptr)[i]) / 32768.0f;
       }
     } else {
       memset(audioDestination->inputBuffer.data(), 0, sizeof(float) * audioDestination->inputBuffer.size());
@@ -47,7 +47,7 @@ void outputBufferCallback(MLHandle handle, void *callback_context) {
     audioDestination->render(audioDestination->outputBuffer.size(), audioDestination->outputBuffer.data(), audioDestination->inputBuffer.data());
 
     for (size_t i = 0; i < audioDestination->outputBuffer.size(); i++) {
-      ((uint16_t *)outputMlBuffer.ptr)[i] = (uint16_t)(audioDestination->outputBuffer[i]);
+      ((uint16_t *)outputMlBuffer.ptr)[i] = (uint16_t)(audioDestination->outputBuffer[i] * 32768.0f);
     }
 
     result = MLAudioReleaseOutputStreamBuffer(audioDestination->outputHandle);
