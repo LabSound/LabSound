@@ -20,7 +20,11 @@ public:
 
     virtual void start();
     virtual void stop();
+    virtual void startRecording() override;
+    virtual void stopRecording() override;
+
     bool isPlaying() { return m_isPlaying; }
+    bool isRecording() { return m_isRecording; }
 
     float sampleRate() const { return m_sampleRate; }
 
@@ -37,7 +41,8 @@ private:
     AudioBus m_renderBus;
 
     float m_sampleRate;
-    bool m_isPlaying;
+    bool m_isPlaying = false;
+    bool m_isRecording = false;
     
     class Input; // LabSound
     Input* m_input; // LabSound

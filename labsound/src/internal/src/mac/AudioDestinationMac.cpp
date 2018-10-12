@@ -268,6 +268,16 @@ void AudioDestinationMac::stop()
     result = AudioOutputUnitStop(m_input->m_inputUnit);
 }
 
+void AudioDestinationMac::startRecording()
+{
+  m_isRecording = true;
+}
+
+void AudioDestinationMac::stopRecording()
+{
+  m_isRecording = false;
+}
+
 // Pulls on our provider to get rendered audio stream.
 OSStatus AudioDestinationMac::render(UInt32 numberOfFrames, AudioBufferList* ioData)
 {
