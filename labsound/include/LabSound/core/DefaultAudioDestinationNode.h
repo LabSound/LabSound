@@ -26,6 +26,8 @@ public:
     virtual void initialize() override;
     virtual void uninitialize() override;
     virtual void startRendering() override;
+
+    AudioDestination *destination();
     
     unsigned maxChannelCount() const;
     virtual void setChannelCount(ContextGraphLock &, unsigned long) override;

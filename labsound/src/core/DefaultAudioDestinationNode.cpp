@@ -56,6 +56,10 @@ void DefaultAudioDestinationNode::startRendering()
     if (isInitialized())
         m_destination->start();
 }
+
+AudioDestination *DefaultAudioDestinationNode::destination() {
+  return m_destination.get();
+}
     
 unsigned DefaultAudioDestinationNode::maxChannelCount() const
 {
