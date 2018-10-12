@@ -8,6 +8,7 @@ set(CMAKE_SYSROOT /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin)
 set(CMAKE_STAGING_PREFIX /tmp/stage)
 include_directories(/mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin/stl/libc++/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
+definition("LUMIN", "1")
 
 set(CMAKE_C_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang)
 set(CMAKE_CXX_COMPILER /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/tools/toolchains/bin/aarch64-linux-android-clang++)
