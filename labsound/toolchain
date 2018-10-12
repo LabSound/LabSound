@@ -7,6 +7,7 @@ SET(CMAKE_CROSSCOMPILING TRUE)
 set(CMAKE_SYSROOT /mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin)
 set(CMAKE_STAGING_PREFIX /tmp/stage)
 include_directories(/mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/lumin/stl/libc++/include)
+include_directories(/mnt/c/Users/avaer/MagicLeap/mlsdk/v0.16.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/third_party)
 definition("LUMIN", "1")
 
