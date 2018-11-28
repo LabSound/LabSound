@@ -21,7 +21,7 @@ class AudioDestinationWin : public AudioDestination
 
 public:
 
-    AudioDestinationWin(AudioIOCallback &, unsigned numChannels, float sampleRate);
+    AudioDestinationWin(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationWin();
 
     virtual void start() override;
@@ -40,7 +40,7 @@ private:
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
-    unsigned m_numChannels;
+    size_t m_numChannels;
     float m_sampleRate;
 
     RtAudio dac;

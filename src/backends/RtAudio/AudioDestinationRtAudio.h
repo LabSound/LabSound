@@ -21,7 +21,7 @@ class AudioDestinationRtAudio : public AudioDestination
 
 public:
 
-    AudioDestinationRtAudio(AudioIOCallback &, unsigned numChannels, float sampleRate);
+    AudioDestinationRtAudio(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationRtAudio();
 
     virtual void start() override;

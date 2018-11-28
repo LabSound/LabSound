@@ -22,7 +22,6 @@ const double UnknownTime = -1;
 
 AudioScheduledSourceNode::AudioScheduledSourceNode() : m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
 {
-
 }
 
 void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
@@ -53,11 +52,13 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     size_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
     size_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
 
-    // If we know the end time and it's already passed, then don't bother doing any more rendering this cycle.
+    // If end time is known and it's already passed, then don't do any more rendering
     if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)
         finish(r);
 
-    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) {
+    // If unscheduled, or finished, or out of time, output silence
+    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) 
+    {
         // Output silence.
         outputBus->zero();
         nonSilentFramesToProcess = 0;
@@ -67,9 +68,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     // Check if it's time to start playing.
     if (m_playbackState == SCHEDULED_STATE) 
     {
-        // Increment the active source count only if we're transitioning from SCHEDULED_STATE to PLAYING_STATE.
         m_playbackState = PLAYING_STATE;
-        context->incrementActiveSourceCount();
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
@@ -119,7 +118,10 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
 
 void AudioScheduledSourceNode::start(double when)
 {
-    if (m_playbackState != UNSCHEDULED_STATE)
+    // https://github.com/modulesio/LabSound/pull/17
+    // allow start to be scheduled independently of current state
+
+    if (m_playbackState == PLAYING_STATE)
         return;
 
     if (!std::isfinite(when) || (when < 0)) {
@@ -132,8 +134,11 @@ void AudioScheduledSourceNode::start(double when)
 
 void AudioScheduledSourceNode::stop(double when)
 {
-    if (!(m_playbackState == SCHEDULED_STATE || m_playbackState == PLAYING_STATE))
-        return;
+    // https://github.com/modulesio/LabSound/pull/17
+    // allow stop to be scheduled independently of current state
+    // original:
+    // if (m_playbackState == FINISHED_STATE || m_playbackState == UNSCHEDULED_STATE))
+    //    return;
     
     if (!std::isfinite(when))
         return;
@@ -142,7 +147,8 @@ void AudioScheduledSourceNode::stop(double when)
     m_endTime = when;
 }
 
-void AudioScheduledSourceNode::reset(ContextRenderLock&) {
+void AudioScheduledSourceNode::reset(ContextRenderLock&) 
+{
     m_playbackState = UNSCHEDULED_STATE;
     m_endTime = UnknownTime;
 }
@@ -150,7 +156,6 @@ void AudioScheduledSourceNode::reset(ContextRenderLock&) {
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
 {
     m_playbackState = FINISHED_STATE;
-    r.context()->decrementActiveSourceCount();
     r.context()->enqueueEvent(m_onEnded);
 }
 

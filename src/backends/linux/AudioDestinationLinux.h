@@ -21,7 +21,7 @@ class AudioDestinationLinux : public AudioDestination
 
 public:
 
-    AudioDestinationLinux(AudioIOCallback &, float sampleRate);
+    AudioDestinationLinux(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationLinux();
 
     virtual void start() override;

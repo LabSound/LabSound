@@ -42,7 +42,7 @@ using namespace std;
 
 namespace lab {
 
-SincResampler::SincResampler(double scaleFactor, unsigned kernelSize, unsigned numberOfKernelOffsets)
+SincResampler::SincResampler(double scaleFactor, size_t kernelSize, size_t numberOfKernelOffsets)
     : m_scaleFactor(scaleFactor)
     , m_kernelSize(kernelSize)
     , m_numberOfKernelOffsets(numberOfKernelOffsets)
@@ -75,12 +75,13 @@ void SincResampler::initializeKernel()
     // FIXME: this value is empirical and to be more exact should vary depending on m_kernelSize.
     sincScaleFactor *= 0.9;
 
-    int n = m_kernelSize;
+    int n = static_cast<int>(m_kernelSize);
     int halfSize = n / 2;
 
     // Generates a set of windowed sinc() kernels.
     // We generate a range of sub-sample offsets from 0.0 to 1.0.
-    for (unsigned offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex) {
+    for (size_t offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex) 
+    {
         double subsampleOffset = static_cast<double>(offsetIndex) / m_numberOfKernelOffsets;
 
         for (int i = 0; i < n; ++i) {
@@ -94,12 +95,12 @@ void SincResampler::initializeKernel()
             double window = a0 - a1 * cos(2.0 * piDouble * x) + a2 * cos(4.0 * piDouble * x);
 
             // Window the sinc() function and store at the correct offset.
-            m_kernelStorage[i + offsetIndex * m_kernelSize] = sinc * window;
+            m_kernelStorage[static_cast<size_t>(i) + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);
         }
     }
 }
 
-void SincResampler::consumeSource(float* buffer, unsigned numberOfSourceFrames)
+void SincResampler::consumeSource(float* buffer, size_t numberOfSourceFrames)
 {
     ASSERT(m_sourceProvider);
     if (!m_sourceProvider)
@@ -154,16 +155,17 @@ private:
 
 } // namespace
 
-void SincResampler::process(const float* source, float* destination, unsigned numberOfSourceFrames)
+void SincResampler::process(const float* source, float* destination, size_t numberOfSourceFrames)
 {
     // Resample an in-memory buffer using an AudioSourceProvider.
     BufferSourceProvider sourceProvider(source, numberOfSourceFrames);
 
-    unsigned numberOfDestinationFrames = static_cast<unsigned>(numberOfSourceFrames / m_scaleFactor);
-    unsigned remaining = numberOfDestinationFrames;
+    size_t numberOfDestinationFrames = static_cast<size_t>(numberOfSourceFrames / m_scaleFactor);
+    size_t remaining = numberOfDestinationFrames;
     
-    while (remaining) {
-        unsigned framesThisTime = min(remaining, m_blockSize);
+    while (remaining) 
+    {
+        size_t framesThisTime = min(remaining, m_blockSize);
         process(&sourceProvider, destination, framesThisTime);
         
         destination += framesThisTime;
@@ -180,7 +182,7 @@ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destinat
     
     m_sourceProvider = sourceProvider;
 
-    unsigned numberOfDestinationFrames = framesToProcess;
+    size_t numberOfDestinationFrames = framesToProcess;
     
     // Setup various region pointers in the buffer (see diagram above).
     float* r0 = m_inputBuffer.data() + m_kernelSize / 2;
@@ -222,7 +224,7 @@ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destinat
             double kernelInterpolationFactor = virtualOffsetIndex - offsetIndex;
 
             // Generate a single output sample. 
-            int n = m_kernelSize;
+            int n = static_cast<int>(m_kernelSize);
 
 #define CONVOLVE_ONE_SAMPLE      \
             input = *inputP++;   \
@@ -415,9 +417,7 @@ void SincResampler::process(AudioSourceProvider* sourceProvider, float* destinat
             }
 
             // Linearly interpolate the two "convolutions".
-            double result = (1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2;
-
-            *destination++ = result;
+            *destination++ = static_cast<float>((1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2);
 
             // Advance the virtual index.
             m_virtualSourceIndex += m_scaleFactor;

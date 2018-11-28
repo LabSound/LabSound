@@ -644,7 +644,7 @@ void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus &sourceBus, f
     }
 }
 
-std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, double newSampleRate)
+std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus* sourceBus, bool mixToMono, float newSampleRate)
 {
     // sourceBus's sample-rate must be known.
     ASSERT(sourceBus && sourceBus->sampleRate());
@@ -675,7 +675,7 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus*
 
     if (sourceBus->isSilent()) 
 	{
-        std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, sourceBus->length() / sampleRateRatio));
+        std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, static_cast<size_t>(sourceBus->length() / sampleRateRatio)));
         silentBus->setSampleRate(newSampleRate);
         return silentBus;
     }

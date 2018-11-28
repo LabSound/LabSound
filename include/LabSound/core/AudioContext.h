@@ -70,11 +70,6 @@ public:
 
     AudioListener & listener();
 
-    unsigned long activeSourceCount() const;
-
-    void incrementActiveSourceCount();
-    void decrementActiveSourceCount();
-
     void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
 
