@@ -26,7 +26,7 @@ namespace lab
 
     public:
 
-        LocalAudioInputProvider(unsigned channelCount) : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
+        LocalAudioInputProvider(size_t channelCount) : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
         {
         }
         
@@ -50,7 +50,7 @@ namespace lab
     };
 
     
-AudioDestinationNode::AudioDestinationNode(AudioContext * context, unsigned channelCount, float sampleRate) 
+AudioDestinationNode::AudioDestinationNode(AudioContext * context, size_t channelCount, float sampleRate) 
 : m_currentSampleFrame(0), m_sampleRate(sampleRate), m_context(context)
 {
     m_localAudioInputProvider = new LocalAudioInputProvider(channelCount);

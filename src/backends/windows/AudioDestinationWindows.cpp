@@ -74,7 +74,7 @@ void AudioDestinationWin::configure()
 
     RtAudio::StreamParameters outputParams;
     outputParams.deviceId = dac.getDefaultOutputDevice();
-    outputParams.nChannels = m_numChannels;
+    outputParams.nChannels = static_cast<unsigned int>(m_numChannels);
     outputParams.firstChannel = 0;
 
     auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);

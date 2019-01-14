@@ -26,7 +26,7 @@ namespace lab {
 
     inline void applyWindow(WindowType wType, std::vector<float> &buffer) {
 
-        int bSize = buffer.size();
+        int bSize = static_cast<int>(buffer.size());
 
         switch (wType) {
 

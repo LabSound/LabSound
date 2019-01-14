@@ -38,7 +38,7 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
     ASSERT(source);
     ASSERT_UNUSED(framesToProcess, framesToProcess == source->length());
     
-    unsigned numberOfSourceChannels = source->numberOfChannels();
+    size_t numberOfSourceChannels = source->numberOfChannels();
     
     for (uint32_t i = 0; i < numberOfOutputs(); ++i)
     {

@@ -36,10 +36,10 @@ public:
     
     // Rendering code accesses its version of the current connections here.
     size_t numberOfRenderingConnections(ContextRenderLock&) const;
-    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, unsigned i) {
+    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, size_t i) {
         return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
     
-    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, unsigned i) const {
+    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, size_t i) const {
         return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
     
     bool isConnected() const { return numberOfConnections() > 0; }

@@ -30,7 +30,7 @@ private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     
-    uint32_t m_desiredNumberOfOutputChannels = 1; // default
+    size_t m_desiredNumberOfOutputChannels = 1; // default
 };
 
 } // namespace lab

@@ -50,10 +50,10 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
         
         if (input->isConnected())
         {
-            uint32_t numberOfInputChannels = input->bus(r)->numberOfChannels();
+            size_t numberOfInputChannels = input->bus(r)->numberOfChannels();
             
             // Merge channels from this particular input.
-            for (uint32_t j = 0; j < numberOfInputChannels; ++j)
+            for (size_t j = 0; j < numberOfInputChannels; ++j)
             {
                 AudioChannel* inputChannel = input->bus(r)->channel(j);
                 AudioChannel* outputChannel = output->bus(r)->channel(outputChannelIndex);
@@ -77,7 +77,7 @@ void ChannelMergerNode::reset(ContextRenderLock&)
 void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
 {
     // Count how many channels we have all together from all of the inputs.
-    uint32_t numberOfOutputChannels = 0;
+    size_t numberOfOutputChannels = 0;
     
     for (uint32_t i = 0; i < numberOfInputs(); ++i)
     {

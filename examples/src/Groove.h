@@ -110,13 +110,13 @@ struct MoogFilter
 
     float process(double cutoff, double resonance, double sample)
     {
-        cutoff = 2.0 * cutoff / sampleRate;
+        cutoff = 2.0f * cutoff / sampleRate;
 
-        p = cutoff * (1.8 - 0.8 * cutoff);
-        k = 2.0 * std::sin(cutoff * M_PI * 0.5) - 1.0;
-        t1 = (1.0 - p) * 1.386249;
-        t2 = 12.0 + t1 * t1;
-        r = resonance * (t2 + 6.0 * t1) / (t2 - 6.0 * t1);
+        p = cutoff * (1.8f - 0.8f * cutoff);
+        k = 2.0 * std::sin(cutoff * M_PI * 0.5f) - 1.0f;
+        t1 = (1.0f - p) * 1.386249f;
+        t2 = 12.0f + t1 * t1;
+        r = resonance * (t2 + 6.0f * t1) / (t2 - 6.0f * t1);
 
         x = sample - r * y4;
 

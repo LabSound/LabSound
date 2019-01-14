@@ -112,8 +112,6 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
 
         finish(r);
     }
-
-    return;
 }
 
 void AudioScheduledSourceNode::start(double when)

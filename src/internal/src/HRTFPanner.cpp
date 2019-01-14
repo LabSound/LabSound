@@ -95,7 +95,7 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double& azi
 
 void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess)
 {
-    unsigned numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
+    size_t numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
 
     bool isInputGood = inputBus &&  numInputChannels >= Channels::Mono && numInputChannels <= Channels::Stereo;
     ASSERT(isInputGood);

@@ -83,8 +83,8 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     // Find the number of channels of the connection with the largest number of channels.
     size_t maxChannels = 1; // one channel is the minimum allowed
 
-    int c = numberOfRenderingConnections(r);
-    for (int i = 0; i < c; ++i)
+    size_t c = numberOfRenderingConnections(r);
+    for (size_t i = 0; i < c; ++i)
     {
         auto output = renderingOutput(r, i);
         if (output)
