@@ -6,6 +6,7 @@
 #define AudioScheduledSourceNode_h
 
 #include "LabSound/core/AudioSourceNode.h"
+#include <functional>
 
 namespace lab {
 

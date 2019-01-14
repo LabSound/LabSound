@@ -9,7 +9,7 @@
 
 #include "LabSound/extended/AudioFileReader.h"
 
-#include "libnyquist/AudioDecoder.h"
+#include "libnyquist/Decoders.h"
 
 #include <mutex>
 #include <cstring>
