@@ -58,9 +58,8 @@ AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, size_t 
 
 AudioDestinationLinux::~AudioDestinationLinux()
 {
-    dac.release(); // XXX
-    /* if (dac.isStreamOpen())
-        dac.closeStream(); */
+    if (dac.isStreamOpen())
+        dac.closeStream();
 }
 
 void AudioDestinationLinux::configure()
@@ -77,7 +76,7 @@ void AudioDestinationLinux::configure()
     outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-    auto deviceInfo = dac->getDeviceInfo(outputParams.deviceId);
+    auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
     LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;

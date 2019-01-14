@@ -58,7 +58,6 @@ AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback, siz
 
 AudioDestinationRtAudio::~AudioDestinationRtAudio()
 {
-    //dac.release(); // XXX
      if (dac.isStreamOpen())
         dac.closeStream();
 }
