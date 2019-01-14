@@ -12,7 +12,7 @@
 
 namespace lab {
     
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context, unsigned channelCount, const float sampleRate) 
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context, size_t channelCount, const float sampleRate) 
 : AudioDestinationNode(context, channelCount, sampleRate)
 {
     // Node-specific default mixing rules.

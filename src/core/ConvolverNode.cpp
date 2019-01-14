@@ -96,7 +96,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
     if (!bus) return;
 
-    unsigned numberOfChannels = bus->numberOfChannels();
+    size_t numberOfChannels = bus->numberOfChannels();
     size_t bufferLength = bus->length();
 
     // The current implementation supports up to four channel impulse responses, which are interpreted as true-stereo (see Reverb class).

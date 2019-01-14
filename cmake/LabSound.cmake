@@ -56,7 +56,11 @@ set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
+elseif (APPLE)
+else()
+    target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
 endif()
+
 
 target_link_libraries(LabSound libnyquist)
 

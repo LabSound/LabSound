@@ -21,7 +21,7 @@ class AudioDestinationLinux : public AudioDestination
 
 public:
 
-    AudioDestinationLinux(AudioIOCallback &, float sampleRate);
+    AudioDestinationLinux(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationLinux();
 
     virtual void start() override;
@@ -40,9 +40,10 @@ private:
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
     AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
 
+    size_t m_numChannels;
     float m_sampleRate;
 
-    std::unique_ptr<RtAudio> dac; // XXX
+    RtAudio dac;
 };
 
 int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );

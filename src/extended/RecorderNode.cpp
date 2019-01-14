@@ -7,7 +7,7 @@
 
 #include "LabSound/extended/RecorderNode.h"
 
-#include "libnyquist/WavEncoder.h"
+#include "libnyquist/Encoders.h"
 
 namespace lab 
 {
@@ -140,7 +140,8 @@ namespace lab
         // Libnyquist bug with things other than PCM_FLT?
         nqr::EncoderParams params = {channels, nqr::PCM_FLT, nqr::DITHER_NONE};
 
-        /*int encoderStatus =*/ nqr::WavEncoder::WriteFile(params, fileData.get(), filenameWithWavExtension);
+        /*int encoderStatus =*/
+        nqr::encode_wav_to_disk(params, fileData.get(), filenameWithWavExtension);
     }
     
     void RecorderNode::reset(ContextRenderLock& r)

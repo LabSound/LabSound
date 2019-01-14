@@ -58,7 +58,7 @@ namespace lab
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
-            unsigned numChannels = numberOfChannels();
+            size_t numChannels = numberOfChannels();
 
             if (mode == ClipNode::TANH)
             {

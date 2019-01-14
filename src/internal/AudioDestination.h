@@ -15,7 +15,7 @@ struct AudioIOCallback;
 struct AudioDestination
 {
     //@tofix - web audio puts the input initialization on the destination as well. I'm not sure that makes sense.
-    static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, unsigned numberOfOutputChannels, float sampleRate);
+    static AudioDestination * MakePlatformAudioDestination(AudioIOCallback &, size_t numberOfOutputChannels, float sampleRate);
 
     virtual ~AudioDestination() { }
 

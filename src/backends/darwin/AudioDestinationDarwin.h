@@ -15,7 +15,7 @@ namespace lab {
 
 class AudioDestinationMac : public AudioDestination {
 public:
-    AudioDestinationMac(AudioIOCallback&, unsigned channelCount, float sampleRate);
+    AudioDestinationMac(AudioIOCallback&, size_t channelCount, float sampleRate);
     virtual ~AudioDestinationMac();
 
     virtual void start();

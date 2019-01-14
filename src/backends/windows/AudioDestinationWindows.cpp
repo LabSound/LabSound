@@ -35,7 +35,7 @@ static int NumDefaultOutputChannels()
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 
-AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, unsigned numberOfOutputChannels, float sampleRate)
+AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, size_t numberOfOutputChannels, float sampleRate)
 {
     return new AudioDestinationWin(callback, numberOfOutputChannels, sampleRate);
 }
@@ -45,7 +45,7 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, unsigned numChannels, float sampleRate)
+AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, size_t numChannels, float sampleRate)
 : m_callback(callback)
 , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 , m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
@@ -74,7 +74,7 @@ void AudioDestinationWin::configure()
 
     RtAudio::StreamParameters outputParams;
     outputParams.deviceId = dac.getDefaultOutputDevice();
-    outputParams.nChannels = m_numChannels;
+    outputParams.nChannels = static_cast<unsigned int>(m_numChannels);
     outputParams.firstChannel = 0;
 
     auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);

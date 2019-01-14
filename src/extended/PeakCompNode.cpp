@@ -118,8 +118,8 @@ namespace lab
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];
-            unsigned numChannels = numberOfChannels();
-            for (unsigned int i = 0; i < numChannels; ++i)
+            size_t numChannels = numberOfChannels();
+            for (size_t i = 0; i < numChannels; ++i)
             {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source[i] = sourceBus->channel(i)->data();
@@ -128,7 +128,7 @@ namespace lab
             }
 
             float * dest[16];
-            for (unsigned int i = 0; i < numChannels; ++i)
+            for (size_t i = 0; i < numChannels; ++i)
                 dest[i] = destinationBus->channel(i)->mutableData();
 
             for (size_t i = 0; i < framesToProcess; ++i)

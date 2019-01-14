@@ -163,7 +163,7 @@ public:
 };
 //LabSound end
 
-AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, unsigned numberOfOutputChannels, float sampleRate)
+AudioDestination* AudioDestination::MakePlatformAudioDestination(AudioIOCallback& callback, size_t numberOfOutputChannels, float sampleRate)
 {
     return new AudioDestinationMac(callback, numberOfOutputChannels, sampleRate);
 }
@@ -177,7 +177,7 @@ unsigned long AudioDestination::maxChannelCount()
     return 0;
 }
 
-AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, unsigned channelCount, float sampleRate)
+AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, size_t channelCount, float sampleRate)
 : m_outputUnit(0)
 , m_callback(callback)
 , m_renderBus(2, kBufferSize, false)

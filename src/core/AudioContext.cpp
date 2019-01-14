@@ -459,24 +459,9 @@ AudioListener & AudioContext::listener()
     return *m_listener.get();
 }
 
-unsigned long AudioContext::activeSourceCount() const
-{
-    return static_cast<unsigned long>(m_activeSourceCount);
-}
-
 void AudioContext::startRendering()
 {
     destination()->startRendering();
-}
-
-void AudioContext::incrementActiveSourceCount()
-{
-    ++m_activeSourceCount;
-}
-
-void AudioContext::decrementActiveSourceCount()
-{
-    --m_activeSourceCount;
 }
 
 } // End namespace lab

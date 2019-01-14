@@ -49,7 +49,7 @@ void ReverbAccumulationBuffer::readAndClear(float* destination, size_t numberOfF
 void ReverbAccumulationBuffer::updateReadIndex(int* readIndex, size_t numberOfFrames) const
 {
     // Update caller's readIndex
-    *readIndex = (*readIndex + numberOfFrames) % m_buffer.size();
+    *readIndex = static_cast<int>((*readIndex + numberOfFrames) % m_buffer.size());
 }
 
 int ReverbAccumulationBuffer::accumulate(float* source, size_t numberOfFrames, int* readIndex, size_t delayFrames)

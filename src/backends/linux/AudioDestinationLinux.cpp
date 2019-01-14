@@ -35,7 +35,7 @@ static int NumDefaultOutputChannels()
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 
-AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, unsigned numberOfOutputChannels, float sampleRate)
+AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, size_t numberOfOutputChannels, float sampleRate)
 {
     return new AudioDestinationLinux(callback, numberOfOutputChannels, sampleRate);
 }
@@ -45,7 +45,7 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, unsigned numChannels, float sampleRate)
+AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, size_t numChannels, float sampleRate)
 : m_callback(callback)
 , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 , m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
@@ -58,9 +58,8 @@ AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, unsigne
 
 AudioDestinationLinux::~AudioDestinationLinux()
 {
-    dac.release(); // XXX
-    /* if (dac.isStreamOpen())
-        dac.closeStream(); */
+    if (dac.isStreamOpen())
+        dac.closeStream();
 }
 
 void AudioDestinationLinux::configure()
@@ -77,7 +76,7 @@ void AudioDestinationLinux::configure()
     outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-    auto deviceInfo = dac->getDeviceInfo(outputParams.deviceId);
+    auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
     LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;

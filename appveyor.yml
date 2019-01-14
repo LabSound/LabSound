@@ -2,6 +2,13 @@ version: 1.0.{build}
 
 image: Visual Studio 2017
 
+environment:
+  matrix:
+    - CMAKE_PLATFORM: "Visual Studio 14 2015"
+    - CMAKE_PLATFORM: "Visual Studio 14 2015 Win64"
+    - CMAKE_PLATFORM: "Visual Studio 15 2017"
+    - CMAKE_PLATFORM: "Visual Studio 15 2017 Win64"
+
 platform: x64
 configuration: 
   - Release
@@ -10,6 +17,8 @@ configuration:
 install:
   - git submodule update --init --recursive
 
-build:
-  verbosity: minimal
-  project: examples/win.vs2017/LabSoundExamples.sln
+build_script:
+  - mkdir build
+  - cd build
+  - cmake -G "%CMAKE_PLATFORM%" ..
+  - cmake --build . --target install --config %CONFIGURATION%
