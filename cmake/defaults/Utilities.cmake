@@ -11,6 +11,7 @@ function(include_dir fpath)
     set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${fpath})
 endfunction()
 
-function(set_cxx_version proj)
+function(_set_cxx_14 proj)
 	target_compile_features(${proj} INTERFACE cxx_std_14)
 endfunction()
+
