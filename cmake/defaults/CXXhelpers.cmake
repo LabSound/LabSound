@@ -49,3 +49,7 @@ function(_set_compile_options proj)
     endif()
 
 endfunction()
+
+function(_set_cxx_14 proj)
+    target_compile_features(${proj} INTERFACE cxx_std_14)
+endfunction()
