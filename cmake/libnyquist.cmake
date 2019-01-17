@@ -16,7 +16,7 @@ list(FILTER third_opus_src EXCLUDE REGEX ".*demo.c$")
 
 add_library(libopus STATIC ${third_opus_src})
 
-set_cxx_version(libopus)
+_set_cxx_14(libopus)
 _set_compile_options(libopus)
 
 if (WIN32)
@@ -99,7 +99,7 @@ file(GLOB third_nyquist_src "${LABSOUND_ROOT}/third_party/libnyquist/src/*")
 add_library(libnyquist STATIC
     ${third_nyquist_h} ${third_nyquist_src})
 
-set_cxx_version(libnyquist)
+_set_cxx_14(libnyquist)
 _set_compile_options(libnyquist)
 
 if(WIN32)
