@@ -1,6 +1,12 @@
 
 project(LabSound)
 
+if (UNIX AND NOT APPLE)
+    if (NOT (LABSOUND_JACK OR LABSOUND_PULSE OR LABSOUND_ASOUND))
+        message(FATAL, "On Linux, one of LABSOUND_JACK, LABSOUND_PULSE, or LABSOUND_ASOUND must be set.")
+    endif()
+endif()
+
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -28,7 +34,7 @@ add_library(LabSound STATIC
     ${third_kissfft}
  )
 
-_set_Cxx17(LabSound)
+_set_cxx_14(LabSound)
 _set_compile_options(LabSound)
 
 target_include_directories(LabSound PUBLIC
