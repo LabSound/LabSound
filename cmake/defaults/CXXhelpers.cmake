@@ -23,7 +23,7 @@ endif()
 function(_set_compile_options proj)
     if(WIN32)
         target_compile_options(${proj} PRIVATE /arch:AVX /Zi)
-        target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
+        target_compile_definitions(${proj} PRIVATE __WINDOWS_WASAPI__=1)
         # TODO: These vars are for libniquist and should be set in the find libynquist script.
         target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
     elseif(APPLE)
