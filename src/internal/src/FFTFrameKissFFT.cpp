@@ -19,7 +19,7 @@ namespace lab
     const int kMaxFFTPow2Size = 24;
     
     // Normal constructor: allocates for a given fftSize.
-    FFTFrame::FFTFrame(unsigned fftSize) : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double)fftSize))), mFFT(0), mIFFT(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1)
+    FFTFrame::FFTFrame(size_t fftSize) : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double)fftSize))), mFFT(0), mIFFT(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1)
     {
         // We only allow power of two.
         ASSERT(1UL << m_log2FFTSize == m_FFTSize);

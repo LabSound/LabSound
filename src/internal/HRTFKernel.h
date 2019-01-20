@@ -23,16 +23,15 @@ class HRTFKernel
 public:
     // Note: this is destructive on the passed in AudioChannel.
     // The length of channel must be a power of two.
-    HRTFKernel(AudioChannel *, uint32_t fftSize, float sampleRate);
+    HRTFKernel(AudioChannel *, size_t fftSize, float sampleRate);
     
     HRTFKernel(std::unique_ptr<FFTFrame> fftFrame, float frameDelay, float sampleRate) : m_fftFrame(std::move(fftFrame)) , m_frameDelay(frameDelay), m_sampleRate(sampleRate)
     {
-
     }
 
     FFTFrame* fftFrame() { return m_fftFrame.get(); }
     
-    uint32_t fftSize() const { return m_fftFrame->fftSize(); }
+    size_t fftSize() const { return m_fftFrame->fftSize(); }
     float frameDelay() const { return m_frameDelay; }
 
     // Converts back into impulse-response form.

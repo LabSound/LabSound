@@ -60,7 +60,7 @@ void HRTFDatabase::getKernelsFromAzimuthElevation(double azimuthBlend,
                                                   double & frameDelayR)
 {
     
-    unsigned elevationIndex = info->indexFromElevationAngle(elevationAngle);
+    size_t elevationIndex = info->indexFromElevationAngle(elevationAngle);
     
     ASSERT(elevationIndex < m_elevations.size() && m_elevations.size() > 0);
     
