@@ -224,7 +224,7 @@ void HRTFElevation::getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthI
         azimuthBlend = 0.0;
     }
 
-    unsigned numKernels = m_kernelListL->size();
+    size_t numKernels = m_kernelListL->size();
 
     bool isIndexGood = azimuthIndex < numKernels;
     ASSERT(isIndexGood);

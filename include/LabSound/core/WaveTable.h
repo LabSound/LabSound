@@ -51,15 +51,15 @@ private:
     float m_sampleRate;
     float m_rateScale;
 
-    unsigned numberOfRanges() const { return m_numberOfRanges; }
+    size_t numberOfRanges() const { return m_numberOfRanges; }
 
     // Maximum possible number of partials (before culling).
-    unsigned maxNumberOfPartials() const;
+    size_t maxNumberOfPartials() const;
 
-    unsigned numberOfPartialsForRange(unsigned rangeIndex) const;
+    size_t numberOfPartialsForRange(size_t rangeIndex) const;
 
     // Creates tables based on numberOfComponents Fourier coefficients.
-    void createBandLimitedTables(const float* real, const float* imag, unsigned numberOfComponents);
+    void createBandLimitedTables(const float* real, const float* imag, size_t numberOfComponents);
 
     std::vector<std::unique_ptr<AudioFloatArray> > m_bandLimitedTables;
 };

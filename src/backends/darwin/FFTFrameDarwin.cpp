@@ -18,12 +18,12 @@ const int kMaxFFTPow2Size = 24;
 FFTSetup * FFTFrame::fftSetups = 0;
 
 // Normal constructor: allocates for a given fftSize
-FFTFrame::FFTFrame(unsigned fftSize)
+FFTFrame::FFTFrame(size_t fftSize)
     : m_realData(fftSize)
     , m_imagData(fftSize)
 {
     m_FFTSize = fftSize;
-    m_log2FFTSize = static_cast<unsigned>(log2(fftSize));
+    m_log2FFTSize = static_cast<size_t>(log2(fftSize));
 
     // We only allow power of two
     ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -62,7 +62,7 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
     m_frame.imagp = m_imagData.data();
 
     // Copy/setup frame data
-    unsigned nbytes = sizeof(float) * m_FFTSize;
+    size_t nbytes = sizeof(float) * m_FFTSize;
     memcpy(realData(), frame.m_frame.realp, nbytes);
     memcpy(imagData(), frame.m_frame.imagp, nbytes);
 }
@@ -96,7 +96,7 @@ void FFTFrame::multiply(const FFTFrame& frame)
     const float* realP2 = frame2.realData();
     const float* imagP2 = frame2.imagData();
 
-    unsigned halfSize = m_FFTSize / 2;
+    size_t halfSize = m_FFTSize / 2;
     float real0 = realP1[0];
     float imag0 = imagP1[0];
 
@@ -131,7 +131,7 @@ void FFTFrame::doInverseFFT(float* data)
     vDSP_vsmul(data, 1, &scale, data, 1, m_FFTSize);
 }
 
-FFTSetup FFTFrame::fftSetupForSize(unsigned fftSize)
+FFTSetup FFTFrame::fftSetupForSize(size_t fftSize)
 {
     if (!fftSetups) {
         fftSetups = (FFTSetup*)malloc(sizeof(FFTSetup) * kMaxFFTPow2Size);

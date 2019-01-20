@@ -46,8 +46,8 @@ namespace lab {
         // specific to this node
         {
             std::vector<const float*> channels;
-            unsigned numberOfChannels = bus->numberOfChannels();
-            for (unsigned i = 0; i < numberOfChannels; ++i) {
+            size_t numberOfChannels = bus->numberOfChannels();
+            for (size_t i = 0; i < numberOfChannels; ++i) {
                 channels.push_back(bus->channel(i)->data());
             }
 

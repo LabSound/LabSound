@@ -9,14 +9,9 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     SET(CMAKE_INSTALL_PREFIX ${LABSOUND_ROOT}/install CACHE PATH "Install root" FORCE)
 ENDIF()
 
-set(CMAKE_MODULE_PATH
-    ${LABSOUND_ROOT}/cmake/defaults
-    ${LABSOUND_ROOT}/cmake/modules
-    ${LABSOUND_ROOT}/cmake/macros)
+add_subdirectory(third_party/libnyquist)
 
-include(Utilities)
-include(CXXDefaults)
-include(cmake/libnyquist.cmake)
+include(cmake/common.cmake)
 include(cmake/LabSound.cmake)
 include(cmake/examples.cmake)
 

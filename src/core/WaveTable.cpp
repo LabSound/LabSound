@@ -31,26 +31,26 @@ using namespace VectorMath;
 
 WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
 {
-    float nyquist = 0.5 * m_sampleRate;
+    float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
     m_rateScale = periodicWaveSize() / m_sampleRate;
 
     // Compute the number of ranges needed to cover the entire frequency range, assuming
     // kNumberOfOctaveBands per octave.
-    m_numberOfRanges = 0.5 + kNumberOfOctaveBands * log2f(periodicWaveSize());
+    m_numberOfRanges = static_cast<size_t>(0.5f + kNumberOfOctaveBands * log2f(static_cast<float>(periodicWaveSize())));
     
     generateBasicWaveform(basicWaveform);
 }
 
 WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
 {
-    float nyquist = 0.5 * m_sampleRate;
+    float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
     m_rateScale = periodicWaveSize() / m_sampleRate;
 
     // Compute the number of ranges needed to cover the entire frequency range, assuming
     // kNumberOfOctaveBands per octave.
-    m_numberOfRanges = 0.5 + kNumberOfOctaveBands * log2f(periodicWaveSize());
+    m_numberOfRanges = static_cast<size_t>(0.5f + kNumberOfOctaveBands * log2f(static_cast<float>(periodicWaveSize())));
     
     bool isGood = real.size() == imag.size() && real.size() > 0;
 
@@ -87,7 +87,7 @@ void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, floa
     fundamentalFrequency = std::abs(fundamentalFrequency);
 
     // Calculate the pitch range.
-    float ratio = fundamentalFrequency > 0 ? fundamentalFrequency / m_lowestFundamentalFrequency : 0.5;
+    float ratio = fundamentalFrequency > 0 ? fundamentalFrequency / m_lowestFundamentalFrequency : 0.5f;
     float centsAboveLowestFrequency = log2f(ratio) * 1200;
 
     // Add one to round-up to the next range just in time to truncate partials before aliasing occurs.
@@ -109,21 +109,21 @@ void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, floa
     tableInterpolationFactor = pitchRange - rangeIndex1;
 }
 
-unsigned WaveTable::maxNumberOfPartials() const
+size_t WaveTable::maxNumberOfPartials() const
 {
     return periodicWaveSize() / 2;
 }
 
-unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
+size_t WaveTable::numberOfPartialsForRange(size_t rangeIndex) const
 {
     // Number of cents below nyquist where we cull partials.
     float centsToCull = rangeIndex * m_centsPerRange;
 
     // A value from 0 -> 1 representing what fraction of the partials to keep.
-    float cullingScale = pow(2, -centsToCull / 1200);
+    float cullingScale = powf(2, -centsToCull / 1200.f);
 
     // The very top range will have all the partials culled.
-    unsigned numberOfPartials = cullingScale * maxNumberOfPartials();
+    size_t numberOfPartials = static_cast<size_t>(cullingScale * maxNumberOfPartials());
 
     return numberOfPartials;
 }
@@ -131,19 +131,19 @@ unsigned WaveTable::numberOfPartialsForRange(unsigned rangeIndex) const
 // Convert into time-domain wave tables.
 // One table is created for each range for non-aliasing playback at different playback rates.
 // Thus, higher ranges have more high-frequency partials culled out.
-void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, unsigned numberOfComponents)
+void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, size_t numberOfComponents)
 {
     float normalizationScale = 1.f;
 
-    unsigned fftSize = periodicWaveSize();
-    unsigned halfSize = fftSize / 2 + 1;
-    unsigned i;
+    size_t fftSize = periodicWaveSize();
+    size_t halfSize = fftSize / 2 + 1;
+    size_t i;
     
     numberOfComponents = std::min(numberOfComponents, halfSize);
 
     m_bandLimitedTables.reserve(numberOfRanges());
 
-    for (unsigned rangeIndex = 0; rangeIndex < numberOfRanges(); ++rangeIndex) {
+    for (size_t rangeIndex = 0; rangeIndex < numberOfRanges(); ++rangeIndex) {
         
         // This FFTFrame is used to cull partials (represented by frequency bins).
         FFTFrame frame(fftSize);
@@ -159,7 +159,7 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
 
         // Find the starting bin where we should start culling.  We need to clear out the highest
         // frequencies to band-limit the waveform.
-        unsigned numberOfPartials = numberOfPartialsForRange(rangeIndex);
+        size_t numberOfPartials = numberOfPartialsForRange(rangeIndex);
 
         // If fewer components were provided than 1/2 FFT size, then clear the remaining bins.
         // We also need to cull the aliasing partials for this pitch range.
@@ -228,7 +228,7 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
         switch (shape) {
         case OscillatorType::SINE:
             // Standard sine wave function.
-            b = (n == 1) ? 1 : 0;
+            b = (n == 1) ? 1.f : 0;
             break;
         case OscillatorType::SQUARE:
             // Square-shaped waveform with the first half its maximum value and the second half its
