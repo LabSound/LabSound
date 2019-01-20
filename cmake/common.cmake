@@ -1,8 +1,24 @@
 
+
 function(_add_define definition)
     list(APPEND _LAB_CXX_DEFINITIONS "-D${definition}")
     set(_LAB_CXX_DEFINITIONS ${_LAB_CXX_DEFINITIONS} PARENT_SCOPE)
 endfunction()
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+elseif(MSVC)
+    # Disable warning C4996 regarding fopen(), strcpy(), etc.
+    _add_define("_CRT_SECURE_NO_WARNINGS")
+
+    # Disable warning C4996 regarding unchecked iterators for std::transform,
+    # std::copy, std::equal, et al.
+    _add_define("_SCL_SECURE_NO_WARNINGS")
+
+    # Make sure WinDef.h does not define min and max macros which
+    # will conflict with std::min() and std::max().
+    _add_define("NOMINMAX")
+endif()
 
 function(_disable_warning flag)
     if(MSVC)
@@ -52,4 +68,16 @@ endfunction()
 
 function(_set_cxx_14 proj)
     target_compile_features(${proj} INTERFACE cxx_std_14)
+endfunction()
+
+function(source_file fname)
+    if(IS_ABSOLUTE ${fname})
+        target_sources(${PROJECT_NAME} PRIVATE ${fname})
+    else()
+        target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${fname})
+    endif()
+endfunction()
+
+function(include_dir fpath)
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${fpath})
 endfunction()

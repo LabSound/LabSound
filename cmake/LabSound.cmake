@@ -67,8 +67,7 @@ else()
     target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
 endif()
 
-
-target_link_libraries(LabSound libnyquist)
+target_link_libraries(LabSound libnyquist libopus libwavpack)
 
 install(TARGETS LabSound
     LIBRARY DESTINATION lib

@@ -69,52 +69,52 @@ namespace lab
             float v = m_threshold->value(r);
             if (v <= 0) {
                 // dB to linear (could use the function from m_pd.h)
-                threshold = powf(10, (v*0.05));
+                threshold = powf(10.f, (v*0.05f));
             }
             else
                 threshold = 0;
 
             v = m_ratio->value(r);
             if (v >= 1) {
-                ratio = 1./v;
+                ratio = 1.f/v;
             }
             else
                 ratio = 1;
 
             v = m_attack->value(r);
-            if (v >= 0.001) {
-                attack = v * 0.001;
+            if (v >= 0.001f) {
+                attack = v * 0.001f;
             }
             else
-                attack = 0.000001;
+                attack = 0.000001f;
 
             v = m_release->value(r);
-            if (v >= 0.001) {
-                release = v * 0.001;
+            if (v >= 0.001f) {
+                release = v * 0.001f;
             }
             else
-                release = 0.000001;
+                release = 0.000001f;
 
             v = m_makeup->value(r);
             // dB to linear (could use the function from m_pd.h)
-            makeupGain = pow(10, (v * 0.05));
+            makeupGain = powf(10.f, (v * 0.05f));
 
             v = m_knee->value(r);
             if (v >= 0 && v <= 1)
             {
                 // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.
-                knee = v * 0.02;
+                knee = v * 0.02f;
             }
 
             // calc coefficients from run time vars
-            kneeCoeffs = expf(0. - (oneOverSampleRate / knee));
-            kneeCoeffsMinus = 1. - kneeCoeffs;
+            kneeCoeffs = expf(0.f - (oneOverSampleRate / knee));
+            kneeCoeffsMinus = 1.f - kneeCoeffs;
 
-            attackCoeffs = expf(0. - (oneOverSampleRate / attack));
-            attackCoeffsMinus = 1. - attackCoeffs;
+            attackCoeffs = expf(0.f - (oneOverSampleRate / attack));
+            attackCoeffsMinus = 1.f - attackCoeffs;
 
-            releaseCoeff = expf(0. - (oneOverSampleRate / release));
-            releaseCoeffMinus = 1. - releaseCoeff;
+            releaseCoeff = expf(0.f - (oneOverSampleRate / release));
+            releaseCoeffMinus = 1.f - releaseCoeff;
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];
