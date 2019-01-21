@@ -1,12 +1,6 @@
 
 project(LabSound)
 
-if (UNIX AND NOT APPLE)
-    if (NOT (LABSOUND_JACK OR LABSOUND_PULSE OR LABSOUND_ASOUND))
-        message(FATAL, "On Linux, one of LABSOUND_JACK, LABSOUND_PULSE, or LABSOUND_ASOUND must be set.")
-    endif()
-endif()
-
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -60,11 +54,26 @@ set_target_properties(LabSound
 
 set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 
+message("P " ${LABSOUND_PULSE} " J " ${LABSOUND_JACK} " A " ${LABSOUND_ASOUND})
+
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
 elseif (APPLE)
 else()
-    target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
+    if (LABSOUND_JACK)
+        target_compile_definitions(LabSound PRIVATE __UNIX_JACK__=1)
+        message(FATAL, "WTF J")
+        set(LIBNYQUIST_JACK ON)
+    elseif (LABSOUND_PULSE)
+        target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
+        set(LIBNYQUIST_PULSE ON)
+        message(FATAL, "WTF P")
+    elseif (LABSOUND_ASOUND)    
+        target_compile_definitions(LabSound PRIVATE __LINUX_ALSA__=1)
+        set(LIBNYQUIST_ASOUND ON)
+    else()
+        message(FATAL, "On Linux, one of LABSOUND_JACK, LABSOUND_PULSE, or LABSOUND_ASOUND must be set.")
+    endif()
 endif()
 
 target_link_libraries(LabSound libnyquist libopus libwavpack)
