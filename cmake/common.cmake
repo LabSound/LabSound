@@ -29,13 +29,6 @@ function(_disable_warning flag)
     set(_LAB_CXX_WARNING_FLAGS ${_LAB_CXX_WARNING_FLAGS} PARENT_SCOPE)
 endfunction()
 
-# TODO this should be an option on linux
-if (UNIX AND NOT APPLE)
-    set(LABSOUND_JACK 0)
-    set(LABSOUND_ASOUND 1)
-    set(LABSOUND_PULSE 1)
-endif()
-
 function(_set_compile_options proj)
     if(WIN32)
         target_compile_options(${proj} PRIVATE /arch:AVX /Zi)
