@@ -83,6 +83,14 @@ install(FILES ${labsnd_core_h}
         DESTINATION include/LabSound/core)
 install(FILES ${labsnd_extended_h}
         DESTINATION include/LabSound/extended)
+install(DIRECTORY 
+        assets/hrtf
+        assets/images
+        assets/impulse
+        assets/json
+        assets/pd
+        assets/samples
+        DESTINATION share/LabSound)
 
 source_group(include\\core FILES ${labsnd_core_h})
 source_group(include\\extended FILES ${labsnd_extended_h})
