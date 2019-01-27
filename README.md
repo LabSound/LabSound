@@ -2,13 +2,15 @@
   <img src="https://raw.githubusercontent.com/LabSound/LabSound/master/assets/images/labsound_4x3.png"/>
 </p>
 
-macOS | Windows |
--------- | ------------ |
+macOS | Windows | Linux |
+-------- | ------------ | -------
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound) | [![Build status](https://ci.appveyor.com/api/projects/status/k6n5ib48t7q8wwlc?svg=true)](https://ci.appveyor.com/project/ddiakopoulos/labsound) |
 -----------------
 
 
-LabSound is a graph-based audio engine built in modern C++11. As a fork of the WebAudio implementation in Google's Chrome browser, LabSound implements many aspects of the WebAudio specification while extending its functionality with an improved API, new graph nodes, bugfixes, and performance improvements.
+LabSound is a graph-based audio engine built using C++11. LabSound originated as a fork of WebKit's WebAudio implementation, as used in Google's Chrome browser and Apple's Safari. 
+
+LabSound implements many aspects of the WebAudio specification while extending its functionality with an improved API, new graph nodes, bugfixes, and performance improvements.
 
 The engine is packaged as a batteries-included static library meant for integration in many types of software: games, visualizers, interactive installations, live coding environments, VST plugins, audio editing/sequencing applications, and more.
 
@@ -31,7 +33,19 @@ The engine is packaged as a batteries-included static library meant for integrat
 
 # Platforms
 
-LabSound uses RtAudio as its hardware abstraction layer for realtime audio playback on desktop platforms. The repository hosts maintained project files for Visual Studio 2017, XCode 8, and CMake. While not actively supported, LabSound has been shown to run on other platforms including Linux (JACK via RtAudio), iOS (CoreAudio), and Android (OpenSL ES).
+LabSound has a variety of backends, including RtAudio and CoreAudio.
+
+LabSound is currently tested on
+
+* Windows 10
+* macOS 10.10 to current
+* Ubuntu 18.04, using the ALSA and Pulse back ends.
+
+LabSound has been shown to run on
+
+* iOS
+* Android
+* macOS and Linux Jack
 
 # Building
 
@@ -46,6 +60,13 @@ LabSound and libnyquist require a C++11 compiler.
 CMake can be used as an alternative to the vcproj and xcodeproj files bundled with the LabSound source distribution.
 
 LabSound has a `CMakeLists.txt` at the root directory, and all the associated CMake files are in the `cmake/` subfolder. A CMake based build will work out of the box on Windows, it is not yet tested on other platforms. If you use the CMake build, it will build everything to a folder named `../local/` build directory. As always with CMake, it is recommended that you do an out-of-source build.
+
+On Linux, a backend must be selected, using one of ALSA, Pulse, or Jack. To build with ALSA:
+
+```sh
+cmake -DLABSOUND_ASOUND=1 /path/to/LabSound
+cmake --build . --target INSTALL --config Release
+```
 
 # Examples
 
