@@ -76,13 +76,15 @@ void AudioDestinationLinux::configure()
     outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-    auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    auto outDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
     LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = dac.getDefaultInputDevice();
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
+
+    auto inDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -91,7 +93,10 @@ void AudioDestinationLinux::configure()
 
     try
     {
-        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(outDeviceInfo.probed ? &outputParams : nullptr, 
+                       inDeviceInfo.probed ? &inputParams : nullptr, 
+            RTAUDIO_FLOAT32, 
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
