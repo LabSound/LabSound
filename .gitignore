@@ -67,6 +67,7 @@ win.vs2015/LabSound.VC.*
 
 # Visual Studio Code
 .vs/
+.vscode/
 
 # Visual Studio profiler
 *.psess

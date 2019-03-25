@@ -5,9 +5,13 @@ include_guard()
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    SET(CMAKE_INSTALL_PREFIX ${LABSOUND_ROOT}/install CACHE PATH "Install root" FORCE)
-ENDIF()
+if (LABSOUND_ASOUND)
+    set(LIBNYQUIST_ASOUND ON)
+elseif (LABSOUND_JACK)
+    set(LIBNYQUIST_JACK ON)
+elseif (LABSOUND_PULSE)
+    set(LIBNYQUIST_PULSE ON)
+endif()
 
 add_subdirectory(third_party/libnyquist)
 
