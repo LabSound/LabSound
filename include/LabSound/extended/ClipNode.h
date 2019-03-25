@@ -10,13 +10,18 @@
 namespace lab
 {
     // ClipNode clips a signal, using either thresholding or tanh
+    //
+    // params: a, b
+    // settings: mode
+    //
     class ClipNode : public AudioBasicProcessorNode
     {
         class ClipNodeInternal;
         ClipNodeInternal * internalNode;
         
     public:
-        enum Mode { CLIP, TANH };
+        enum Mode { CLIP = 0, 
+                    TANH = 1 };
 
         ClipNode();
         virtual ~ClipNode();

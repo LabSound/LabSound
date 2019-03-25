@@ -8,13 +8,16 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/WaveTable.h"
-#include "LabSound/core/Synthesis.h"
 
 namespace lab {
 
-class AudioContext;
 class AudioBus;
+class AudioContext;
+class AudioSetting;
 
+// params: frequency, detune
+// settings: type
+//
 class OscillatorNode : public AudioScheduledSourceNode
 {
     
@@ -27,13 +30,15 @@ public:
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
 
-    OscillatorType type() const { return m_type; }
+    OscillatorType type() const;
     void setType(OscillatorType type);
 
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
+
 private:
+    void _setType(OscillatorType type);
 
     float m_sampleRate;
 
@@ -45,7 +50,7 @@ private:
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
     // One of the waveform types defined in the enum.
-    OscillatorType m_type;
+    std::shared_ptr<AudioSetting> m_type;
    
     // Frequency value in Hertz.
     std::shared_ptr<AudioParam> m_frequency;

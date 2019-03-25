@@ -52,35 +52,35 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
 
         // Configure the biquad with the new filter parameters for the appropriate type of filter.
         switch (biquadProcessor()->type()) {
-        case BiquadProcessor::LowPass:
+        case FilterType::LOWPASS:
             m_biquad.setLowpassParams(normalizedFrequency, value2);
             break;
 
-        case BiquadProcessor::HighPass:
+        case FilterType::HIGHPASS:
             m_biquad.setHighpassParams(normalizedFrequency, value2);
             break;
 
-        case BiquadProcessor::BandPass:
+        case FilterType::BANDPASS:
             m_biquad.setBandpassParams(normalizedFrequency, value2);
             break;
 
-        case BiquadProcessor::LowShelf:
+        case FilterType::LOWSHELF:
             m_biquad.setLowShelfParams(normalizedFrequency, gain);
             break;
 
-        case BiquadProcessor::HighShelf:
+        case FilterType::HIGHSHELF:
             m_biquad.setHighShelfParams(normalizedFrequency, gain);
             break;
 
-        case BiquadProcessor::Peaking:
+        case FilterType::PEAKING:
             m_biquad.setPeakingParams(normalizedFrequency, value2, gain);
             break;
 
-        case BiquadProcessor::Notch:
+        case FilterType::NOTCH:
             m_biquad.setNotchParams(normalizedFrequency, value2);
             break;
 
-        case BiquadProcessor::Allpass:
+        case FilterType::ALLPASS:
             m_biquad.setAllpassParams(normalizedFrequency, value2);
             break;
         }

@@ -11,12 +11,15 @@
 
 namespace lab {
 
-class Reverb;
 class AudioBus;
-    
+class AudioSetting;
+class Reverb;
+
+// params:
+// settings: normalize
+//    
 class ConvolverNode final : public AudioNode 
 {
-
 public:
 
     ConvolverNode();
@@ -29,11 +32,13 @@ public:
     virtual void uninitialize() override;
 
     // Impulse responses
+    // setImpulse takes an audio bus as a source of a buffer to create an audio
+    // bus from, but the bus and its data is not retained
     void setImpulse(std::shared_ptr<AudioBus> bus);
     std::shared_ptr<AudioBus> getImpulse();
 
-    bool normalize() const { return m_normalize; }
-    void setNormalize(bool normalize) { m_normalize = normalize; }
+    bool normalize() const;
+    void setNormalize(bool normalize);
 
 private:
 
@@ -49,7 +54,7 @@ private:
     std::shared_ptr<AudioBus> m_newBus;
 
     // Normalize the impulse response or not. Must default to true.
-    bool m_normalize;
+    std::shared_ptr<AudioSetting> m_normalize;
 };
 
 } // namespace lab

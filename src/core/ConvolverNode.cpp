@@ -3,11 +3,12 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/ConvolverNode.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
-
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
@@ -25,7 +26,8 @@ const size_t MaxFFTSize = 32768;
 
 namespace lab {
 
-ConvolverNode::ConvolverNode() : m_swapOnRender(false), m_normalize(true)
+ConvolverNode::ConvolverNode() : m_swapOnRender(false)
+, m_normalize(std::make_shared<AudioSetting>("normalize"))
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -34,6 +36,8 @@ ConvolverNode::ConvolverNode() : m_swapOnRender(false), m_normalize(true)
     m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
+
+    m_settings.push_back(m_normalize);
     
     initialize();
 }
@@ -106,7 +110,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 
     // Create the reverb with the given impulse response.
     const bool threaded = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, m_normalize));
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, normalize()));
     m_newBus = bus;
     m_swapOnRender = true;
 }
@@ -126,5 +130,15 @@ double ConvolverNode::latencyTime(ContextRenderLock & r) const
 {
     return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
+
+bool ConvolverNode::normalize() const
+{
+    return m_normalize->valueUint32() != 0;
+}
+void ConvolverNode::setNormalize(bool normalize)
+{
+    m_normalize->setUint32(normalize ? 1 : 0);
+}
+
 
 } // namespace lab

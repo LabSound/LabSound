@@ -41,21 +41,27 @@ public:
     std::string name() const { return _name; }
 
     float valueFloat() const { return _valf; }
-    void setFloat(float v)
+    void setFloat(float v, bool notify = true)
     {
+        if (v == _valf)
+            return;
+
         _valf = v;
         _vali = uint32_t(v);
         _asFloat = true;
-        if (_valueChanged) _valueChanged();
+        if (notify && _valueChanged) _valueChanged();
     }
 
     uint32_t valueUint32() const { return _vali; }
-    void setUint32(uint32_t v)
+    void setUint32(uint32_t v, bool notify = true)
     {
+        if (v == _vali)
+            return;
+
         _vali = v;
         _valf = float(v);
         _asFloat = false;
-        if (_valueChanged) _valueChanged();
+        if (notify && _valueChanged) _valueChanged();
     }
 
     bool floatAssigned() const { return _asFloat; }

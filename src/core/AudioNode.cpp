@@ -3,12 +3,13 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioNode.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/AudioBus.h"
-
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
@@ -242,5 +243,47 @@ void AudioNode::unsilenceOutputs(ContextRenderLock& r)
         out->bus(r)->clearSilentFlag();
     }
 }
+
+std::shared_ptr<AudioParam> AudioNode::getParam(char const * const str)
+{
+    for (auto & p : m_params)
+    {
+        if (!strcmp(str, p->name().c_str()))
+            return p;
+    }
+    return {};
+}
+
+std::shared_ptr<AudioSetting> AudioNode::getSetting(char const * const str)
+{
+    for (auto & p : m_settings)
+    {
+        if (!strcmp(str, p->name().c_str()))
+            return p;
+    }
+    return {};
+}
+
+std::vector<std::string> AudioNode::params() const
+{
+    std::vector<std::string> ret;   
+    for (auto & p : m_params)
+    {
+        ret.push_back(p->name());
+    }
+    return ret;
+}
+
+std::vector<std::string> AudioNode::settings() const
+{
+    std::vector<std::string> ret;   
+    for (auto & p : m_settings)
+    {
+        ret.push_back(p->name());
+    }
+    return ret;
+}
+
+
 
 } // namespace lab

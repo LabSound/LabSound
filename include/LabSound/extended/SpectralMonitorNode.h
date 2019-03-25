@@ -14,6 +14,8 @@
 
 namespace lab 
 {
+    // params:
+    // settings: windowSize
     class SpectralMonitorNode : public AudioBasicInspectorNode 
     {
         class SpectralMonitorNodeInternal;

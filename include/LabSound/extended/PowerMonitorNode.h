@@ -11,7 +11,12 @@
 #include <mutex>
 
 namespace lab {
-    
+
+    class AudioSetting;
+
+    // params:
+    // settings: windowSize
+    //    
     class PowerMonitorNode : public AudioBasicInspectorNode 
     {
     public:
@@ -37,8 +42,8 @@ namespace lab {
         // The intent of the power monitor node is to provide levels that can be used for a VU meter
         // or a ducking algorithm.
         //
-        void windowSize(size_t ws) { _windowSize = ws; }
-        size_t windowSize() const { return _windowSize; }
+        void windowSize(size_t ws);
+        size_t windowSize() const;
         
     private:
 
@@ -46,7 +51,7 @@ namespace lab {
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }   // required for BasicInspector
 
         float _db;
-        size_t _windowSize;
+        std::shared_ptr<AudioSetting> _windowSize;
 
     };
 

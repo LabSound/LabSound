@@ -1,20 +1,25 @@
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 // License is MIT: http://opensource.org/licenses/MIT
 
+#include "LabSound/extended/PowerMonitorNode.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
-
-#include "LabSound/extended/PowerMonitorNode.h"
 
 namespace lab {
     
     using namespace lab;
     
-    PowerMonitorNode::PowerMonitorNode() : AudioBasicInspectorNode(2), _db(0), _windowSize(128)
+    PowerMonitorNode::PowerMonitorNode() 
+    : AudioBasicInspectorNode(2), _db(0)
+    , _windowSize(std::make_shared<AudioSetting>("windowSize"))
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+        _windowSize->setUint32(128);
+        m_settings.push_back(_windowSize);
         initialize();
     }
     
@@ -22,6 +27,16 @@ namespace lab {
     {
         uninitialize();
     }
+
+    void PowerMonitorNode::windowSize(size_t ws)
+    {
+        _windowSize->setUint32(static_cast<uint32_t>(ws));
+    }
+    size_t PowerMonitorNode::windowSize() const
+    {
+        return _windowSize->valueUint32();
+    }
+
     
     void PowerMonitorNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
@@ -51,8 +66,8 @@ namespace lab {
                 channels.push_back(bus->channel(i)->data());
             }
 
-            int start = framesToProcess - _windowSize;
-            int end = framesToProcess;
+            int start = static_cast<int>(framesToProcess) - static_cast<int>(_windowSize->valueUint32());
+            int end = static_cast<int>(framesToProcess);
             if (start < 0)
                 start = 0;
 

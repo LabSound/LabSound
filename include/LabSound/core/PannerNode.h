@@ -19,12 +19,16 @@ namespace lab {
 // A cone effect will attenuate the gain as the orientation moves away from the listener.
 // All of these effects follow the OpenAL specification very closely.
 
-class DistanceEffect;
-class ConeEffect;
 class AudioBus;
-class Panner;
+class ConeEffect;
+class DistanceEffect;
 class HRTFDatabaseLoader;
+class Panner;
 
+// params: orientation[XYZ], velocity[XYZ], position[XYZ]
+// settings: distanceModel, refDistance, maxDistance, rolloffFactor,
+//           coneKInnerAngle, coneOuterAngle, panningMode
+//
 class PannerNode : public AudioNode
 {
     std::shared_ptr<AudioParam> m_orientationX;
@@ -37,9 +41,21 @@ class PannerNode : public AudioNode
     std::shared_ptr<AudioParam> m_positionY;
     std::shared_ptr<AudioParam> m_positionZ;
 
+    std::shared_ptr<AudioParam> m_distanceGain;
+    std::shared_ptr<AudioParam> m_coneGain;
+
+    std::shared_ptr<AudioSetting> m_distanceModel;
+    std::shared_ptr<AudioSetting> m_refDistance;
+    std::shared_ptr<AudioSetting> m_maxDistance;
+    std::shared_ptr<AudioSetting> m_rolloffFactor;
+    std::shared_ptr<AudioSetting> m_coneInnerAngle;
+    std::shared_ptr<AudioSetting> m_coneOuterAngle;
+    std::shared_ptr<AudioSetting> m_panningModel;
+
+
 public:
 
-    enum
+    enum DistanceModel
     {
         LINEAR_DISTANCE = 0,
         INVERSE_DISTANCE = 1,
@@ -57,7 +73,7 @@ public:
     virtual void uninitialize() override;
 
     // Panning model
-    PanningMode panningModel() const { return m_panningModel; }
+    PanningMode panningModel() const;
     void setPanningModel(PanningMode m);
 
     // Position
@@ -85,8 +101,8 @@ public:
     std::shared_ptr<AudioParam> velocityZ() const { return m_velocityZ; }
 
     // Distance parameters
-    unsigned short distanceModel();
-    void setDistanceModel(unsigned short);
+    DistanceModel distanceModel();
+    void setDistanceModel(DistanceModel);
 
     float refDistance();
     void setRefDistance(float refDistance);
@@ -130,12 +146,6 @@ protected:
     void notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode *);
 
     std::unique_ptr<Panner> m_panner;
-
-    PanningMode m_panningModel;
-
-    std::shared_ptr<AudioParam> m_distanceGain;
-    std::shared_ptr<AudioParam> m_coneGain;
-
     std::unique_ptr<DistanceEffect> m_distanceEffect;
     std::unique_ptr<ConeEffect> m_coneEffect;
 

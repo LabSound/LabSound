@@ -15,6 +15,10 @@ class AudioContext;
     
 // GainNode is an AudioNode with one input and one output which applies a gain (volume) change to the audio signal.
 // De-zippering (smoothing) is applied when the gain value is changed dynamically.
+//
+// params: gain
+// settings: 
+//
 class GainNode : public AudioNode 
 {
     

@@ -3,13 +3,14 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/PannerNode.h"
-#include "LabSound/core/SampledAudioNode.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
-
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/HRTFDatabaseLoader.h"
@@ -31,7 +32,8 @@ static void fixNANs(T& x)
 }
 
 PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
-: AudioNode(), m_sampleRate(sampleRate), m_panningModel(PanningMode::EQUALPOWER)
+: AudioNode()
+, m_sampleRate(sampleRate)
 , m_orientationX(std::make_shared<AudioParam>("orientationX", 0.f, -1.f, 1.f))
 , m_orientationY(std::make_shared<AudioParam>("orientationY", 0.f, -1.f, 1.f))
 , m_orientationZ(std::make_shared<AudioParam>("orientationZ", 0.f, -1.f, 1.f))
@@ -41,6 +43,13 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
 , m_positionX(std::make_shared<AudioParam>("positionX", 0.f, -1.e6f, 1.e6f))
 , m_positionY(std::make_shared<AudioParam>("positionY", 0.f, -1.e6f, 1.e6f))
 , m_positionZ(std::make_shared<AudioParam>("positionZ", 0.f, -1.e6f, 1.e6f))
+, m_distanceModel(std::make_shared<AudioSetting>("distanceModel"))
+, m_refDistance(std::make_shared<AudioSetting>("refDistance"))
+, m_maxDistance(std::make_shared<AudioSetting>("maxDistance"))
+, m_rolloffFactor(std::make_shared<AudioSetting>("rolloffFactor"))
+, m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle"))
+, m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle"))
+, m_panningModel(std::make_shared<AudioSetting>("panningMode"))
 {
     if (searchPath.length())
     {
@@ -66,6 +75,67 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
     m_params.push_back(m_distanceGain);
     m_params.push_back(m_coneGain);
 
+    m_distanceModel->setValueChanged(
+        [this]() {
+            DistanceModel model(static_cast<DistanceModel>(m_distanceModel->valueUint32()));
+            switch (model)
+            {
+                case DistanceEffect::ModelLinear:
+                case DistanceEffect::ModelInverse:
+                case DistanceEffect::ModelExponential:
+                    m_distanceEffect->setModel(static_cast<DistanceEffect::ModelType>(model), true);
+                    break;
+
+                default:
+                    throw std::invalid_argument("invalid distance model");
+                    break;
+            }
+        }
+    );
+    m_settings.push_back(m_distanceModel);
+
+    m_refDistance->setValueChanged(
+        [this]() {
+            m_distanceEffect->setRefDistance(m_refDistance->valueFloat());
+        }
+    );
+    m_settings.push_back(m_refDistance);
+
+    m_maxDistance->setValueChanged(
+        [this]() {
+            m_distanceEffect->setMaxDistance(m_maxDistance->valueFloat());
+        }
+    );
+    m_settings.push_back(m_maxDistance);
+
+    m_rolloffFactor->setValueChanged(
+        [this]() {
+            m_distanceEffect->setRolloffFactor(m_maxDistance->valueFloat());
+        }
+    );
+    m_settings.push_back(m_rolloffFactor);
+
+    m_coneInnerAngle->setValueChanged(
+        [this]() {
+            m_coneEffect->setInnerAngle(m_coneInnerAngle->valueFloat());
+        }
+    );
+    m_settings.push_back(m_coneInnerAngle);
+
+    m_coneOuterAngle->setValueChanged(
+        [this]() {
+            m_coneEffect->setOuterAngle(m_coneOuterAngle->valueFloat());
+        }
+    );
+    m_settings.push_back(m_coneOuterAngle);
+
+    m_panningModel->setUint32(static_cast<uint32_t>(EQUALPOWER));
+    m_panningModel->setValueChanged(
+        [this]() {
+            setPanningModel(static_cast<PanningMode>(m_panningModel->valueUint32()));
+        }
+    );
+
     // Node-specific default mixing rules.
     m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
@@ -83,7 +153,7 @@ void PannerNode::initialize()
 {
     if (isInitialized()) return;
 
-    switch (m_panningModel)
+    switch (static_cast<PanningMode>(m_panningModel->valueUint32()))
     {
         case PanningMode::EQUALPOWER:
             m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
@@ -160,7 +230,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     }
 
     // HRTFDatabase should be loaded before proceeding for offline audio context
-    if (m_panningModel == PanningMode::HRTF && !m_hrtfDatabaseLoader->isLoaded())
+    if (static_cast<PanningMode>(m_panningModel->valueUint32()) == PanningMode::HRTF && !m_hrtfDatabaseLoader->isLoaded())
     {
         if (r.context()->isOfflineContext())
         {
@@ -203,11 +273,12 @@ void PannerNode::setPanningModel(PanningMode model)
     if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
         throw std::invalid_argument("Unknown panning model specified");
 
-    if (!m_panner.get() || model != m_panningModel)
+    PanningMode curr = static_cast<PanningMode>(m_panningModel->valueUint32());
+    if (!m_panner.get() || model != curr)
     {
-        m_panningModel = model;
+        m_panningModel->setUint32(static_cast<uint32_t>(model));
 
-        switch (m_panningModel)
+        switch (model)
         {
             case PanningMode::EQUALPOWER:
                 m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
@@ -223,19 +294,13 @@ void PannerNode::setPanningModel(PanningMode model)
 
 }
 
-void PannerNode::setDistanceModel(unsigned short model)
+void PannerNode::setDistanceModel(DistanceModel model)
 {
-    switch (model)
-    {
-        case DistanceEffect::ModelLinear:
-        case DistanceEffect::ModelInverse:
-        case DistanceEffect::ModelExponential:
-            m_distanceEffect->setModel(static_cast<DistanceEffect::ModelType>(model), true);
-            break;
-        default:
-            throw std::invalid_argument("invalid distance model");
-            break;
-    }
+    m_distanceModel->setUint32(static_cast<uint32_t>(model));
+}
+PannerNode::DistanceModel PannerNode::distanceModel()
+{
+    return static_cast<PannerNode::DistanceModel>(m_distanceModel->valueUint32());
 }
 
 void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation)
@@ -446,22 +511,20 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
     }
 }
 
-unsigned short PannerNode::distanceModel() { return m_distanceEffect->model(); }
 float PannerNode::refDistance() { return static_cast<float>(m_distanceEffect->refDistance()); }
-
-void PannerNode::setRefDistance(float refDistance) { m_distanceEffect->setRefDistance(refDistance); }
+void PannerNode::setRefDistance(float refDistance) { m_refDistance->setFloat(refDistance); }
 
 float PannerNode::maxDistance() { return static_cast<float>(m_distanceEffect->maxDistance()); }
-void PannerNode::setMaxDistance(float maxDistance) { m_distanceEffect->setMaxDistance(maxDistance); }
+void PannerNode::setMaxDistance(float maxDistance) { m_maxDistance->setFloat(maxDistance); }
 
 float PannerNode::rolloffFactor() { return static_cast<float>(m_distanceEffect->rolloffFactor()); }
-void PannerNode::setRolloffFactor(float rolloffFactor) { m_distanceEffect->setRolloffFactor(rolloffFactor); }
+void PannerNode::setRolloffFactor(float rolloffFactor) { m_rolloffFactor->setFloat(rolloffFactor); }
 
 float PannerNode::coneInnerAngle() const { return static_cast<float>(m_coneEffect->innerAngle()); }
-void PannerNode::setConeInnerAngle(float angle) { m_coneEffect->setInnerAngle(angle); }
+void PannerNode::setConeInnerAngle(float angle) { m_coneInnerAngle->setFloat(angle); }
 
 float PannerNode::coneOuterAngle() const { return static_cast<float>(m_coneEffect->outerAngle()); }
-void PannerNode::setConeOuterAngle(float angle) { m_coneEffect->setOuterAngle(angle); }
+void PannerNode::setConeOuterAngle(float angle) { m_coneOuterAngle->setFloat(angle); }
 
 float PannerNode::coneOuterGain() const { return static_cast<float>(m_coneEffect->outerGain()); }
 void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angle); }

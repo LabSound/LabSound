@@ -22,7 +22,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
             ContextRenderLock r(context.get(), "PeakCompressorApp");
 
             filter = std::make_shared<BiquadFilterNode>();
-            filter->setType(BiquadFilterNode::LOWPASS);
+            filter->setType(lab::FilterType::LOWPASS);
             filter->frequency()->setValue(2800.0f);
 
             peakComp = std::make_shared<PeakCompNode>();

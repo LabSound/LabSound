@@ -16,25 +16,15 @@ class BiquadFilterNode : public AudioBasicProcessorNode
 {
 
     BiquadProcessor * biquadProcessor();
+    BiquadProcessor * biquadProcessor() const;
+    std::shared_ptr<AudioSetting> m_type;
 
 public:
-
-    enum 
-    {
-        LOWPASS = 0,
-        HIGHPASS = 1,
-        BANDPASS = 2,
-        LOWSHELF = 3,
-        HIGHSHELF = 4,
-        PEAKING = 5,
-        NOTCH = 6,
-        ALLPASS = 7
-    };
     
     BiquadFilterNode();
     
-    unsigned short type();
-    void setType(unsigned short type);
+    FilterType type() const;
+    void setType(FilterType type);
 
     std::shared_ptr<AudioParam> frequency();
     std::shared_ptr<AudioParam> q();

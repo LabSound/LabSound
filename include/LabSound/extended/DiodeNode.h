@@ -9,12 +9,16 @@
 namespace lab {
 
     //@tofix - DiodeNode should subclass waveShaper, then the create method will work
-    
+    // params:
+    // settings: distortion
+    //
     class DiodeNode
     {
         void setCurve();
         std::shared_ptr<WaveShaperNode> waveShaper;
-        float vb, vl, h;  // parameters controlling the shape of the curve
+        std::shared_ptr<AudioSetting> _distortion;
+
+        float vb, vl;  // parameters controlling the shape of the curve
     public:
 
         DiodeNode();
