@@ -99,7 +99,7 @@ namespace lab
     ////////////////////////////////
 
     SpectralMonitorNode::SpectralMonitorNode() : AudioBasicInspectorNode(2)
-    , internalNode(std::make_unique<SpectralMonitorNodeInternal>())
+    , internalNode(new SpectralMonitorNodeInternal())
     {
         m_settings.push_back(internalNode->windowSize);
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
@@ -109,6 +109,7 @@ namespace lab
     SpectralMonitorNode::~SpectralMonitorNode()
     {
         uninitialize();
+        delete internalNode;
     }
 
     void SpectralMonitorNode::process(ContextRenderLock& r, size_t framesToProcess)

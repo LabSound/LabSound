@@ -19,7 +19,7 @@ namespace lab
     class SpectralMonitorNode : public AudioBasicInspectorNode 
     {
         class SpectralMonitorNodeInternal;
-        std::unique_ptr<SpectralMonitorNodeInternal> internalNode;
+        SpectralMonitorNodeInternal* internalNode = nullptr;
     public:
 
         SpectralMonitorNode();
