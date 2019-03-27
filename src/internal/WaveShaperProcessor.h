@@ -7,6 +7,9 @@
 
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
+#include <memory>
+#include <mutex>
+#include <vector>
 
 namespace lab
 {
@@ -40,7 +43,7 @@ public:
     // accessing curve is heavyweight because of the need to prevent
     // another thread from overwriting the Curve object while it is in use.
     // the alternative is to copy the curve, but that isn't great either.
-    std::unique_ptr<Curve> curve() { return std::make_unique<Curve>(m_curveWrite, m_curve); }
+    std::unique_ptr<Curve> curve();
 
 private:
     std::mutex m_curveWrite;

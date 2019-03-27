@@ -59,4 +59,10 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
     }
 }
 
+std::unique_ptr<WaveShaperProcessor::Curve> WaveShaperProcessor::curve() 
+{ 
+    return std::unique_ptr<WaveShaperProcessor::Curve>(new WaveShaperProcessor::Curve(m_curveWrite, m_curve)); 
+}
+
+
 } // namespace lab
