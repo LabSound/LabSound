@@ -1,10 +1,11 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/extended/NoiseNode.h"
+
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeOutput.h"
-
-#include "LabSound/extended/NoiseNode.h"
+#include "LabSound/core/AudioSetting.h"
 
 using namespace std;
 using namespace lab;
@@ -12,9 +13,10 @@ using namespace lab;
 namespace lab {
 
     NoiseNode::NoiseNode() : AudioScheduledSourceNode()
+    , _type(std::make_shared<AudioSetting>("type"))
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
+        m_settings.push_back(_type);
         initialize();
     }
 
@@ -25,9 +27,17 @@ namespace lab {
 
     void NoiseNode::setType(NoiseType type)
     {
-        if (type > NOISE_TYPE_END) throw std::out_of_range("Noise argument exceeds known noise types");
-        m_type = type;
+        if (type > NoiseType::BROWN)
+            throw std::out_of_range("Noise argument exceeds known noise types");
+
+        _type->setUint32(uint32_t(type));
     }
+
+    NoiseNode::NoiseType NoiseNode::type() const
+    {
+        return NoiseType(_type->valueUint32());
+    }
+
 
 
     void NoiseNode::process(ContextRenderLock& r, size_t framesToProcess)
@@ -55,7 +65,8 @@ namespace lab {
         destP += quantumFrameOffset;
         size_t n = nonSilentFramesToProcess;
 
-        switch (m_type) {
+        switch (NoiseType(_type->valueUint32())) 
+        {
                 // reference: http://noisehack.com/generate-noise-web-audio-api/
             case WHITE:
                 while (n--) {

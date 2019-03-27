@@ -77,13 +77,15 @@ void AudioDestinationWin::configure()
     outputParams.nChannels = static_cast<unsigned int>(m_numChannels);
     outputParams.firstChannel = 0;
 
-    auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
-    LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
+    auto outDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    LOG("Using Default Audio Device: %s", outDeviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = dac.getDefaultInputDevice();
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
+
+    auto inDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -92,7 +94,10 @@ void AudioDestinationWin::configure()
 
     try
     {
-        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(outDeviceInfo.probed ? &outputParams : nullptr, 
+                       inDeviceInfo.probed ? &inputParams : nullptr, 
+            RTAUDIO_FLOAT32, 
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
@@ -164,7 +169,6 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
     AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin*>(userData);
-
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;

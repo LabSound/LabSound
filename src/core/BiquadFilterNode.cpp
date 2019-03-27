@@ -4,12 +4,14 @@
 
 #include "LabSound/core/BiquadFilterNode.h"
 
+#include "LabSound/core/AudioSetting.h"
 #include "internal/BiquadProcessor.h"
 
 namespace lab
 {
 
 BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
+, m_type(std::make_shared<AudioSetting>("type"))
 {
     // Initially setup as lowpass filter.
     m_processor.reset(new BiquadProcessor(1, false));
@@ -19,14 +21,25 @@ BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
     m_params.push_back(biquadProcessor()->parameter3());
     m_params.push_back(biquadProcessor()->parameter4());
 
+
+    m_type->setValueChanged(
+        [this]()
+        {
+            uint32_t type = m_type->valueUint32();
+            if (type > static_cast<uint32_t>(FilterType::ALLPASS)) 
+                throw std::out_of_range("Filter type exceeds index of known types");
+
+            biquadProcessor()->setType(static_cast<FilterType>(type));
+        }
+    );
+    m_settings.push_back(m_type);
+
     initialize();
 }
 
-void BiquadFilterNode::setType(unsigned short type)
+void BiquadFilterNode::setType(FilterType type)
 {
-    if (type > BiquadProcessor::Allpass) throw std::out_of_range("Filter type exceeds index of known types");
-
-    biquadProcessor()->setType(static_cast<BiquadProcessor::FilterType>(type));
+    m_type->setUint32(uint32_t(type));
 }
 
 
@@ -52,7 +65,12 @@ BiquadProcessor * BiquadFilterNode::biquadProcessor()
     return static_cast<BiquadProcessor*>(processor());
 }
 
-unsigned short BiquadFilterNode::type()
+BiquadProcessor * BiquadFilterNode::biquadProcessor() const
+{
+    return static_cast<BiquadProcessor *>(processor());
+}
+
+FilterType BiquadFilterNode::type() const
 {
     return biquadProcessor()->type();
 }

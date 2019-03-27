@@ -12,7 +12,11 @@
 
 namespace lab 
 {
+    class AudioSetting;
 
+    // params: 
+    // settings: type
+    //
     class NoiseNode : public AudioScheduledSourceNode 
     {
 
@@ -20,10 +24,9 @@ namespace lab
 
         enum NoiseType
         {
-            WHITE,
-            PINK,
-            BROWN,
-            NOISE_TYPE_END,
+            WHITE = 0,
+            PINK = 1,
+            BROWN = 2
         };
 
         NoiseNode();
@@ -32,15 +35,14 @@ namespace lab
         virtual void process(ContextRenderLock&, size_t framesToProcess) override;
         virtual void reset(ContextRenderLock&) override;
 
-        unsigned short type() const { return m_type; }
-
+        NoiseType type() const;
         void setType(NoiseType newType);
 
     private:
 
         virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
-        NoiseType m_type = WHITE;
+        std::shared_ptr<AudioSetting> _type;
 
         uint32_t whiteSeed = 1489853723;
 

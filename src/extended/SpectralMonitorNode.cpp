@@ -1,11 +1,12 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/WindowFunctions.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/core/WindowFunctions.h"
 
 #include "LabSound/extended/SpectralMonitorNode.h"
 
@@ -41,7 +42,7 @@ namespace lab
         // real values are on even, imag on odd
         void forward( std::vector<float>& waveform)
         {
-            ooura::rdft( size, 1, &waveform[0], oouraIp, oouraW );
+            ooura::rdft( static_cast<int>(size), 1, &waveform[0], oouraIp, oouraW );
         }
 
         size_t size;
@@ -53,7 +54,9 @@ namespace lab
     {
     public:
 
-        SpectralMonitorNodeInternal() : fft(0) 
+        SpectralMonitorNodeInternal() 
+        : fft(0)
+        , windowSize(std::make_shared<AudioSetting>("windowSize")) 
         {
             setWindowSize(512);
         }
@@ -66,11 +69,11 @@ namespace lab
         void setWindowSize(int s) 
         {
             cursor = 0;
-            windowSize = s;
+            windowSize->setUint32(static_cast<size_t>(s));
 
-            buffer.resize(windowSize);
+            buffer.resize(s);
 
-            for (size_t i = 0; i < windowSize; ++i) 
+            for (size_t i = 0; i < s; ++i) 
             {
                 buffer[i] = 0;
             }
@@ -81,11 +84,12 @@ namespace lab
         
         float _db;
 
-        size_t windowSize;
         size_t cursor;
 
         std::vector<float> buffer;
         std::recursive_mutex magMutex;
+
+        std::shared_ptr<AudioSetting> windowSize;
 
         FFT * fft;
     };
@@ -95,8 +99,9 @@ namespace lab
     ////////////////////////////////
 
     SpectralMonitorNode::SpectralMonitorNode() : AudioBasicInspectorNode(2)
+    , internalNode(new SpectralMonitorNodeInternal())
     {
-        internalNode.reset(new SpectralMonitorNodeInternal());
+        m_settings.push_back(internalNode->windowSize);
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         initialize();
     }
@@ -104,6 +109,7 @@ namespace lab
     SpectralMonitorNode::~SpectralMonitorNode()
     {
         uninitialize();
+        delete internalNode;
     }
 
     void SpectralMonitorNode::process(ContextRenderLock& r, size_t framesToProcess)
@@ -129,25 +135,27 @@ namespace lab
         // specific to this node
         {
             std::vector<const float*> channels;
-            unsigned numberOfChannels = bus->numberOfChannels();
-            for (unsigned c = 0; c < numberOfChannels; ++ c)
+            size_t numberOfChannels = bus->numberOfChannels();
+            for (size_t c = 0; c < numberOfChannels; ++ c)
                 channels.push_back(bus->channel(c)->data());
 
+            size_t sz = internalNode->windowSize->valueUint32();
+
             // if the fft is smaller than the quantum, just grab a chunk
-            if (internalNode->windowSize < framesToProcess) 
+            if (sz < framesToProcess) 
             {
                 internalNode->cursor = 0;
-                framesToProcess = internalNode->windowSize;
+                framesToProcess = internalNode->windowSize->valueUint32();
             }
 
             // if the quantum overlaps the end of the window, just fill up the buffer
-            if (internalNode->cursor + framesToProcess > internalNode->windowSize)
-                framesToProcess = internalNode->windowSize - internalNode->cursor;
+            if (internalNode->cursor + framesToProcess > sz)
+                framesToProcess = sz - internalNode->cursor;
 
             {
                 std::lock_guard<std::recursive_mutex> lock(internalNode->magMutex);
 
-                internalNode->buffer.resize(internalNode->windowSize);
+                internalNode->buffer.resize(sz);
 
                 for (size_t i = 0; i < framesToProcess; ++i) 
                 {
@@ -167,7 +175,7 @@ namespace lab
 
             // advance the cursor
             internalNode->cursor += framesToProcess;
-            if (internalNode->cursor >= internalNode->windowSize)
+            if (internalNode->cursor >= internalNode->windowSize->valueUint32())
                 internalNode->cursor = 0;
         }
         // to here
@@ -182,7 +190,7 @@ namespace lab
 
     void SpectralMonitorNode::reset(ContextRenderLock&)
     {
-        internalNode->setWindowSize(internalNode->windowSize);
+        internalNode->setWindowSize(internalNode->windowSize->valueUint32());
     }
 
     void SpectralMonitorNode::spectralMag(std::vector<float>& result) 
@@ -192,7 +200,7 @@ namespace lab
         {
             std::lock_guard<std::recursive_mutex> lock(internalNode->magMutex);
             window.swap(internalNode->buffer);
-            internalNode->setWindowSize(internalNode->windowSize);
+            internalNode->setWindowSize(internalNode->windowSize->valueUint32());
         }
 
         // http://www.ni.com/white-paper/4844/en/
@@ -223,7 +231,7 @@ namespace lab
 
     size_t SpectralMonitorNode::windowSize() const 
     {
-        return internalNode->windowSize;
+        return internalNode->windowSize->valueUint32();
     }
 
 } // namespace lab

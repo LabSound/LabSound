@@ -17,17 +17,18 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
 {
     ASSERT(source && destination && waveShaperProcessor());
 
-    std::vector<float> & curve = waveShaperProcessor()->curve();
+    // Curve object locks the curve during processing
+    std::unique_ptr<WaveShaperProcessor::Curve> c = std::move(waveShaperProcessor()->curve());
 
-    if (curve.size() == 0) 
+    if (c->curve.size() == 0) 
     {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * framesToProcess);
         return;
     }
 
-    float * curveData = curve.data();
-    int curveLength = curve.size();
+    float const * curveData = c->curve.data();
+    size_t curveLength = c->curve.size();
 
     ASSERT(curveData);
 
@@ -43,11 +44,11 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
         const float input = source[i];
 
         // Calculate an index based on input -1 -> +1 with 0 being at the center of the curve data.
-        int index = (curveLength * (input + 1)) / 2;
+        size_t index = static_cast<size_t>((curveLength * (input + 1)) / 2);
 
         // Clip index to the input range of the curve.
         // This takes care of input outside of nominal range -1 -> +1
-        index = max(index, 0);
+        index = max(index, size_t(0));
         index = min(index, curveLength - 1);
         destination[i] = curveData[index];
     }

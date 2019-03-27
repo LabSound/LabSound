@@ -124,5 +124,9 @@ AudioProcessor * AudioBasicProcessorNode::processor()
 { 
     return m_processor.get(); 
 }
+AudioProcessor * AudioBasicProcessorNode::processor() const
+{
+    return m_processor.get();
+}
 
 } // namespace lab

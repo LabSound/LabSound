@@ -14,10 +14,12 @@
 
 namespace lab 
 {
+    // params:
+    // settings: windowSize
     class SpectralMonitorNode : public AudioBasicInspectorNode 
     {
         class SpectralMonitorNodeInternal;
-        std::unique_ptr<SpectralMonitorNodeInternal> internalNode;
+        SpectralMonitorNodeInternal* internalNode = nullptr;
     public:
 
         SpectralMonitorNode();

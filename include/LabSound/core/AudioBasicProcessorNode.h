@@ -42,6 +42,7 @@ protected:
     virtual double latencyTime(ContextRenderLock & r) const override;
 
     AudioProcessor * processor();
+    AudioProcessor * processor() const;
 
     std::unique_ptr<AudioProcessor> m_processor;
 

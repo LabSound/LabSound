@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/ClipNode.h"
@@ -21,19 +22,20 @@ namespace lab
 {
 
     /////////////////////////////////////
-    // Prviate ClipNode Implementation //
+    // Private ClipNode Implementation //
     /////////////////////////////////////
 
     class ClipNode::ClipNodeInternal : public lab::AudioProcessor 
     {
-
     public:
 
-        ClipNodeInternal() : AudioProcessor(2), mode(ClipNode::CLIP)
+        ClipNodeInternal() : AudioProcessor(2)
         {
             auto fMax = std::numeric_limits<float>::max();
             aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
             bVal = std::make_shared<AudioParam>("b",  1.0, -fMax, fMax);
+            mode = std::make_shared<AudioSetting>("mode");
+            mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
         }
 
         virtual ~ClipNodeInternal() { }
@@ -60,7 +62,9 @@ namespace lab
 
             size_t numChannels = numberOfChannels();
 
-            if (mode == ClipNode::TANH)
+            ClipNode::Mode clipMode = static_cast<ClipNode::Mode>(mode->valueUint32());
+
+            if (clipMode == ClipNode::TANH)
             {
                 float outputGain = aVal->value(r);
                 float inputGain = bVal->value(r);
@@ -77,7 +81,6 @@ namespace lab
                     }
                 }
             }
-
             else
             {
                 float minf = aVal->value(r);
@@ -110,10 +113,9 @@ namespace lab
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-        ClipNode::Mode mode;
-
         std::shared_ptr<AudioParam> aVal;
         std::shared_ptr<AudioParam> bVal;
+        std::shared_ptr<AudioSetting> mode;
 
         std::vector<float> gainValues;
     };
@@ -122,14 +124,15 @@ namespace lab
     // Public ClipNode //
     /////////////////////
 
-    ClipNode::ClipNode() : lab::AudioBasicProcessorNode()
+    ClipNode::ClipNode() 
+    : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ClipNodeInternal());
-
-        internalNode = static_cast<ClipNodeInternal*>(m_processor.get());
+        internalNode = new ClipNodeInternal();
+        m_processor.reset(internalNode);
 
         m_params.push_back(internalNode->aVal);
         m_params.push_back(internalNode->bVal);
+        m_settings.push_back(internalNode->mode);
 
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
@@ -144,7 +147,7 @@ namespace lab
 
     void ClipNode::setMode(Mode m)
     {
-        internalNode->mode = m;
+        internalNode->mode->setUint32(uint32_t(m));
     }
 
     std::shared_ptr<AudioParam> ClipNode::aVal() { return internalNode->aVal; }

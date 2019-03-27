@@ -9,21 +9,26 @@
 
 #include <memory>
 
-namespace lab {
+namespace lab
+{
 
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
-class AudioChannel {
-    AudioChannel(const AudioChannel&); // noncopyable
+class AudioChannel
+{
+    AudioChannel(const AudioChannel &);  // noncopyable
 public:
     // Memory can be externally referenced, or can be internally allocated with an AudioFloatArray.
 
     // Reference an external buffer.
-    AudioChannel(float* storage, size_t length)
+    AudioChannel(float * storage, size_t length)
         : m_length(length)
         , m_rawPointer(storage)
         , m_silent(false)
     {
+        // provided managed backing if supplied storage is nullptr
+        if (!storage && length)
+            m_memBuffer.reset(new AudioFloatArray(length));
     }
 
     // Manage storage for us.
@@ -31,10 +36,11 @@ public:
         : m_length(length)
         , m_silent(true)
     {
-        m_memBuffer.reset(new AudioFloatArray(length));
+        if (length)
+            m_memBuffer.reset(new AudioFloatArray(length));
     }
 
-    // A "blank" audio channel -- must call set() before it's useful...
+    // An empty audio channel -- must call set() before it's useful...
     AudioChannel()
         : m_length(0)
         , m_silent(true)
@@ -43,12 +49,17 @@ public:
 
     // Redefine the memory for this channel.
     // storage represents external memory not managed by this object.
-    void set(float* storage, size_t length)
+    void set(float * storage, size_t length)
     {
-        m_memBuffer.reset();//  .clear(); // cleanup managed storage
+        // provided managed backing if supplied storage is nullptr
+        if (!storage && length)
+            m_memBuffer.reset(new AudioFloatArray(length));
+        else
+            m_memBuffer.reset();  // release any managed storage
+
         m_rawPointer = storage;
         m_length = length;
-        m_silent = false;
+        m_silent = length > 0;
     }
 
     // How many sample-frames do we contain?
@@ -62,20 +73,32 @@ public:
     float * mutableData()
     {
         clearSilentFlag();
-        return m_rawPointer ? m_rawPointer : m_memBuffer->data(); 
+        return const_cast<float*>(data());
     }
 
-    const float* data() const { return m_rawPointer ? m_rawPointer : m_memBuffer->data(); }
+    const float * data() const 
+    { 
+        if (m_rawPointer)
+            return m_rawPointer;
+
+        if (!m_memBuffer)
+            return nullptr;
+
+        return m_memBuffer->data();
+    }
 
     // Zeroes out all sample values in buffer.
     void zero()
     {
-        if (m_silent) return;
+        if (m_silent || (!m_memBuffer && !m_rawPointer)) 
+            return;
 
         m_silent = true;
 
-        if (m_memBuffer.get()) m_memBuffer->zero();
-        else memset(m_rawPointer, 0, sizeof(float) * m_length);
+        if (m_memBuffer.get())
+            m_memBuffer->zero();
+        else
+            memset(m_rawPointer, 0, sizeof(float) * m_length);
     }
 
     // Clears the silent flag.
@@ -87,25 +110,24 @@ public:
     void scale(float scale);
 
     // A simple memcpy() from the source channel
-    void copyFrom(const AudioChannel* sourceChannel);
+    void copyFrom(const AudioChannel * sourceChannel);
 
     // Copies the given range from the source channel.
-    void copyFromRange(const AudioChannel* sourceChannel, size_t startFrame, size_t endFrame);
+    void copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame);
 
     // Sums (with unity gain) from the source channel.
-    void sumFrom(const AudioChannel* sourceChannel);
+    void sumFrom(const AudioChannel * sourceChannel);
 
     // Returns maximum absolute value (useful for normalization).
     float maxAbsValue() const;
 
 private:
-
     size_t m_length;
     float * m_rawPointer = nullptr;
     std::unique_ptr<AudioFloatArray> m_memBuffer;
     bool m_silent;
 };
 
-} // lab
+}  // lab
 
-#endif // AudioChannel_h
+#endif  // AudioChannel_h

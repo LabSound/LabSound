@@ -13,6 +13,7 @@ namespace lab
 class AudioParam;
 class DelayProcessor;
 
+// TempoSync is commonly used by subclasses of DelayNode
 enum TempoSync
 {
     TS_32,

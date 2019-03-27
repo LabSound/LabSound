@@ -12,10 +12,16 @@
 
 namespace lab {
 
+class AudioSetting;
+
+// params:
+// settings: fftSize, minDecibels, maxDecibels, smoothingTimeConstant
+//
 class AnalyserNode : public AudioBasicInspectorNode 
 {
 public:
 
+    AnalyserNode(); // defaults to 1024
     AnalyserNode(size_t fftSize);
     virtual ~AnalyserNode();
     
@@ -23,30 +29,38 @@ public:
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
 
-    size_t fftSize() const { return m_analyser.fftSize(); }
+    void setFftSize(ContextRenderLock&, size_t fftSize);
+    size_t fftSize() const { return m_analyser->fftSize(); }
 
-    size_t frequencyBinCount() const { return m_analyser.frequencyBinCount(); }
+    size_t frequencyBinCount() const { return m_analyser->frequencyBinCount(); }
 
-    void setMinDecibels(double k) { m_analyser.setMinDecibels(k); }
-    double minDecibels() const { return m_analyser.minDecibels(); }
+    void setMinDecibels(double k);
+    double minDecibels() const;
 
-    void setMaxDecibels(double k) { m_analyser.setMaxDecibels(k); }
-    double maxDecibels() const { return m_analyser.maxDecibels(); }
+    void setMaxDecibels(double k);
+    double maxDecibels() const;
 
-    void setSmoothingTimeConstant(double k) { m_analyser.setSmoothingTimeConstant(k); }
-    double smoothingTimeConstant() const { return m_analyser.smoothingTimeConstant(); }
+    void setSmoothingTimeConstant(double k);
+    double smoothingTimeConstant() const;
 
-    void getFloatFrequencyData(std::vector<float>& array) { m_analyser.getFloatFrequencyData(array); }
-    void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser.getByteFrequencyData(array); }
-    void getFloatTimeDomainData(std::vector<float>& array) { m_analyser.getFloatTimeDomainData(array); } // LabSound
-    void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser.getByteTimeDomainData(array); }
+    // ffi: user facing functions
+    void getFloatFrequencyData(std::vector<float>& array) { m_analyser->getFloatFrequencyData(array); }
+    void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser->getByteFrequencyData(array); }
+    void getFloatTimeDomainData(std::vector<float>& array) { m_analyser->getFloatTimeDomainData(array); } // LabSound
+    void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser->getByteTimeDomainData(array); }
 
 private:
+    void shared_construction(size_t fftSize);
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    RealtimeAnalyser m_analyser;
+    RealtimeAnalyser* m_analyser;
+
+    std::shared_ptr<AudioSetting> _fftSize;
+    std::shared_ptr<AudioSetting> _minDecibels;
+    std::shared_ptr<AudioSetting> _maxDecibels;
+    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
 };
 
 } // namespace lab

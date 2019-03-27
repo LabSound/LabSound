@@ -6,7 +6,7 @@
 #define WaveTable_h
 
 #include "LabSound/core/AudioArray.h"
-#include "LabSound/core/Synthesis.h"
+#include "LabSound/core/AudioNode.h"
 
 #include <vector>
 #include <memory>

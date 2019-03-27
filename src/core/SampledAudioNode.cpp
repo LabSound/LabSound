@@ -6,11 +6,12 @@
 // @tofix - webkit change e369924 adds backward playback, change not incorporated yet
 
 #include "LabSound/core/SampledAudioNode.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
-
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/AudioUtilities.h"
@@ -30,12 +31,19 @@ const double DefaultGrainDuration = 0.020; // 20ms
 const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration)
+, m_isLooping(std::make_shared<AudioSetting>("loop"))
+, m_loopStart(std::make_shared<AudioSetting>("loopStart"))
+, m_loopEnd(std::make_shared<AudioSetting>("loopEnd"))
 {
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
 
     m_params.push_back(m_gain);
     m_params.push_back(m_playbackRate);
+
+    m_settings.push_back(m_isLooping);
+    m_settings.push_back(m_loopStart);
+    m_settings.push_back(m_loopEnd);
 
     // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -93,7 +101,10 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
         // at a sub-sample position since it will degrade the quality.
         // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
         // Since playbackRate == 1 is very common, it's worth considering quality.
-        m_virtualReadIndex = AudioUtilities::timeToSampleFrame(m_grainOffset, getBus()->sampleRate());
+
+        /// @TODO consistently pick double or size_t through this entire API chain.
+        m_virtualReadIndex = static_cast<double>(
+                                AudioUtilities::timeToSampleFrame(m_grainOffset, static_cast<double>(getBus()->sampleRate())));
         m_startRequested = false;
     }
 
@@ -144,7 +155,7 @@ bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, 
     return false;
 }
 
-bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, unsigned destinationFrameOffset, size_t numberOfFrames)
+bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, size_t destinationFrameOffset, size_t numberOfFrames)
 {
     if (!r.context())
         return false;
@@ -154,8 +165,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
     if (!bus || !srcBus)
         return false;
 
-    unsigned numChannels = numberOfChannels(r);
-    unsigned busNumberOfChannels = bus->numberOfChannels();
+    size_t numChannels = numberOfChannels(r);
+    size_t busNumberOfChannels = bus->numberOfChannels();
 
     bool channelCountGood = numChannels && numChannels == busNumberOfChannels;
     ASSERT(channelCountGood);
@@ -203,11 +214,14 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, uns
     double virtualEndFrame = endFrame;
     double virtualDeltaFrames = endFrame;
 
-    if (loop() && (m_loopStart || m_loopEnd) && m_loopStart >= 0 && m_loopEnd > 0 && m_loopStart < m_loopEnd) 
+    double loopS = loopStart();
+    double loopE = loopEnd();
+
+    if (loop() && (loopS || loopE) && loopS >= 0 && loopE > 0 && loopS < loopE) 
     {
         // Convert from seconds to sample-frames.
-        double loopStartFrame = m_loopStart * srcBus->sampleRate();
-        double loopEndFrame = m_loopEnd * srcBus->sampleRate();
+        double loopStartFrame = loopS * srcBus->sampleRate();
+        double loopEndFrame = loopE * srcBus->sampleRate();
 
         virtualEndFrame = std::min(loopEndFrame, virtualEndFrame);
         virtualDeltaFrames = virtualEndFrame - loopStartFrame;
@@ -421,6 +435,34 @@ void SampledAudioNode::clearPannerNode()
 {
     m_pannerNode = 0;
 }
+
+bool SampledAudioNode::loop() const
+{
+    return m_isLooping->valueUint32() != 0;
+}
+void SampledAudioNode::setLoop(bool loop)
+{
+    m_isLooping->setUint32(loop ? 1 : 0);
+}
+
+// Loop times in seconds.
+double SampledAudioNode::loopStart() const
+{
+    return m_loopStart->valueFloat();
+}
+double SampledAudioNode::loopEnd() const
+{
+    return m_loopEnd->valueFloat();
+}
+void SampledAudioNode::setLoopStart(double loopStart)
+{
+    m_loopStart->setFloat(loopStart);
+}
+void SampledAudioNode::setLoopEnd(double loopEnd)
+{
+    m_loopEnd->setFloat(loopEnd);
+}
+
 
 } // namespace lab
 

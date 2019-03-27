@@ -3,12 +3,14 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/OscillatorNode.h"
-#include "LabSound/core/WaveTable.h"
+
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/core/WaveTable.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -31,7 +33,7 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
 OscillatorNode::OscillatorNode(const float sampleRate) :
       m_sampleRate(sampleRate),
-      m_type(OscillatorType::SINE),
+      m_type(std::make_shared<AudioSetting>("type")),
       m_firstRender(true),
       m_virtualReadIndex(0),
       m_phaseIncrements(AudioNode::ProcessingSizeInFrames),
@@ -46,8 +48,15 @@ OscillatorNode::OscillatorNode(const float sampleRate) :
     m_params.push_back(m_frequency);
     m_params.push_back(m_detune);
 
+    m_type->setValueChanged(
+        [this]() {
+            _setType(OscillatorType(m_type->valueUint32()));
+        }
+    );
+    m_settings.push_back(m_type);
+
     // Sets up default wavetable.
-    setType(m_type);
+    setType(OscillatorType::SINE);
 
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -60,7 +69,18 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
+OscillatorType OscillatorNode::type() const 
+{
+    return OscillatorType(m_type->valueUint32());
+}
+
+
 void OscillatorNode::setType(OscillatorType type)
+{
+    m_type->setUint32(static_cast<uint32_t>(type));
+}
+
+void OscillatorNode::_setType(OscillatorType type)
 {
     std::shared_ptr<WaveTable> waveTable;
 
@@ -100,7 +120,9 @@ void OscillatorNode::setType(OscillatorType type)
     }
 
     setWaveTable(waveTable);
-    m_type = type;
+
+    // set the value again, with no notification, as setWaveTable forces the type to CUSTOM.
+    m_type->setUint32(static_cast<uint32_t>(type), false);
 }
 
 bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & r, size_t framesToProcess)
@@ -289,7 +311,8 @@ void OscillatorNode::reset(ContextRenderLock&)
 void OscillatorNode::setWaveTable(std::shared_ptr<WaveTable> waveTable)
 {
     m_waveTable = waveTable;
-    m_type = OscillatorType::CUSTOM;
+    // set the value, but don't notify as that would recurse
+    m_type->setUint32(static_cast<uint32_t>(OscillatorType::CUSTOM), false);
 }
 
 bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const

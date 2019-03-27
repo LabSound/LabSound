@@ -14,15 +14,17 @@ WaveShaperNode::WaveShaperNode()
     initialize();
 }
 
-void WaveShaperNode::setCurve(const std::vector<float> & curve)
+void WaveShaperNode::setCurve(std::vector<float> && curve)
 {
-    waveShaperProcessor()->setCurve(curve);
+    waveShaperProcessor()->setCurve(std::move(curve));
 }
 
+#if 0
 std::vector<float> & WaveShaperNode::curve()
 {
     return waveShaperProcessor()->curve();
 }
+#endif
 
  WaveShaperProcessor * WaveShaperNode::waveShaperProcessor() 
  {

@@ -70,7 +70,17 @@ std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);
     nqr::AudioData * audioData = new nqr::AudioData();
-    nyquistFileIO.Load(audioData, std::string(filePath));
+    try
+    {
+        nyquistFileIO.Load(audioData, std::string(filePath));
+    }
+    catch (...)
+    {
+        // use empty pointer as load failure sentinel
+        /// @TODO report loading error
+        return {};
+    }
+
     return detail::LoadInternal(audioData, mixToMono);
 }
 

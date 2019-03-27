@@ -24,14 +24,39 @@ namespace lab
 
 enum PanningMode
 {
+    PANNING_NONE = 0,
     EQUALPOWER = 10,
     HRTF = 20,
+};
+
+enum FilterType
+{
+    FILTER_NONE = 0,
+    LOWPASS = 1,
+    HIGHPASS = 2,
+    BANDPASS = 3,
+    LOWSHELF = 4,
+    HIGHSHELF = 5,
+    PEAKING = 6,
+    NOTCH = 7,
+    ALLPASS = 8
+};
+
+enum class OscillatorType
+{
+    OSCILLATOR_NONE = 0,
+    SINE = 1,
+    SQUARE = 2,
+    SAWTOOTH = 3,
+    TRIANGLE = 4,
+    CUSTOM = 5
 };
 
 class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
+class AudioSetting;
 class ContextGraphLock;
 class ContextRenderLock;
 
@@ -114,8 +139,19 @@ public:
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
 
-    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
+    // returns a vector of parameter names
+    std::vector<std::string> params() const;
 
+    // returns a vector of setting names
+    std::vector<std::string> settings() const;
+
+    // USER FACING FUNCTIONS >
+
+    std::shared_ptr<AudioParam> getParam(char const * const str);
+    std::shared_ptr<AudioSetting> getSetting(char const * const str);
+
+    // USER FACING FUNCTIONS <
+    
 protected:
 
     // Inputs and outputs must be created before the AudioNode is initialized.
@@ -173,6 +209,7 @@ private:
 protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
+    std::vector<std::shared_ptr<AudioSetting>> m_settings;
     size_t m_channelCount;
     float m_sampleRate;
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };

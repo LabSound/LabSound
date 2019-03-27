@@ -18,16 +18,6 @@ namespace lab {
 
 class BiquadProcessor : public AudioDSPKernelProcessor {
 public:
-    enum FilterType {
-        LowPass = 0,
-        HighPass = 1,
-        BandPass = 2,
-        LowShelf = 3,
-        HighShelf = 4,
-        Peaking = 5,
-        Notch = 6,
-        Allpass = 7
-    };
 
     BiquadProcessor(size_t numberOfChannels, bool autoInitialize);
 

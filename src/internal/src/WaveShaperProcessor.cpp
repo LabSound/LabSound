@@ -25,9 +25,10 @@ AudioDSPKernel * WaveShaperProcessor::createKernel()
     return new WaveShaperDSPKernel(this);
 }
 
-void WaveShaperProcessor::setCurve(const std::vector<float> & curve)
+void WaveShaperProcessor::setCurve(std::vector<float> && curve)
 {
-    m_newCurve = curve;
+    std::lock_guard<std::mutex> lock(m_curveWrite);
+    std::swap(m_newCurve, curve);
 }
 
 void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
@@ -38,10 +39,11 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
         return;
     }
 
-    // tofix - make this thread safe
+    /// @todo - make this lock free. Setting a curve might cause an audio glitch.
     if (m_newCurve.size())
     {
-        m_curve = m_newCurve;
+        std::lock_guard<std::mutex> lock(m_curveWrite);
+        std::swap(m_curve, m_newCurve);
         m_newCurve.clear();
     }
     
@@ -56,5 +58,11 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
         m_kernels[i]->process(r, source->channel(i)->data(), destination->channel(i)->mutableData(), framesToProcess);
     }
 }
+
+std::unique_ptr<WaveShaperProcessor::Curve> WaveShaperProcessor::curve() 
+{ 
+    return std::unique_ptr<WaveShaperProcessor::Curve>(new WaveShaperProcessor::Curve(m_curveWrite, m_curve)); 
+}
+
 
 } // namespace lab
