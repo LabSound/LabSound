@@ -127,8 +127,8 @@ namespace lab
     ClipNode::ClipNode() 
     : lab::AudioBasicProcessorNode()
     {
-        m_processor = std::make_unique<ClipNodeInternal>();
-        internalNode = static_cast<ClipNodeInternal *>(m_processor.get());
+        internalNode = new ClipNodeInternal();
+        m_processor.reset(internalNode);
 
         m_params.push_back(internalNode->aVal);
         m_params.push_back(internalNode->bVal);
