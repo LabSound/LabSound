@@ -8,7 +8,7 @@ macOS | Windows | Linux |
 -----------------
 
 
-LabSound is a graph-based audio engine built using C++11. LabSound originated as a fork of WebKit's WebAudio implementation, as used in Google's Chrome browser and Apple's Safari. 
+LabSound is a C++ graph-based audio engine. LabSound originated as a fork of WebKit's WebAudio implementation, as used in Google's Chrome browser and Apple's Safari. 
 
 LabSound implements many aspects of the WebAudio specification while extending its functionality with an improved API, new graph nodes, bugfixes, and performance improvements.
 
@@ -53,7 +53,7 @@ Users of LabSound are expected to compile LabSound from source. While most depen
 
 The submodules can be fetched after a clone with `git submodule update --init --recursive`
 
-LabSound and libnyquist require a C++11 compiler.
+LabSound and libnyquist require a C++14 or greater compiler.
 
 # Building with Cmake
 
