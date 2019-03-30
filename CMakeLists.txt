@@ -13,6 +13,8 @@ elseif (LABSOUND_PULSE)
     set(LIBNYQUIST_PULSE ON)
 endif()
 
+set(CMAKE_CXX_STANDARD 14)
+
 add_subdirectory(third_party/libnyquist)
 
 include(cmake/common.cmake)
