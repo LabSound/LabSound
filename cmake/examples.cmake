@@ -21,9 +21,9 @@ ENDIF(APPLE)
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 
 set_target_properties(LabSoundExample PROPERTIES
-                      RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+                      RUNTIME_OUTPUT_DIRECTORY bin)
 
 set_property(TARGET LabSoundExample PROPERTY FOLDER "examples")
 
 install(TARGETS LabSoundExample
-    RUNTIME DESTINATION ${PROJECT_BINARY_DIR}/bin)
+    RUNTIME DESTINATION bin)
