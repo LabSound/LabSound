@@ -34,7 +34,8 @@ public:
     // controlRate is the rate (number per second) at which parameter values will be calculated.
     // It should equal sampleRate for sample-accurate parameter changes, and otherwise will usually match
     // the render quantum size such that the parameter value changes once per render quantum.
-    float valuesForTimeRange(double startTime, double endTime, float defaultValue, float* values, unsigned numberOfValues, double sampleRate, double controlRate);
+    float valuesForTimeRange(double startTime, double endTime, float defaultValue, 
+                             float* values, size_t numberOfValues, double sampleRate, double controlRate);
 
     bool hasValues() { return m_events.size() > 0; }
 
@@ -105,7 +106,8 @@ private:
     };
 
     void insertEvent(const ParamEvent&);
-    float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue, float* values, unsigned numberOfValues, double sampleRate, double controlRate);
+    float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue, 
+                                 float* values, size_t numberOfValues, double sampleRate, double controlRate);
 
     std::vector<ParamEvent> m_events;
 };

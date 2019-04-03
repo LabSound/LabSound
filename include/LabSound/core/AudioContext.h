@@ -62,7 +62,7 @@ public:
 
     bool isOfflineContext();
 
-    size_t currentSampleFrame() const;
+    uint64_t currentSampleFrame() const;
 
     double currentTime() const;
 
