@@ -264,9 +264,9 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // Fix gremlins.
-        if (isnan(m_detectorAverage))
+        if (std::isnan(m_detectorAverage))
             m_detectorAverage = 1;
-        if (isinf(m_detectorAverage))
+        if (std::isinf(m_detectorAverage))
             m_detectorAverage = 1;
 
         float desiredGain = m_detectorAverage;
