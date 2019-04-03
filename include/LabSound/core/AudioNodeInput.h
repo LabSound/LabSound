@@ -57,10 +57,6 @@ private:
 
     AudioNode * m_node;
 
-    // Called from context's audio thread.
-    AudioBus * internalSummingBus(ContextRenderLock&);
-    void sumAllConnections(ContextRenderLock&, AudioBus* summingBus, size_t framesToProcess);
-
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };
 
