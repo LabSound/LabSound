@@ -158,7 +158,7 @@ float AudioParamTimeline::valuesForTimeRange(
     double endTime,
     float defaultValue,
     float* values,
-    unsigned numberOfValues,
+    size_t numberOfValues,
     double sampleRate,
     double controlRate)
 {
@@ -171,7 +171,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     double endTime,
     float defaultValue,
     float* values,
-    unsigned numberOfValues,
+    size_t numberOfValues,
     double sampleRate,
     double controlRate)
 {
@@ -195,7 +195,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     double firstEventTime = m_events[0].time();
     if (firstEventTime > startTime) {
         double fillToTime = std::min(endTime, firstEventTime);
-        unsigned fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
+        size_t fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
         fillToFrame = std::min(fillToFrame, numberOfValues);
         for (; writeIndex < fillToFrame; ++writeIndex)
             values[writeIndex] = defaultValue;
@@ -209,7 +209,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     // stopping when we've rendered all the requested values.
     // FIXME: could try to optimize by avoiding having to iterate starting from the very first event
     // and keeping track of a "current" event index.
-    int n = m_events.size();
+    int n = static_cast<int>(m_events.size());
     for (int i = 0; i < n && writeIndex < numberOfValues; ++i) {
         ParamEvent& event = m_events[i];
         ParamEvent* nextEvent = i < n - 1 ? &(m_events[i + 1]) : 0;
@@ -228,7 +228,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         double sampleFrameTimeIncr = 1 / sampleRate;
 
         double fillToTime = std::min(endTime, time2);
-        unsigned fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
+        size_t fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
         fillToFrame = std::min(fillToFrame, numberOfValues);
 
         ParamEvent::Type nextEventType = nextEvent ? static_cast<ParamEvent::Type>(nextEvent->type()) : ParamEvent::LastType /* unknown */;
@@ -322,7 +322,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
                     // Save old values and recalculate information based on the curve's duration
                     // instead of the next event time.
-                    unsigned nextEventFillToFrame = fillToFrame;
+                    size_t nextEventFillToFrame = fillToFrame;
                     double nextEventFillToTime = fillToTime;
                     fillToTime = std::min(endTime, time1 + duration);
                     

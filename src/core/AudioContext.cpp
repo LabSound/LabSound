@@ -438,7 +438,7 @@ bool AudioContext::isOfflineContext()
     return m_isOfflineContext;
 }
 
-size_t AudioContext::currentSampleFrame() const
+uint64_t AudioContext::currentSampleFrame() const
 {
     return m_destinationNode->currentSampleFrame();
 }

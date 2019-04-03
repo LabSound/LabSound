@@ -47,10 +47,10 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
     // endFrame              : End frame for this source.
-    size_t quantumStartFrame = context->currentSampleFrame();
-    size_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
-    size_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
-    size_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
+    uint64_t quantumStartFrame = context->currentSampleFrame();
+    uint64_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
+    uint64_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
+    uint64_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
 
     // If end time is known and it's already passed, then don't do any more rendering
     if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)

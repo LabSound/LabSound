@@ -32,6 +32,7 @@ namespace lab {
     {
         _windowSize->setUint32(static_cast<uint32_t>(ws));
     }
+
     size_t PowerMonitorNode::windowSize() const
     {
         return _windowSize->valueUint32();
@@ -81,7 +82,7 @@ namespace lab {
             
             // Protect against accidental overload due to bad values in input stream
             const float kMinPower = 0.000125f;
-            if (isinf(power) || isnan(power) || power < kMinPower)
+            if (std::isinf(power) || std::isnan(power) || power < kMinPower)
                 power = kMinPower;
             
             // db is 20 * log10(rms/Vref) where Vref is 1.0

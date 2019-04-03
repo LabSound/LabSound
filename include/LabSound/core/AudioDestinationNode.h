@@ -35,7 +35,7 @@ public:
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).
     virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
 
-    size_t currentSampleFrame() const { return m_currentSampleFrame; }
+    uint64_t currentSampleFrame() const { return m_currentSampleFrame; }
     double currentTime() const;
 
     virtual size_t numberOfChannels() const { return m_channelCount; }
@@ -52,7 +52,7 @@ protected:
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     // Counts the number of sample-frames processed by the destination.
-    size_t m_currentSampleFrame;
+    uint64_t m_currentSampleFrame;
 
     float m_sampleRate;
     AudioContext * m_context;
