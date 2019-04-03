@@ -49,7 +49,7 @@ constexpr int iterations = 1;
 int main (int argc, char *argv[]) try
 {
     for (int i = 0; i < iterations; ++i)
-        g_simpleExample.PlayExample();
+        g_tremolo.PlayExample();
 
     return 0;
 }

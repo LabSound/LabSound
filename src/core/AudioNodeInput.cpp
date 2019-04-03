@@ -21,7 +21,8 @@ using namespace std;
 namespace lab
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) : AudioSummingJunction(), m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) 
+: AudioSummingJunction(), m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, processingSizeInFrames));
@@ -47,7 +48,8 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
 void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!junction || !junction->node() || !toOutput) return;
+    if (!junction || !junction->node() || !toOutput) 
+        return;
 
     if (junction->isConnected(toOutput))
     {
@@ -116,36 +118,9 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
     }
 
     // Multiple connections case (or no connections).
-    return internalSummingBus(r);
-}
-
-AudioBus* AudioNodeInput::internalSummingBus(ContextRenderLock& r)
-{
     return m_internalSummingBus.get();
 }
 
-void AudioNodeInput::sumAllConnections(ContextRenderLock& r, AudioBus* summingBus, size_t framesToProcess)
-{
-    // We shouldn't be calling this method if there's only one connection, since it's less efficient.
-    size_t c = numberOfRenderingConnections(r);
-    if (c < 1 || !summingBus)
-        return;
-
-    summingBus->zero();
-
-    for (int i = 0; i < c; ++i)
-    {
-        auto output = renderingOutput(r, i);
-        if (output)
-        {
-            // Render audio from this output.
-            AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
-
-            // Sum, with unity-gain.
-            summingBus->sumFrom(*connectionBus);
-        }
-    }
-}
 
 AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
@@ -166,18 +141,30 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
         c = 0; // if there's a single input, but it has no output; treat this input as silent.
     }
 
-    AudioBus* internalSummingBusPtr = internalSummingBus(r);
     if (c == 0)
     {
-        // Generate silence if we're not connected to anything.
+        // Generate silence if we're not connected to anything, and return the silent bus
         /// @TODO a possible optimization is to flag silence and propagate it to consumers of this input.
-        internalSummingBusPtr->zero();
-        return internalSummingBusPtr;
+        m_internalSummingBus->zero();
+        return m_internalSummingBus.get();
     }
 
-    // There are multiple connectsion to process.
-	sumAllConnections(r, internalSummingBusPtr, framesToProcess);
-    return internalSummingBusPtr;
+    // multiple connections
+    m_internalSummingBus->zero();
+
+    for (int i = 0; i < c; ++i)
+    {
+        auto output = renderingOutput(r, i);
+        if (output)
+        {
+            // Render audio from this output.
+            AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
+
+            // Sum, with unity-gain.
+            m_internalSummingBus->sumFrom(*connectionBus);
+        }
+    }
+    return m_internalSummingBus.get();
 }
 
 } // namespace lab

@@ -40,6 +40,6 @@ struct TremoloApp : public LabSoundExampleApp
             context->connect(context->destination(), osc, 0, 0);
         }
 
-        Wait(std::chrono::seconds(5));
+        Wait(std::chrono::seconds(500));
     }
 };
