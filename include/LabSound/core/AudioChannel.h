@@ -17,6 +17,7 @@ namespace lab
 class AudioChannel
 {
     AudioChannel(const AudioChannel &);  // noncopyable
+
 public:
     // Memory can be externally referenced, or can be internally allocated with an AudioFloatArray.
 
@@ -26,9 +27,6 @@ public:
         , m_rawPointer(storage)
         , m_silent(false)
     {
-        // provided managed backing if supplied storage is nullptr
-        if (!storage && length)
-            m_memBuffer.reset(new AudioFloatArray(length));
     }
 
     // Manage storage for us.
@@ -36,8 +34,7 @@ public:
         : m_length(length)
         , m_silent(true)
     {
-        if (length)
-            m_memBuffer.reset(new AudioFloatArray(length));
+        m_memBuffer.reset(new AudioFloatArray(length));
     }
 
     // An empty audio channel -- must call set() before it's useful...
@@ -51,15 +48,10 @@ public:
     // storage represents external memory not managed by this object.
     void set(float * storage, size_t length)
     {
-        // provided managed backing if supplied storage is nullptr
-        if (!storage && length)
-            m_memBuffer.reset(new AudioFloatArray(length));
-        else
-            m_memBuffer.reset();  // release any managed storage
-
+        m_memBuffer.reset();  // clean up managed storage
         m_rawPointer = storage;
         m_length = length;
-        m_silent = length > 0;
+        m_silent = false;
     }
 
     // How many sample-frames do we contain?
@@ -73,31 +65,28 @@ public:
     float * mutableData()
     {
         clearSilentFlag();
-        return const_cast<float*>(data());
+        return const_cast<float *>(data());
     }
 
-    const float * data() const 
-    { 
+    const float * data() const
+    {
         if (m_rawPointer)
             return m_rawPointer;
-
-        if (!m_memBuffer)
-            return nullptr;
-
-        return m_memBuffer->data();
+        if (m_memBuffer)
+            return m_memBuffer->data();
+        return nullptr;
     }
 
     // Zeroes out all sample values in buffer.
     void zero()
     {
-        if (m_silent || (!m_memBuffer && !m_rawPointer)) 
-            return;
+        if (m_silent) return;
 
         m_silent = true;
 
-        if (m_memBuffer.get())
+        if (m_memBuffer)
             m_memBuffer->zero();
-        else
+        else if (m_rawPointer)
             memset(m_rawPointer, 0, sizeof(float) * m_length);
     }
 
@@ -122,10 +111,10 @@ public:
     float maxAbsValue() const;
 
 private:
-    size_t m_length;
+    size_t m_length = 0;
     float * m_rawPointer = nullptr;
     std::unique_ptr<AudioFloatArray> m_memBuffer;
-    bool m_silent;
+    bool m_silent = true;
 };
 
 }  // lab
