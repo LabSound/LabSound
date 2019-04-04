@@ -63,33 +63,41 @@ namespace detail
 namespace lab
 {
 
-nqr::NyquistIO nyquistFileIO;
-std::mutex g_fileIOMutex;
+    nqr::NyquistIO nyquist_io;
+    std::mutex g_fileIOMutex;
 
-std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
-{
-    std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    nqr::AudioData * audioData = new nqr::AudioData();
-    try
+    std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
     {
-        nyquistFileIO.Load(audioData, std::string(filePath));
+        std::lock_guard<std::mutex> lock(g_fileIOMutex);
+        nqr::AudioData * audioData = new nqr::AudioData();
+        try
+        {
+            nyquist_io.Load(audioData, std::string(filePath));
+        }
+        catch (...)
+        {
+            // use empty pointer as load failure sentinel
+            /// @TODO report loading error
+            return {};
+        }
+
+        return detail::LoadInternal(audioData, mixToMono);
     }
-    catch (...)
+
+    std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono)
     {
-        // use empty pointer as load failure sentinel
-        /// @TODO report loading error
-        return {};
+        std::lock_guard<std::mutex> lock(g_fileIOMutex);
+        nqr::AudioData * audioData = new nqr::AudioData();
+        nyquist_io.Load(audioData, buffer);
+        return detail::LoadInternal(audioData, mixToMono);
     }
 
-    return detail::LoadInternal(audioData, mixToMono);
-}
-
-std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
-{
-    std::lock_guard<std::mutex> lock(g_fileIOMutex);
-    nqr::AudioData * audioData = new nqr::AudioData();
-    nyquistFileIO.Load(audioData, extension, buffer);
-    return detail::LoadInternal(audioData, mixToMono);
-}
+    std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
+    {
+        std::lock_guard<std::mutex> lock(g_fileIOMutex);
+        nqr::AudioData * audioData = new nqr::AudioData();
+        nyquist_io.Load(audioData, extension, buffer);
+        return detail::LoadInternal(audioData, mixToMono);
+    }
 
 } // end namespace lab
