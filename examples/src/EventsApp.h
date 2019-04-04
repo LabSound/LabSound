@@ -14,13 +14,15 @@ struct EventsApp : public LabSoundExampleApp
 
         auto musicClipNode = std::make_shared<SampledAudioNode>();
         {
-            ContextRenderLock r(context.get(), "Simple");
+            ContextRenderLock r(context.get(), "EventsSampleApp");
             musicClipNode->setBus(r, musicClip);
         }
         context->connect(gain, musicClipNode, 0, 0);
         context->connect(context->destination(), gain, 0, 0);
 
-        musicClipNode->setOnEnded([](){ printf("Music clip finished\n"); });
+        musicClipNode->setOnEnded([](){ 
+            std::cout << "clip finished" << std::endl;
+        });
         musicClipNode->start(0.0f);
 
         Wait(std::chrono::seconds(6));
