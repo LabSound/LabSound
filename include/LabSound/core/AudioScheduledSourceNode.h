@@ -12,7 +12,7 @@ namespace lab {
 
 class AudioBus;
 
-class AudioScheduledSourceNode : public AudioSourceNode 
+class AudioScheduledSourceNode : public AudioSourceNode
 {
 public:
 
@@ -27,14 +27,14 @@ public:
         PLAYING_STATE = 2,
         FINISHED_STATE = 3
     };
-    
+
     AudioScheduledSourceNode();
     virtual ~AudioScheduledSourceNode() { }
 
     // Scheduling.
     void start(double when);
     void stop(double when);
-    
+
     double startTime() const { return m_startTime; }
 
     unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
@@ -72,12 +72,23 @@ protected:
 
     PlaybackState m_playbackState;
 
-    // m_startTime is the time to start playing based on the context's timeline (0 or a time less than the context's current time means "now").
+    // m_startTime is the time to start playing based on the context's timeline.
+    // 0 or a time less than the context's current time means as soon as the
+    // next audio buffer is processed.
+    //
+    double m_pendingStartTime;
     double m_startTime; // in seconds
 
-    // m_endTime is the time to stop playing based on the context's timeline (0 or a time less than the context's current time means "now").
-    // If it hasn't been set explicitly, then the sound will not stop playing (if looping) or will stop when the end of the AudioBuffer
-    // has been reached.
+    // m_endTime is the time to stop playing based on the context's timeline.
+    // 0 or a time less than the context's current time means as soon as the
+    // next audio buffer is processed.
+    //
+    // If it hasn't been set explicitly,
+    //    if looping, then the sound will not stop playing
+    // else
+    //    it will stop when the end of the AudioBuffer has been reached.
+    //
+    double m_pendingEndTime;
     double m_endTime; // in seconds
 
     std::function<void()> m_onEnded;
