@@ -52,7 +52,7 @@ namespace lab
             
             // Start rendering at the correct offset.
             destP += quantumFrameOffset;
-            _function(r, this, i, destP, nonSilentFramesToProcess);
+            _function(r, this, static_cast<int>(i), destP, nonSilentFramesToProcess);
         }
 
         _now += double(framesToProcess) / r.context()->sampleRate();

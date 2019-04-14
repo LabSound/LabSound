@@ -30,7 +30,7 @@ struct ValidationApp : public LabSoundExampleApp
 
         auto randomFloat = std::uniform_real_distribution<float>(0, 1);
         auto randomScaleDegree = std::uniform_int_distribution<int>(0, int(pentatonicMajor.size()) - 1);
-        auto randomTimeIndex = std::uniform_int_distribution<int>(0, delayTimes.size() - 1);
+        auto randomTimeIndex = std::uniform_int_distribution<int>(0, static_cast<int>(delayTimes.size()) - 1);
 
         //std::cout << "Current Directory: " << PrintCurrentDirectory() << std::endl;
 

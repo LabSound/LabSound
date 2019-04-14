@@ -1,7 +1,8 @@
 
 cmake_minimum_required(VERSION 3.10)
-
 include_guard()
+
+project(LabSound)
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 

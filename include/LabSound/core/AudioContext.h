@@ -34,7 +34,6 @@ class ContextRenderLock;
 
 class AudioContext
 {
-
     friend class ContextGraphLock;
     friend class ContextRenderLock;
 

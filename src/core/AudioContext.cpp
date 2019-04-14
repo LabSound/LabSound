@@ -18,9 +18,9 @@
 
 #include "readerwriterqueue/readerwriterqueue.h"
 
-#include <stdio.h>
 #include <queue>
 #include <assert.h>
+#include <stdio.h>
 
 namespace lab
 {

@@ -21,6 +21,7 @@
 #include "Simple.h"
 #include "Spatialization.h"
 #include "StereoPanning.h"
+#include "Timing.h"
 #include "Tremolo.h"
 #include "Validation.h"
 
@@ -38,6 +39,7 @@ RedAlertApp g_redAlert;
 SimpleApp g_simpleExample;
 SpatializationApp g_spatialization;
 StereoPanningApp g_stereoPanning;
+TimingApp g_timing;
 TremoloApp g_tremolo;
 ValidationApp g_validation;
 
@@ -49,7 +51,7 @@ constexpr int iterations = 1;
 int main (int argc, char *argv[]) try
 {
     for (int i = 0; i < iterations; ++i)
-        g_eventsApp.PlayExample();
+        g_timing.PlayExample();
 
     return 0;
 }
