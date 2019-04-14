@@ -60,12 +60,12 @@ namespace lab
 
                 m_attackTimeTarget = m_noteOnTime + m_attackTime->value(r);
 
-                m_attackSteps = m_attackTime->value(r) * r.context()->sampleRate();
+                m_attackSteps = static_cast<int>(m_attackTime->value(r) * r.context()->sampleRate());
                 m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
 
                 m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
 
-                m_decaySteps = m_decayTime->value(r) * r.context()->sampleRate();
+                m_decaySteps = static_cast<int>(m_decayTime->value(r) * r.context()->sampleRate());
                 m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
 
                 m_releaseSteps = 0;
@@ -120,8 +120,8 @@ namespace lab
                 }
             }
 
-            unsigned numChannels = numberOfChannels();
-            for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+            size_t numChannels = numberOfChannels();
+            for (size_t channelIndex = 0; channelIndex < numChannels; ++channelIndex)
             {
                 if (sourceBus->numberOfChannels() == numChannels)
                     source = sourceBus->channel(channelIndex)->data();
@@ -150,7 +150,7 @@ namespace lab
             if (m_noteOffTime == std::numeric_limits<double>::max())
             {
                 m_noteOffTime = now + m_releaseTime->value(r);
-                m_releaseSteps = m_releaseTime->value(r) * r.context()->sampleRate();
+                m_releaseSteps = static_cast<int>(m_releaseTime->value(r) * r.context()->sampleRate());
                 m_releaseStepSize = -m_sustainLevel->value(r) / m_releaseSteps;
             }
         }
