@@ -19,7 +19,7 @@ class AudioBus;
 // This should  be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
 //
 // params: gain, playbackRate
-// settings: loop 
+// settings: loop
 //
 class SampledAudioNode final : public AudioScheduledSourceNode
 {
@@ -56,6 +56,7 @@ public:
 
     std::shared_ptr<AudioParam> gain() { return m_gain; }
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
+    std::shared_ptr<AudioParam> detune() { return m_detune; }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
     void setPannerNode(PannerNode*);
@@ -78,9 +79,10 @@ private:
     // m_buffer holds the sample data which this node outputs.
     std::shared_ptr<AudioBus> m_sourceBus;
 
-    // Used for the "gain" and "playbackRate" attributes.
+    // Exposed attributes
     std::shared_ptr<AudioParam> m_gain;
     std::shared_ptr<AudioParam> m_playbackRate;
+    std::shared_ptr<AudioParam> m_detune;
 
     // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
     // If true, it will wrap around to the start of the buffer each time it reaches the end.

@@ -20,7 +20,10 @@ namespace lab {
 
 const double UnknownTime = -1;
 
-AudioScheduledSourceNode::AudioScheduledSourceNode() : m_playbackState(UNSCHEDULED_STATE), m_startTime(0), m_endTime(UnknownTime)
+AudioScheduledSourceNode::AudioScheduledSourceNode()
+: m_playbackState(UNSCHEDULED_STATE)
+, m_pendingStartTime(UnknownTime), m_startTime(0)
+, m_pendingEndTime(UnknownTime), m_endTime(UnknownTime)
 {
 }
 
@@ -40,9 +43,22 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
 
     if (!context)
         return;
-    
+
+    // not atomic, but will largely prevent the times from being updated
+    // by another thread during the update calculations.
+    if (m_pendingEndTime > UnknownTime)
+    {
+        m_endTime = m_pendingEndTime;
+        m_pendingEndTime = UnknownTime;
+    }
+    if (m_pendingStartTime > UnknownTime)
+    {
+        m_startTime = m_pendingStartTime;
+        m_pendingStartTime = UnknownTime;
+    }
+
     float sampleRate = r.context()->sampleRate();
-    
+
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
@@ -57,7 +73,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         finish(r);
 
     // If unscheduled, or finished, or out of time, output silence
-    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame) 
+    if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame)
     {
         // Output silence.
         outputBus->zero();
@@ -66,7 +82,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     }
 
     // Check if it's time to start playing.
-    if (m_playbackState == SCHEDULED_STATE) 
+    if (m_playbackState == SCHEDULED_STATE)
     {
         m_playbackState = PLAYING_STATE;
     }
@@ -126,7 +142,7 @@ void AudioScheduledSourceNode::start(double when)
         return;
     }
 
-    m_startTime = when;
+    m_pendingStartTime = when;
     m_playbackState = SCHEDULED_STATE;
 }
 
@@ -137,18 +153,18 @@ void AudioScheduledSourceNode::stop(double when)
     // original:
     // if (m_playbackState == FINISHED_STATE || m_playbackState == UNSCHEDULED_STATE))
     //    return;
-    
+
     if (!std::isfinite(when))
         return;
-    
+
     when = max(0.0, when);
-    m_endTime = when;
+    m_pendingEndTime = when;
 }
 
-void AudioScheduledSourceNode::reset(ContextRenderLock&) 
+void AudioScheduledSourceNode::reset(ContextRenderLock&)
 {
+    m_pendingEndTime = UnknownTime;
     m_playbackState = UNSCHEDULED_STATE;
-    m_endTime = UnknownTime;
 }
 
 void AudioScheduledSourceNode::finish(ContextRenderLock& r)
