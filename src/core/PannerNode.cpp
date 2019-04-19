@@ -268,6 +268,12 @@ void PannerNode::reset(ContextRenderLock&)
         m_panner->reset();
 }
 
+PanningMode PannerNode::panningModel() const
+{
+    return static_cast<PanningMode>(m_panningModel->valueUint32());
+}
+
+
 void PannerNode::setPanningModel(PanningMode model)
 {
     if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
