@@ -1,6 +1,4 @@
 
-project(LabSound)
-
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -64,7 +62,7 @@ else()
     elseif (LABSOUND_PULSE)
         target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
         set(LIBNYQUIST_PULSE ON)
-    elseif (LABSOUND_ASOUND)    
+    elseif (LABSOUND_ASOUND)
         target_compile_definitions(LabSound PRIVATE __LINUX_ALSA__=1)
         set(LIBNYQUIST_ASOUND ON)
     else()
@@ -83,7 +81,7 @@ install(FILES ${labsnd_core_h}
         DESTINATION include/LabSound/core)
 install(FILES ${labsnd_extended_h}
         DESTINATION include/LabSound/extended)
-install(DIRECTORY 
+install(DIRECTORY
         assets/hrtf
         assets/images
         assets/impulse

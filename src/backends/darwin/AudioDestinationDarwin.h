@@ -18,10 +18,10 @@ public:
     AudioDestinationMac(AudioIOCallback&, size_t channelCount, float sampleRate);
     virtual ~AudioDestinationMac();
 
-    virtual void start();
-    virtual void stop();
+    virtual void start() override;
+    virtual void stop() override;
 
-    float sampleRate() const { return m_sampleRate; }
+    float sampleRate() const override { return m_sampleRate; }
 
 private:
     void configure();

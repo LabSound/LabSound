@@ -18,7 +18,6 @@ class LocalAudioInputProvider;
 
 class AudioDestinationNode : public AudioNode, public AudioIOCallback 
 {
-
     class LocalAudioInputProvider;
     LocalAudioInputProvider * m_localAudioInputProvider;
 
@@ -28,15 +27,16 @@ public:
     virtual ~AudioDestinationNode();
     
     // AudioNode   
-    virtual void process(ContextRenderLock&, size_t) override { } // we're pulled by hardware so this is never called
-    virtual void reset(ContextRenderLock&) override { m_currentSampleFrame = 0; };
+    virtual void process(ContextRenderLock&, size_t) override { } // DestinationNode is pulled by hardware so this is never called
+    virtual void reset(ContextRenderLock &) override;
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).
     virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
 
-    uint64_t currentSampleFrame() const { return m_currentSampleFrame; }
+    uint64_t currentSampleFrame() const;
     double currentTime() const;
+    double currentSampleTime() const; // extrapolated exact time
 
     virtual size_t numberOfChannels() const { return m_channelCount; }
 
@@ -51,11 +51,10 @@ protected:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    // Counts the number of sample-frames processed by the destination.
-    uint64_t m_currentSampleFrame;
-
     float m_sampleRate;
     AudioContext * m_context;
+
+private:
 };
 
 } // namespace lab

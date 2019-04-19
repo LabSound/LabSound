@@ -108,12 +108,14 @@ struct MoogFilter
 
     const float sampleRate = 44100.00f;
 
-    float process(double cutoff, double resonance, double sample)
+    float process(double cutoff_, double resonance_, double sample_)
     {
-        cutoff = 2.0f * cutoff / sampleRate;
+        float cutoff = 2.0f * cutoff_ / sampleRate;
+        float resonance = static_cast<float>(resonance_);
+        float sample = static_cast<float>(sample_);
 
         p = cutoff * (1.8f - 0.8f * cutoff);
-        k = 2.0 * std::sin(cutoff * M_PI * 0.5f) - 1.0f;
+        k = 2.0 * std::sin(cutoff * static_cast<float>(M_PI) * 0.5f) - 1.0f;
         t1 = (1.0f - p) * 1.386249f;
         t2 = 12.0f + t1 * t1;
         r = resonance * (t2 + 6.0f * t1) / (t2 - 6.0f * t1);

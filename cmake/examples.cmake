@@ -1,13 +1,11 @@
 
-project(LabSoundExamples)
+set(labsound_examples_src "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp")
+file(GLOB labsound_examples_hdr "${LABSOUND_ROOT}/examples/*.h")
 
-set(src "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp")
-
-add_executable(LabSoundExample ${src})
+add_executable(LabSoundExample ${labsound_examples_src} ${labsound_examples_hdr})
 
 _set_cxx_14(LabSoundExample)
 _set_compile_options(LabSoundExample)
-
 
 if(APPLE)
     set(DARWIN_LIBS
