@@ -71,6 +71,10 @@ AudioDestinationNode::AudioDestinationNode(AudioContext * context, size_t channe
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
+    m_localAudioInputProvider->epoch[0] =
+    m_localAudioInputProvider->epoch[1] = std::chrono::high_resolution_clock::now();
+
+
     // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
     // initialize();
 }

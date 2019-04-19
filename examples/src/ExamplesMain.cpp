@@ -51,7 +51,7 @@ constexpr int iterations = 1;
 int main (int argc, char *argv[]) try
 {
     for (int i = 0; i < iterations; ++i)
-        g_timing.PlayExample();
+        g_simpleExample.PlayExample();
 
     return 0;
 }
