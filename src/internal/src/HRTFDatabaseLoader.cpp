@@ -24,7 +24,10 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::MakeHRTFLoaderSingleton(
     return s_loader;
 }
 
-HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & searchPath) : searchPath(searchPath), m_databaseSampleRate(sampleRate), m_loading(false)
+HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & searchPath)
+: m_loading(false)
+, m_databaseSampleRate(sampleRate)
+, searchPath(searchPath)
 {
     ASSERT(!s_loader.get());
 }

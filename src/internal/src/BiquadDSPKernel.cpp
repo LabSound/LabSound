@@ -83,6 +83,9 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
         case FilterType::ALLPASS:
             m_biquad.setAllpassParams(normalizedFrequency, value2);
             break;
+                
+        default:
+            break;
         }
     }
 }

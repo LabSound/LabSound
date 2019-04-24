@@ -116,9 +116,6 @@ private:
     bool m_isOfflineContext = false;
     bool m_automaticPullNodesNeedUpdating = false; // keeps track if m_automaticPullNodes is modified.
 
-    // Number of SampledAudioNode that are active (playing).
-    std::atomic<int> m_activeSourceCount;
-
     void uninitialize();
 
     void handleAutomaticSources();

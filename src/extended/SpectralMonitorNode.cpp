@@ -55,8 +55,8 @@ namespace lab
     public:
 
         SpectralMonitorNodeInternal() 
-        : fft(0)
-        , windowSize(std::make_shared<AudioSetting>("windowSize")) 
+        : windowSize(std::make_shared<AudioSetting>("windowSize"))
+        , fft(nullptr)
         {
             setWindowSize(512);
         }

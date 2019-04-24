@@ -28,9 +28,9 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels, size_
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
+    , m_inPlaceBus(0)
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
-    , m_inPlaceBus(0)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
     

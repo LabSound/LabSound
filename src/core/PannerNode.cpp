@@ -33,7 +33,6 @@ static void fixNANs(T& x)
 
 PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
 : AudioNode()
-, m_sampleRate(sampleRate)
 , m_orientationX(std::make_shared<AudioParam>("orientationX", 0.f, -1.f, 1.f))
 , m_orientationY(std::make_shared<AudioParam>("orientationY", 0.f, -1.f, 1.f))
 , m_orientationZ(std::make_shared<AudioParam>("orientationZ", 0.f, -1.f, 1.f))
@@ -50,6 +49,7 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
 , m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle"))
 , m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle"))
 , m_panningModel(std::make_shared<AudioSetting>("panningMode"))
+, m_sampleRate(sampleRate)
 {
     if (searchPath.length())
     {
@@ -77,13 +77,13 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
 
     m_distanceModel->setValueChanged(
         [this]() {
-            DistanceModel model(static_cast<DistanceModel>(m_distanceModel->valueUint32()));
+            DistanceEffect::ModelType model(static_cast<DistanceEffect::ModelType>(m_distanceModel->valueUint32()));
             switch (model)
             {
                 case DistanceEffect::ModelLinear:
                 case DistanceEffect::ModelInverse:
                 case DistanceEffect::ModelExponential:
-                    m_distanceEffect->setModel(static_cast<DistanceEffect::ModelType>(model), true);
+                    m_distanceEffect->setModel(model, true);
                     break;
 
                 default:

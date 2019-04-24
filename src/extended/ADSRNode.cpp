@@ -25,7 +25,8 @@ namespace lab
 
     public:
 
-        ADSRNodeInternal() : AudioProcessor(2), m_noteOffTime(0), m_currentGain(0), m_noteOnTime(-1.)
+        ADSRNodeInternal()
+        : AudioProcessor(2), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
         {
             m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
             m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);

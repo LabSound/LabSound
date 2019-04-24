@@ -31,7 +31,6 @@ namespace lab
     class PingPongDelayNode : public Subgraph
     {
         float tempo;
-        int noteDivision;
 
         std::shared_ptr<BPMDelay> leftDelay;
         std::shared_ptr<BPMDelay> rightDelay;
