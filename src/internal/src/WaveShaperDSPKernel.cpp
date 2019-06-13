@@ -18,7 +18,7 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
     ASSERT(source && destination && waveShaperProcessor());
 
     // Curve object locks the curve during processing
-    std::unique_ptr<WaveShaperProcessor::Curve> c = std::move(waveShaperProcessor()->curve());
+    std::unique_ptr<WaveShaperProcessor::Curve> c = waveShaperProcessor()->curve();
 
     if (c->curve.size() == 0) 
     {

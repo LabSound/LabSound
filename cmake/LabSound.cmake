@@ -26,6 +26,17 @@ add_library(LabSound STATIC
     ${third_kissfft}
  )
 
+if (APPLE)
+    set_target_properties(LabSound PROPERTIES
+        FRAMEWORK TRUE
+        FRAMEWORK_VERSION A
+        MACOSX_FRAMEWORK_IDENTIFIER com.Lab.LabSound
+        VERSION 0.13.0
+        SOVERSION 1.0.0
+        PUBLIC_HEADER "${labsnd_core_h} ${labsnd_extended_h}"
+    )
+endif()
+
 _set_cxx_14(LabSound)
 _set_compile_options(LabSound)
 
@@ -75,6 +86,7 @@ target_link_libraries(LabSound libnyquist libopus libwavpack)
 install(TARGETS LabSound
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
     RUNTIME DESTINATION bin)
 
 install(FILES ${labsnd_core_h}

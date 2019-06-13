@@ -69,17 +69,13 @@ private:
     : m_kernelListL(std::move(kernelListL))
     , m_kernelListR(std::move(kernelListR))
     , m_elevationAngle(elevation)
-    , info(info)
     {
-        
     }
 
     std::unique_ptr<HRTFKernelList> m_kernelListL;
     std::unique_ptr<HRTFKernelList> m_kernelListR;
     
     double m_elevationAngle;
-    
-    HRTFDatabaseInfo * info;
 };
 
 } // namespace lab

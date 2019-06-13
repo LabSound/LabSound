@@ -50,5 +50,5 @@ int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFr
 
 } // namespace lab
 
-#endif // AudioDestinationWin_h
+#endif // AudioDestinationLinux_h
 

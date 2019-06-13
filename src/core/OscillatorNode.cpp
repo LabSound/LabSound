@@ -217,8 +217,8 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset;
-    size_t nonSilentFramesToProcess;
+    size_t quantumFrameOffset = 0;
+    size_t nonSilentFramesToProcess = 0;
 
     updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 

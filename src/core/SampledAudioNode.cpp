@@ -30,10 +30,12 @@ const double DefaultGrainDuration = 0.020; // 20ms
 // to minimize linear interpolation aliasing.
 const double MaxRate = 1024;
 
-SampledAudioNode::SampledAudioNode() : AudioScheduledSourceNode(), m_grainDuration(DefaultGrainDuration)
+SampledAudioNode::SampledAudioNode()
+: AudioScheduledSourceNode()
 , m_isLooping(std::make_shared<AudioSetting>("loop"))
 , m_loopStart(std::make_shared<AudioSetting>("loopStart"))
 , m_loopEnd(std::make_shared<AudioSetting>("loopEnd"))
+, m_grainDuration(DefaultGrainDuration)
 {
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);

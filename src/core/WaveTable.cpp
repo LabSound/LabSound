@@ -29,7 +29,9 @@ namespace lab
     
 using namespace VectorMath;
 
-WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
+WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform)
+: m_centsPerRange(CentsPerRange)
+, m_sampleRate(sampleRate)
 {
     float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -42,7 +44,9 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform) : m_s
     generateBasicWaveform(basicWaveform);
 }
 
-WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag) : m_sampleRate(sampleRate), m_centsPerRange(CentsPerRange)
+WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
+: m_centsPerRange(CentsPerRange)
+, m_sampleRate(sampleRate)
 {
     float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
