@@ -51,18 +51,12 @@ AudioContext::~AudioContext()
     if (!isOfflineContext()) graphKeepAlive = 0.25f;
 
     updateThreadShouldRun = false;
-    if (graphUpdateThread.joinable())
-    {
-        cv.notify_all();
-        graphUpdateThread.join();
-    }
+    cv.notify_all();
 
-    //std::unique_lock<std::mutex> lk(m_updateMutex); // do we need this?
+    if (graphUpdateThread.joinable())
+        graphUpdateThread.join();
 
     uninitialize();
-
-    // Audio thread is dead. Nobody will schedule node deletion action. Let's do it ourselves.
-    if (m_destinationNode.get()) m_destinationNode.reset();
 
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
@@ -236,6 +230,8 @@ void AudioContext::update()
         if (m_internal->autoDispatchEvents)
             dispatchEvents();
 
+        // if blocked on cv.wait, double check whether it's still necessary to run.
+        if (updateThreadShouldRun || graphKeepAlive > 0)
         {
             ContextGraphLock gLock(this, "AudioContext::Update()");
 
@@ -350,7 +346,8 @@ void AudioContext::update()
 
         }
 
-        if (lk.owns_lock()) lk.unlock();
+        if (lk.owns_lock()) 
+            lk.unlock();
     }
 
     LOG("End UpdateGraphThread");

@@ -35,6 +35,10 @@ if (APPLE)
         SOVERSION 1.0.0
         PUBLIC_HEADER "${labsnd_core_h} ${labsnd_extended_h}"
     )
+    set_property(SOURCE ${labsnd_core_h}
+        PROPERTY MACOSX_PACKAGE_LOCATION Headers/LabSound/core)
+    set_property(SOURCE ${labsnd_extended_h}
+        PROPERTY MACOSX_PACKAGE_LOCATION Headers/LabSound/extended)
 endif()
 
 _set_cxx_14(LabSound)

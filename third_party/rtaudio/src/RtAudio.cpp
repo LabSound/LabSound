@@ -2692,7 +2692,8 @@ RtApiAsio :: RtApiAsio()
   // CoInitialize beforehand, but it must be for appartment threading
   // (in which case, CoInitilialize will return S_FALSE here).
   coInitialized_ = false;
-  HRESULT hr = CoInitialize( NULL ); 
+  //HRESULT hr = CoInitialize( NULL ); LabSound modified per issue 121
+  HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
   if ( FAILED(hr) ) {
     errorText_ = "RtApiAsio::ASIO requires a single-threaded appartment. Call CoInitializeEx(0,COINIT_APARTMENTTHREADED)";
     error( RtAudioError::WARNING );
@@ -3912,7 +3913,8 @@ RtApiWasapi::RtApiWasapi()
   : coInitialized_( false ), deviceEnumerator_( NULL )
 {
   // WASAPI can run either apartment or multi-threaded
-  HRESULT hr = CoInitialize( NULL );
+  //HRESULT hr = CoInitialize( NULL ); LabSound modified per issue 121
+  HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
   if ( !FAILED( hr ) )
     coInitialized_ = true;
 
@@ -4646,7 +4648,8 @@ DWORD WINAPI RtApiWasapi::abortWasapiThread( void* wasapiPtr )
 void RtApiWasapi::wasapiThread()
 {
   // as this is a new thread, we must CoInitialize it
-  CoInitialize( NULL );
+  //CoInitialize( NULL ); modified by LabSound per issue 121
+  CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
   HRESULT hr;
 
@@ -5245,7 +5248,8 @@ RtApiDs :: RtApiDs()
   // Dsound will run both-threaded. If CoInitialize fails, then just
   // accept whatever the mainline chose for a threading model.
   coInitialized_ = false;
-  HRESULT hr = CoInitialize( NULL );
+  //HRESULT hr = CoInitialize( NULL ); modified by LabSound per issue 121
+  HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
   if ( !FAILED( hr ) ) coInitialized_ = true;
 }
 
