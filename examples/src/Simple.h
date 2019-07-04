@@ -3,22 +3,20 @@
 
 #include "ExampleBaseApp.h"
 #include <iostream>
+#include <string>
 
 struct SimpleApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
+        if (!musicClip)
+            return;
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
-        std::shared_ptr<AudioBus> musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
-        if (!musicClip)
-        {
-            std::cerr << "Could not open samples/stereo-music-clip.wav" << std::endl;
-            return;
-        }
 
         oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
         gain = std::make_shared<GainNode>();

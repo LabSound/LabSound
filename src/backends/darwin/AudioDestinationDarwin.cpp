@@ -41,10 +41,16 @@ public:
         ASSERT(comp);
         
         OSStatus result = AudioComponentInstanceNew(comp, &m_inputUnit);
-        ASSERT(!result);
-        
-        result = AudioUnitInitialize(m_inputUnit);
-        ASSERT(!result);
+        if (!result)
+        {
+            AudioComponentInstanceDispose(m_inputUnit);
+            m_inputUnit = 0;
+        }
+        else
+        {
+            result = AudioUnitInitialize(m_inputUnit);
+            ASSERT(!result);
+        }
     }
     
     ~Input()
@@ -63,72 +69,77 @@ public:
     {
         // enable IO on input
         UInt32 param = 1;
-        OSErr result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &param, sizeof(UInt32));
-        ASSERT(!result);
+        OSErr result = 0;
         
-        // disable IO on output
-        param = 0;
-        result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &param, sizeof(UInt32));
-        ASSERT(!result);
+        if (m_inputUnit)
+        {
+            AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &param, sizeof(UInt32));
+            ASSERT(!result);
+            
+            // disable IO on output
+            param = 0;
+            result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &param, sizeof(UInt32));
+            ASSERT(!result);
         
-#if !TARGET_OS_IPHONE
-        // set to use default device
-        AudioDeviceID deviceId = kAudioObjectUnknown;
-        param = sizeof(AudioDeviceID);
-        AudioObjectPropertyAddress property_address = {
-            kAudioHardwarePropertyDefaultInputDevice,  // mSelector
-            kAudioObjectPropertyScopeGlobal,            // mScope
-            kAudioObjectPropertyElementMaster           // mElement
-        };
-        UInt32 deviceIdSize = sizeof(deviceId);
-        result = AudioObjectGetPropertyData(kAudioObjectSystemObject,
-                                            &property_address,
-                                            0,     // inQualifierDataSize
-                                            NULL,  // inQualifierData
-                                            &deviceIdSize,
-                                            &deviceId);
-        ASSERT(!result);
-        
-        result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &deviceId, sizeof(AudioDeviceID));
-        ASSERT(!result);
-#endif
-        
-        // configure the callback
-        AURenderCallbackStruct callback;
-        callback.inputProc = inputCallback;
-        callback.inputProcRefCon = this;
-        result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, 0, &callback, sizeof(AURenderCallbackStruct));
-        ASSERT(!result);
-        
-        // make the input buffer size match the output buffer size
-        UInt32 bufferSizeVal = bufferSize;
-#if TARGET_OS_IPHONE
-        result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &bufferSizeVal, sizeof(bufferSizeVal));
-#else
-        result = AudioUnitSetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &bufferSizeVal, sizeof(bufferSizeVal));
-#endif
-        ASSERT(!result);
-        
-        // Initialize the AudioUnit
-        result = AudioUnitInitialize(m_inputUnit);
-        ASSERT(!result);
-        
-        // get Size of IO Buffers
-        UInt32 sampleCount;
-        param = sizeof(UInt32);
-#if TARGET_OS_IPHONE
-        result = AudioUnitGetProperty(m_inputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &sampleCount, &param);
-#else
-        result = AudioUnitGetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
-#endif
-        ASSERT(!result);
-        
-        // The AudioUnit can do format conversions, so match the input configuration to the output.
-        //// if this doesn't work try it the other way around - set up the input desc and force the output to match
-        param = sizeof(AudioStreamBasicDescription);
-        result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &outDesc, param);
-        ASSERT(!result);
-        
+        #if !TARGET_OS_IPHONE
+            // set to use default device
+            AudioDeviceID deviceId = kAudioObjectUnknown;
+            param = sizeof(AudioDeviceID);
+            AudioObjectPropertyAddress property_address = {
+                kAudioHardwarePropertyDefaultInputDevice,  // mSelector
+                kAudioObjectPropertyScopeGlobal,            // mScope
+                kAudioObjectPropertyElementMaster           // mElement
+            };
+            UInt32 deviceIdSize = sizeof(deviceId);
+            result = AudioObjectGetPropertyData(kAudioObjectSystemObject,
+                                                &property_address,
+                                                0,     // inQualifierDataSize
+                                                NULL,  // inQualifierData
+                                                &deviceIdSize,
+                                                &deviceId);
+            ASSERT(!result);
+            
+            result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &deviceId, sizeof(AudioDeviceID));
+            ASSERT(!result);
+        #endif
+            
+            // configure the callback
+            AURenderCallbackStruct callback;
+            callback.inputProc = inputCallback;
+            callback.inputProcRefCon = this;
+            result = AudioUnitSetProperty(m_inputUnit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, 0, &callback, sizeof(AURenderCallbackStruct));
+            ASSERT(!result);
+            
+            // make the input buffer size match the output buffer size
+            UInt32 bufferSizeVal = bufferSize;
+        #if TARGET_OS_IPHONE
+            result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &bufferSizeVal, sizeof(bufferSizeVal));
+        #else
+            result = AudioUnitSetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &bufferSizeVal, sizeof(bufferSizeVal));
+        #endif
+            ASSERT(!result);
+            
+            // Initialize the AudioUnit
+            result = AudioUnitInitialize(m_inputUnit);
+            ASSERT(!result);
+            
+            // get Size of IO Buffers
+            UInt32 sampleCount;
+            param = sizeof(UInt32);
+        #if TARGET_OS_IPHONE
+            result = AudioUnitGetProperty(m_inputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &sampleCount, &param);
+        #else
+            result = AudioUnitGetProperty(m_inputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
+        #endif
+            ASSERT(!result);
+            
+            // The AudioUnit can do format conversions, so match the input configuration to the output.
+            //// if this doesn't work try it the other way around - set up the input desc and force the output to match
+            param = sizeof(AudioStreamBasicDescription);
+            result = AudioUnitSetProperty(m_inputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &outDesc, param);
+            ASSERT(!result);
+        }
+
         m_audioBus = new AudioBus(2, bufferSize, true);
         
         m_buffers = (AudioBufferList*) malloc(offsetof(AudioBufferList, mBuffers[0]) + sizeof(AudioBuffer) * outDesc.mChannelsPerFrame);
@@ -147,6 +158,9 @@ public:
                                   AudioBufferList *ioData)
     {
         Input* input = reinterpret_cast<Input*>( inRefCon );
+        if (!input->m_inputUnit)
+            return noErr;
+
         OSStatus result = AudioUnitRender(input->m_inputUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, input->m_buffers);
         
         if (result != noErr)
@@ -250,7 +264,8 @@ void AudioDestinationMac::start()
     OSStatus result = AudioOutputUnitStart(m_outputUnit);
     
     // LabSound
-    result = AudioOutputUnitStart(m_input->m_inputUnit);
+    if (m_input->m_inputUnit)
+        result = AudioOutputUnitStart(m_input->m_inputUnit);
 }
 
 void AudioDestinationMac::stop()
@@ -258,7 +273,8 @@ void AudioDestinationMac::stop()
     OSStatus result = AudioOutputUnitStop(m_outputUnit);
     
     // LabSound
-    result = AudioOutputUnitStop(m_input->m_inputUnit);
+    if (m_input->m_inputUnit)
+        result = AudioOutputUnitStop(m_input->m_inputUnit);
 }
 
 // Pulls on our provider to get rendered audio stream.

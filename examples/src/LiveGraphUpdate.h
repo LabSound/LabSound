@@ -5,7 +5,7 @@
 
 struct LiveGraphUpdateApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         std::shared_ptr<OscillatorNode> oscillator1, oscillator2;
         std::shared_ptr<GainNode> gain;

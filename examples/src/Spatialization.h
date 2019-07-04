@@ -6,11 +6,11 @@
 // Illustrates 3d sound spatialization and doppler shift
 struct SpatializationApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
-        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/trainrolling.wav", false);
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
         std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf"); // note search path
 

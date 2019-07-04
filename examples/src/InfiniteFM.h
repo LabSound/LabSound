@@ -29,7 +29,7 @@
 // it is because LabSound oscillators are wavetable generated?
 struct InfiniteFMApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 

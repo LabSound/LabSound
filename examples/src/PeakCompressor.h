@@ -3,15 +3,16 @@
 
 #include "ExampleBaseApp.h"
 
+
 struct PeakCompressorApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
-        std::shared_ptr<AudioBus> kick = MakeBusFromFile("samples/kick.wav", false);
-        std::shared_ptr<AudioBus> hihat = MakeBusFromFile("samples/hihat.wav", false);
-        std::shared_ptr<AudioBus> snare = MakeBusFromFile("samples/snare.wav", false);
+        std::shared_ptr<AudioBus> kick = MakeBusFromSampleFile("samples/kick.wav", argc, argv);
+        std::shared_ptr<AudioBus> hihat = MakeBusFromSampleFile("samples/hihat.wav", argc, argv);
+        std::shared_ptr<AudioBus> snare = MakeBusFromSampleFile("samples/snare.wav", argc, argv);
 
         std::vector<std::shared_ptr<SampledAudioNode>> samples;
 

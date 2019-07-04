@@ -9,7 +9,7 @@ struct TimingApp : public LabSoundExampleApp
     // This sample simply counts time, and checks that chrono's high_resolution_clock
     // and the time measure from the audio destination node essentially agree
     //
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         std::unique_ptr<lab::AudioContext> context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 

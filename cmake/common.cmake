@@ -64,6 +64,11 @@ endfunction()
 
 function(_set_cxx_14 proj)
     target_compile_features(${proj} INTERFACE cxx_std_14)
+    set(CMAKE_CXX_STANDARD 14)
+    set(CXX_STANDARD_REQUIRED)
+    if (APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -std=c++1y")
+    endif()
 endfunction()
 
 function(source_file fname)

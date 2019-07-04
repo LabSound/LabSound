@@ -19,7 +19,7 @@ std::string PrintCurrentDirectory()
 struct ValidationApp : public LabSoundExampleApp
 {
 
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
 
         std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
@@ -37,7 +37,7 @@ struct ValidationApp : public LabSoundExampleApp
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto ac = context.get();
 
-        std::shared_ptr<AudioBus> audioClip = MakeBusFromFile("samples/cello_pluck/cello_pluck_As0.wav", false);
+        std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_As0.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
         std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
 

@@ -84,6 +84,11 @@ namespace lab
         return detail::LoadInternal(audioData, mixToMono);
     }
 
+    std::shared_ptr<AudioBus> MakeBusFromFile(const std::string& path, bool mixToMono)
+    {
+        return MakeBusFromFile(path.c_str(), mixToMono);
+    }
+
     std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono)
     {
         std::lock_guard<std::mutex> lock(g_fileIOMutex);
@@ -92,7 +97,7 @@ namespace lab
         return detail::LoadInternal(audioData, mixToMono);
     }
 
-    std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, std::string extension, bool mixToMono)
+    std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, const std::string& extension, bool mixToMono)
     {
         std::lock_guard<std::mutex> lock(g_fileIOMutex);
         nqr::AudioData * audioData = new nqr::AudioData();

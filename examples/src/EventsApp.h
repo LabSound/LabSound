@@ -5,10 +5,13 @@
 
 struct EventsApp : public LabSoundExampleApp
 {
-    void PlayExample()
+    virtual void PlayExample(int argc, char** argv) override
     {
         auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
-        auto musicClip = MakeBusFromFile("samples/stereo-music-clip.wav", false);
+        auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
+        if (!musicClip)
+            return;
+
         auto gain = std::make_shared<GainNode>();
         gain->gain()->setValue(0.0625f);
 

@@ -17,6 +17,7 @@
 #include <map>
 #include <mutex>
 #include <random>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -27,7 +28,7 @@ using namespace lab;
 
 struct LabSoundExampleApp
 {
-    virtual void PlayExample() = 0;
+    virtual void PlayExample(int argc, char** argv) = 0;
 
     float MidiToFrequency(int midiNote)
     {
@@ -42,6 +43,9 @@ struct LabSoundExampleApp
         std::condition_variable cv;
         cv.wait_for(lock, duration);
     }
+    
+    static std::vector<std::string> SplitCommandLine(int argc, char** argv);
+    static std::shared_ptr<AudioBus> MakeBusFromSampleFile(char const*const name, int argc, char** argv);
 
     std::mt19937 randomgenerator;
 };
