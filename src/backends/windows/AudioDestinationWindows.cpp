@@ -48,7 +48,6 @@ unsigned long AudioDestination::maxChannelCount()
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, size_t numChannels, float sampleRate)
 : m_callback(callback)
 , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
-, m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
@@ -85,7 +84,11 @@ void AudioDestinationWin::configure()
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
 
-    auto inDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    auto inDeviceInfo = dac.getDeviceInfo(inputParams.deviceId);
+    if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
+    {
+        m_inputBus = std::make_unique<AudioBus>(1, AudioNode::ProcessingSizeInFrames, false);
+    }
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -144,13 +147,13 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
         }
     }
 
-    if (m_inputBus.isFirstTime())
+    if (m_inputBus && m_inputBus->isFirstTime())
     {
-        m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+        m_inputBus->setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
