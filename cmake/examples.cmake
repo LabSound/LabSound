@@ -11,20 +11,20 @@ add_executable(LabSoundExample
 _set_cxx_14(LabSoundExample)
 _set_compile_options(LabSoundExample)
 
-if (CMAKE_OSX_ARCHITECTURES)
-    if(CMAKE_OSX_SYSROOT MATCHES ".*iphoneos.*")
-        set(DARWIN_LIBS
-            "-framework AudioToolbox"
-            "-framework Accelerate"
-            "-framework CoreAudio")
-    else()
+if (APPLE)
+#    if(CMAKE_OSX_SYSROOT MATCHES ".*iphoneos.*")
+#        set(DARWIN_LIBS
+#            "-framework AudioToolbox"
+#            "-framework Accelerate"
+#            "-framework CoreAudio")
+#    else()
         set(DARWIN_LIBS
             "-framework AudioToolbox"
             "-framework AudioUnit"
             "-framework Accelerate"
             "-framework CoreAudio"
             "-framework Cocoa")
-    endif()
+#    endif()
 endif()
 
 
