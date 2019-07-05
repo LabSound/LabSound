@@ -7,19 +7,20 @@
 
 #include "LabSound/core/Macros.h"
 
-namespace lab {
 
 // Deal with denormals. They can very seriously impact performance on x86.
 
 // Define HAVE_DENORMAL if we support flushing denormals to zero.
 #if defined(LABSOUND_PLATFORM_WINDOWS)
     #define HAVE_DENORMAL
-    #include <float.h>
 #endif
+#include <float.h>
 
 #if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 #define HAVE_DENORMAL
 #endif
+
+namespace lab {
 
 #ifdef HAVE_DENORMAL
 class DenormalDisabler {

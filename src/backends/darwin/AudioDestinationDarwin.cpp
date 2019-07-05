@@ -8,7 +8,10 @@
 #include "AudioDestinationDarwin.h"
 #include "internal/VectorMath.h"
 
+#if TARGET_OS_IPHONE
+#else
 #include <CoreAudio/AudioHardware.h>
+#endif
 
 namespace lab {
 
@@ -203,7 +206,12 @@ AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, size_t chann
     AudioComponentDescription desc;
     
     desc.componentType = kAudioUnitType_Output;
+    
+#if TARGET_OS_IPHONE
+    desc.componentSubType = kAudioUnitSubType_RemoteIO;
+#else
     desc.componentSubType = kAudioUnitSubType_DefaultOutput;
+#endif
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
@@ -253,8 +261,12 @@ void AudioDestinationMac::configure()
     
     // Set the buffer frame size.
     UInt32 bufferSize = kBufferSize;
+#if TARGET_OS_IPHONE
+    // ios manages the buffer size according to a variety of factors outside of LabSound's control
+#else
     result = AudioUnitSetProperty(m_outputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Output, 0, (void*)&bufferSize, sizeof(bufferSize));
     ASSERT(!result);
+#endif
     
     m_input->configure(streamFormat, bufferSize);
 }
