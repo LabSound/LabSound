@@ -115,3 +115,10 @@ source_group(src\\internal FILES ${labsnd_int_h})
 source_group(src\\internal\\src FILES ${labsnd_int_src})
 source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
+
+configure_file("${LABSOUND_ROOT}/cmake/LabSoundConfig.cmake.in"
+  "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake" @ONLY)
+install(FILES
+  "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}"
+)
