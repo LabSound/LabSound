@@ -51,20 +51,20 @@
 #include "LabSound/extended/RecorderNode.h"
 #include "LabSound/extended/AudioFileReader.h"
 
-#include <functional>
-#include <string>
-
 #define LABSOUND_DEFAULT_SAMPLERATE 44100.0f
 #define LABSOUND_DEFAULT_CHANNELS (uint32_t) lab::Channels::Stereo
 
-// These are convenience functions with straightforward bodies. 
-// Most LabSound samples use them, but they are not strictly required. 
+#include <memory>
+// Factory functions for convenience.
+
 namespace lab
 {
     std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate = LABSOUND_DEFAULT_SAMPLERATE);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sample_rate);
+
+    char const*const*const AudioNodeNames();
 }
 
 #endif
