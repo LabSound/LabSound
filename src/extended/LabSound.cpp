@@ -57,7 +57,50 @@ namespace lab
         ctx->lazyInitialize();
         return ctx;
     }
-}
+
+    namespace { char const*const NodeNames[] = {
+        "ADSR",
+        "Analyser",
+        "AudioBasicInspector",
+        "AudioBasicProcessor",
+        "AudioDestination",
+        "AudioHardwareSource",
+        "BiquadFilter",
+        "ChannelMerger",
+        "ChannelSpliter",
+        "Clip",
+        "Convolver",
+        "DefaultAudioDestination",
+        "Delay",
+        "Diode",
+        "DynamicsCompressor",
+        "Function",
+        "Gain",
+        "Noise",
+        "OfflineAudioDestination",
+        "Oscillator",
+        "Panner",
+        "Pd",
+        "PeakCompressor",
+        "PingPongDelay",
+        "PowerMonitor",
+        "PWM",
+        "Recorder",
+        "SampledAudio",
+        "Sfxr",
+        "Spatialization",
+        "SpectralMonitor",
+        "StereoPanner",
+        "SuperSaw",
+        "WaveShaper",
+    }; }
+
+    char const*const*const AudioNodeNames()
+    {
+        return NodeNames;
+    }
+
+} // lab
 
 ///////////////////////
 // Logging Utilities //
@@ -79,8 +122,10 @@ void LabSoundLog(const char* file, int line, const char* fmt, ...)
     va_end(args);
 }
 
-void LabSoundAssertLog(const char* file, int line, const char * function, const char * assertion)
+void LabSoundAssertLog(const char* file_, int line, const char* function_, const char* assertion_)
 {
-    if (assertion) printf("[%s @ %i] ASSERTION FAILED: %s\n", file, line, assertion);
-    else printf("[%s @ %i] SHOULD NEVER BE REACHED\n", file, line);
+    const char* file = file_ ? file_ : "Unknown source file";
+    const char* function = function_ ? function_ : "";
+    const char* assertion = assertion_ ? assertion_ : "Assertion failed";
+    printf("Assertion: %s:%s:%d - %s\n", function, file_, line, assertion);
 }

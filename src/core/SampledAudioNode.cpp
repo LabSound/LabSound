@@ -137,7 +137,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 }
 
 // Returns true if we're finished.
-bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus* bus, unsigned index, size_t framesToProcess)
+bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus* bus, size_t index, size_t framesToProcess)
 {
     if (!loop())
     {
@@ -198,7 +198,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
 
     // Avoid converting from time to sample-frames twice by computing
     // the grain end time first before computing the sample frame.
-    unsigned endFrame = m_isGrain ? AudioUtilities::timeToSampleFrame(m_grainOffset + m_grainDuration, bufferSampleRate) : bufferLength;
+    size_t endFrame = m_isGrain ? AudioUtilities::timeToSampleFrame(m_grainOffset + m_grainDuration, bufferSampleRate) : bufferLength;
 
     // This is a HACK to allow for HRTF tail-time - avoids glitch at end.
     // FIXME: implement tailTime for each AudioNode for a more general solution to this problem.
@@ -215,8 +215,8 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
 
     // If the .loop attribute is true, then values of m_loopStart == 0 && m_loopEnd == 0 implies
     // that we should use the entire buffer as the loop, otherwise use the loop values in m_loopStart and m_loopEnd.
-    double virtualEndFrame = endFrame;
-    double virtualDeltaFrames = endFrame;
+    double virtualEndFrame = static_cast<double>(endFrame);
+    double virtualDeltaFrames = virtualEndFrame;
 
     double loopS = loopStart();
     double loopE = loopEnd();
@@ -242,19 +242,19 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
     double virtualReadIndex = m_virtualReadIndex;
 
     // Render loop - reading from the source buffer to the destination using linear interpolation.
-    int framesToProcess = numberOfFrames;
+    int framesToProcess = static_cast<int>(numberOfFrames);
 
     // Optimize for the very common case of playing back with pitchRate == 1.
     // We can avoid the linear interpolation.
     if (pitchRate == 1 && virtualReadIndex == floor(virtualReadIndex) && virtualDeltaFrames == floor(virtualDeltaFrames) && virtualEndFrame == floor(virtualEndFrame))
     {
-        unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
-        unsigned deltaFrames = static_cast<unsigned>(virtualDeltaFrames);
-        endFrame = static_cast<unsigned>(virtualEndFrame);
+        int readIndex = static_cast<int>(virtualReadIndex);
+        int deltaFrames = static_cast<int>(virtualDeltaFrames);
+        endFrame = static_cast<int>(virtualEndFrame);
 
         while (framesToProcess > 0)
         {
-            int framesToEnd = endFrame - readIndex;
+            int framesToEnd = static_cast<int>(endFrame) - readIndex;
             int framesThisTime = std::min(framesToProcess, framesToEnd);
             framesThisTime = std::max(0, framesThisTime);
 
@@ -271,7 +271,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
             if (readIndex >= endFrame)
             {
                 readIndex -= deltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, static_cast<unsigned int>(writeIndex), static_cast<size_t>(framesToProcess)))
                     break;
             }
         }
@@ -321,7 +321,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
             if (virtualReadIndex >= virtualEndFrame)
             {
                 virtualReadIndex -= virtualDeltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, framesToProcess))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, static_cast<size_t>(framesToProcess)))
                     break;
             }
         }
@@ -349,7 +349,7 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
     if (buffer)
     {
         // Do any necesssary re-configuration to the buffer's number of channels.
-        unsigned numberOfChannels = buffer->numberOfChannels();
+        size_t numberOfChannels = buffer->numberOfChannels();
 
         if (numberOfChannels > AudioContext::maxNumberOfChannels)
             return false;
@@ -362,7 +362,7 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
     return true;
 }
 
-unsigned SampledAudioNode::numberOfChannels(ContextRenderLock& r)
+size_t SampledAudioNode::numberOfChannels(ContextRenderLock& r)
 {
     return output(0)->numberOfChannels();
 }
@@ -461,11 +461,11 @@ double SampledAudioNode::loopEnd() const
 }
 void SampledAudioNode::setLoopStart(double loopStart)
 {
-    m_loopStart->setFloat(loopStart);
+    m_loopStart->setFloat(static_cast<float>(loopStart));
 }
 void SampledAudioNode::setLoopEnd(double loopEnd)
 {
-    m_loopEnd->setFloat(loopEnd);
+    m_loopEnd->setFloat(static_cast<float>(loopEnd));
 }
 
 

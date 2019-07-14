@@ -37,7 +37,7 @@ public:
 
     // numberOfChannels() returns the number of output channels. This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
-    unsigned numberOfChannels(ContextRenderLock & r);
+    size_t numberOfChannels(ContextRenderLock & r);
 
     // Play-state
     void startGrain(double when, double grainOffset);
@@ -74,7 +74,7 @@ private:
     bool renderFromBuffer(ContextRenderLock &, AudioBus *, size_t destinationFrameOffset, size_t numberOfFrames);
 
     // Render silence starting from "index" frame in AudioBus.
-    bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus *, unsigned index, size_t framesToProcess);
+    bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus *, size_t index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
     std::shared_ptr<AudioBus> m_sourceBus;
