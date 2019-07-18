@@ -108,14 +108,14 @@ struct MoogFilter
 
     const float sampleRate = 44100.00f;
 
-    float process(double cutoff_, double resonance_, double sample_)
+    float process(float cutoff_, float resonance_, float sample_)
     {
         float cutoff = 2.0f * cutoff_ / sampleRate;
         float resonance = static_cast<float>(resonance_);
         float sample = static_cast<float>(sample_);
 
         p = cutoff * (1.8f - 0.8f * cutoff);
-        k = 2.0 * std::sin(cutoff * static_cast<float>(M_PI) * 0.5f) - 1.0f;
+        k = 2.f * std::sin(cutoff * static_cast<float>(M_PI) * 0.5f) - 1.0f;
         t1 = (1.0f - p) * 1.386249f;
         t2 = 12.0f + t1 * t1;
         r = resonance * (t2 + 6.0f * t1) / (t2 - 6.0f * t1);
@@ -129,7 +129,7 @@ struct MoogFilter
         y4 = y3 * p + oldy3 * p - k * y4;
 
         // Clipping band-limited sigmoid
-        y4 -= (y4 * y4 * y4) / 6.0;
+        y4 -= (y4 * y4 * y4) / 6.f;
 
         oldx = x;
         oldy1 = y1;
@@ -151,7 +151,7 @@ struct GrooveApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<GainNode> masterGain;
@@ -159,7 +159,7 @@ struct GrooveApp : public LabSoundExampleApp
 
         float songLenSeconds = 2.0f;
         {
-            float elapsedTime = 0.0f;
+            double elapsedTime = 0.;
 
             envelope = std::make_shared<ADSRNode>();
             envelope->set(6.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
@@ -173,18 +173,18 @@ struct GrooveApp : public LabSoundExampleApp
             grooveBox = std::make_shared<FunctionNode>(2);
             grooveBox->setFunction([&](ContextRenderLock& r, FunctionNode * self, int channel, float * samples, size_t framesToProcess)
             {
-                double dt = 1.0 / r.context()->sampleRate(); // time duration of one sample
-                double now = self->now();
+                float dt = 1.f / r.context()->sampleRate(); // time duration of one sample
+                float now = static_cast<float>(self->now());
 
                 int nextMeasure = int((now / 2)) % bassline.size();
                 auto bm = bassline[nextMeasure];
 
-                int nextNote =  int((now * 4)) % bm.size();
+                int nextNote =  int((now * 4.f)) % bm.size();
                 float bn = note(bm[nextNote], 0);
 
                 auto p = chords[int(now / 4) % chords.size()];
 
-                auto mn = note(melody[int(now * 3) % melody.size()], int(2 - (now * 3)) % 4);
+                auto mn = note(melody[int(now * 3.f) % melody.size()], int(2 - (now * 3)) % 4);
 
                 for (size_t i = 0; i < framesToProcess; ++i)
                 {
@@ -198,21 +198,21 @@ struct GrooveApp : public LabSoundExampleApp
                     bassSample = lp_a[channel].process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform);
 
                     // Pad
-                    padWaveform = 5.1f * quickSaw(note(p[0], 1.f), now) + 3.9f * quickSaw(note(p[1], 2.f), now) + 4.0f * quickSaw(note(p[2], 1.f), now) + 3.0f * quickSqr(note(p[3], 0.0f), now);
+                    padWaveform = 5.1f * quickSaw(note(p[0], 1), now) + 3.9f * quickSaw(note(p[1], 2), now) + 4.0f * quickSaw(note(p[2], 1), now) + 3.0f * quickSqr(note(p[3], 0), now);
                     padSample = 1.0f - ((quickSin(2.0f, now) * 0.28f) + 0.5f) * fasthp_c[channel](0.5f, lp_c[channel].process(1100.f + (lfo_a * 150.f), 0.05f, padWaveform * 0.03f));
 
                     // Kick
-                    kickWaveform = hardClip(0.37f, quickSin(note(7.0f, -1.f), now)) * 2.0f + hardClip(0.07f, quickSaw(note(7.03f,-1.0f), now * 0.2f)) * 4.00f;
+                    kickWaveform = hardClip(0.37f, quickSin(note(7, -1), now)) * 2.0f + hardClip(0.07f, quickSaw(note(7, -1), now * 0.2f)) * 4.00f;
                     kickSample = quickSaw(2.f, now) * 0.054f + fastlp_a[channel](240.0f, perc(hardClip(0.6f, kickWaveform), 54.f, fmod(now, 0.5f), now)) * 2.f;
 
                     // Synth
                     synthWaveform = quickSaw(mn, now + 1.0f) + quickSqr(mn * 2.02f, now) * 0.4f + quickSqr(mn * 3.f, now + 2.f);
                     synthPercussive = lp_b[channel].process(3200.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f) * 1.8f;
-                    synthDegradedWaveform = synthPercussive * quickSin(note(5.0f, 2.0f), now);
+                    synthDegradedWaveform = synthPercussive * quickSin(note(5, 2), now);
                     synthSample = 0.4f * synthPercussive + 0.05f * synthDegradedWaveform;
 
                     // Mixer
-                    samples[i] = (0.66 * hardClip(0.65f, bassSample)) + (0.50 * padSample) + (0.66 * synthSample) + (2.75 * kickSample);
+                    samples[i] = (0.66f * hardClip(0.65f, bassSample)) + (0.50f * padSample) + (0.66f * synthSample) + (2.75f * kickSample);
 
                     now += dt;
                 }

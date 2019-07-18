@@ -11,15 +11,17 @@ namespace lab
 {
 
 class AudioContext;
-    
+
 class ChannelSplitterNode : public AudioNode
 {
-        
+
 public:
 
-    ChannelSplitterNode(unsigned numberOfOutputs);
+    ChannelSplitterNode(size_t numberOfOutputs = 1);
     virtual ~ChannelSplitterNode() {}
-    
+
+    void addOutputs(size_t numberOfOutputs);
+
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;

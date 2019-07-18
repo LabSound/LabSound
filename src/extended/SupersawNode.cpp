@@ -116,7 +116,7 @@ namespace lab
     // Public Supersaw Node //
     //////////////////////////
 
-    SupersawNode::SupersawNode(ContextRenderLock & r) : AudioNode()
+    SupersawNode::SupersawNode() : AudioNode()
     {
         internalNode.reset(new SupersawNodeInternal());
 

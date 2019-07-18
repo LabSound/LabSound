@@ -15,19 +15,30 @@ using namespace std;
 namespace lab
 {
 
-ChannelMergerNode::ChannelMergerNode(unsigned numberOfInputs) : AudioNode()
+ChannelMergerNode::ChannelMergerNode(size_t numberOfInputs_)
+: AudioNode()
 {
-    numberOfInputs = std::max(1U, std::min(numberOfInputs, AudioContext::maxNumberOfChannels));
-    
+    addInputs(numberOfInputs_);
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    initialize(); // initialize only sets a flag, no need to allocate memory according to input count
+}
+
+void ChannelMergerNode::addInputs(size_t n)
+{
+    if (!n || numberOfInputs() == AudioContext::maxNumberOfChannels)
+        return;
+
+    if (n + numberOfInputs() > AudioContext::maxNumberOfChannels)
+    {
+        // Notify user we were clamped to max?
+        n = AudioContext::maxNumberOfChannels - numberOfInputs();
+    }
+
     // Create the requested number of inputs.
-    for (uint32_t i = 0; i < numberOfInputs; ++i)
+    for (uint32_t i = 0; i < n; ++i)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     }
-
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    
-    initialize();
 }
 
 void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
@@ -41,35 +52,35 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
         output->bus(r)->zero();
         return;
     }
-    
+
     // Merge all the channels from all the inputs into one output.
     uint32_t outputChannelIndex = 0;
     for (uint32_t i = 0; i < numberOfInputs(); ++i)
     {
         auto input = this->input(i);
-        
+
         if (input->isConnected())
         {
             size_t numberOfInputChannels = input->bus(r)->numberOfChannels();
-            
+
             // Merge channels from this particular input.
             for (size_t j = 0; j < numberOfInputChannels; ++j)
             {
                 AudioChannel* inputChannel = input->bus(r)->channel(j);
                 AudioChannel* outputChannel = output->bus(r)->channel(outputChannelIndex);
-                
+
                 outputChannel->copyFrom(inputChannel);
                 ++outputChannelIndex;
             }
         }
     }
-    
+
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
 void ChannelMergerNode::reset(ContextRenderLock&)
 {
-    
+
 }
 
 // Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
@@ -78,11 +89,11 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
 {
     // Count how many channels we have all together from all of the inputs.
     size_t numberOfOutputChannels = 0;
-    
+
     for (uint32_t i = 0; i < numberOfInputs(); ++i)
     {
         auto input = this->input(i);
-        
+
         if (input->isConnected())
         {
            numberOfOutputChannels += input->bus(r)->numberOfChannels();
@@ -92,7 +103,7 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     // Set the correct number of channels on the output
     auto output = this->output(0);
     output->setNumberOfChannels(r, numberOfOutputChannels);
-    
+
     // Note * There can in rare cases be a slight delay before the output bus is updated to the new number of
     // channels because of tryLocks() in the context's updating system. So record the new number of
     // output channels here.
