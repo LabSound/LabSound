@@ -34,7 +34,7 @@ struct AudioContext::Internals
     bool autoDispatchEvents;
 };
 
-const uint32_t lab::AudioContext::maxNumberOfChannels = 32;
+const size_t lab::AudioContext::maxNumberOfChannels = 32;
 
 // Constructor for realtime rendering
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) : m_isOfflineContext(isOffline)

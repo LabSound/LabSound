@@ -16,7 +16,7 @@ namespace lab
         
     public:
         
-        FunctionNode(int channels);
+        FunctionNode(size_t channels = 1);
         virtual ~FunctionNode();
         
         // @tofix - should this be protected with a mutex?

@@ -7,7 +7,7 @@ struct EventsApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
             return;

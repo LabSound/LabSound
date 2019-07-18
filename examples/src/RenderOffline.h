@@ -8,7 +8,7 @@ struct OfflineRenderApp : public LabSoundExampleApp
     virtual void PlayExample(int argc, char** argv) override
     {
         // Run for 5 seconds
-        auto context = lab::MakeOfflineAudioContext(LABSOUND_DEFAULT_CHANNELS, 5000.f);
+        auto context = lab::Sound::MakeOfflineAudioContext(LABSOUND_DEFAULT_CHANNELS, 5000.f);
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/mono-music-clip.wav", argc, argv);

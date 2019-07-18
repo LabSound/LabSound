@@ -60,7 +60,7 @@ namespace lab {
     {
     public:
 
-        SpatializationNode(float sampleRate);
+        SpatializationNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
         virtual ~SpatializationNode() = default;
 
         void setOccluders(OccludersPtr ptr);

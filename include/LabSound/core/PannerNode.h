@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/Constants.h"
 #include "LabSound/core/FloatPoint3D.h"
 
 namespace lab {
@@ -62,7 +63,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
 
-    PannerNode(const float sampleRate, const std::string & searchPath = "");
+    PannerNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, const std::string & searchPath = "");
     virtual ~PannerNode();
 
     // AudioNode

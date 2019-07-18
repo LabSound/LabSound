@@ -14,7 +14,7 @@ using namespace lab;
 namespace lab
 {
     
-    FunctionNode::FunctionNode(int channels) : AudioScheduledSourceNode()
+    FunctionNode::FunctionNode(size_t channels) : AudioScheduledSourceNode()
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
         initialize();
@@ -59,7 +59,7 @@ namespace lab
         outputBus->clearSilentFlag();
     }
     
-    void FunctionNode::reset(ContextRenderLock  & r)
+    void FunctionNode::reset(ContextRenderLock & r)
     {
         // No-op
     }
