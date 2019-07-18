@@ -17,13 +17,19 @@ elseif (UNIX)
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 endif()
 
+set(ooura_src
+    "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
+    "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
+
 add_library(LabSound STATIC
+    "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
     ${labsnd_core_h}     ${labsnd_core}
     ${labsnd_extended_h} ${labsnd_extended}
     ${labsnd_int_h}      ${labsnd_int_src}
     ${labsnd_backend}
     ${third_rtaudio}
     ${third_kissfft}
+    ${ooura_src}
  )
 
 if (APPLE)
@@ -93,19 +99,22 @@ install(TARGETS LabSound
     FRAMEWORK DESTINATION lib
     RUNTIME DESTINATION bin)
 
+install(FILES "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
+    DESTINATION include/LabSound)
 install(FILES ${labsnd_core_h}
-        DESTINATION include/LabSound/core)
+    DESTINATION include/LabSound/core)
 install(FILES ${labsnd_extended_h}
-        DESTINATION include/LabSound/extended)
+    DESTINATION include/LabSound/extended)
 install(DIRECTORY
-        assets/hrtf
-        assets/images
-        assets/impulse
-        assets/json
-        assets/pd
-        assets/samples
-        DESTINATION share/LabSound)
+    assets/hrtf
+    assets/images
+    assets/impulse
+    assets/json
+    assets/pd
+    assets/samples
+    DESTINATION share/LabSound)
 
+source_group(include FILES "${LABSOUND_ROOT}/include/LabSound")
 source_group(include\\core FILES ${labsnd_core_h})
 source_group(include\\extended FILES ${labsnd_extended_h})
 source_group(src\\backends FILES ${labsnd_backend})
@@ -114,6 +123,7 @@ source_group(src\\extended FILES ${labsnd_extended})
 source_group(src\\internal FILES ${labsnd_int_h})
 source_group(src\\internal\\src FILES ${labsnd_int_src})
 source_group(third_party\\kissfft FILES ${third_kissfft})
+source_group(third_party\\ooura FILES ${ooura_src})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
 
 configure_file("${LABSOUND_ROOT}/cmake/LabSoundConfig.cmake.in"
