@@ -17,7 +17,7 @@ namespace lab
 
     public:
 
-        SupersawNode(ContextRenderLock & r);
+        SupersawNode();
         virtual ~SupersawNode();
         
         std::shared_ptr<AudioParam> attack() const;

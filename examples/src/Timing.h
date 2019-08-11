@@ -11,7 +11,7 @@ struct TimingApp : public LabSoundExampleApp
     //
     virtual void PlayExample(int argc, char** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        std::unique_ptr<lab::AudioContext> context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         // On Windows, it takes almost 400ms before the audio callbacks
         // begin, so wait for the start up to elapse.

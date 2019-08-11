@@ -40,7 +40,7 @@ class AudioContext
 public:
 
     // Somewhat arbitrary and could be increased if necessary
-    static const uint32_t maxNumberOfChannels;
+    static const size_t maxNumberOfChannels;
 
     // Debugging/Sanity Checking
     std::string m_graphLocker;
@@ -149,7 +149,7 @@ private:
         uint32_t destIndex;
         uint32_t srcIndex;
         float duration = 0.1f;
-        
+
         PendingConnection(
             std::shared_ptr<AudioNode> destination,
             std::shared_ptr<AudioNode> source,

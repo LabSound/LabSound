@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioArray.h"
+#include "LabSound/core/Constants.h"
 
 #include <memory>
 #include <string>
@@ -23,7 +24,7 @@ class StereoPannerNode : public AudioNode
 {
 public:
     
-    StereoPannerNode(const float sampleRate);
+    StereoPannerNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
     
     virtual ~StereoPannerNode();
     

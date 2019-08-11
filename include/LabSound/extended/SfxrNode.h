@@ -6,6 +6,7 @@
 #ifndef SFXR_NODE_H
 #define SFXR_NODE_H
 
+#include "LabSound/core/Constants.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace lab {
@@ -13,7 +14,7 @@ namespace lab {
     class SfxrNode : public lab::AudioScheduledSourceNode {
     public:
 
-        SfxrNode(float sampleRate);
+        SfxrNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
         virtual ~SfxrNode();
 
         // AudioNode
@@ -114,7 +115,7 @@ namespace lab {
         class Sfxr;
         Sfxr *sfxr;
     };
-    
+
 }
 
 #endif

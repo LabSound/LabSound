@@ -10,26 +10,33 @@
 
 #include "internal/Assertions.h"
 
-namespace lab 
+namespace lab
 {
 
-ChannelSplitterNode::ChannelSplitterNode(unsigned numberOfOutputs) : AudioNode()
+ChannelSplitterNode::ChannelSplitterNode(size_t numberOfOutputs_)
+: AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutputs(numberOfOutputs_);
+    initialize();   // currently initialize only sets a flag; no memory is allocated in response to adding outputs
+}
 
-    if (numberOfOutputs > AudioContext::maxNumberOfChannels)
+void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
+{
+    if (!numberOfOutputs_ || numberOfOutputs() == AudioContext::maxNumberOfChannels)
+        return;
+
+    if (numberOfOutputs_ + numberOfOutputs() > AudioContext::maxNumberOfChannels)
     {
-        // Notify user we were clamped to max?
-        numberOfOutputs = AudioContext::maxNumberOfChannels;
+        // Notify user clamping to max?
+        numberOfOutputs_ = AudioContext::maxNumberOfChannels - numberOfOutputs();
     }
-    
+
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
-    for (uint32_t i = 0; i < numberOfOutputs; ++i)
+    for (uint32_t i = 0; i < numberOfOutputs_; ++i)
     {
-       addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     }
-
-    initialize();
 }
 
 void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
@@ -37,14 +44,14 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
     AudioBus* source = input(0)->bus(r);
     ASSERT(source);
     ASSERT_UNUSED(framesToProcess, framesToProcess == source->length());
-    
+
     size_t numberOfSourceChannels = source->numberOfChannels();
-    
+
     for (uint32_t i = 0; i < numberOfOutputs(); ++i)
     {
         AudioBus* destination = output(i)->bus(r);
         ASSERT(destination);
-        
+
         if (i < numberOfSourceChannels)
         {
             // Split the channel out if it exists in the source.
@@ -61,7 +68,7 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
 
 void ChannelSplitterNode::reset(ContextRenderLock&)
 {
-    
+
 }
 
 } // namespace lab

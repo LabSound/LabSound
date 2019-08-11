@@ -5,9 +5,10 @@
 #ifndef DelayNode_h
 #define DelayNode_h
 
+#include "LabSound/core/Constants.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace lab 
+namespace lab
 {
 
 class AudioParam;
@@ -36,7 +37,8 @@ class DelayNode : public AudioBasicProcessorNode
 {
     DelayProcessor * delayProcessor();
 public:
-    DelayNode(float sampleRate, double maxDelayTime);
+    // default maximum delay of 100ms
+    DelayNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, double maxDelayTime = 0.1);
     std::shared_ptr<AudioParam> delayTime();
 };
 

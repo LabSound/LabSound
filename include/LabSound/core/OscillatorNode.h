@@ -7,6 +7,7 @@
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/Constants.h"
 #include "LabSound/core/WaveTable.h"
 
 namespace lab {
@@ -20,12 +21,12 @@ class AudioSetting;
 //
 class OscillatorNode : public AudioScheduledSourceNode
 {
-    
+
 public:
-    
-    OscillatorNode(const float sampleRate);
+
+    OscillatorNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
     virtual ~OscillatorNode();
-    
+
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
@@ -51,7 +52,7 @@ private:
 
     // One of the waveform types defined in the enum.
     std::shared_ptr<AudioSetting> m_type;
-   
+
     // Frequency value in Hertz.
     std::shared_ptr<AudioParam> m_frequency;
 
@@ -67,7 +68,7 @@ private:
     // Stores sample-accurate values calculated according to frequency and detune.
     AudioFloatArray m_phaseIncrements;
     AudioFloatArray m_detuneValues;
-    
+
     std::shared_ptr<WaveTable> m_waveTable;
 
     // Cache the wave tables for different waveform types, except CUSTOM.
