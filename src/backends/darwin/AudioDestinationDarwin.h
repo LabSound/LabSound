@@ -36,6 +36,7 @@ private:
     AudioBus m_renderBus;
 
     float m_sampleRate;
+    size_t m_renderQuantum;
 
     class Input; // LabSound
     Input* m_input; // LabSound

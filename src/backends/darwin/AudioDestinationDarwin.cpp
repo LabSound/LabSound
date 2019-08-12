@@ -196,6 +196,7 @@ unsigned long AudioDestination::maxChannelCount()
 AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, size_t channelCount, float sampleRate, size_t renderQuantum)
 : m_outputUnit(0)
 , m_callback(callback)
+, m_renderQuantum(renderQuantum)
 , m_renderBus(2, renderQuantum, false)
 , m_sampleRate(sampleRate)
 , m_input(new Input()) // LabSound
@@ -259,7 +260,7 @@ void AudioDestinationMac::configure()
     ASSERT(!result);
 
     // Set the buffer frame size.
-    UInt32 bufferSize = kBufferSize;
+    size_t  bufferSize = m_renderQuantum;
 #if TARGET_OS_IPHONE
     // ios manages the buffer size according to a variety of factors outside of LabSound's control
 #else
