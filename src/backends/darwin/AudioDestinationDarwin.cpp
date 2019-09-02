@@ -43,7 +43,7 @@ public:
         ASSERT(comp);
 
         OSStatus result = AudioComponentInstanceNew(comp, &m_inputUnit);
-        if (!result)
+        if (result != noErr)
         {
             AudioComponentInstanceDispose(m_inputUnit);
             m_inputUnit = 0;
