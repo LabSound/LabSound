@@ -3,7 +3,7 @@
 </p>
 
 macOS | Windows | Linux |
--------- | ------------ | -------
+----- | ------- | -------
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound) | [![Build status](https://ci.appveyor.com/api/projects/status/k6n5ib48t7q8wwlc?svg=true)](https://ci.appveyor.com/project/ddiakopoulos/labsound) | [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
 -----------------
 
@@ -53,11 +53,16 @@ LabSound and libnyquist require a C++14 or greater compiler.
 
 LabSound has a `CMakeLists.txt` at the root directory, and all the associated CMake files are in the `cmake/` subfolder. If you use the CMake build, it will build everything to a folder named `../local/` build directory. As always with CMake, it is recommended that you do an out-of-source build.
 
+```sh
+cmake ..
+cmake --build . --target install --config Release
+```
+
 On Linux, a backend must be selected, using one of ALSA, Pulse, or Jack. To build with ALSA:
 
 ```sh
 cmake -DLABSOUND_ASOUND=1 /path/to/LabSound
-cmake --build . --target INSTALL --config Release
+cmake --build . --target install --config Release
 ```
 
 # Examples

@@ -196,8 +196,8 @@ unsigned long AudioDestination::maxChannelCount()
 AudioDestinationMac::AudioDestinationMac(AudioIOCallback& callback, size_t channelCount, float sampleRate, size_t renderQuantum)
 : m_outputUnit(0)
 , m_callback(callback)
+, m_renderBus(2, renderQuantum)
 , m_renderQuantum(renderQuantum)
-, m_renderBus(2, renderQuantum, false)
 , m_sampleRate(sampleRate)
 , m_input(new Input()) // LabSound
 {

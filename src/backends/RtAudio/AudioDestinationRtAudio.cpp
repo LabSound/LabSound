@@ -48,7 +48,6 @@ unsigned long AudioDestination::maxChannelCount()
 AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback, size_t numChannels, float sampleRate)
 : m_callback(callback)
 , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
-, m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
@@ -58,6 +57,7 @@ AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback, siz
 
 AudioDestinationRtAudio::~AudioDestinationRtAudio()
 {
+    //dac.release(); // XXX
      if (dac.isStreamOpen())
         dac.closeStream();
 }
@@ -76,13 +76,19 @@ void AudioDestinationRtAudio::configure()
     outputParams.nChannels = m_numChannels;
     outputParams.firstChannel = 0;
 
-	auto deviceInfo = dac.getDeviceInfo(outputParams.deviceId);
-	LOG("Using Default Audio Device: %s", deviceInfo.name.c_str());
+    auto outDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    LOG("Using Default Audio Device: %s", outDeviceInfo.name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = dac.getDefaultInputDevice();
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
+
+    auto inDeviceInfo = dac.getDeviceInfo(inputParams.deviceId);
+    if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
+    {
+        m_inputBus = std::make_unique<AudioBus>(1, AudioNode::ProcessingSizeInFrames, false);
+    }
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -91,7 +97,12 @@ void AudioDestinationRtAudio::configure()
 
     try
     {
-        dac.openStream(&outputParams, &inputParams, RTAUDIO_FLOAT32, (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+        dac.openStream(
+            outDeviceInfo.probed && outDeviceInfo.isDefaultOutput ? &outputParams : nullptr,
+            inDeviceInfo.probed && inDeviceInfo.isDefaultInput ? &inputParams : nullptr,
+            RTAUDIO_FLOAT32,
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options
+        );
     }
     catch (RtAudioError & e)
     {
@@ -138,13 +149,13 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
 		}
     }
 
-    if (m_inputBus.isFirstTime())
+    if (m_inputBus && m_inputBus->isFirstTime())
     {
-        m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+        m_inputBus->setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
@@ -163,7 +174,6 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
     AudioDestinationRtAudio * audioDestination = static_cast<AudioDestinationRtAudio*>(userData);
-
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;

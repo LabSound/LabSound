@@ -8,7 +8,13 @@ file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
 if (APPLE)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
+    #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
+    set(labsnd_backend 
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
+        "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
+        )
+    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 elseif (WIN32)
     file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
@@ -76,6 +82,7 @@ set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
 elseif (APPLE)
+    target_compile_definitions(LabSound PRIVATE __MACOSX_CORE__=1)
 else()
     if (LABSOUND_JACK)
         target_compile_definitions(LabSound PRIVATE __UNIX_JACK__=1)
