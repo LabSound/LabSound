@@ -7,7 +7,14 @@ file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
-if (APPLE)
+if (IOS)
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
+    )
+elseif (APPLE)
     #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
     set(labsnd_backend 
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
