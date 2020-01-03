@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 namespace lab {
     
@@ -39,13 +40,14 @@ namespace lab {
     }
 
     
-    void PowerMonitorNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void PowerMonitorNode::process(ContextRenderLock& r)
     {
         // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
         // It's merely a pass through though.
         
         AudioBus* outputBus = output(0)->bus(r);
-        
+        uint32_t framesToProcess = r.context()->currentFrames();
+
         if (!isInitialized() || !input(0)->isConnected()) {
             if (outputBus)
                 outputBus->zero();

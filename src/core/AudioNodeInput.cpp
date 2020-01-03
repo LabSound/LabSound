@@ -21,11 +21,9 @@ using namespace std;
 namespace lab
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) 
+AudioNodeInput::AudioNodeInput(AudioNode* node)
 : AudioSummingJunction(), m_node(node)
 {
-    // Set to mono by default.
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, processingSizeInFrames));
 }
 
 AudioNodeInput::~AudioNodeInput()
@@ -67,10 +65,10 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
     size_t numberOfInputChannels = numberOfChannels(r);
 
-    if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
+    if (m_internalSummingBus && numberOfInputChannels == m_internalSummingBus->numberOfChannels() && r.context()->currentFrames() <= m_internalSummingBus->length())
         return;
 
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
+    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, r.context()->currentFrames()));
 }
 
 size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
@@ -122,9 +120,10 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 }
 
 
-AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus)
 {
     updateRenderingState(r);
+    updateInternalBus(r);
 
     size_t c = numberOfRenderingConnections(r);
 
@@ -135,7 +134,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
         auto output = renderingOutput(r, 0);
         if (output)
         {
-             return output->pull(r, inPlaceBus, framesToProcess);
+             return output->pull(r, inPlaceBus);
         }
 
         c = 0; // if there's a single input, but it has no output; treat this input as silent.
@@ -158,7 +157,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
         if (output)
         {
             // Render audio from this output.
-            AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
+            AudioBus* connectionBus = output->pull(r, 0);
 
             // Sum, with unity-gain.
             m_internalSummingBus->sumFrom(*connectionBus);

@@ -24,7 +24,7 @@ namespace
    std::mutex outputMutex;
 }
 
-AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels, size_t processingSizeInFrames)
+AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
@@ -33,8 +33,6 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels, size_
     , m_renderingParamFanOutCount(0)
 {
     ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-    
-    m_internalBus.reset(new AudioBus(numberOfChannels, processingSizeInFrames));
 }
 
 AudioNodeOutput::~AudioNodeOutput()
@@ -51,26 +49,27 @@ void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, size_t numberOfC
         return;
     
     m_desiredNumberOfChannels = numberOfChannels;
-    m_internalBus.reset(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-void AudioNodeOutput::updateInternalBus()
+void AudioNodeOutput::updateInternalBus(unsigned int frameSize)
 {
-    if (numberOfChannels() == m_internalBus->numberOfChannels())
+    if (m_internalBus && numberOfChannels() == m_internalBus->numberOfChannels() && frameSize == m_internalBus->length())
         return;
 
-    m_internalBus.reset(new AudioBus(numberOfChannels(), AudioNode::ProcessingSizeInFrames));
+    m_internalBus.reset(new AudioBus(numberOfChannels(), frameSize));
 }
 
 void AudioNodeOutput::updateRenderingState(ContextRenderLock& r)
 {
+    ASSERT(r.context());
+    
     if (m_numberOfChannels != m_desiredNumberOfChannels)
     {
-        ASSERT(r.context());
         m_numberOfChannels = m_desiredNumberOfChannels;
-        updateInternalBus();
+        updateInternalBus(r.context()->currentFrames());
         propagateChannelCount(r);
     }
+    updateInternalBus(r.context()->currentFrames());
     m_renderingFanOutCount = fanOutCount();
     m_renderingParamFanOutCount = paramFanOutCount();
 }
@@ -90,7 +89,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock& r)
     }
 }
 
-AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus)
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
@@ -112,7 +111,7 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, siz
     if (!n)
         return bus(r);
 
-    n->processIfNecessary(r, framesToProcess);
+    n->processIfNecessary(r);
     return bus(r);
 }
 

@@ -41,10 +41,9 @@ void ChannelMergerNode::addInputs(size_t n)
     }
 }
 
-void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
+void ChannelMergerNode::process(ContextRenderLock& r)
 {
     auto output = this->output(0);
-    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
 
     // Output bus not updated yet, so just output silence. See Note * in checkNumberOfChannelsForInput
     if (m_desiredNumberOfOutputChannels != output->numberOfChannels())

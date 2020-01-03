@@ -13,14 +13,15 @@ using namespace std;
 
 namespace lab {
 
-void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, float* destination, size_t framesToProcess)
+void WaveShaperDSPKernel::process(ContextRenderLock & r, const float* source, float* destination)
 {
     ASSERT(source && destination && waveShaperProcessor());
 
     // Curve object locks the curve during processing
     std::unique_ptr<WaveShaperProcessor::Curve> c = waveShaperProcessor()->curve();
 
-    if (c->curve.size() == 0) 
+    uint32_t framesToProcess = r.context()->currentFrames();
+    if (c->curve.size() == 0)
     {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * framesToProcess);

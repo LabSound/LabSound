@@ -17,11 +17,12 @@ if (IOS)
 elseif (APPLE)
     #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
     set(labsnd_backend 
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
         "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
-        )
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
+    )
+    #set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 elseif (WIN32)
     file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")

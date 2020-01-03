@@ -246,7 +246,7 @@ using namespace std;
 
 StereoPannerNode::StereoPannerNode(const float sampleRate) : AudioNode()
 {
-    m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
+    m_sampleAccuratePanValues.reset(new AudioFloatArray());
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
@@ -264,7 +264,7 @@ StereoPannerNode::~StereoPannerNode()
     uninitialize();
 }
 
-void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
+void StereoPannerNode::process(ContextRenderLock& r)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -274,6 +274,7 @@ void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
+    uint32_t framesToProcess = r.context()->currentFrames();
     AudioBus* inputBus = input(0)->bus(r);
 
     if (!inputBus)
@@ -285,12 +286,14 @@ void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
     if (m_pan->hasSampleAccurateValues())
     {
         // Apply sample-accurate panning specified by AudioParam automation.
-        ASSERT(framesToProcess <= m_sampleAccuratePanValues->size());
+        if (m_sampleAccuratePanValues->size() < framesToProcess)
+            m_sampleAccuratePanValues->allocate(framesToProcess);
+        
 
         if (framesToProcess <= m_sampleAccuratePanValues->size())
         {
             float * panValues = m_sampleAccuratePanValues->data();
-            m_pan->calculateSampleAccurateValues(r, panValues, framesToProcess);
+            m_pan->calculateSampleAccurateValues(r, panValues);
             m_stereoPanner->panWithSampleAccurateValues(inputBus, outputBus, panValues, framesToProcess);
         }
     }

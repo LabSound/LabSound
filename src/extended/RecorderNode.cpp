@@ -6,6 +6,7 @@
 #include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/RecorderNode.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "libnyquist/Encoders.h"
 
@@ -35,7 +36,7 @@ namespace lab
         result.swap(m_data);
     }
 
-    void RecorderNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void RecorderNode::process(ContextRenderLock& r)
     {
         AudioBus* outputBus = output(0)->bus(r);
         
@@ -45,7 +46,9 @@ namespace lab
                 outputBus->zero();
             return;
         }
-
+        
+        uint32_t framesToProcess = r.context()->currentFrames();
+        
         // =====> should this follow the WebAudio pattern have a writer object to call here?
         AudioBus* bus = input(0)->bus(r);        
         bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= framesToProcess);

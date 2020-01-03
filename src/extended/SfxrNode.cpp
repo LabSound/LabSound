@@ -655,7 +655,7 @@ namespace lab {
         sfxr->PlaySample();
     }
 
-    void SfxrNode::process(ContextRenderLock& r, size_t framesToProcess)
+    void SfxrNode::process(ContextRenderLock& r)
     {
         AudioBus* outputBus = output(0)->bus(r);
 
@@ -664,10 +664,10 @@ namespace lab {
             return;
         }
 
-        size_t quantumFrameOffset;
-        size_t nonSilentFramesToProcess;
+        uint32_t quantumFrameOffset;
+        uint32_t nonSilentFramesToProcess;
 
-        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+        updateSchedulingInfo(r, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
         if (!nonSilentFramesToProcess) {
             outputBus->zero();

@@ -21,7 +21,7 @@ public:
     void addInputs(size_t n);
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&) override;
     virtual void reset(ContextRenderLock&) override;
 
     // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.

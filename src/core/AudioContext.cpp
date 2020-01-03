@@ -196,9 +196,7 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    const float frameSizeMs = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
-    const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
-    const int graphTickDurationUs = static_cast<int>(graphTickDurationMs * 1000.f);  // = ~5550us
+    const int graphTickDurationUs = 500;    // an ad hoc value
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
@@ -398,10 +396,10 @@ void AudioContext::updateAutomaticPullNodes()
     }
 }
 
-void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t framesToProcess)
+void AudioContext::processAutomaticPullNodes(ContextRenderLock & r)
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+        m_renderingAutomaticPullNodes[i]->processIfNecessary(r);
 }
 
 void AudioContext::enqueueEvent(std::function<void()>& fn)

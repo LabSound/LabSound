@@ -25,7 +25,7 @@ namespace lab
             _function = fn;
         }
         
-        virtual void process(ContextRenderLock & r, size_t framesToProcess) override;
+        virtual void process(ContextRenderLock & r) override;
         virtual void reset(ContextRenderLock & r) override;
         
         double now() const { return _now; }

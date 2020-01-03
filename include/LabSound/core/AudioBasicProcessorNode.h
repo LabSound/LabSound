@@ -24,8 +24,8 @@ public:
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&) override;
+    virtual void pullInputs(ContextRenderLock&) override;
     virtual void reset(ContextRenderLock&) override;
     virtual void initialize() override;
     virtual void uninitialize() override;

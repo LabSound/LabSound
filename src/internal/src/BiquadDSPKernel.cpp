@@ -90,7 +90,7 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
     }
 }
 
-void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* destination)
 {
     ASSERT(source && destination && biquadProcessor());
     
@@ -100,6 +100,7 @@ void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* 
 
     updateCoefficientsIfNecessary(r, true, false);
 
+    uint32_t framesToProcess = r.context()->currentFrames();
     m_biquad.process(source, destination, framesToProcess);
 }
 

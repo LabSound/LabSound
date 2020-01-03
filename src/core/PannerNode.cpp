@@ -199,7 +199,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
     m_velocityZ->setValue(velocity.z);
 }
 
-void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+void PannerNode::pullInputs(ContextRenderLock& r)
 {
     // We override pullInputs(), so we can detect new AudioSourceNodes which have connected to us when new connections are made.
     // These AudioSourceNodes need to be made aware of our existence in order to handle doppler shift pitch changes.
@@ -208,10 +208,10 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
     if (!ac)
         return;
 
-    AudioNode::pullInputs(r, framesToProcess);
+    AudioNode::pullInputs(r);
 }
 
-void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
+void PannerNode::process(ContextRenderLock & r)
 {
     AudioBus* destination = output(0)->bus(r);
 
@@ -248,7 +248,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     double elevation;
     getAzimuthElevation(r, &azimuth, &elevation);
 
-    m_panner->pan(r, azimuth, elevation, source, destination, framesToProcess);
+    m_panner-> pan(r, azimuth, elevation, source, destination);
 
     // Get the distance and cone gain.
     float totalGain = distanceConeGain(r);

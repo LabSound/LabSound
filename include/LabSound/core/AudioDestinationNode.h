@@ -27,7 +27,7 @@ public:
     virtual ~AudioDestinationNode();
     
     // AudioNode   
-    virtual void process(ContextRenderLock&, size_t) override { } // DestinationNode is pulled by hardware so this is never called
+    virtual void process(ContextRenderLock&) override { } // DestinationNode is pulled by hardware so this is never called
     virtual void reset(ContextRenderLock &) override;
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.

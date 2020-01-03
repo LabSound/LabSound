@@ -28,7 +28,7 @@ public:
     virtual ~GainNode();
     
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&) override;
     virtual void reset(ContextRenderLock&) override;
 
     // Called in the main thread when the number of channels for the input may have changed.

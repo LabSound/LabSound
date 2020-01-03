@@ -9,6 +9,7 @@
 #include "LabSound/core/AudioIOCallback.h"
 #include "LabSound/extended/Logging.h"
 
+#define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
 namespace lab
@@ -34,17 +35,17 @@ unsigned long AudioDestination::maxChannelCount()
 AudioDestinationMiniaudio::AudioDestinationMiniaudio(AudioIOCallback & callback,
                                                      unsigned int numChannels, float sampleRate)
 : m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-    m_renderBus.setSampleRate(m_sampleRate);
     configure();
 }
 
 AudioDestinationMiniaudio::~AudioDestinationMiniaudio()
 {
     ma_device_uninit(&device);
+    delete m_renderBus;
+    delete m_inputBus;
 }
     
 namespace
@@ -70,6 +71,7 @@ void AudioDestinationMiniaudio::configure()
     deviceConfig.playback.channels = m_numChannels;
     deviceConfig.sampleRate = m_sampleRate;
     deviceConfig.dataCallback = outputCallback;
+    deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
     if (ma_device_init(NULL, &deviceConfig, &device) != MA_SUCCESS)
     {
@@ -103,15 +105,24 @@ const float kHighThreshold = 1.0f;
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
+    if (!m_renderBus || m_renderBus->length() < numberOfFrames)
+    {
+        if (m_renderBus)
+            delete m_renderBus;
+        
+        // Note: false here indicates that the memory will be supplied externally
+        m_renderBus = new AudioBus(m_numChannels, numberOfFrames, false);
+        m_renderBus->setSampleRate(m_sampleRate);
+    }
+    
     float *myOutputBufferOfFloats = (float*) outputBuffer;
     float *myInputBufferOfFloats = (float*) inputBuffer;
 
-    // Inform bus to use an externally allocated buffer from rtaudio
-    if (m_renderBus.isFirstTime())
+    if (m_renderBus->isFirstTime())
     {
 		for (uint32_t i = 0; i < m_numChannels; ++i)
 		{
-			m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
+			m_renderBus->setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
 		}
     }
 
@@ -121,12 +132,12 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus, m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
-    for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
+    for (unsigned i = 0; i < m_renderBus->numberOfChannels(); ++i)
     {
-        AudioChannel * channel = m_renderBus.channel(i);
+        AudioChannel * channel = m_renderBus->channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
 }

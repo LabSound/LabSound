@@ -56,12 +56,13 @@ namespace lab
         virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, size_t framesToProcess) override
+        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus) override
         {
             // Get sample rate
             internalSampleRate = r.context()->sampleRate();
             oneOverSampleRate = 1.0 / internalSampleRate;
-
+            uint32_t framesToProcess = r.context()->currentFrames();
+            
             if (!numberOfChannels())
                 return;
 

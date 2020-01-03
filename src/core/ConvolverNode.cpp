@@ -47,7 +47,7 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
+void ConvolverNode::process(ContextRenderLock & r)
 {
     if (m_swapOnRender)
     {
@@ -69,7 +69,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
     // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
     // FIXME: If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
     // we keep getting fed silence.
-    m_reverb->process(r, input(0)->bus(r), outputBus, framesToProcess);
+    m_reverb->process(r, input(0)->bus(r), outputBus);
 }
 
 void ConvolverNode::reset(ContextRenderLock&)
@@ -110,7 +110,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 
     // Create the reverb with the given impulse response.
     const bool threaded = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, normalize()));
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), bus->length(), MaxFFTSize, 2, threaded, normalize()));
     m_newBus = bus;
     m_swapOnRender = true;
 }

@@ -38,10 +38,10 @@ private:
     void configure();
 
     AudioIOCallback & m_callback;
-    AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
-    std::unique_ptr<AudioBus> m_inputBus;
-    unsigned int m_numChannels;
-    float m_sampleRate;
+    AudioBus* m_renderBus = nullptr;
+    AudioBus* m_inputBus = nullptr;
+    unsigned int m_numChannels = 2;
+    float m_sampleRate = 44000;
     ma_device device;
 };
 

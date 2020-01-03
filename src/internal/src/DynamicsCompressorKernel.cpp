@@ -181,7 +181,6 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        const float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,
-                                       size_t framesToProcess,
                                        float dbThreshold,
                                        float dbKnee,
                                        float ratio,
@@ -197,6 +196,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        )
 {
     ASSERT(m_preDelayBuffers.size() == numberOfChannels);
+    uint32_t framesToProcess = r.context()->currentFrames();
 
     float sampleRate = r.context()->sampleRate();
 

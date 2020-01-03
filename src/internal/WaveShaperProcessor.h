@@ -22,7 +22,7 @@ public:
     WaveShaperProcessor(size_t numberOfChannels);
     virtual ~WaveShaperProcessor();
     virtual AudioDSPKernel * createKernel();
-    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, size_t framesToProcess);
+    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination);
 
     // curve is moved into setCurve, and contents will be mutated safely
     void setCurve(std::vector<float> && curve);

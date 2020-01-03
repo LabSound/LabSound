@@ -44,7 +44,7 @@ public:
     void getFloatTimeDomainData(std::vector<float>&); // LabSound
     void getByteTimeDomainData(std::vector<uint8_t>&);
 
-    void writeInput(ContextRenderLock& r, AudioBus*, size_t framesToProcess);
+    void writeInput(ContextRenderLock& r, AudioBus*);
 
     static const double DefaultSmoothingTimeConstant;
     static const double DefaultMinDecibels;

@@ -36,7 +36,7 @@ namespace lab
 
     private:
 
-        virtual void process(ContextRenderLock&, size_t) override;
+        virtual void process(ContextRenderLock&) override;
 
         virtual void reset(ContextRenderLock&) override { /*m_currentSampleFrame = 0;*/ }
 

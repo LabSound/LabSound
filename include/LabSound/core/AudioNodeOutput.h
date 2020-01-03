@@ -23,7 +23,7 @@ class AudioNodeOutput
 public:
 
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
-    AudioNodeOutput(AudioNode *audioNode, size_t numberOfChannels, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+    AudioNodeOutput(AudioNode *audioNode, size_t numberOfChannels);
     virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
@@ -32,7 +32,7 @@ public:
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus * pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock&, AudioBus* inPlaceBus);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     AudioBus * bus(ContextRenderLock&) const;
@@ -85,7 +85,7 @@ private:
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
-    void updateInternalBus();
+    void updateInternalBus(unsigned int frameSize);
 
     // Announce to any nodes we're connected to that we changed our channel count for its input.
     void propagateChannelCount(ContextRenderLock&);

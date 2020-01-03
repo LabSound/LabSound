@@ -42,7 +42,7 @@ void AudioBasicProcessorNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void AudioBasicProcessorNode::process(ContextRenderLock& r, size_t framesToProcess)
+void AudioBasicProcessorNode::process(ContextRenderLock& r)
 {
     AudioBus* destinationBus = output(0)->bus(r);
     
@@ -55,15 +55,15 @@ void AudioBasicProcessorNode::process(ContextRenderLock& r, size_t framesToProce
         if (!input(0)->isConnected())
             sourceBus->zero();
 
-        processor()->process(r, sourceBus, destinationBus, framesToProcess);
+        processor()->process(r, sourceBus, destinationBus);
     }
 }
 
 // Nice optimization in the very common case allowing for "in-place" processing
-void AudioBasicProcessorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+void AudioBasicProcessorNode::pullInputs(ContextRenderLock& r)
 {
     // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(r), framesToProcess);
+    input(0)->pull(r, output(0)->bus(r));
 }
 
 void AudioBasicProcessorNode::reset(ContextRenderLock&)

@@ -24,30 +24,45 @@ namespace lab
 // If there is local/live audio input, we call set() with the audio input data every render quantum.
 class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider
 {
-    AudioBus m_sourceBus;
+    AudioBus* m_sourceBus = nullptr;
 
 public:
-    LocalAudioInputProvider(size_t channelCount)
-        : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
+    LocalAudioInputProvider()
     {
         epoch[0] = epoch[1] = std::chrono::high_resolution_clock::now();
     }
 
     virtual ~LocalAudioInputProvider()
     {
+        delete m_sourceBus;
     }
 
     void set(AudioBus * bus)
     {
-        if (bus) m_sourceBus.copyFrom(*bus);
+        if (!bus)
+            return;
+        
+        if (!m_sourceBus || bus->numberOfChannels() != m_sourceBus->numberOfChannels() || bus->length() != m_sourceBus->length())
+        {
+            if (m_sourceBus)
+                delete m_sourceBus;
+            m_sourceBus = new AudioBus(bus->numberOfChannels(), bus->length(), true);
+        }
+
+        m_sourceBus->copyFrom(*bus);
     }
 
     // AudioSourceProvider.
     virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames)
     {
-        bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus.length() == numberOfFrames;
+        if (!m_sourceBus)
+            return;
+        
+        bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus->length() == numberOfFrames;
         ASSERT(isGood);
-        if (isGood) destinationBus->copyFrom(m_sourceBus);
+        
+        if (isGood)
+            destinationBus->copyFrom(*m_sourceBus);
     }
 
     // Counts the number of sample-frames processed by the destination.
@@ -62,7 +77,7 @@ AudioDestinationNode::AudioDestinationNode(AudioContext * context, size_t channe
     : m_sampleRate(sampleRate)
     , m_context(context)
 {
-    m_localAudioInputProvider = new LocalAudioInputProvider(channelCount);
+    m_localAudioInputProvider = new LocalAudioInputProvider();
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
@@ -99,6 +114,8 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
     if (!renderLock.context())
         return;  // return if couldn't acquire lock
 
+    m_context->setCurrentFrames(numberOfFrames);
+    
     if (!m_context->isInitialized())
     {
         destinationBus->zero();
@@ -123,7 +140,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
     /// @TODO why is only input 0 processed?
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
-    AudioBus * renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
+    AudioBus * renderedBus = input(0)->pull(renderLock, destinationBus);
 
     if (!renderedBus)
     {
@@ -136,7 +153,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
     }
 
     // Process nodes which need a little extra help because they are not connected to anything, but still need to process.
-    m_context->processAutomaticPullNodes(renderLock, numberOfFrames);
+    m_context->processAutomaticPullNodes(renderLock);
 
     // Let the context take care of any business at the end of each render quantum.
     m_context->handlePostRenderTasks(renderLock);

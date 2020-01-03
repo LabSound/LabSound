@@ -20,7 +20,7 @@ public:
     MultiChannelResampler(double scaleFactor, unsigned numberOfChannels);
     
     // Process given AudioSourceProvider for streaming applications.
-    void process(ContextRenderLock&, AudioSourceProvider*, AudioBus* destination, size_t framesToProcess);
+    void process(ContextRenderLock&, AudioSourceProvider*, AudioBus* destination);
 
 private:
     // FIXME: the mac port can have a more highly optimized implementation based on CoreAudio

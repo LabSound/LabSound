@@ -23,7 +23,7 @@ public:
     virtual ~AudioBasicInspectorNode() { }
 
     // AudioNode
-    virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock& r) override;
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 };
 

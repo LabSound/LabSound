@@ -60,7 +60,7 @@ SampledAudioNode::~SampledAudioNode()
     uninitialize();
 }
 
-void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
+void SampledAudioNode::process(ContextRenderLock & r)
 {
     AudioBus* outputBus = output(0)->bus(r);
 
@@ -112,10 +112,10 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
         m_startRequested = false;
     }
 
-    size_t quantumFrameOffset;
-    size_t bufferFramesToProcess;
+    uint32_t quantumFrameOffset;
+    uint32_t bufferFramesToProcess;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, bufferFramesToProcess);
+    updateSchedulingInfo(r, outputBus, quantumFrameOffset, bufferFramesToProcess);
 
     if (!bufferFramesToProcess)
     {

@@ -46,11 +46,12 @@ namespace lab
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
         virtual void process(ContextRenderLock& r,
-                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
-                             size_t framesToProcess) override
+                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus) override
         {
             if (!numberOfChannels())
                 return;
+
+            uint32_t framesToProcess = r.context()->currentFrames();
 
             // We handle both the 1 -> N and N -> N case here.
             const float* source = sourceBus->channel(0)->data();

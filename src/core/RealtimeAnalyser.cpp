@@ -88,8 +88,10 @@ void RealtimeAnalyser::reset()
     m_magnitudeBuffer.zero();
 }
 
-void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus, size_t framesToProcess)
+void RealtimeAnalyser::writeInput(ContextRenderLock &r, AudioBus* bus)
 {
+    uint32_t framesToProcess = r.context()->currentFrames();
+
     bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess && r.context();
     if (!isBusGood)
         return;

@@ -19,7 +19,6 @@ const float SmoothingTimeConstant = 0.020f; // 20ms
 DelayDSPKernel::DelayDSPKernel( DelayProcessor * processor, float sampleRate) : AudioDSPKernel(processor)
     , m_writeIndex(0)
     , m_firstTime(true)
-    , m_delayTimes(AudioNode::ProcessingSizeInFrames)
 {
     ASSERT(processor);
     if (!processor)
@@ -60,7 +59,12 @@ size_t DelayDSPKernel::bufferLengthForDelay(double maxDelayTime, double sampleRa
     return 1 + AudioUtilities::timeToSampleFrame(maxDelayTime, sampleRate);
 }
 
-void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void DelayDSPKernel::process(ContextRenderLock & r, const float *source, float *destination)
+{
+    process(r, source, destination, r.context()->currentFrames());
+}
+
+void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, uint32_t framesToProcess)
 {
     size_t bufferLength = m_buffer.size();
     float* buffer = m_buffer.data();
@@ -81,7 +85,7 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
     bool sampleAccurate = delayProcessor() && delayProcessor()->delayTime()->hasSampleAccurateValues();
 
     if (sampleAccurate)
-        delayProcessor()->delayTime()->calculateSampleAccurateValues(r, delayTimes, framesToProcess);
+        delayProcessor()->delayTime()->calculateSampleAccurateValues(r, delayTimes);
     else {
         delayTime = delayProcessor() ? delayProcessor()->delayTime()->finalValue(r) : m_desiredDelayFrames / sampleRate;
 

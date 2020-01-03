@@ -102,16 +102,17 @@ float AudioParam::finalValue(ContextRenderLock& r)
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values, size_t numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values)
 {
-    bool isSafe = r.context() && values && numberOfValues;
+    uint32_t framesToProcess = r.context()->currentFrames();
+    bool isSafe = r.context() && values && framesToProcess;
     if (!isSafe)
         return;
 
-    calculateFinalValues(r, values, numberOfValues, true);
+    calculateFinalValues(r, values, framesToProcess, true);
 }
 
-void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_t numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, uint32_t numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -162,14 +163,14 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_
         ASSERT(output);
         
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
+        AudioBus* connectionBus = output->pull(r, 0);
 
         // Sum, with unity-gain.
         m_data->m_internalSummingBus->sumFrom(*connectionBus);
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, uint32_t numberOfValues)
 {
     // Calculate values for this render quantum.
     // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).

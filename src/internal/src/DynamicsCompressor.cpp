@@ -100,7 +100,7 @@ void DynamicsCompressor::setEmphasisParameters(float gain, float anchorFreq, flo
     setEmphasisStageParameters(3, gain, anchorFreq / (filterStageRatio * filterStageRatio * filterStageRatio));
 }
 
-void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus, size_t framesToProcess)
+void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus)
 {
     // Though numberOfChannels is retrived from destinationBus, we still name it numberOfChannels instead of numberOfDestinationChannels.
     // It's because we internally match sourceChannels's size to destinationBus by channel up/down mix. Thus we need numberOfChannels
@@ -155,6 +155,7 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
 
     // Apply pre-emphasis filter.
     // Note that the final three stages are computed in-place in the destination buffer.
+    uint32_t framesToProcess = r.context()->currentFrames();
     for (unsigned i = 0; i < numberOfChannels; ++i)
     {
         const float* sourceData = m_sourceChannels[i];
@@ -194,7 +195,6 @@ void DynamicsCompressor::process(ContextRenderLock& r, const AudioBus* sourceBus
                          m_sourceChannels.get(),
                          m_destinationChannels.get(),
                          numberOfChannels,
-                         framesToProcess,
                          dbThreshold,
                          dbKnee,
                          ratio,

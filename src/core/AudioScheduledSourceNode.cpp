@@ -28,15 +28,11 @@ AudioScheduledSourceNode::AudioScheduledSourceNode()
 }
 
 void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
-                                                    size_t quantumFrameSize,
                                                     AudioBus * outputBus,
-                                                    size_t & quantumFrameOffset,
-                                                    size_t & nonSilentFramesToProcess)
+                                                    uint32_t & quantumFrameOffset,
+                                                    uint32_t & nonSilentFramesToProcess)
 {
     if (!outputBus)
-        return;
-
-    if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
         return;
 
     AudioContext * context = r.context();
@@ -58,13 +54,15 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     }
 
     float sampleRate = r.context()->sampleRate();
+    
+    uint32_t quantumFrameSize = r.context()->currentFrames();
 
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
     // endFrame              : End frame for this source.
     uint64_t quantumStartFrame = context->currentSampleFrame();
-    uint64_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
+    uint64_t quantumEndFrame = quantumStartFrame + context->currentFrames();
     uint64_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
     uint64_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
 
@@ -88,8 +86,8 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
-    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
-    nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
+    quantumFrameOffset = std::min(quantumFrameOffset, context->currentFrames()); // clamp to valid range
+    nonSilentFramesToProcess = context->currentFrames() - quantumFrameOffset;
 
     if (!nonSilentFramesToProcess)
     {

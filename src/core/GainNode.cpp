@@ -18,7 +18,6 @@ namespace lab
 GainNode::GainNode() 
 : AudioNode()
 , m_lastGain(1.0)
-, m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
 {
     m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0);
 
@@ -35,7 +34,7 @@ GainNode::~GainNode()
     uninitialize();
 }
 
-void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
+void GainNode::process(ContextRenderLock& r)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
@@ -44,6 +43,8 @@ void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
     AudioBus* outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
+    uint32_t framesToProcess = r.context()->currentFrames();
+
     if (!isInitialized() || !input(0)->isConnected())
         outputBus->zero();
     else {
@@ -51,10 +52,13 @@ void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
 
         if (gain()->hasSampleAccurateValues()) {
             // Apply sample-accurate gain scaling for precise envelopes, grain windows, etc.
-            ASSERT(framesToProcess <= m_sampleAccurateGainValues.size());
+            if (m_sampleAccurateGainValues.size() < framesToProcess) {
+                m_sampleAccurateGainValues.allocate(framesToProcess);
+            }
+
             if (framesToProcess <= m_sampleAccurateGainValues.size()) {
                 float* gainValues = m_sampleAccurateGainValues.data();
-                gain()->calculateSampleAccurateValues(r, gainValues, framesToProcess);
+                gain()->calculateSampleAccurateValues(r, gainValues);
                 outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
             }
         }

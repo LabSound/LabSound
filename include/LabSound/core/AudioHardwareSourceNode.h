@@ -21,7 +21,7 @@ public:
     virtual ~AudioHardwareSourceNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &) override;
     virtual void reset(ContextRenderLock &) override;
 
     // Interface for AudioSourceProviderClient
@@ -36,7 +36,7 @@ private:
 
     AudioSourceProvider * m_audioSourceProvider;
 
-    size_t m_sourceNumberOfChannels;
+    unsigned int m_sourceNumberOfChannels = 0;
 };
 
 } // namespace lab

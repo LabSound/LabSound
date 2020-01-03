@@ -23,7 +23,7 @@ class AudioNodeInput : public AudioSummingJunction
 {
 public:
 
-    explicit AudioNodeInput(AudioNode *audioNode, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+    explicit AudioNodeInput(AudioNode *audioNode);
     virtual ~AudioNodeInput();
 
     // AudioSummingJunction
@@ -40,7 +40,7 @@ public:
     // In the case of multiple connections, the result is summed onto the internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    AudioBus* pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus* pull(ContextRenderLock&, AudioBus* inPlaceBus);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
     AudioBus* bus(ContextRenderLock&);

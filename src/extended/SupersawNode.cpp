@@ -135,7 +135,7 @@ namespace lab
         uninitialize();
     }
 
-    void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess)
+    void SupersawNode::process(ContextRenderLock & r)
     {
         internalNode->update(r);
 

@@ -49,7 +49,7 @@ void AudioResampler::configureChannels(unsigned numberOfChannels)
     m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
 }
 
-void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider, AudioBus* destinationBus, size_t framesToProcess)
+void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider, AudioBus* destinationBus)
 {
     ASSERT(provider);
     if (!provider)
@@ -63,6 +63,7 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
     if (!channelsMatch)
         return;
 
+    uint32_t framesToProcess = r.context()->currentFrames();
     // Setup the source bus.
     for (unsigned i = 0; i < numberOfChannels; ++i) {
         // Figure out how many frames we need to get from the provider, and a pointer to the buffer.
@@ -82,7 +83,7 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
     // FIXME: optimize for the common stereo case where it's faster to process both left/right channels in the same inner loop.
     for (unsigned i = 0; i < numberOfChannels; ++i) {
         float* destination = destinationBus->channel(i)->mutableData();
-        m_kernels[i]->process(r, destination, framesToProcess);
+        m_kernels[i]->process(r, destination);
     }
 }
 

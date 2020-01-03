@@ -105,14 +105,16 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
     }
 }
 
-void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
+void AudioNode::processIfNecessary(ContextRenderLock & r)
 {
     if (!isInitialized()) return;
 
     auto ac = r.context();
 
     if (!ac) return;
-
+    
+    uint32_t framesToProcess = r.context()->currentFrames();    
+    
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
     // The first time we're called during this time slice we process, but after that we don't want to re-process,
@@ -122,7 +124,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
     {
         m_lastProcessingTime = currentTime; // important to first update this time to accomodate feedback loops in the rendering graph
 
-        pullInputs(r, framesToProcess);
+        pullInputs(r);
 
         bool silentInputs = inputsAreSilent(r);
         if (!silentInputs)
@@ -137,11 +139,11 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
         }
         else
         {
-            process(r, framesToProcess);
+            process(r);
 
             float new_schedule = 0.f;
 
-            if (m_disconnectSchedule >= 0)
+            if (disconnectionReady())
             {
                 for (auto out : m_outputs)
                     for (unsigned i = 0; i < out->bus(r)->numberOfChannels(); ++i)
@@ -161,7 +163,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
             }
 
             new_schedule = 1.f;
-            if (m_connectSchedule < 1)
+            if (!connectionReady()) // ad hoc imperceptible small epsilon
             {
                 for (auto out : m_outputs)
                     for (unsigned i = 0; i < out->bus(r)->numberOfChannels(); ++i)
@@ -205,14 +207,14 @@ bool AudioNode::propagatesSilence(ContextRenderLock & r) const
     return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
 }
 
-void AudioNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+void AudioNode::pullInputs(ContextRenderLock& r)
 {
     ASSERT(r.context());
 
     // Process all of the AudioNodes connected to our inputs.
     for (auto & in : m_inputs)
     {
-        in->pull(r, 0, framesToProcess);
+        in->pull(r, 0);
     }
 }
 

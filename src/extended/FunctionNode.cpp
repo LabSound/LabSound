@@ -25,7 +25,7 @@ namespace lab
         uninitialize();
     }
     
-    void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
+    void FunctionNode::process(ContextRenderLock & r)
     {
         AudioBus * outputBus = output(0)->bus(r);
 
@@ -35,10 +35,10 @@ namespace lab
             return;
         }
         
-        size_t quantumFrameOffset;
-        size_t nonSilentFramesToProcess;
-        
-        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+        uint32_t quantumFrameOffset;
+        uint32_t nonSilentFramesToProcess;
+
+        updateSchedulingInfo(r, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
         if (!nonSilentFramesToProcess) 
         {
@@ -55,7 +55,7 @@ namespace lab
             _function(r, this, static_cast<int>(i), destP, nonSilentFramesToProcess);
         }
 
-        _now += double(framesToProcess) / r.context()->sampleRate();
+        _now += double(r.context()->currentFrames()) / r.context()->sampleRate();
         outputBus->clearSilentFlag();
     }
     

@@ -62,6 +62,8 @@ public:
     bool isOfflineContext();
 
     uint64_t currentSampleFrame() const;
+    uint32_t currentFrames() const { return m_currentFrames; }
+    void setCurrentFrames(uint32_t f) { m_currentFrames = f; }
 
     double currentTime() const;
 
@@ -79,7 +81,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioDestinationNode should call this.
-    void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
+    void processAutomaticPullNodes(ContextRenderLock &);
 
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
@@ -110,6 +112,8 @@ private:
     void update();
     float graphKeepAlive{ 0.f };
     float lastGraphUpdateTime{ 0.f };
+    
+    uint32_t m_currentFrames = 0;
 
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;

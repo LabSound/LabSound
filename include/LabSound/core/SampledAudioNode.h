@@ -29,7 +29,7 @@ public:
     virtual ~SampledAudioNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&) override;
     virtual void reset(ContextRenderLock&) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);

@@ -28,7 +28,7 @@ public:
     virtual ~OscillatorNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&) override;
     virtual void reset(ContextRenderLock&) override;
 
     OscillatorType type() const;
@@ -46,7 +46,7 @@ private:
     void setWaveTable(std::shared_ptr<WaveTable> table);
 
     // Returns true if there are sample-accurate timeline parameter changes.
-    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&, size_t framesToProcess);
+    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock&);
 
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
 

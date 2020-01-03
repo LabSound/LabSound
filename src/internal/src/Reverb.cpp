@@ -10,6 +10,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/extended/AudioFileReader.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include <math.h>
 
@@ -110,8 +111,10 @@ void Reverb::initialize(AudioBus* impulseResponseBuffer, size_t renderSliceSize,
         m_tempBuffer = std::unique_ptr<AudioBus>(new AudioBus(2, MaxFrameSize));
 }
 
-void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus, size_t framesToProcess)
+void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* destinationBus)
 {
+    uint32_t framesToProcess = r.context()->currentFrames();
+
     // Do a fairly comprehensive sanity check.
     // If these conditions are satisfied, all of the source and destination pointers will be valid for the various matrixing cases.
     bool isSafeToProcess = sourceBus && destinationBus && sourceBus->numberOfChannels() > 0 && destinationBus->numberOfChannels() > 0
@@ -140,25 +143,25 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         // 2 -> 2 -> 2
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
-        m_convolvers[1]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
+        m_convolvers[1]->process(r, sourceChannelR, destinationChannelR);
     } else if (numInputChannels == Channels::Stereo && numReverbChannels == Channels::Mono && numOutputChannels == Channels::Stereo) {
         // LabSound added this case, should submit it back to WebKit after it's known to work correctly
         // because the initialize method says that a mono-IR is expected to work with a stero in/out setup
         // 2 -> 1 -> 2
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
-        m_convolvers[0]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
+        m_convolvers[0]->process(r, sourceChannelR, destinationChannelR);
     } else  if (numInputChannels == Channels::Mono && numOutputChannels == Channels::Stereo && numReverbChannels == Channels::Stereo) {
         // 1 -> 2 -> 2
         for (int i = 0; i < 2; ++i) {
             AudioChannel* destinationChannel = destinationBus->channel(i);
-            m_convolvers[i]->process(r, sourceChannelL, destinationChannel, framesToProcess);
+            m_convolvers[i]->process(r, sourceChannelL, destinationChannel);
         }
     } else if (numInputChannels == Channels::Mono && numReverbChannels == Channels::Mono && numOutputChannels == Channels::Stereo) {
         // 1 -> 1 -> 2
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
 
         // simply copy L -> R
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
@@ -169,7 +172,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         memcpy(destinationChannelR->mutableData(), destinationChannelL->data(), sizeof(float) * framesToProcess);
     } else if (numInputChannels == Channels::Mono && numReverbChannels == Channels::Mono && numOutputChannels == Channels::Mono) {
         // 1 -> 1 -> 1
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
     } else if (numInputChannels == Channels::Stereo && numReverbChannels == Channels::Quad && numOutputChannels == Channels::Stereo) {
         // 2 -> 4 -> 2 ("True" stereo)
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
@@ -179,12 +182,12 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         AudioChannel* tempChannelR = m_tempBuffer->channelByType(Channel::Right);
 
         // Process left virtual source
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
-        m_convolvers[1]->process(r, sourceChannelL, destinationChannelR, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
+        m_convolvers[1]->process(r, sourceChannelL, destinationChannelR);
 
         // Process right virtual source
-        m_convolvers[2]->process(r, sourceChannelR, tempChannelL, framesToProcess);
-        m_convolvers[3]->process(r, sourceChannelR, tempChannelR, framesToProcess);
+        m_convolvers[2]->process(r, sourceChannelR, tempChannelL);
+        m_convolvers[3]->process(r, sourceChannelR, tempChannelR);
 
         destinationBus->sumFrom(*m_tempBuffer);
     } else if (numInputChannels == Channels::Mono && numReverbChannels == Channels::Quad && numOutputChannels == Channels::Stereo) {
@@ -196,12 +199,12 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         AudioChannel* tempChannelR = m_tempBuffer->channelByType(Channel::Right);
 
         // Process left virtual source
-        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL, framesToProcess);
-        m_convolvers[1]->process(r, sourceChannelL, destinationChannelR, framesToProcess);
+        m_convolvers[0]->process(r, sourceChannelL, destinationChannelL);
+        m_convolvers[1]->process(r, sourceChannelL, destinationChannelR);
 
         // Process right virtual source
-        m_convolvers[2]->process(r, sourceChannelL, tempChannelL, framesToProcess);
-        m_convolvers[3]->process(r, sourceChannelL, tempChannelR, framesToProcess);
+        m_convolvers[2]->process(r, sourceChannelL, tempChannelL);
+        m_convolvers[3]->process(r, sourceChannelL, tempChannelR);
 
         destinationBus->sumFrom(*m_tempBuffer);
     } else {

@@ -35,7 +35,7 @@ public:
     // AudioProcessor methods
     virtual void initialize() override;
     virtual void uninitialize() override;
-    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination) override;
     virtual void reset() override;
 
     virtual double tailTime(ContextRenderLock & r) const override;

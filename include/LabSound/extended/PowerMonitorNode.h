@@ -25,7 +25,7 @@ namespace lab {
 
         virtual ~PowerMonitorNode();
         
-        virtual void process(ContextRenderLock&, size_t framesToProcess) override;
+        virtual void process(ContextRenderLock&) override;
         virtual void reset(ContextRenderLock&) override;
 
         // instantaneous estimation of power

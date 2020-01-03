@@ -13,11 +13,9 @@
 
 namespace lab {
 
-AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
+AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : m_audioSourceProvider(audioSourceProvider)
 {
-    // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
+    m_sampleRate = sampleRate; /// @TODO why is sample rate provided when it must come from the context?
     initialize();
 }
 
@@ -28,9 +26,15 @@ AudioHardwareSourceNode::~AudioHardwareSourceNode()
 
 void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
 {
+    if (!output(0))
+    {
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numberOfChannels)));
+    }
+
     if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
     {
         // The sample-rate must be equal to the context's sample-rate.
+        /// @TODO why is sample rate part of the interface?
         if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
             throw std::runtime_error("AudioHardwareSourceNode must match samplerate of context... ");
 
@@ -41,8 +45,12 @@ void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfCh
     }
 }
 
-void AudioHardwareSourceNode::process(ContextRenderLock & r, size_t numberOfFrames)
+void AudioHardwareSourceNode::process(ContextRenderLock & r)
 {
+    if (!output(0))
+    {
+        setFormat(r, 1, r.context()->sampleRate());
+    }
     AudioBus * outputBus = output(0)->bus(r);
 
     if (!audioSourceProvider())
@@ -62,7 +70,7 @@ void AudioHardwareSourceNode::process(ContextRenderLock & r, size_t numberOfFram
     // a format change, so we output silence in this case.
     if (r.context())
     {
-        audioSourceProvider()->provideInput(outputBus, numberOfFrames);
+        audioSourceProvider()->provideInput(outputBus, r.context()->currentFrames());
     }
     else
     {

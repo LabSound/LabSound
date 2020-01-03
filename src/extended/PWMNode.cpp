@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/extended/AudioContextLock.h"
 
 #include "LabSound/extended/PWMNode.h"
 
@@ -32,9 +33,8 @@ namespace lab {
         virtual void uninitialize() override { }
 
         // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock&,
-                             const lab::AudioBus* source, lab::AudioBus* destination,
-                             size_t framesToProcess) override
+        virtual void process(ContextRenderLock & r,
+                             const lab::AudioBus* source, lab::AudioBus* destination) override
         {
             if (!numberOfChannels())
                 return;
@@ -49,7 +49,7 @@ namespace lab {
             else 
             {
                 float* destP = destination->channel(0)->mutableData();
-                size_t n = framesToProcess;
+                size_t n = r.context()->currentFrames();
                 while (n--)
                 {
                     float carrier = *carrierP++;

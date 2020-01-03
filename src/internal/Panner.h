@@ -23,7 +23,7 @@ public:
 
     PanningMode panningModel() const { return m_panningModel; }
 
-    virtual void pan(ContextRenderLock & r, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess) = 0;
+    virtual void pan(ContextRenderLock & r, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus) = 0;
 
     virtual void reset() = 0;
 

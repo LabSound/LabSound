@@ -35,9 +35,7 @@ OscillatorNode::OscillatorNode(const float sampleRate) :
       m_sampleRate(sampleRate),
       m_type(std::make_shared<AudioSetting>("type")),
       m_firstRender(true),
-      m_virtualReadIndex(0),
-      m_phaseIncrements(AudioNode::ProcessingSizeInFrames),
-      m_detuneValues(AudioNode::ProcessingSizeInFrames)
+      m_virtualReadIndex(0)
 {
     // Use musical pitch standard A440 as a default.
     m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
@@ -125,8 +123,10 @@ void OscillatorNode::_setType(OscillatorType type)
     m_type->setUint32(static_cast<uint32_t>(type), false);
 }
 
-bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & r, size_t framesToProcess)
+bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & r)
 {
+    uint32_t framesToProcess = r.context()->currentFrames();
+
     bool isGood = framesToProcess <= m_phaseIncrements.size() && framesToProcess <= m_detuneValues.size();
     ASSERT(isGood);
     if (!isGood)
@@ -150,8 +150,9 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
 
         // Get the sample-accurate frequency values and convert to phase increments.
         // They will be converted to phase increments below.
-        m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
-    } else {
+        m_frequency->calculateSampleAccurateValues(r, phaseIncrements);
+    } 
+    else {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
         m_frequency->smooth(r);
         float frequency = m_frequency->smoothedValue();
@@ -163,7 +164,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
 
         // Get the sample-accurate detune values.
         float* detuneValues = hasFrequencyChanges ? m_detuneValues.data() : phaseIncrements;
-        m_detune->calculateSampleAccurateValues(r, detuneValues, framesToProcess);
+        m_detune->calculateSampleAccurateValues(r, detuneValues);
 
         // Convert from cents to rate scalar.
         float k = 1.f / 1200.f;
@@ -191,7 +192,7 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
     return hasSampleAccurateValues;
 }
 
-void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
+void OscillatorNode::process(ContextRenderLock& r)
 {
     AudioBus* outputBus = output(0)->bus(r);
 
@@ -199,17 +200,13 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         outputBus->zero();
         return;
     }
+    
+    size_t framesToProcess = r.context()->currentFrames();
 
-    ASSERT(framesToProcess <= m_phaseIncrements.size());
     if (framesToProcess > m_phaseIncrements.size())
-        return;
-
-    // The audio thread can't block on this lock, so we call tryLock() instead.
-    if (!r.context()) {
-        // Too bad - the tryLock() failed. We must be in the middle of changing wave-tables.
-        outputBus->zero();
-        return;
-    }
+        m_phaseIncrements.allocate(framesToProcess);
+    if (framesToProcess > m_detuneValues.size())
+        m_detuneValues.allocate(framesToProcess);
 
     // We must access m_waveTable only inside the lock.
     if (!m_waveTable.get()) {
@@ -217,10 +214,10 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset = 0;
-    size_t nonSilentFramesToProcess = 0;
+    uint32_t quantumFrameOffset = 0;
+    uint32_t nonSilentFramesToProcess = 0;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess) {
         outputBus->zero();
@@ -239,7 +236,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
 
     float rateScale = m_waveTable->rateScale();
     float invRateScale = 1 / rateScale;
-    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(r, framesToProcess);
+    bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(r);
 
     float frequency = 0;
     float* higherWaveData = 0;

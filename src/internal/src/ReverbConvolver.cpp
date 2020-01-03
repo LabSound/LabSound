@@ -154,9 +154,10 @@ void ReverbConvolver::backgroundThreadEntry()
     }
 }
 
-void ReverbConvolver::process(ContextRenderLock&, const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess)
+void ReverbConvolver::process(ContextRenderLock & r, const AudioChannel* sourceChannel, AudioChannel* destinationChannel)
 {
-    bool isSafe = sourceChannel && destinationChannel && sourceChannel->length() >= framesToProcess && destinationChannel->length() >= framesToProcess;
+    uint32_t framesToProcess = r.context()->currentFrames();
+    bool isSafe = sourceChannel && destinationChannel && sourceChannel->length() >= framesToProcess;
     ASSERT(isSafe);
     if (!isSafe)
         return;
