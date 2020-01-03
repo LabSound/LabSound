@@ -108,14 +108,14 @@ namespace lab
             }
 
             // calc coefficients from run time vars
-            kneeCoeffs = expf(0.f - (oneOverSampleRate / knee));
-            kneeCoeffsMinus = 1.f - kneeCoeffs;
+            kneeCoeffs = exp(0.f - (oneOverSampleRate / knee));
+            kneeCoeffsMinus = 1. - kneeCoeffs;
 
-            attackCoeffs = expf(0.f - (oneOverSampleRate / attack));
-            attackCoeffsMinus = 1.f - attackCoeffs;
+            attackCoeffs = exp(0.f - (oneOverSampleRate / attack));
+            attackCoeffsMinus = 1. - attackCoeffs;
 
-            releaseCoeff = expf(0.f - (oneOverSampleRate / release));
-            releaseCoeffMinus = 1.f - releaseCoeff;
+            releaseCoeff = exp(0.f - (oneOverSampleRate / release));
+            releaseCoeffMinus = 1. - releaseCoeff;
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];

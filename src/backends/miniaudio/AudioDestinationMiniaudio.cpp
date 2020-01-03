@@ -22,9 +22,10 @@ static int NumDefaultOutputChannels()
 }
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback,
-                                                                    size_t numberOfOutputChannels, float sampleRate)
+                                                                  size_t numberOfOutputChannels, float sampleRate)
 {
-    return new AudioDestinationMiniaudio(callback, static_cast<unsigned int>(numberOfOutputChannels), sampleRate);
+    // default to no input for now
+    return new AudioDestinationMiniaudio(callback, static_cast<unsigned int>(numberOfOutputChannels), 0, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -33,11 +34,14 @@ unsigned long AudioDestination::maxChannelCount()
 }
 
 AudioDestinationMiniaudio::AudioDestinationMiniaudio(AudioIOCallback & callback,
-                                                     unsigned int numChannels, float sampleRate)
+                                                     uint32_t numChannels,
+                                                     uint32_t numInputChannels,
+                                                     float sampleRate)
 : m_callback(callback)
+, m_numChannels(numInputChannels)
+, m_numInputChannels(numInputChannels)
+, m_sampleRate(sampleRate)
 {
-    m_numChannels = numChannels;
-    m_sampleRate = sampleRate;
     configure();
 }
 
@@ -47,10 +51,10 @@ AudioDestinationMiniaudio::~AudioDestinationMiniaudio()
     delete m_renderBus;
     delete m_inputBus;
 }
-    
+
 namespace
 {
-    
+
     void outputCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
     {
         float *fBufOut = (float*) pOutput;
@@ -58,10 +62,10 @@ namespace
         AudioDestinationMiniaudio* audioDestination = reinterpret_cast<AudioDestinationMiniaudio*>(pDevice->pUserData);
         // Buffer is nBufferFrames * channels
         memset(fBufOut, 0, sizeof(float) * frameCount * audioDestination->channelCount());
-        
+
         audioDestination->render(frameCount, pOutput, const_cast<void*>(pInput));
     }
-        
+
 }
 
 void AudioDestinationMiniaudio::configure()
@@ -98,7 +102,7 @@ void AudioDestinationMiniaudio::stop()
     }
 }
 
-    
+
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 
@@ -109,12 +113,12 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
     {
         if (m_renderBus)
             delete m_renderBus;
-        
+
         // Note: false here indicates that the memory will be supplied externally
         m_renderBus = new AudioBus(m_numChannels, numberOfFrames, false);
         m_renderBus->setSampleRate(m_sampleRate);
     }
-    
+
     float *myOutputBufferOfFloats = (float*) outputBuffer;
     float *myInputBufferOfFloats = (float*) inputBuffer;
 

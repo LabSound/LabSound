@@ -20,8 +20,9 @@ namespace lab {
 // An AudioBus with one channel is mono, an AudioBus with two channels is stereo, etc.
 class AudioBus 
 {
-    AudioBus(const AudioBus&);  // noncopyable
-    
+    AudioBus(const AudioBus &) = delete;
+    AudioBus(AudioBus &) = delete;
+
 public:
 
     // Can define non-standard layouts here:
@@ -33,7 +34,7 @@ public:
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
     // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
     // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
-    AudioBus(size_t numberOfChannels, size_t length, bool allocate = true);
+    explicit AudioBus(size_t numberOfChannels, size_t length, bool allocate = true);
 
     // Tells the given channel to use an externally allocated buffer.
     void setChannelMemory(size_t channelIndex, float* storage, size_t length);
@@ -120,7 +121,7 @@ public:
 
 protected:
 
-    AudioBus() {};
+    AudioBus() = default;
 
     void speakersCopyFrom(const AudioBus&);
     void discreteCopyFrom(const AudioBus&);
@@ -129,19 +130,14 @@ protected:
     void speakersSumFrom5_1_ToMono(const AudioBus&);
     void speakersSumFrom7_1_ToMono(const AudioBus&);
 
-    size_t m_length;
-
-    std::vector<std::unique_ptr<AudioChannel> > m_channels;
-
+    size_t m_length = 0;
     int m_layout = LayoutCanonical;
-
     float m_busGain = 1.0f;
-
-    std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
-
     bool m_isFirstTime = true;
     float m_sampleRate = 0.0f;
 
+    std::vector<std::unique_ptr<AudioChannel>> m_channels;
+    std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
 };
 
 } // lab

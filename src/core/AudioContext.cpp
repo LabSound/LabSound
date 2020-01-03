@@ -115,7 +115,8 @@ void AudioContext::uninitialize()
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
 
-    updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
+    LOG("AudioContext::final updateAutomaticPullNodes()");
+    updateAutomaticPullNodes();  // added for the case where an OfflineAudioDestinationNode needs to update the graph
 
     m_isInitialized = false;
 }

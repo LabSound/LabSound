@@ -5,8 +5,8 @@
 #include "AudioDestinationWindows.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include <rtaudio/RtAudio.h>
@@ -45,20 +45,18 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, size_t numChannels, float sampleRate)
-: m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
+AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, uint32_t numChannels, float sampleRate)
+    : m_callback(callback)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-    m_renderBus.setSampleRate(m_sampleRate);
     configure();
 }
 
 AudioDestinationWin::~AudioDestinationWin()
 {
     //dac.release(); // XXX
-     if (dac.isStreamOpen())
+    if (dac.isStreamOpen())
         dac.closeStream();
 }
 
@@ -84,13 +82,12 @@ void AudioDestinationWin::configure()
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
 
+    unsigned int bufferFrames = 128;
     auto inDeviceInfo = dac.getDeviceInfo(inputParams.deviceId);
     if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
     {
-        m_inputBus = std::make_unique<AudioBus>(1, AudioNode::ProcessingSizeInFrames, false);
+        m_inputBus = std::make_unique<AudioBus>(1, 128, false);
     }
-
-    unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
     RtAudio::StreamOptions options;
     options.flags |= RTAUDIO_NONINTERLEAVED;
@@ -101,12 +98,12 @@ void AudioDestinationWin::configure()
             outDeviceInfo.probed && outDeviceInfo.isDefaultOutput ? &outputParams : nullptr,
             inDeviceInfo.probed && inDeviceInfo.isDefaultInput ? &inputParams : nullptr,
             RTAUDIO_FLOAT32,
-            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options
-        );
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
         e.printMessage();
+        m_inputBus.reset();
     }
 }
 
@@ -137,15 +134,27 @@ void AudioDestinationWin::stop()
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
-    float *myOutputBufferOfFloats = (float*) outputBuffer;
-    float *myInputBufferOfFloats = (float*) inputBuffer;
+    float * myOutputBufferOfFloats = (float *) outputBuffer;
+    float * myInputBufferOfFloats = (float *) inputBuffer;
+
+    if (!m_renderBus || m_renderBus->length() < numberOfFrames)
+    {
+        m_renderBus = std::make_unique<AudioBus>(m_numChannels, numberOfFrames, false);
+        m_renderBus->setSampleRate(m_sampleRate);
+    }
+
+    if (m_inputBus && m_inputBus->length() < numberOfFrames)
+    {
+        m_inputBus = std::make_unique<AudioBus>(m_numChannels, numberOfFrames, false);
+        m_inputBus->setSampleRate(m_sampleRate);
+    }
 
     // Inform bus to use an externally allocated buffer from rtaudio
-    if (m_renderBus.isFirstTime())
+    if (m_renderBus->isFirstTime())
     {
         for (uint32_t i = 0; i < m_numChannels; ++i)
         {
-            m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
+            m_renderBus->setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
         }
     }
 
@@ -155,28 +164,28 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus.get(), m_renderBus.get(), numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
-    for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
+    for (unsigned i = 0; i < m_renderBus->numberOfChannels(); ++i)
     {
-        AudioChannel * channel = m_renderBus.channel(i);
+        AudioChannel * channel = m_renderBus->channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
 }
 
 int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
 {
-    float *fBufOut = (float*) outputBuffer;
+    float * fBufOut = (float *) outputBuffer;
 
     // Buffer is nBufferFrames * channels
     // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin*>(userData);
+    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin *>(userData);
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

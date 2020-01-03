@@ -7,6 +7,8 @@ file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
+set(MINIAUDIO OFF)
+
 if (IOS)
     set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
@@ -16,18 +18,26 @@ if (IOS)
     )
 elseif (APPLE)
     #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
-    set(labsnd_backend 
+    set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
         "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
         "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
     )
     #set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
+elseif (MINIAUDIO)
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+    )
 elseif (WIN32)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
+    #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
+    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/RTAudio/*")
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 elseif (UNIX)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/linux/*")
+    #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/linux/*")
+    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/RTAudio/*")
     set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
 endif()
 

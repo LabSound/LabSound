@@ -1,5 +1,4 @@
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "AudioDestinationRtAudio.h"
@@ -37,7 +36,9 @@ const float kHighThreshold = 1.0f;
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback, size_t numberOfOutputChannels, float sampleRate)
 {
-    return new AudioDestinationRtAudio(callback, numberOfOutputChannels, sampleRate);
+    return new AudioDestinationRtAudio(callback, numberOfOutputChannels,
+                                       1, // default to mono for now
+                                       sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -45,13 +46,13 @@ unsigned long AudioDestination::maxChannelCount()
     return NumDefaultOutputChannels();
 }
 
-AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback, size_t numChannels, float sampleRate)
+AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback,
+                                                 uint32_t numChannels, uint32_t numInputChannels, float sampleRate)
 : m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
+, m_numChannels(numChannels)
+, m_numInputChannels(numInputChannels)
+, m_sampleRate(sampleRate)
 {
-    m_numChannels = numChannels;
-    m_sampleRate = sampleRate;
-    m_renderBus.setSampleRate(m_sampleRate);
     configure();
 }
 
@@ -84,13 +85,16 @@ void AudioDestinationRtAudio::configure()
     inputParams.nChannels = 1;
     inputParams.firstChannel = 0;
 
+    // Note! RtAudio has a hard limit on a power of two buffer size, non-power of two sizes will result in
+    // heap corruption, for example, when dac.stopStream() is invoked.
+    unsigned int bufferFrames = 128;
     auto inDeviceInfo = dac.getDeviceInfo(inputParams.deviceId);
-    if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
+    if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0 && m_numInputChannels > 0)
     {
-        m_inputBus = std::make_unique<AudioBus>(1, AudioNode::ProcessingSizeInFrames, false);
+        // ensure that the number of input channels buffered does not exceed the number available.
+        m_numInputChannels = inDeviceInfo.inputChannels < m_numInputChannels ? inDeviceInfo.inputChannels : m_numInputChannels;
+        m_inputBus = std::make_unique<AudioBus>(m_numInputChannels, bufferFrames, false);
     }
-
-    unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
     RtAudio::StreamOptions options;
     options.flags |= RTAUDIO_NONINTERLEAVED;
@@ -107,6 +111,7 @@ void AudioDestinationRtAudio::configure()
     catch (RtAudioError & e)
     {
         e.printMessage();
+        m_inputBus.reset();
     }
 }
 
@@ -140,27 +145,38 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
     float *myOutputBufferOfFloats = (float*) outputBuffer;
     float *myInputBufferOfFloats = (float*) inputBuffer;
 
-    // Inform bus to use an externally allocated buffer from rtaudio
-    if (m_renderBus.isFirstTime())
+    if (!m_renderBus || m_renderBus->length() < numberOfFrames)
     {
-		for (uint32_t i = 0; i < m_numChannels; ++i)
-		{
-			m_renderBus.setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
-		}
+        m_renderBus = std::make_unique<AudioBus>(m_numChannels, numberOfFrames, false);
+        m_renderBus->setSampleRate(m_sampleRate);
+    }
+
+    if (m_inputBus && m_inputBus->length() < numberOfFrames)
+    {
+        m_inputBus = std::make_unique<AudioBus>(m_numInputChannels, numberOfFrames, false);
+        m_inputBus->setSampleRate(m_sampleRate);
+    }
+
+    // Inform bus to use an externally allocated buffer from rtaudio
+    if (m_renderBus->isFirstTime())
+    {
+        for (uint32_t i = 0; i < m_numChannels; ++i)
+            m_renderBus->setChannelMemory(i, myOutputBufferOfFloats + i * static_cast<uint32_t>(numberOfFrames), numberOfFrames);
     }
 
     if (m_inputBus && m_inputBus->isFirstTime())
     {
-        m_inputBus->setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+        for (uint32_t i = 0; i < m_numInputChannels; ++i)
+            m_inputBus->setChannelMemory(i, myInputBufferOfFloats + i * static_cast<uint32_t>(numberOfFrames), numberOfFrames);
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus.get(), m_renderBus.get(), numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
-    for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
+    for (unsigned i = 0; i < m_renderBus->numberOfChannels(); ++i)
     {
-        AudioChannel * channel = m_renderBus.channel(i);
+        AudioChannel * channel = m_renderBus->channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
 }

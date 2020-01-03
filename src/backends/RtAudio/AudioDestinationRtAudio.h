@@ -22,7 +22,9 @@ class AudioDestinationRtAudio : public AudioDestination
 
 public:
 
-    AudioDestinationRtAudio(AudioIOCallback &, size_t numChannels, float sampleRate);
+    AudioDestinationRtAudio(AudioIOCallback &,
+                            uint32_t numOutputChannels, uint32_t numInputChannels,
+                            float sampleRate);
     virtual ~AudioDestinationRtAudio();
 
     virtual void start() override;
@@ -37,9 +39,10 @@ private:
     void configure();
 
     AudioIOCallback & m_callback;
-    AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
+    std::unique_ptr<AudioBus> m_renderBus;
     std::unique_ptr<AudioBus> m_inputBus;
-    unsigned m_numChannels;
+    uint32_t m_numChannels;
+    uint32_t m_numInputChannels;
     float m_sampleRate;
     RtAudio dac;
 };

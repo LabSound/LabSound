@@ -104,7 +104,7 @@ void AudioDestinationNode::reset(ContextRenderLock &)
     m_localAudioInputProvider->m_currentSampleFrame = 0;
 };
 
-void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames)
+void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBus, uint32_t numberOfFrames)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
     if (!m_context)

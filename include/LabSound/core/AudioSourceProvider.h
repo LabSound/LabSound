@@ -14,7 +14,7 @@ class AudioBus;
 class AudioSourceProviderClient 
 {
     public:
-        virtual void setFormat(ContextRenderLock& r, size_t numberOfChannels, float sampleRate) = 0;
+        virtual void setFormat(ContextRenderLock& r, uint32_t numberOfChannels, float sampleRate) = 0;
     protected:
         virtual ~AudioSourceProviderClient() { }
 };

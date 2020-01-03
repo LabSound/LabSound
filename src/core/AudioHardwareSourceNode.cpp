@@ -24,7 +24,7 @@ AudioHardwareSourceNode::~AudioHardwareSourceNode()
     uninitialize();
 }
 
-void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
+void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, uint32_t numberOfChannels, float sourceSampleRate)
 {
     if (!output(0))
     {

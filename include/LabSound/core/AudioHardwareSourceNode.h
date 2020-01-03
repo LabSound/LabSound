@@ -25,7 +25,7 @@ public:
     virtual void reset(ContextRenderLock &) override;
 
     // Interface for AudioSourceProviderClient
-    virtual void setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate) override;
+    virtual void setFormat(ContextRenderLock & r, uint32_t numberOfChannels, float sourceSampleRate) override;
 
     AudioSourceProvider * audioSourceProvider() const { return m_audioSourceProvider; }
 

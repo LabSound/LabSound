@@ -32,7 +32,7 @@ public:
     
     // The audio hardware calls render() to get the next render quantum of audio into destinationBus.
     // It will optionally give us local/live audio input in sourceBus (if it's not 0).
-    virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
+    virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, uint32_t numberOfFrames) override;
 
     uint64_t currentSampleFrame() const;
     double currentTime() const;

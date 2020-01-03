@@ -22,7 +22,7 @@ class AudioDestinationWin : public AudioDestination
 
 public:
 
-    AudioDestinationWin(AudioIOCallback &, size_t numChannels, float sampleRate);
+    AudioDestinationWin(AudioIOCallback &, uint32_t numChannels, float sampleRate);
     virtual ~AudioDestinationWin();
 
     virtual void start() override;
@@ -36,7 +36,7 @@ private:
     void configure();
 
     AudioIOCallback & m_callback;
-    AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
+    std::unique_ptr<AudioBus> m_renderBus;
     std::unique_ptr<AudioBus> m_inputBus;
     size_t m_numChannels;
     float m_sampleRate;
