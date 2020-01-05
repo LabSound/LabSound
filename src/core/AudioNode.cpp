@@ -16,7 +16,8 @@
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 AudioNode::AudioNode() = default;
 AudioNode::~AudioNode() = default;
@@ -55,12 +56,12 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(size_t i)
     return nullptr;
 }
 
-size_t AudioNode::channelCount()
+uint32_t AudioNode::channelCount()
 {
     return m_channelCount;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
+void AudioNode::setChannelCount(ContextGraphLock & g, uint32_t channelCount)
 {
     if (!g.context())
     {
@@ -81,7 +82,7 @@ void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
     throw std::logic_error("Should not be reached");
 }
 
-void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode)
+void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
 {
     if (mode >= ChannelCountMode::End || !g.context())
     {
@@ -97,7 +98,7 @@ void AudioNode::setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode)
     }
 }
 
-void AudioNode::updateChannelsForInputs(ContextGraphLock& g)
+void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 {
     for (auto input : m_inputs)
     {
@@ -112,9 +113,9 @@ void AudioNode::processIfNecessary(ContextRenderLock & r)
     auto ac = r.context();
 
     if (!ac) return;
-    
-    uint32_t framesToProcess = r.context()->currentFrames();    
-    
+
+    uint32_t framesToProcess = r.context()->currentFrames();
+
     // Ensure that we only process once per rendering quantum.
     // This handles the "fanout" problem where an output is connected to multiple inputs.
     // The first time we're called during this time slice we process, but after that we don't want to re-process,
@@ -122,7 +123,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r)
     double currentTime = ac->currentTime();
     if (m_lastProcessingTime != currentTime)
     {
-        m_lastProcessingTime = currentTime; // important to first update this time to accomodate feedback loops in the rendering graph
+        m_lastProcessingTime = currentTime;  // important to first update this time to accomodate feedback loops in the rendering graph
 
         pullInputs(r);
 
@@ -163,10 +164,12 @@ void AudioNode::processIfNecessary(ContextRenderLock & r)
             }
 
             new_schedule = 1.f;
-            if (!connectionReady()) // ad hoc imperceptible small epsilon
+            if (!connectionReady())  // ad hoc imperceptible small epsilon
             {
-                for (auto out : m_outputs)
-                    for (unsigned i = 0; i < out->bus(r)->numberOfChannels(); ++i)
+                for (std::shared_ptr<AudioNodeOutput> out : m_outputs)
+                {
+                    uint32_t c = out->bus(r)->numberOfChannels();
+                    for (uint32_t i = 0; i < c; ++i)
                     {
                         float scale = m_connectSchedule;
                         float * sample = out->bus(r)->channel(i)->mutableData();
@@ -179,15 +182,15 @@ void AudioNode::processIfNecessary(ContextRenderLock & r)
                         new_schedule = scale;
                     }
 
-                m_connectSchedule = new_schedule;
+                    m_connectSchedule = new_schedule;
+                }
             }
-
             unsilenceOutputs(r);
         }
     }
 }
 
-void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     ASSERT(r.context());
     for (auto & in : m_inputs)
@@ -204,10 +207,10 @@ bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
     ASSERT(r.context());
 
-    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime(); // dimitri use of latencyTime() / tailTime()
+    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime();  // dimitri use of latencyTime() / tailTime()
 }
 
-void AudioNode::pullInputs(ContextRenderLock& r)
+void AudioNode::pullInputs(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
@@ -218,7 +221,7 @@ void AudioNode::pullInputs(ContextRenderLock& r)
     }
 }
 
-bool AudioNode::inputsAreSilent(ContextRenderLock& r)
+bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 {
     for (auto & in : m_inputs)
     {
@@ -230,7 +233,7 @@ bool AudioNode::inputsAreSilent(ContextRenderLock& r)
     return true;
 }
 
-void AudioNode::silenceOutputs(ContextRenderLock& r)
+void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
     for (auto out : m_outputs)
     {
@@ -238,7 +241,7 @@ void AudioNode::silenceOutputs(ContextRenderLock& r)
     }
 }
 
-void AudioNode::unsilenceOutputs(ContextRenderLock& r)
+void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 {
     for (auto out : m_outputs)
     {
@@ -268,7 +271,7 @@ std::shared_ptr<AudioSetting> AudioNode::getSetting(char const * const str)
 
 std::vector<std::string> AudioNode::params() const
 {
-    std::vector<std::string> ret;   
+    std::vector<std::string> ret;
     for (auto & p : m_params)
     {
         ret.push_back(p->name());
@@ -278,7 +281,7 @@ std::vector<std::string> AudioNode::params() const
 
 std::vector<std::string> AudioNode::settings() const
 {
-    std::vector<std::string> ret;   
+    std::vector<std::string> ret;
     for (auto & p : m_settings)
     {
         ret.push_back(p->name());
@@ -286,6 +289,4 @@ std::vector<std::string> AudioNode::settings() const
     return ret;
 }
 
-
-
-} // namespace lab
+}  // namespace lab

@@ -154,7 +154,6 @@ struct GrooveApp : public LabSoundExampleApp
         auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<FunctionNode> grooveBox;
-        std::shared_ptr<GainNode> masterGain;
         std::shared_ptr<ADSRNode> envelope;
 
         float songLenSeconds = 2.0f;

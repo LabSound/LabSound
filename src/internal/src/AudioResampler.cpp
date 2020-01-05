@@ -11,78 +11,47 @@
 #include <algorithm>
 
 using namespace std;
- 
-namespace lab {
+
+namespace lab
+{
 
 const double AudioResampler::MaxRate = 8.0;
 
-AudioResampler::AudioResampler()
-    : m_rate(1.0)
-{
-    m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
-    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(1, 0, false));
-}
-
-AudioResampler::AudioResampler(unsigned numberOfChannels)
-    : m_rate(1.0)
-{
-    for (unsigned i = 0; i < numberOfChannels; ++i)
-        m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
-
-    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
-}
-
-void AudioResampler::configureChannels(unsigned numberOfChannels)
-{
-    unsigned currentSize = m_kernels.size();
-    if (numberOfChannels == currentSize)
-        return; // already setup
-
-    // First deal with adding or removing kernels.
-    if (numberOfChannels > currentSize) {
-        for (unsigned i = currentSize; i < numberOfChannels; ++i)
-            m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
-    } else
-        m_kernels.resize(numberOfChannels);
-
-    // Reconfigure our source bus to the new channel size.
-    m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
-}
-
-void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider, AudioBus* destinationBus)
+void AudioResampler::process(ContextRenderLock & r, AudioSourceProvider * provider, AudioBus * destinationBus)
 {
     ASSERT(provider);
     if (!provider)
         return;
-        
-    unsigned numberOfChannels = m_kernels.size();
 
-    // Make sure our configuration matches the bus we're rendering to.
-    bool channelsMatch = (destinationBus && destinationBus->numberOfChannels() == numberOfChannels);
-    ASSERT(channelsMatch);
-    if (!channelsMatch)
+    int source_channels = provider->numberOfChannels();
+    int dest_channels = destinationBus->numberOfChannels();
+    if (!source_channels || !dest_channels)
         return;
 
-    uint32_t framesToProcess = r.context()->currentFrames();
+    // ensure there are at least enough kernels to deal with the resampling required
+    int process_count = source_channels < dest_channels? source_channels : dest_channels;
+    for (int i = m_kernels.size(); i < process_count; ++i)
+        m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
+
     // Setup the source bus.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
-        // Figure out how many frames we need to get from the provider, and a pointer to the buffer.
+    int channel;
+    uint32_t framesToProcess = r.context()->currentFrames();
+    for (channel = 0; channel < process_count; ++channel)
+    {
+        // Calculate a pointer to a buffer, and the number of bytes the kernel needs fetched
         size_t framesNeeded;
-        float* fillPointer = m_kernels[i]->getSourcePointer(framesToProcess, &framesNeeded);
-        ASSERT(fillPointer);
+        float * fillPointer = m_kernels[channel]->getSourcePointer(framesToProcess, &framesNeeded);
         if (!fillPointer)
-            return;
-            
-        m_sourceBus->setChannelMemory(i, fillPointer, framesNeeded);
+            break;
+
+        provider->provideInput(channel, fillPointer, framesNeeded);
     }
 
-    // Ask the provider to supply the desired number of source frames.
-    provider->provideInput(m_sourceBus.get(), m_sourceBus->length());
-
-    // Now that we have the source data, resample each channel into the destination bus.
-    // FIXME: optimize for the common stereo case where it's faster to process both left/right channels in the same inner loop.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
-        float* destination = destinationBus->channel(i)->mutableData();
+    // Resample each channel to the destination. The loop is bounded by the number of channels copied
+    // in the set up stage.
+    for (int i = 0; i < channel; ++i)
+    {
+        float * destination = destinationBus->channel(i)->mutableData();
         m_kernels[i]->process(r, destination);
     }
 }
@@ -91,15 +60,15 @@ void AudioResampler::setRate(double rate)
 {
     if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0)
         return;
-    
+
     m_rate = min(AudioResampler::MaxRate, rate);
 }
 
 void AudioResampler::reset()
 {
-    unsigned numberOfChannels = m_kernels.size();
-    for (unsigned i = 0; i < numberOfChannels; ++i)
+    size_t numberOfChannels = m_kernels.size();
+    for (size_t i = 0; i < numberOfChannels; ++i)
         m_kernels[i]->reset();
 }
 
-} // namespace lab
+}  // namespace lab

@@ -171,7 +171,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         if (desiredAzimuthIndex != m_azimuthIndex1 || elevation != m_elevation1) 
         {
             // Cross-fade from 1 -> 2
-            m_crossfadeIncr = 1 / fadeFrames;
+            m_crossfadeIncr = static_cast<float>(1 / fadeFrames);
             m_azimuthIndex2 = desiredAzimuthIndex;
             m_elevation2 = elevation;
         }
@@ -182,7 +182,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         if (desiredAzimuthIndex != m_azimuthIndex2 || elevation != m_elevation2) 
         {
             // Cross-fade from 2 -> 1
-            m_crossfadeIncr = -1 / fadeFrames;
+            m_crossfadeIncr = static_cast<float>(-1. / fadeFrames);
             m_azimuthIndex1 = desiredAzimuthIndex;
             m_elevation1 = elevation;
         }

@@ -13,7 +13,8 @@
 
 namespace lab {
 
-AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider) : m_audioSourceProvider(audioSourceProvider)
+AudioHardwareSourceNode::AudioHardwareSourceNode(const float sampleRate, AudioSourceProvider * audioSourceProvider)
+: m_audioSourceProvider(audioSourceProvider)
 {
     m_sampleRate = sampleRate; /// @TODO why is sample rate provided when it must come from the context?
     initialize();
@@ -39,7 +40,7 @@ void AudioHardwareSourceNode::setFormat(ContextRenderLock & r, uint32_t numberOf
             throw std::runtime_error("AudioHardwareSourceNode must match samplerate of context... ");
 
         m_sourceNumberOfChannels = numberOfChannels;
-        
+
         // Do any necesssary re-configuration to the output's number of channels.
         output(0)->setNumberOfChannels(r, numberOfChannels);
     }
@@ -81,7 +82,7 @@ void AudioHardwareSourceNode::process(ContextRenderLock & r)
 
 void AudioHardwareSourceNode::reset(ContextRenderLock & r)
 {
-    
+
 }
 
 } // namespace lab

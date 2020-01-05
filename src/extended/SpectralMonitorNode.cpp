@@ -66,10 +66,10 @@ namespace lab
             delete fft;
         }
 
-        void setWindowSize(int s) 
+        void setWindowSize(uint32_t s) 
         {
             cursor = 0;
-            windowSize->setUint32(static_cast<size_t>(s));
+            windowSize->setUint32(s);
 
             buffer.resize(s);
 
@@ -84,7 +84,7 @@ namespace lab
         
         float _db;
 
-        size_t cursor;
+        uint32_t cursor;
 
         std::vector<float> buffer;
         std::recursive_mutex magMutex;
@@ -140,7 +140,7 @@ namespace lab
             for (size_t c = 0; c < numberOfChannels; ++ c)
                 channels.push_back(bus->channel(c)->data());
 
-            size_t sz = internalNode->windowSize->valueUint32();
+            uint32_t sz = internalNode->windowSize->valueUint32();
 
             // if the fft is smaller than the quantum, just grab a chunk
             if (sz < framesToProcess) 
@@ -225,12 +225,12 @@ namespace lab
         result.swap(window);
     }
 
-    void SpectralMonitorNode::windowSize(size_t ws) 
+    void SpectralMonitorNode::windowSize(uint32_t ws) 
     {
         internalNode->setWindowSize(ws);
     }
 
-    size_t SpectralMonitorNode::windowSize() const 
+    uint32_t SpectralMonitorNode::windowSize() const 
     {
         return internalNode->windowSize->valueUint32();
     }

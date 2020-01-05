@@ -49,7 +49,7 @@ float AudioParam::value(ContextRenderLock& r)
     if (r.context()) {
         bool hasValue;
         float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
-        
+
         if (hasValue)
             m_value = timelineValue;
     }
@@ -75,12 +75,12 @@ bool AudioParam::smooth(ContextRenderLock& r)
     bool useTimelineValue = false;
     if (r.context())
         m_value = m_timeline.valueForContextTime(r, static_cast<float>(m_value), useTimelineValue);
-    
+
     if (m_smoothedValue == m_value) {
         // Smoothed value has already approached and snapped to value.
         return true;
     }
-    
+
     if (useTimelineValue)
         m_smoothedValue = m_value;
     else {
@@ -134,40 +134,37 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, uint3
 
         values[0] = static_cast<float>(m_value);
     }
-    
+
     // if there are rendering connections, be sure they are ready
     updateRenderingState(r);
-    
-    size_t connectionCount = numberOfRenderingConnections(r);
+
+    uint32_t connectionCount = numberOfRenderingConnections(r);
     if (!connectionCount)
         return;
 
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
-    
-    // LabSound: For some reason a bus was temporarily created here and the results discarded.
-    // Bug still exists in WebKit top of tree.
-    if (m_data->m_internalSummingBus && m_data->m_internalSummingBus->length() < numberOfValues)
-        m_data->m_internalSummingBus.reset();
-    
+
     if (!m_data->m_internalSummingBus)
         m_data->m_internalSummingBus.reset(new AudioBus(1, numberOfValues));
 
-    // point the summing bus at the values array
-    m_data->m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
+    if (m_data->m_internalSummingBus->length() < numberOfValues)
+        m_data->m_internalSummingBus->setLength(numberOfValues);
 
-    for (size_t i = 0; i < connectionCount; ++i)
+    for (uint32_t i = 0; i < connectionCount; ++i)
     {
         auto output = renderingOutput(r, i);
-        
         ASSERT(output);
-        
+
         // Render audio from this output.
         AudioBus* connectionBus = output->pull(r, 0);
 
         // Sum, with unity-gain.
         m_data->m_internalSummingBus->sumFrom(*connectionBus);
     }
+
+    // copy the result out
+    memcpy(values, m_data->m_internalSummingBus->channel(0)->data(), sizeof(float) * numberOfValues);
 }
 
 void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, uint32_t numberOfValues)
@@ -182,15 +179,15 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, ui
     // Pass in the current value as default value.
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
-    
+
 void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
-    
+
     if (param->isConnected(output))
         return;
-    
+
     param->junctionConnectOutput(output);
     output->addParam(g, param);
 }
@@ -199,7 +196,7 @@ void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> par
 {
     if (!param || !output)
         return;
-    
+
     if (param->isConnected(output)) {
         param->junctionDisconnectOutput(output);
     }

@@ -45,7 +45,7 @@ void AudioBasicProcessorNode::uninitialize()
 void AudioBasicProcessorNode::process(ContextRenderLock& r)
 {
     AudioBus* destinationBus = output(0)->bus(r);
-    
+
     if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
         destinationBus->zero();
     else {
@@ -84,16 +84,16 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
         return;
 
     size_t numberOfChannels = input->numberOfChannels(r);
-    
+
     bool mustPropagate = false;
     for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i) {
         mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
     }
-    
+
     if (mustPropagate) {
         // Re-initialize the processor with the new channel count.
         processor()->setNumberOfChannels(numberOfChannels);
-        
+
         uninitialize();
         for (unsigned int i = 0; i < numberOfOutputs(); ++i) {
             // This will propagate the channel count to any nodes connected further down the chain...
@@ -101,7 +101,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
         }
         initialize();
     }
-    
+
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
@@ -120,9 +120,9 @@ double AudioBasicProcessorNode::latencyTime(ContextRenderLock & r) const
     return m_processor->latencyTime(r);
 }
 
-AudioProcessor * AudioBasicProcessorNode::processor() 
-{ 
-    return m_processor.get(); 
+AudioProcessor * AudioBasicProcessorNode::processor()
+{
+    return m_processor.get();
 }
 AudioProcessor * AudioBasicProcessorNode::processor() const
 {

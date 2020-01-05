@@ -1,17 +1,61 @@
+
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #ifndef AudioChannel_h
 #define AudioChannel_h
 
-#include "LabSound/core/AudioArray.h"
-
-#include <memory>
-
 namespace lab
 {
 
+// An AudioChannel contains a buffer of non-interleaved PCM floating-point audio samples.
+// The samples are typically in a nominal range of -1.0 -> +1.0
+
+class AudioChannel
+{
+    size_t _sz = 0;
+    size_t _capacity = 0;
+    float * _data = nullptr;
+    bool _silent = true;
+
+public:
+    explicit AudioChannel() = default;
+    ~AudioChannel();
+
+    void setSize(size_t size);
+    size_t size() const { return _sz; }
+
+    float * mutableData()
+    {
+        _silent = false;
+        return _data;
+    }
+
+    float const * data() const { return _data; }
+
+    void setSilent();
+    void clearSilentFlag() { _silent = false; }
+    bool isSilent() const { return _silent; }
+
+    float maxAbsValue() const;
+    void copyData(AudioChannel const * const sourceChannel);
+
+    // Adds sourceChannel data to the existing data
+    void sumFrom(const AudioChannel * sourceChannel);
+
+    // Scales all samples by the same amount.
+    void scale(float scale);
+
+    // legacy, remove after debugging
+    void copyFrom(const AudioChannel * sourceChannel)
+    {
+        copyData(sourceChannel);
+    }
+    size_t length() const { return size(); }
+    void zero() { setSilent(); }
+};
+
+#if 0
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
 class AudioChannel
@@ -116,6 +160,7 @@ private:
     std::unique_ptr<AudioFloatArray> m_memBuffer;
     bool m_silent = true;
 };
+#endif
 
 }  // lab
 

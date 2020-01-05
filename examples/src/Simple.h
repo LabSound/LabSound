@@ -38,6 +38,6 @@ struct SimpleApp : public LabSoundExampleApp
         oscillator->setType(OscillatorType::SINE);
         oscillator->start(0.0f);
 
-        Wait(std::chrono::seconds(6));
+        Wait(std::chrono::seconds(10));
     }
 };

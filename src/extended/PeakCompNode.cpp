@@ -150,7 +150,7 @@ namespace lab
 
                 for (unsigned int j = 0; j < numChannels; ++j)
                 {
-                    dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;
+                    dest[j][i] = static_cast<float>(source[j][i] * kneeRecursive[0] * makeupGain);
                 }
             }
 

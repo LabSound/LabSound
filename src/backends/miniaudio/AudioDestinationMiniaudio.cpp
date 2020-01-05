@@ -1,6 +1,5 @@
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #include "AudioDestinationMiniaudio.h"
 #include "internal/VectorMath.h"
@@ -22,10 +21,12 @@ static int NumDefaultOutputChannels()
 }
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback,
-                                                                  size_t numberOfOutputChannels, float sampleRate)
+                                                                  uint32_t numberOfInputChannels,
+                                                                  uint32_t numberOfOutputChannels,
+                                                                  float sampleRate)
 {
     // default to no input for now
-    return new AudioDestinationMiniaudio(callback, static_cast<unsigned int>(numberOfOutputChannels), 0, sampleRate);
+    return new AudioDestinationMiniaudio(callback, 0, static_cast<unsigned int>(numberOfOutputChannels), sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -34,11 +35,11 @@ unsigned long AudioDestination::maxChannelCount()
 }
 
 AudioDestinationMiniaudio::AudioDestinationMiniaudio(AudioIOCallback & callback,
-                                                     uint32_t numChannels,
                                                      uint32_t numInputChannels,
+                                                     uint32_t numChannels,
                                                      float sampleRate)
 : m_callback(callback)
-, m_numChannels(numInputChannels)
+, m_numChannels(numChannels)
 , m_numInputChannels(numInputChannels)
 , m_sampleRate(sampleRate)
 {
@@ -57,12 +58,10 @@ namespace
 
     void outputCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
     {
-        float *fBufOut = (float*) pOutput;
-
-        AudioDestinationMiniaudio* audioDestination = reinterpret_cast<AudioDestinationMiniaudio*>(pDevice->pUserData);
-        // Buffer is nBufferFrames * channels
+        // Buffer is nBufferFrames * channels, interleaved
+        float * fBufOut = (float *) pOutput;
+        AudioDestinationMiniaudio * audioDestination = reinterpret_cast<AudioDestinationMiniaudio *>(pDevice->pUserData);
         memset(fBufOut, 0, sizeof(float) * frameCount * audioDestination->channelCount());
-
         audioDestination->render(frameCount, pOutput, const_cast<void*>(pInput));
     }
 
@@ -73,7 +72,7 @@ void AudioDestinationMiniaudio::configure()
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = ma_format_f32;
     deviceConfig.playback.channels = m_numChannels;
-    deviceConfig.sampleRate = m_sampleRate;
+    deviceConfig.sampleRate = static_cast<uint32_t>(m_sampleRate);
     deviceConfig.dataCallback = outputCallback;
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
@@ -114,29 +113,31 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
         if (m_renderBus)
             delete m_renderBus;
 
-        // Note: false here indicates that the memory will be supplied externally
-        m_renderBus = new AudioBus(m_numChannels, numberOfFrames, false);
+        m_renderBus = new AudioBus(m_numChannels, numberOfFrames);
         m_renderBus->setSampleRate(m_sampleRate);
     }
 
-    float *myOutputBufferOfFloats = (float*) outputBuffer;
     float *myInputBufferOfFloats = (float*) inputBuffer;
-
-    if (m_renderBus->isFirstTime())
-    {
-		for (uint32_t i = 0; i < m_numChannels; ++i)
-		{
-			m_renderBus->setChannelMemory(i, myOutputBufferOfFloats + i * numberOfFrames, numberOfFrames);
-		}
-    }
 
     if (m_inputBus && m_inputBus->isFirstTime())
     {
-        m_inputBus->setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+        /// @TODO all the code for input!!!
     }
 
     // Source Bus :: Destination Bus
     m_callback.render(m_inputBus, m_renderBus, numberOfFrames);
+
+    // miniaudio expects interleaved data
+    float* pOut = static_cast<float*>(outputBuffer);
+    size_t c = m_renderBus->numberOfChannels();
+    for (size_t i = 0; i < c; ++i)
+    {
+        const float* data = m_renderBus->channel(i)->data();
+        for (int j = 0; j < numberOfFrames; ++j)
+            pOut[i * c + j] = data[j];
+    }
+#if 0
+    // miniaudio does its own clipping
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus->numberOfChannels(); ++i)
@@ -144,6 +145,7 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
         AudioChannel * channel = m_renderBus->channel(i);
         VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
     }
+#endif
 }
 
 

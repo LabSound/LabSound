@@ -71,7 +71,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, r.context()->currentFrames()));
 }
 
-size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
+uint32_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
 
@@ -81,10 +81,10 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     }
 
     // Find the number of channels of the connection with the largest number of channels.
-    size_t maxChannels = 1; // one channel is the minimum allowed
+    uint32_t maxChannels = 1; // one channel is the minimum allowed
 
-    size_t c = numberOfRenderingConnections(r);
-    for (size_t i = 0; i < c; ++i)
+    uint32_t c = numberOfRenderingConnections(r);
+    for (uint32_t i = 0; i < c; ++i)
     {
         auto output = renderingOutput(r, i);
         if (output)

@@ -15,22 +15,17 @@
 namespace lab {
 
 // AudioResampler resamples the audio stream from an AudioSourceProvider.
-// The audio stream may be single or multi-channel.
-// The default constructor defaults to single-channel (mono).
 
 class AudioResampler {
 public:
-    AudioResampler();
-    AudioResampler(unsigned numberOfChannels);
-    ~AudioResampler() { }
-    
+    AudioResampler() = default;
+    ~AudioResampler() = default;
+
     // Given an AudioSourceProvider, process() resamples the source stream into destinationBus.
     void process(ContextRenderLock&, AudioSourceProvider*, AudioBus* destinationBus);
 
     // Resets the processing state.
     void reset();
-
-    void configureChannels(unsigned numberOfChannels);
 
     // 0 < rate <= MaxRate
     void setRate(double rate);
@@ -39,9 +34,8 @@ public:
     static const double MaxRate;
 
 private:
-    double m_rate;
+    double m_rate = 1.f;
     std::vector<std::unique_ptr<AudioResamplerKernel> > m_kernels;
-    std::unique_ptr<AudioBus> m_sourceBus;
 };
 
 } // namespace lab

@@ -2,8 +2,104 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioChannel.h"
 #include "internal/VectorMath.h"
+#include <stdlib.h>
+#include <string.h>
+
+namespace lab
+{
+
+AudioChannel::~AudioChannel()
+{
+    if (_data) free(_data);
+}
+
+void AudioChannel::setSize(size_t size)
+{
+    if (_capacity < size)
+    {
+        float * newData = reinterpret_cast<float *>(malloc(size * sizeof(float)));
+        if (_data && newData && _sz)
+            memcpy(newData, _data, _sz);
+
+        if (_data)
+            free(_data);
+
+        _data = newData;
+        _sz = newData ? size : 0;
+        _capacity = _sz;
+    }
+    _sz = size;
+}
+void AudioChannel::setSilent()
+{
+    if (_silent)
+        return;
+
+    _silent = true;
+    memset(_data, 0, sizeof(float) * _capacity);
+}
+
+float AudioChannel::maxAbsValue() const
+{
+    if (isSilent())
+        return 0;
+
+    float max = 0;
+    VectorMath::vmaxmgv(data(), 1, &max, length());
+    return max;
+}
+
+void AudioChannel::copyData(AudioChannel const * const sourceChannel)
+{
+    size_t sz = sourceChannel->size();
+    if (_capacity < sz)
+    {
+        if (_data)
+            free(_data);
+
+        _data = reinterpret_cast<float *>(malloc(sz * sizeof(float)));
+        _capacity = sz;
+    }
+    _sz = sz;
+
+    if (sourceChannel->isSilent())
+        setSilent();
+    else if (_data && _sz)
+        memcpy(_data, sourceChannel->data(), sz * sizeof(float));
+}
+
+// Adds sourceChannel data to the existing data
+void AudioChannel::sumFrom(const AudioChannel * sourceChannel)
+{
+    if (sourceChannel->isSilent())
+        return;
+
+    if (isSilent())
+    {
+        copyData(sourceChannel);
+    }
+    else
+    {
+        size_t sz = _sz < sourceChannel->size() ? _sz : sourceChannel->size();
+        VectorMath::vadd(data(), 1, sourceChannel->data(), 1, mutableData(), 1, _sz);
+    }
+    clearSilentFlag();
+}
+
+// Scales all samples by the same amount.
+void AudioChannel::scale(float scale)
+{
+    if (!isSilent())
+        VectorMath::vsmul(data(), 1, &scale, mutableData(), 1, size());
+}
+
+}  // lab
+
+#if 0
 #include "internal/Assertions.h"
+#include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioChannel.h"
 
@@ -102,3 +198,5 @@ float AudioChannel::maxAbsValue() const
 }
 
 } // lab
+
+#endif

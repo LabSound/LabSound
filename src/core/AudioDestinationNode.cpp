@@ -21,10 +21,10 @@ namespace lab
 {
 
 // LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
-// If there is local/live audio input, we call set() with the audio input data every render quantum.
+// If there is local/live audio input, we call copyBusData() with the audio input data every render quantum.
 class AudioDestinationNode::LocalAudioInputProvider : public AudioSourceProvider
 {
-    AudioBus* m_sourceBus = nullptr;
+    AudioBus * m_sourceBus = nullptr;
 
 public:
     LocalAudioInputProvider()
@@ -37,32 +37,53 @@ public:
         delete m_sourceBus;
     }
 
-    void set(AudioBus * bus)
+    void copyBusData(AudioBus * bus)
     {
         if (!bus)
             return;
-        
+
         if (!m_sourceBus || bus->numberOfChannels() != m_sourceBus->numberOfChannels() || bus->length() != m_sourceBus->length())
         {
             if (m_sourceBus)
                 delete m_sourceBus;
-            m_sourceBus = new AudioBus(bus->numberOfChannels(), bus->length(), true);
+            m_sourceBus = new AudioBus(bus->numberOfChannels(), bus->length());
         }
 
         m_sourceBus->copyFrom(*bus);
     }
 
     // AudioSourceProvider.
-    virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames)
+    virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames) override
     {
         if (!m_sourceBus)
             return;
-        
-        bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus->length() == numberOfFrames;
+
+        bool isGood = destinationBus && destinationBus->length();
         ASSERT(isGood);
-        
         if (isGood)
             destinationBus->copyFrom(*m_sourceBus);
+    }
+
+    virtual void provideInput(uint32_t channel, float * destination, size_t numberOfFrames) override
+    {
+        if (!m_sourceBus)
+            return;
+
+        bool isGood = destination && m_sourceBus && m_sourceBus->channel(channel) && m_sourceBus->channel(channel)->data();
+        ASSERT(isGood);
+        if (!isGood)
+            return;
+
+        size_t sz = numberOfFrames * sizeof(float);
+        size_t src_sz = m_sourceBus->channel(channel)->size() * sizeof(float);
+        sz = sz < src_sz ? sz : src_sz;
+        if (sz)
+            memcpy(destination, m_sourceBus->channel(channel)->data(), sz);
+    }
+
+    virtual uint32_t numberOfChannels() const override
+    {
+        return m_sourceBus ? m_sourceBus->numberOfChannels() : 0;
     }
 
     // Counts the number of sample-frames processed by the destination.
@@ -73,7 +94,7 @@ public:
     std::chrono::high_resolution_clock::time_point epoch[2];
 };
 
-AudioDestinationNode::AudioDestinationNode(AudioContext * context, size_t channelCount, float sampleRate)
+AudioDestinationNode::AudioDestinationNode(AudioContext * context, uint32_t channelCount, float sampleRate)
     : m_sampleRate(sampleRate)
     , m_context(context)
 {
@@ -86,9 +107,7 @@ AudioDestinationNode::AudioDestinationNode(AudioContext * context, size_t channe
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    m_localAudioInputProvider->epoch[0] =
-    m_localAudioInputProvider->epoch[1] = std::chrono::high_resolution_clock::now();
-
+    m_localAudioInputProvider->epoch[0] = m_localAudioInputProvider->epoch[1] = std::chrono::high_resolution_clock::now();
 
     // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
     // initialize();
@@ -115,7 +134,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
         return;  // return if couldn't acquire lock
 
     m_context->setCurrentFrames(numberOfFrames);
-    
+
     if (!m_context->isInitialized())
     {
         destinationBus->zero();
@@ -135,7 +154,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
 
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
-        m_localAudioInputProvider->set(sourceBus);
+        m_localAudioInputProvider->copyBusData(sourceBus);
 
     /// @TODO why is only input 0 processed?
 

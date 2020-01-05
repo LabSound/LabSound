@@ -40,7 +40,7 @@
 
 // RtAudio: Version 4.1.1
 
-#include "rtaudio/RtAudio.h"
+#include "RtAudio.h"
 #include <iostream>
 #include <cstdlib>
 #include <cstring>

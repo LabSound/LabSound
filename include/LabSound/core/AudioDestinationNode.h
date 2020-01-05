@@ -23,7 +23,7 @@ class AudioDestinationNode : public AudioNode, public AudioIOCallback
 
 public:
 
-    AudioDestinationNode(AudioContext * context, size_t channelCount, float sampleRate);
+    AudioDestinationNode(AudioContext * context, uint32_t channelCount, float sampleRate);
     virtual ~AudioDestinationNode();
     
     // AudioNode   

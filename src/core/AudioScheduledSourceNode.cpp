@@ -85,7 +85,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         m_playbackState = PLAYING_STATE;
     }
 
-    quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
+    quantumFrameOffset = static_cast<uint32_t>(startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0);
     quantumFrameOffset = std::min(quantumFrameOffset, context->currentFrames()); // clamp to valid range
     nonSilentFramesToProcess = context->currentFrames() - quantumFrameOffset;
 
@@ -107,14 +107,16 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     // Handle silence after we're done playing.
     // If the end time is somewhere in the middle of this time quantum, then zero out the
     // frames from the end time to the very end of the quantum.
-    if (m_endTime != UnknownTime && endFrame >= quantumStartFrame && endFrame < quantumEndFrame) {
-        size_t zeroStartFrame = endFrame - quantumStartFrame;
-        size_t framesToZero = quantumFrameSize - zeroStartFrame;
+    if (m_endTime != UnknownTime && endFrame >= quantumStartFrame && endFrame < quantumEndFrame) 
+    {
+        uint32_t zeroStartFrame = static_cast<uint32_t>(endFrame - quantumStartFrame);
+        uint32_t framesToZero = quantumFrameSize - zeroStartFrame;
 
         bool isSafe = zeroStartFrame < quantumFrameSize && framesToZero <= quantumFrameSize && zeroStartFrame + framesToZero <= quantumFrameSize;
         ASSERT(isSafe);
 
-        if (isSafe) {
+        if (isSafe) 
+        {
             if (framesToZero > nonSilentFramesToProcess)
                 nonSilentFramesToProcess = 0;
             else

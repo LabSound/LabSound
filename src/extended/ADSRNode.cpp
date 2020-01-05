@@ -25,8 +25,8 @@ namespace lab
 
     public:
 
-        ADSRNodeInternal()
-        : AudioProcessor(2), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
+        ADSRNodeInternal(int channelCount)
+        : AudioProcessor(channelCount), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
         {
             m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
             m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);
@@ -79,8 +79,6 @@ namespace lab
             // We handle both the 1 -> N and N -> N case here.
             const float* source = sourceBus->channelByType(Channel::First)->data();
 
-            // this will only ever happen once, so if heap contention is an issue it should only ever cause one glitch
-            // what would be better, alloca? What does webaudio do elsewhere for this sort of thing?
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
@@ -190,12 +188,11 @@ namespace lab
 
     ADSRNode::ADSRNode() : lab::AudioBasicProcessorNode()
     {
-        m_processor.reset(new ADSRNodeInternal());
+        // AudioBasicProcessorNode already added the inputs and outputs
+
+        m_processor.reset(new ADSRNodeInternal(numberOfChannels()));
 
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
-
-        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
 
         m_params.push_back(internalNode->m_attackTime);
         m_params.push_back(internalNode->m_attackLevel);

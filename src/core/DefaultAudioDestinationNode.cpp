@@ -11,8 +11,8 @@
 #include "internal/AudioDestination.h"
 
 namespace lab {
-    
-DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context, size_t channelCount, const float sampleRate) 
+
+DefaultAudioDestinationNode::DefaultAudioDestinationNode(AudioContext* context, uint32_t channelCount, const float sampleRate)
 : AudioDestinationNode(context, channelCount, sampleRate)
 {
     // Node-specific default mixing rules.
@@ -44,11 +44,13 @@ void DefaultAudioDestinationNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-    
+
 void DefaultAudioDestinationNode::createDestination()
 {
-    LOG("Designated Samplerate: %f", m_sampleRate);
-    m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, channelCount(), m_sampleRate));
+    LOG("Initialize with sample rate: %f\n"
+        "Input Channels: %d\n"
+        "Output Channels: %d\n", m_sampleRate, 1, channelCount());
+    m_destination = std::unique_ptr<AudioDestination>(AudioDestination::MakePlatformAudioDestination(*this, 1, channelCount(), m_sampleRate));
 }
 
 void DefaultAudioDestinationNode::startRendering()
@@ -57,28 +59,28 @@ void DefaultAudioDestinationNode::startRendering()
     if (isInitialized())
         m_destination->start();
 }
-    
+
 unsigned DefaultAudioDestinationNode::maxChannelCount() const
 {
     return AudioDestination::maxChannelCount();
 }
 
-void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, size_t channelCount)
+void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock & g, uint32_t channelCount)
 {
     // The channelCount for the input to this node controls the actual number of channels we
     // send to the audio hardware. It can only be set depending on the maximum number of
     // channels supported by the hardware.
-    
+
     ASSERT(g.context());
-    
+
     if (!maxChannelCount() || channelCount > maxChannelCount())
     {
         throw std::invalid_argument("Max channel count invalid");
     }
-    
-    size_t oldChannelCount = this->channelCount();
+
+    uint32_t oldChannelCount = this->channelCount();
     AudioNode::setChannelCount(g, channelCount);
-    
+
     if (this->channelCount() != oldChannelCount && isInitialized())
     {
         // Re-create destination.
@@ -87,5 +89,5 @@ void DefaultAudioDestinationNode::setChannelCount(ContextGraphLock& g, size_t ch
         m_destination->start();
     }
 }
-    
+
 } // namespace lab

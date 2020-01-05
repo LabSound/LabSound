@@ -124,8 +124,8 @@ public:
     void silenceOutputs(ContextRenderLock&);
     void unsilenceOutputs(ContextRenderLock&);
 
-    size_t channelCount();
-    virtual void setChannelCount(ContextGraphLock & g, size_t count);
+    uint32_t channelCount();
+    virtual void setChannelCount(ContextGraphLock & g, uint32_t count);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
@@ -204,7 +204,7 @@ protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
     std::vector<std::shared_ptr<AudioSetting>> m_settings;
-    size_t m_channelCount;
+    uint32_t m_channelCount;
     float m_sampleRate;
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };

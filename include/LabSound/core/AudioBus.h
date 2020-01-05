@@ -7,6 +7,7 @@
 
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/AudioChannel.h"
+#include "LabSound/core/AudioArray.h"
 #include <vector>
 #include <iostream>
 
@@ -14,42 +15,38 @@ namespace lab {
 
     using lab::ChannelInterpretation;
     using lab::Channel;
-    
+
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".
 // An AudioBus with one channel is mono, an AudioBus with two channels is stereo, etc.
-class AudioBus 
+class AudioBus
 {
-    AudioBus(const AudioBus &) = delete;
     AudioBus(AudioBus &) = delete;
 
 public:
-
-    // Can define non-standard layouts here:
-    enum 
-    {
-        LayoutCanonical = 0
-    };
-    
-    // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
-    // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
-    // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
-    explicit AudioBus(size_t numberOfChannels, size_t length, bool allocate = true);
-
-    // Tells the given channel to use an externally allocated buffer.
-    void setChannelMemory(size_t channelIndex, float* storage, size_t length);
+    // clone an existing audio bus. If the source bus references external memory
+    // the clone will not, it will take a copy of what was there at the time the
+    // clone was made.
+    AudioBus(const AudioBus &);
+    explicit AudioBus(size_t numberOfChannels, size_t length);
 
     // Channels
-    size_t numberOfChannels() const { return m_channels.size(); }
+    uint32_t numberOfChannels() const { return static_cast<uint32_t>(m_channels.size()); }
 
     // Use this when looping over channels
-    AudioChannel * channel(size_t channel) { return m_channels[channel].get(); }
-
-    const AudioChannel * channel(size_t channel) const 
+    AudioChannel * channel(size_t channel)
     {
-        return const_cast<AudioBus*>(this)->m_channels[channel].get(); 
+        if (channel >= m_channels.size())
+            return nullptr;
+
+        return m_channels[channel].get();
     }
-    
+
+    const AudioChannel * channel(size_t channel) const
+    {
+        return const_cast<AudioBus*>(this)->m_channels[channel].get();
+    }
+
     // use this when accessing channels semantically
     AudioChannel* channelByType(Channel type);
     const AudioChannel* channelByType(Channel type) const;
@@ -57,9 +54,8 @@ public:
     // Number of sample-frames
     size_t length() const { return m_length; }
 
-    // resizeSmaller() can only be called with a new length <= the current length.
-    // The data stored in the bus will remain undisturbed.
-    void resizeSmaller(size_t newLength);
+    // setLength preserves existing data
+    void setLength(size_t newLength);
 
     // Sample-rate : 0.0 if unknown or "don't care"
     float sampleRate() const { return m_sampleRate; }
@@ -76,10 +72,6 @@ public:
 
     // Returns true if the channel count and frame-size match.
     bool topologyMatches(const AudioBus &sourceBus) const;
-
-    // Creates a new buffer from a range in the source buffer.
-    // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, size_t startFrame, size_t endFrame);
 
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
@@ -131,7 +123,6 @@ protected:
     void speakersSumFrom7_1_ToMono(const AudioBus&);
 
     size_t m_length = 0;
-    int m_layout = LayoutCanonical;
     float m_busGain = 1.0f;
     bool m_isFirstTime = true;
     float m_sampleRate = 0.0f;
