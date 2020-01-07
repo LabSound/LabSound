@@ -96,7 +96,7 @@ void ConvolverNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
+void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus, uint32_t kernelFramesToProcess)
 {
     if (!bus) return;
 
@@ -110,7 +110,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 
     // Create the reverb with the given impulse response.
     const bool threaded = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), bus->length(), MaxFFTSize, 2, threaded, normalize()));
+    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), kernelFramesToProcess, MaxFFTSize, 2, threaded, normalize()));
     m_newBus = bus;
     m_swapOnRender = true;
 }

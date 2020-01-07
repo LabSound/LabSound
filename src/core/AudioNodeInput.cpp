@@ -64,11 +64,11 @@ void AudioNodeInput::didUpdate(ContextRenderLock& r)
 void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
 {
     size_t numberOfInputChannels = numberOfChannels(r);
+    if (!m_internalSummingBus || numberOfInputChannels != m_internalSummingBus->numberOfChannels())
+        m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, r.context()->currentFrames()));
 
-    if (m_internalSummingBus && numberOfInputChannels == m_internalSummingBus->numberOfChannels() && r.context()->currentFrames() <= m_internalSummingBus->length())
-        return;
-
-    m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, r.context()->currentFrames()));
+    if (m_internalSummingBus->length() != r.context()->currentFrames())
+        m_internalSummingBus->setLength(r.context()->currentFrames());
 }
 
 uint32_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const

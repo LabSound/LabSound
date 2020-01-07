@@ -119,10 +119,12 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
 
     float *myInputBufferOfFloats = (float*) inputBuffer;
 
-    if (m_inputBus && m_inputBus->isFirstTime())
+#if 0
+    if (m_inputBus)
     {
         /// @TODO all the code for input!!!
     }
+#endif
 
     // Source Bus :: Destination Bus
     m_callback.render(m_inputBus, m_renderBus, numberOfFrames);

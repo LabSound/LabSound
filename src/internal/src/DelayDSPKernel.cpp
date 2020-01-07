@@ -79,6 +79,10 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
 
     float sampleRate = r.context()->sampleRate();
     double delayTime = 0;
+
+    if (m_delayTimes.size() < framesToProcess)
+        m_delayTimes.allocate(framesToProcess);
+
     float* delayTimes = m_delayTimes.data();
     double maxTime = maxDelayTime();
 

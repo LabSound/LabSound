@@ -32,9 +32,9 @@ public:
     virtual void uninitialize() override;
 
     // Impulse responses
-    // setImpulse takes an audio bus as a source of a buffer to create an audio
-    // bus from, but the bus and its data is not retained
-    void setImpulse(std::shared_ptr<AudioBus> bus);
+    // The data for the convolver is computed from the supplied bus, which is not retained.
+    // The convolver size must be less than or equal to the length of the impulse sample
+    void setImpulse(std::shared_ptr<AudioBus> bus, uint32_t convolverSize = 128);
     std::shared_ptr<AudioBus> getImpulse();
 
     bool normalize() const;

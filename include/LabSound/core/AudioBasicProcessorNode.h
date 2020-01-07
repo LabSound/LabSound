@@ -34,7 +34,7 @@ public:
     virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
 
     // Returns the number of channels for both the input and the output.
-    size_t numberOfChannels();
+    uint32_t numberOfChannels();
 
 protected:
 

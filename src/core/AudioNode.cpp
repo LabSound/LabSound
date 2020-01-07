@@ -168,6 +168,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r)
             {
                 for (std::shared_ptr<AudioNodeOutput> out : m_outputs)
                 {
+                    out->updateRenderingState(r);
                     uint32_t c = out->bus(r)->numberOfChannels();
                     for (uint32_t i = 0; i < c; ++i)
                     {
@@ -225,10 +226,9 @@ bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 {
     for (auto & in : m_inputs)
     {
-        if (!in->bus(r)->isSilent())
-        {
+        AudioBus * bus = in->bus(r);
+        if (bus && !bus->isSilent())
             return false;
-        }
     }
     return true;
 }

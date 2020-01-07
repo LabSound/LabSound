@@ -105,9 +105,9 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-size_t AudioBasicProcessorNode::numberOfChannels()
+uint32_t AudioBasicProcessorNode::numberOfChannels()
 {
-    return output(0)->numberOfChannels();
+    return static_cast<uint32_t>(output(0)->numberOfChannels());
 }
 
 double AudioBasicProcessorNode::tailTime(ContextRenderLock & r) const

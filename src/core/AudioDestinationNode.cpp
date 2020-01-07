@@ -42,12 +42,15 @@ public:
         if (!bus)
             return;
 
-        if (!m_sourceBus || bus->numberOfChannels() != m_sourceBus->numberOfChannels() || bus->length() != m_sourceBus->length())
+        if (!m_sourceBus || bus->numberOfChannels() != m_sourceBus->numberOfChannels())
         {
             if (m_sourceBus)
                 delete m_sourceBus;
             m_sourceBus = new AudioBus(bus->numberOfChannels(), bus->length());
         }
+
+        if (bus->length() != m_sourceBus->length())
+            m_sourceBus->setLength(bus->length());
 
         m_sourceBus->copyFrom(*bus);
     }
@@ -55,13 +58,10 @@ public:
     // AudioSourceProvider.
     virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames) override
     {
-        if (!m_sourceBus)
+        if (!m_sourceBus || !destinationBus || !destinationBus->length())
             return;
 
-        bool isGood = destinationBus && destinationBus->length();
-        ASSERT(isGood);
-        if (isGood)
-            destinationBus->copyFrom(*m_sourceBus);
+        destinationBus->copyFrom(*m_sourceBus);
     }
 
     virtual void provideInput(uint32_t channel, float * destination, size_t numberOfFrames) override
