@@ -9,7 +9,7 @@
 namespace lab {
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
-AudioDSPKernelProcessor::AudioDSPKernelProcessor(size_t numberOfChannels) : AudioProcessor(numberOfChannels), m_hasJustReset(true)
+AudioDSPKernelProcessor::AudioDSPKernelProcessor(uint32_t numberOfChannels) : AudioProcessor(numberOfChannels), m_hasJustReset(true)
 {
 }
 

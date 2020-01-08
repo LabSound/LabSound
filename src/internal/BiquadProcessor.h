@@ -19,7 +19,7 @@ namespace lab {
 class BiquadProcessor : public AudioDSPKernelProcessor {
 public:
 
-    BiquadProcessor(size_t numberOfChannels, bool autoInitialize);
+    BiquadProcessor(uint32_t numberOfChannels, bool autoInitialize);
 
     virtual ~BiquadProcessor();
     
