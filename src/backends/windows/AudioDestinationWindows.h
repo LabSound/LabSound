@@ -1,6 +1,6 @@
+
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #ifndef AudioDestinationWin_h
 #define AudioDestinationWin_h
@@ -28,9 +28,11 @@ public:
     virtual void start() override;
     virtual void stop() override;
 
-    float sampleRate() const override { return m_sampleRate; }
+    float sampleRate() const override { return _sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
+
+    uint32_t outputChannelCount() const { return _numOutputChannels; }
 
 private:
     void configure();
