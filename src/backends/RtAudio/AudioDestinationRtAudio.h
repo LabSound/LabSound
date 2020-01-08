@@ -1,52 +1,53 @@
+
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #ifndef AudioDestinationRtAudio_h
 #define AudioDestinationRtAudio_h
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "internal/AudioDestination.h"
 
-#include "rtaudio/RtAudio.h"
-#include <iostream>
-#include <memory>
-#include <cstdlib>
+#include "RtAudio.h"
 
-namespace lab {
+namespace lab
+{
 
 class AudioDestinationRtAudio : public AudioDestination
 {
 
 public:
-
-    AudioDestinationRtAudio(AudioIOCallback &, size_t numChannels, float sampleRate);
+    AudioDestinationRtAudio(AudioIOCallback &,
+                            uint32_t numOutputChannels, uint32_t numInputChannels,
+                            float sampleRate);
     virtual ~AudioDestinationRtAudio();
 
     virtual void start() override;
     virtual void stop() override;
 
-    float sampleRate() const override { return m_sampleRate; }
+    float sampleRate() const override { return _sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
-private:
+    uint32_t outputChannelCount() const { return _numOutputChannels; }
 
+private:
     void configure();
 
-    AudioIOCallback & m_callback;
-    AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
-    std::unique_ptr<AudioBus> m_inputBus;
-    unsigned m_numChannels;
-    float m_sampleRate;
-    RtAudio dac;
+    AudioIOCallback & _callback;
+    AudioBus * _renderBus = nullptr;
+    AudioBus * _inputBus = nullptr;
+    uint32_t _numOutputChannels = 0;
+    uint32_t _numInputChannels = 0;
+    float _sampleRate = 44100.f;
+    RtAudio _dac;
 };
 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );
+int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, 
+                   RtAudioStreamStatus status, void * userData);
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioDestinationRtAudio_h
-
+#endif  // AudioDestinationRtAudio_h

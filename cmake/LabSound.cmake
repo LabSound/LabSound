@@ -5,31 +5,41 @@ file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
-file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
+
+set(LABSOUND_USE_MINIAUDIO OFF)
+set(LABSOUND_USE_RTAUDIO OFF)
 
 if (IOS)
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+    set(LABSOUND_USE_MINIAUDIO ON)
+elseif (APPLE)
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+    set(LABSOUND_USE_RTAUDIO ON)
+elseif (WIN32)
+    file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
+    set(LABSOUND_USE_RTAUDIO ON)
+elseif (UNIX)
+    file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
+    set(LABSOUND_USE_RTAUDIO ON)
+endif()
+
+if (LABSOUND_USE_MINIAUDIO)
     set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
         "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
-        "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
     )
-elseif (APPLE)
-    #file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
-    set(labsnd_backend 
+endif()
+if (LABSOUND_USE_RTAUDIO)
+    set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
-        "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp"
-        )
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
-elseif (WIN32)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
-elseif (UNIX)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/linux/*")
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
+    )
 endif()
 
+# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameDarwin
 set(ooura_src
     "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
     "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
@@ -40,8 +50,7 @@ add_library(LabSound STATIC
     ${labsnd_extended_h} ${labsnd_extended}
     ${labsnd_int_h}      ${labsnd_int_src}
     ${labsnd_backend}
-    ${third_rtaudio}
-    ${third_kissfft}
+    ${labsnd_fft_src}
     ${ooura_src}
  )
 
