@@ -33,23 +33,24 @@ public:
     virtual void start() override;
     virtual void stop() override;
 
-    float sampleRate() const override { return m_sampleRate; }
+    float sampleRate() const override { return _sampleRate; }
 
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
-    unsigned int channelCount() const { return m_numChannels; }
+    unsigned int channelCount() const { return _numChannels; }
 
 private:
 
     void configure();
 
-    AudioIOCallback & m_callback;
-    AudioBus* m_renderBus = nullptr;
-    AudioBus* m_inputBus = nullptr;
-    uint32_t m_numChannels = 0;
-    uint32_t m_numInputChannels = 0;
-    float m_sampleRate = 44000;
-    ma_device device;
+    AudioIOCallback & _callback;
+    AudioBus* _renderBus = nullptr;
+    AudioBus* _inputBus = nullptr;
+    uint32_t _numChannels = 0;
+    uint32_t _numInputChannels = 0;
+    float _sampleRate = 44100;
+    ma_device _device;
+    int _remainder = 0;
 };
 
 } // namespace lab

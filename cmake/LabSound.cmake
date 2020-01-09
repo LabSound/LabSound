@@ -1,4 +1,7 @@
 
+# LabSound
+# Will create a target named LabSound
+
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -6,22 +9,38 @@ file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 
-set(LABSOUND_USE_MINIAUDIO OFF)
-set(LABSOUND_USE_RTAUDIO OFF)
+# options
+
+if (IOS)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
+    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" OFF)
+elseif (APPLE)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+elseif (WIN32)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+elseif (UNIX)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+endif()
+
+# platform specific sources
 
 if (IOS)
     set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
-    set(LABSOUND_USE_MINIAUDIO ON)
 elseif (APPLE)
     set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
-    set(LABSOUND_USE_RTAUDIO ON)
 elseif (WIN32)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
-    set(LABSOUND_USE_RTAUDIO ON)
 elseif (UNIX)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
-    set(LABSOUND_USE_RTAUDIO ON)
 endif()
+
+# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameDarwin
+set(ooura_src
+    "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
+    "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
 
 if (LABSOUND_USE_MINIAUDIO)
     set(labsnd_backend
@@ -38,11 +57,6 @@ if (LABSOUND_USE_RTAUDIO)
         "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
     )
 endif()
-
-# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameDarwin
-set(ooura_src
-    "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
-    "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
 
 add_library(LabSound STATIC
     "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
