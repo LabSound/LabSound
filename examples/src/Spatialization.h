@@ -28,7 +28,7 @@ struct SpatializationApp : public LabSoundExampleApp
         if (audioClipNode)
         {
             audioClipNode->setLoop(true);
-            context->listener().setPosition({ 0, 0, 0 });
+            context->listener()->setPosition({ 0, 0, 0 });
             panner->setVelocity(4, 0, 0);
 
             const int seconds = 10;

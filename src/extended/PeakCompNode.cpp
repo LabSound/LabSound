@@ -107,14 +107,14 @@ namespace lab
             }
 
             // calc coefficients from run time vars
-            kneeCoeffs = expf(0.f - (oneOverSampleRate / knee));
-            kneeCoeffsMinus = 1.f - kneeCoeffs;
+            kneeCoeffs = exp(0. - (oneOverSampleRate / knee));
+            kneeCoeffsMinus = 1. - kneeCoeffs;
 
-            attackCoeffs = expf(0.f - (oneOverSampleRate / attack));
-            attackCoeffsMinus = 1.f - attackCoeffs;
+            attackCoeffs = exp(0. - (oneOverSampleRate / attack));
+            attackCoeffsMinus = 1. - attackCoeffs;
 
-            releaseCoeff = expf(0.f - (oneOverSampleRate / release));
-            releaseCoeffMinus = 1.f - releaseCoeff;
+            releaseCoeff = exp(0. - (oneOverSampleRate / release));
+            releaseCoeffMinus = 1. - releaseCoeff;
 
             // Handle both the 1 -> N and N -> N case here.
             const float * source[16];
@@ -149,7 +149,7 @@ namespace lab
 
                 for (unsigned int j = 0; j < numChannels; ++j)
                 {
-                    dest[j][i] = source[j][i] * kneeRecursive[0] * makeupGain;
+                    dest[j][i] = static_cast<float>(source[j][i] * kneeRecursive[0] * makeupGain);
                 }
             }
 

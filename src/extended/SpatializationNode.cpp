@@ -86,12 +86,12 @@ namespace lab
         if (!r.context())
             return 1.f;
         
-        AudioListener & listener = r.context()->listener();
+        auto listener = r.context()->listener();
 
         FloatPoint3D fwd = {
-            listener.forwardX()->value(r),
-            listener.forwardY()->value(r),
-            listener.forwardZ()->value(r) };
+            listener->forwardX()->value(r),
+            listener->forwardY()->value(r),
+            listener->forwardZ()->value(r) };
 
         FloatPoint3D pos = {
             positionX()->value(r),

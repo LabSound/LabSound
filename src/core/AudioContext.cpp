@@ -451,9 +451,9 @@ float AudioContext::sampleRate() const
     return m_destinationNode->sampleRate();
 }
 
-AudioListener & AudioContext::listener()
+std::shared_ptr<AudioListener> AudioContext::listener()
 {
-    return *m_listener.get();
+    return m_listener;
 }
 
 void AudioContext::startRendering()

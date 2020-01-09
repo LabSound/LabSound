@@ -212,7 +212,7 @@ namespace lab
         window[1] = 0.0f;
 
         // compute normalized magnitude spectrum
-        // @tofix - break this into vector cartisian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
+        /// @TODO @tofix - break this into vector Cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
         const float kMagScale = 1.0f ;/// detail->windowSize;
         for(size_t i = 0; i < window.size(); i += 2)
         {
@@ -224,12 +224,12 @@ namespace lab
         result.swap(window);
     }
 
-    void SpectralMonitorNode::windowSize(size_t ws) 
+    void SpectralMonitorNode::windowSize(unsigned int ws) 
     {
         internalNode->setWindowSize(ws);
     }
 
-    size_t SpectralMonitorNode::windowSize() const 
+    unsigned int SpectralMonitorNode::windowSize() const 
     {
         return internalNode->windowSize->valueUint32();
     }

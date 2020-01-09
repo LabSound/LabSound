@@ -29,8 +29,8 @@ namespace lab
         virtual void reset(ContextRenderLock&) override;
 
         void spectralMag(std::vector<float>& result);
-        void windowSize(size_t ws);
-        size_t windowSize() const;
+        void windowSize(unsigned int ws);
+        unsigned int windowSize() const;
 
     private:
 

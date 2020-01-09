@@ -315,13 +315,13 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     double azimuth = 0.0;
 
-    AudioListener & listener = r.context()->listener();
+    auto listener = r.context()->listener();
 
     // Calculate the source-listener vector
     FloatPoint3D listenerPosition = {
-                                        listener.positionX()->value(r),
-                                        listener.positionY()->value(r),
-                                        listener.positionZ()->value(r) };
+                                        listener->positionX()->value(r),
+                                        listener->positionY()->value(r),
+                                        listener->positionZ()->value(r) };
 
     FloatPoint3D sourceListener = {
                                         positionX()->value(r),
@@ -340,15 +340,15 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     // Align axes
     FloatPoint3D listenerFront = normalize(FloatPoint3D{
-                                        listener.forwardX()->value(r),
-                                        listener.forwardY()->value(r),
-                                        listener.forwardZ()->value(r) }
+                                        listener->forwardX()->value(r),
+                                        listener->forwardY()->value(r),
+                                        listener->forwardZ()->value(r) }
                                     );
 
     FloatPoint3D listenerUp = {
-                                        listener.upX()->value(r),
-                                        listener.upY()->value(r),
-                                        listener.upZ()->value(r) };
+                                        listener->upX()->value(r),
+                                        listener->upY()->value(r),
+                                        listener->upZ()->value(r) };
 
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
     FloatPoint3D up = cross(listenerRight, listenerFront);
@@ -390,23 +390,23 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
 {
     double dopplerShift = 1.0;
 
-    AudioListener & listener = r.context()->listener();
+    auto listener = r.context()->listener();
 
     // FIXME: optimize for case when neither source nor listener has changed...
-    double dopplerFactor = listener.dopplerFactor()->value(r);
+    double dopplerFactor = listener->dopplerFactor()->value(r);
 
     if (dopplerFactor > 0.0)
     {
-        double speedOfSound = listener.speedOfSound()->value(r);
+        double speedOfSound = listener->speedOfSound()->value(r);
 
         const FloatPoint3D sourceVelocity = {
                                                     velocityX()->value(r),
                                                     velocityY()->value(r),
                                                     velocityZ()->value(r) };
         const FloatPoint3D listenerVelocity = {
-                                                    listener.velocityX()->value(r),
-                                                    listener.velocityY()->value(r),
-                                                    listener.velocityZ()->value(r) };
+                                                    listener->velocityX()->value(r),
+                                                    listener->velocityY()->value(r),
+                                                    listener->velocityZ()->value(r) };
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);
@@ -416,9 +416,9 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
         {
             // Calculate the source to listener vector
             FloatPoint3D listenerPosition = {
-                                                    listener.positionX()->value(r),
-                                                    listener.positionY()->value(r),
-                                                    listener.positionZ()->value(r) };
+                                                    listener->positionX()->value(r),
+                                                    listener->positionY()->value(r),
+                                                    listener->positionZ()->value(r) };
 
             FloatPoint3D sourceToListener = {
                                                     positionX()->value(r),
@@ -455,12 +455,12 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
 
 float PannerNode::distanceConeGain(ContextRenderLock& r)
 {
-    AudioListener & listener = r.context()->listener();
+    auto listener = r.context()->listener();
 
     FloatPoint3D listenerPosition = {
-                                                    listener.positionX()->value(r),
-                                                    listener.positionY()->value(r),
-                                                    listener.positionZ()->value(r) };
+                                                    listener->positionX()->value(r),
+                                                    listener->positionY()->value(r),
+                                                    listener->positionZ()->value(r) };
 
     FloatPoint3D position = {
                                                     positionX()->value(r),

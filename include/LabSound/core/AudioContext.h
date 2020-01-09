@@ -67,7 +67,7 @@ public:
 
     float sampleRate() const;
 
-    AudioListener & listener();
+    std::shared_ptr<AudioListener> listener();
 
     void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
