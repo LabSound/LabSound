@@ -25,8 +25,8 @@ AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallbac
                                                                   uint32_t numberOfOutputChannels,
                                                                   float sampleRate)
 {
-    // default to no input for now
-    return new AudioDestinationMiniaudio(callback, 0, static_cast<unsigned int>(numberOfOutputChannels), sampleRate);
+    return new AudioDestinationMiniaudio(callback, 
+                numberOfInputChannels, numberOfOutputChannels, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -67,10 +67,12 @@ namespace
 
 void AudioDestinationMiniaudio::configure()
 {
-    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
+    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
     deviceConfig.playback.format = ma_format_f32;
     deviceConfig.playback.channels = _numChannels;
     deviceConfig.sampleRate = static_cast<uint32_t>(_sampleRate);
+    deviceConfig.capture.format = ma_format_f32;
+    deviceConfig.capture.channels = _numInputChannels;
     deviceConfig.dataCallback = outputCallback;
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
@@ -123,9 +125,8 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
         _inputBus->setSampleRate(_sampleRate);
     }
 
-    float * myInputBufferOfFloats = (float *) inputBuffer;
+    float * pIn = static_cast<float *>(inputBuffer);
     float * pOut = static_cast<float *>(outputBuffer);
-    size_t c = _renderBus->numberOfChannels();
 
     while (numberOfFrames > 0)
     {
@@ -133,14 +134,26 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
         {
             // use up samples from previous callback
             int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
-            for (int i = 0; i < c; ++i)
+
+            for (int i = 0; i < _numInputChannels; ++i)
+            {
+                AudioChannel * channel = _inputBus->channel(i);
+                VectorMath::vclip(pIn + i, 1,
+                                  &kLowThreshold, &kHighThreshold,
+                                  channel->mutableData() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder),
+                                  _numInputChannels, samples);
+            }
+            pIn += static_cast<ptrdiff_t>(_numInputChannels * samples);
+
+            for (int i = 0; i < _numInputChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
                 VectorMath::vclip(channel->data() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder), 1,
                                   &kLowThreshold, &kHighThreshold,
                                   pOut + i, _numChannels, samples);
             }
-            pOut += (c * samples);
+            pOut += static_cast<ptrdiff_t>(_numChannels * samples);
+
             numberOfFrames -= samples;
             _remainder -= samples;
         }
