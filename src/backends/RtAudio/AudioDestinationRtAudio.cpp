@@ -35,7 +35,7 @@ static int NumDefaultOutputChannels()
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
-const bool kInterleaved = true;
+const bool kInterleaved = false;
 
 AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback,
                                                                   uint32_t numberOfInputChannels,
@@ -176,29 +176,31 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
         }
     }
 
-    // Source Bus :: Destination Bus
-    _callback.render(_inputBus, _renderBus, numberOfFrames);
-
     if (_numInputChannels)
     {
+        // copy the input buffer into channels
         if (kInterleaved)
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
-                AudioChannel * channel = _renderBus->channel(i);
-                float * dst = &myInputBufferOfFloats[i];
-                VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, _numInputChannels, numberOfFrames);
+                AudioChannel * channel = _inputBus->channel(i);
+                float * src = &myInputBufferOfFloats[i];
+                VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), _numInputChannels, numberOfFrames);
             }
         else
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
-                AudioChannel * channel = _renderBus->channel(i);
-                float * dst = &myInputBufferOfFloats[i * numberOfFrames];
-                VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, 1, numberOfFrames);
+                AudioChannel * channel = _inputBus->channel(i);
+                float * src = &myInputBufferOfFloats[i * numberOfFrames];
+                VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
             }
     }
 
+    // render the output
+    _callback.render(_inputBus, _renderBus, numberOfFrames);
+
     if (_numOutputChannels)
     {
+        // copy the rendered audio to the destination
         if (kInterleaved)
             for (uint32_t i = 0; i < _numOutputChannels; ++i)
             {

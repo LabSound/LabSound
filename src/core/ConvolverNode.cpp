@@ -44,6 +44,8 @@ ConvolverNode::ConvolverNode() : m_swapOnRender(false)
 
 ConvolverNode::~ConvolverNode()
 {
+    /// @TODO shutdown must be guarded by a mutex versus m_reverb->process
+    /// otherwise the audio buffer might be deleted during the processing step
     uninitialize();
 }
 

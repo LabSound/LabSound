@@ -9,23 +9,52 @@ file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 
-# options
+# backend selection
 
 if (IOS)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
-    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
 elseif (APPLE)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 elseif (WIN32)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 elseif (UNIX)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_PORTAUDIO "Use RtAudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
+elseif (ANDROID)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+else ()
+    message(FATAL, " Untested platform. Please try miniaudio and report results on the LabSound issues page")
 endif()
 
-# platform specific sources
+if (LABSOUND_USE_MINIAUDIO AND LABSOUND_USE_RTAUDIO)
+    message(FATAL, " Specify only one backend")
+elseif(NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
+    message(FATAL, " Specify at least one backend")
+endif()
+
+if (LABSOUND_USE_MINIAUDIO)
+    message(INFO, "Using miniaudio backend")
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+    )
+elseif (LABSOUND_USE_RTAUDIO)
+    message(INFO, "Using RtAudio backend")
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
+    )
+endif()
+
+
+# FFT
 
 if (IOS)
     set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
@@ -41,22 +70,6 @@ endif()
 set(ooura_src
     "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
     "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
-
-if (LABSOUND_USE_MINIAUDIO)
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDestinationMiniaudio.h"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
-    )
-endif()
-if (LABSOUND_USE_RTAUDIO)
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
-    )
-endif()
 
 add_library(LabSound STATIC
     "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
