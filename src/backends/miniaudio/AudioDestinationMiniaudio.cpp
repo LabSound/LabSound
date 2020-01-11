@@ -74,6 +74,11 @@ void AudioDestinationMiniaudio::configure()
     deviceConfig.dataCallback = outputCallback;
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
+
+    #ifdef __WINDOWS_WASAPI__
+    deviceConfig.wasapi.noAutoConvertSRC = true;
+    #endif
+
     if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
@@ -131,8 +136,8 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
             for (int i = 0; i < c; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
-                VectorMath::vclip(channel->data() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder), 1, 
-                                  &kLowThreshold, &kHighThreshold, 
+                VectorMath::vclip(channel->data() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder), 1,
+                                  &kLowThreshold, &kHighThreshold,
                                   pOut + i, _numChannels, samples);
             }
             pOut += (c * samples);
