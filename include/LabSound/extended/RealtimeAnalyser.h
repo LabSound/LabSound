@@ -27,6 +27,7 @@ public:
     void reset();
 
     uint32_t fftSize() const { return m_fftSize; }
+    void setFftSize(uint32_t fftSize);
 
     uint32_t frequencyBinCount() const { return m_fftSize / 2; }
 

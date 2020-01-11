@@ -21,13 +21,17 @@ const unsigned MaxBusChannels = 32;
 AudioBus::AudioBus(size_t numberOfChannels, size_t length, bool allocate) : m_length(length)
 {
     ASSERT(numberOfChannels <= MaxBusChannels);
-    if (numberOfChannels > MaxBusChannels) return;
+    if (numberOfChannels > MaxBusChannels)
+        return;
 
     for (uint32_t i = 0; i < numberOfChannels; ++i) 
     {
-		AudioChannel * newChannel{ nullptr };
-        if (allocate) newChannel = new AudioChannel(length);
-        else newChannel = new AudioChannel(nullptr, length);
+        AudioChannel * newChannel;
+        if (allocate)
+            newChannel = new AudioChannel(length);
+        else
+            newChannel = new AudioChannel(nullptr, length);
+
         m_channels.emplace_back(std::unique_ptr<AudioChannel>(newChannel));
     }
 }

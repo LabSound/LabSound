@@ -29,7 +29,7 @@ namespace lab
     {
     public:
 
-        ClipNodeInternal() : AudioProcessor(2)
+        ClipNodeInternal() : AudioProcessor(2) /// @TODO another magic 2 to fix
         {
             auto fMax = std::numeric_limits<float>::max();
             aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);

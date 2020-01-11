@@ -120,7 +120,7 @@ void LabSoundLog(const char * file, int line, const char * fmt, ...)
     va_list args;
     va_start(args, fmt);
 
-    char tmp[256] = {0};
+    char tmp[256] = { 0 };
     sprintf(tmp, "[%s @ %i]\n\t%s\n", file, line, fmt);
     vprintf(tmp, args);
 

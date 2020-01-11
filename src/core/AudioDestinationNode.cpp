@@ -150,7 +150,7 @@ void AudioDestinationNode::render(AudioBus * sourceBus, AudioBus * destinationBu
 
 uint64_t AudioDestinationNode::currentSampleFrame() const
 {
-    return m_localAudioInputProvider->m_currentSampleFrame / 2;
+    return m_localAudioInputProvider->m_currentSampleFrame / 2; /// @TODO why div 2?
 }
 
 double AudioDestinationNode::currentTime() const
