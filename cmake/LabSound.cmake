@@ -106,6 +106,7 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/Soundpipe/install/include
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
 
 if (MSVC_IDE)

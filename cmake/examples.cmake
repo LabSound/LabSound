@@ -2,7 +2,11 @@
 set(labsound_examples_src
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.cpp"
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.h"
-    "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp")
+    "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp"
+    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe.c"
+    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_sp_fft.c"
+    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_fft.c"
+)
 file(GLOB labsound_examples_hdr "${LABSOUND_ROOT}/examples/*.h")
 
 add_executable(LabSoundExample 
@@ -27,6 +31,9 @@ if (APPLE)
 #    endif()
 endif()
 
+
+target_include_directories(LabSoundExample PRIVATE
+    ${LABSOUND_ROOT}/third_party/Soundpipe/install/include)
 
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 
