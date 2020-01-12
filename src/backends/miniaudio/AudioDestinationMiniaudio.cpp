@@ -14,6 +14,10 @@
 namespace lab
 {
 
+const float kLowThreshold = -1.0f;
+const float kHighThreshold = 1.0f;
+const int kRenderQuantum = 128;
+
 static int NumDefaultOutputChannels()
 {
     /// @TODO how does miniaudio expose this?
@@ -25,8 +29,8 @@ AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallbac
                                                                   uint32_t numberOfOutputChannels,
                                                                   float sampleRate)
 {
-    return new AudioDestinationMiniaudio(callback, 
-                numberOfInputChannels, numberOfOutputChannels, sampleRate);
+    return new AudioDestinationMiniaudio(callback,
+                                         numberOfInputChannels, numberOfOutputChannels, sampleRate);
 }
 
 unsigned long AudioDestination::maxChannelCount()
@@ -38,10 +42,10 @@ AudioDestinationMiniaudio::AudioDestinationMiniaudio(AudioIOCallback & callback,
                                                      uint32_t numInputChannels,
                                                      uint32_t numChannels,
                                                      float sampleRate)
-: _callback(callback)
-, _numChannels(numChannels)
-, _numInputChannels(numInputChannels)
-, _sampleRate(sampleRate)
+    : _callback(callback)
+    , _numChannels(numChannels)
+    , _numInputChannels(numInputChannels)
+    , _sampleRate(sampleRate)
 {
     configure();
 }
@@ -51,6 +55,9 @@ AudioDestinationMiniaudio::~AudioDestinationMiniaudio()
     ma_device_uninit(&_device);
     delete _renderBus;
     delete _inputBus;
+    delete _ring;
+    if (_scratch)
+        free(_scratch);
 }
 
 namespace
@@ -77,15 +84,19 @@ void AudioDestinationMiniaudio::configure()
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
 
-    #ifdef __WINDOWS_WASAPI__
+#ifdef __WINDOWS_WASAPI__
     deviceConfig.wasapi.noAutoConvertSRC = true;
-    #endif
+#endif
 
     if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
     }
+
+    _ring = new RingBufferT<float>();
+    _ring->resize(_sampleRate);  // ad hoc. hold one second
+    _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * _numInputChannels));
 }
 
 void AudioDestinationMiniaudio::start()
@@ -106,10 +117,6 @@ void AudioDestinationMiniaudio::stop()
     }
 }
 
-const float kLowThreshold = -1.0f;
-const float kHighThreshold = 1.0f;
-const int kRenderQuantum = 128;
-
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
@@ -128,24 +135,19 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
     float * pIn = static_cast<float *>(inputBuffer);
     float * pOut = static_cast<float *>(outputBuffer);
 
+    if (numberOfFrames * _numInputChannels)
+        _ring->write(pIn, numberOfFrames * _numInputChannels);
+
     while (numberOfFrames > 0)
     {
         if (_remainder > 0)
         {
-            // use up samples from previous callback
+            // copy samples to output buffer. There might have been some rendered frames
+            // left over from the previous numberOfFrames, so start by moving those into
+            // the output buffer.
+
             int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
-
-            for (int i = 0; i < _numInputChannels; ++i)
-            {
-                AudioChannel * channel = _inputBus->channel(i);
-                VectorMath::vclip(pIn + i, 1,
-                                  &kLowThreshold, &kHighThreshold,
-                                  channel->mutableData() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder),
-                                  _numInputChannels, samples);
-            }
-            pIn += static_cast<ptrdiff_t>(_numInputChannels * samples);
-
-            for (int i = 0; i < _numInputChannels; ++i)
+            for (unsigned int i = 0; i < _numChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
                 VectorMath::vclip(channel->data() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder), 1,
@@ -154,11 +156,25 @@ void AudioDestinationMiniaudio::render(int numberOfFrames, void * outputBuffer, 
             }
             pOut += static_cast<ptrdiff_t>(_numChannels * samples);
 
+            // deduct the output samples from the desired copy amount, and from the remaining
+            // samples from the last invocation of _callback.render().
             numberOfFrames -= samples;
             _remainder -= samples;
         }
         else
         {
+            if (_numInputChannels)
+            {
+                _ring->read(_scratch, _numInputChannels * kRenderQuantum);
+                for (unsigned int i = 0; i < _numInputChannels; ++i)
+                {
+                    AudioChannel * channel = _inputBus->channel(i);
+                    VectorMath::vclip(_scratch + i, _numInputChannels,
+                                      &kLowThreshold, &kHighThreshold,
+                                      channel->mutableData(), 1, kRenderQuantum);
+                }
+            }
+
             // generate new data
             _callback.render(_inputBus, _renderBus, kRenderQuantum);
             _remainder = kRenderQuantum;

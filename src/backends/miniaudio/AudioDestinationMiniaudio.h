@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioBus.h"
 
 #include "internal/AudioDestination.h"
+#include "internal/RingBuffer.h"
 
 #include "miniaudio.h"
 #include <iostream>
@@ -43,6 +44,8 @@ private:
 
     void configure();
 
+    RingBufferT<float>* _ring = nullptr;
+    float * _scratch = nullptr;
     AudioIOCallback & _callback;
     AudioBus* _renderBus = nullptr;
     AudioBus* _inputBus = nullptr;

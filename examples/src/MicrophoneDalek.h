@@ -1,7 +1,7 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-//#define USE_LIVE
+#define USE_LIVE
 
 #include "ExampleBaseApp.h"
 
@@ -79,7 +79,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // When working on complex graphs it helps to have a pen and paper handy!
 
 #ifdef USE_LIVE
-            input = MakeHardwareSourceNode(r);
+            input = lab::Sound::MakeHardwareSourceNode(r);
             context->connect(vcInverter1, input, 0, 0);
             context->connect(vcDiode4->node(), input, 0, 0);
 #else
