@@ -106,14 +106,18 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
 AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
 {
     // Handle single connection specially to allow for in-place processing.
-    // note: The webkit sources check for max, but I can't see how that's correct
-
-    // @tofix - did I miss part of the merge?
-    if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
+    // Max counting mode means check all the input connections and pick the one with the most channels
+    // so this test says it's ok to simply propagate the bus if the most connections on any input is one.
+    /// @TODO this channel count mode is bonkers; the channelcount method should go away and be 
+    /// replaced with explicit calls for "max inputs connected to me" and so on. Needs more study to
+    /// discover exactly what it's supposed to be doing, because currently it simply prevents the
+    /// signal chain from being evaluated. Should check the webkit sources to see if this bus()
+    /// method is implemented correctly.
+    if (numberOfRenderingConnections(r) == 1)// && node()->channelCountMode() == ChannelCountMode::Max)
     {
         std::shared_ptr<AudioNodeOutput> output = renderingOutput(r, 0);
         if (output) {
-          return output->bus(r);
+           return output->bus(r);
         }
     }
 

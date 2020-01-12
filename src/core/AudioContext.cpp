@@ -48,7 +48,8 @@ AudioContext::~AudioContext()
     // LOG can block.
     // LOG("Begin AudioContext::~AudioContext()");
 
-    if (!isOfflineContext()) graphKeepAlive = 0.25f;
+    if (!isOfflineContext()) 
+        graphKeepAlive = 0.25f;
 
     updateThreadShouldRun = false;
     cv.notify_all();
@@ -109,13 +110,14 @@ void AudioContext::uninitialize()
     if (!m_isInitialized)
         return;
 
+    // for the case where an OfflineAudioDestinationNode needs to update the graph:
+    updateAutomaticPullNodes();
+
     // This stops the audio thread and all audio rendering.
     m_destinationNode->uninitialize();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
-
-    updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
 
     m_isInitialized = false;
 }

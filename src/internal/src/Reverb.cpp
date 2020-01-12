@@ -144,7 +144,7 @@ void Reverb::process(ContextRenderLock& r, const AudioBus* sourceBus, AudioBus* 
         m_convolvers[1]->process(r, sourceChannelR, destinationChannelR, framesToProcess);
     } else if (numInputChannels == Channels::Stereo && numReverbChannels == Channels::Mono && numOutputChannels == Channels::Stereo) {
         // LabSound added this case, should submit it back to WebKit after it's known to work correctly
-        // because the initialize method says that a mono-IR is expected to work with a stero in/out setup
+        // because the initialize method says that a mono-IR is expected to work with a stereo in/out setup
         // 2 -> 1 -> 2
         const AudioChannel* sourceChannelR = sourceBus->channelByType(Channel::Right);
         AudioChannel* destinationChannelR = destinationBus->channelByType(Channel::Right);
