@@ -6,7 +6,7 @@
 #ifndef SFXR_NODE_H
 #define SFXR_NODE_H
 
-#include "LabSound/core/Constants.h"
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace lab {

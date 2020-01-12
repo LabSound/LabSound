@@ -22,7 +22,6 @@
 #include "LabSound/core/BiquadFilterNode.h"
 #include "LabSound/core/ChannelMergerNode.h"
 #include "LabSound/core/ChannelSplitterNode.h"
-#include "LabSound/core/Constants.h"
 #include "LabSound/core/ConvolverNode.h"
 #include "LabSound/core/DefaultAudioDestinationNode.h"
 #include "LabSound/core/DelayNode.h"

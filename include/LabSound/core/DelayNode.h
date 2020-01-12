@@ -5,7 +5,7 @@
 #ifndef DelayNode_h
 #define DelayNode_h
 
-#include "LabSound/core/Constants.h"
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
 namespace lab

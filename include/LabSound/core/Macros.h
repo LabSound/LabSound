@@ -4,6 +4,9 @@
 #ifndef labsound_macros_h
 #define labsound_macros_h
 
+#define LABSOUND_DEFAULT_SAMPLERATE 44100.0f
+#define LABSOUND_DEFAULT_CHANNELS (uint32_t) lab::Channels::Stereo
+
 #if (defined(__linux) || defined(__unix) || defined(__posix) || defined(__LINUX__) || defined(__linux__))
 #define LABSOUND_PLATFORM_LINUX 1
 #elif (defined(_WIN64) || defined(_WIN32) || defined(__CYGWIN32__) || defined(__MINGW32__))

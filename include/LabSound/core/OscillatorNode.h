@@ -7,7 +7,7 @@
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
-#include "LabSound/core/Constants.h"
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/WaveTable.h"
 
 namespace lab {

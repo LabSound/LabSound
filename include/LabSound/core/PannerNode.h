@@ -8,7 +8,7 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/Constants.h"
+#include "LabSound/core/Macros.h"
 #include "LabSound/core/FloatPoint3D.h"
 
 namespace lab {
