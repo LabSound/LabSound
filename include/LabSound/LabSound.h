@@ -42,11 +42,11 @@
 #include "LabSound/extended/DiodeNode.h"
 #include "LabSound/extended/FunctionNode.h"
 #include "LabSound/extended/NoiseNode.h"
+#include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/PdNode.h"
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/PingPongDelayNode.h"
 #include "LabSound/extended/PowerMonitorNode.h"
-#include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/RecorderNode.h"
 #include "LabSound/extended/SampledInstrumentNode.h"
@@ -56,17 +56,18 @@
 #include "LabSound/extended/SupersawNode.h"
 
 #include <memory>
-// Factory functions for convenience.
 
-namespace lab {
-namespace Sound {
-    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
-    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate = LABSOUND_DEFAULT_SAMPLERATE);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sample_rate);
-
-    char const * const * const AudioNodeNames();
-
-} } // lab::Sound
+namespace lab
+{
+    namespace Sound
+    {
+        // Factory functions for convenience.
+        std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
+        std::unique_ptr<AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate = LABSOUND_DEFAULT_SAMPLERATE);
+        std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds);
+        std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sample_rate);
+        char const * const * const AudioNodeNames();
+    }
+}  // lab::Sound
 
 #endif
