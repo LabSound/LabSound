@@ -1,49 +1,12 @@
 
-// Using soundpipe in LabSound
-#if 0
-typedef struct {
-    sp_diskin *diskin;
-    sp_conv *conv;
-    sp_ftbl *ft;
-} UserData;
-
-void process(sp_data *sp, void *udata) {
-    UserData *ud = udata;
-    SPFLOAT conv = 0, diskin = 0, bal = 0;
-    sp_diskin_compute(sp, ud->diskin, NULL, &diskin);
-    sp_conv_compute(sp, ud->conv, &diskin, &conv);
-    sp->out[0] = conv * 0.05;
-}
-
-int main() {
-    srand(1234567);
-    UserData ud;
-    sp_data *sp;
-    sp_create(&sp);
-
-    sp_diskin_create(&ud.diskin);
-    sp_conv_create(&ud.conv);
-    sp_ftbl_loadfile(sp, &ud.ft, "imp.wav");
-
-    sp_diskin_init(sp, ud.diskin, "oneart.wav");
-    sp_conv_init(sp, ud.conv, ud.ft, 8192);
-
-    sp->len = 44100 * 5;
-    sp_process(sp, &ud, process);
-
-    sp_conv_destroy(&ud.conv);
-    sp_ftbl_destroy(&ud.ft);
-    sp_diskin_destroy(&ud.diskin);
-
-    sp_destroy(&sp);
-    return 0;
-}
-#endif
+// Prototype replacement for ReverbConvolverNode.
 
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "ExampleBaseApp.h"
+#include "internal/VectorMath.h"
+#include <LabSound/core/AudioSetting.h>
 #include <cmath>
 
 struct sp_conv;
@@ -59,61 +22,308 @@ extern "C" int sp_conv_init(sp_data * sp, sp_conv * p, sp_ftbl * ft, SPFLOAT iPa
 extern "C" int sp_ftbl_destroy(sp_ftbl ** ft);
 extern "C" int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
 
-class SoundPipeNode : public FunctionNode
+// Empirical gain calibration tested across many impulse responses to ensure perceived volume is same as dry (unprocessed) signal
+const float GainCalibration = -58;
+const float GainCalibrationSampleRate = 44100;
+
+// A minimum power value to when normalizing a silent (or very quiet) impulse response
+const float MinPower = 0.000125f;
+
+// This function is adapted from webkit's Reverb.cpp, and carried the license:
+// License: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
+static float calculateNormalizationScale(AudioBus * response)
+{
+    // Normalize by RMS power
+    size_t numberOfChannels = response->numberOfChannels();
+    size_t length = response->length();
+
+    float power = 0;
+
+    for (size_t i = 0; i < numberOfChannels; ++i)
+    {
+        float channelPower = 0;
+        VectorMath::vsvesq(response->channel(i)->data(), 1, &channelPower, length);
+        power += channelPower;
+    }
+
+    power = sqrt(power / (numberOfChannels * length));
+
+    // Protect against accidental overload
+    if (std::isinf(power) || std::isnan(power) || power < MinPower)
+        power = MinPower;
+
+    float scale = 1 / power;
+
+    scale *= powf(10, GainCalibration * 0.05f);  // calibrate to make perceived volume same as unprocessed
+
+    // Scale depends on sample-rate.
+    if (response->sampleRate())
+        scale *= GainCalibrationSampleRate / response->sampleRate();
+
+    // True-stereo compensation
+    if (response->numberOfChannels() == Channels::Quad)
+        scale *= 0.5f;
+
+    return scale;
+}
+
+struct ReverbKernel
+{
+    ReverbKernel() = default;
+    ReverbKernel(ReverbKernel && rh) noexcept
+        : conv(rh.conv)
+        , ft(rh.ft)
+    {
+        rh.conv = nullptr;
+        rh.ft = nullptr;
+    }
+
+    ~ReverbKernel()
+    {
+        if (ft)
+            sp_ftbl_destroy(&ft);
+
+        if (conv)
+            sp_conv_destroy(&conv);
+    }
+
+    sp_conv * conv = nullptr;
+    sp_ftbl * ft = nullptr;
+};
+
+class SoundPipeNode : public AudioScheduledSourceNode
 {
 public:
-    SoundPipeNode()
-        : FunctionNode(1)
+    SoundPipeNode(int channels)
+        : AudioScheduledSourceNode()
+        , m_normalize(std::make_shared<AudioSetting>("normalize"))
     {
-        sp_create(&sp);
-        sp_conv_create(&_conv);
+        m_settings.push_back(m_normalize);
+        m_normalize->setUint32(1);
 
-        /// @TODO MakeBusFromFile should also do resampling because we need r.sampleRate() for sure
-        const bool mixToMono = true;
-        impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", mixToMono);
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
+        initialize();
 
-        // ft doesn't own the data; it does retain a pointer to it.
-        sp_ftbl_bind(sp, &ft, impulseResponseClip->channel(0)->mutableData(), impulseResponseClip->channel(0)->length());
-        sp_conv_init(sp, _conv, ft, 8192);
-
-        voiceClip = MakeBusFromFile("samples/voice.ogg", mixToMono);
+        sp_create(&_sp);
     }
 
     virtual ~SoundPipeNode()
     {
-        sp_conv_destroy(&_conv);
-        sp_ftbl_destroy(&ft);
-        sp_destroy(&sp);
+        _kernels.clear();
+        sp_destroy(&_sp);
+        uninitialize();
     }
 
-    void process(ContextRenderLock & r, int channel, float * pOut, size_t frames)
+    bool normalize() const { return m_normalize->valueUint32() != 0; }
+    void setNormalize(bool new_n)
     {
-        float const * data = voiceClip->channel(channel)->data();
-        int c = voiceClip->channel(channel)->length() - 1;
-        for (int i = 0; i < frames; ++i)
+        bool n = normalize();
+        if (new_n == n)
+            return;
+
+        int len = _impulseResponseClip->length();
+        if (n && _scale != 1.f)
         {
-            if (clipFrame >= c)
+            // undo previous normalization
+            float s = 1.f / _scale;
+            for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
             {
-                *pOut++ = 0.f;
-                continue;
+                float * data = _impulseResponseClip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= s;
+            }
+        }
+        if (!n)
+        {
+            // wasn't previously normalized, so normalize
+            _scale = calculateNormalizationScale(_impulseResponseClip.get());
+            for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
+            {
+                float * data = _impulseResponseClip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= _scale;
+            }
+        }
+
+        m_normalize->setUint32(new_n ? 1 : 0);
+    }
+
+    void setImpulse(std::shared_ptr<AudioBus> bus)
+    {
+        _kernels.clear();
+
+        int len = bus->length();
+        _impulseResponseClip = std::make_shared<AudioBus>(bus->numberOfChannels(), len);
+        _impulseResponseClip->copyFrom(*bus.get());
+
+        if (normalize())
+        {
+            float scale = calculateNormalizationScale(bus.get());
+            for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
+            {
+                float * data = _impulseResponseClip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= scale;
+            }
+        }
+
+        int c = _impulseResponseClip->numberOfChannels();
+        for (int i = 0; i < c; ++i)
+        {
+            // create one kernel per IR channel
+            ReverbKernel kernel;
+
+            // ft doesn't own the data; it does retain a pointer to it.
+            sp_ftbl_bind(_sp, &kernel.ft,
+                         _impulseResponseClip->channel(0)->mutableData(), _impulseResponseClip->channel(0)->length());
+
+            sp_conv_create(&kernel.conv);
+            sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
+
+            _kernels.emplace_back(std::move(kernel));
+        }
+    }
+
+    std::shared_ptr<AudioBus> getImpulse() const { return _impulseResponseClip; }
+
+    virtual void process(ContextRenderLock & r, size_t framesToProcess) override
+    {
+        AudioBus * outputBus = output(0)->bus(r);
+        AudioBus * inputBus = input(0)->bus(r);
+
+        if (!isInitialized() || !outputBus || !inputBus || !inputBus->numberOfChannels() || !_kernels.size())
+        {
+            outputBus->zero();
+            return;
+        }
+
+        if (!outputBus->numberOfChannels())
+            output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
+
+        size_t quantumFrameOffset;
+        size_t nonSilentFramesToProcess;
+
+        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+
+        if (!nonSilentFramesToProcess)
+        {
+            outputBus->zero();
+            return;
+        }
+
+        int numInputChannels = inputBus->numberOfChannels();
+        int numOutputChannels = outputBus->numberOfChannels();
+        int numReverbChannels = _kernels.size();
+
+        if (numOutputChannels == numInputChannels && numOutputChannels == numReverbChannels)
+        {
+            // special case of a straight one to one pass through on all channels
+
+            for (int i = 0; i < numOutputChannels; ++i)
+            {
+                float * destP = outputBus->channel(i)->mutableData();
+
+                // Start rendering at the correct offset.
+                destP += quantumFrameOffset;
+                {
+                    size_t clipFrame = 0;
+                    AudioBus * input_bus = input(0)->bus(r);
+                    float const * data = input_bus->channel(i)->data();
+                    int c = input_bus->channel(i)->length();
+                    for (int j = 0; j < framesToProcess; ++j)
+                    {
+                        SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
+                        SPFLOAT out = 0.f;
+                        sp_conv_compute(_sp, _kernels[i].conv, &in, &out);
+                        *destP++ = out;
+                    }
+                }
+            }
+        }
+        else
+        {
+            bool handled = false;
+            // fan in, fan out combos where at least one element is 1
+            int code = ((numInputChannels == 1) ? 4 : 0) | ((numOutputChannels == 1) ? 2 : 0) | ((numReverbChannels == 1) ? 1 : 0);
+            if (code != 0)
+            {
+                switch (code)
+                {
+                    case 0:
+                        // n -> n -> n --- pass through handled above
+                        handled = false; // because one or two counts differ
+                        break;
+                    case 1:
+                        // n -> n -> 1 --- process one to one, then sum
+                        handled = numInputChannels == numReverbChannels;
+                        break;
+                    case 2:
+                        // n -> 1 -> m --- all in to one kernel then replicate to all outs
+                        // n -> 1 -> n --- all in to one kernel then replicate to corresponding out
+                        handled = true;
+                        break;
+                    case 3:
+                        // n -> 1 -> 1 --- process all through 1 kernel, sum to out
+                        handled = true;
+                        break;
+                    case 4:
+                        // 1 -> n -> n --- process one through n kernels to corresponding n outs
+                        handled = true;
+                        break;
+                    case 5:
+                        // 1 -> n -> 1 --- convolve and sum
+                        handled = true;
+                        break;
+                    case 6:
+                        // 1 -> 1 -> n --- convolve and copy to all outs
+                        handled = true;
+                        break;
+                    case 7:
+                        // 1 -> 1 -> 1 --- pass through handled above
+                        handled = true;
+                        break;
+                }
             }
 
-            int index = clipFrame + i;
-            SPFLOAT in = data[clipFrame + i];
-            SPFLOAT out = 0.f;
-            sp_conv_compute(sp, _conv, &in, &out);
-            *pOut++ = out;
+            if (!handled)
+            {
+                // special
+                // 2 -> 4 -> 2 --- "true stereo" convolve left through first two convolvers, then sum to out left, same for right
+                // 1 -> 4 -> 2 --- "true stereo" as previous, except input goes through all convolvers
+
+                // FIXME: add code for 5.1 support...
+                // FIXME: add code for 7.1 support...
+
+                // Handle gracefully any unexpected / unsupported matrixing
+                outputBus->zero();
+            }
         }
-        clipFrame += frames;
+
+        _now += double(framesToProcess) / r.context()->sampleRate();
+        outputBus->clearSilentFlag();
     }
 
-    std::shared_ptr<AudioBus> impulseResponseClip;
-    std::shared_ptr<AudioBus> voiceClip;
-    size_t clipFrame = 0;
+    virtual void reset(ContextRenderLock &) override {}
 
-    sp_data * sp = nullptr;
-    sp_conv * _conv = nullptr;
-    sp_ftbl * ft = nullptr;
+    double now() const { return _now; }
+
+private:
+    virtual bool propagatesSilence(ContextRenderLock & r) const override
+    {
+        return !isPlayingOrScheduled() || hasFinished();
+    }
+
+    double _now = 0.0;
+
+    // Normalize the impulse response or not. Must default to true.
+    std::shared_ptr<AudioSetting> m_normalize;
+
+    std::shared_ptr<AudioBus> _impulseResponseClip;
+
+    sp_data * _sp = nullptr;
+    std::vector<ReverbKernel> _kernels;  // one per impulse response channel
+    float _scale = 1.f;
 };
 
 struct SoundPipeApp : public LabSoundExampleApp
@@ -123,24 +333,37 @@ struct SoundPipeApp : public LabSoundExampleApp
         auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<SoundPipeNode> soundpipeNode;
-        std::shared_ptr<GainNode> gainNode;
+        std::shared_ptr<SampledAudioNode> voiceNode;
+        std::shared_ptr<GainNode> dryGainNode;
+        std::shared_ptr<GainNode> wetGainNode;
+        std::shared_ptr<AudioBus> voiceClip;
         {
             ContextRenderLock r(context.get(), "SoundPipe");
 
-            soundpipeNode = std::make_shared<SoundPipeNode>();
-            soundpipeNode->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * pOutput, size_t framesToProcess) {
-                SoundPipeNode * n = reinterpret_cast<SoundPipeNode *>(me);
-                n->process(r, channel, pOutput, framesToProcess);
-            });
+            soundpipeNode = std::make_shared<SoundPipeNode>(1);
             soundpipeNode->start(0);
 
-            gainNode = std::make_shared<GainNode>();
-            gainNode->gain()->setValue(0.5f);
+            /// @TODO MakeBusFromFile should also do resampling because we need r.sampleRate() for sure
+            const bool mixToMono = true;
+            soundpipeNode->setImpulse(MakeBusFromFile("impulse/cardiod-rear-levelled.wav", mixToMono));
 
-            context->connect(gainNode, soundpipeNode);
-            context->connect(context->destination(), gainNode, 0, 0);
+            wetGainNode = std::make_shared<GainNode>();
+            wetGainNode->gain()->setValue(0.5f);
+
+            voiceClip = MakeBusFromFile("samples/voice.ogg", mixToMono);
+            voiceNode = std::make_shared<SampledAudioNode>();
+            voiceNode->setBus(r, voiceClip);
+            voiceNode->start(0.0f);
+
+            dryGainNode = std::make_shared<GainNode>();
+            dryGainNode->gain()->setValue(0.75f);
+
+            context->connect(dryGainNode, voiceNode);
+            context->connect(soundpipeNode, dryGainNode);
+            context->connect(wetGainNode, soundpipeNode);
+            context->connect(context->destination(), wetGainNode, 0, 0);
         }
 
-        Wait(std::chrono::seconds(10));
+        Wait(std::chrono::seconds(20));
     }
 };

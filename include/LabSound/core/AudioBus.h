@@ -120,7 +120,7 @@ public:
 
 protected:
 
-    AudioBus() {};
+    AudioBus() = default;
 
     void speakersCopyFrom(const AudioBus&);
     void discreteCopyFrom(const AudioBus&);
@@ -129,7 +129,7 @@ protected:
     void speakersSumFrom5_1_ToMono(const AudioBus&);
     void speakersSumFrom7_1_ToMono(const AudioBus&);
 
-    size_t m_length;
+    size_t m_length = 0;
 
     std::vector<std::unique_ptr<AudioChannel> > m_channels;
 

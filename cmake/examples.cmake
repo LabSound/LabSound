@@ -33,6 +33,7 @@ endif()
 
 
 target_include_directories(LabSoundExample PRIVATE
+    ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/third_party/Soundpipe/install/include)
 
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
