@@ -198,6 +198,7 @@ public:
             return;
         }
 
+        // if the user never specified the number of output channels, make it match the input
         if (!outputBus->numberOfChannels())
             output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
 
@@ -206,97 +207,36 @@ public:
 
         updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
-        if (!nonSilentFramesToProcess)
+        int numInputChannels = inputBus->numberOfChannels();
+        int numOutputChannels = outputBus->numberOfChannels();
+        int numReverbChannels = _kernels.size();
+        bool valid = numInputChannels == numOutputChannels && ((numInputChannels == numReverbChannels) || (numReverbChannels == 1));
+
+        if (!nonSilentFramesToProcess || !valid)
         {
             outputBus->zero();
             return;
         }
 
-        int numInputChannels = inputBus->numberOfChannels();
-        int numOutputChannels = outputBus->numberOfChannels();
-        int numReverbChannels = _kernels.size();
-
-        if (numOutputChannels == numInputChannels && numOutputChannels == numReverbChannels)
+        for (int i = 0; i < numOutputChannels; ++i)
         {
-            // special case of a straight one to one pass through on all channels
+            sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
+            float * destP = outputBus->channel(i)->mutableData();
 
-            for (int i = 0; i < numOutputChannels; ++i)
+            // Start rendering at the correct offset.
+            destP += quantumFrameOffset;
             {
-                float * destP = outputBus->channel(i)->mutableData();
-
-                // Start rendering at the correct offset.
-                destP += quantumFrameOffset;
+                size_t clipFrame = 0;
+                AudioBus * input_bus = input(0)->bus(r);
+                float const * data = input_bus->channel(i)->data();
+                int c = input_bus->channel(i)->length();
+                for (int j = 0; j < framesToProcess; ++j)
                 {
-                    size_t clipFrame = 0;
-                    AudioBus * input_bus = input(0)->bus(r);
-                    float const * data = input_bus->channel(i)->data();
-                    int c = input_bus->channel(i)->length();
-                    for (int j = 0; j < framesToProcess; ++j)
-                    {
-                        SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
-                        SPFLOAT out = 0.f;
-                        sp_conv_compute(_sp, _kernels[i].conv, &in, &out);
-                        *destP++ = out;
-                    }
+                    SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
+                    SPFLOAT out = 0.f;
+                    sp_conv_compute(_sp, conv, &in, &out);
+                    *destP++ = out;
                 }
-            }
-        }
-        else
-        {
-            bool handled = false;
-            // fan in, fan out combos where at least one element is 1
-            int code = ((numInputChannels == 1) ? 4 : 0) | ((numOutputChannels == 1) ? 2 : 0) | ((numReverbChannels == 1) ? 1 : 0);
-            if (code != 0)
-            {
-                switch (code)
-                {
-                    case 0:
-                        // n -> n -> n --- pass through handled above
-                        handled = false; // because one or two counts differ
-                        break;
-                    case 1:
-                        // n -> n -> 1 --- process one to one, then sum
-                        handled = numInputChannels == numReverbChannels;
-                        break;
-                    case 2:
-                        // n -> 1 -> m --- all in to one kernel then replicate to all outs
-                        // n -> 1 -> n --- all in to one kernel then replicate to corresponding out
-                        handled = true;
-                        break;
-                    case 3:
-                        // n -> 1 -> 1 --- process all through 1 kernel, sum to out
-                        handled = true;
-                        break;
-                    case 4:
-                        // 1 -> n -> n --- process one through n kernels to corresponding n outs
-                        handled = true;
-                        break;
-                    case 5:
-                        // 1 -> n -> 1 --- convolve and sum
-                        handled = true;
-                        break;
-                    case 6:
-                        // 1 -> 1 -> n --- convolve and copy to all outs
-                        handled = true;
-                        break;
-                    case 7:
-                        // 1 -> 1 -> 1 --- pass through handled above
-                        handled = true;
-                        break;
-                }
-            }
-
-            if (!handled)
-            {
-                // special
-                // 2 -> 4 -> 2 --- "true stereo" convolve left through first two convolvers, then sum to out left, same for right
-                // 1 -> 4 -> 2 --- "true stereo" as previous, except input goes through all convolvers
-
-                // FIXME: add code for 5.1 support...
-                // FIXME: add code for 7.1 support...
-
-                // Handle gracefully any unexpected / unsupported matrixing
-                outputBus->zero();
             }
         }
 
