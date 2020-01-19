@@ -183,3 +183,5 @@ install(FILES
   "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake"
   DESTINATION "${CMAKE_INSTALL_PREFIX}"
 )
+
+add_library(Lab::Sound ALIAS LabSound)

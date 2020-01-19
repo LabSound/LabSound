@@ -3,9 +3,7 @@ set(labsound_examples_src
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.cpp"
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.h"
     "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp"
-    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe.c"
-    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_sp_fft.c"
-    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_fft.c"
+    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_fft.cpp"
 )
 file(GLOB labsound_examples_hdr "${LABSOUND_ROOT}/examples/*.h")
 

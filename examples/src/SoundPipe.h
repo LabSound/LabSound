@@ -9,18 +9,24 @@
 #include <LabSound/core/AudioSetting.h>
 #include <cmath>
 
+namespace lab
+{
+namespace Sound
+{
 struct sp_conv;
 struct sp_data;
 struct sp_ftbl;
 typedef float SPFLOAT;
-extern "C" int sp_create(sp_data ** spp);
-extern "C" int sp_destroy(sp_data ** spp);
-extern "C" int sp_conv_compute(sp_data * sp, sp_conv * p, SPFLOAT * in, SPFLOAT * out);
-extern "C" int sp_conv_create(sp_conv ** p);
-extern "C" int sp_conv_destroy(sp_conv ** p);
-extern "C" int sp_conv_init(sp_data * sp, sp_conv * p, sp_ftbl * ft, SPFLOAT iPartLen);
-extern "C" int sp_ftbl_destroy(sp_ftbl ** ft);
-extern "C" int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
+int sp_create(sp_data ** spp);
+int sp_destroy(sp_data ** spp);
+int sp_conv_compute(sp_data * sp, sp_conv * p, SPFLOAT * in, SPFLOAT * out);
+int sp_conv_create(sp_conv ** p);
+int sp_conv_destroy(sp_conv ** p);
+int sp_conv_init(sp_data * sp, sp_conv * p, sp_ftbl * ft, SPFLOAT iPartLen);
+int sp_ftbl_destroy(sp_ftbl ** ft);
+int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
+}
+} // lab::Sound
 
 // Empirical gain calibration tested across many impulse responses to ensure perceived volume is same as dry (unprocessed) signal
 const float GainCalibration = -58;
@@ -81,14 +87,14 @@ struct ReverbKernel
     ~ReverbKernel()
     {
         if (ft)
-            sp_ftbl_destroy(&ft);
+            lab::Sound::sp_ftbl_destroy(&ft);
 
         if (conv)
-            sp_conv_destroy(&conv);
+            lab::Sound::sp_conv_destroy(&conv);
     }
 
-    sp_conv * conv = nullptr;
-    sp_ftbl * ft = nullptr;
+    lab::Sound::sp_conv * conv = nullptr;
+    lab::Sound::sp_ftbl * ft = nullptr;
 };
 
 class SoundPipeNode : public AudioScheduledSourceNode
@@ -105,13 +111,13 @@ public:
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
         initialize();
 
-        sp_create(&_sp);
+        lab::Sound::sp_create(&_sp);
     }
 
     virtual ~SoundPipeNode()
     {
         _kernels.clear();
-        sp_destroy(&_sp);
+        lab::Sound::sp_destroy(&_sp);
         uninitialize();
     }
 
@@ -220,7 +226,7 @@ public:
 
         for (int i = 0; i < numOutputChannels; ++i)
         {
-            sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
+            lab::Sound::sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
             float * destP = outputBus->channel(i)->mutableData();
 
             // Start rendering at the correct offset.
@@ -232,9 +238,9 @@ public:
                 int c = input_bus->channel(i)->length();
                 for (int j = 0; j < framesToProcess; ++j)
                 {
-                    SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
-                    SPFLOAT out = 0.f;
-                    sp_conv_compute(_sp, conv, &in, &out);
+                    lab::Sound::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
+                    lab::Sound::SPFLOAT out = 0.f;
+                    lab::Sound::sp_conv_compute(_sp, conv, &in, &out);
                     *destP++ = out;
                 }
             }
@@ -261,7 +267,7 @@ private:
 
     std::shared_ptr<AudioBus> _impulseResponseClip;
 
-    sp_data * _sp = nullptr;
+    lab::Sound::sp_data * _sp = nullptr;
     std::vector<ReverbKernel> _kernels;  // one per impulse response channel
     float _scale = 1.f;
 };
