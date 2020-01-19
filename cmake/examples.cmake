@@ -25,7 +25,6 @@ if (APPLE)
 #    endif()
 endif()
 
-
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 
 set_target_properties(LabSoundExample PROPERTIES
