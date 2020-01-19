@@ -19,7 +19,6 @@
 #include "RedAlert.h"
 #include "RenderOffline.h"
 #include "Simple.h"
-#include "SoundPipe.h"
 #include "Spatialization.h"
 #include "StereoPanning.h"
 #include "Timing.h"
@@ -38,7 +37,6 @@ OfflineRenderApp g_offlineRenderApp;
 PeakCompressorApp g_peakCompressor;
 RedAlertApp g_redAlert;
 SimpleApp g_simpleExample;
-SoundPipeApp g_soundPipe;
 SpatializationApp g_spatialization;
 StereoPanningApp g_stereoPanning;
 TimingApp g_timing;
@@ -53,7 +51,7 @@ constexpr int iterations = 1;
 int main (int argc, char *argv[]) try
 {
     for (int i = 0; i < iterations; ++i)
-        g_soundPipe.PlayExample(argc, argv);
+        g_convolutionReverbExample.PlayExample(argc, argv);
 
     return 0;
 }

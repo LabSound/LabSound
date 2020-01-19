@@ -3,7 +3,6 @@ set(labsound_examples_src
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.cpp"
     "${LABSOUND_ROOT}/examples/src/ExampleBaseApp.h"
     "${LABSOUND_ROOT}/examples/src/ExamplesMain.cpp"
-    "${LABSOUND_ROOT}/third_party/Soundpipe/install/include/Soundpipe/Soundpipe_fft.cpp"
 )
 file(GLOB labsound_examples_hdr "${LABSOUND_ROOT}/examples/*.h")
 
@@ -31,8 +30,7 @@ endif()
 
 
 target_include_directories(LabSoundExample PRIVATE
-    ${LABSOUND_ROOT}/src
-    ${LABSOUND_ROOT}/third_party/Soundpipe/install/include)
+    ${LABSOUND_ROOT}/src)
 
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 

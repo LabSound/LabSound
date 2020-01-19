@@ -3,7 +3,43 @@
 # Will create a target named LabSound
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
-file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
+set(labsnd_core
+"${LABSOUND_ROOT}/src/core/_SoundPipe_FFT.cpp"
+"${LABSOUND_ROOT}/src/core/AnalyserNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioBasicInspectorNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioBasicProcessorNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioBus.cpp"
+"${LABSOUND_ROOT}/src/core/AudioChannel.cpp"
+"${LABSOUND_ROOT}/src/core/AudioContext.cpp"
+"${LABSOUND_ROOT}/src/core/AudioDestinationNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioHardwareSourceNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioListener.cpp"
+"${LABSOUND_ROOT}/src/core/AudioNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioNodeInput.cpp"
+"${LABSOUND_ROOT}/src/core/AudioNodeOutput.cpp"
+"${LABSOUND_ROOT}/src/core/AudioParam.cpp"
+"${LABSOUND_ROOT}/src/core/AudioParamTimeline.cpp"
+"${LABSOUND_ROOT}/src/core/AudioScheduledSourceNode.cpp"
+"${LABSOUND_ROOT}/src/core/AudioSummingJunction.cpp"
+"${LABSOUND_ROOT}/src/core/BiquadFilterNode.cpp"
+"${LABSOUND_ROOT}/src/core/ChannelMergerNode.cpp"
+"${LABSOUND_ROOT}/src/core/ChannelSplitterNode.cpp"
+"${LABSOUND_ROOT}/src/core/ConvolverNode.cpp"
+"${LABSOUND_ROOT}/src/core/ConvolverNodeDeprecated.cpp"
+"${LABSOUND_ROOT}/src/core/DefaultAudioDestinationNode.cpp"
+"${LABSOUND_ROOT}/src/core/DelayNode.cpp"
+"${LABSOUND_ROOT}/src/core/DynamicsCompressorNode.cpp"
+"${LABSOUND_ROOT}/src/core/GainNode.cpp"
+"${LABSOUND_ROOT}/src/core/OfflineAudioDestinationNode.cpp"
+"${LABSOUND_ROOT}/src/core/OscillatorNode.cpp"
+"${LABSOUND_ROOT}/src/core/PannerNode.cpp"
+"${LABSOUND_ROOT}/src/core/RealtimeAnalyser.cpp"
+"${LABSOUND_ROOT}/src/core/SampledAudioNode.cpp"
+"${LABSOUND_ROOT}/src/core/StereoPannerNode.cpp"
+"${LABSOUND_ROOT}/src/core/WaveShaperNode.cpp"
+"${LABSOUND_ROOT}/src/core/WaveTable.cpp"
+)
+
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")

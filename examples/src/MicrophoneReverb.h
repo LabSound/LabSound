@@ -7,8 +7,8 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
+        using namespace Sound;
         auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
-
         {
             std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
             std::shared_ptr<AudioHardwareSourceNode> input;

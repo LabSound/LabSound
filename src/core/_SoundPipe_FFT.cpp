@@ -44,6 +44,13 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+// disable unreferenced local variable, 32 to 64 bit cast warnings, double to float warnings
+#pragma warning(disable: 4101)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4305)
+#endif
+
 namespace lab
 {
 namespace Sound
@@ -142,7 +149,12 @@ typedef struct
 #define MYCOSPID8 0.9238795325112867561281831893967882868224 /* cos(pi/8)  */
 #define MYSINPID8 0.3826834323650897717284599840303988667613 /* sin(pi/8)  */
 
-#define POW2(m) ((uint32_t) 1 << (m)) /* integer power of 2 for m<32 */
+// interger power of two
+template <typename T>
+T POW2(T m)
+{
+    return T(1) << m;
+}
 
     /* initialize constants in ftable */
 int sp_ftbl_init(sp_data * sp, sp_ftbl * ft, size_t size)
