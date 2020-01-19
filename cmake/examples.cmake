@@ -28,10 +28,6 @@ if (APPLE)
 #    endif()
 endif()
 
-
-target_include_directories(LabSoundExample PRIVATE
-    ${LABSOUND_ROOT}/src)
-
 target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
 
 set_target_properties(LabSoundExample PROPERTIES
