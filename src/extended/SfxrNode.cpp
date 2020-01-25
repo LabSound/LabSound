@@ -648,10 +648,10 @@ namespace lab {
         uninitialize();
     }
 
-    void SfxrNode::noteOn() {
+    void SfxrNode::bang() 
+    {
         start(0);
         sfxr->ResetSample(true);
-        sfxr->ResetSample(false);
         sfxr->PlaySample();
     }
 

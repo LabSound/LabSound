@@ -171,7 +171,7 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
     if (!destination) throw std::runtime_error("Cannot connect to null destination");
-    if (!destination) throw std::runtime_error("Cannot connect from null source");
+    if (!source) throw std::runtime_error("Cannot connect from null source");
     std::lock_guard<std::mutex> lock(m_updateMutex);
     if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
@@ -181,10 +181,23 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
 {
+    if (!destination && !source)
+        return;
+
     std::lock_guard<std::mutex> lock(m_updateMutex);
     if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
     pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
+    cv.notify_all();
+}
+
+void AudioContext::disconnect(std::shared_ptr<AudioNode> node, uint32_t index)
+{
+    if (!node)
+        return;
+
+    std::lock_guard<std::mutex> lock(m_updateMutex);
+    pendingNodeConnections.emplace(node, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, index, 0);
     cv.notify_all();
 }
 
@@ -293,13 +306,12 @@ void AudioContext::update()
                     if (connection.source)
                     {
                         // if source and destination are specified, then we don't ramp out the destination
+                        // source all by itself will be completely disconnected
                         connection.source->scheduleDisconnect();
                     }
                     else if (connection.destination)
                     {
-                        // this case is a disconnect where source is nothing, and destination is something
-                        // probably this case should be disallowed because we have to study it to find out
-                        // if it is any different than a source with no destination. Answer: it's the same. source or dest by itself means disconnect all
+                        // destination all by itself will be completely disconnected
                         connection.destination->scheduleDisconnect();
                     }
                     graphKeepAlive = updateThreadShouldRun ? connection.duration : graphKeepAlive;

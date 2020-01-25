@@ -201,8 +201,8 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
 
 void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 {
-    // We override pullInputs(), so we can detect new AudioSourceNodes which have connected to us when new connections are made.
-    // These AudioSourceNodes need to be made aware of our existence in order to handle doppler shift pitch changes.
+    // We override pullInputs(), so we can detect new AudioNodes which have connected to us when new connections are made.
+    // These AudioNodes need to be made aware of this PannerNode in order to handle doppler shift pitch changes.
     auto ac = r.context();
 
     if (!ac)

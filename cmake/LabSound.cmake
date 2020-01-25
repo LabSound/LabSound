@@ -2,7 +2,76 @@
 # LabSound
 # Will create a target named LabSound
 
-file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
+set(labsnd_core_h
+"${LABSOUND_ROOT}/include/LabSound/core/AnalyserNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioArray.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioBasicInspectorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioBasicProcessorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioBus.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioChannel.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioContext.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioDestinationNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioHardwareSourceNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioIOCallback.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioListener.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioNodeInput.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioNodeOutput.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioParam.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioParamTimeline.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioProcessor.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioScheduledSourceNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioSetting.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioSourceProvider.h"
+"${LABSOUND_ROOT}/include/LabSound/core/AudioSummingJunction.h"
+"${LABSOUND_ROOT}/include/LabSound/core/BiquadFilterNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/ChannelMergerNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/ChannelSplitterNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/ConcurrentQueue.h"
+"${LABSOUND_ROOT}/include/LabSound/core/Constants.h"
+"${LABSOUND_ROOT}/include/LabSound/core/ConvolverNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/DefaultAudioDestinationNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/DelayNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/DynamicsCompressorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/FloatPoint3D.h"
+"${LABSOUND_ROOT}/include/LabSound/core/GainNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/Macros.h"
+"${LABSOUND_ROOT}/include/LabSound/core/Mixing.h"
+"${LABSOUND_ROOT}/include/LabSound/core/OfflineAudioDestinationNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/OscillatorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/PannerNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/SampledAudioNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/StereoPannerNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/WaveShaperNode.h"
+"${LABSOUND_ROOT}/include/LabSound/core/WaveTable.h"
+"${LABSOUND_ROOT}/include/LabSound/core/WindowFunctions.h"
+)
+
+set(labsnd_extended_h
+"${LABSOUND_ROOT}/include/LabSound/extended/ADSRNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/AudioContextLock.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/AudioFileReader.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/BPMDelay.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/ClipNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/DiodeNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/FunctionNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/Logging.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/NoiseNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/PdNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/PeakCompNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/PingPongDelayNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/PowerMonitorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/PWMNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/RealtimeAnalyser.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/RecorderNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/SampledInstrumentNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/SfxrNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/SpatializationNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/SpectralMonitorNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/SupersawNode.h"
+"${LABSOUND_ROOT}/include/LabSound/extended/Util.h"
+)
+
 set(labsnd_core
 "${LABSOUND_ROOT}/src/core/_SoundPipe_FFT.cpp"
 "${LABSOUND_ROOT}/src/core/AnalyserNode.cpp"
@@ -40,7 +109,6 @@ set(labsnd_core
 "${LABSOUND_ROOT}/src/core/WaveTable.cpp"
 )
 
-file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")

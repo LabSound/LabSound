@@ -5,14 +5,14 @@
 #ifndef AudioScheduledSourceNode_h
 #define AudioScheduledSourceNode_h
 
-#include "LabSound/core/AudioSourceNode.h"
+#include "LabSound/core/AudioNode.h"
 #include <functional>
 
 namespace lab {
 
 class AudioBus;
 
-class AudioScheduledSourceNode : public AudioSourceNode
+class AudioScheduledSourceNode : public AudioNode
 {
 public:
 
@@ -66,9 +66,6 @@ protected:
 
     // Called when we have no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock&);
-
-    // this is the base declaration
-    virtual void clearPannerNode() {}
 
     PlaybackState m_playbackState;
 

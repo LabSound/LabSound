@@ -70,7 +70,7 @@ public:
             float outputGain = aVal->value(r);
             float inputGain = bVal->value(r);
 
-            for (unsigned int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
+            for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
             {
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
@@ -86,7 +86,7 @@ public:
             float minf = aVal->value(r);
             float maxf = bVal->value(r);
 
-            for (unsigned int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
+            for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
             {
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
