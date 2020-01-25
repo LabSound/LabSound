@@ -96,7 +96,7 @@ void AudioDestinationMiniaudio::configure()
     }
 
     _ring = new RingBufferT<float>();
-    _ring->resize(_sampleRate);  // ad hoc. hold one second
+    _ring->resize(static_cast<int>(_sampleRate));  // ad hoc. hold one second
     _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * _numInputChannels));
 }
 
