@@ -32,11 +32,11 @@ const double DefaultGrainDuration = 0.020;  // 20ms
 const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode()
-    : AudioScheduledSourceNode()
-    , m_isLooping(std::make_shared<AudioSetting>("loop"))
-    , m_loopStart(std::make_shared<AudioSetting>("loopStart"))
-    , m_loopEnd(std::make_shared<AudioSetting>("loopEnd"))
-    , m_grainDuration(DefaultGrainDuration)
+: AudioScheduledSourceNode()
+, m_isLooping(std::make_shared<AudioSetting>("loop", AudioSetting::Type::Bool))
+, m_loopStart(std::make_shared<AudioSetting>("loopStart", AudioSetting::Type::Float))
+, m_loopEnd(std::make_shared<AudioSetting>("loopEnd", AudioSetting::Type::Float))
+, m_grainDuration(DefaultGrainDuration)
 {
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
@@ -346,15 +346,10 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
 {
     ASSERT(r.context());
 
-    if (buffer)
-    {
-        // Do any necesssary re-configuration to the buffer's number of channels.
-        size_t numberOfChannels = buffer->numberOfChannels();
-        output(0)->setNumberOfChannels(r, numberOfChannels);
-    }
-
-    m_virtualReadIndex = 0;
     m_sourceBus = buffer;
+    // Do any necesssary re-configuration to the buffer's number of channels.
+    output(0)->setNumberOfChannels(r, buffer? buffer->numberOfChannels() : 0);
+    m_virtualReadIndex = 0;
     return true;
 }
 
@@ -439,11 +434,11 @@ void SampledAudioNode::clearPannerNode()
 
 bool SampledAudioNode::loop() const
 {
-    return m_isLooping->valueUint32() != 0;
+    return m_isLooping->valueBool();
 }
 void SampledAudioNode::setLoop(bool loop)
 {
-    m_isLooping->setUint32(loop ? 1 : 0);
+    m_isLooping->setBool(loop);
 }
 
 // Loop times in seconds.

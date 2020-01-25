@@ -1,5 +1,6 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #ifndef SUPERSAW_NODE_H
 #define SUPERSAW_NODE_H
@@ -7,10 +8,11 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace lab 
 {
-    class SupersawNode : public AudioNode 
+    class SupersawNode : public AudioScheduledSourceNode 
     {
         class SupersawNodeInternal;
         std::unique_ptr<SupersawNodeInternal> internalNode;

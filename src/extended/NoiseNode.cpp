@@ -12,8 +12,11 @@ using namespace lab;
 
 namespace lab {
 
+    static char const * const s_noiseTypes[NoiseNode::NoiseType::_Count + 1] = {
+        "White", "Pink", "Brown", nullptr};
+
     NoiseNode::NoiseNode() : AudioScheduledSourceNode()
-    , _type(std::make_shared<AudioSetting>("type"))
+    , _type(std::make_shared<AudioSetting>("type", s_noiseTypes))
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
         m_settings.push_back(_type);
@@ -27,7 +30,7 @@ namespace lab {
 
     void NoiseNode::setType(NoiseType type)
     {
-        if (type > NoiseType::BROWN)
+        if (type >= NoiseType::_Count)
             throw std::out_of_range("Noise argument exceeds known noise types");
 
         _type->setUint32(uint32_t(type));

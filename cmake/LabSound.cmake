@@ -1,5 +1,9 @@
 
 # LabSound
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (C) 2020, The LabSound Authors. All rights reserved.
+#
 # Will create a target named LabSound
 
 set(labsnd_core_h
@@ -109,7 +113,28 @@ set(labsnd_core
 "${LABSOUND_ROOT}/src/core/WaveTable.cpp"
 )
 
-file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
+set(labsnd_extended
+"${LABSOUND_ROOT}/src/extended/ADSRNode.cpp"
+"${LABSOUND_ROOT}/src/extended/AudioFileReader.cpp"
+"${LABSOUND_ROOT}/src/extended/BPMDelay.cpp"
+"${LABSOUND_ROOT}/src/extended/ClipNode.cpp"
+"${LABSOUND_ROOT}/src/extended/DiodeNode.cpp"
+"${LABSOUND_ROOT}/src/extended/FunctionNode.cpp"
+"${LABSOUND_ROOT}/src/extended/LabSound.cpp"
+"${LABSOUND_ROOT}/src/extended/NoiseNode.cpp"
+"${LABSOUND_ROOT}/src/extended/PdNode.cpp"
+"${LABSOUND_ROOT}/src/extended/PeakCompNode.cpp"
+"${LABSOUND_ROOT}/src/extended/PingPongDelayNode.cpp"
+"${LABSOUND_ROOT}/src/extended/PowerMonitorNode.cpp"
+"${LABSOUND_ROOT}/src/extended/PWMNode.cpp"
+"${LABSOUND_ROOT}/src/extended/RecorderNode.cpp"
+"${LABSOUND_ROOT}/src/extended/SampledInstrumentNode.cpp"
+"${LABSOUND_ROOT}/src/extended/SfxrNode.cpp"
+"${LABSOUND_ROOT}/src/extended/SpatializationNode.cpp"
+"${LABSOUND_ROOT}/src/extended/SpectralMonitorNode.cpp"
+"${LABSOUND_ROOT}/src/extended/SupersawNode.cpp"
+)
+
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 

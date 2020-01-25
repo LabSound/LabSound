@@ -13,10 +13,10 @@ namespace lab
 
 void AnalyserNode::shared_construction(size_t fftSize)
 {
-    _fftSize = std::make_shared<AudioSetting>("fftSize");
-    _minDecibels = std::make_shared<AudioSetting>("minDecibels");
-    _maxDecibels = std::make_shared<AudioSetting>("maxDecibels");
-    _smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant");
+    _fftSize = std::make_shared<AudioSetting>("fftSize", AudioSetting::Type::Integer);
+    _minDecibels = std::make_shared<AudioSetting>("minDecibels", AudioSetting::Type::Float);
+    _maxDecibels = std::make_shared<AudioSetting>("maxDecibels", AudioSetting::Type::Float);
+    _smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", AudioSetting::Type::Float);
 
     _fftSize->setUint32(static_cast<uint32_t>(fftSize));
     _fftSize->setValueChanged(

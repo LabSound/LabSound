@@ -21,7 +21,8 @@ namespace lab
         
     public:
         enum Mode { CLIP = 0, 
-                    TANH = 1 };
+                    TANH = 1,
+                    _Count = 2 };
 
         ClipNode();
         virtual ~ClipNode();

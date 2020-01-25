@@ -64,7 +64,7 @@ protected:
                               size_t quantumFrameSize, AudioBus * outputBus,
                               size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess);
 
-    // Called when we have no more sound to play or the noteOff/stop() time has been reached.
+    // Called when there is no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock&);
 
     PlaybackState m_playbackState;

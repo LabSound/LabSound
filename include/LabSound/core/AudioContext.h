@@ -65,9 +65,6 @@ public:
 
     std::shared_ptr<AudioListener> listener();
 
-    void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
-    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
-
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
     void addAutomaticPullNode(std::shared_ptr<AudioNode>);
@@ -76,6 +73,7 @@ public:
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioHardwareDeviceNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
+    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
 
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
@@ -97,6 +95,15 @@ public:
     void dispatchEvents();
 
 private:
+    void update();
+    void uninitialize();
+    void handleAutomaticSources();
+    void updateAutomaticPullNodes();
+
+    // @TODO migrate most of the internal datastructures such as PendingConnection
+    // into Internals as there's no need to expose these at all.
+    struct Internals;
+    std::unique_ptr<Internals> m_internal;
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;
@@ -105,7 +112,6 @@ private:
 
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
-    void update();
     float graphKeepAlive{ 0.f };
     float lastGraphUpdateTime{ 0.f };
 
@@ -131,49 +137,7 @@ private:
 
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes
-
     std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
-
-    enum class ConnectionType : int
-    {
-        Disconnect,
-        Connect,
-        FinishDisconnect
-    };
-
-    struct PendingConnection
-    {
-        ConnectionType type;
-        std::shared_ptr<AudioNode> destination;
-        std::shared_ptr<AudioNode> source;
-        uint32_t destIndex;
-        uint32_t srcIndex;
-        float duration = 0.1f;
-
-        PendingConnection(
-            std::shared_ptr<AudioNode> destination,
-            std::shared_ptr<AudioNode> source,
-            ConnectionType t,
-            uint32_t destIndex = 0,
-            uint32_t srcIndex = 0)
-        : type(t), destination(destination), source(source), destIndex(destIndex), srcIndex(srcIndex) { }
-    };
-
-    struct CompareScheduledTime
-    {
-        bool operator()(const PendingConnection & p1, const PendingConnection & p2)
-        {
-            if (!p1.destination || !p2.destination) return false;
-            if (!p2.destination->isScheduledNode()) return false; // src cannot be compared
-            if (!p1.destination->isScheduledNode()) return false; // dest cannot be compared
-            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());
-            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.destination.get());
-            return ap2->startTime() < ap1->startTime();
-        }
-    };
-
-    std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
-    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, uint32_t>> pendingParamConnections;
 };
 
 } // End namespace lab

@@ -13,7 +13,7 @@ namespace lab
 // Based on the DiodeNode found at the BBC Radiophonic Workshop
 // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
 DiodeNode::DiodeNode()
-    : _distortion(std::make_shared<AudioSetting>("distortion"))
+    : _distortion(std::make_shared<AudioSetting>("distortion", AudioSetting::Type::Float))
     , vb(0.2f)
     , vl(0.4f)
 {

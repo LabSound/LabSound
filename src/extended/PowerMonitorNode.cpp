@@ -15,7 +15,7 @@ namespace lab {
     
     PowerMonitorNode::PowerMonitorNode() 
     : AudioBasicInspectorNode(2), _db(0)
-    , _windowSize(std::make_shared<AudioSetting>("windowSize"))
+    , _windowSize(std::make_shared<AudioSetting>("windowSize", AudioSetting::Type::Integer))
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         _windowSize->setUint32(128);

@@ -26,7 +26,8 @@ namespace lab
         {
             WHITE = 0,
             PINK = 1,
-            BROWN = 2
+            BROWN = 2,
+            _Count = 3
         };
 
         NoiseNode();

@@ -113,7 +113,8 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, siz
 
 AudioBus* AudioNodeOutput::bus(ContextRenderLock& r) const
 {
-    ASSERT(r.context()); // only legal during rendering because an in place bus might have been supplied to pull
+    // only legal during rendering because an in-place bus might have been supplied to pull
+    ASSERT(r.context());
     return m_inPlaceBus ? m_inPlaceBus : m_internalBus.get();
 }
 

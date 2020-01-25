@@ -18,7 +18,8 @@ public:
     {
         ModelLinear = 0,
         ModelInverse = 1,
-        ModelExponential = 2
+        ModelExponential = 2,
+        _Count = 3
     };
 
     DistanceEffect();

@@ -25,17 +25,20 @@ namespace lab
 // Private ClipNode Implementation //
 /////////////////////////////////////
 
+static char const * const s_ClipModes[ClipNode::Mode::_Count + 1] = {"Clip", "Tanh", nullptr};
+
+
 class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
 public:
     ClipNodeInternal(ClipNode * owner)
-    : AudioProcessor(1)
-    , _owner(owner)
+        : AudioProcessor(1)
+        , _owner(owner)
     {
         auto fMax = std::numeric_limits<float>::max();
         aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
         bVal = std::make_shared<AudioParam>("b", 1.0, -fMax, fMax);
-        mode = std::make_shared<AudioSetting>("mode");
+        mode = std::make_shared<AudioSetting>("mode", s_ClipModes);
         mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
     }
 

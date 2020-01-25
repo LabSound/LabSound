@@ -95,10 +95,10 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
 
 ConvolverNode::ConvolverNode()
 : AudioScheduledSourceNode()
-, m_normalize(std::make_shared<AudioSetting>("normalize"))
+, m_normalize(std::make_shared<AudioSetting>("normalize", AudioSetting::Type::Bool))
 {
     m_settings.push_back(m_normalize);
-    m_normalize->setUint32(1);
+    m_normalize->setBool(true);
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
@@ -114,7 +114,7 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-bool ConvolverNode::normalize() const { return m_normalize->valueUint32() != 0; }
+bool ConvolverNode::normalize() const { return m_normalize->valueBool(); }
 void ConvolverNode::setNormalize(bool new_n)
 {
     bool n = normalize();
@@ -145,7 +145,7 @@ void ConvolverNode::setNormalize(bool new_n)
         }
     }
 
-    m_normalize->setUint32(new_n ? 1 : 0);
+    m_normalize->setBool(new_n);
 }
 
 void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)

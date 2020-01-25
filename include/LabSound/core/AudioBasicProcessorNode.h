@@ -14,12 +14,11 @@ namespace lab {
 class AudioBus;
 class AudioNodeInput;
 
-// AudioBasicProcessorNode is an AudioNode with one input and one output where the input and output have the same number of channels.
+// AudioBasicProcessorNode is an AudioNode with one input and one output where
+//  the input and output have the same number of channels.
 class AudioBasicProcessorNode : public AudioNode 
 {
-
 public:
-
     AudioBasicProcessorNode();
     virtual ~AudioBasicProcessorNode() {}
 
@@ -45,7 +44,6 @@ protected:
     AudioProcessor * processor() const;
 
     std::unique_ptr<AudioProcessor> m_processor;
-
 };
 
 } // namespace lab

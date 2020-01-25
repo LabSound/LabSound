@@ -1,13 +1,15 @@
 
-// License: BSD 3 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #ifndef AudioSetting_h
 #define AudioSetting_h
 
-#include <functional>
-#include <string>
 #include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace lab
 {
@@ -21,52 +23,99 @@ namespace lab
 //
 class AudioSetting
 {
+public:
+    enum class Type
+    {
+        Bool,
+        Integer,
+        Float,
+        Enumeration
+    };
+
+private:
     std::string _name;
     float _valf = 0;
     uint32_t _vali = 0;
-    bool _asFloat = false;
+    bool _valb = false;
     std::function<void()> _valueChanged;
+    Type _type;
+    char const*const* _enums;
 
 public:
-    explicit AudioSetting(const std::string & n)
-    : _name(n)
+    explicit AudioSetting(const std::string & n, Type t)
+        : _name(n)
+        , _type(t)
     {
     }
-    explicit AudioSetting(char const * const n)
-    : _name(n)
+    explicit AudioSetting(char const * const n, Type t)
+        : _name(n)
+        , _type(t)
     {
     }
-    
-    void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
-    std::string name() const { return _name; }
+    explicit AudioSetting(const std::string & n, char const*const* enums)
+        : _name(n)
+        , _type(Type::Enumeration)
+        , _enums(enums)
+    {
+    }
+    explicit AudioSetting(char const * const n, char const*const* enums)
+        : _name(n)
+        , _type(Type::Enumeration)
+        , _enums(enums)
+    {
+    }
 
+    std::string name() const { return _name; }
+    Type type() const { return _type; }
+    char const*const* enums() const { return _enums; }
+
+    bool valueBool() const { return _valb; }
     float valueFloat() const { return _valf; }
+    uint32_t valueUint32() const { return _vali; }
+
+    void setBool(bool v, bool notify = true)
+    {
+        if (v == _valb)
+            return;
+
+        _valb = v;
+        if (notify && _valueChanged)
+            _valueChanged();
+    }
+
     void setFloat(float v, bool notify = true)
     {
         if (v == _valf)
             return;
 
         _valf = v;
-        _vali = uint32_t(v);
-        _asFloat = true;
-        if (notify && _valueChanged) _valueChanged();
+        if (notify && _valueChanged)
+            _valueChanged();
     }
 
-    uint32_t valueUint32() const { return _vali; }
     void setUint32(uint32_t v, bool notify = true)
     {
         if (v == _vali)
             return;
 
         _vali = v;
-        _valf = float(v);
-        _asFloat = false;
-        if (notify && _valueChanged) _valueChanged();
+        if (notify && _valueChanged)
+            _valueChanged();
     }
 
-    bool floatAssigned() const { return _asFloat; }
+    void setEnumeration(int v, bool notify = true)
+    {
+        if (v == _vali)
+            return;
+
+        _vali = static_cast<int>(v);
+        if (notify && _valueChanged)
+            _valueChanged();
+    }
+
+    void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
 };
 
-} // lab
+}  // lab
 
 #endif

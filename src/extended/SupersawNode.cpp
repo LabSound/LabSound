@@ -1,5 +1,6 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/AudioNodeInput.h"
@@ -79,9 +80,11 @@ namespace lab
                 sawStorage.clear();
                 saws.clear();
 
-                for (int i = 0; i < n; ++i) sawStorage.emplace_back(std::make_shared<OscillatorNode>(sampleRate));
+                for (int i = 0; i < n; ++i) 
+                    sawStorage.emplace_back(std::make_shared<OscillatorNode>(sampleRate));
 
-                for (int i = 0; i < n; ++i) saws.push_back(sawStorage[i].get());
+                for (int i = 0; i < n; ++i) 
+                    saws.push_back(sawStorage[i].get());
 
                 for (auto i : sawStorage)
                 {
@@ -116,7 +119,7 @@ namespace lab
     // Public Supersaw Node //
     //////////////////////////
 
-    SupersawNode::SupersawNode() : AudioNode()
+    SupersawNode::SupersawNode() : AudioScheduledSourceNode()
     {
         internalNode.reset(new SupersawNodeInternal());
 
