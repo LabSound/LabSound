@@ -32,8 +32,6 @@ AudioNodeOutput::AudioNodeOutput(AudioNode* node, size_t numberOfChannels, size_
     , m_renderingFanOutCount(0)
     , m_renderingParamFanOutCount(0)
 {
-    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-    
     m_internalBus.reset(new AudioBus(numberOfChannels, processingSizeInFrames));
 }
 
@@ -44,9 +42,6 @@ AudioNodeOutput::~AudioNodeOutput()
 
 void AudioNodeOutput::setNumberOfChannels(ContextRenderLock& r, size_t numberOfChannels)
 {
-    ASSERT(r.context());
-    ASSERT(numberOfChannels <= AudioContext::maxNumberOfChannels);
-    
     if (m_numberOfChannels == numberOfChannels)
         return;
     

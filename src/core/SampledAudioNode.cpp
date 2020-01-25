@@ -350,10 +350,6 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
     {
         // Do any necesssary re-configuration to the buffer's number of channels.
         size_t numberOfChannels = buffer->numberOfChannels();
-
-        if (numberOfChannels > AudioContext::maxNumberOfChannels)
-            return false;
-
         output(0)->setNumberOfChannels(r, numberOfChannels);
     }
 

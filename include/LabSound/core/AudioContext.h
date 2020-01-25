@@ -40,10 +40,6 @@ class AudioContext
     friend class ContextRenderLock;
 
 public:
-
-    // Somewhat arbitrary and could be increased if necessary
-    static const size_t maxNumberOfChannels;
-
     // Debugging/Sanity Checking
     std::string m_graphLocker;
     std::string m_renderLocker;

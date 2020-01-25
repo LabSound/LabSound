@@ -23,15 +23,6 @@ ChannelSplitterNode::ChannelSplitterNode(size_t numberOfOutputs_)
 
 void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
 {
-    if (!numberOfOutputs_ || numberOfOutputs() == AudioContext::maxNumberOfChannels)
-        return;
-
-    if (numberOfOutputs_ + numberOfOutputs() > AudioContext::maxNumberOfChannels)
-    {
-        // Notify user clamping to max?
-        numberOfOutputs_ = AudioContext::maxNumberOfChannels - numberOfOutputs();
-    }
-
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
     for (uint32_t i = 0; i < numberOfOutputs_; ++i)
     {

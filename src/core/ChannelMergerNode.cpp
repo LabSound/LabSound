@@ -25,20 +25,9 @@ ChannelMergerNode::ChannelMergerNode(size_t numberOfInputs_)
 
 void ChannelMergerNode::addInputs(size_t n)
 {
-    if (!n || numberOfInputs() == AudioContext::maxNumberOfChannels)
-        return;
-
-    if (n + numberOfInputs() > AudioContext::maxNumberOfChannels)
-    {
-        // Notify user we were clamped to max?
-        n = AudioContext::maxNumberOfChannels - numberOfInputs();
-    }
-
     // Create the requested number of inputs.
     for (uint32_t i = 0; i < n; ++i)
-    {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    }
 }
 
 void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
