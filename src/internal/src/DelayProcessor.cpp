@@ -15,7 +15,7 @@ DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, doub
 , m_maxDelayTime(maxDelayTime)
 , m_sampleRate(sampleRate)
 {
-    m_delayTime = std::make_shared<AudioParam>("delayTime", 0.0, 0.0, maxDelayTime);
+    m_delayTime = std::make_shared<AudioSetting>("delayTime", AudioSetting::Type::Float);
 }
 
 DelayProcessor::~DelayProcessor()

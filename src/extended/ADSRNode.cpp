@@ -28,11 +28,16 @@ namespace lab
         ADSRNodeInternal()
         : AudioProcessor(2), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
         {
-            m_attackTime = std::make_shared<AudioParam>("attackTime",  0.05, 0, 120);
-            m_attackLevel = std::make_shared<AudioParam>("attackLevel",  1.0, 0, 10);
-            m_decayTime = std::make_shared<AudioParam>("decayTime",   0.05,  0, 120);
-            m_sustainLevel = std::make_shared<AudioParam>("sustain", 0.75, 0, 10);
-            m_releaseTime = std::make_shared<AudioParam>("release", 0.0625, 0, 120);
+            m_attackTime = std::make_shared<AudioSetting>("attackTime", AudioSetting::Type::Float);
+            m_attackTime->setFloat(0.05);
+            m_attackLevel = std::make_shared<AudioSetting>("attackLevel", AudioSetting::Type::Float);
+            m_attackLevel->setFloat(1.0);
+            m_decayTime = std::make_shared<AudioSetting>("decayTime", AudioSetting::Type::Float);
+            m_decayTime->setFloat(0.05);
+            m_sustainLevel = std::make_shared<AudioSetting>("sustain", AudioSetting::Type::Float);
+            m_sustainLevel->setFloat(0.75f);
+            m_releaseTime = std::make_shared<AudioSetting>("release", AudioSetting::Type::Float);
+            m_releaseTime->setFloat(0.0625f);
         }
 
         virtual ~ADSRNodeInternal() { }
@@ -59,15 +64,15 @@ namespace lab
                 else
                     m_zeroSteps = 0;
 
-                m_attackTimeTarget = m_noteOnTime + m_attackTime->value(r);
+                m_attackTimeTarget = m_noteOnTime + m_attackTime->valueFloat();
 
-                m_attackSteps = static_cast<int>(m_attackTime->value(r) * r.context()->sampleRate());
-                m_attackStepSize = m_attackLevel->value(r) / m_attackSteps;
+                m_attackSteps = static_cast<int>(m_attackTime->valueFloat() * r.context()->sampleRate());
+                m_attackStepSize = m_attackLevel->valueFloat() / m_attackSteps;
 
-                m_decayTimeTarget = m_attackTimeTarget + m_decayTime->value(r);
+                m_decayTimeTarget = m_attackTimeTarget + m_decayTime->valueFloat();
 
-                m_decaySteps = static_cast<int>(m_decayTime->value(r) * r.context()->sampleRate());
-                m_decayStepSize = (m_sustainLevel->value(r) - m_attackLevel->value(r)) / m_decaySteps;
+                m_decaySteps = static_cast<int>(m_decayTime->valueFloat() * r.context()->sampleRate());
+                m_decayStepSize = (m_sustainLevel->valueFloat() - m_attackLevel->valueFloat()) / m_decaySteps;
 
                 m_releaseSteps = 0;
 
@@ -83,7 +88,7 @@ namespace lab
             if (gainValues.size() < framesToProcess)
                 gainValues.resize(framesToProcess);
 
-            float s = m_sustainLevel->value(r);
+            float s = m_sustainLevel->valueFloat();
 
             for (size_t i = 0; i < framesToProcess; ++i)
             {
@@ -150,9 +155,9 @@ namespace lab
 
             if (m_noteOffTime == std::numeric_limits<double>::max())
             {
-                m_noteOffTime = now + m_releaseTime->value(r);
-                m_releaseSteps = static_cast<int>(m_releaseTime->value(r) * r.context()->sampleRate());
-                m_releaseStepSize = -m_sustainLevel->value(r) / m_releaseSteps;
+                m_noteOffTime = now + m_releaseTime->valueFloat();
+                m_releaseSteps = static_cast<int>(m_releaseTime->valueFloat() * r.context()->sampleRate());
+                m_releaseStepSize = -m_sustainLevel->valueFloat() / m_releaseSteps;
             }
         }
 
@@ -176,11 +181,11 @@ namespace lab
 
         std::vector<float> gainValues;
 
-        std::shared_ptr<AudioParam> m_attackTime;
-        std::shared_ptr<AudioParam> m_attackLevel;
-        std::shared_ptr<AudioParam> m_decayTime;
-        std::shared_ptr<AudioParam> m_sustainLevel;
-        std::shared_ptr<AudioParam> m_releaseTime;
+        std::shared_ptr<AudioSetting> m_attackTime;
+        std::shared_ptr<AudioSetting> m_attackLevel;
+        std::shared_ptr<AudioSetting> m_decayTime;
+        std::shared_ptr<AudioSetting> m_sustainLevel;
+        std::shared_ptr<AudioSetting> m_releaseTime;
     };
 
     /////////////////////
@@ -193,14 +198,11 @@ namespace lab
 
         internalNode = static_cast<ADSRNodeInternal*>(m_processor.get());
 
-        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
-
-        m_params.push_back(internalNode->m_attackTime);
-        m_params.push_back(internalNode->m_attackLevel);
-        m_params.push_back(internalNode->m_decayTime);
-        m_params.push_back(internalNode->m_sustainLevel);
-        m_params.push_back(internalNode->m_releaseTime);
+        m_settings.push_back(internalNode->m_attackTime);
+        m_settings.push_back(internalNode->m_attackLevel);
+        m_settings.push_back(internalNode->m_decayTime);
+        m_settings.push_back(internalNode->m_sustainLevel);
+        m_settings.push_back(internalNode->m_releaseTime);
 
         initialize();
     }
@@ -221,36 +223,36 @@ namespace lab
         internalNode->noteOff(r, when);
     }
 
-    std::shared_ptr<AudioParam> ADSRNode::attackTime() const
+    std::shared_ptr<AudioSetting> ADSRNode::attackTime() const
     {
         return internalNode->m_attackTime;
     }
 
     void ADSRNode::set(float aT, float aL, float d, float s, float r)
     {
-        internalNode->m_attackTime->setValue(aT);
-        internalNode->m_attackLevel->setValue(aL);
-        internalNode->m_decayTime->setValue(d);
-        internalNode->m_sustainLevel->setValue(s);
-        internalNode->m_releaseTime->setValue(r);
+        internalNode->m_attackTime->setFloat(aT);
+        internalNode->m_attackLevel->setFloat(aL);
+        internalNode->m_decayTime->setFloat(d);
+        internalNode->m_sustainLevel->setFloat(s);
+        internalNode->m_releaseTime->setFloat(r);
     }
 
-    std::shared_ptr<AudioParam> ADSRNode::attackLevel() const
+    std::shared_ptr<AudioSetting> ADSRNode::attackLevel() const
     {
         return internalNode->m_attackLevel;
     }
 
-    std::shared_ptr<AudioParam> ADSRNode::decayTime() const
+    std::shared_ptr<AudioSetting> ADSRNode::decayTime() const
     {
         return internalNode->m_decayTime;
     }
 
-    std::shared_ptr<AudioParam> ADSRNode::sustainLevel() const
+    std::shared_ptr<AudioSetting> ADSRNode::sustainLevel() const
     {
         return internalNode->m_sustainLevel;
     }
 
-    std::shared_ptr<AudioParam> ADSRNode::releaseTime() const
+    std::shared_ptr<AudioSetting> ADSRNode::releaseTime() const
     {
         return internalNode->m_releaseTime;
     }

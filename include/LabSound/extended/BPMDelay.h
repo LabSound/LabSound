@@ -8,7 +8,7 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/DelayNode.h"
 
 namespace lab 
@@ -22,7 +22,7 @@ namespace lab
         void recomputeDelay()
         {
             float dT = float(60.0f * noteDivision) / tempo;
-            delayTime()->setValue(dT);
+            delayTime()->setFloat(dT);
         }
             
     public:

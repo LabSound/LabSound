@@ -29,7 +29,8 @@ namespace lab
         SupersawNodeInternal() : cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
         {
             gainNode = std::make_shared<ADSRNode>();
-            sawCount = std::make_shared<AudioParam>("sawCount", 1.0, 100.0f, 3.0f);
+            sawCount = std::make_shared<AudioSetting>("sawCount", AudioSetting::Type::Integer);
+            sawCount->setUint32(1);
             detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
             frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
         }
@@ -65,7 +66,7 @@ namespace lab
         void update(ContextRenderLock & r, bool okayToReallocate)
         {
             size_t currentN = saws.size();
-            int n = int(sawCount->value(r) + 0.5f);
+            int n = int(sawCount->valueUint32() + 0.5f);
 
             auto context = r.context();
 
@@ -103,7 +104,7 @@ namespace lab
         std::shared_ptr<ADSRNode> gainNode;
         std::shared_ptr<AudioParam> detune;
         std::shared_ptr<AudioParam> frequency;
-        std::shared_ptr<AudioParam> sawCount;
+        std::shared_ptr<AudioSetting> sawCount;
 
     private:
 
@@ -125,7 +126,7 @@ namespace lab
 
         m_params.push_back(internalNode->detune);
         m_params.push_back(internalNode->frequency);
-        m_params.push_back(internalNode->sawCount);
+        m_settings.push_back(internalNode->sawCount);
 
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -161,13 +162,13 @@ namespace lab
         internalNode->update(r, true);
     }
 
-    std::shared_ptr<AudioParam> SupersawNode::attack() const { return internalNode->gainNode->attackTime(); }
-    std::shared_ptr<AudioParam> SupersawNode::decay() const { return internalNode->gainNode->decayTime(); }
-    std::shared_ptr<AudioParam> SupersawNode::sustain() const { return internalNode->gainNode->sustainLevel(); }
-    std::shared_ptr<AudioParam> SupersawNode::release() const { return internalNode->gainNode->releaseTime(); }
+    std::shared_ptr<AudioSetting> SupersawNode::attack() const { return internalNode->gainNode->attackTime(); }
+    std::shared_ptr<AudioSetting> SupersawNode::decay() const { return internalNode->gainNode->decayTime(); }
+    std::shared_ptr<AudioSetting> SupersawNode::sustain() const { return internalNode->gainNode->sustainLevel(); }
+    std::shared_ptr<AudioSetting> SupersawNode::release() const { return internalNode->gainNode->releaseTime(); }
     std::shared_ptr<AudioParam> SupersawNode::detune() const { return internalNode->detune; }
     std::shared_ptr<AudioParam> SupersawNode::frequency() const { return internalNode->frequency; }
-    std::shared_ptr<AudioParam> SupersawNode::sawCount() const { return internalNode->sawCount; }
+    std::shared_ptr<AudioSetting> SupersawNode::sawCount() const { return internalNode->sawCount; }
 
     void SupersawNode::noteOn(double when)
     {

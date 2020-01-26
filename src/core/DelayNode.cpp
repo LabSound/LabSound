@@ -25,12 +25,12 @@ DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcesso
     }
     m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
 
-    m_params.push_back(delayProcessor()->delayTime());
+    m_settings.push_back(delayProcessor()->delayTime());
 
     initialize();
 }
 
-std::shared_ptr<AudioParam> DelayNode::delayTime()
+std::shared_ptr<AudioSetting> DelayNode::delayTime()
 {
     return delayProcessor()->delayTime();
 }

@@ -5,7 +5,7 @@
 #define ADSR_NODE_H
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
@@ -33,11 +33,11 @@ namespace lab
 
         void set(float aT, float aL, float d, float s, float r);
 
-        std::shared_ptr<AudioParam> attackTime() const; // Duration in ms
-        std::shared_ptr<AudioParam> attackLevel() const; // Duration in ms
-        std::shared_ptr<AudioParam> decayTime() const; // Duration in ms
-        std::shared_ptr<AudioParam> sustainLevel() const; // Level 0-10
-        std::shared_ptr<AudioParam> releaseTime() const; // Duration in ms
+        std::shared_ptr<AudioSetting> attackTime() const; // Duration in ms
+        std::shared_ptr<AudioSetting> attackLevel() const; // Duration in ms
+        std::shared_ptr<AudioSetting> decayTime() const; // Duration in ms
+        std::shared_ptr<AudioSetting> sustainLevel() const; // Level 0-10
+        std::shared_ptr<AudioSetting> releaseTime() const; // Duration in ms
     };
     
 }

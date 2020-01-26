@@ -39,7 +39,7 @@ private:
     bool _valb = false;
     std::function<void()> _valueChanged;
     Type _type;
-    char const*const* _enums;
+    char const * const * _enums = nullptr;
 
 public:
     explicit AudioSetting(const std::string & n, Type t)

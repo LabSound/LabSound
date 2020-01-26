@@ -78,6 +78,18 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
     float* delayTimes = m_delayTimes.data();
     double maxTime = maxDelayTime();
 
+ #if 1
+    /// @TODO before deleting the else clause here, is there a legitimate reason to have the delayTime be automated?
+    /// is it not just a setting? If it's actually an audio rate signal, then delayTime should be switched back
+    /// from AudioSetting to AudioParam.
+    delayTime = delayProcessor() ? delayProcessor()->delayTime()->valueFloat() : m_desiredDelayFrames / sampleRate;
+    if (m_firstTime)
+    {
+        m_currentDelayTime = delayTime;
+        m_firstTime = false;
+    }
+    bool sampleAccurate = false;
+#else
     bool sampleAccurate = delayProcessor() && delayProcessor()->delayTime()->hasSampleAccurateValues();
 
     if (sampleAccurate)
@@ -94,6 +106,7 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
             m_firstTime = false;
         }
     }
+#endif
 
     for (unsigned i = 0; i < framesToProcess; ++i) {
         if (sampleAccurate) {

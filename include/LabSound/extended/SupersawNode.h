@@ -22,12 +22,12 @@ namespace lab
         SupersawNode();
         virtual ~SupersawNode();
         
-        std::shared_ptr<AudioParam> attack() const;
-        std::shared_ptr<AudioParam> decay() const;
-        std::shared_ptr<AudioParam> sustain() const;
-        std::shared_ptr<AudioParam> release() const;
+        std::shared_ptr<AudioSetting> attack() const;
+        std::shared_ptr<AudioSetting> decay() const;
+        std::shared_ptr<AudioSetting> sustain() const;
+        std::shared_ptr<AudioSetting> release() const;
 
-        std::shared_ptr<AudioParam> sawCount() const;
+        std::shared_ptr<AudioSetting> sawCount() const;
         std::shared_ptr<AudioParam> frequency() const;
         std::shared_ptr<AudioParam> detune() const;
 

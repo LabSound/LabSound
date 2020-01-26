@@ -64,7 +64,7 @@ AnalyserNode::AnalyserNode(size_t fftSize)
 }
 
 AnalyserNode::AnalyserNode() 
-: AudioBasicInspectorNode((uint32_t) 2)
+: AudioBasicInspectorNode(1)
 , m_analyser(new RealtimeAnalyser(1024u))
 {
     shared_construction(1024u);

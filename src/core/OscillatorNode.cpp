@@ -6,23 +6,24 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/WaveTable.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 #include "internal/VectorMath.h"
-#include "internal/Assertions.h"
 
 #include <algorithm>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 using namespace VectorMath;
 
@@ -31,13 +32,18 @@ std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSquare = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSawtooth = 0;
 std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
-OscillatorNode::OscillatorNode(const float sampleRate) :
-      m_sampleRate(sampleRate),
-      m_type(std::make_shared<AudioSetting>("type")),
-      m_firstRender(true),
-      m_virtualReadIndex(0),
-      m_phaseIncrements(AudioNode::ProcessingSizeInFrames),
-      m_detuneValues(AudioNode::ProcessingSizeInFrames)
+static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {
+    "None", "Sine", "Square", "Sawtooth", "Triangle", "Custom",
+    nullptr
+};
+
+OscillatorNode::OscillatorNode(const float sampleRate)
+    : m_sampleRate(sampleRate)
+, m_type(std::make_shared<AudioSetting>("type", s_types))
+, m_firstRender(true)
+, m_virtualReadIndex(0)
+, m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
+, m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
     // Use musical pitch standard A440 as a default.
     m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
@@ -51,8 +57,7 @@ OscillatorNode::OscillatorNode(const float sampleRate) :
     m_type->setValueChanged(
         [this]() {
             _setType(OscillatorType(m_type->valueUint32()));
-        }
-    );
+        });
     m_settings.push_back(m_type);
 
     // Sets up default wavetable.
@@ -69,11 +74,10 @@ OscillatorNode::~OscillatorNode()
     uninitialize();
 }
 
-OscillatorType OscillatorNode::type() const 
+OscillatorType OscillatorNode::type() const
 {
     return OscillatorType(m_type->valueUint32());
 }
-
 
 void OscillatorNode::setType(OscillatorType type)
 {
@@ -82,6 +86,9 @@ void OscillatorNode::setType(OscillatorType type)
 
 void OscillatorNode::_setType(OscillatorType type)
 {
+    if (type >= OscillatorType::CUSTOM)
+        return;
+
     std::shared_ptr<WaveTable> waveTable;
 
     switch (type)
@@ -132,7 +139,8 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
     if (!isGood)
         return false;
 
-    if (m_firstRender) {
+    if (m_firstRender)
+    {
         m_firstRender = false;
         m_frequency->resetSmoothedValue();
         m_detune->resetSmoothedValue();
@@ -140,42 +148,49 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
 
     bool hasSampleAccurateValues = false;
     bool hasFrequencyChanges = false;
-    float* phaseIncrements = m_phaseIncrements.data();
+    float * phaseIncrements = m_phaseIncrements.data();
 
     float finalScale = m_waveTable->rateScale();
 
-    if (m_frequency->hasSampleAccurateValues()) {
+    if (m_frequency->hasSampleAccurateValues())
+    {
         hasSampleAccurateValues = true;
         hasFrequencyChanges = true;
 
         // Get the sample-accurate frequency values and convert to phase increments.
         // They will be converted to phase increments below.
         m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
-    } else {
+    }
+    else
+    {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
         m_frequency->smooth(r);
         float frequency = m_frequency->smoothedValue();
         finalScale *= frequency;
     }
 
-    if (m_detune->hasSampleAccurateValues()) {
+    if (m_detune->hasSampleAccurateValues())
+    {
         hasSampleAccurateValues = true;
 
         // Get the sample-accurate detune values.
-        float* detuneValues = hasFrequencyChanges ? m_detuneValues.data() : phaseIncrements;
+        float * detuneValues = hasFrequencyChanges ? m_detuneValues.data() : phaseIncrements;
         m_detune->calculateSampleAccurateValues(r, detuneValues, framesToProcess);
 
         // Convert from cents to rate scalar.
         float k = 1.f / 1200.f;
         vsmul(detuneValues, 1, &k, detuneValues, 1, framesToProcess);
         for (unsigned i = 0; i < framesToProcess; ++i)
-            detuneValues[i] = powf(2, detuneValues[i]); // FIXME: converting to expf() will be faster.
+            detuneValues[i] = powf(2, detuneValues[i]);  // FIXME: converting to expf() will be faster.
 
-        if (hasFrequencyChanges) {
+        if (hasFrequencyChanges)
+        {
             // Multiply frequencies by detune scalings.
             vmul(detuneValues, 1, phaseIncrements, 1, phaseIncrements, 1, framesToProcess);
         }
-    } else {
+    }
+    else
+    {
         // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
         m_detune->smooth(r);
         float detune = m_detune->smoothedValue();
@@ -183,7 +198,8 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
         finalScale *= detuneScale;
     }
 
-    if (hasSampleAccurateValues) {
+    if (hasSampleAccurateValues)
+    {
         // Convert from frequency to wavetable increment.
         vsmul(phaseIncrements, 1, &finalScale, phaseIncrements, 1, framesToProcess);
     }
@@ -191,11 +207,12 @@ bool OscillatorNode::calculateSampleAccuratePhaseIncrements(ContextRenderLock & 
     return hasSampleAccurateValues;
 }
 
-void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
+void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
 
-    if (!isInitialized() || !outputBus->numberOfChannels()) {
+    if (!isInitialized() || !outputBus->numberOfChannels())
+    {
         outputBus->zero();
         return;
     }
@@ -205,14 +222,16 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
 
     // The audio thread can't block on this lock, so we call tryLock() instead.
-    if (!r.context()) {
+    if (!r.context())
+    {
         // Too bad - the tryLock() failed. We must be in the middle of changing wave-tables.
         outputBus->zero();
         return;
     }
 
     // We must access m_waveTable only inside the lock.
-    if (!m_waveTable.get()) {
+    if (!m_waveTable.get())
+    {
         outputBus->zero();
         return;
     }
@@ -222,7 +241,8 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
 
     updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
-    if (!nonSilentFramesToProcess) {
+    if (!nonSilentFramesToProcess)
+    {
         outputBus->zero();
         return;
     }
@@ -230,7 +250,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     unsigned waveTableSize = m_waveTable->periodicWaveSize();
     double invWaveTableSize = 1.0 / waveTableSize;
 
-    float* destP = outputBus->channel(0)->mutableData();
+    float * destP = outputBus->channel(0)->mutableData();
 
     ASSERT(quantumFrameOffset <= framesToProcess);
 
@@ -242,11 +262,12 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     bool hasSampleAccurateValues = calculateSampleAccuratePhaseIncrements(r, framesToProcess);
 
     float frequency = 0;
-    float* higherWaveData = 0;
-    float* lowerWaveData = 0;
+    float * higherWaveData = 0;
+    float * lowerWaveData = 0;
     float tableInterpolationFactor;
 
-    if (!hasSampleAccurateValues) {
+    if (!hasSampleAccurateValues)
+    {
         frequency = m_frequency->smoothedValue();
         float detune = m_detune->smoothedValue();
         float detuneScale = powf(2, detune / 1200);
@@ -255,7 +276,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     }
 
     float incr = frequency * rateScale;
-    float* phaseIncrements = m_phaseIncrements.data();
+    float * phaseIncrements = m_phaseIncrements.data();
 
     unsigned readIndexMask = waveTableSize - 1;
 
@@ -263,7 +284,8 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     destP += quantumFrameOffset;
     size_t n = nonSilentFramesToProcess;
 
-    while (n--) {
+    while (n--)
+    {
         unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
         unsigned readIndex2 = readIndex + 1;
 
@@ -271,7 +293,8 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
         readIndex = readIndex & readIndexMask;
         readIndex2 = readIndex2 & readIndexMask;
 
-        if (hasSampleAccurateValues) {
+        if (hasSampleAccurateValues)
+        {
             incr = *phaseIncrements++;
 
             frequency = invRateScale * incr;
@@ -303,7 +326,7 @@ void OscillatorNode::process(ContextRenderLock& r, size_t framesToProcess)
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::reset(ContextRenderLock&)
+void OscillatorNode::reset(ContextRenderLock &)
 {
     m_virtualReadIndex = 0;
 }
@@ -320,4 +343,4 @@ bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
     return !isPlayingOrScheduled() || hasFinished() || !m_waveTable.get();
 }
 
-} // namespace lab
+}  // namespace lab
