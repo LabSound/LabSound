@@ -20,9 +20,25 @@ class ConcurrentQueue
 public:
     void push(Data const & data)
     {
+        std::queue<Data> the_queue;
+        mutable std::mutex the_mutex;
+        std::condition_variable the_condition_variable;
+
+    public:
+
+        void push(Data const & data)
+        {
+            {
+                std::lock_guard<std::mutex> lock(the_mutex);
+                the_queue.push(data);
+            }
+            the_condition_variable.notify_one();
+        }
+
+        bool empty() const
         {
             std::lock_guard<std::mutex> lock(the_mutex);
-            the_queue.push(data);
+            return the_queue.empty();
         }
         the_condition_variable.notify_one();
     }
@@ -38,7 +54,15 @@ public:
         std::lock_guard<std::mutex> lock(the_mutex);
         if (the_queue.empty())
         {
-            return false;
+            std::lock_guard<std::mutex> lock(the_mutex);
+            if (the_queue.empty())
+            {
+                return false;
+            }
+
+            popped_value = the_queue.front();
+            the_queue.pop();
+            return true;
         }
 
         popped_value = the_queue.front();
@@ -51,7 +75,14 @@ public:
         std::unique_lock<std::mutex> lock(the_mutex);
         while (the_queue.empty())
         {
-            the_condition_variable.wait(lock);
+            std::unique_lock<std::mutex> lock(the_mutex);
+            while (the_queue.empty())
+            {
+                the_condition_variable.wait(lock);
+            }
+
+            popped_value = the_queue.front();
+            the_queue.pop();
         }
 
         popped_value = the_queue.front();
