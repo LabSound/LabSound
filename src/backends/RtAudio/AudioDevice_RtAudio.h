@@ -1,14 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause
+// License: BSD 3 Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
-#pragma once
-
-#ifndef labsound_audiodevice_rtaudio_hpp
-#define labsound_audiodevice_rtaudio_hpp
+#ifndef AudioDestinationRtAudio_h
+#define AudioDestinationRtAudio_h
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 #include "RtAudio.h"
 
@@ -19,29 +17,24 @@ class AudioDevice_RtAudio : public AudioDevice
 {
     AudioDeviceRenderCallback & _callback;
 
-    std::unique_ptr<AudioBus> _renderBus;
-    std::unique_ptr<AudioBus> _inputBus;
+    AudioBus * _renderBus = nullptr;
+    AudioBus * _inputBus = nullptr;
 
-    RtAudio rtaudio_ctx;
-
-    SamplingInfo samplingInfo;
+    RtAudio _dac;
 
 public:
+
     AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioDevice_RtAudio();
 
-    AudioStreamConfig outputConfig;
-    AudioStreamConfig inputConfig;
-    float authoritativeDeviceSampleRateAtRuntime{0.f};
-
     // AudioDevice Interface
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
-    virtual void start() override final;
-    virtual void stop() override final;
+    virtual void start() override;
+    virtual void stop() override;
 };
 
 int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
 
 }  // namespace lab
 
-#endif  // labsound_audiodevice_rtaudio_hpp
+#endif  // AudioDestinationRtAudio_h
