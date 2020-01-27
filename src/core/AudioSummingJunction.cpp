@@ -16,7 +16,7 @@
 namespace lab 
 {
     
-lab::concurrent_queue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
+lab::ConcurrentQueue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
 
 namespace
 {
@@ -31,15 +31,10 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock& r
         asj->updateRenderingState(r);
 }
 
-AudioSummingJunction::AudioSummingJunction() : m_renderingStateNeedUpdating(false)
-{
-    
-}
+AudioSummingJunction::AudioSummingJunction() 
+    : m_renderingStateNeedUpdating(false) { }
 
-AudioSummingJunction::~AudioSummingJunction()
-{
-    
-}
+AudioSummingJunction::~AudioSummingJunction() { }
     
 bool AudioSummingJunction::isConnected(std::shared_ptr<AudioNodeOutput> o) const
 {
