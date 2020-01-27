@@ -8,26 +8,24 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioDevice.h"
 
-
 namespace lab {
 
 class AudioBus;
 class AudioContext;
 struct AudioSourceProvider;
-class LocalAudioInputProvider;
+class AudioHardwareInput;
 
 class AudioHardwareDeviceNode : public AudioNode, public AudioDeviceRenderCallback 
 {
 protected:
 
-    class LocalAudioInputProvider;
-    LocalAudioInputProvider * m_localAudioInputProvider;
+    class AudioHardwareInput;
+    AudioHardwareInput * m_audioHardwareInput {nullptr};
 
     // AudioNode interface 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    float m_sampleRate;
     AudioContext * m_context;
 
     // Platform specific implementation
@@ -35,7 +33,7 @@ protected:
 
 public:
 
-    AudioHardwareDeviceNode(AudioContext * context, size_t channelCount, float sampleRate);
+    AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioHardwareDeviceNode();
     
     // AudioNode interface  
@@ -55,9 +53,9 @@ public:
     size_t numberOfChannels() const { return m_channelCount; }
     float sampleRate() const { return m_sampleRate; }
 
-    AudioSourceProvider * localAudioInputProvider();
+    AudioSourceProvider * AudioHardwareInputProvider();
 
-    // No
+    // @fixme - need to nuke this
     virtual void setChannelCount(ContextGraphLock &, size_t) override;
 };
 

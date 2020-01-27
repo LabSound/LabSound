@@ -17,46 +17,65 @@
 
 namespace lab
 {
+    std::vector<AudioDeviceInfo> MakeAudioDeviceList()
+    {
+        LOG("MakeAudioDeviceList()");
+        return AudioDevice::MakeAudioDeviceList();
+    }
+
+    uint32_t GetDefaultOutputAudioDeviceIndex()
+    {
+        LOG("GetDefaultOutputAudioDeviceIndex()");
+        return AudioDevice::GetDefaultOutputAudioDeviceIndex();
+    }
+
+    uint32_t GetDefaultInputAudioDeviceIndex()
+    {
+        LOG("GetDefaultInputAudioDeviceIndex()");
+        return AudioDevice::GetDefaultInputAudioDeviceIndex();
+    }
+
+    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+    {
+        LOG("MakeRealtimeAudioContext()");
+
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
+        ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), outputConfig, inputConfig));
+        ctx->lazyInitialize();
+        return ctx;
+    }
+
+    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds)
+    {
+        LOG("MakeOfflineAudioContext()");
+
+        const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
+
+        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
+        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), offlineConfig, secondsToRun));
+        ctx->lazyInitialize();
+        return ctx;
+    }
 
     std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
     {
-        AudioSourceProvider * provider = r.context()->device()->localAudioInputProvider();
-        std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(r.context()->sampleRate(), provider));
-        // inputNode->setFormat(r, 1, r.context()->sampleRate()); // @tofix - fixme! 
-        return inputNode;
-    }
+        LOG("MakeAudioHardwareInputNode()");
 
-    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate)
-    {
-        LOG("Initialize Realtime Context");
+        auto device = r.context()->device();
 
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-        ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), numChannels, sample_rate));
-        ctx->lazyInitialize();
-        return ctx;
-    }
-
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds)
-    {
-        LOG("Initialize Offline Context");
-
-        float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
-        ctx->lazyInitialize();
-        return ctx;
-    }
-
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sampleRate)
-    {
-        LOG("Initialize Offline Context");
-
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
-        ctx->lazyInitialize();
-        return ctx;
+        if (device)
+        {
+            if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
+            {
+                std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(r.context()->sampleRate(), hardwareDevice->AudioHardwareInputProvider()));
+                return inputNode;
+            }
+            else
+            {
+                throw std::runtime_error("Cannot create AudioHardwareInputNode. Context does not own an AudioHardwareInputNode.");
+            }
+        }
+        return {};
     }
 
     namespace

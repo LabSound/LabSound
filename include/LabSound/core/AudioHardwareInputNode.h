@@ -17,10 +17,10 @@ namespace lab
         // As an audio source, we will never propagate silence.
         virtual bool propagatesSilence(ContextRenderLock & r) const override { return false; }
         AudioSourceProvider * m_audioSourceProvider;
-        size_t m_sourceNumberOfChannels;
+        size_t m_sourceNumberOfChannels {0};
 
     public:
-        AudioHardwareInputNode(const float sampleRate, AudioSourceProvider *);
+        AudioHardwareInputNode(AudioSourceProvider *);
         virtual ~AudioHardwareInputNode();
 
         // AudioNode

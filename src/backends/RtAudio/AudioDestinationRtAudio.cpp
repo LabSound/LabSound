@@ -8,23 +8,40 @@
 
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+
 #include "LabSound/extended/Logging.h"
 
 #include "RtAudio.h"
+#include "LabSound/LabSound.h"  // for AudioDeviceInfo
 
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 namespace lab
 {
 
-//////////////////////////////////////
-//   MakePlatformSpecificDevice   //
-//////////////////////////////////////
+////////////////////////////////////////////////////
+//   Platform/backend specific static functions   //
+////////////////////////////////////////////////////
+
+std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
+{
+    return {};
+}
+
+uint32_t AudioDevice::GetDefaultOutputAudioDeviceIndex()
+{
+    return {};
+}
+
+uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
+{
+    return {};
+}
 
 AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback, 
-    uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, float sampleRate)
+    const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
 {
-    return new AudioDestinationRtAudio(callback, numberOfInputChannels, numberOfOutputChannels, sampleRate);
+    return new AudioDestinationRtAudio(callback, outputConfig, inputConfig);
 }
 
 /////////////////////////////////

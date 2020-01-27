@@ -29,7 +29,7 @@ namespace lab
 
     public:
 
-        NullDeviceNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels);
+        NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const float lengthSeconds);
         virtual ~NullDeviceNode();
 
         // AudioNode Interface

@@ -21,10 +21,7 @@ class AudioProcessor
     
 public:
     
-    AudioProcessor(unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels)
-    {
-    }
-
+    AudioProcessor(unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels) { }
     virtual ~AudioProcessor() { }
 
     // Full initialization can be done here instead of in the constructor.
@@ -46,6 +43,7 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
+
     bool m_initialized = false;
     size_t m_numberOfChannels;
 };

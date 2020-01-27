@@ -32,6 +32,7 @@
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/WaveShaperNode.h"
+#include "LabSound/core/AudioDevice.h"
 
 // LabSound Extended Public API
 #include "LabSound/extended/ADSRNode.h"
@@ -57,25 +58,6 @@
 
 namespace lab
 {
-    struct AudioDeviceInfo
-    {
-        int32_t index {-1};
-        std::string identifier; 
-        uint32_t num_output_channels;
-        uint32_t num_input_channels;
-        std::vector<float> supported_samplerates;
-        float nominal_samplerate;
-        bool is_default;
-    };
-
-    // Input and Output
-    struct AudioStreamConfig
-    {
-        int32_t device_index {-1};
-        uint32_t desired_channels;
-        float desired_samplerate;
-    };
-
     std::vector<AudioDeviceInfo> MakeAudioDeviceList();
     uint32_t GetDefaultOutputAudioDeviceIndex();
     uint32_t GetDefaultInputAudioDeviceIndex();
