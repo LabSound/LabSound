@@ -64,27 +64,6 @@ size_t AudioNode::channelCount()
     return m_channelCount;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
-{
-    if (!g.context())
-    {
-        throw std::invalid_argument("No context specified");
-    }
-
-    if (channelCount <= AudioContext::maxNumberOfChannels)
-    {
-        if (m_channelCount != channelCount)
-        {
-            m_channelCount = channelCount;
-            if (m_channelCountMode != ChannelCountMode::Max)
-                updateChannelsForInputs(g);
-        }
-        return;
-    }
-
-    throw std::logic_error("Should not be reached");
-}
-
 void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
 {
     if (mode >= ChannelCountMode::End || !g.context())

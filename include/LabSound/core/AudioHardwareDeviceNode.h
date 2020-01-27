@@ -54,9 +54,6 @@ public:
     float sampleRate() const { return m_sampleRate; }
 
     AudioSourceProvider * AudioHardwareInputProvider();
-
-    // @fixme - need to nuke this
-    virtual void setChannelCount(ContextGraphLock &, size_t) override;
 };
 
 } // namespace lab
