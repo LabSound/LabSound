@@ -19,25 +19,25 @@
 
 using namespace lab;
 
-////////////////////////////////////////////////////
-//   AudioHardwareDeviceNode::LocalAudioInputProvider   //
-////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+//   AudioHardwareDeviceNode::AudioHardwareInput   //
+/////////////////////////////////////////////////////
 
-// LocalAudioInputProvider allows us to expose an AudioSourceProvider for local/live audio input.
+// AudioHardwareInput allows us to expose an AudioSourceProvider for local/live audio input.
 // If there is local/live audio input, we call set() with the audio input data every render quantum.
 // `set()` is called in AudioHardwareDeviceNode::render, which is one or two frames above the actual hardware io.
-class AudioHardwareDeviceNode::LocalAudioInputProvider : public AudioSourceProvider
+class AudioHardwareDeviceNode::AudioHardwareInput : public AudioSourceProvider
 {
     AudioBus m_sourceBus;
 
 public:
-    LocalAudioInputProvider(size_t channelCount)
+    AudioHardwareInput(size_t channelCount)
         : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
     {
         epoch[0] = epoch[1] = std::chrono::high_resolution_clock::now();
     }
 
-    virtual ~LocalAudioInputProvider() {}
+    virtual ~AudioHardwareInput() {}
 
     void set(AudioBus * bus)
     {
@@ -61,34 +61,35 @@ public:
 //   AudioHardwareDeviceNode   //
 /////////////////////////////////
 
-AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, size_t channelCount, float sampleRate)
-    : m_sampleRate(sampleRate)
-    , m_context(context)
+AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+    : m_context(context)
 {
-    m_localAudioInputProvider = new LocalAudioInputProvider(channelCount); // @fixme
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    
+    // Ensure that input and output samplerates match
+    if (inputConfig.device_index != -1)
+    {
+        ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
+    }
+
+    m_destination = std::unique_ptr<AudioDevice>(AudioDevice::MakePlatformSpecificDevice(*this, outputConfig, inputConfig));
+
+    LOG("AudioHardwareDeviceNode::MakePlatformSpecificDevice()"
+        "Sample Rate:     %f \n"
+        "Input Channels:  %i \n"
+        "Output Channels: %i \n",
+        outputConfig.desired_samplerate, inputConfig.desired_channels, outputConfig.desired_channels);
+
+    if (inputConfig.device_index != -1)
+    {
+        m_audioHardwareInput = new AudioHardwareInput(inputConfig.desired_channels);  // @fixme
+        m_audioHardwareInput->epoch[0] = m_audioHardwareInput->epoch[1] = std::chrono::high_resolution_clock::now();
+        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    }
 
     // Node-specific default mixing rules.
-    m_channelCount = channelCount;
+    m_channelCount = outputConfig.desired_channels;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
-
-    m_localAudioInputProvider->epoch[0] = m_localAudioInputProvider->epoch[1] = std::chrono::high_resolution_clock::now();
-
-        // Node-specific default mixing rules.
-    m_channelCount = channelCount;
-    m_channelCountMode = ChannelCountMode::Explicit;
-    m_channelInterpretation = ChannelInterpretation::Speakers;
-
-    LOG("Initialize with sample rate: %f\n"
-        "Input Channels: %d\n"
-        "Output Channels: %d\n",
-        m_sampleRate, 1, channelCount);
-
-    m_destination = std::unique_ptr<AudioDevice>(AudioDevice::MakePlatformSpecificDevice(*this, 1, channelCount, m_sampleRate));
-
-    // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
-    // initialize();
 }
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
@@ -156,7 +157,7 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
     // Prepare the local audio input provider for this render quantum.
     if (sourceBus)
     {
-        m_localAudioInputProvider->set(sourceBus);
+        m_audioHardwareInput->set(sourceBus);
     }
 
     /// @TODO why is only input 0 processed?
@@ -183,7 +184,7 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
 
     // Advance current sample-frame.
     int index = 1 - (m_currentSampleFrame & 1);
-    m_localAudioInputProvider->epoch[index] = std::chrono::high_resolution_clock::now();
+    m_audioHardwareInput->epoch[index] = std::chrono::high_resolution_clock::now();
     uint64_t t = m_currentSampleFrame & ~1;
     m_currentSampleFrame = t + numberOfFrames * 2 + index;
 }
@@ -204,13 +205,13 @@ double AudioHardwareDeviceNode::currentSampleTime() const
     int index = t & 1;
     double val = (t / 2) / static_cast<double>(m_sampleRate);
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    std::chrono::high_resolution_clock::time_point::duration dt = t2 - m_localAudioInputProvider->epoch[index];
+    std::chrono::high_resolution_clock::time_point::duration dt = t2 - m_audioHardwareInput->epoch[index];
     return val + (std::chrono::duration_cast<std::chrono::microseconds>(dt).count() * 1.0e-6f);
 }
 
-AudioSourceProvider * AudioHardwareDeviceNode::localAudioInputProvider()
+AudioSourceProvider * AudioHardwareDeviceNode::AudioHardwareInputProvider()
 {
-    return static_cast<AudioSourceProvider *>(m_localAudioInputProvider);
+    return static_cast<AudioSourceProvider *>(m_audioHardwareInput);
 }
 
 void AudioHardwareDeviceNode::setChannelCount(ContextGraphLock & g, size_t channelCount)

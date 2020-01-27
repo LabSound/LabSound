@@ -45,6 +45,7 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
+
     bool m_initialized = false;
     size_t m_numberOfChannels;
 };

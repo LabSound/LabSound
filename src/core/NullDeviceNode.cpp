@@ -18,9 +18,10 @@ namespace lab {
     
 const size_t renderQuantumSize = 128;    
 
-NullDeviceNode::NullDeviceNode(AudioContext * context, const float sampleRate, const float lengthSeconds, const uint32_t numChannels) 
-    : m_numChannels(numChannels), m_lengthSeconds(lengthSeconds), m_context(context)
+NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds) 
+    : m_lengthSeconds(lengthSeconds), m_context(context)
 {
+    m_numChannels = outputConfig.desired_channels;
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, renderQuantumSize));
 }
 
