@@ -213,31 +213,3 @@ AudioSourceProvider * AudioHardwareDeviceNode::AudioHardwareInputProvider()
 {
     return static_cast<AudioSourceProvider *>(m_audioHardwareInput);
 }
-
-void AudioHardwareDeviceNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
-{
-    // The channelCount for the input to this node controls the actual number of channels we
-    // send to the audio hardware. It can only be set depending on the maximum number of
-    // channels supported by the hardware.
-
-    ASSERT(g.context());
-
-    //if (!maxChannelCount() || channelCount > maxChannelCount())
-    //{
-    //    throw std::invalid_argument("Max channel count invalid");
-    //}
-
-    size_t oldChannelCount = this->channelCount();
-    AudioNode::setChannelCount(g, channelCount);
-
-    // @fixme - live channel count modification
-    //if (this->channelCount() != oldChannelCount && isInitialized())
-    //{
-    //    // Re-create destination.
-    //    m_destination->stop();
-    //
-    //    createDestination();
-    //
-    //    m_destination->start();
-    //}
-}
