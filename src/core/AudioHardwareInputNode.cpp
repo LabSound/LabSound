@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BSD-3-Clause
+// License: BSD 2 Clause
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
@@ -11,15 +11,30 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
 
-#include <memory>
-
 namespace lab
 {
 
-AudioHardwareInputNode::AudioHardwareInputNode(AudioSourceProvider * audioSourceProvider)
-    : m_audioSourceProvider(audioSourceProvider)
+AudioHardwareInputNode::AudioHardwareInputNode(const float sampleRate, AudioSourceProvider * audioSourceProvider)
+    : m_audioSourceProvider(audioSourceProvider), m_sourceNumberOfChannels(0)
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
+    // @tofix - defaults to stereo. will change when this node eventually supports multi-channel audio
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+
+    /*
+    
+    formerly ... setFormat(ContextRenderLock & r, size_t numberOfChannels, float sourceSampleRate)
+    if (numberOfChannels != m_sourceNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
+    {
+        // The sample-rate must be equal to the context's sample-rate.
+        if (!numberOfChannels || numberOfChannels > AudioContext::maxNumberOfChannels || sourceSampleRate != r.context()->sampleRate())
+            throw std::runtime_error("AudioHardwareInputNode must match samplerate of context... ");
+
+        m_sourceNumberOfChannels = numberOfChannels;
+
+        // Do any necesssary re-configuration to the output's number of channels.
+        output(0)->setNumberOfChannels(r, numberOfChannels);
+    }
+    */
     initialize();
 }
 
@@ -31,20 +46,6 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
 void AudioHardwareInputNode::process(ContextRenderLock & r, size_t numberOfFrames)
 {
     AudioBus * outputBus = output(0)->bus(r);
-
-    // This used to be the function of a manual call to setFormat()
-    if (m_sourceNumberOfChannels == 0)
-    {
-        auto DeviceAsAudioNode = r.context()->device();
-
-        if (auto DeviceAsRenderCallback = std::dynamic_pointer_cast<AudioDeviceRenderCallback>(DeviceAsAudioNode))
-        {
-            auto inputConfig = DeviceAsRenderCallback->getInputConfig();
-            m_sourceNumberOfChannels = inputConfig.desired_channels;
-            output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
-            outputBus = output(0)->bus(r);  // outputBus pointer was invalidated
-        }
-    }
 
     if (!m_audioSourceProvider)
     {

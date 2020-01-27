@@ -4,32 +4,30 @@
 #include "AudioDestinationWindows.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include "RtAudio.h"
 
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+
 namespace lab
 {
 
-static int NumDefaultOutputChannels()
-{
-    RtAudio audio;
-    uint32_t n = audio.getDeviceCount();
+//////////////////////////////////////
+//   MakePlatformSpecificDevice   //
+//////////////////////////////////////
 
-    uint32_t i = 0;
-    for (uint32_t i = 0; i < n; i++)
-    {
-        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
-        if (info.isDefaultOutput)
-        {
-            //printf("%d channels\n", info.outputChannels);
-            return info.outputChannels;
-        }
-    }
-    return 2;
+AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback, 
+    uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, float sampleRate)
+{
+    return new AudioDestinationRtAudio(callback, numberOfInputChannels, numberOfOutputChannels, sampleRate);
 }
+
+/////////////////////////////////
+//   AudioDestinationRtAudio   //
+/////////////////////////////////
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
@@ -43,7 +41,8 @@ AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallbac
     return new AudioDestinationWin(callback, numberOfOutputChannels, sampleRate);
 }
 
-unsigned long AudioDestination::maxChannelCount()
+AudioDestinationRtAudio::AudioDestinationRtAudio(AudioDeviceRenderCallback & callback, uint32_t numInputChannels, uint32_t numOutputChannels, float sampleRate)
+    : _callback(callback), _numOutputChannels(numOutputChannels), _numInputChannels(numInputChannels), _sampleRate(sampleRate)
 {
     return NumDefaultOutputChannels();
 }
@@ -156,6 +155,7 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
 
     if (_numInputChannels)
     {
+        // Create
         if (!_inputBus || _inputBus->length() < numberOfFrames)
         {
             delete _inputBus;
@@ -169,19 +169,23 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
     {
         // copy the input buffer into channels
         if (kInterleaved)
+        {
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &myInputBufferOfFloats[i];
                 VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), _numInputChannels, numberOfFrames);
             }
+        }
         else
+        {
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &myInputBufferOfFloats[i * numberOfFrames];
                 VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
             }
+        }
     }
 
     // render the output
@@ -191,6 +195,7 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
     {
         // copy the rendered audio to the destination
         if (kInterleaved)
+        {
             for (uint32_t i = 0; i < _numOutputChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
@@ -198,7 +203,9 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
                 // Clamp values at 0db (i.e., [-1.0, 1.0]) and also copy result to the DAC output buffer
                 VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, _numOutputChannels, numberOfFrames);
             }
+        }
         else
+        {
             for (uint32_t i = 0; i < _numOutputChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
@@ -206,6 +213,7 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
                 // Clamp values at 0db (i.e., [-1.0, 1.0]) and also copy result to the DAC output buffer
                 VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, 1, numberOfFrames);
             }
+        }
     }
 }
 
