@@ -13,7 +13,6 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioDestination.h"
 #include "internal/Assertions.h"
 
 #include "readerwriterqueue/readerwriterqueue.h"
@@ -85,6 +84,7 @@ void AudioContext::lazyInitialize()
 
                 if (!isOfflineContext())
                 {
+                    // This starts the audio thread and all audio rendering.
                     // The destination node's provideInput() method will now be called repeatedly to render audio.
                     // Each time provideInput() is called, a portion of the audio stream is rendered. 
                     device_callback->start();
@@ -109,7 +109,7 @@ void AudioContext::uninitialize()
         return;
 
     // This stops the audio thread and all audio rendering.
-    m_device->stop();
+    device_callback->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
@@ -460,12 +460,8 @@ double AudioContext::currentTime() const
 
 float AudioContext::sampleRate() const
 {
-    return device_callback->sampleRate();
-}
-
-void AudioContext::startRendering()
-{
-    device_callback->start();
+    // return device_callback->sampleRate(); // @FIXME
+    return {};
 }
 
 } // End namespace lab

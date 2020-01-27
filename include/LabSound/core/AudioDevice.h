@@ -2,11 +2,13 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef AudioIOCallback_h
-#define AudioIOCallback_h
+#pragma once
+
+#ifndef lab_audiodevice_h
+#define lab_audiodevice_h
 
 #include <stddef.h>
-#include "LabSound/LabSound.h"
+#include <stdint.h>
 
 namespace lab
 {
@@ -55,4 +57,4 @@ namespace lab
 
 } // lab
 
-#endif // AudioIOCallback_h
+#endif // lab_audiodevice_h

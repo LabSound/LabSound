@@ -7,11 +7,13 @@
 #define LABSOUND_H
 
 // WebAudio Public API
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioHardwareInputNode.h"
+#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeInput.h"
@@ -22,11 +24,9 @@
 #include "LabSound/core/ChannelMergerNode.h"
 #include "LabSound/core/ChannelSplitterNode.h"
 #include "LabSound/core/ConvolverNode.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/PannerNode.h"
 #include "LabSound/core/SampledAudioNode.h"

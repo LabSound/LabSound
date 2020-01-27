@@ -3,7 +3,7 @@
 
 #include "LabSound/LabSound.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioDestinationNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -31,7 +31,7 @@ namespace lab
         LOG("Initialize Realtime Context");
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-        ctx->setDevice(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), numChannels, sample_rate));
+        ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), numChannels, sample_rate));
         ctx->lazyInitialize();
         return ctx;
     }
@@ -43,7 +43,7 @@ namespace lab
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        ctx->setDevice(std::make_shared<lab::NullDeviceNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
+        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
         ctx->lazyInitialize();
         return ctx;
     }
@@ -54,7 +54,7 @@ namespace lab
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-        ctx->setDevice(std::make_shared<lab::NullDeviceNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
+        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
         ctx->lazyInitialize();
         return ctx;
     }

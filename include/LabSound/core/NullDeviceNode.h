@@ -2,11 +2,13 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef labsound_null_device_node_h
-#define labsound_null_device_node_h
+#pragma once
 
+#ifndef lab_null_device_node_h
+#define lab_null_device_node_h
+
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
-#include "LabSound/core/AudioIOCallback.h"
 
 namespace lab
 {
@@ -45,4 +47,4 @@ namespace lab
 
 }  // namespace lab
 
-#endif // end labsound_null_device_node_h
+#endif // end lab_null_device_node_h

@@ -6,7 +6,7 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioDestinationNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 #include "RtAudio.h"
 
@@ -18,15 +18,13 @@ class AudioDestinationRtAudio : public AudioDevice
 
 public:
 
-    AudioDestinationRtAudio(AudioIOCallback &, uint32_t numOutputChannels, uint32_t numInputChannels, float sampleRate);
+    AudioDestinationRtAudio(AudioDeviceRenderCallback &, uint32_t numOutputChannels, uint32_t numInputChannels, float sampleRate);
     virtual ~AudioDestinationRtAudio();
 
+    // AudioDevice Interface
+    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override;
     virtual void stop() override;
-
-    float sampleRate() const override { return _sampleRate; }
-
-    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
     uint32_t outputChannelCount() const { return _numOutputChannels; }
 
@@ -34,7 +32,7 @@ private:
 
     void configure();
 
-    AudioIOCallback & _callback;
+    AudioDeviceRenderCallback & _callback;
     AudioBus * _renderBus = nullptr;
     AudioBus * _inputBus = nullptr;
     uint32_t _numOutputChannels = 0;

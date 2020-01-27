@@ -9,6 +9,7 @@
 #include "LabSound/core/ConcurrentQueue.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 
 #include <set>
 #include <atomic>

@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
 
+#include "LabSound/extended/Util.h"
 #include "LabSound/extended/PingPongDelayNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 

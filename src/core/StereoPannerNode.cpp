@@ -10,6 +10,7 @@
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/extended/Util.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
