@@ -26,7 +26,8 @@ namespace lab
         uint32_t num_input_channels;
         std::vector<float> supported_samplerates;
         float nominal_samplerate;
-        bool is_default;
+        bool is_default_output;
+        bool is_default_input;
     };
 
     // Input and Output
