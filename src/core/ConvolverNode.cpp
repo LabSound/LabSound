@@ -8,10 +8,13 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "internal/VectorMath.h"
-#include <math.h>
+#include <cmath>
 
 namespace lab {
     namespace Sound {
+
+using std::isnan;
+using std::isinf;
 
 // from _SoundPipe_FFT.cpp
 struct sp_conv;
