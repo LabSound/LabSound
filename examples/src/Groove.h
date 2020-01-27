@@ -151,7 +151,7 @@ struct GrooveApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<ADSRNode> envelope;
@@ -224,7 +224,7 @@ struct GrooveApp : public LabSoundExampleApp
             envelope->noteOn(0.0);
 
             context->connect(envelope, grooveBox, 0, 0);
-            context->connect(context->destination(), envelope, 0, 0);
+            context->connect(context->device(), envelope, 0, 0);
         }
 
         Wait(std::chrono::seconds(1 + (int) songLenSeconds));

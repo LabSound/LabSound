@@ -8,7 +8,7 @@ struct StereoPanningApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
@@ -21,7 +21,7 @@ struct StereoPanningApp : public LabSoundExampleApp
             context->connect(stereoPanner, audioClipNode, 0, 0);
             audioClipNode->start(0.0f);
 
-            context->connect(context->destination(), stereoPanner, 0, 0);
+            context->connect(context->device(), stereoPanner, 0, 0);
         }
 
         if (audioClipNode)

@@ -12,7 +12,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
     // the recipe at http://webaudio.prototyping.bbc.co.uk/ring-modulator/
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
 #ifndef USE_LIVE
         auto audioClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
@@ -21,7 +21,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
 #endif
 
-        std::shared_ptr<AudioHardwareSourceNode> input;
+        std::shared_ptr<AudioHardwareInputNode> input;
 
         std::shared_ptr<OscillatorNode> vIn;
         std::shared_ptr<GainNode> vInGain;
@@ -79,7 +79,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             // When working on complex graphs it helps to have a pen and paper handy!
 
 #ifdef USE_LIVE
-            input = lab::Sound::MakeHardwareSourceNode(r);
+            input = lab::MakeAudioHardwareInputNode(r);
             context->connect(vcInverter1, input, 0, 0);
             context->connect(vcDiode4->node(), input, 0, 0);
 #else
@@ -110,7 +110,7 @@ struct MicrophoneDalekApp : public LabSoundExampleApp
             context->connect(compressor, vcDiode4->node(), 0, 0);
 
             context->connect(outGain, compressor, 0, 0);
-            context->connect(context->destination(), outGain, 0, 0);
+            context->connect(context->device(), outGain, 0, 0);
         }
 
         Wait(std::chrono::seconds(30));

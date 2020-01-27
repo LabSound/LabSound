@@ -11,17 +11,17 @@ struct TimingApp : public LabSoundExampleApp
     //
     virtual void PlayExample(int argc, char** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        std::unique_ptr<lab::AudioContext> context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         // On Windows, it takes almost 400ms before the audio callbacks
         // begin, so wait for the start up to elapse.
-        while (!context->destination()->currentSampleFrame())
+        while (!context->currentSampleFrame())
         {
             Wait(std::chrono::milliseconds(1));
         }
 
         auto start_tp = std::chrono::high_resolution_clock::now();
-        double start_ac = context->destination()->currentSampleTime();
+        double start_ac = context->currentSampleTime();
 
         std::vector<int64_t> chrono_measure(1000);
         std::vector<int64_t> audio_measure(1000);
@@ -29,11 +29,11 @@ struct TimingApp : public LabSoundExampleApp
         for (int i = 0; i < 1000; ++i)
         {
             auto tp2 = std::chrono::high_resolution_clock::now();
-            auto ac2 = context->destination()->currentSampleTime();
+            auto ac2 = context->currentSampleTime();
             auto int_ms = std::chrono::duration_cast<std::chrono::microseconds>(tp2 - start_tp);
             chrono_measure[i] = static_cast<int64_t>(int_ms.count());
             audio_measure[i] = static_cast<int64_t>(ac2 * 1000000);
-            audio_frame_count[i] = context->destination()->currentSampleFrame();
+            audio_frame_count[i] = context->currentSampleFrame();
             Wait(std::chrono::milliseconds(1));
         }
     }

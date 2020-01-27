@@ -9,7 +9,7 @@ struct SimpleApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
             return;
@@ -32,7 +32,7 @@ struct SimpleApp : public LabSoundExampleApp
 
         // osc -> gain -> destination
         context->connect(gain, oscillator, 0, 0);
-        context->connect(context->destination(), gain, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
 
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(OscillatorType::SINE);

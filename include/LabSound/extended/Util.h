@@ -10,8 +10,17 @@
 #define NO_COPY(C) C(const C &) = delete; C & operator = (const C &) = delete
 #define NO_MOVE(C) NO_COPY(C); C(C &&) = delete; C & operator = (const C &&) = delete
 
+
 namespace lab {
     
+    template <typename S, typename T>
+    inline T clampTo(S value, T min, T max)
+    {
+        if (value >= static_cast<S>(max)) return max;
+        if (value <= static_cast<S>(min)) return min;
+        return static_cast<T>(value);
+    }
+
     // Hard-coded to the IRCAM HRTF Database
     struct HRTFDatabaseInfo
     {

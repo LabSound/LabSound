@@ -8,6 +8,7 @@
 
 #include "LabSound/core/ConcurrentQueue.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 #include <set>
 #include <atomic>
@@ -22,11 +23,11 @@
 namespace lab
 {
 
-class AudioDestinationNode;
+class AudioHardwareDeviceNode;
 class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
-class AudioHardwareSourceNode;
+class AudioHardwareInputNode;
 class AudioNodeInput;
 class AudioNodeOutput;
 class ContextGraphLock;
@@ -55,15 +56,14 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
-    void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
-
-    std::shared_ptr<AudioDestinationNode> destination();
+    void setDeviceNode(std::shared_ptr<AudioNode> device);
+    std::shared_ptr<AudioNode> device();
 
     bool isOfflineContext();
 
-    uint64_t currentSampleFrame() const;
-
     double currentTime() const;
+    double currentSampleTime() const;
+    uint64_t currentSampleFrame() const;
 
     float sampleRate() const;
 
@@ -78,7 +78,7 @@ public:
     void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
-    // Only an AudioDestinationNode should call this.
+    // Only an AudioHardwareDeviceNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
 
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
@@ -88,8 +88,7 @@ public:
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
 
-    // Necessary to call when using an OfflineAudioDestinationNode
-    void startRendering();
+    // void start();  // Necessary to call when using a NullDeviceNode
     std::function<void()> offlineRenderCompleteCallback;
 
     // event dispatching will be called automatically, depending on constructor
@@ -121,7 +120,9 @@ private:
     void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
-    std::shared_ptr<AudioDestinationNode> m_destinationNode;
+    AudioDeviceRenderCallback * device_callback {nullptr};
+    std::shared_ptr<AudioNode> m_device;
+
     std::shared_ptr<AudioListener> m_listener;
 
     // @TODO migrate most of the internal datastructures such as PendingConnection

@@ -7,7 +7,7 @@ struct TremoloApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -37,7 +37,7 @@ struct TremoloApp : public LabSoundExampleApp
             //                                osc > context
             context->connect(modulatorGain, modulator, 0, 0);
             context->connectParam(osc->frequency(), modulatorGain, 0);
-            context->connect(context->destination(), osc, 0, 0);
+            context->connect(context->device(), osc, 0, 0);
         }
 
         Wait(std::chrono::seconds(5));

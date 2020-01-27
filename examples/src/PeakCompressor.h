@@ -8,7 +8,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<AudioBus> kick = MakeBusFromSampleFile("samples/kick.wav", argc, argv);
         std::shared_ptr<AudioBus> hihat = MakeBusFromSampleFile("samples/hihat.wav", argc, argv);
@@ -28,7 +28,7 @@ struct PeakCompressorApp : public LabSoundExampleApp
 
             peakComp = std::make_shared<PeakCompNode>();
             context->connect(peakComp, filter, 0, 0);
-            context->connect(context->destination(), peakComp, 0, 0);
+            context->connect(context->device(), peakComp, 0, 0);
 
             auto schedule_node = [&](std::shared_ptr<AudioBus> sample, std::shared_ptr<AudioNode> destination, const float time)
             {

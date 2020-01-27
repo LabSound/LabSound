@@ -65,11 +65,4 @@ const float piOverFourFloat = static_cast<float>(M_PI_4);
 const double twoPiDouble = piDouble * 2.0;
 const float twoPiFloat = piFloat * 2.0f;
 
-template<typename S, typename T> inline T clampTo(S value, T min, T max)
-{
-    if (value >= static_cast<S>(max)) return max;
-    if (value <= static_cast<S>(min)) return min;
-    return static_cast<T>(value);
-}
-
 #endif // end labsound_macros_h

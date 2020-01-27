@@ -1,5 +1,7 @@
 ﻿---
 BasedOnStyle: WebKit
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
+BreakConstructorInitializersBeforeComma: 'false'
 AlignAfterOpenBracket: Align
 AlignOperands: 'true'
 AllowShortFunctionsOnASingleLine: Inline
@@ -16,5 +18,4 @@ SpaceInEmptyParentheses: 'false'
 SpacesBeforeTrailingComments: '2'
 Standard: Cpp11
 UseTab: Never
-
 ...

@@ -8,7 +8,7 @@ struct SpatializationApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
@@ -18,7 +18,7 @@ struct SpatializationApp : public LabSoundExampleApp
             ContextRenderLock r(context.get(), "spatialization");
 
             panner->setPanningModel(PanningMode::HRTF);
-            context->connect(context->destination(), panner, 0, 0);
+            context->connect(context->device(), panner, 0, 0);
 
             audioClipNode->setBus(r, audioClip);
             context->connect(panner, audioClipNode, 0, 0);

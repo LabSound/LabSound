@@ -3,7 +3,7 @@
 
 #include "LabSound/LabSound.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/DefaultAudioDestinationNode.h"
+#include "LabSound/core/AudioDestinationNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -17,22 +17,21 @@
 
 namespace lab
 {
-namespace Sound
-{
 
-    std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r)
+    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
     {
-        AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
-        std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
-        inputNode->setFormat(r, 1, r.context()->sampleRate());
+        AudioSourceProvider * provider = r.context()->device()->localAudioInputProvider();
+        std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(r.context()->sampleRate(), provider));
+        // inputNode->setFormat(r, 1, r.context()->sampleRate()); // @tofix - fixme! 
         return inputNode;
     }
 
     std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate)
     {
         LOG("Initialize Realtime Context");
+
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-        ctx->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(ctx.get(), numChannels, sample_rate));
+        ctx->setDevice(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), numChannels, sample_rate));
         ctx->lazyInitialize();
         return ctx;
     }
@@ -44,7 +43,7 @@ namespace Sound
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
+        ctx->setDevice(std::make_shared<lab::NullDeviceNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
         ctx->lazyInitialize();
         return ctx;
     }
@@ -55,14 +54,15 @@ namespace Sound
 
         std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
         float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-        ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
+        ctx->setDevice(std::make_shared<lab::NullDeviceNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
         ctx->lazyInitialize();
         return ctx;
     }
 
     namespace
     {
-        char const * const NodeNames[] = {
+        char const * const NodeNames[] = 
+        {
             "ADSR",
             "Analyser",
             "AudioBasicProcessor",
@@ -95,7 +95,8 @@ namespace Sound
             "StereoPanner",
             "SuperSaw",
             "WaveShaper",
-            nullptr};
+            nullptr
+        };
     }
 
     char const * const * const AudioNodeNames()
@@ -103,7 +104,6 @@ namespace Sound
         return NodeNames;
     }
 
-}  // Sound
 }  // lab
 
 ///////////////////////
@@ -133,3 +133,4 @@ void LabSoundAssertLog(const char * file_, int line, const char * function_, con
     const char * assertion = assertion_ ? assertion_ : "Assertion failed";
     printf("Assertion: %s:%s:%d - %s\n", function, file_, line, assertion);
 }
+

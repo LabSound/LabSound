@@ -7,31 +7,18 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-namespace lab {
-
-class AudioBus;
-
-class AudioSourceProviderClient 
+namespace lab
 {
-    public:
-        virtual void setFormat(ContextRenderLock& r, size_t numberOfChannels, float sampleRate) = 0;
-    protected:
-        virtual ~AudioSourceProviderClient() { }
-};
+    class AudioBus;
 
-// Abstract base-class for a pull-model client.
-class AudioSourceProvider 
-{
-public:
+    // Abstract base-class for a pull-model client.
     // provideInput() gets called repeatedly to render time-slices of a continuous audio stream.
-    virtual void provideInput(AudioBus* bus, size_t framesToProcess) = 0;
+    struct AudioSourceProvider
+    {
+        virtual void provideInput(AudioBus * bus, size_t framesToProcess) = 0;
+        virtual ~AudioSourceProvider() { }
+    };
 
-    // If a client is set, we call it back when the audio format is available or changes.
-    virtual void setClient(AudioSourceProviderClient*) { };
+}  // lab
 
-    virtual ~AudioSourceProvider() { }
-};
-
-} // lab
-
-#endif // AudioSourceProvider_h
+#endif  // AudioSourceProvider_h

@@ -63,7 +63,7 @@ class ContextRenderLock;
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs. An AudioSourceNode has no inputs and a single output.
-// An AudioDestinationNode has one input and no outputs and represents the final destination to the audio hardware.
+// An AudioHardwareDeviceNode has one input and no outputs and represents the final destination to the audio hardware.
 // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
 class AudioNode
 {

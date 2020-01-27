@@ -38,7 +38,7 @@ namespace lab
 
         virtual void process(ContextRenderLock&, size_t) override;
 
-        virtual void reset(ContextRenderLock&) override { /*m_currentSampleFrame = 0;*/ }
+        virtual void reset(ContextRenderLock&) override { }
 
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }

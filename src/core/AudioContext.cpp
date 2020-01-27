@@ -6,10 +6,10 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/DefaultAudioDestinationNode.h"
-#include "LabSound/core/OfflineAudioDestinationNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
-#include "LabSound/core/AudioHardwareSourceNode.h"
+#include "LabSound/core/AudioHardwareInputNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -37,7 +37,8 @@ struct AudioContext::Internals
 const size_t lab::AudioContext::maxNumberOfChannels = 32;
 
 // Constructor for realtime rendering
-AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) : m_isOfflineContext(isOffline)
+AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) 
+    : m_isOfflineContext(isOffline)
 {
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
@@ -77,25 +78,23 @@ void AudioContext::lazyInitialize()
         ASSERT(!m_isAudioThreadFinished);
         if (!m_isAudioThreadFinished)
         {
-            if (m_destinationNode.get())
+            if (m_device.get())
             {
-                m_destinationNode->initialize();
-
                 graphKeepAlive = 0.25f; // pump the graph for the first 0.25 seconds
                 graphUpdateThread = std::thread(&AudioContext::update, this);
 
                 if (!isOfflineContext())
                 {
-                    // This starts the audio thread. The destination node's provideInput() method will now be called repeatedly to render audio.
-                    // Each time provideInput() is called, a portion of the audio stream is rendered. Let's call this time period a "render quantum".
-                    m_destinationNode->startRendering();
+                    // The destination node's provideInput() method will now be called repeatedly to render audio.
+                    // Each time provideInput() is called, a portion of the audio stream is rendered. 
+                    device_callback->start();
                 }
 
                 cv.notify_all();
             }
             else
             {
-                LOG_ERROR("m_destinationNode not specified");
+                LOG_ERROR("m_device not specified");
             }
             m_isInitialized = true;
         }
@@ -110,12 +109,12 @@ void AudioContext::uninitialize()
         return;
 
     // This stops the audio thread and all audio rendering.
-    m_destinationNode->uninitialize();
+    m_device->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
 
-    updateAutomaticPullNodes(); // added for the case where an OfflineAudioDestinationNode needs to update the graph
+    updateAutomaticPullNodes(); // added for the case where an NullDeviceNode needs to update the graph
 
     m_isInitialized = false;
 }
@@ -415,19 +414,23 @@ void AudioContext::dispatchEvents()
     std::function<void()> event_fn;
     while (m_internal->enqueuedEvents.try_dequeue(event_fn))
     {
-        if (event_fn)
-            event_fn();
+        if (event_fn) event_fn();
     }
 }
 
-void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> node)
+void AudioContext::setDeviceNode(std::shared_ptr<AudioNode> device)
 {
-    m_destinationNode = node;
+    m_device = device;
+
+    if (auto * callback = dynamic_cast<AudioDeviceRenderCallback*>(device.get()))
+    {
+        device_callback = callback;
+    }
 }
 
-std::shared_ptr<AudioDestinationNode> AudioContext::destination()
+std::shared_ptr<AudioNode> AudioContext::device()
 {
-    return m_destinationNode;
+    return m_device;
 }
 
 bool AudioContext::isOfflineContext()
@@ -435,30 +438,34 @@ bool AudioContext::isOfflineContext()
     return m_isOfflineContext;
 }
 
-uint64_t AudioContext::currentSampleFrame() const
-{
-    return m_destinationNode->currentSampleFrame();
-}
-
-double AudioContext::currentTime() const
-{
-    return m_destinationNode->currentTime();
-}
-
-float AudioContext::sampleRate() const
-{
-    ASSERT(m_destinationNode);
-    return m_destinationNode->sampleRate();
-}
-
 std::shared_ptr<AudioListener> AudioContext::listener()
 {
     return m_listener;
 }
 
+double AudioContext::currentSampleTime() const
+{
+    return device_callback->currentSampleTime();
+}
+
+uint64_t AudioContext::currentSampleFrame() const
+{
+    return device_callback->currentSampleFrame();
+}
+
+double AudioContext::currentTime() const
+{
+    return device_callback->currentTime();
+}
+
+float AudioContext::sampleRate() const
+{
+    return device_callback->sampleRate();
+}
+
 void AudioContext::startRendering()
 {
-    destination()->startRendering();
+    device_callback->start();
 }
 
 } // End namespace lab

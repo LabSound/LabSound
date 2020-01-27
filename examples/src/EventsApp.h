@@ -7,7 +7,7 @@ struct EventsApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
             return;
@@ -21,7 +21,7 @@ struct EventsApp : public LabSoundExampleApp
             musicClipNode->setBus(r, musicClip);
         }
         context->connect(gain, musicClipNode, 0, 0);
-        context->connect(context->destination(), gain, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
 
         musicClipNode->setOnEnded([](){ 
             std::cout << "clip finished" << std::endl;

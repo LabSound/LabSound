@@ -8,7 +8,7 @@ struct RedAlertApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;
@@ -147,7 +147,7 @@ struct RedAlertApp : public LabSoundExampleApp
 
             // filterSum --> destination
             context->connectParam(filterSum->gain(), outputGainFunction, 0);
-            context->connect( context->destination(), filterSum, 0, 0);
+            context->connect( context->device(), filterSum, 0, 0);
         }
 
         Wait(std::chrono::seconds(10));

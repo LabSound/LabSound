@@ -31,7 +31,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -73,7 +73,7 @@ struct InfiniteFMApp : public LabSoundExampleApp
             context->connect(feedbackTap, signalGain, 0, 0);                    // Signal to Feedback
             context->connect(chainDelay, feedbackTap, 0, 0);                    // Feedback to Delay
             context->connect(signalGain, chainDelay, 0, 0);                     // Delay to signalGain
-            context->connect(context->destination(), signalGain, 0, 0);         // signalGain to DAC
+            context->connect(context->device(), signalGain, 0, 0);         // signalGain to DAC
         }
 
         int now = 0;

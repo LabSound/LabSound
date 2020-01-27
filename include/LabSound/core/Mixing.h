@@ -1,8 +1,8 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef Mixing_h
-#define Mixing_h
+#ifndef labsound_mixing_h
+#define labsound_mixing_h
 
 #include <stdint.h>
 
@@ -50,6 +50,6 @@ namespace lab
         End
     };
 
-}
+} // end namespace lab
 
-#endif
+#endif // end labsound_mixing_h

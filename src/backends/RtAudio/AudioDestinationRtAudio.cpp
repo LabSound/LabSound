@@ -6,56 +6,54 @@
 #include "internal/Assertions.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include "RtAudio.h"
 
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+
 namespace lab
 {
 
-static int NumDefaultOutputChannels()
-{
-    RtAudio audio;
-    uint32_t n = audio.getDeviceCount();
+//////////////////////////////////////
+//   MakePlatformSpecificDevice   //
+//////////////////////////////////////
 
-    uint32_t i = 0;
-    for (uint32_t i = 0; i < n; i++)
-    {
-        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
-        if (info.isDefaultOutput)
-        {
-            //printf("%d channels\n", info.outputChannels);
-            return info.outputChannels;
-        }
-    }
-    return 2;
+AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback, 
+    uint32_t numberOfInputChannels, uint32_t numberOfOutputChannels, float sampleRate)
+{
+    return new AudioDestinationRtAudio(callback, numberOfInputChannels, numberOfOutputChannels, sampleRate);
 }
+
+/////////////////////////////////
+//   AudioDestinationRtAudio   //
+/////////////////////////////////
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-AudioDestination * AudioDestination::MakePlatformAudioDestination(AudioIOCallback & callback,
-                                                                  uint32_t numberOfInputChannels,
-                                                                  uint32_t numberOfOutputChannels,
-                                                                  float sampleRate)
-{
-    return new AudioDestinationRtAudio(callback, numberOfInputChannels, numberOfOutputChannels, sampleRate);
-}
+//unsigned long AudioDevice::maxChannelCount()
+//{
+//    RtAudio audio;
+//    uint32_t n = audio.getDeviceCount();
+//
+//    uint32_t i = 0;
+//    for (uint32_t i = 0; i < n; i++)
+//    {
+//        RtAudio::DeviceInfo info(audio.getDeviceInfo(i));
+//        if (info.isDefaultOutput)
+//        {
+//            return info.outputChannels;
+//        }
+//    }
+//    return 2;
+//}
 
-unsigned long AudioDestination::maxChannelCount()
-{
-    return NumDefaultOutputChannels();
-}
-
-AudioDestinationRtAudio::AudioDestinationRtAudio(AudioIOCallback & callback,
-                                                 uint32_t numInputChannels, uint32_t numOutputChannels, float sampleRate)
-    : _callback(callback)
-    , _numOutputChannels(numOutputChannels)
-    , _numInputChannels(numInputChannels)
-    , _sampleRate(sampleRate)
+AudioDestinationRtAudio::AudioDestinationRtAudio(AudioDeviceRenderCallback & callback, uint32_t numInputChannels, uint32_t numOutputChannels, float sampleRate)
+    : _callback(callback), _numOutputChannels(numOutputChannels), _numInputChannels(numInputChannels), _sampleRate(sampleRate)
 {
     configure();
 }
@@ -167,6 +165,7 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
 
     if (_numInputChannels)
     {
+        // Create
         if (!_inputBus || _inputBus->length() < numberOfFrames)
         {
             delete _inputBus;
@@ -180,19 +179,23 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
     {
         // copy the input buffer into channels
         if (kInterleaved)
+        {
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &myInputBufferOfFloats[i];
                 VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), _numInputChannels, numberOfFrames);
             }
+        }
         else
+        {
             for (uint32_t i = 0; i < _numInputChannels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &myInputBufferOfFloats[i * numberOfFrames];
                 VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), 1, numberOfFrames);
             }
+        }
     }
 
     // render the output
@@ -202,6 +205,7 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
     {
         // copy the rendered audio to the destination
         if (kInterleaved)
+        {
             for (uint32_t i = 0; i < _numOutputChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
@@ -209,7 +213,9 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
                 // Clamp values at 0db (i.e., [-1.0, 1.0]) and also copy result to the DAC output buffer
                 VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, _numOutputChannels, numberOfFrames);
             }
+        }
         else
+        {
             for (uint32_t i = 0; i < _numOutputChannels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
@@ -217,6 +223,7 @@ void AudioDestinationRtAudio::render(int numberOfFrames, void * outputBuffer, vo
                 // Clamp values at 0db (i.e., [-1.0, 1.0]) and also copy result to the DAC output buffer
                 VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, 1, numberOfFrames);
             }
+        }
     }
 }
 
@@ -229,8 +236,7 @@ int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBuffer
     // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * self->outputChannelCount());
 
-    AudioDestinationRtAudio * audioDestination = static_cast<AudioDestinationRtAudio *>(userData);
-    audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
+    self->render(nBufferFrames, fBufOut, inputBuffer);
     return 0;
 }
 

@@ -7,11 +7,11 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::Sound::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
 
         {
             std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
-            std::shared_ptr<AudioHardwareSourceNode> input;
+            std::shared_ptr<AudioHardwareInputNode> input;
             std::shared_ptr<ConvolverNode> convolve;
             std::shared_ptr<GainNode> wetGain;
             std::shared_ptr<RecorderNode> recorder;
@@ -19,7 +19,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
             {
                 ContextRenderLock r(context.get(), "MicrophoneReverbApp");
 
-                input = lab::Sound::MakeHardwareSourceNode(r);
+                input = lab::MakeAudioHardwareInputNode(r);
 
                 recorder = std::make_shared<RecorderNode>();
                 context->addAutomaticPullNode(recorder);
@@ -34,7 +34,7 @@ struct MicrophoneReverbApp : public LabSoundExampleApp
 
                 context->connect(convolve, input, 0, 0);
                 context->connect(wetGain, convolve, 0, 0);
-                context->connect(context->destination(), wetGain, 0, 0);
+                context->connect(context->device(), wetGain, 0, 0);
                 context->connect(recorder, wetGain, 0, 0);
             }
 

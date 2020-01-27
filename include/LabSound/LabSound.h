@@ -11,8 +11,7 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioDestinationNode.h"
-#include "LabSound/core/AudioHardwareSourceNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeInput.h"
@@ -23,11 +22,11 @@
 #include "LabSound/core/ChannelMergerNode.h"
 #include "LabSound/core/ChannelSplitterNode.h"
 #include "LabSound/core/ConvolverNode.h"
-#include "LabSound/core/DefaultAudioDestinationNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/OfflineAudioDestinationNode.h"
+#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/PannerNode.h"
 #include "LabSound/core/SampledAudioNode.h"
@@ -58,15 +57,35 @@
 
 namespace lab
 {
-    namespace Sound
+    struct AudioDeviceInfo
     {
-        // Factory functions for convenience.
-        std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r);
-        std::unique_ptr<AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate = LABSOUND_DEFAULT_SAMPLERATE);
-        std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds);
-        std::unique_ptr<AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sample_rate);
-        char const * const * const AudioNodeNames();
-    }
-}  // lab::Sound
+        int32_t index {-1};
+        std::string identifier; 
+        uint32_t num_output_channels;
+        uint32_t num_input_channels;
+        std::vector<float> supported_samplerates;
+        float nominal_samplerate;
+        bool is_default;
+    };
+
+    // Input and Output
+    struct AudioStreamConfig
+    {
+        int32_t device_index {-1};
+        uint32_t desired_channels;
+        float desired_samplerate;
+    };
+
+    std::vector<AudioDeviceInfo> MakeAudioDeviceList();
+    uint32_t GetDefaultOutputAudioDeviceIndex();
+    uint32_t GetDefaultInputAudioDeviceIndex();
+
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
+
+    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
+
+    char const * const * const AudioNodeNames();
+}
 
 #endif
