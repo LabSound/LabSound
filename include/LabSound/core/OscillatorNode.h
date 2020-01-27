@@ -21,7 +21,6 @@ class AudioSetting;
 //
 class OscillatorNode : public AudioScheduledSourceNode
 {
-
 public:
 
     OscillatorNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
@@ -34,14 +33,25 @@ public:
     OscillatorType type() const;
     void setType(OscillatorType type);
 
+    std::shared_ptr<AudioParam> amplitude() { return m_amplitude; }
     std::shared_ptr<AudioParam> frequency() { return m_frequency; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
+    std::shared_ptr<AudioParam> bias() { return m_bias; }
 
 
 private:
     void _setType(OscillatorType type);
 
     float m_sampleRate;
+
+    double _lab_phase = 0; // new sine oscillator
+
+    std::shared_ptr<AudioParam> m_amplitude; // default 1
+    std::shared_ptr<AudioParam> m_frequency; // hz
+    std::shared_ptr<AudioParam> m_bias;  // default 0
+
+    // Detune value (deviating from the frequency) in Cents.
+    std::shared_ptr<AudioParam> m_detune;
 
     void setWaveTable(std::shared_ptr<WaveTable> table);
 
@@ -50,14 +60,13 @@ private:
 
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
+    void process_oscillator(ContextRenderLock & r, int frames);
+
     // One of the waveform types defined in the enum.
     std::shared_ptr<AudioSetting> m_type;
 
     // Frequency value in Hertz.
-    std::shared_ptr<AudioParam> m_frequency;
 
-    // Detune value (deviating from the frequency) in Cents.
-    std::shared_ptr<AudioParam> m_detune;
 
     bool m_firstRender;
 
@@ -65,9 +74,10 @@ private:
     // Since it's floating-point, it has sub-sample accuracy.
     double m_virtualReadIndex;
 
-    // Stores sample-accurate values calculated according to frequency and detune.
     AudioFloatArray m_phaseIncrements;
+    AudioFloatArray m_biasValues;
     AudioFloatArray m_detuneValues;
+    AudioFloatArray m_amplitudeValues;
 
     std::shared_ptr<WaveTable> m_waveTable;
 

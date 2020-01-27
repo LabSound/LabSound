@@ -249,8 +249,12 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, uint32_t index)
 
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
 {
-    if (!param) throw std::invalid_argument("No parameter specified");
-    if (index >= driver->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs on the driver");
+    if (!param) 
+        throw std::invalid_argument("No parameter specified");
+
+    if (index >= driver->numberOfOutputs()) 
+        throw std::out_of_range("Output index greater than available outputs on the driver");
+
     m_internal->pendingParamConnections.push(std::make_tuple(param, driver, index));
     cv.notify_all();
 }
