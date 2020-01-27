@@ -74,6 +74,31 @@ void NullDeviceNode::start()
     }
 }
 
+void NullDeviceNode::stop()
+{
+
+}
+
+void NullDeviceNode::render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) 
+{
+
+}
+
+uint64_t NullDeviceNode::currentSampleFrame() const 
+{
+    return {};
+}
+
+double NullDeviceNode::currentTime() const 
+{
+     return {};
+}
+
+double NullDeviceNode::currentSampleTime() const 
+{
+    return {};
+}
+
 void NullDeviceNode::offlineRender()
 {
     LOG("Starting Offline Rendering");
