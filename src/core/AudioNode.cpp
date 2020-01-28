@@ -71,7 +71,8 @@ void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
         throw std::invalid_argument("No context specified");
     }
 
-    if (channelCount <= AudioContext::maxNumberOfChannels)
+    int c = channelCount < AudioContext::maxNumberOfChannels ? channelCount : AudioContext::maxNumberOfChannels;
+    if (m_channelCount != c)
     {
         if (m_channelCount != channelCount)
         {
@@ -81,10 +82,7 @@ void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
                 updateChannelsForInputs(g);
             }
         }
-        return;
     }
-
-    throw std::logic_error("Should not be reached");
 }
 
 void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
@@ -93,22 +91,18 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
     {
         throw std::invalid_argument("No context specified");
     }
-    else
+
+    if (m_channelCountMode != mode)
     {
-        if (m_channelCountMode != mode)
-        {
-            m_channelCountMode = mode;
-            updateChannelsForInputs(g);
-        }
+        m_channelCountMode = mode;
+        updateChannelsForInputs(g);
     }
 }
 
 void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 {
     for (auto input : m_inputs)
-    {
         input->changedOutputs(g);
-    }
 }
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
