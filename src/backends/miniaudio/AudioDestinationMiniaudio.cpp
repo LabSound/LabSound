@@ -52,6 +52,7 @@ AudioDestinationMiniaudio::AudioDestinationMiniaudio(AudioIOCallback & callback,
 
 AudioDestinationMiniaudio::~AudioDestinationMiniaudio()
 {
+    stop();
     ma_device_uninit(&_device);
     delete _renderBus;
     delete _inputBus;
