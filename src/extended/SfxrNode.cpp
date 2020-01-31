@@ -176,6 +176,7 @@
 #include "LabSound/extended/SfxrNode.h"
 
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSetting.h"
 
 #include <math.h>
 #include <memory.h>
@@ -583,12 +584,14 @@ void SfxrNode::Sfxr::SynthSample(size_t length, float* buffer, FILE* file)
 
 namespace lab {
 
+    char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
+
     SfxrNode::SfxrNode(float sampleRate) : AudioScheduledSourceNode(), sfxr(new SfxrNode::Sfxr())
     {
         // Output is always mono.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-        _waveType = make_shared<AudioParam>("waveType", 0, 0, 3);
+        _waveType = make_shared<AudioSetting>("waveType", s_waveTypes);
         _attack = make_shared<AudioParam>("attack", 0, 0, 1);
         _sustainTime = make_shared<AudioParam>("sustain", 0.3, 0, 1);
         _sustainPunch = make_shared<AudioParam>("sustainPunch", 0, 0, 1);
@@ -612,7 +615,7 @@ namespace lab {
         _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", 0, 0, 1);
         _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", 0, -1, 1);
 
-        m_params.push_back(_waveType);
+        m_settings.push_back(_waveType);
         m_params.push_back(_attack);
         m_params.push_back(_sustainTime);
         m_params.push_back(_sustainPunch);
@@ -684,7 +687,15 @@ namespace lab {
 { typ v = static_cast<typ>(val->value(r)); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
 
         bool needUpdate = false;
-        UPDATE(int, wave_type, _waveType)
+        {
+            int v = _waveType->valueUint32();
+            if (sfxr->wave_type != v)
+            {
+                needUpdate = true;
+                sfxr->wave_type = v;
+            }
+        }
+            
         UPDATE(float, p_base_freq, _startFrequency)
         UPDATE(float, p_freq_limit, _minFrequency)
         UPDATE(float, p_freq_ramp, _slide)
@@ -751,7 +762,7 @@ namespace lab {
 
     void SfxrNode::setDefaultBeep() {
         // Wave shape
-        _waveType->setValue(SQUARE);
+        _waveType->setEnumeration(SQUARE);
 
         // Envelope
         _attack->setValue(0);
@@ -810,13 +821,12 @@ namespace lab {
         }
     }
 
-    /// @TODO this should be queued up for the next processing call to avoid the context lock requirement
-    /// or we need a variation of value that is threadsafe
+    /// @TODO the audioParams should be read into buffers in the case that they are time varying
     void SfxrNode::laser(ContextRenderLock& r) {
         setDefaultBeep();
-        _waveType->setValue(static_cast<float>(rnd(2)));
-        if(_waveType->value(r) == SINE && rnd(1))
-            _waveType->setValue(static_cast<float>(rnd(1)));
+        _waveType->setEnumeration(rnd(2));
+        if(_waveType->valueUint32() == SINE && rnd(1))
+            _waveType->setEnumeration(rnd(1));
         if (rnd(2) == 0) {
             _startFrequency->setValue(0.3f + frnd(0.6f));
             _minFrequency->setValue(frnd(0.1f));
@@ -827,7 +837,7 @@ namespace lab {
             if (_minFrequency->value(r) < 0.2f) _minFrequency->setValue(0.2f);
             _slide->setValue(-0.15f - frnd(0.2f));
         }
-        if (_waveType->value(r) == SAWTOOTH)
+        if (_waveType->valueUint32() == SAWTOOTH)
             _squareDuty->setValue(1);
         if (rnd(1)) {
             _squareDuty->setValue(frnd(0.5f));
@@ -850,7 +860,7 @@ namespace lab {
 
     void SfxrNode::explosion() {
         setDefaultBeep();
-        _waveType->setValue(NOISE);
+        _waveType->setEnumeration(NOISE);
         if (rnd(1)) {
             _startFrequency->setValue(sqr(0.1f + frnd(0.4f)));
             _slide->setValue(-0.1f + frnd(0.4f));
@@ -883,7 +893,7 @@ namespace lab {
     void SfxrNode::powerUp() {
         setDefaultBeep();
         if (rnd(1)) {
-            _waveType->setValue(SAWTOOTH);
+            _waveType->setEnumeration(SAWTOOTH);
             _squareDuty->setValue(1);
         }
         else {
@@ -909,12 +919,12 @@ namespace lab {
     /// @TODO remove need for context lock see above
     void SfxrNode::hit(ContextRenderLock& r) {
         setDefaultBeep();
-        _waveType->setValue(static_cast<float>(rnd(2)));
-        if (_waveType->value(r) == SINE)
-            _waveType->setValue(NOISE);
-        if (_waveType->value(r) == SQUARE)
+        _waveType->setEnumeration(rnd(2));
+        if (_waveType->valueUint32() == SINE)
+            _waveType->setEnumeration(NOISE);
+        if (_waveType->valueUint32() == SQUARE)
             _squareDuty->setValue(frnd(0.6f));
-        if (_waveType->value(r) == SAWTOOTH)
+        if (_waveType->valueUint32() == SAWTOOTH)
             _squareDuty->setValue(1);
         _startFrequency->setValue(0.2f + frnd(0.6f));
         _slide->setValue(-0.3f - frnd(0.4f));
@@ -927,7 +937,7 @@ namespace lab {
 
     void SfxrNode::jump() {
         setDefaultBeep();
-        _waveType->setValue(SQUARE);
+        _waveType->setEnumeration(SQUARE);
         _squareDuty->setValue(frnd(0.6f));
         _startFrequency->setValue(0.3f + frnd(0.3f));
         _slide->setValue(0.1f + frnd(0.2f));
@@ -943,8 +953,8 @@ namespace lab {
     /// @TODO remove need for context lock see above
     void SfxrNode::select(ContextRenderLock& r) {
         setDefaultBeep();
-        _waveType->setValue(static_cast<float>(rnd(1)));
-        if (_waveType->value(r) == SQUARE)
+        _waveType->setEnumeration(rnd(1));
+        if (_waveType->valueUint32() == SQUARE)
             _squareDuty->setValue(frnd(0.6f));
         else
             _squareDuty->setValue(1);
@@ -955,7 +965,6 @@ namespace lab {
         _hpFilterCutoff->setValue(0.1f);
     }
 
-    /// @TODO remove need for context lock see above
     void SfxrNode::mutate(ContextRenderLock& r) {
         if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
         if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
@@ -1019,10 +1028,7 @@ namespace lab {
         _changeAmount->setValue(frnd(2) - 1);
     }
 
-#ifdef __APPLE__
-#pragma mark ____________________________
-#pragma mark Conversions
-#endif
+    //------------------------------------------------------------------------
 
     // Conversion math was found here https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
     // and inverted as necessary.
@@ -1077,10 +1083,7 @@ namespace lab {
         return powf(s3, 1.0f/3.0f);
     }
 
-#ifdef __APPLE__
-#pragma mark ____________________________
-#pragma mark Convenience
-#endif
+    //------------------------------------------------------------------------
 
     void SfxrNode::setStartFrequencyInHz(float hz) {
         _startFrequency->setValue(frequencyInSfxrUnits(hz));

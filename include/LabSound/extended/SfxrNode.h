@@ -22,7 +22,7 @@ namespace lab {
         virtual void reset(ContextRenderLock&) override;
 
         // SfxrNode - values in sfxr units
-        std::shared_ptr<AudioParam> waveType() const { return _waveType; }
+        std::shared_ptr<AudioSetting> waveType() const { return _waveType; }
 
         std::shared_ptr<AudioParam> attackTime() const { return _attack; }
         std::shared_ptr<AudioParam> sustainTime() const { return _sustainTime; }
@@ -89,7 +89,7 @@ namespace lab {
     private:
         virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
-        std::shared_ptr<AudioParam> _waveType;
+        std::shared_ptr<AudioSetting> _waveType;
         std::shared_ptr<AudioParam> _attack;
         std::shared_ptr<AudioParam> _sustainTime;
         std::shared_ptr<AudioParam> _sustainPunch;
