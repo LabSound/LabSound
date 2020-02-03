@@ -40,7 +40,7 @@ struct SimpleApp : public LabSoundExampleApp
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
 
-        oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
+        oscillator = std::make_shared<OscillatorNode>(48000.f); // fixme
         gain = std::make_shared<GainNode>();
         gain->gain()->setValue(0.0625f);
 

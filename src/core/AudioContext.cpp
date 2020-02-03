@@ -462,6 +462,9 @@ double AudioContext::currentTime() const
 float AudioContext::sampleRate() const
 {
     // return device_callback->sampleRate(); // @FIXME
+
+    return 48000.f;
+
     return {};
 }
 

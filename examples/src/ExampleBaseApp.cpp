@@ -75,12 +75,14 @@ std::shared_ptr<AudioBus> LabSoundExampleApp::MakeBusFromSampleFile(char const*c
 {
     std::string path_prefix;
     auto cmds = SplitCommandLine(argc, argv);
+
     if (cmds.size() > 1)
         path_prefix = cmds[1] + "/";    // cmds[0] is the path to the exe
+
     std::string path = path_prefix + name;
+    std::cout << "Loading: " << path << std::endl;
     std::shared_ptr<AudioBus> musicClip = MakeBusFromFile(path, false);
-    if (!musicClip)
-        std::cerr << "Could not open " << path << "\n";
+    if (!musicClip) throw std::runtime_error("couldn't open " + path);
 
     return musicClip;
 }
