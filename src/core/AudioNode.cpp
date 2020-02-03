@@ -19,7 +19,6 @@ using namespace std;
 namespace lab
 {
 
-AudioNode::AudioNode() = default;
 AudioNode::~AudioNode()
 {
     uninitialize();
@@ -61,7 +60,32 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(size_t i)
 
 size_t AudioNode::channelCount()
 {
+    ASSERT(m_channelCount != 0);
     return m_channelCount;
+}
+
+void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
+{
+    if (!g.context())
+    {
+        throw std::invalid_argument("No context specified");
+    }
+
+    if (channelCount <= AudioContext::maxNumberOfChannels)
+    {
+        if (m_channelCount != channelCount)
+        {
+            m_channelCount = channelCount;
+            if (m_channelCountMode != ChannelCountMode::Max)
+            {
+                std::cout << ">>>>>>>>>> UPDATING CHANNEL COUNT: " << m_channelCount << std::endl;
+                updateChannelsForInputs(g);
+            }
+        }
+        return;
+    }
+
+    throw std::logic_error("Should not be reached");
 }
 
 void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)

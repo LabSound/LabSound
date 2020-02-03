@@ -39,7 +39,6 @@ private:
     virtual void initialize() override;
     virtual void uninitialize() override;
     
-    
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     

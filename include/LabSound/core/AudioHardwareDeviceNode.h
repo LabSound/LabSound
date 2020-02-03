@@ -50,8 +50,8 @@ public:
     virtual double currentTime() const override;
     virtual double currentSampleTime() const override;
 
-    size_t numberOfChannels() const { return m_channelCount; }
-    float sampleRate() const { return m_sampleRate; }
+    //size_t numberOfChannels() const { return m_channelCount; }
+    //float sampleRate() const { return m_sampleRate; }
 
     AudioSourceProvider * AudioHardwareInputProvider();
 };

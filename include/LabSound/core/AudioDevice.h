@@ -9,6 +9,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 namespace lab
 {
@@ -22,20 +24,20 @@ namespace lab
     {
         int32_t index{-1};
         std::string identifier;
-        uint32_t num_output_channels;
-        uint32_t num_input_channels;
+        uint32_t num_output_channels {0};
+        uint32_t num_input_channels {0};
         std::vector<float> supported_samplerates;
-        float nominal_samplerate;
-        bool is_default_output;
-        bool is_default_input;
+        float nominal_samplerate {0};
+        bool is_default_output {false};
+        bool is_default_input {false};
     };
 
     // Input and Output
     struct AudioStreamConfig
     {
         int32_t device_index{-1};
-        uint32_t desired_channels;
-        float desired_samplerate;
+        uint32_t desired_channels {0};
+        float desired_samplerate {0};
     };
 
     ///////////////////////////////////
@@ -76,6 +78,8 @@ namespace lab
         virtual ~AudioDevice() {}
         virtual void start() = 0;
         virtual void stop() = 0;
+
+        virtual float getSampleRate() = 0;
     };
 
     //  virtual float sampleRate() const = 0; // basically get configured settings

@@ -36,6 +36,12 @@ namespace lab
         virtual void initialize() override;
         virtual void uninitialize() override;
 
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+        virtual void process(ContextRenderLock &, size_t) override {}  // NullDeviceNode is pulled by its own internal thread so this is never called
+        virtual void reset(ContextRenderLock &) override {}; // @fixme
+
         // AudioDeviceRenderCallback interface
         virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
         virtual void start() override;

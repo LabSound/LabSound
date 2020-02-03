@@ -33,7 +33,7 @@ ConvolverNode::ConvolverNode() : m_swapOnRender(false)
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
     
     // Node-specific default mixing rules.
-    m_channelCount = 2;
+    // m_channelCount = 2; @dimitri
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 

@@ -58,9 +58,9 @@
 
 namespace lab
 {
-    std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-    uint32_t GetDefaultOutputAudioDeviceIndex();
-    uint32_t GetDefaultInputAudioDeviceIndex();
+    const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
+    const uint32_t GetDefaultOutputAudioDeviceIndex();
+    const uint32_t GetDefaultInputAudioDeviceIndex();
 
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);

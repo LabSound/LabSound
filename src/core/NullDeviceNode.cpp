@@ -23,6 +23,9 @@ NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig o
 {
     m_numChannels = outputConfig.desired_channels;
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, renderQuantumSize));
+
+    // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
+    // initialize();
 }
 
 NullDeviceNode::~NullDeviceNode()
@@ -71,33 +74,33 @@ void NullDeviceNode::start()
     }
     else
     {
-        LOG("Offline rendering has already started");
+        LOG("NullDeviceNode rendering already started");
     }
 }
 
 void NullDeviceNode::stop()
 {
-
+    // @fixme
 }
 
 void NullDeviceNode::render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) 
 {
-
+    // @fixme
 }
 
 uint64_t NullDeviceNode::currentSampleFrame() const 
 {
-    return {};
+    return {};  // @fixme
 }
 
 double NullDeviceNode::currentTime() const 
 {
-     return {};
+    return {};  // @fixme
 }
 
 double NullDeviceNode::currentSampleTime() const 
 {
-    return {};
+    return {};  // @fixme
 }
 
 void NullDeviceNode::offlineRender()
@@ -121,6 +124,7 @@ void NullDeviceNode::offlineRender()
     // Break up the render target into smaller "render quantize" sized pieces.
     size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize);
 
+    // @todo - early exit if stop or reset called
     while (framesToProcess > 0)
     {
         render(0, m_renderBus.get(), renderQuantumSize);

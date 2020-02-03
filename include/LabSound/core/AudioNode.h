@@ -74,7 +74,7 @@ public:
         ProcessingSizeInFrames = 128
     };
 
-    AudioNode();
+    AudioNode() = default;
     virtual ~AudioNode();
 
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
@@ -131,6 +131,8 @@ public:
     void unsilenceOutputs(ContextRenderLock&);
 
     size_t channelCount();
+
+    void setChannelCount(ContextGraphLock & g, size_t channelCount);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
@@ -209,8 +211,10 @@ protected:
 
     std::vector<std::shared_ptr<AudioParam>> m_params;
     std::vector<std::shared_ptr<AudioSetting>> m_settings;
-    size_t m_channelCount;
-    float m_sampleRate;
+
+    size_t m_channelCount {0};
+
+    //float m_sampleRate; // @fixme - nuke this
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 };

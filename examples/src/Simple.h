@@ -9,7 +9,29 @@ struct SimpleApp : public LabSoundExampleApp
 {
     virtual void PlayExample(int argc, char** argv) override
     {
-        auto context = lab::MakeRealtimeAudioContext(lab::Channels::Stereo);
+        const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
+        const uint32_t default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
+        const uint32_t default_input_device = lab::GetDefaultInputAudioDeviceIndex();
+
+        std::unique_ptr<lab::AudioContext> context;
+
+        AudioDeviceInfo defaultDeviceInfo;
+        for (auto & info : audioDevices)
+        {
+            if (info.index == default_output_device) defaultDeviceInfo = info;
+        }
+
+        if (defaultDeviceInfo.index != -1)
+        {
+            AudioStreamConfig inputConfig, outputConfig;
+
+            outputConfig.device_index = defaultDeviceInfo.index;
+            outputConfig.desired_channels = std::min(uint32_t(2), defaultDeviceInfo.num_output_channels);
+            outputConfig.desired_samplerate = defaultDeviceInfo.nominal_samplerate;
+
+            context = lab::MakeRealtimeAudioContext(outputConfig, inputConfig);
+        }
+
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
             return;

@@ -17,19 +17,19 @@
 
 namespace lab
 {
-    std::vector<AudioDeviceInfo> MakeAudioDeviceList()
+    const std::vector<AudioDeviceInfo> MakeAudioDeviceList()
     {
         LOG("MakeAudioDeviceList()");
         return AudioDevice::MakeAudioDeviceList();
     }
 
-    uint32_t GetDefaultOutputAudioDeviceIndex()
+    const uint32_t GetDefaultOutputAudioDeviceIndex()
     {
         LOG("GetDefaultOutputAudioDeviceIndex()");
         return AudioDevice::GetDefaultOutputAudioDeviceIndex();
     }
 
-    uint32_t GetDefaultInputAudioDeviceIndex()
+    const uint32_t GetDefaultInputAudioDeviceIndex()
     {
         LOG("GetDefaultInputAudioDeviceIndex()");
         return AudioDevice::GetDefaultInputAudioDeviceIndex();
@@ -67,7 +67,7 @@ namespace lab
         {
             if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
             {
-                std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(r.context()->sampleRate(), hardwareDevice->AudioHardwareInputProvider()));
+                std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(hardwareDevice->AudioHardwareInputProvider()));
                 return inputNode;
             }
             else
