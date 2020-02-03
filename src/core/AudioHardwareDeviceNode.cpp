@@ -153,11 +153,13 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
     }
 
     // Denormals can slow down audio processing.
+    // Use an RAII object to protect all AudioNodes processed within this scope.
+
     /// @TODO under what circumstance do they arise?
     /// If they come from input data such as loaded WAV files, they should be corrected
     /// at source. If they can result from signal processing; again, where? The
     /// signal processing should not produce denormalized values.
-    /// Use an RAII object to protect all AudioNodes processed within this scope.
+
     DenormalDisabler denormalDisabler;
 
     // Let the context take care of any business at the start of each render quantum.
