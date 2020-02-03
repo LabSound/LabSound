@@ -136,6 +136,8 @@ public:
     size_t channelCount();
     void setChannelCount(ContextGraphLock & g, size_t channelCount);
 
+    void setChannelCount(ContextGraphLock & g, size_t channelCount);
+
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
 

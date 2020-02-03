@@ -64,7 +64,6 @@ public:
 AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
     : m_context(context)
 {
-    
     // Ensure that input and output samplerates match
     if (inputConfig.device_index != -1)
     {
@@ -73,23 +72,32 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
 
     m_destination = std::unique_ptr<AudioDevice>(AudioDevice::MakePlatformSpecificDevice(*this, outputConfig, inputConfig));
 
-    LOG("AudioHardwareDeviceNode::MakePlatformSpecificDevice()"
-        "Sample Rate:     %f \n"
-        "Input Channels:  %i \n"
-        "Output Channels: %i \n",
+    LOG("MakePlatformSpecificDevice() \n"
+        "\tSample Rate:     %f \n"
+        "\tInput Channels:  %i \n"
+        "\tOutput Channels: %i \n",
         outputConfig.desired_samplerate, inputConfig.desired_channels, outputConfig.desired_channels);
 
     if (inputConfig.device_index != -1)
     {
         m_audioHardwareInput = new AudioHardwareInput(inputConfig.desired_channels);  // @fixme
         m_audioHardwareInput->epoch[0] = m_audioHardwareInput->epoch[1] = std::chrono::high_resolution_clock::now();
-        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     }
 
+    // This is the final node in the chain. It willpull on all others from this input. 
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+
     // Node-specific default mixing rules.
-    m_channelCount = outputConfig.desired_channels;
+    //m_channelCount = outputConfig.desired_channels;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
+    
+    ContextGraphLock glock(context, "AudioHardwareDeviceNode");
+
+    AudioNode::setChannelCount(glock, outputConfig.desired_channels);
+
+    // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
+    initialize();
 }
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
@@ -112,7 +120,8 @@ void AudioHardwareDeviceNode::uninitialize()
 
 void AudioHardwareDeviceNode::start()
 {
-    ASSERT(isInitialized());
+    initialize(); // presumably called by the context
+
     if (isInitialized())
     {
         m_destination->start();
@@ -148,7 +157,7 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
     /// If they come from input data such as loaded WAV files, they should be corrected
     /// at source. If they can result from signal processing; again, where? The
     /// signal processing should not produce denormalized values.
-    // Use an RAII object to protect all AudioNodes processed within this scope.
+    /// Use an RAII object to protect all AudioNodes processed within this scope.
     DenormalDisabler denormalDisabler;
 
     // Let the context take care of any business at the start of each render quantum.
@@ -159,9 +168,6 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
     {
         m_audioHardwareInput->set(sourceBus);
     }
-
-    /// @TODO why is only input 0 processed?
-    /// Debug: how many inputs are there?!
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
     AudioBus * renderedBus = input(0)->pull(renderLock, destinationBus, numberOfFrames);
@@ -184,9 +190,10 @@ void AudioHardwareDeviceNode::render(AudioBus * sourceBus, AudioBus * destinatio
 
     // Advance current sample-frame.
     int index = 1 - (m_currentSampleFrame & 1);
-    m_audioHardwareInput->epoch[index] = std::chrono::high_resolution_clock::now();
     uint64_t t = m_currentSampleFrame & ~1;
     m_currentSampleFrame = t + numberOfFrames * 2 + index;
+
+    if (m_audioHardwareInput) m_audioHardwareInput->epoch[index] = std::chrono::high_resolution_clock::now();
 }
 
 uint64_t AudioHardwareDeviceNode::currentSampleFrame() const
@@ -196,14 +203,14 @@ uint64_t AudioHardwareDeviceNode::currentSampleFrame() const
 
 double AudioHardwareDeviceNode::currentTime() const
 {
-    return currentSampleFrame() / static_cast<double>(m_sampleRate);
+    return currentSampleFrame() / static_cast<double>(m_destination->getSampleRate());
 }
 
 double AudioHardwareDeviceNode::currentSampleTime() const
 {
     uint64_t t = m_currentSampleFrame;
     int index = t & 1;
-    double val = (t / 2) / static_cast<double>(m_sampleRate);
+    double val = (t / 2) / static_cast<double>(m_destination->getSampleRate());
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point::duration dt = t2 - m_audioHardwareInput->epoch[index];
     return val + (std::chrono::duration_cast<std::chrono::microseconds>(dt).count() * 1.0e-6f);

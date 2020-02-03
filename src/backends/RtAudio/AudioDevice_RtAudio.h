@@ -5,8 +5,8 @@
 #define AudioDestinationRtAudio_h
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "RtAudio.h"
 
@@ -17,20 +17,25 @@ class AudioDevice_RtAudio : public AudioDevice
 {
     AudioDeviceRenderCallback & _callback;
 
-    AudioBus * _renderBus = nullptr;
-    AudioBus * _inputBus = nullptr;
+    std::unique_ptr<AudioBus> _renderBus;
+    std::unique_ptr<AudioBus> _inputBus;
 
-    RtAudio _dac;
+    RtAudio rtaudio_ctx;
 
 public:
 
     AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioDevice_RtAudio();
 
+    AudioStreamConfig outputConfig;
+    AudioStreamConfig inputConfig;
+    float authoritativeDeviceSampleRateAtRuntime {0.f};
+
     // AudioDevice Interface
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
-    virtual void start() override;
-    virtual void stop() override;
+    virtual void start() override final;
+    virtual void stop() override final;
+    virtual float getSampleRate() override final;
 };
 
 int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);

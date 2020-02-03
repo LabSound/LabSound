@@ -198,6 +198,11 @@ void AudioDevice_RtAudio::stop()
     samplingInfo = {};
 }
 
+float AudioDevice_RtAudio::getSampleRate() 
+{
+    return authoritativeDeviceSampleRateAtRuntime;
+}
+
 // Pulls on our provider to get rendered audio stream.
 void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
