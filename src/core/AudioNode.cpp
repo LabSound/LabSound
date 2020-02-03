@@ -245,7 +245,7 @@ void AudioNode::unsilenceOutputs(ContextRenderLock & r)
     }
 }
 
-std::shared_ptr<AudioParam> AudioNode::getParam(char const * const str)
+std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 {
     for (auto & p : m_params)
     {
@@ -255,7 +255,7 @@ std::shared_ptr<AudioParam> AudioNode::getParam(char const * const str)
     return {};
 }
 
-std::shared_ptr<AudioSetting> AudioNode::getSetting(char const * const str)
+std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 {
     for (auto & p : m_settings)
     {
@@ -265,7 +265,7 @@ std::shared_ptr<AudioSetting> AudioNode::getSetting(char const * const str)
     return {};
 }
 
-std::vector<std::string> AudioNode::params() const
+std::vector<std::string> AudioNode::paramNames() const
 {
     std::vector<std::string> ret;
     for (auto & p : m_params)
@@ -275,7 +275,7 @@ std::vector<std::string> AudioNode::params() const
     return ret;
 }
 
-std::vector<std::string> AudioNode::settings() const
+std::vector<std::string> AudioNode::settingNames() const
 {
     std::vector<std::string> ret;
     for (auto & p : m_settings)
