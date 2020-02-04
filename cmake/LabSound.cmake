@@ -46,8 +46,8 @@ if (LABSOUND_USE_MINIAUDIO)
 elseif (LABSOUND_USE_RTAUDIO)
     message(INFO, "Using RtAudio backend")
     set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDestinationRtAudio.h"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
         "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
         "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
     )
