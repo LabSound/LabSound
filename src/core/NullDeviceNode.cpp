@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/core/AudioNodeInput.h"
 
 #include "internal/Assertions.h"
 
@@ -16,16 +17,14 @@ using namespace std;
  
 namespace lab {
     
-const size_t renderQuantumSize = 128;    
+static const size_t offlineRenderSizeQuantum = 4096;    
 
 NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds) 
     : m_lengthSeconds(lengthSeconds), m_context(context)
 {
     m_numChannels = outputConfig.desired_channels;
-    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, renderQuantumSize));
-
-    // NB: Special case - the audio context calls initialize so that rendering doesn't start before the context is ready
-    // initialize();
+    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 }
 
 NullDeviceNode::~NullDeviceNode()
@@ -83,24 +82,15 @@ void NullDeviceNode::stop()
     // @fixme
 }
 
-void NullDeviceNode::render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) 
+void NullDeviceNode::render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info)
 {
-    // @fixme
+    pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
+    // @todo - update `info` here
 }
 
-uint64_t NullDeviceNode::currentSampleFrame() const 
+const SamplingInfo NullDeviceNode::getSamplingInfo() const
 {
-    return {};  // @fixme
-}
-
-double NullDeviceNode::currentTime() const 
-{
-    return {};  // @fixme
-}
-
-double NullDeviceNode::currentSampleTime() const 
-{
-    return {};  // @fixme
+    return {}; // @todo
 }
 
 void NullDeviceNode::offlineRender()
@@ -111,7 +101,7 @@ void NullDeviceNode::offlineRender()
     if (!m_renderBus.get())
         return;
 
-    bool isRenderBusAllocated = m_renderBus->length() >= renderQuantumSize;
+    bool isRenderBusAllocated = m_renderBus->length() >= offlineRenderSizeQuantum;
     ASSERT(isRenderBusAllocated);
     if (!isRenderBusAllocated)
         return;
@@ -121,14 +111,15 @@ void NullDeviceNode::offlineRender()
     if (!isAudioContextInitialized) 
         return;
 
-    // Break up the render target into smaller "render quantize" sized pieces.
-    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / renderQuantumSize);
+    // Break up the desired length into smaller "render quantum" sized pieces.
+    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / offlineRenderSizeQuantum);
 
     // @todo - early exit if stop or reset called
     while (framesToProcess > 0)
     {
-        render(0, m_renderBus.get(), renderQuantumSize);
-        framesToProcess -= 1;
+        SamplingInfo info; // @fixme
+        render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
+        framesToProcess--;
     }
 
     LOG("Stopping Offline Rendering");

@@ -78,7 +78,6 @@ void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
             m_channelCount = channelCount;
             if (m_channelCountMode != ChannelCountMode::Max)
             {
-                std::cout << ">>>>>>>>>> UPDATING CHANNEL COUNT: " << m_channelCount << std::endl;
                 updateChannelsForInputs(g);
             }
         }

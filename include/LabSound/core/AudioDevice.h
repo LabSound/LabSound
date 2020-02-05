@@ -11,10 +11,14 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <chrono>
 
 namespace lab
 {
     class AudioBus;
+    class AudioContext;
+    class AudioNodeInput;
+    class AudioHardwareInput;
 
     /////////////////////////////////////////////
     //   Audio Device Configuration Settings   //
@@ -24,49 +28,63 @@ namespace lab
     {
         int32_t index{-1};
         std::string identifier;
-        uint32_t num_output_channels {0};
-        uint32_t num_input_channels {0};
+        uint32_t num_output_channels{0};
+        uint32_t num_input_channels{0};
         std::vector<float> supported_samplerates;
-        float nominal_samplerate {0};
-        bool is_default_output {false};
-        bool is_default_input {false};
+        float nominal_samplerate{0};
+        bool is_default_output{false};
+        bool is_default_input{false};
     };
 
     // Input and Output
     struct AudioStreamConfig
     {
         int32_t device_index{-1};
-        uint32_t desired_channels {0};
-        float desired_samplerate {0};
+        uint32_t desired_channels{0};
+        float desired_samplerate{0};
     };
+
+    // low bit of current_sample_frame indexes time point 0 or 1
+    // (so that time and epoch are written atomically, after the alternative epoch has been filled in)
+    struct SamplingInfo
+    {
+        uint64_t current_sample_frame{0};
+        double current_time{0.0};
+        float sampling_rate{0.0};
+        std::chrono::high_resolution_clock::time_point epoch[2];
+    };
+
+    // This is a free function to consolidate and implement the required functionality to take buffers
+    // from the hardware (both input and output) and begin pulling the graph until fully rendered per quanta. 
+    // This was formerly a function found on the removed `AudioDestinationNode` class (removed
+    // to de-complicate some annoying inheritance chains). `pull_graph(...)` will need to be called by a single AudioNode
+    // per-context. For instance, the `AudioHardwareDeviceNode` or the `NullDeviceNode`. 
+    void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames, 
+        const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
     ///////////////////////////////////
     //   AudioDeviceRenderCallback   //
     ///////////////////////////////////
 
     // `render()` is called periodically to get the next render quantum of audio into destinationBus.
-    // Optional audio input is given in sourceBus (if not nullptr). This structure also keeps
+    // Optional audio input is given in src (if not nullptr). This structure also keeps
     // track of timing information with respect to the callback.
     class AudioDeviceRenderCallback
     {
-    protected:
-        uint64_t m_currentSampleFrame {0};
     public:
         virtual ~AudioDeviceRenderCallback() {}
-        virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t framesToProcess) = 0;
-        virtual void start()                        = 0;
-        virtual void stop()                         = 0;
-        virtual uint64_t currentSampleFrame() const = 0;
-        virtual double currentTime() const          = 0;
-        virtual double currentSampleTime() const    = 0;
+        virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) = 0;
+        virtual void start() = 0;
+        virtual void stop() = 0;
+        virtual const SamplingInfo getSamplingInfo() const = 0;
     };
 
     /////////////////////
     //   AudioDevice   //
     /////////////////////
 
-    // The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to 
-    // render/output the next render quantum of audio. It optionally will pass in local/live audio 
+    // The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to
+    // render/output the next render quantum of audio. It optionally will pass in local/live audio
     // input when it calls `render()`.
     struct AudioDevice
     {
@@ -79,11 +97,11 @@ namespace lab
         virtual void start() = 0;
         virtual void stop() = 0;
 
-        virtual float getSampleRate() = 0;
+        // Possible future API if required: 
+        // virtual const AudioStreamConfig getOutputConfig() const = 0;
+        // virtual const AudioStreamConfig getInputConfig() const = 0;
     };
 
-    //  virtual float sampleRate() const = 0; // basically get configured settings
+}  // lab
 
-} // lab
-
-#endif // lab_audiodevice_h
+#endif  // lab_audiodevice_h

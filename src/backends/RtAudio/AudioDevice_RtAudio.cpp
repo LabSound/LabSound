@@ -171,6 +171,8 @@ AudioDevice_RtAudio::~AudioDevice_RtAudio()
 
 void AudioDevice_RtAudio::start()
 {
+    ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f); // something went very wrong
+    samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
     try { rtaudio_ctx.startStream(); }
     catch (const RtAudioError & e) { LOG_ERROR(e.getMessage().c_str()); }
 }
@@ -179,11 +181,7 @@ void AudioDevice_RtAudio::stop()
 {
     try { rtaudio_ctx.stopStream(); }
     catch (const RtAudioError & e) { LOG_ERROR(e.getMessage().c_str()); }
-}
-
-float AudioDevice_RtAudio::getSampleRate() 
-{
-    return authoritativeDeviceSampleRateAtRuntime;
+    samplingInfo = {};
 }
 
 // Pulls on our provider to get rendered audio stream.
@@ -234,7 +232,15 @@ void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void *
     }
 
     // Pull on the graph
-    _callback.render(_inputBus.get(), _renderBus.get(), numberOfFrames);
+    _callback.render(_inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
+
+    // Update sampling info
+    const int32_t index = 1 - (samplingInfo.current_sample_frame & 1);
+    const uint64_t t = samplingInfo.current_sample_frame & ~1;
+    samplingInfo.sampling_rate = authoritativeDeviceSampleRateAtRuntime;
+    samplingInfo.current_sample_frame = t + numberOfFrames + index;
+    samplingInfo.current_time = samplingInfo.current_sample_frame / static_cast<double>(samplingInfo.sampling_rate);
+    samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
     if (outputConfig.desired_channels)

@@ -41,7 +41,7 @@ void AudioBus::setChannelMemory(size_t channelIndex, float * storage, size_t len
     if (channelIndex < m_channels.size()) 
     {
         channel(channelIndex)->set(storage, length);
-        m_length = length; // FIXME: verify that this length matches all the other channel lengths
+        m_length = length; // @fixme - verify that this length matches all the other channel lengths
     }
 }
 
@@ -234,8 +234,7 @@ void AudioBus::copyFrom(const AudioBus& sourceBus, ChannelInterpretation channel
 		{
         case ChannelInterpretation::Speakers: speakersCopyFrom(sourceBus); break;
         case ChannelInterpretation::Discrete: discreteCopyFrom(sourceBus); break;
-        default:
-            ASSERT_NOT_REACHED();
+        default: ASSERT_NOT_REACHED();
         }
     }
 }

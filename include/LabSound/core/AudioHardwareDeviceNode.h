@@ -12,15 +12,12 @@ namespace lab {
 
 class AudioBus;
 class AudioContext;
-struct AudioSourceProvider;
 class AudioHardwareInput;
+struct AudioSourceProvider;
 
 class AudioHardwareDeviceNode : public AudioNode, public AudioDeviceRenderCallback 
 {
 protected:
-
-    class AudioHardwareInput;
-    AudioHardwareInput * m_audioHardwareInput {nullptr};
 
     // AudioNode interface 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
@@ -29,7 +26,9 @@ protected:
     AudioContext * m_context;
 
     // Platform specific implementation
-    std::unique_ptr<AudioDevice> m_destination;
+    std::unique_ptr<AudioDevice> m_platformAudioDevice;
+    AudioHardwareInput * m_audioHardwareInput{nullptr};
+    SamplingInfo last_info;
 
 public:
 
@@ -37,21 +36,16 @@ public:
     virtual ~AudioHardwareDeviceNode();
     
     // AudioNode interface  
-    virtual void process(ContextRenderLock &, size_t) override { } // AudioHardwareDeviceNode is pulled by hardware so this is never called
+    virtual void process(ContextRenderLock &, size_t) override {} // AudioHardwareDeviceNode is pulled by hardware so this is never called
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 
     // AudioDeviceRenderCallback interface
-    virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
+    virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) override;
     virtual void start() override;
     virtual void stop() override;
-    virtual uint64_t currentSampleFrame() const override;
-    virtual double currentTime() const override;
-    virtual double currentSampleTime() const override;
-
-    //size_t numberOfChannels() const { return m_channelCount; }
-    //float sampleRate() const { return m_sampleRate; }
+    virtual const SamplingInfo getSamplingInfo() const override;
 
     AudioSourceProvider * AudioHardwareInputProvider();
 };

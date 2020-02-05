@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef AUDIO_CONTEXT_H
-#define AUDIO_CONTEXT_H
+#ifndef lab_audio_context_h
+#define lab_audio_context_h
 
 #include "LabSound/core/ConcurrentQueue.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
@@ -62,10 +62,9 @@ public:
 
     bool isOfflineContext();
 
+    // Query AudioDeviceRenderCallback properties
     double currentTime() const;
-    double currentSampleTime() const;
     uint64_t currentSampleFrame() const;
-
     float sampleRate() const;
 
     std::shared_ptr<AudioListener> listener();
@@ -89,7 +88,6 @@ public:
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
 
-    // void start();  // Necessary to call when using a NullDeviceNode
     std::function<void()> offlineRenderCompleteCallback;
 
     // event dispatching will be called automatically, depending on constructor
@@ -126,7 +124,7 @@ private:
 
     std::shared_ptr<AudioListener> m_listener;
 
-    // @TODO migrate most of the internal datastructures such as PendingConnection
+    // @todo - migrate most of the internal datastructures such as PendingConnection
     // into Internals as there's no need to expose these at all.
     struct Internals;
     std::unique_ptr<Internals> m_internal;
@@ -138,7 +136,7 @@ private:
 
     enum class ConnectionType : int
     {
-        Disconnect = 0,
+        Disconnect,
         Connect,
         FinishDisconnect
     };
@@ -180,4 +178,4 @@ private:
 
 } // End namespace lab
 
-#endif // AudioContext_h
+#endif // lab_audio_context_h

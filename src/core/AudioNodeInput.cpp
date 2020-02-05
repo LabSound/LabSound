@@ -38,8 +38,7 @@ void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput
         return;
 
     // return if input is already connected to this output.
-    if (junction->isConnected(toOutput))
-        return;
+    if (junction->isConnected(toOutput)) return;
 
     toOutput->addInput(g, junction);
     junction->junctionConnectOutput(toOutput);
@@ -121,15 +120,14 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
     return m_internalSummingBus.get();
 }
 
-
-AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
 {
     updateRenderingState(r);
 
-    size_t c = numberOfRenderingConnections(r);
+    size_t num_connections = numberOfRenderingConnections(r);
 
     // Handle single connection case.
-    if (c == 1)
+    if (num_connections == 1)
     {
         // If this input is simply passing data through, then immediately delegate the pull request to it.
         auto output = renderingOutput(r, 0);
@@ -138,10 +136,10 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
              return output->pull(r, inPlaceBus, framesToProcess);
         }
 
-        c = 0; // if there's a single input, but it has no output; treat this input as silent.
+        num_connections = 0; // if there's a single input, but it has no output; treat this input as silent.
     }
 
-    if (c == 0)
+    if (num_connections == 0)
     {
         // Generate silence if we're not connected to anything, and return the silent bus
         /// @TODO a possible optimization is to flag silence and propagate it to consumers of this input.
@@ -152,7 +150,7 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // multiple connections
     m_internalSummingBus->zero();
 
-    for (int i = 0; i < c; ++i)
+    for (int i = 0; i < num_connections; ++i)
     {
         auto output = renderingOutput(r, i);
         if (output)

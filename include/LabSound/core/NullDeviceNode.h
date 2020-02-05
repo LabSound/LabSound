@@ -43,12 +43,10 @@ namespace lab
         virtual void reset(ContextRenderLock &) override {}; // @fixme
 
         // AudioDeviceRenderCallback interface
-        virtual void render(AudioBus * sourceBus, AudioBus * destinationBus, size_t numberOfFrames) override;
-        virtual void start() override;
-        virtual void stop() override;
-        virtual uint64_t currentSampleFrame() const override;
-        virtual double currentTime() const override;
-        virtual double currentSampleTime() const override;
+        virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) override final;
+        virtual void start() override final;
+        virtual void stop() override final;
+        virtual const SamplingInfo getSamplingInfo() const override final;
     };
 
 }  // namespace lab

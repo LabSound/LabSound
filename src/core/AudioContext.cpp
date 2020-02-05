@@ -24,6 +24,8 @@
 namespace lab
 {
 
+const size_t lab::AudioContext::maxNumberOfChannels = 96;
+
 struct AudioContext::Internals
 {
     Internals(bool a) : autoDispatchEvents(a) {}
@@ -32,8 +34,6 @@ struct AudioContext::Internals
     moodycamel::ReaderWriterQueue<std::function<void()>> enqueuedEvents;
     bool autoDispatchEvents;
 };
-
-const size_t lab::AudioContext::maxNumberOfChannels = 96;
 
 // Constructor for realtime rendering
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) 
@@ -196,9 +196,9 @@ void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    const float frameSizeMs = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
-    const float graphTickDurationMs = frameSizeMs * 16; // = ~5.5ms
-    const int graphTickDurationUs = static_cast<int>(graphTickDurationMs * 1000.f);  // = ~5550us
+    const float frameLengthInMilliseconds = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
+    const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
+    const uint32_t graphTickDurationUs = static_cast<uint32_t>(graphTickDurationMs * 1000.f);  // = ~5550us
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
@@ -444,28 +444,19 @@ std::shared_ptr<AudioListener> AudioContext::listener()
     return m_listener;
 }
 
-double AudioContext::currentSampleTime() const
+double AudioContext::currentTime() const
 {
-    return device_callback->currentSampleTime();
+    return device_callback->getSamplingInfo().current_time;
 }
 
 uint64_t AudioContext::currentSampleFrame() const
 {
-    return device_callback->currentSampleFrame();
-}
-
-double AudioContext::currentTime() const
-{
-    return device_callback->currentTime();
+    return device_callback->getSamplingInfo().current_sample_frame;
 }
 
 float AudioContext::sampleRate() const
 {
-    // return device_callback->sampleRate(); // @FIXME
-
-    return 48000.f;
-
-    return {};
+    return device_callback->getSamplingInfo().sampling_rate;
 }
 
 } // End namespace lab
