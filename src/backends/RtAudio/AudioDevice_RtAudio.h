@@ -1,8 +1,10 @@
 // License: BSD 3 Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
-#ifndef AudioDestinationRtAudio_h
-#define AudioDestinationRtAudio_h
+#pragma once
+
+#ifndef labsound_audiodevice_rtaudio_hpp
+#define labsound_audiodevice_rtaudio_hpp
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
@@ -13,33 +15,34 @@
 namespace lab
 {
 
-class AudioDevice_RtAudio : public AudioDevice
-{
-    AudioDeviceRenderCallback & _callback;
+    class AudioDevice_RtAudio : public AudioDevice
+    {
+        AudioDeviceRenderCallback & _callback;
 
-    std::unique_ptr<AudioBus> _renderBus;
-    std::unique_ptr<AudioBus> _inputBus;
+        std::unique_ptr<AudioBus> _renderBus;
+        std::unique_ptr<AudioBus> _inputBus;
 
-    RtAudio rtaudio_ctx;
+        RtAudio rtaudio_ctx;
 
-public:
+        SamplingInfo samplingInfo;
 
-    AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
-    virtual ~AudioDevice_RtAudio();
+    public:
 
-    AudioStreamConfig outputConfig;
-    AudioStreamConfig inputConfig;
-    float authoritativeDeviceSampleRateAtRuntime {0.f};
+        AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+        virtual ~AudioDevice_RtAudio();
 
-    // AudioDevice Interface
-    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
-    virtual void start() override final;
-    virtual void stop() override final;
-    virtual float getSampleRate() override final;
-};
+        AudioStreamConfig outputConfig;
+        AudioStreamConfig inputConfig;
+        float authoritativeDeviceSampleRateAtRuntime {0.f};
 
-int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
+        // AudioDevice Interface
+        void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
+        virtual void start() override final;
+        virtual void stop() override final;
+    };
+
+    int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
 
 }  // namespace lab
 
-#endif  // AudioDestinationRtAudio_h
+#endif  // labsound_audiodevice_rtaudio_hpp
