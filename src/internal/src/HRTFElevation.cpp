@@ -111,19 +111,24 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
 
-    auto impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
+    std::shared_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
 
     if (!impulseResponse)
     {
-        std::cerr << "Impulse response files not found " << resourceName.c_str() << std::endl;
+        LOG_ERROR("impulse not found %s (bad path?)", resourceName.c_str());
         return false;
     }
 
-    size_t responseLength = impulseResponse->length();
-    size_t expectedLength = static_cast<size_t>(256 * (info->sampleRate / 44100.0));
+    // The impulse files are 44.1k so we need to resample them if the graph is playing back at any other rate
+    if (info->sampleRate != 44100.0f)
+    {
+        std::unique_ptr<AudioBus> resampledImpulseResponse = AudioBus::createBySampleRateConverting(impulseResponse.get(), false, info->sampleRate);
+        impulseResponse = std::move(resampledImpulseResponse);
+        // LOG_VERBOSE("converting %s impulse to %f hz", resourceName.c_str(), info->sampleRate);
+    }
 
-    // Check number of channels and length.  For now these are fixed and known.
-    bool isBusGood = responseLength == expectedLength && impulseResponse->numberOfChannels() == Channels::Stereo;
+    // Check number of channels. For now these are fixed and known.
+    bool isBusGood =(impulseResponse->numberOfChannels() == Channels::Stereo);
 
     ASSERT(isBusGood);
     if (!isBusGood)

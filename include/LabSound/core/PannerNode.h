@@ -63,7 +63,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
 
-    PannerNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, const std::string & searchPath = "");
+    PannerNode(const float sampleRate, const std::string & hrtf_root_dir_path = "");
     virtual ~PannerNode();
 
     // AudioNode

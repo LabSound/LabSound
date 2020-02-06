@@ -214,7 +214,6 @@ protected:
 
     size_t m_channelCount {0};
 
-    //float m_sampleRate; // @fixme - nuke this
     ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 };

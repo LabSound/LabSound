@@ -209,8 +209,7 @@ void AudioParam::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioParam> 
 {
 	for (auto i : param->m_connectedOutputs) {
 		auto j = i.lock();
-		if (j)
-			j->removeParam(g, param);
+		if (j) j->removeParam(g, param);
 	}
 	param->junctionDisconnectAllOutputs();
 }

@@ -599,6 +599,7 @@ struct ex_hrtf_spatialization : public labsound_example
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
+        std::cout << "Sample Rate is: " << context->sampleRate() << std::endl;
         std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");  // note hrtf search path
 
         {
@@ -1107,9 +1108,7 @@ struct ex_wavepot_dsp : public labsound_example
 
         float p, k, t1, t2, r, x;
 
-        const float sampleRate = 44100.00f;
-
-        float process(float cutoff_, float resonance_, float sample_)
+        float process(float cutoff_, float resonance_, float sample_, float sampleRate)
         {
             float cutoff = 2.0f * cutoff_ / sampleRate;
             float resonance = static_cast<float>(resonance_);
@@ -1157,12 +1156,12 @@ struct ex_wavepot_dsp : public labsound_example
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<ADSRNode> envelope;
 
-        float songLenSeconds = 5.0f;
+        float songLenSeconds = 12.0f;
         {
             double elapsedTime = 0.;
 
             envelope = std::make_shared<ADSRNode>();
-            envelope->set(6.0f, 0.5f, 14.0f, 0.0f, songLenSeconds);
+            envelope->set(6.0f, 0.75f, 14.0f, 0.0f, songLenSeconds);
 
             float lfo_a, lfo_b, lfo_c;
             float bassWaveform, percussiveWaveform, bassSample;
@@ -1194,11 +1193,11 @@ struct ex_wavepot_dsp : public labsound_example
                     // Bass
                     bassWaveform = quickSaw(bn, now) * 1.9f + quickSqr(bn / 2.f, now) * 1.0f + quickSin(bn / 2.f, now) * 2.2f + quickSqr(bn * 3.f, now) * 3.f;
                     percussiveWaveform = perc(bassWaveform / 3.f, 48.0f, fmod(now, 0.125f), now) * 1.0f;
-                    bassSample = lp_a[channel].process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform);
+                    bassSample = lp_a[channel].process(1000.f + (lfo_b * 140.f), quickSin(0.5f, now + 0.75f) * 0.2f, percussiveWaveform, r.context()->sampleRate());
 
                     // Pad
                     padWaveform = 5.1f * quickSaw(note(p[0], 1), now) + 3.9f * quickSaw(note(p[1], 2), now) + 4.0f * quickSaw(note(p[2], 1), now) + 3.0f * quickSqr(note(p[3], 0), now);
-                    padSample = 1.0f - ((quickSin(2.0f, now) * 0.28f) + 0.5f) * fasthp_c[channel](0.5f, lp_c[channel].process(1100.f + (lfo_a * 150.f), 0.05f, padWaveform * 0.03f));
+                    padSample = 1.0f - ((quickSin(2.0f, now) * 0.28f) + 0.5f) * fasthp_c[channel](0.5f, lp_c[channel].process(1100.f + (lfo_a * 150.f), 0.05f, padWaveform * 0.03f, r.context()->sampleRate()));
 
                     // Kick
                     kickWaveform = hardClip(0.37f, quickSin(note(7, -1), now)) * 2.0f + hardClip(0.07f, quickSaw(note(7, -1), now * 0.2f)) * 4.00f;
@@ -1206,7 +1205,7 @@ struct ex_wavepot_dsp : public labsound_example
 
                     // Synth
                     synthWaveform = quickSaw(mn, now + 1.0f) + quickSqr(mn * 2.02f, now) * 0.4f + quickSqr(mn * 3.f, now + 2.f);
-                    synthPercussive = lp_b[channel].process(3200.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f) * 1.8f;
+                    synthPercussive = lp_b[channel].process(3200.0f + (lfo_a * 400.f), 0.1f, perc(synthWaveform, 1.6f, fmod(now, 4.f), now) * 1.7f, r.context()->sampleRate()) * 1.8f;
                     synthDegradedWaveform = synthPercussive * quickSin(note(5, 2), now);
                     synthSample = 0.4f * synthPercussive + 0.05f * synthDegradedWaveform;
 
