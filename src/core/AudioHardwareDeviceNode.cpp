@@ -36,9 +36,9 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
     m_platformAudioDevice = std::unique_ptr<AudioDevice>(AudioDevice::MakePlatformSpecificDevice(*this, outputConfig, inputConfig));
 
     LOG("MakePlatformSpecificDevice() \n"
-        "\tSample Rate:     %f \n"
-        "\tInput Channels:  %i \n"
-        "\tOutput Channels: %i \n",
+        "\t* Sample Rate:     %f \n"
+        "\t* Input Channels:  %i \n"
+        "\t* Output Channels: %i   ",
         outputConfig.desired_samplerate, inputConfig.desired_channels, outputConfig.desired_channels);
 
     if (inputConfig.device_index != -1)
@@ -63,7 +63,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
 {
-    uninitialize();
+    // uninitialize(); taken care of by the AudioContext
 }
 
 void AudioHardwareDeviceNode::initialize()
