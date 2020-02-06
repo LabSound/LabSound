@@ -1,64 +1,48 @@
 // License: BSD 2 Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+// Windows users will need to set a valid working directory for the
+// LabSoundExamples project, for instance $(ProjectDir)../../assets
+
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
     #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "ExampleBaseApp.h"
+// #define USE_LIVE
+#include "Examples.hpp"
 
-//#include "InfiniteFM.h"
-
-//#include "ConvolutionReverb.h"
-//#include "EventsApp.h"
-//#include "Groove.h"
-//#include "LiveGraphUpdate.h"
-//#include "MicrophoneDalek.h"
-//#include "MicrophoneLoopback.h"
-//#include "MicrophoneReverb.h"
-//#include "PeakCompressor.h"
-//#include "RedAlert.h"
-//#include "RenderOffline.h"
-#include "Simple.h"
-//#include "Spatialization.h"
-//#include "StereoPanning.h"
-//#include "Timing.h"
-//#include "Tremolo.h"
-//#include "Validation.h"
-
-//InfiniteFMApp g_infiniteFM;
-
-//ConvolutionReverbApp g_convolutionReverbExample;
-//EventsApp g_eventsApp;
-//GrooveApp g_grooveExample;
-//LiveGraphUpdateApp g_liveGraphUpdateApp;
-//MicrophoneDalekApp g_microphoneDalekApp;
-//MicrophoneLoopbackApp g_microphoneLoopback;
-//MicrophoneReverbApp g_microphoneReverb;
-//OfflineRenderApp g_offlineRenderApp;
-//PeakCompressorApp g_peakCompressor;
-//RedAlertApp g_redAlert;
-SimpleApp g_simpleExample;
-//SpatializationApp g_spatialization;
-//StereoPanningApp g_stereoPanning;
-//TimingApp g_timing;
-//TremoloApp g_tremolo;
-//ValidationApp g_validation;
-
-// Windows users will need to set a valid working directory for the
-// LabSoundExamples project, for instance $(ProjectDir)../../assets
-
-constexpr int iterations = 1;
+static constexpr int iterations = 1;
 
 int main (int argc, char *argv[]) try
-{
-    for (int i = 0; i < iterations; ++i)
-        g_simpleExample.PlayExample(argc, argv);
+{   
+                                                  // [refactoring status 2.06.2020]
+    ex_simple simple;                             // ok
+    ex_playback_events playback_events;           // ok
+    ex_offline_rendering offline_rendering;       // crash
+    ex_tremolo tremolo;                           // silence
+    ex_frequency_modulation frequency_mod;        // silence
+    ex_runtime_graph_update runtime_graph_update; // silence
+    ex_microphone_loopback microphone_loopback;   // silence
+    ex_microphone_reverb microphone_reverb;       // silence
+    ex_peak_compressor peak_compressor;           // ok
+    ex_stereo_panning stereo_panning;             // ok
+    ex_hrtf_spatialization hrtf_spatialization;   // crash
+    ex_convolution_reverb convolution_reverb;     // loud + clips
+    ex_misc misc;                                 // crash
+    ex_dalek_filter dalek_filter;                 // ok
+    ex_redalert_synthesis redalert_synthesis;     // silence
+    ex_wavepot_dsp wavepot_dsp;                   // silence
 
-    return 0;
-}
-catch (const std::exception & e)
+    // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
+    for (int i = 0; i < iterations; ++i)
+    {
+        hrtf_spatialization.play(argc, argv);
+    }
+
+    return EXIT_SUCCESS;
+} 
+catch (const std::exception & e) 
 {
-    std::cerr << "Uncaught fatal exception: " << e.what() << std::endl;
-    return 1;
+    std::cerr << "unhandled fatal exception: " << e.what() << std::endl;
+    return EXIT_FAILURE;
 }

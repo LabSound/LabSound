@@ -11,10 +11,8 @@
 
 namespace lab
 {
-    
     class RecorderNode : public AudioBasicInspectorNode
     {
-        
     public:
         
         RecorderNode();
@@ -45,7 +43,6 @@ namespace lab
 
         std::vector<float> m_data; // interleaved
         mutable std::recursive_mutex m_mutex;
-
     };
     
 } // end namespace lab

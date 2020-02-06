@@ -458,5 +458,16 @@ float AudioContext::sampleRate() const
 {
     return device_callback->getSamplingInfo().sampling_rate;
 }
+void AudioContext::startOfflineRendering()
+{
+    if (m_isOfflineContext)
+    {
+         device_callback->start();
+    }
+    else
+    {
+        throw std::runtime_error("context is not setup for offline rendering");
+    }
+}
 
 } // End namespace lab

@@ -88,6 +88,7 @@ public:
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
 
+    void startOfflineRendering();
     std::function<void()> offlineRenderCompleteCallback;
 
     // event dispatching will be called automatically, depending on constructor
