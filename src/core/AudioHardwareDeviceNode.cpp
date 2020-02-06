@@ -57,6 +57,11 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
     ContextGraphLock glock(context, "AudioHardwareDeviceNode");
 
     AudioNode::setChannelCount(glock, outputConfig.desired_channels);
+    
+    // Info is provided by the backend every frame, but some nodes need to be constructed
+    // with a valid sample rate before the first frame so we make our best guess here
+    last_info = {};
+    last_info.sampling_rate = outputConfig.desired_samplerate;
 
     // Unlike all other nodes that inherit from AudioNode, we do not need to call initialize here. 
 }
