@@ -64,6 +64,8 @@ void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
         {
             channels.push_back(bus->channel(i)->data());
         }
+        return;
+    }
 
         // mix down the output, or interleave the output
         // use the tightest loop possible since this is part of the processing step

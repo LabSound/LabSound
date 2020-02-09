@@ -136,7 +136,7 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
         });
 
     // Node-specific default mixing rules.
-    // m_channelCount = 2; @dimitri
+    m_channelCount = 2;
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 

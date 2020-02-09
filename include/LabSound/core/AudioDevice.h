@@ -112,4 +112,4 @@ public:
 
 }  // lab
 
-#endif  // lab_audiodevice_h
+#endif // lab_audiodevice_h

@@ -13,18 +13,29 @@
 
 #include <algorithm>
 
-using namespace std;
- 
-namespace lab {
-    
-static const size_t offlineRenderSizeQuantum = 4096;    
+using namespace lab;
+
+static const size_t offlineRenderSizeQuantum = 128;    
 
 NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds) 
-    : m_lengthSeconds(lengthSeconds), m_context(context)
+    : m_lengthSeconds(lengthSeconds), m_context(context), outConfig(outputConfig), m_numChannels(outputConfig.desired_channels)
 {
-    m_numChannels = outputConfig.desired_channels;
-    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+
+    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
+
+    m_channelCount = m_numChannels;
+    m_channelCountMode = ChannelCountMode::Explicit;
+    m_channelInterpretation = ChannelInterpretation::Discrete;
+
+    // We need to partially fill the the info struct here so that the context's graph thread
+    // has enough initial info to make connections/disconnections appropriately
+    info = {};
+    info.sampling_rate = outConfig.desired_samplerate;
+    info.epoch[0] = info.epoch[1] = std::chrono::high_resolution_clock::now();
+
+    ContextGraphLock glock(context, "NullDeviceNode");
+    AudioNode::setChannelCount(glock, m_numChannels);
 }
 
 NullDeviceNode::~NullDeviceNode()
@@ -34,16 +45,13 @@ NullDeviceNode::~NullDeviceNode()
 
 void NullDeviceNode::initialize()
 {
-    if (isInitialized())
-        return;
-
+    if (isInitialized()) return;
     AudioNode::initialize();
 }
 
 void NullDeviceNode::uninitialize()
 {
-    if (!isInitialized())
-        return;
+    if (!isInitialized()) return;
 
     if (m_renderThread.joinable())
     {
@@ -58,11 +66,17 @@ void NullDeviceNode::start()
     if (!m_startedRendering) 
     {
         m_startedRendering = true;
+        shouldExit = false;
 
         m_renderThread = std::thread(&NullDeviceNode::offlineRender, this);
         
         // @tofix - ability to update main thread from here. Currently blocks until complete
-        if (m_renderThread.joinable()) m_renderThread.join();
+        if (m_renderThread.joinable()) 
+        {
+            m_renderThread.join();
+        }
+
+        LOG("offline rendering completed");
 
         if (m_context->offlineRenderCompleteCallback)
         {
@@ -79,24 +93,32 @@ void NullDeviceNode::start()
 
 void NullDeviceNode::stop()
 {
-    // @fixme
+    shouldExit = true;
+    info = {};
 }
 
 void NullDeviceNode::render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info)
 {
     pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
-    // @todo - update `info` here
 }
 
 const SamplingInfo NullDeviceNode::getSamplingInfo() const
 {
-    return {}; // @todo
+    return info;
+}
+
+const AudioStreamConfig NullDeviceNode::getOutputConfig() const
+{
+    return outConfig;
+}
+
+const AudioStreamConfig NullDeviceNode::getInputConfig() const
+{
+    return {}; 
 }
 
 void NullDeviceNode::offlineRender()
 {
-    LOG("Starting Offline Rendering");
-
     ASSERT(m_renderBus.get());
     if (!m_renderBus.get())
         return;
@@ -112,17 +134,23 @@ void NullDeviceNode::offlineRender()
         return;
 
     // Break up the desired length into smaller "render quantum" sized pieces.
-    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * m_context->sampleRate()) / offlineRenderSizeQuantum);
+    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * outConfig.desired_samplerate) / offlineRenderSizeQuantum);
 
-    // @todo - early exit if stop or reset called
+    LOG("offline rendering started");
+
     while (framesToProcess > 0)
     {
-        SamplingInfo info; // @fixme
+        if (shouldExit == true) return;
+
         render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
+
+        // Update sampling info
+        const int32_t index = 1 - (info.current_sample_frame & 1);
+        const uint64_t t = info.current_sample_frame & ~1;
+        info.current_sample_frame = t + offlineRenderSizeQuantum + index;
+        info.current_time = info.current_sample_frame / static_cast<double>(info.sampling_rate);
+        info.epoch[index] = std::chrono::high_resolution_clock::now();
+
         framesToProcess--;
     }
-
-    LOG("Stopping Offline Rendering");
 }
-
-} // namespace lab
