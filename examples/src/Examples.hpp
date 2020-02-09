@@ -75,7 +75,7 @@ struct ex_simple : public labsound_example
 
         musicClipNode = std::make_shared<SampledAudioNode>();
         {
-            ContextRenderLock r(context.get(), "Simple");
+            ContextRenderLock r(context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
         }
         context->connect(gain, musicClipNode, 0, 0);
@@ -106,7 +106,7 @@ struct ex_playback_events : public labsound_example
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
-        auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
+        auto musicClip = MakeBusFromSampleFile("samples/mono-music-clip.wav", argc, argv);
         if (!musicClip)
             return;
 
@@ -115,7 +115,7 @@ struct ex_playback_events : public labsound_example
 
         auto musicClipNode = std::make_shared<SampledAudioNode>();
         {
-            ContextRenderLock r(context.get(), "EventsSampleApp");
+            ContextRenderLock r(context.get(), "ex_playback_events");
             musicClipNode->setBus(r, musicClip);
         }
         context->connect(gain, musicClipNode, 0, 0);
@@ -148,32 +148,40 @@ struct ex_offline_rendering : public labsound_example
         std::unique_ptr<lab::AudioContext> context = lab::MakeOfflineAudioContext(offlineConfig, 5000.f);
 
         std::shared_ptr<OscillatorNode> oscillator;
-        std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/mono-music-clip.wav", argc, argv);
+        std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> musicClipNode;
+        std::shared_ptr<GainNode> gain;
 
-        auto recorder = std::make_shared<RecorderNode>();
+        auto recorder = std::make_shared<RecorderNode>(offlineConfig);
 
         context->addAutomaticPullNode(recorder);
+
         recorder->startRecording();
+
         {
             ContextRenderLock r(context.get(), "ex_offline_rendering");
 
+            gain = std::make_shared<GainNode>();
+            gain->gain()->setValue(0.125f);
+
+            // osc -> gain -> recorder
             oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
-            context->connect(recorder, oscillator, 0, 0);
+            context->connect(gain, oscillator, 0, 0);
+            context->connect(recorder, gain, 0, 0);
             oscillator->frequency()->setValue(880.f);
             oscillator->setType(OscillatorType::SINE);
-            oscillator->start(0);
+            oscillator->start(0.0f);
 
             musicClipNode = std::make_shared<SampledAudioNode>();
-            musicClipNode->setBus(r, musicClip);
             context->connect(recorder, musicClipNode, 0, 0);
+            musicClipNode->setBus(r, musicClip);
             musicClipNode->start(0.0f);
         }
 
-        context->offlineRenderCompleteCallback = [&context, &recorder]() {
+        context->offlineRenderCompleteCallback = [&context, &recorder, offlineConfig]() {
             recorder->stopRecording();
             context->removeAutomaticPullNode(recorder);
-            recorder->writeRecordingToWav(1, "OfflineRender.wav");
+            recorder->writeRecordingToWav("ex_offline_rendering.wav");
         };
 
         // Offline rendering happens in a separate thread and blocks until complete.
@@ -207,7 +215,7 @@ struct ex_tremolo : public labsound_example
         std::shared_ptr<ADSRNode> trigger;
 
         {
-            ContextRenderLock r(context.get(), "Tremolo");
+            ContextRenderLock r(context.get(), "ex_tremolo");
 
             modulator = std::make_shared<OscillatorNode>(context->sampleRate());
             modulator->setType(OscillatorType::SINE);
@@ -239,7 +247,7 @@ struct ex_tremolo : public labsound_example
 ///////////////////////////////////
 
 // This is inspired by a patch created in the ChucK audio programming language. It showcases
-// LabSound's ability to construct arbitrary graphs of oscillators a-la FM synthesis. 
+// LabSound's ability to construct arbitrary graphs of oscillators a-la FM synthesis.
 struct ex_frequency_modulation : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
@@ -429,7 +437,7 @@ struct ex_microphone_reverb : public labsound_example
 
                 input = lab::MakeAudioHardwareInputNode(r);
 
-                recorder = std::make_shared<RecorderNode>();
+                recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
                 context->addAutomaticPullNode(recorder);
                 recorder->mixToMono(true);
                 recorder->startRecording();
@@ -438,7 +446,7 @@ struct ex_microphone_reverb : public labsound_example
                 convolve->setImpulse(impulseResponseClip);
 
                 wetGain = std::make_shared<GainNode>();
-                wetGain->gain()->setValue(1.f);
+                wetGain->gain()->setValue(0.1f);
 
                 context->connect(convolve, input, 0, 0);
                 context->connect(wetGain, convolve, 0, 0);
@@ -450,10 +458,9 @@ struct ex_microphone_reverb : public labsound_example
 
             recorder->stopRecording();
             context->removeAutomaticPullNode(recorder);
+            recorder->writeRecordingToWav("ex_microphone_reverb.wav");
 
-            recorder->writeRecordingToWav(1, "ex_microphone_reverb.wav");
-
-            context.reset();  // lifetime issues
+            context.reset();
         }
     }
 };
@@ -668,9 +675,9 @@ struct ex_convolution_reverb : public labsound_example
             convolve->setImpulse(impulseResponseClip);
 
             wetGain = std::make_shared<GainNode>();
-            wetGain->gain()->setValue(1.15f);
+            wetGain->gain()->setValue(0.1f);
             dryGain = std::make_shared<GainNode>();
-            dryGain->gain()->setValue(0.75f);
+            dryGain->gain()->setValue(0.1f);
 
             context->connect(wetGain, convolve, 0, 0);
             context->connect(outputGain, wetGain, 0, 0);
@@ -716,21 +723,24 @@ struct ex_misc : public labsound_example
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_As0.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
-        std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 120.0f);
+        std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 240.0f);
 
         {
             ContextRenderLock r(context.get(), "ex_misc");
 
             pingping->BuildSubgraph(context);
-            pingping->SetFeedback(0.5f);
-            pingping->SetDelayIndex(lab::TempoSync::TS_8);
+            pingping->SetFeedback(.75f);
+            pingping->SetDelayIndex(lab::TempoSync::TS_16);
 
             context->connect(context->device(), pingping->output, 0, 0);
 
             audioClipNode->setBus(r, audioClip);
 
             context->connect(pingping->input, audioClipNode, 0, 0);
-            audioClipNode->start(0.0f);
+
+            //audioClipNode->start(0.0f);
+            audioClipNode->start(0.25f);
+            //audioClipNode->start(0.5f);
         }
 
         Wait(std::chrono::seconds(10));

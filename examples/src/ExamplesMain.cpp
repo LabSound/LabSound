@@ -22,12 +22,12 @@ int main (int argc, char *argv[]) try
     ex_tremolo tremolo;                           // ok
     ex_frequency_modulation frequency_mod;        // ok
     ex_runtime_graph_update runtime_graph_update; // ok
-    ex_microphone_loopback microphone_loopback;   // silence
-    ex_microphone_reverb microphone_reverb;       // silence
+    ex_microphone_loopback microphone_loopback;   // ok
+    ex_microphone_reverb microphone_reverb;       // ok
     ex_peak_compressor peak_compressor;           // ok
     ex_stereo_panning stereo_panning;             // ok
     ex_hrtf_spatialization hrtf_spatialization;   // ok
-    ex_convolution_reverb convolution_reverb;     // loud + clips
+    ex_convolution_reverb convolution_reverb;     // ok
     ex_misc misc;                                 // silence
     ex_dalek_filter dalek_filter;                 // ok
     ex_redalert_synthesis redalert_synthesis;     // ok
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        wavepot_dsp.play(argc, argv);
+        offline_rendering.play(argc, argv);
     }
 
     return EXIT_SUCCESS;

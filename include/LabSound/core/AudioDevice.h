@@ -19,6 +19,7 @@ namespace lab
     class AudioContext;
     class AudioNodeInput;
     class AudioHardwareInput;
+    class AudioDevice;
 
     /////////////////////////////////////////////
     //   Audio Device Configuration Settings   //
@@ -57,8 +58,10 @@ namespace lab
     // This is a free function to consolidate and implement the required functionality to take buffers
     // from the hardware (both input and output) and begin pulling the graph until fully rendered per quanta. 
     // This was formerly a function found on the removed `AudioDestinationNode` class (removed
-    // to de-complicate some annoying inheritance chains). `pull_graph(...)` will need to be called by a single AudioNode
-    // per-context. For instance, the `AudioHardwareDeviceNode` or the `NullDeviceNode`. 
+    // to de-complicate some annoying inheritance chains). 
+    // 
+    // `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance, 
+    // the `AudioHardwareDeviceNode` or the `NullDeviceNode`. 
     void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames, 
         const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
@@ -71,12 +74,18 @@ namespace lab
     // track of timing information with respect to the callback.
     class AudioDeviceRenderCallback
     {
+        AudioStreamConfig outputConfig;
+        AudioStreamConfig inputConfig;
+        friend class AudioDevice;
     public:
         virtual ~AudioDeviceRenderCallback() {}
         virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) = 0;
         virtual void start() = 0;
         virtual void stop() = 0;
+
         virtual const SamplingInfo getSamplingInfo() const = 0;
+        virtual const AudioStreamConfig getOutputConfig() const = 0;
+        virtual const AudioStreamConfig getInputConfig() const = 0;
     };
 
     /////////////////////
@@ -86,8 +95,10 @@ namespace lab
     // The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to
     // render/output the next render quantum of audio. It optionally will pass in local/live audio
     // input when it calls `render()`.
-    struct AudioDevice
+    class AudioDevice
     {
+    public:
+
         static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
         static uint32_t GetDefaultOutputAudioDeviceIndex();
         static uint32_t GetDefaultInputAudioDeviceIndex();
@@ -96,12 +107,8 @@ namespace lab
         virtual ~AudioDevice() {}
         virtual void start() = 0;
         virtual void stop() = 0;
-
-        // Possible future API if required: 
-        // virtual const AudioStreamConfig getOutputConfig() const = 0;
-        // virtual const AudioStreamConfig getInputConfig() const = 0;
     };
 
-}  // lab
+} // lab
 
-#endif  // lab_audiodevice_h
+#endif // lab_audiodevice_h

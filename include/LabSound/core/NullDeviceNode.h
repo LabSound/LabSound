@@ -20,12 +20,17 @@ namespace lab
         std::unique_ptr<AudioBus> m_renderBus;
         std::thread m_renderThread;
 
+        std::atomic<bool> shouldExit {false};
+
         void offlineRender();
         bool m_startedRendering{false};
         uint32_t m_numChannels;
         float m_lengthSeconds;
 
         AudioContext * m_context;
+
+        AudioStreamConfig outConfig;
+        SamplingInfo info;
 
     public:
 
@@ -47,6 +52,8 @@ namespace lab
         virtual void start() override final;
         virtual void stop() override final;
         virtual const SamplingInfo getSamplingInfo() const override final;
+        virtual const AudioStreamConfig getOutputConfig() const override final;
+        virtual const AudioStreamConfig getInputConfig() const override final;
     };
 
 }  // namespace lab

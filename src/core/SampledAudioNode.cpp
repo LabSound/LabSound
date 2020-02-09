@@ -14,16 +14,17 @@
 #include "LabSound/core/Macros.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
+#include "internal/AudioUtilities.h"
 
 #include <algorithm>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
-const double DefaultGrainDuration = 0.020; // 20ms
+const double DefaultGrainDuration = 0.020;  // 20ms
 
 // Arbitrary upper limit on playback rate.
 // Higher than expected rates can be useful when playing back oversampled buffers
@@ -31,11 +32,11 @@ const double DefaultGrainDuration = 0.020; // 20ms
 const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode()
-: AudioScheduledSourceNode()
-, m_isLooping(std::make_shared<AudioSetting>("loop"))
-, m_loopStart(std::make_shared<AudioSetting>("loopStart"))
-, m_loopEnd(std::make_shared<AudioSetting>("loopEnd"))
-, m_grainDuration(DefaultGrainDuration)
+    : AudioScheduledSourceNode()
+    , m_isLooping(std::make_shared<AudioSetting>("loop"))
+    , m_loopStart(std::make_shared<AudioSetting>("loopStart"))
+    , m_loopEnd(std::make_shared<AudioSetting>("loopEnd"))
+    , m_grainDuration(DefaultGrainDuration)
 {
     m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
     m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
@@ -62,9 +63,9 @@ SampledAudioNode::~SampledAudioNode()
 
 void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
 
-    if (!getBus() || !isInitialized() || ! r.context())
+    if (!getBus() || !isInitialized() || !r.context())
     {
         outputBus->zero();
         return;
@@ -108,7 +109,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 
         /// @TODO consistently pick double or size_t through this entire API chain.
         m_virtualReadIndex = static_cast<double>(
-                                AudioUtilities::timeToSampleFrame(m_grainOffset, static_cast<double>(getBus()->sampleRate())));
+            AudioUtilities::timeToSampleFrame(m_grainOffset, static_cast<double>(getBus()->sampleRate())));
         m_startRequested = false;
     }
 
@@ -137,7 +138,7 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
 }
 
 // Returns true if we're finished.
-bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, AudioBus* bus, size_t index, size_t framesToProcess)
+bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, size_t index, size_t framesToProcess)
 {
     if (!loop())
     {
@@ -159,7 +160,7 @@ bool SampledAudioNode::renderSilenceAndFinishIfNotLooping(ContextRenderLock& r, 
     return false;
 }
 
-bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, size_t destinationFrameOffset, size_t numberOfFrames)
+bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, size_t destinationFrameOffset, size_t numberOfFrames)
 {
     if (!r.context())
         return false;
@@ -178,7 +179,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
         return false;
 
     // Sanity check destinationFrameOffset, numberOfFrames.
-    size_t destinationLength = bus->length();
+    size_t destinationLength = bus->length(); 
 
     bool isLengthGood = destinationLength <= 4096 && numberOfFrames <= 4096;
     ASSERT(isLengthGood);
@@ -211,7 +212,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
         endFrame = bufferLength;
 
     if (m_virtualReadIndex >= endFrame)
-        m_virtualReadIndex = 0; // reset to start
+        m_virtualReadIndex = 0;  // reset to start
 
     // If the .loop attribute is true, then values of m_loopStart == 0 && m_loopEnd == 0 implies
     // that we should use the entire buffer as the loop, otherwise use the loop values in m_loopStart and m_loopEnd.
@@ -230,7 +231,6 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
         virtualEndFrame = std::min(loopEndFrame, virtualEndFrame);
         virtualDeltaFrames = virtualEndFrame - loopStartFrame;
     }
-
 
     double pitchRate = totalPitchRate(r);
 
@@ -289,11 +289,12 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
 
             if (readIndex2 >= bufferLength)
             {
-                if (loop()) {
+                if (loop())
+                {
                     // Make sure to wrap around at the end of the buffer.
                     readIndex2 = static_cast<unsigned>(virtualReadIndex + 1 - virtualDeltaFrames);
-                } else
-                    readIndex2 = readIndex;
+                }
+                else readIndex2 = readIndex;
             }
 
             // Final sanity check on buffer access.
@@ -334,8 +335,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock& r, AudioBus* bus, siz
     return true;
 }
 
-
-void SampledAudioNode::reset(ContextRenderLock& r)
+void SampledAudioNode::reset(ContextRenderLock & r)
 {
     m_virtualReadIndex = 0;
     m_lastGain = gain()->value(r);
@@ -362,7 +362,7 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
     return true;
 }
 
-size_t SampledAudioNode::numberOfChannels(ContextRenderLock& r)
+size_t SampledAudioNode::numberOfChannels(ContextRenderLock & r)
 {
     return output(0)->numberOfChannels();
 }
@@ -415,7 +415,7 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock & r)
     // Sanity check the total rate.  It's very important that the resampler not get any bad rate values.
     totalRate = std::max(0.0, totalRate);
     if (!totalRate)
-        totalRate = 1; // zero rate is considered illegal
+        totalRate = 1;  // zero rate is considered illegal
     totalRate = std::min(MaxRate, totalRate);
 
     bool isTotalRateValid = !std::isnan(totalRate) && !std::isinf(totalRate);
@@ -431,7 +431,7 @@ bool SampledAudioNode::propagatesSilence(ContextRenderLock & r) const
     return !isPlayingOrScheduled() || hasFinished() || !m_sourceBus;
 }
 
-void SampledAudioNode::setPannerNode(PannerNode* pannerNode)
+void SampledAudioNode::setPannerNode(PannerNode * pannerNode)
 {
     m_pannerNode = pannerNode;
 }
@@ -468,6 +468,4 @@ void SampledAudioNode::setLoopEnd(double loopEnd)
     m_loopEnd->setFloat(static_cast<float>(loopEnd));
 }
 
-
-} // namespace lab
-
+}  // namespace lab

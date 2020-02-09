@@ -9,19 +9,15 @@
 
 namespace lab {
 
-class AudioSourceNode : public AudioNode 
-{
-
-public:
-
-    AudioSourceNode() : AudioNode() { }
-    virtual ~AudioSourceNode() {}
-    
-protected:
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-};
+    class AudioSourceNode : public AudioNode 
+    {
+    public:
+        AudioSourceNode() : AudioNode() {}
+        virtual ~AudioSourceNode() {}
+    protected:
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+    };
 
 } // namespace lab
 

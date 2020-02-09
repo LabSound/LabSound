@@ -30,6 +30,9 @@ protected:
     AudioHardwareInput * m_audioHardwareInput{nullptr};
     SamplingInfo last_info;
 
+    const AudioStreamConfig outConfig;
+    const AudioStreamConfig inConfig;
+
 public:
 
     AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
@@ -46,6 +49,8 @@ public:
     virtual void start() override;
     virtual void stop() override;
     virtual const SamplingInfo getSamplingInfo() const override;
+    virtual const AudioStreamConfig getOutputConfig() const override;
+    virtual const AudioStreamConfig getInputConfig() const override;
 
     AudioSourceProvider * AudioHardwareInputProvider();
 };

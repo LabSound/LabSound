@@ -20,10 +20,10 @@ namespace lab
         size_t m_sourceNumberOfChannels {0};
 
     public:
-        AudioHardwareInputNode(AudioSourceProvider *);
+        AudioHardwareInputNode(AudioSourceProvider * provider_from_context);
         virtual ~AudioHardwareInputNode();
 
-        // AudioNode
+        // AudioNode interface
         virtual void process(ContextRenderLock &, size_t framesToProcess) override;
         virtual void reset(ContextRenderLock &) override;
     };

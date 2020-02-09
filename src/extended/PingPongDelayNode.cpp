@@ -69,7 +69,6 @@ namespace lab
 
     void PingPongDelayNode::BuildSubgraph(std::unique_ptr<AudioContext> & ac) 
     {
-
         // Input into splitter
         ac->connect(splitter, input, 0, 0);
 

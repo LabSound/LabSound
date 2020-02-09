@@ -199,6 +199,10 @@ void AudioContext::update()
     const float frameLengthInMilliseconds = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
     const uint32_t graphTickDurationUs = static_cast<uint32_t>(graphTickDurationMs * 1000.f);  // = ~5550us
+    
+    ASSERT(frameLengthInMilliseconds);
+    ASSERT(graphTickDurationMs);
+    ASSERT(graphTickDurationUs);
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
@@ -212,8 +216,8 @@ void AudioContext::update()
         if (!m_isOfflineContext)
         {
             lk = std::unique_lock<std::mutex>(m_updateMutex);
-            // A condition variable is used to notify this thread that a graph update is pending
-            // in one of the queues.
+
+            // A condition variable is used to notify this thread that a graph update is pendingin one of the queues.
 
             // graph needs to tick to complete
             if ((currentTime() + graphKeepAlive) > currentTime())
@@ -401,13 +405,15 @@ void AudioContext::updateAutomaticPullNodes()
 void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t framesToProcess)
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
+    {
         m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+    }
 }
 
 void AudioContext::enqueueEvent(std::function<void()>& fn)
 {
     m_internal->enqueuedEvents.enqueue(fn);
-    cv.notify_all();    // processing thread must dispatch events
+    cv.notify_all(); // processing thread must dispatch events
 }
 
 void AudioContext::dispatchEvents()
@@ -458,8 +464,10 @@ float AudioContext::sampleRate() const
 {
     return device_callback->getSamplingInfo().sampling_rate;
 }
+
 void AudioContext::startOfflineRendering()
 {
+    // This takes the function of `lazyInitialize()` but for offline contexts
     if (m_isOfflineContext)
     {
          device_callback->start();

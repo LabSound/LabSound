@@ -24,8 +24,10 @@ using namespace lab;
 //   AudioHardwareDeviceNode   //
 /////////////////////////////////
 
-AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
-    : m_context(context)
+AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, 
+    const AudioStreamConfig outputConfig, 
+    const AudioStreamConfig inputConfig)
+    : m_context(context), outConfig(outputConfig), inConfig(inputConfig)
 {
     // Ensure that input and output samplerates match
     if (inputConfig.device_index != -1)
@@ -46,7 +48,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
         m_audioHardwareInput = new AudioHardwareInput(inputConfig.desired_channels); 
     }
 
-    // This is the final node in the chain. It willpull on all others from this input. 
+    // This is the "final node" in the chain. It will pull on all others from this input. 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
     // Node-specific default mixing rules.
@@ -55,7 +57,6 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, const A
     m_channelInterpretation = ChannelInterpretation::Speakers;
     
     ContextGraphLock glock(context, "AudioHardwareDeviceNode");
-
     AudioNode::setChannelCount(glock, outputConfig.desired_channels);
     
     // Info is provided by the backend every frame, but some nodes need to be constructed
@@ -102,6 +103,16 @@ void AudioHardwareDeviceNode::stop()
 const SamplingInfo AudioHardwareDeviceNode::getSamplingInfo() const 
 {
     return last_info;
+}
+
+const AudioStreamConfig AudioHardwareDeviceNode::getOutputConfig() const
+{
+    return outConfig;
+}
+
+const AudioStreamConfig AudioHardwareDeviceNode::getInputConfig() const
+{
+    return inConfig;
 }
 
 void AudioHardwareDeviceNode::reset(ContextRenderLock &)

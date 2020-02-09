@@ -2,37 +2,38 @@
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
-#include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
+#include "internal/AudioUtilities.h"
 
 #include <algorithm>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 const double UnknownTime = -1;
 
 AudioScheduledSourceNode::AudioScheduledSourceNode()
-: m_playbackState(UNSCHEDULED_STATE)
-, m_pendingStartTime(UnknownTime), m_startTime(0)
-, m_pendingEndTime(UnknownTime), m_endTime(UnknownTime)
+    : m_playbackState(UNSCHEDULED_STATE)
+    , m_pendingStartTime(UnknownTime)
+    , m_startTime(0)
+    , m_pendingEndTime(UnknownTime)
+    , m_endTime(UnknownTime)
 {
 }
 
-void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
-                                                    size_t quantumFrameSize,
-                                                    AudioBus * outputBus,
-                                                    size_t & quantumFrameOffset,
-                                                    size_t & nonSilentFramesToProcess)
+void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus, 
+    size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
 {
+
     if (!outputBus)
         return;
 
@@ -57,7 +58,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
         m_pendingStartTime = UnknownTime;
     }
 
-    float sampleRate = r.context()->sampleRate();
+    const float sampleRate = r.context()->sampleRate();
 
     // quantumStartFrame     : Start frame of the current time quantum.
     // quantumEndFrame       : End frame of the current time quantum.
@@ -88,7 +89,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     }
 
     quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
-    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize); // clamp to valid range
+    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize);  // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
 
     if (!nonSilentFramesToProcess)
@@ -109,14 +110,16 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock& r,
     // Handle silence after we're done playing.
     // If the end time is somewhere in the middle of this time quantum, then zero out the
     // frames from the end time to the very end of the quantum.
-    if (m_endTime != UnknownTime && endFrame >= quantumStartFrame && endFrame < quantumEndFrame) {
+    if (m_endTime != UnknownTime && endFrame >= quantumStartFrame && endFrame < quantumEndFrame)
+    {
         size_t zeroStartFrame = endFrame - quantumStartFrame;
         size_t framesToZero = quantumFrameSize - zeroStartFrame;
 
         bool isSafe = zeroStartFrame < quantumFrameSize && framesToZero <= quantumFrameSize && zeroStartFrame + framesToZero <= quantumFrameSize;
         ASSERT(isSafe);
 
-        if (isSafe) {
+        if (isSafe)
+        {
             if (framesToZero > nonSilentFramesToProcess)
                 nonSilentFramesToProcess = 0;
             else
@@ -138,7 +141,8 @@ void AudioScheduledSourceNode::start(double when)
     if (m_playbackState == PLAYING_STATE)
         return;
 
-    if (!std::isfinite(when) || (when < 0)) {
+    if (!std::isfinite(when) || (when < 0))
+    {
         return;
     }
 
@@ -161,16 +165,16 @@ void AudioScheduledSourceNode::stop(double when)
     m_pendingEndTime = when;
 }
 
-void AudioScheduledSourceNode::reset(ContextRenderLock&)
+void AudioScheduledSourceNode::reset(ContextRenderLock &)
 {
     m_pendingEndTime = UnknownTime;
     m_playbackState = UNSCHEDULED_STATE;
 }
 
-void AudioScheduledSourceNode::finish(ContextRenderLock& r)
+void AudioScheduledSourceNode::finish(ContextRenderLock & r)
 {
     m_playbackState = FINISHED_STATE;
     r.context()->enqueueEvent(m_onEnded);
 }
 
-} // namespace lab
+}  // namespace lab

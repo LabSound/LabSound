@@ -209,7 +209,7 @@ bool AudioNode::propagatesSilence(ContextRenderLock & r) const
 {
     ASSERT(r.context());
 
-    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime();  // dimitri use of latencyTime() / tailTime()
+    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime();
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)

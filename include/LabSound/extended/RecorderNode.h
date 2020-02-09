@@ -13,9 +13,21 @@ namespace lab
 {
     class RecorderNode : public AudioBasicInspectorNode
     {
+
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+        bool m_mixToMono{false};
+        bool m_recording{false};
+
+        std::vector<float> m_data;  // interleaved
+        mutable std::recursive_mutex m_mutex;
+
+        const AudioStreamConfig outConfig;
+
     public:
         
-        RecorderNode();
+        RecorderNode(const AudioStreamConfig outConfig);
         virtual ~RecorderNode();
         
         // AudioNode
@@ -26,23 +38,9 @@ namespace lab
         void stopRecording() { m_recording = false; }
         
         void mixToMono(bool m) { m_mixToMono = m; }
-
-        // replaces result with the currently recorded data.
-        // saved data is cleared.
-        void getData(std::vector<float> & result);
         
-        void writeRecordingToWav(int channels, const std::string & filenameWithWavExtension);
-        
-    private:
-        
-        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+        void writeRecordingToWav(const std::string & filenameWithWavExtension);
 
-        bool m_mixToMono{ false };
-        bool m_recording{ false };
-
-        std::vector<float> m_data; // interleaved
-        mutable std::recursive_mutex m_mutex;
     };
     
 } // end namespace lab
