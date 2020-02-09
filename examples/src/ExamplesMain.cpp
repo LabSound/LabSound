@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) try
     ex_runtime_graph_update runtime_graph_update;
     ex_microphone_loopback microphone_loopback;  
     ex_microphone_reverb microphone_reverb;      
-    ex_peak_compressor peak_compressor;          
+    ex_peak_compressor peak_compressor;           
     ex_stereo_panning stereo_panning;            
     ex_hrtf_spatialization hrtf_spatialization;  
     ex_convolution_reverb convolution_reverb;    
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        offline_rendering.play(argc, argv);
+        simple.play(argc, argv);
     }
 
     return EXIT_SUCCESS;
