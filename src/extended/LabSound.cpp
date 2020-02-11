@@ -150,4 +150,3 @@ void LabSoundAssertLog(const char * file_, int line, const char * function_, con
     const char * assertion = assertion_ ? assertion_ : "Assertion failed";
     printf("Assertion: %s:%s:%d - %s\n", function, file_, line, assertion);
 }
-

@@ -193,7 +193,7 @@ bool SampledAudioNode::renderFromBuffer(ContextRenderLock & r, AudioBus * bus, s
         return false;
 
     // Sanity check destinationFrameOffset, numberOfFrames.
-    size_t destinationLength = bus->length(); 
+    size_t destinationLength = bus->length();
 
     bool isLengthGood = destinationLength <= 4096 && numberOfFrames <= 4096;
     ASSERT(isLengthGood);
