@@ -66,13 +66,12 @@ size_t AudioNode::channelCount()
 
 void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
 {
-    if (m_channelCount != channelCount)
+    if (!g.context())
     {
         throw std::invalid_argument("No context specified");
     }
 
-    int c = channelCount < AudioContext::maxNumberOfChannels ? channelCount : AudioContext::maxNumberOfChannels;
-    if (m_channelCount != c)
+    if (m_channelCount != channelCount)
     {
         if (m_channelCount != channelCount)
         {
@@ -107,11 +106,11 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess)
 {
-    if (!isInitialized()) 
+    if (!isInitialized())
         return;
 
     auto ac = r.context();
-    if (!ac) 
+    if (!ac)
         return;
 
     // Ensure that we only process once per rendering quantum.

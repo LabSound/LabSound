@@ -65,6 +65,9 @@ public:
 
     std::shared_ptr<AudioListener> listener();
 
+    void handlePreRenderTasks(ContextRenderLock &); // Called at the start of each render quantum.
+    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
+
     // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
     // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
     void addAutomaticPullNode(std::shared_ptr<AudioNode>);
@@ -73,7 +76,6 @@ public:
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioHardwareDeviceNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
-    void handlePostRenderTasks(ContextRenderLock &); // Called at the end of each render quantum.
 
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
@@ -95,10 +97,6 @@ public:
     void dispatchEvents();
 
 private:
-    void update();
-    void uninitialize();
-    void handleAutomaticSources();
-    void updateAutomaticPullNodes();
 
     // @TODO migrate most of the internal datastructures such as PendingConnection
     // into Internals as there's no need to expose these at all.
@@ -112,6 +110,7 @@ private:
 
     std::atomic<bool> updateThreadShouldRun{ true };
     std::thread graphUpdateThread;
+    void update();
     float graphKeepAlive{ 0.f };
     float lastGraphUpdateTime{ 0.f };
 
@@ -129,11 +128,6 @@ private:
     std::shared_ptr<AudioNode> m_device;
 
     std::shared_ptr<AudioListener> m_listener;
-
-    // @todo - migrate most of the internal datastructures such as PendingConnection
-    // into Internals as there's no need to expose these at all.
-    struct Internals;
-    std::unique_ptr<Internals> m_internal;
 
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes; // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes; // vector of known pull nodes

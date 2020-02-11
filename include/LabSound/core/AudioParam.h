@@ -21,9 +21,9 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string& name, const std::string& short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    AudioParam(const std::string & name, const std::string & short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
     virtual ~AudioParam();
-    
+
     // AudioSummingJunction
     virtual void didUpdate(ContextRenderLock&) override { }
 
@@ -55,7 +55,7 @@ public:
     void resetSmoothedValue() { m_smoothedValue = m_value; }
     void setSmoothingConstant(double k) { m_smoothingConstant = k; }
 
-    // Parameter automation.    
+    // Parameter automation.
     void setValueAtTime(float value, float time) { m_timeline.setValueAtTime(value, time); }
     void linearRampToValueAtTime(float value, float time) { m_timeline.linearRampToValueAtTime(value, time); }
     void exponentialRampToValueAtTime(float value, float time) { m_timeline.exponentialRampToValueAtTime(value, time); }
@@ -64,7 +64,7 @@ public:
     void cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); }
 
     bool hasSampleAccurateValues() { return m_timeline.hasValues() || numberOfConnections(); }
-    
+
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
     void calculateSampleAccurateValues(ContextRenderLock&, float* values, size_t numberOfValues);
@@ -90,9 +90,9 @@ private:
     // Smoothing (de-zippering)
     double m_smoothedValue;
     double m_smoothingConstant;
-    
+
     AudioParamTimeline m_timeline;
-    
+
     struct Data;
     std::unique_ptr<Data> m_data;
 };
