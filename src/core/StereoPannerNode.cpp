@@ -254,7 +254,7 @@ StereoPannerNode::StereoPannerNode(const float sampleRate) : AudioNode()
 
     m_stereoPanner.reset(new Spatializer(sampleRate, Spatializer::PanningModelEqualPower));
 
-    m_pan = std::make_shared<AudioParam>("pan", 0.5, 0.0, 1.0);
+    m_pan = std::make_shared<AudioParam>("pan", "PAN", 0.5, 0.0, 1.0);
     m_params.push_back(m_pan);
 
     initialize();

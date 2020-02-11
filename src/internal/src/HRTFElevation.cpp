@@ -128,7 +128,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
     }
 
     // Check number of channels. For now these are fixed and known.
-    bool isBusGood =(impulseResponse->numberOfChannels() == Channels::Stereo);
+    bool isBusGood = (impulseResponse->numberOfChannels() == Channels::Stereo);
 
     ASSERT(isBusGood);
     if (!isBusGood)

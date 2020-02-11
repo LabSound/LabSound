@@ -80,12 +80,12 @@ namespace lab
 
     namespace
     {
-        char const * const NodeNames[] = 
+        char const * const NodeNames[] =
         {
             "ADSR",
             "Analyser",
-            "AudioBasicProcessor",
-            "AudioHardwareSource",
+//            "AudioBasicProcessor",
+//            "AudioHardwareSource",
             "BiquadFilter",
             "ChannelMerger",
             "ChannelSplitter",
@@ -94,7 +94,7 @@ namespace lab
             "Delay",
             "Diode",
             "DynamicsCompressor",
-            "Function",
+//            "Function",
             "Gain",
             "Noise",
             "Oscillator",
@@ -135,14 +135,13 @@ namespace lab
 
 void LabSoundLog(const char * file, int line, const char * fmt, ...)
 {
+    printf("[%s @ %i]\n\t", file, line);
     va_list args;
     va_start(args, fmt);
-
-    char tmp[256] = {0};
-    sprintf(tmp, "[%s @ %i]\n\t%s\n", file, line, fmt);
-    vprintf(tmp, args);
-
+    static std::vector<char> buff(1024);
+    vprintf(fmt, args);
     va_end(args);
+    printf("\n");
 }
 
 void LabSoundAssertLog(const char * file_, int line, const char * function_, const char * assertion_)
@@ -152,4 +151,3 @@ void LabSoundAssertLog(const char * file_, int line, const char * function_, con
     const char * assertion = assertion_ ? assertion_ : "Assertion failed";
     printf("Assertion: %s:%s:%d - %s\n", function, file_, line, assertion);
 }
-

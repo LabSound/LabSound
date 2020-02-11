@@ -547,4 +547,3 @@ double PannerNode::tailTime(ContextRenderLock & r) const { return m_panner ? m_p
 double PannerNode::latencyTime(ContextRenderLock & r) const { return m_panner ? m_panner->latencyTime(r) : 0; }
 
 } // namespace lab
-

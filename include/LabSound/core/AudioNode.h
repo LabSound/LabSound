@@ -25,8 +25,9 @@ namespace lab
 enum PanningMode
 {
     PANNING_NONE = 0,
-    EQUALPOWER = 10,
-    HRTF = 20,
+    EQUALPOWER = 1,
+    HRTF = 2,
+    _PanningModeCount = 3
 };
 
 enum FilterType
@@ -39,17 +40,19 @@ enum FilterType
     HIGHSHELF = 5,
     PEAKING = 6,
     NOTCH = 7,
-    ALLPASS = 8
-};
+    ALLPASS = 8,
+    _FilterTypeCount = 9
+    };
 
-enum class OscillatorType
+enum OscillatorType
 {
     OSCILLATOR_NONE = 0,
     SINE = 1,
     SQUARE = 2,
     SAWTOOTH = 3,
     TRIANGLE = 4,
-    CUSTOM = 5
+    CUSTOM = 5,
+    _OscillatorCount = 6
 };
 
 class AudioContext;
@@ -81,14 +84,16 @@ public:
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
 
+    virtual bool hasBang() const { return false; }
+    virtual void bang() {}
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
-    virtual void process(ContextRenderLock&, size_t framesToProcess) = 0;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) = 0;
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
-    virtual void reset(ContextRenderLock&) = 0;
+    virtual void reset(ContextRenderLock &) = 0;
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
@@ -107,12 +112,12 @@ public:
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
-    void processIfNecessary(ContextRenderLock& r, size_t framesToProcess);
+    void processIfNecessary(ContextRenderLock & r, size_t framesToProcess);
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*);
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput*);
 
     // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
     virtual double tailTime(ContextRenderLock & r) const = 0;
@@ -126,33 +131,37 @@ public:
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
     virtual bool propagatesSilence(ContextRenderLock & r) const;
 
-    bool inputsAreSilent(ContextRenderLock&);
-    void silenceOutputs(ContextRenderLock&);
-    void unsilenceOutputs(ContextRenderLock&);
+    bool inputsAreSilent(ContextRenderLock &);
+    void silenceOutputs(ContextRenderLock &);
+    void unsilenceOutputs(ContextRenderLock &);
 
     size_t channelCount();
-
     void setChannelCount(ContextGraphLock & g, size_t channelCount);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock& g, ChannelCountMode mode);
+    void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
 
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
 
     // returns a vector of parameter names
-    std::vector<std::string> params() const;
+    std::vector<std::string> paramNames() const;
+    std::vector<std::string> paramShortNames() const;
 
     // returns a vector of setting names
-    std::vector<std::string> settings() const;
+    std::vector<std::string> settingNames() const;
+    std::vector<std::string> settingShortNames() const;
 
     // USER FACING FUNCTIONS >
 
-    std::shared_ptr<AudioParam> getParam(char const * const str);
-    std::shared_ptr<AudioSetting> getSetting(char const * const str);
+    std::shared_ptr<AudioParam> param(char const * const str);
+    std::shared_ptr<AudioSetting> setting(char const * const str);
+
+    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
+    std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
 
     // USER FACING FUNCTIONS <
-    
+
 protected:
 
     // Inputs and outputs must be created before the AudioNode is initialized.
@@ -208,7 +217,6 @@ private:
     std::atomic<float> m_connectSchedule{ 0.f };
 
 protected:
-
     std::vector<std::shared_ptr<AudioParam>> m_params;
     std::vector<std::shared_ptr<AudioSetting>> m_settings;
 
