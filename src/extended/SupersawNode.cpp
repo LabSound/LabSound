@@ -29,10 +29,10 @@ namespace lab
         SupersawNodeInternal() : cachedDetune(FLT_MAX), cachedFrequency(FLT_MAX)
         {
             gainNode = std::make_shared<ADSRNode>();
-            sawCount = std::make_shared<AudioSetting>("sawCount", AudioSetting::Type::Integer);
+            sawCount = std::make_shared<AudioSetting>("sawCount", "SAWC", AudioSetting::Type::Integer);
             sawCount->setUint32(1);
-            detune = std::make_shared<AudioParam>("detune", 1.0, 0, 120);
-            frequency= std::make_shared<AudioParam>("frequency", 440.0, 1.0f, sampleRate * 0.5f);
+            detune = std::make_shared<AudioParam>("detune", "DTUN", 1.0, 0, 120);
+            frequency= std::make_shared<AudioParam>("frequency", "FREQ", 440.0, 1.0f, sampleRate * 0.5f);
         }
 
         ~SupersawNodeInternal()

@@ -21,7 +21,7 @@ public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    AudioParam(const std::string& name, const std::string& short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
     virtual ~AudioParam();
     
     // AudioSummingJunction
@@ -35,6 +35,7 @@ public:
     float finalValue(ContextRenderLock&);
 
     std::string name() const { return m_name; }
+    std::string shortName() const { return m_shortName; }
 
     float minValue() const { return static_cast<float>(m_minValue); }
     float maxValue() const { return static_cast<float>(m_maxValue); }
@@ -79,6 +80,7 @@ private:
     void calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues);
 
     std::string m_name;
+    std::string m_shortName;
     double m_value;
     double m_defaultValue;
     double m_minValue;

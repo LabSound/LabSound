@@ -22,12 +22,12 @@ DynamicsCompressorNode::DynamicsCompressorNode()
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_threshold = make_shared<AudioParam>("threshold", -24, -100, 0);
-    m_knee = make_shared<AudioParam>("knee", 30, 0, 40);
-    m_ratio = make_shared<AudioParam>("ratio", 12, 1, 20);
-    m_reduction = make_shared<AudioParam>("reduction", 0, -20, 0);
-    m_attack = make_shared<AudioParam>("attack", 0.003, 0, 1);
-    m_release = make_shared<AudioParam>("release", 0.250, 0, 1);
+    m_threshold = make_shared<AudioParam>("threshold", "THRS", -24, -100, 0);
+    m_knee = make_shared<AudioParam>("knee", "KNEE", 30, 0, 40);
+    m_ratio = make_shared<AudioParam>("ratio", "RATE", 12, 1, 20);
+    m_reduction = make_shared<AudioParam>("reduction", "REDC", 0, -20, 0);
+    m_attack = make_shared<AudioParam>("attack", "ATCK", 0.003, 0, 1);
+    m_release = make_shared<AudioParam>("release", "RELS", 0.250, 0, 1);
 
     m_params.push_back(m_threshold);
     m_params.push_back(m_knee);

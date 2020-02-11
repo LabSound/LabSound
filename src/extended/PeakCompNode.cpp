@@ -33,12 +33,12 @@ namespace lab
 
         PeakCompNodeInternal() : AudioProcessor(2)
         {
-            m_threshold = std::make_shared<AudioParam>("threshold",  0, 0, -1e6f);
-            m_ratio = std::make_shared<AudioParam>("ratio",  1, 0, 10);
-            m_attack = std::make_shared<AudioParam>("attack",   0.001f,  0, 1000);
-            m_release = std::make_shared<AudioParam>("release", 0.001f, 0, 1000);
-            m_makeup = std::make_shared<AudioParam>("makeup", 0, 0, 60);
-            m_knee = std::make_shared<AudioParam>("knee", 0, 0, 1);
+            m_threshold = std::make_shared<AudioParam>("threshold", "THRS",  0, 0, -1e6f);
+            m_ratio = std::make_shared<AudioParam>("ratio", "RATI",  1, 0, 10);
+            m_attack = std::make_shared<AudioParam>("attack", "ATCK",   0.001f,  0, 1000);
+            m_release = std::make_shared<AudioParam>("release", "RELS", 0.001f, 0, 1000);
+            m_makeup = std::make_shared<AudioParam>("makeup", "MAKE", 0, 0, 60);
+            m_knee = std::make_shared<AudioParam>("knee", "KNEE", 0, 0, 1);
 
             for (int i = 0; i < 2; i++)
             {

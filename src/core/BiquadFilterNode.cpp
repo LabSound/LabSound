@@ -17,7 +17,7 @@ static char const * const s_filter_types[FilterType::_FilterTypeCount + 1] = {
 
 BiquadFilterNode::BiquadFilterNode()
     : AudioBasicProcessorNode()
-, m_type(std::make_shared<AudioSetting>("type", s_filter_types))
+, m_type(std::make_shared<AudioSetting>("type", "TYPE", s_filter_types))
 {
     // Initially setup as lowpass filter.
     m_processor.reset(new BiquadProcessor(1, false));

@@ -34,6 +34,7 @@ public:
 
 private:
     std::string _name;
+    std::string _shortName;
     float _valf = 0;
     uint32_t _vali = 0;
     bool _valb = false;
@@ -42,30 +43,35 @@ private:
     char const * const * _enums = nullptr;
 
 public:
-    explicit AudioSetting(const std::string & n, Type t)
+    explicit AudioSetting(const std::string & n, const std::string& sn, Type t)
         : _name(n)
+        , _shortName(sn)
         , _type(t)
     {
     }
-    explicit AudioSetting(char const * const n, Type t)
+    explicit AudioSetting(char const * const n, char const * const sn, Type t)
         : _name(n)
+        , _shortName(sn)
         , _type(t)
     {
     }
-    explicit AudioSetting(const std::string & n, char const*const* enums)
+    explicit AudioSetting(const std::string & n, const std::string & sn, char const*const* enums)
         : _name(n)
+        , _shortName(sn)
         , _type(Type::Enumeration)
         , _enums(enums)
     {
     }
-    explicit AudioSetting(char const * const n, char const*const* enums)
+    explicit AudioSetting(char const * const n, char const * const sn, char const*const* enums)
         : _name(n)
+        , _shortName(sn)
         , _type(Type::Enumeration)
         , _enums(enums)
     {
     }
 
     std::string name() const { return _name; }
+    std::string shortName() const { return _shortName; }
     Type type() const { return _type; }
     char const*const* enums() const { return _enums; }
 

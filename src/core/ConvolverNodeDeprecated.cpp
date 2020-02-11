@@ -27,7 +27,7 @@ const size_t MaxFFTSize = 32768;
 namespace lab { namespace deprecated {
 
 ConvolverNode::ConvolverNode() : m_swapOnRender(false)
-, m_normalize(std::make_shared<AudioSetting>("normalize", AudioSetting::Type::Bool))
+, m_normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
 {
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

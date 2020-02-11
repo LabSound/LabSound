@@ -36,9 +36,9 @@ public:
         , _owner(owner)
     {
         auto fMax = std::numeric_limits<float>::max();
-        aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
-        bVal = std::make_shared<AudioParam>("b", 1.0, -fMax, fMax);
-        mode = std::make_shared<AudioSetting>("mode", s_ClipModes);
+        aVal = std::make_shared<AudioParam>("a", "A   ", -1.0, -fMax, fMax);
+        bVal = std::make_shared<AudioParam>("b", "B   ", 1.0, -fMax, fMax);
+        mode = std::make_shared<AudioSetting>("mode", "MODE", s_ClipModes);
         mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
     }
 

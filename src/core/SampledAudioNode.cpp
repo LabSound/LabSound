@@ -33,14 +33,14 @@ const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode()
 : AudioScheduledSourceNode()
-, m_isLooping(std::make_shared<AudioSetting>("loop", AudioSetting::Type::Bool))
-, m_loopStart(std::make_shared<AudioSetting>("loopStart", AudioSetting::Type::Float))
-, m_loopEnd(std::make_shared<AudioSetting>("loopEnd", AudioSetting::Type::Float))
+, m_isLooping(std::make_shared<AudioSetting>("loop", "LOOP", AudioSetting::Type::Bool))
+, m_loopStart(std::make_shared<AudioSetting>("loopStart", "STRT", AudioSetting::Type::Float))
+, m_loopEnd(std::make_shared<AudioSetting>("loopEnd", "END ", AudioSetting::Type::Float))
 , m_grainDuration(DefaultGrainDuration)
 {
-    m_gain = make_shared<AudioParam>("gain", 1.0, 0.0, 1.0);
-    m_playbackRate = make_shared<AudioParam>("playbackRate", 1.0, 0.0, MaxRate);
-    m_detune = make_shared<AudioParam>("detune", 0.0, -1.e6f, 1.e6f);
+    m_gain = make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 1.0);
+    m_playbackRate = make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, MaxRate);
+    m_detune = make_shared<AudioParam>("detune", "DTUNE", 0.0, -1.e6f, 1.e6f);
 
     m_params.push_back(m_gain);
     m_params.push_back(m_playbackRate);

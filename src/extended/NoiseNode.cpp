@@ -16,7 +16,7 @@ namespace lab {
         "White", "Pink", "Brown", nullptr};
 
     NoiseNode::NoiseNode() : AudioScheduledSourceNode()
-    , _type(std::make_shared<AudioSetting>("type", s_noiseTypes))
+    , _type(std::make_shared<AudioSetting>("type", "TYPE", s_noiseTypes))
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
         m_settings.push_back(_type);

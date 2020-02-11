@@ -274,6 +274,15 @@ std::vector<std::string> AudioNode::paramNames() const
     }
     return ret;
 }
+std::vector<std::string> AudioNode::paramShortNames() const
+{
+    std::vector<std::string> ret;
+    for (auto& p : m_params)
+    {
+        ret.push_back(p->shortName());
+    }
+    return ret;
+}
 
 std::vector<std::string> AudioNode::settingNames() const
 {
@@ -281,6 +290,15 @@ std::vector<std::string> AudioNode::settingNames() const
     for (auto & p : m_settings)
     {
         ret.push_back(p->name());
+    }
+    return ret;
+}
+std::vector<std::string> AudioNode::settingShortNames() const
+{
+    std::vector<std::string> ret;
+    for (auto& p : m_settings)
+    {
+        ret.push_back(p->shortName());
     }
     return ret;
 }

@@ -28,15 +28,15 @@ namespace lab
         ADSRNodeInternal()
         : AudioProcessor(2), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
         {
-            m_attackTime = std::make_shared<AudioSetting>("attackTime", AudioSetting::Type::Float);
-            m_attackTime->setFloat(0.05);
-            m_attackLevel = std::make_shared<AudioSetting>("attackLevel", AudioSetting::Type::Float);
-            m_attackLevel->setFloat(1.0);
-            m_decayTime = std::make_shared<AudioSetting>("decayTime", AudioSetting::Type::Float);
-            m_decayTime->setFloat(0.05);
-            m_sustainLevel = std::make_shared<AudioSetting>("sustain", AudioSetting::Type::Float);
+            m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATCK", AudioSetting::Type::Float);
+            m_attackTime->setFloat(0.05f);
+            m_attackLevel = std::make_shared<AudioSetting>("attackLevel", "ALVL", AudioSetting::Type::Float);
+            m_attackLevel->setFloat(1.0f);
+            m_decayTime = std::make_shared<AudioSetting>("decayTime", "DECY", AudioSetting::Type::Float);
+            m_decayTime->setFloat(0.05f);
+            m_sustainLevel = std::make_shared<AudioSetting>("sustain", "SUS ", AudioSetting::Type::Float);
             m_sustainLevel->setFloat(0.75f);
-            m_releaseTime = std::make_shared<AudioSetting>("release", AudioSetting::Type::Float);
+            m_releaseTime = std::make_shared<AudioSetting>("release", "REL ", AudioSetting::Type::Float);
             m_releaseTime->setFloat(0.0625f);
         }
 

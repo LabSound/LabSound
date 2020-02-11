@@ -99,7 +99,7 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
 
 ConvolverNode::ConvolverNode()
 : AudioScheduledSourceNode()
-, m_normalize(std::make_shared<AudioSetting>("normalize", AudioSetting::Type::Bool))
+, m_normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
 {
     m_settings.push_back(m_normalize);
     m_normalize->setBool(true);

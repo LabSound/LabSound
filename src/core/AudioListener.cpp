@@ -5,20 +5,20 @@
 
 namespace lab
 {
-    AudioListener::AudioListener() : m_dopplerFactor(std::make_shared<AudioParam>("dopplerFactor", 1.f, 0.01f, 100.f)),
-        m_speedOfSound(std::make_shared<AudioParam>("speedOfSound", 343.f, 1.f, 10000.f)),
-        m_forwardX(std::make_shared<AudioParam>("forwardX", 0.f, -1.e6f, 1.e6f)),
-        m_forwardY(std::make_shared<AudioParam>("forwardY", 0.f, -1.e6f, 1.e6f)),
-        m_forwardZ(std::make_shared<AudioParam>("forwardZ", -1.f, -1.e6f, 1.e6f)),
-        m_upX(std::make_shared<AudioParam>("upX", 0.f, -1.f, 1.f)),
-        m_upY(std::make_shared<AudioParam>("upY", 1.f, -1.f, 1.f)),
-        m_upZ(std::make_shared<AudioParam>("upZ", 0.f, -1.f, 1.f)),
-        m_velocityX(std::make_shared<AudioParam>("velocityX", 0.f, -1000.f, 1000.f)),
-        m_velocityY(std::make_shared<AudioParam>("velocityY", 0.f, -1000.f, 1000.f)),
-        m_velocityZ(std::make_shared<AudioParam>("velocityZ", 0.f, -1000.f, 1000.f)),
-        m_positionX(std::make_shared<AudioParam>("positionX", 0.f, -1.e6f, 1.e6f)),
-        m_positionY(std::make_shared<AudioParam>("positionY", 0.f, -1.e6f, 1.e6f)),
-        m_positionZ(std::make_shared<AudioParam>("positionZ", 0.f, -1.e6f, 1.e6f))
+    AudioListener::AudioListener() : m_dopplerFactor(std::make_shared<AudioParam>("dopplerFactor", "DPLR", 1.f, 0.01f, 100.f)),
+        m_speedOfSound(std::make_shared<AudioParam>("speedOfSound", "SPED", 343.f, 1.f, 10000.f)),
+        m_forwardX(std::make_shared<AudioParam>("forwardX", "FWDX", 0.f, -1.e6f, 1.e6f)),
+        m_forwardY(std::make_shared<AudioParam>("forwardY", "FWDY", 0.f, -1.e6f, 1.e6f)),
+        m_forwardZ(std::make_shared<AudioParam>("forwardZ", "FWDZ", -1.f, -1.e6f, 1.e6f)),
+        m_upX(std::make_shared<AudioParam>("upX", "UP X",  0.f, -1.f, 1.f)),
+        m_upY(std::make_shared<AudioParam>("upY", "UP Y", 1.f, -1.f, 1.f)),
+        m_upZ(std::make_shared<AudioParam>("upZ", "UP Z", 0.f, -1.f, 1.f)),
+        m_velocityX(std::make_shared<AudioParam>("velocityX", "VELX", 0.f, -1000.f, 1000.f)),
+        m_velocityY(std::make_shared<AudioParam>("velocityY", "VELY", 0.f, -1000.f, 1000.f)),
+        m_velocityZ(std::make_shared<AudioParam>("velocityZ", "VELZ", 0.f, -1000.f, 1000.f)),
+        m_positionX(std::make_shared<AudioParam>("positionX", "POSX", 0.f, -1.e6f, 1.e6f)),
+        m_positionY(std::make_shared<AudioParam>("positionY", "POSY", 0.f, -1.e6f, 1.e6f)),
+        m_positionZ(std::make_shared<AudioParam>("positionZ", "POSZ", 0.f, -1.e6f, 1.e6f))
     {
 
     }

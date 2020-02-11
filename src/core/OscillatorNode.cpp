@@ -227,20 +227,20 @@ static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {
 
 OscillatorNode::OscillatorNode(const float sampleRate)
 : m_sampleRate(sampleRate)
-, m_type(std::make_shared<AudioSetting>("type", s_types))
+, m_type(std::make_shared<AudioSetting>("type", "TYPE", s_types))
 , m_firstRender(true)
 , m_virtualReadIndex(0)
 , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
 , m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
     // Use musical pitch standard A440 as a default.
-    m_frequency = std::make_shared<AudioParam>("frequency", 440, 0, 100000);
+    m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
 
     // Default to no detuning.
-    m_detune = std::make_shared<AudioParam>("detune", 0, -4800, 4800);
+    m_detune = std::make_shared<AudioParam>("detune", "DTUN", 0, -4800, 4800);
 
-    m_amplitude = std::make_shared<AudioParam>("amplitude", 1, 0, 100000);
-    m_bias = std::make_shared<AudioParam>("bias", 0, -1000000, 100000);
+    m_amplitude = std::make_shared<AudioParam>("amplitude", "AMPL", 1, 0, 100000);
+    m_bias = std::make_shared<AudioParam>("bias", "BIAS", 0, -1000000, 100000);
 
     m_params.push_back(m_frequency);
     m_params.push_back(m_amplitude);

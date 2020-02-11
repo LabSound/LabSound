@@ -14,10 +14,10 @@ BiquadProcessor::BiquadProcessor(size_t numberOfChannels, bool autoInitialize) :
 {
 
     // Create parameters for BiquadFilterNode.
-    m_parameter1 = std::make_shared<AudioParam>("frequency", 350.0, 10.0, 22500);
-    m_parameter2 = std::make_shared<AudioParam>("Q", 1, 0.0001, 1000.0);
-    m_parameter3 = std::make_shared<AudioParam>("gain", 0.0, -40, 40);
-    m_parameter4 = std::make_shared<AudioParam>("detune", 0.0, -4800, 4800);
+    m_parameter1 = std::make_shared<AudioParam>("frequency", "FREQ", 350.0, 10.0, 22500);
+    m_parameter2 = std::make_shared<AudioParam>("Q", "Q   ", 1, 0.0001, 1000.0);
+    m_parameter3 = std::make_shared<AudioParam>("gain", "GAIN", 0.0, -40, 40);
+    m_parameter4 = std::make_shared<AudioParam>("detune", "DTUN", 0.0, -4800, 4800);
 
     if (autoInitialize)
         initialize();
