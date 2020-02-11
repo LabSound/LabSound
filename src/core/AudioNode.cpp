@@ -66,7 +66,7 @@ size_t AudioNode::channelCount()
 
 void AudioNode::setChannelCount(ContextGraphLock & g, size_t channelCount)
 {
-    if (m_channelCount != channelCount)
+    if (!g.context())
     {
         throw std::invalid_argument("No context specified");
     }
