@@ -10,14 +10,14 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace lab 
+namespace lab
 {
     class AudioSetting;
 
-    // params: 
+    // params:
     // settings: type
     //
-    class NoiseNode : public AudioScheduledSourceNode 
+    class NoiseNode : public AudioScheduledSourceNode
     {
 
     public:
@@ -40,8 +40,9 @@ namespace lab
         void setType(NoiseType newType);
 
     private:
-
         virtual bool propagatesSilence(ContextRenderLock & r) const override;
+        virtual double tailTime(ContextRenderLock& r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
 
         std::shared_ptr<AudioSetting> _type;
 
@@ -49,7 +50,7 @@ namespace lab
 
         float lastBrown = 0;
 
-        float pink0 = 0; 
+        float pink0 = 0;
         float pink1 = 0;
         float pink2 = 0;
         float pink3 = 0;

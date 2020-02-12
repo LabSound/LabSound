@@ -54,8 +54,6 @@ struct PendingConnection
     }
 };
 
-const size_t lab::AudioContext::maxNumberOfChannels = 96;
-
 struct AudioContext::Internals
 {
     Internals(bool a) : autoDispatchEvents(a) {}

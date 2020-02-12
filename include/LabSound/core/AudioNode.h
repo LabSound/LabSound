@@ -163,6 +163,7 @@ public:
     // USER FACING FUNCTIONS <
 
 protected:
+    virtual void clearPannerNode() {}
 
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.

@@ -39,7 +39,7 @@ public:
     std::shared_ptr<AudioParam> bias() { return m_bias; }
 
 
-private:
+protected:
     void _setType(OscillatorType type);
 
     float m_sampleRate;
@@ -52,6 +52,9 @@ private:
 
     // Detune value (deviating from the frequency) in Cents.
     std::shared_ptr<AudioParam> m_detune;
+
+    virtual double tailTime(ContextRenderLock& r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
 
     void setWaveTable(std::shared_ptr<WaveTable> table);
 

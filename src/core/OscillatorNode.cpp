@@ -155,7 +155,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
         {
             for (int i = 0; i < framesToProcess; ++i)
             {
-                destP[i] = bias[i] + amplitudes[i] * static_cast<float>(sin(_lab_phase));
+                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(_lab_phase)));
                 _lab_phase += phaseIncrements[i];
             }
 
@@ -169,7 +169,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i] = bias[i] + (_lab_phase < M_PI? amp : -amp);
+                destP[i] = static_cast<float>(bias[i] + (_lab_phase < M_PI? amp : -amp));
                 _lab_phase += phaseIncrements[i];
                 if (_lab_phase > 2. * M_PI)
                     _lab_phase -= 2. * M_PI;
@@ -182,7 +182,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i] = bias[i] + amp - (amp / M_PI * _lab_phase);
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / M_PI * _lab_phase));
                 _lab_phase += phaseIncrements[i];
                 if (_lab_phase > 2. * M_PI)
                     _lab_phase -= 2. * M_PI;
@@ -196,9 +196,9 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             {
                 float amp = amplitudes[i];
                 if (_lab_phase < M_PI)
-                    destP[i] = bias[i] - amp + (2.f * amp / M_PI) * _lab_phase;
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * _lab_phase);
                 else
-                    destP[i] = bias[i] + 3.f * amp - (2.f * amp / M_PI) * _lab_phase;
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * _lab_phase);
 
                 _lab_phase += phaseIncrements[i];
                 if (_lab_phase > 2. * M_PI)

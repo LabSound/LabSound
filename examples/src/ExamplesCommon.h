@@ -6,7 +6,7 @@
 #ifndef LABSOUND_EXAMPLE_BASE_APP_H
 #define LABSOUND_EXAMPLE_BASE_APP_H
 
-#include "LabSound/extended/LabSound.h"
+#include "LabSound/LabSound.h"
 
 #include <algorithm>
 #include <array>

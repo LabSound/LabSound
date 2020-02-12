@@ -56,7 +56,7 @@ public:
     void setDeviceNode(std::shared_ptr<AudioNode> device);
     std::shared_ptr<AudioNode> device();
 
-    bool isOfflineContext();
+    bool isOfflineContext() const;
 
     // Query AudioDeviceRenderCallback properties
     double currentTime() const;

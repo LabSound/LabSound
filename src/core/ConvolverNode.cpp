@@ -11,7 +11,6 @@
 #include <cmath>
 
 namespace lab {
-    namespace Sound {
 
 using std::isnan;
 using std::isinf;
@@ -90,10 +89,10 @@ ConvolverNode::ReverbKernel::ReverbKernel(ReverbKernel && rh) noexcept
 ConvolverNode::ReverbKernel::~ReverbKernel()
 {
     if (ft)
-        lab::Sound::sp_ftbl_destroy(&ft);
+        lab::sp_ftbl_destroy(&ft);
 
     if (conv)
-        lab::Sound::sp_conv_destroy(&conv);
+        lab::sp_conv_destroy(&conv);
 }
 
 
@@ -108,13 +107,13 @@ ConvolverNode::ConvolverNode()
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
     initialize();
 
-    lab::Sound::sp_create(&_sp);
+    lab::sp_create(&_sp);
 }
 
 ConvolverNode::~ConvolverNode()
 {
     _kernels.clear();
-    lab::Sound::sp_destroy(&_sp);
+    lab::sp_destroy(&_sp);
     uninitialize();
 }
 
@@ -227,7 +226,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     for (int i = 0; i < numOutputChannels; ++i)
     {
-        lab::Sound::sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
+        lab::sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
         float * destP = outputBus->channel(i)->mutableData();
 
         // Start rendering at the correct offset.
@@ -239,9 +238,9 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
             size_t c = input_bus->channel(i)->length();
             for (int j = 0; j < framesToProcess; ++j)
             {
-                lab::Sound::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
-                lab::Sound::SPFLOAT out = 0.f;
-                lab::Sound::sp_conv_compute(_sp, conv, &in, &out);
+                lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
+                lab::SPFLOAT out = 0.f;
+                lab::sp_conv_compute(_sp, conv, &in, &out);
                 *destP++ = out;
             }
         }
@@ -261,4 +260,4 @@ bool ConvolverNode::propagatesSilence(ContextRenderLock & r) const
     return !isPlayingOrScheduled() || hasFinished();
 }
 
-}} // lab::Sound
+} // lab::Sound

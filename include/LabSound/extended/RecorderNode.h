@@ -13,7 +13,6 @@ namespace lab
 {
     class RecorderNode : public AudioBasicInspectorNode
     {
-
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
@@ -26,23 +25,22 @@ namespace lab
         const AudioStreamConfig outConfig;
 
     public:
-        
         RecorderNode(const AudioStreamConfig outConfig);
         virtual ~RecorderNode();
-        
+
         // AudioNode
         virtual void process(ContextRenderLock &, size_t framesToProcess) override;
         virtual void reset(ContextRenderLock &) override;
-        
+
         void startRecording() { m_recording = true; }
         void stopRecording() { m_recording = false; }
-        
+
         void mixToMono(bool m) { m_mixToMono = m; }
-        
+
         void writeRecordingToWav(const std::string & filenameWithWavExtension);
 
     };
-    
+
 } // end namespace lab
 
 #endif

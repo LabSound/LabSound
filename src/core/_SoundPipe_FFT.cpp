@@ -53,8 +53,6 @@ THE SOFTWARE.
 
 namespace lab
 {
-namespace Sound
-{
 
 typedef float SPFLOAT;
 #define SP_OK 1
@@ -3636,4 +3634,4 @@ void sp_fft_destroy(sp_fft * fft)
     free(fft->BRLowCpx);
 }
 
-}} // Lab::Sound
+} // lab

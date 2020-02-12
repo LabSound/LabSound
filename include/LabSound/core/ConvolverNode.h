@@ -20,14 +20,14 @@ namespace deprecated {
 
 // params:
 // settings: normalize
-//    
-class ConvolverNode final : public AudioNode 
+//
+class ConvolverNode final : public AudioNode
 {
 public:
 
     ConvolverNode();
     virtual ~ConvolverNode();
-    
+
     // AudioNode
     virtual void process(ContextRenderLock&, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock&) override;
@@ -62,8 +62,6 @@ private:
 
 } // deprecated
 
-namespace Sound
-{
 
 // private data for reverb computations
 struct sp_data;
@@ -85,7 +83,9 @@ public:
     virtual void process(ContextRenderLock & r, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock &) override;
 
-private:
+protected:
+    virtual double tailTime(ContextRenderLock& r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
     double now() const { return _now; }
     double _now = 0.0;
@@ -106,9 +106,6 @@ private:
     };
     std::vector<ReverbKernel> _kernels;  // one per impulse response channel
 };
-
-
-}
 
 
 } // namespace lab

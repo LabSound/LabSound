@@ -88,6 +88,8 @@ namespace lab {
 
     private:
         virtual bool propagatesSilence(ContextRenderLock & r) const override;
+        virtual double tailTime(ContextRenderLock& r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
 
         std::shared_ptr<AudioSetting> _waveType;
         std::shared_ptr<AudioParam> _attack;

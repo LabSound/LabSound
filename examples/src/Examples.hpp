@@ -286,7 +286,7 @@ struct ex_frequency_modulation : public labsound_example
             feedbackTap->gain()->setValue(0.5f);
 
             chainDelay = std::make_shared<DelayNode>(context->sampleRate(), 4);
-            chainDelay->delayTime()->setValue(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
+            chainDelay->delayTime()->setFloat(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
 
             // Set up processing chain:
             context->connect(modulatorGain, modulator, 0, 0);  // Modulator to Gain
@@ -986,7 +986,7 @@ struct ex_redalert_synthesis : public labsound_example
             for (int i = 0; i < 5; ++i)
             {
                 delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
-                delay[i]->delayTime()->setValue(delays[i]);
+                delay[i]->delayTime()->setFloat(delays[i]);
                 context->connect(delay[i], resonanceSum, 0, 0);
                 context->connect(delaySum, delay[i], 0, 0);
             }
