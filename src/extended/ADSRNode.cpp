@@ -26,7 +26,7 @@ namespace lab
     public:
 
         ADSRNodeInternal()
-        : AudioProcessor(2), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
+        : AudioProcessor(1), m_noteOnTime(-1.), m_noteOffTime(0), m_currentGain(0)
         {
             m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATCK", AudioSetting::Type::Float);
             m_attackTime->setFloat(0.05f);
