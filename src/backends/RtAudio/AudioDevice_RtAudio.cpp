@@ -143,7 +143,9 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
     }
 
     RtAudio::StreamOptions options;
-    options.flags = RTAUDIO_MINIMIZE_LATENCY;
+    // RTAUDIO_MINIMIZE_LATENCY tells RtAudio to use the hardware's minimum buffer size
+    // which is not desirable as the minimum way be too small, and a non-power of 2.
+    //options.flags = RTAUDIO_MINIMIZE_LATENCY;
     if (!kInterleaved) options.flags |= RTAUDIO_NONINTERLEAVED;
 
     // Note! RtAudio has a hard limit on a power of two buffer size, non-power of two sizes will result in

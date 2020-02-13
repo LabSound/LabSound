@@ -128,7 +128,7 @@ void RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
     fileData->channelCount = outConfig.desired_channels;
     fileData->sourceFormat = nqr::PCM_FLT;
 
-    nqr::EncoderParams params = {outConfig.desired_channels, nqr::PCM_FLT, nqr::DITHER_NONE};
+    nqr::EncoderParams params = {static_cast<int>(outConfig.desired_channels), nqr::PCM_FLT, nqr::DITHER_NONE};
 
     const int encoder_status = nqr::encode_wav_to_disk(params, fileData.get(), filenameWithWavExtension);
 }
