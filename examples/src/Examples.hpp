@@ -675,13 +675,17 @@ struct ex_convolution_reverb : public labsound_example
         std::shared_ptr<GainNode> outputGain = std::make_shared<GainNode>();
 
         {
+            // voice --+-> dry -------------------+
+            //         |                          |
+            //         +---> convolve ---> wet ---+--->out ---> device
+
             ContextRenderLock r(context.get(), "ex_convolution_reverb");
 
             convolve = std::make_shared<ConvolverNode>();
             convolve->setImpulse(impulseResponseClip);
 
             wetGain = std::make_shared<GainNode>();
-            wetGain->gain()->setValue(0.1f);
+            wetGain->gain()->setValue(0.5f);
             dryGain = std::make_shared<GainNode>();
             dryGain->gain()->setValue(0.1f);
 
@@ -700,7 +704,7 @@ struct ex_convolution_reverb : public labsound_example
             context->connect(context->device(), outputGain, 0, 0);
         }
 
-        Wait(std::chrono::seconds(10));
+        Wait(std::chrono::seconds(20));
     }
 };
 

@@ -13,9 +13,13 @@
 
 static constexpr int iterations = 1;
 
-int main (int argc, char *argv[]) try
+extern "C"
+char* _getcwd(char* buf, size_t size);
+
+int main(int argc, char *argv[]) try
 {   
-                                                 
+    char buff[2048];
+    _getcwd(buff, 2048);
     ex_simple simple;                            
     ex_playback_events playback_events;          
     ex_offline_rendering offline_rendering;      
@@ -36,7 +40,7 @@ int main (int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        simple.play(argc, argv);
+        convolution_reverb.play(argc, argv);
     }
 
     return EXIT_SUCCESS;
