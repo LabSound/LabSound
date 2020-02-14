@@ -662,6 +662,12 @@ struct ex_convolution_reverb : public labsound_example
         std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
         std::shared_ptr<AudioBus> voiceClip = MakeBusFromFile("samples/voice.ogg", false);
 
+        if (!impulseResponseClip || !voiceClip)
+        {
+            std::cerr << "Could not open sample data\n";
+            return;
+        }
+
         std::shared_ptr<ConvolverNode> convolve;
         std::shared_ptr<GainNode> wetGain;
         std::shared_ptr<GainNode> dryGain;

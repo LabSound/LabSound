@@ -35,7 +35,7 @@ namespace lab
             zero();
             return;
         }
-        std::memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
+        memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
     }
 
     void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame)

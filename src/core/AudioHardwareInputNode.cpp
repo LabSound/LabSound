@@ -42,6 +42,7 @@ void AudioHardwareInputNode::process(ContextRenderLock & r, size_t numberOfFrame
             auto inputConfig = DeviceAsRenderCallback->getInputConfig();
             m_sourceNumberOfChannels = inputConfig.desired_channels;
             output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels); // Reconfigure the output's number of channels.
+            outputBus =  output(0)->bus(r); // outputBus pointer was invalidated
         }
     }
 

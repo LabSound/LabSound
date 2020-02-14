@@ -206,7 +206,10 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // if the user never specified the number of output channels, make it match the input
     if (!outputBus->numberOfChannels())
+    {
         output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
+        outputBus = output(0)->bus(r); // set number of channels invalidates the pointer
+    }
 
     size_t quantumFrameOffset;
     size_t nonSilentFramesToProcess;
