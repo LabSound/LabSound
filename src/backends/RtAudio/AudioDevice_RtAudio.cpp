@@ -273,7 +273,7 @@ int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBuf
 {
     AudioDevice_RtAudio * self = reinterpret_cast<AudioDevice_RtAudio *>(userData);
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
-    std::memset(fltOutputBuffer, 0, nBufferFrames * self->outputConfig.desired_channels * sizeof(float));
+    memset(fltOutputBuffer, 0, nBufferFrames * self->outputConfig.desired_channels * sizeof(float));
     self->render(nBufferFrames, fltOutputBuffer, inputBuffer);
     return 0;
 }
