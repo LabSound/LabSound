@@ -1,4 +1,4 @@
-// License: BSD 3 Clause
+// SPDX-License-Identifier: BSD-3-Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #include "AudioDevice_RtAudio.h"
