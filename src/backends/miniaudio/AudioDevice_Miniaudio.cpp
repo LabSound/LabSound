@@ -60,13 +60,18 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     for (iDevice = 0; iDevice < playbackDeviceCount; ++iDevice) 
     {
         AudioDeviceInfo lab_device_info;
-        lab_device_info.index = iDevice;
+        lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
+
+        if (ma_context_get_device_info(&context, ma_device_type_playback, 
+            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
+            continue;
+
         lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].maxChannels;
         lab_device_info.num_input_channels = 0;
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].minSampleRate));
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = 48000;
+        lab_device_info.nominal_samplerate = static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate);
         lab_device_info.is_default_output = iDevice == 0;
         lab_device_info.is_default_input = false;
 
@@ -75,13 +80,18 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 
     for (iDevice = 0; iDevice < captureDeviceCount; ++iDevice) {
         AudioDeviceInfo lab_device_info;
-        lab_device_info.index = iDevice;
+        lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
-        lab_device_info.num_output_channels = pCaptureDeviceInfos[iDevice].maxChannels;
-        lab_device_info.num_input_channels = 0;
+
+        if (ma_context_get_device_info(&context, ma_device_type_capture,
+            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
+            continue;
+
+        lab_device_info.num_output_channels = 0;
+        lab_device_info.num_input_channels = pCaptureDeviceInfos[iDevice].maxChannels;
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].minSampleRate));
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = 48000;
+        lab_device_info.nominal_samplerate = static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
@@ -101,7 +111,7 @@ uint32_t AudioDevice::GetDefaultOutputAudioDeviceIndex()
         if (devices[i].is_default_output)
             return i;
 
-    throw std::runtime_error("no rtaudio devices available!");
+    throw std::runtime_error("no miniaudio devices available!");
 }
 
 uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
@@ -112,7 +122,7 @@ uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
         if (devices[i].is_default_input)
             return i;
 
-    throw std::runtime_error("no rtaudio devices available!");
+    throw std::runtime_error("no miniaudio devices available!");
 }
 
 
@@ -159,9 +169,11 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
         return;
     }
 
+    authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
+
     _ring = new RingBufferT<float>();
-    _ring->resize(static_cast<int>(_sampleRate));  // ad hoc. hold one second
-    _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * _numInputChannels));
+    _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
+    _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
 }
 
 AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
@@ -196,25 +208,29 @@ void AudioDevice_Miniaudio::stop()
 }
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDevice_Miniaudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
+void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, void * inputBuffer)
 {
+    int numberOfFrames = numberOfFrames_;
     if (!_renderBus)
     {
-        _renderBus = new AudioBus(_numChannels, kRenderQuantum, true);
-        _renderBus->setSampleRate(_sampleRate);
+        _renderBus = new AudioBus(outputConfig.desired_channels, kRenderQuantum, true);
+        _renderBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
-    if (!_inputBus && _numInputChannels)
+    if (!_inputBus && inputConfig.desired_channels)
     {
-        _inputBus = new AudioBus(_numInputChannels, kRenderQuantum, true);
-        _inputBus->setSampleRate(_sampleRate);
+        _inputBus = new AudioBus(inputConfig.desired_channels, kRenderQuantum, true);
+        _inputBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
     float * pIn = static_cast<float *>(inputBuffer);
     float * pOut = static_cast<float *>(outputBuffer);
 
-    if (numberOfFrames * _numInputChannels)
-        _ring->write(pIn, numberOfFrames * _numInputChannels);
+    int in_channels = inputConfig.desired_channels;
+    int out_channels = outputConfig.desired_channels;
+
+    if (numberOfFrames * in_channels)
+        _ring->write(pIn, numberOfFrames * in_channels);
 
     while (numberOfFrames > 0)
     {
@@ -224,48 +240,55 @@ void AudioDevice_Miniaudio::render(int numberOfFrames, void * outputBuffer, void
             // left over from the previous numberOfFrames, so start by moving those into
             // the output buffer.
 
-            int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
-            for (unsigned int i = 0; i < _numChannels; ++i)
-            {
-                AudioChannel * channel = _renderBus->channel(i);
-                VectorMath::vclip(channel->data() + static_cast<ptrdiff_t>(kRenderQuantum - _remainder), 1,
-                                  &kLowThreshold, &kHighThreshold,
-                                  pOut + i, _numChannels, samples);
-            }
-            pOut += static_cast<ptrdiff_t>(_numChannels * samples);
+            // miniaudio expects interleaved data, this loop leverages the vclip operation
+            // to copy, interleave, and clip in one pass.
 
-            // deduct the output samples from the desired copy amount, and from the remaining
-            // samples from the last invocation of _callback.render().
-            numberOfFrames -= samples;
-            _remainder -= samples;
+            int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
+            for (unsigned int i = 0; i < out_channels; ++i)
+            {
+                int src_stride = 1; // de-interleaved
+                int dst_stride = out_channels; // interleaved
+                AudioChannel* channel = _renderBus->channel(i);
+                VectorMath::vclip(channel->data() + kRenderQuantum - _remainder, src_stride,
+                                  &kLowThreshold, &kHighThreshold,
+                                  pOut + i, dst_stride, samples);
+            }
+            pOut += out_channels * samples;
+
+            numberOfFrames -= samples; // deduct samples actually copied to output
+            _remainder -= samples; // deduct samples remaining from last render() invocation
         }
         else
         {
-            if (_numInputChannels)
+            if (in_channels)
             {
-                _ring->read(_scratch, _numInputChannels * kRenderQuantum);
-                for (unsigned int i = 0; i < _numInputChannels; ++i)
+                // miniaudio provides the input data in interleaved form, vclip is used here to de-interleave
+
+                _ring->read(_scratch, in_channels * kRenderQuantum);
+                for (unsigned int i = 0; i < in_channels; ++i)
                 {
-                    AudioChannel * channel = _inputBus->channel(i);
-                    VectorMath::vclip(_scratch + i, _numInputChannels,
+                    int src_stride = in_channels; // interleaved
+                    int dst_stride = 1; // de-interleaved
+                    AudioChannel* channel = _inputBus->channel(i);
+                    VectorMath::vclip(_scratch + i, src_stride,
                                       &kLowThreshold, &kHighThreshold,
-                                      channel->mutableData(), 1, kRenderQuantum);
+                                      channel->mutableData(), dst_stride, kRenderQuantum);
                 }
             }
+
+            // Update sampling info for use by the render graph
+            const int32_t index = 1 - (samplingInfo.current_sample_frame & 1);
+            const uint64_t t = samplingInfo.current_sample_frame & ~1;
+            samplingInfo.sampling_rate = authoritativeDeviceSampleRateAtRuntime;
+            samplingInfo.current_sample_frame = t + numberOfFrames + index;
+            samplingInfo.current_time = samplingInfo.current_sample_frame / static_cast<double>(samplingInfo.sampling_rate);
+            samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
             // generate new data
             _callback.render(_inputBus, _renderBus, kRenderQuantum, samplingInfo);
             _remainder = kRenderQuantum;
         }
     }
-
-    // Update sampling info
-    const int32_t index = 1 - (samplingInfo.current_sample_frame & 1);
-    const uint64_t t = samplingInfo.current_sample_frame & ~1;
-    samplingInfo.sampling_rate = authoritativeDeviceSampleRateAtRuntime;
-    samplingInfo.current_sample_frame = t + numberOfFrames + index;
-    samplingInfo.current_time = samplingInfo.current_sample_frame / static_cast<double>(samplingInfo.sampling_rate);
-    samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 }
 
 }  // namespace lab

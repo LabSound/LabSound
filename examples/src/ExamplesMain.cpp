@@ -13,34 +13,41 @@
 
 static constexpr int iterations = 1;
 
-extern "C"
-char* _getcwd(char* buf, size_t size);
+// A simple memory manager for the examples, as they are too large to
+// instantiate all at once on the stack on small machines.
+
+template <typename T>
+class Example
+{
+public:
+    T* ex;
+    Example() { ex = new T; }
+    ~Example() { delete ex; }
+};
 
 int main(int argc, char *argv[]) try
 {   
-    char buff[2048];
-    _getcwd(buff, 2048);
-    ex_simple simple;                            
-    ex_playback_events playback_events;          
-    ex_offline_rendering offline_rendering;      
-    ex_tremolo tremolo;                          
-    ex_frequency_modulation frequency_mod;       
-    ex_runtime_graph_update runtime_graph_update;
-    ex_microphone_loopback microphone_loopback;  
-    ex_microphone_reverb microphone_reverb;      
-    ex_peak_compressor peak_compressor;           
-    ex_stereo_panning stereo_panning;            
-    ex_hrtf_spatialization hrtf_spatialization;  
-    ex_convolution_reverb convolution_reverb;    
-    ex_misc misc;                                
-    ex_dalek_filter dalek_filter;                
-    ex_redalert_synthesis redalert_synthesis;    
-    ex_wavepot_dsp wavepot_dsp;                  
+    Example<ex_simple> simple;
+    Example<ex_playback_events> playback_events;
+    Example<ex_offline_rendering> offline_rendering;
+    Example<ex_tremolo> tremolo;
+    Example<ex_frequency_modulation> frequency_mod;
+    Example<ex_runtime_graph_update> runtime_graph_update;
+    Example<ex_microphone_loopback> microphone_loopback;
+    Example<ex_microphone_reverb> microphone_reverb;
+    Example<ex_peak_compressor> peak_compressor;
+    Example<ex_stereo_panning> stereo_panning;
+    Example<ex_hrtf_spatialization> hrtf_spatialization;
+    Example<ex_convolution_reverb> convolution_reverb;
+    Example<ex_misc> misc;
+    Example<ex_dalek_filter> dalek_filter;
+    Example<ex_redalert_synthesis> redalert_synthesis;
+    Example<ex_wavepot_dsp> wavepot_dsp;
 
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        convolution_reverb.play(argc, argv);
+        convolution_reverb.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;

@@ -22,9 +22,6 @@ class AudioDevice_Miniaudio : public AudioDevice
     AudioDeviceRenderCallback & _callback;
     AudioBus* _renderBus = nullptr;
     AudioBus* _inputBus = nullptr;
-    uint32_t _numChannels = 0;
-    uint32_t _numInputChannels = 0;
-    float _sampleRate = 44100;
     ma_device _device;
     int _remainder = 0;
     SamplingInfo samplingInfo;
