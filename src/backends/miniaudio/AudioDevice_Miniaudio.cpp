@@ -84,14 +84,14 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
         if (ma_context_get_device_info(&context, ma_device_type_capture,
-            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
+            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
             continue;
 
         lab_device_info.num_output_channels = 0;
-        lab_device_info.num_input_channels = pCaptureDeviceInfos[iDevice].maxChannels;
+        lab_device_info.num_input_channels = 2;// pCaptureDeviceInfos[iDevice].maxChannels;
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].minSampleRate));
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
+        lab_device_info.nominal_samplerate = 48000.f;// static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
@@ -244,7 +244,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             // to copy, interleave, and clip in one pass.
 
             int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
-            for (unsigned int i = 0; i < out_channels; ++i)
+            for (int i = 0; i < out_channels; ++i)
             {
                 int src_stride = 1; // de-interleaved
                 int dst_stride = out_channels; // interleaved
@@ -265,7 +265,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
                 // miniaudio provides the input data in interleaved form, vclip is used here to de-interleave
 
                 _ring->read(_scratch, in_channels * kRenderQuantum);
-                for (unsigned int i = 0; i < in_channels; ++i)
+                for (int i = 0; i < in_channels; ++i)
                 {
                     int src_stride = in_channels; // interleaved
                     int dst_stride = 1; // de-interleaved

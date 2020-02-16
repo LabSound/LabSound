@@ -416,6 +416,7 @@ struct ex_microphone_loopback : public labsound_example
 ////////////////////////////////
 
 // This sample takes input from a microphone and convolves it with an impulse response to create reverb (i.e. use of the `ConvolverNode`).
+// The sample convolution is for a rather large room, so there is a delay.
 // DANGER! This sample creates an open feedback loop. It is best used when the output audio device is a pair of headphones. 
 struct ex_microphone_reverb : public labsound_example
 {
@@ -446,7 +447,7 @@ struct ex_microphone_reverb : public labsound_example
                 convolve->setImpulse(impulseResponseClip);
 
                 wetGain = std::make_shared<GainNode>();
-                wetGain->gain()->setValue(0.1f);
+                wetGain->gain()->setValue(0.6f);
 
                 context->connect(convolve, input, 0, 0);
                 context->connect(wetGain, convolve, 0, 0);

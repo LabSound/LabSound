@@ -219,17 +219,20 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
     int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
     int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
     int numReverbChannels = static_cast<int>(_kernels.size());
-    bool valid = numInputChannels == numOutputChannels && ((numInputChannels == numReverbChannels) || (numReverbChannels == 1));
 
-    if (!nonSilentFramesToProcess || !valid)
+    if (!nonSilentFramesToProcess)
     {
         outputBus->zero();
         return;
     }
 
+    /// @todo should a situation such as 1:2:1 be invalid, or should it be powersum(1:1:1, 1:2:1)?
+    /// at the moment, this routine trivially does 1:1:1 only.
+
     for (int i = 0; i < numOutputChannels; ++i)
     {
-        lab::sp_conv * conv = numReverbChannels == 1 ? _kernels[0].conv : _kernels[i].conv;
+        int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
+        lab::sp_conv * conv = _kernels[kernel].conv;
         float * destP = outputBus->channel(i)->mutableData();
 
         // Start rendering at the correct offset.
@@ -237,8 +240,9 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
         {
             size_t clipFrame = 0;
             AudioBus * input_bus = input(0)->bus(r);
-            float const * data = input_bus->channel(i)->data();
-            size_t c = input_bus->channel(i)->length();
+            int in_channel = i < numInputChannels ? i : numInputChannels - 1;
+            float const * data = input_bus->channel(in_channel)->data();
+            size_t c = input_bus->channel(in_channel)->length();
             for (int j = 0; j < framesToProcess; ++j)
             {
                 lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer

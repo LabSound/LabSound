@@ -177,7 +177,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, size_t framesToProcess
                         new_schedule = scale;
                     }
 
-                m_connectSchedule = new_schedule;
+                m_connectSchedule = new_schedule > 0.99999f ? 1.f : new_schedule;
             }
 
             unsilenceOutputs(r);
