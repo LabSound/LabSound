@@ -76,7 +76,7 @@ struct AudioContext::Internals
     };
 
     std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
-    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, uint32_t>> pendingParamConnections;
+    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, ConnectionType, uint32_t>> pendingParamConnections;
 };
 
 // Constructor for realtime rendering
@@ -253,9 +253,22 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     if (index >= driver->numberOfOutputs()) 
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, index));
+    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
     cv.notify_all();
 }
+
+void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
+{
+    if (!param)
+        throw std::invalid_argument("No parameter specified");
+
+    if (index >= driver->numberOfOutputs())
+        throw std::out_of_range("Output index greater than available outputs on the driver");
+
+    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Disconnect, index));
+    cv.notify_all();
+}
+
 
 void AudioContext::update()
 {
@@ -314,7 +327,10 @@ void AudioContext::update()
             {
                 auto connection = m_internal->pendingParamConnections.front();
                 m_internal->pendingParamConnections.pop();
-                AudioParam::connect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<2>(connection)));
+                if (std::get<2>(connection) == ConnectionType::Connect)
+                    AudioParam::connect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<3>(connection)));
+                else
+                    AudioParam::disconnect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<3>(connection)));
             }
 
             std::vector<PendingConnection> skippedConnections;
