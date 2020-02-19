@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-3-Clause
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 

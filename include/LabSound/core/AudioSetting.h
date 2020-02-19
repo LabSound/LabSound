@@ -26,6 +26,7 @@ class AudioSetting
 public:
     enum class Type
     {
+        None,
         Bool,
         Integer,
         Float,

@@ -34,7 +34,7 @@ AudioResampler::AudioResampler(unsigned numberOfChannels)
 
 void AudioResampler::configureChannels(unsigned numberOfChannels)
 {
-    unsigned currentSize = m_kernels.size();
+    unsigned currentSize = (unsigned) m_kernels.size();
     if (numberOfChannels == currentSize)
         return; // already setup
 
@@ -55,7 +55,7 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
     if (!provider)
         return;
         
-    unsigned numberOfChannels = m_kernels.size();
+    unsigned numberOfChannels = (unsigned) m_kernels.size();
 
     // Make sure our configuration matches the bus we're rendering to.
     bool channelsMatch = (destinationBus && destinationBus->numberOfChannels() == numberOfChannels);
@@ -96,7 +96,7 @@ void AudioResampler::setRate(double rate)
 
 void AudioResampler::reset()
 {
-    unsigned numberOfChannels = m_kernels.size();
+    unsigned numberOfChannels = (unsigned) m_kernels.size();
     for (unsigned i = 0; i < numberOfChannels; ++i)
         m_kernels[i]->reset();
 }

@@ -147,6 +147,7 @@ void AudioScheduledSourceNode::start(double when)
     }
 
     m_pendingStartTime = when;
+    m_endTime = UnknownTime;            // clear previous stop()s.
     m_playbackState = SCHEDULED_STATE;
 }
 
