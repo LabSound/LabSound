@@ -7,65 +7,83 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
+#include "LabSound/extended/RealtimeAnalyser.h"
 
 namespace lab
 {
 
+struct AnalyserNode::Detail
+{
+    Detail() = default;
+    ~Detail()
+    {
+        delete m_analyser;
+    }
+    RealtimeAnalyser* m_analyser = nullptr;
+
+    std::shared_ptr<AudioSetting> _fftSize;
+    std::shared_ptr<AudioSetting> _minDecibels;
+    std::shared_ptr<AudioSetting> _maxDecibels;
+    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
+};
+
 void AnalyserNode::shared_construction(size_t fftSize)
 {
-    _fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
-    _minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
-    _maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
-    _smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
+    _detail = new Detail;
 
-    _fftSize->setUint32(static_cast<uint32_t>(fftSize));
-    _fftSize->setValueChanged(
+    _detail->m_analyser = new RealtimeAnalyser((uint32_t)fftSize);
+
+    _detail->_fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
+    _detail->_minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
+    _detail->_maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
+    _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
+
+    _detail->_fftSize->setUint32(static_cast<uint32_t>(fftSize));
+    _detail->_fftSize->setValueChanged(
         [this]() {
-            delete m_analyser;
-            m_analyser = new RealtimeAnalyser(_fftSize->valueUint32());
+            delete _detail->m_analyser;
+            _detail->m_analyser = new RealtimeAnalyser(_detail->_fftSize->valueUint32());
 
             // restore other values
-            m_analyser->setMinDecibels(_minDecibels->valueFloat());
-            m_analyser->setMaxDecibels(_maxDecibels->valueFloat());
+            _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
+            _detail->m_analyser->setMaxDecibels(_detail->_maxDecibels->valueFloat());
         });
 
-    _minDecibels->setFloat(-100.f);
-    _minDecibels->setValueChanged(
+    _detail->_minDecibels->setFloat(-100.f);
+    _detail->_minDecibels->setValueChanged(
         [this]() {
-            m_analyser->setMinDecibels(_minDecibels->valueFloat());
+            _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
         });
 
-    _maxDecibels->setFloat(-30.f);
-    _maxDecibels->setValueChanged(
+    _detail->_maxDecibels->setFloat(-30.f);
+    _detail->_maxDecibels->setValueChanged(
         [this]() {
-            m_analyser->setMaxDecibels(_minDecibels->valueFloat());
+            _detail->m_analyser->setMaxDecibels(_detail->_minDecibels->valueFloat());
         });
 
-    _smoothingTimeConstant->setFloat(0.8f);
-    _smoothingTimeConstant->setValueChanged(
+    _detail->_smoothingTimeConstant->setFloat(0.8f);
+    _detail->_smoothingTimeConstant->setValueChanged(
         [this]() {
-            m_analyser->setSmoothingTimeConstant(_smoothingTimeConstant->valueFloat());
+            _detail->m_analyser->setSmoothingTimeConstant(_detail->_smoothingTimeConstant->valueFloat());
         });
 
-    m_settings.push_back(_fftSize);
-    m_settings.push_back(_minDecibels);
-    m_settings.push_back(_maxDecibels);
-    m_settings.push_back(_smoothingTimeConstant);
+    m_settings.push_back(_detail->_fftSize);
+    m_settings.push_back(_detail->_minDecibels);
+    m_settings.push_back(_detail->_maxDecibels);
+    m_settings.push_back(_detail->_smoothingTimeConstant);
 
     // N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
     initialize();
 }
 
 AnalyserNode::AnalyserNode(size_t fftSize)
-    : AudioBasicInspectorNode((uint32_t) 2)
-    , m_analyser(new RealtimeAnalyser((uint32_t) fftSize))
+    : AudioBasicInspectorNode(1)
 {
     shared_construction(fftSize);
 }
 
 AnalyserNode::AnalyserNode() 
 : AudioBasicInspectorNode(1)
-, m_analyser(new RealtimeAnalyser(1024u))
 {
     shared_construction(1024u);
 }
@@ -76,19 +94,31 @@ AnalyserNode::~AnalyserNode()
 }
 
 void AnalyserNode::setMinDecibels(double k) {
-    _minDecibels->setFloat(static_cast<float>(k)); }
+    _detail->_minDecibels->setFloat(static_cast<float>(k)); }
 double AnalyserNode::minDecibels() const {
-    return m_analyser->minDecibels(); }
+    return _detail->m_analyser->minDecibels(); }
 void AnalyserNode::setMaxDecibels(double k) {
-    _maxDecibels->setFloat(static_cast<float>(k)); }
+    _detail->_maxDecibels->setFloat(static_cast<float>(k)); }
 double AnalyserNode::maxDecibels() const {
-    return m_analyser->maxDecibels(); }
+    return _detail->m_analyser->maxDecibels(); }
 void AnalyserNode::setSmoothingTimeConstant(double k) {
-    _smoothingTimeConstant->setFloat(static_cast<float>(k)); }
+    _detail->_smoothingTimeConstant->setFloat(static_cast<float>(k)); }
 double AnalyserNode::smoothingTimeConstant() const {
-    return m_analyser->smoothingTimeConstant(); }
+    return _detail->m_analyser->smoothingTimeConstant(); }
 void AnalyserNode::setFftSize(ContextRenderLock&, size_t sz) {
-    _fftSize->setUint32(static_cast<uint32_t>(sz)); }
+    _detail->_fftSize->setUint32(static_cast<uint32_t>(sz)); }
+size_t AnalyserNode::fftSize() const { 
+    return _detail->m_analyser->fftSize(); }
+size_t AnalyserNode::frequencyBinCount() const { 
+    return _detail->m_analyser->frequencyBinCount(); }
+void AnalyserNode::getFloatFrequencyData(std::vector<float>& array) { 
+    _detail->m_analyser->getFloatFrequencyData(array); }
+void AnalyserNode::getByteFrequencyData(std::vector<uint8_t>& array) { 
+    _detail->m_analyser->getByteFrequencyData(array); }
+void AnalyserNode::getFloatTimeDomainData(std::vector<float>& array) { 
+    _detail->m_analyser->getFloatTimeDomainData(array); } // LabSound
+void AnalyserNode::getByteTimeDomainData(std::vector<uint8_t>& array) { 
+    _detail->m_analyser->getByteTimeDomainData(array); }
 
 void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 {
@@ -103,7 +133,7 @@ void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
     AudioBus * inputBus = input(0)->bus(r);
 
     // Give the analyser the audio which is passing through this AudioNode.
-    m_analyser->writeInput(r, inputBus, framesToProcess);
+    _detail->m_analyser->writeInput(r, inputBus, framesToProcess);
 
     // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
     // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
@@ -115,7 +145,7 @@ void AnalyserNode::process(ContextRenderLock& r, size_t framesToProcess)
 
 void AnalyserNode::reset(ContextRenderLock&)
 {
-    m_analyser->reset();
+    _detail->m_analyser->reset();
 }
 
 }  // namespace lab

@@ -7,9 +7,6 @@
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 
-//@fixme this node is actually extended
-#include "LabSound/extended/RealtimeAnalyser.h"
-
 namespace lab {
 
 class AudioSetting;
@@ -30,9 +27,9 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
     void setFftSize(ContextRenderLock&, size_t fftSize);
-    size_t fftSize() const { return m_analyser->fftSize(); }
+    size_t fftSize() const;
 
-    size_t frequencyBinCount() const { return m_analyser->frequencyBinCount(); }
+    size_t frequencyBinCount() const;
 
     void setMinDecibels(double k);
     double minDecibels() const;
@@ -44,10 +41,10 @@ public:
     double smoothingTimeConstant() const;
 
     // ffi: user facing functions
-    void getFloatFrequencyData(std::vector<float>& array) { m_analyser->getFloatFrequencyData(array); }
-    void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser->getByteFrequencyData(array); }
-    void getFloatTimeDomainData(std::vector<float>& array) { m_analyser->getFloatTimeDomainData(array); } // LabSound
-    void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser->getByteTimeDomainData(array); }
+    void getFloatFrequencyData(std::vector<float>& array);
+    void getByteFrequencyData(std::vector<uint8_t>& array);
+    void getFloatTimeDomainData(std::vector<float>& array);
+    void getByteTimeDomainData(std::vector<uint8_t>& array);
 
 private:
     void shared_construction(size_t fftSize);
@@ -55,12 +52,8 @@ private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    RealtimeAnalyser* m_analyser;
-
-    std::shared_ptr<AudioSetting> _fftSize;
-    std::shared_ptr<AudioSetting> _minDecibels;
-    std::shared_ptr<AudioSetting> _maxDecibels;
-    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
+    struct Detail;
+    Detail* _detail = nullptr;
 };
 
 } // namespace lab
