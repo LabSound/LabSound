@@ -23,7 +23,12 @@ namespace lab
         
         ADSRNode();
         virtual ~ADSRNode();
-        
+
+        // bang will attack, hold, decay, release
+        virtual bool hasBang() const override { return true; }
+        virtual void bang(ContextRenderLock&) override;
+
+        // noteOn will attack, noteOff will decay, release
         // If noteOn is called before noteOff has finished, a pop can occur. Polling
         // finished and avoiding noteOn while finished is true can avoid the popping.
         void noteOn(double when);
@@ -33,11 +38,12 @@ namespace lab
 
         void set(float aT, float aL, float d, float s, float r);
 
-        std::shared_ptr<AudioSetting> attackTime() const; // Duration in ms
-        std::shared_ptr<AudioSetting> attackLevel() const; // Duration in ms
-        std::shared_ptr<AudioSetting> decayTime() const; // Duration in ms
-        std::shared_ptr<AudioSetting> sustainLevel() const; // Level 0-10
-        std::shared_ptr<AudioSetting> releaseTime() const; // Duration in ms
+        std::shared_ptr<AudioSetting> attackTime() const; // Duration in seconds
+        std::shared_ptr<AudioSetting> attackLevel() const; // Level
+        std::shared_ptr<AudioSetting> decayTime() const; // Duration in seconds
+        std::shared_ptr<AudioSetting> holdTime() const; // Duration in seconds
+        std::shared_ptr<AudioSetting> sustainLevel() const; // Level
+        std::shared_ptr<AudioSetting> releaseTime() const; // Duration in seconds
     };
     
 }

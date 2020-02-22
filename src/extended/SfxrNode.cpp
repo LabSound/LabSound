@@ -651,7 +651,7 @@ namespace lab {
         uninitialize();
     }
 
-    void SfxrNode::bang() 
+    void SfxrNode::bang(ContextRenderLock&) 
     {
         start(0);
         sfxr->ResetSample(true);

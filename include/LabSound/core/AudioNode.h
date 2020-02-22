@@ -85,7 +85,7 @@ public:
     virtual bool isScheduledNode() const { return false; }
 
     virtual bool hasBang() const { return false; }
-    virtual void bang() {}
+    virtual void bang(ContextRenderLock &) {}
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.

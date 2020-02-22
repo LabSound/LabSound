@@ -70,7 +70,7 @@ namespace lab {
         enum WaveType { SQUARE = 0, SAWTOOTH, SINE, NOISE };
 
         virtual bool hasBang() const override { return true; }
-        virtual void bang() override;
+        virtual void bang(ContextRenderLock&) override;
 
         // some presets
         void setDefaultBeep();
