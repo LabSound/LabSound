@@ -134,9 +134,6 @@ ClipNode::ClipNode()
     m_params.push_back(internalNode->bVal);
     m_settings.push_back(internalNode->mode);
 
-    addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 1)));
-
     initialize();
 }
 
