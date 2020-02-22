@@ -1,5 +1,5 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #ifndef RECORDER_NODE_H
 #define RECORDER_NODE_H

@@ -1,5 +1,4 @@
-// License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef PannerNode_h

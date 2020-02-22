@@ -1,15 +1,12 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #ifndef ADSR_NODE_H
 #define ADSR_NODE_H
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioSetting.h"
-#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
-#include "LabSound/core/AudioBasicInspectorNode.h"
-#include "LabSound/core/GainNode.h"
 
 namespace lab
 {

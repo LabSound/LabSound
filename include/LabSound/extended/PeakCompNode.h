@@ -1,11 +1,11 @@
-// License: The MIT License
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
-// Copyright (C) 2013, Two Big Ears Ltd (http://twobigears.com)
+// SPDX-License-Identifier: MIT
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #ifndef PEAK_COMP_NODE_H
 #define PEAK_COMP_NODE_H
 
 // PeakComp ported to LabSound from https://github.com/twobigears/tb_peakcomp
+// Copyright (C) 2013, Two Big Ears Ltd (http://twobigears.com)
 
 /*
  Stereo L+R peak compressor with variable knee-smooth, attack, release and makeup gain.
@@ -16,12 +16,8 @@
  https://ccrma.stanford.edu/~jos/filters/Nonlinear_Filter_Example_Dynamic.htm
  */
 
-#include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
-#include "LabSound/core/AudioBasicInspectorNode.h"
-#include "LabSound/core/GainNode.h"
 
 namespace lab
 {

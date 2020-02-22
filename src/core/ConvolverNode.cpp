@@ -1,5 +1,5 @@
 
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/ConvolverNode.h"
@@ -39,7 +39,7 @@ const float GainCalibrationSampleRate = 44100;
 // A minimum power value to when normalizing a silent (or very quiet) impulse response
 const float MinPower = 0.000125f;
 
-// License: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
+// calculateNormalizationScale license: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
 static float calculateNormalizationScale(AudioBus * response)
 {
     // Normalize by RMS power

@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
@@ -52,8 +52,8 @@ public:
                          const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus,
                          size_t framesToProcess) override
     {
-        int srcChannels = sourceBus->numberOfChannels();
-        int dstChannels = destinationBus->numberOfChannels();
+        int srcChannels = (int) sourceBus->numberOfChannels();
+        int dstChannels = (int) destinationBus->numberOfChannels();
         if (dstChannels < srcChannels)
         {
             _owner->output(0)->setNumberOfChannels(r, srcChannels);

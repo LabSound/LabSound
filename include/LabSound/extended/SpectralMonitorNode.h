@@ -1,5 +1,5 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #pragma once
 
@@ -20,8 +20,8 @@ namespace lab
     {
         class SpectralMonitorNodeInternal;
         SpectralMonitorNodeInternal* internalNode = nullptr;
-    public:
 
+    public:
         SpectralMonitorNode();
         virtual ~SpectralMonitorNode();
 
@@ -33,7 +33,6 @@ namespace lab
         unsigned int windowSize() const;
 
     private:
-
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     };

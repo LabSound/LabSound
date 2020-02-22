@@ -1,6 +1,6 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2012, Intel Corporation. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"

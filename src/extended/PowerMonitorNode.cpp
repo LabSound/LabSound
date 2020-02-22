@@ -1,5 +1,5 @@
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
-// License is MIT: http://opensource.org/licenses/MIT
 
 #include "LabSound/extended/PowerMonitorNode.h"
 
