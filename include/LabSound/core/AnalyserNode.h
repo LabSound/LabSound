@@ -11,6 +11,10 @@ namespace lab {
 
 class AudioSetting;
 
+// If the analyserNode is intended to run without it's output
+// being connected to an AudioDestination, the AnalyserNode must be 
+// registered with the AudioContext, via addAutomaticPullNode.
+
 // params:
 // settings: fftSize, minDecibels, maxDecibels, smoothingTimeConstant
 //
@@ -29,6 +33,7 @@ public:
     void setFftSize(ContextRenderLock&, size_t fftSize);
     size_t fftSize() const;
 
+    // a value large enough to hold all the data return from get*FrequencyData
     size_t frequencyBinCount() const;
 
     void setMinDecibels(double k);
@@ -40,9 +45,16 @@ public:
     void setSmoothingTimeConstant(double k);
     double smoothingTimeConstant() const;
 
-    // ffi: user facing functions
+    // frequency bins, reported in db
+    /// @TODO, add a normalization option to perform the same normalization as 
+    ///    getByteFrequency data.
     void getFloatFrequencyData(std::vector<float>& array);
-    void getByteFrequencyData(std::vector<uint8_t>& array);
+
+    // frequency bins, reported as a linear mapping of minDecibels to maxDecibles
+    //    onto 0-255.
+    // if resample is true, then the computed values will be resampled using a
+    // sinc kernel to the size of the supplied array.
+    void getByteFrequencyData(std::vector<uint8_t>& array, bool resample=false);
     void getFloatTimeDomainData(std::vector<float>& array);
     void getByteTimeDomainData(std::vector<uint8_t>& array);
 

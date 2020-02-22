@@ -165,7 +165,7 @@ void RealtimeAnalyser::doFFTAnalysis()
     float* realP = m_analysisFrame->realData();
     float* imagP = m_analysisFrame->imagData();
 
-    // Blow away the packed nyquist component.
+    // Erase the packed nyquist component.
     imagP[0] = 0;
     
     // Normalize so than an input sine wave at 0dBfs registers as 0dBfs (undo FFT scaling factor).
