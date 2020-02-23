@@ -6,6 +6,7 @@
 #define SampledAudioNode_h
 
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/PannerNode.h"
 
@@ -33,7 +34,7 @@ public:
     virtual void reset(ContextRenderLock&) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);
-    std::shared_ptr<AudioBus> getBus() const { return m_sourceBus; }
+    std::shared_ptr<AudioBus> getBus() const { return m_sourceBus->valueBus(); }
 
     // numberOfChannels() returns the number of output channels. This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
@@ -77,7 +78,7 @@ private:
     bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus *, size_t index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
-    std::shared_ptr<AudioBus> m_sourceBus;
+    std::shared_ptr<AudioSetting> m_sourceBus;
 
     // Exposed attributes
     std::shared_ptr<AudioParam> m_gain;
@@ -88,6 +89,7 @@ private:
     // If true, it will wrap around to the start of the buffer each time it reaches the end.
     std::shared_ptr<AudioSetting> m_isLooping;
 
+    bool m_channelSetupRequested { false };
     bool m_startRequested{ false };
     double m_requestWhen{ 0 };
     double m_requestGrainOffset{ 0 };

@@ -33,6 +33,7 @@ const double MaxRate = 1024;
 
 SampledAudioNode::SampledAudioNode()
 : AudioScheduledSourceNode()
+, m_sourceBus(std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus))
 , m_isLooping(std::make_shared<AudioSetting>("loop", "LOOP", AudioSetting::Type::Bool))
 , m_loopStart(std::make_shared<AudioSetting>("loopStart", "STRT", AudioSetting::Type::Float))
 , m_loopEnd(std::make_shared<AudioSetting>("loopEnd", "END ", AudioSetting::Type::Float))
@@ -46,9 +47,15 @@ SampledAudioNode::SampledAudioNode()
     m_params.push_back(m_playbackRate);
     m_params.push_back(m_detune);
 
+    m_settings.push_back(m_sourceBus);
     m_settings.push_back(m_isLooping);
     m_settings.push_back(m_loopStart);
     m_settings.push_back(m_loopEnd);
+
+    m_sourceBus->setValueChanged([this]() 
+    {
+        this->m_channelSetupRequested = true;
+    });
 
     // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -68,6 +75,17 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
     if (!getBus() || !isInitialized() || !r.context())
     {
         outputBus->zero();
+        return;
+    }
+
+    if (m_channelSetupRequested)
+    {
+        // channel count is changing, so output silence for one quantum to allow the
+        // context to re-evaluate connectivity before rendering
+        outputBus->zero();
+        output(0)->setNumberOfChannels(r, getBus()->numberOfChannels());
+        m_virtualReadIndex = 0;
+        m_channelSetupRequested = false;
         return;
     }
 
@@ -346,7 +364,7 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
 {
     ASSERT(r.context());
 
-    m_sourceBus = buffer;
+    m_sourceBus->setBus(buffer.get());
     // Do any necesssary re-configuration to the buffer's number of channels.
     output(0)->setNumberOfChannels(r, buffer? buffer->numberOfChannels() : 0);
     m_virtualReadIndex = 0;

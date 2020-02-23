@@ -5,6 +5,8 @@
 #ifndef AudioSetting_h
 #define AudioSetting_h
 
+#include "LabSound/core/AudioBus.h"
+
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -30,17 +32,21 @@ public:
         Bool,
         Integer,
         Float,
-        Enumeration
+        Enumeration,
+        Bus
     };
 
 private:
     std::string _name;
     std::string _shortName;
+
+    Type _type;
     float _valf = 0;
     uint32_t _vali = 0;
     bool _valb = false;
+    std::shared_ptr<AudioBus> _valBus;
+
     std::function<void()> _valueChanged;
-    Type _type;
     char const * const * _enums = nullptr;
 
 public:
@@ -79,6 +85,7 @@ public:
     bool valueBool() const { return _valb; }
     float valueFloat() const { return _valf; }
     uint32_t valueUint32() const { return _vali; }
+    std::shared_ptr<AudioBus> valueBus() const { return _valBus; }
 
     void setBool(bool v, bool notify = true)
     {
@@ -116,6 +123,15 @@ public:
             return;
 
         _vali = static_cast<int>(v);
+        if (notify && _valueChanged)
+            _valueChanged();
+    }
+
+    // nb: Invoking setBus will create and cache a duplicate of the supplied bus.
+    void setBus(const AudioBus* incoming, bool notify = true)
+    {
+        std::unique_ptr<AudioBus> new_bus = AudioBus::createByCloning(incoming);
+        _valBus = std::move(new_bus);
         if (notify && _valueChanged)
             _valueChanged();
     }

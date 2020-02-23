@@ -154,7 +154,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t>& array, bool resamp
             memset(&array[0], 0, array.size());
             size_t u = 0;
             float error = 0;
-            for (size_t step = 0; step < src_size - 1; ++step)
+            for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
             {
                 array[u] = std::max(array[u], buff[step]);
                 error += d_err;

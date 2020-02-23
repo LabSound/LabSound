@@ -408,7 +408,7 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     if (type != OscillatorType::CUSTOM)
     {
-        process_oscillator(r, framesToProcess);
+        process_oscillator(r, static_cast<int>(framesToProcess));
         return;
     }
     return;
