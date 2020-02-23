@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: BSD-2-Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef ConvolverNode_h
@@ -17,6 +16,7 @@ class AudioSetting;
 class Reverb;
 
 namespace deprecated {
+// Copyright (C) 2010, Google Inc. All rights reserved.
 
 // params:
 // settings: normalize

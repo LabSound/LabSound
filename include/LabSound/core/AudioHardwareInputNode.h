@@ -5,14 +5,14 @@
 #ifndef audio_hardware_input_node
 #define audio_hardware_input_node
 
-#include "LabSound/core/AudioSourceNode.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
 namespace lab
 {
     class AudioContext;
 
-    class AudioHardwareInputNode : public AudioSourceNode
+    class AudioHardwareInputNode : public AudioNode
     {
         // As an audio source, we will never propagate silence.
         virtual bool propagatesSilence(ContextRenderLock & r) const override { return false; }
@@ -22,6 +22,9 @@ namespace lab
     public:
         AudioHardwareInputNode(AudioSourceProvider * provider_from_context);
         virtual ~AudioHardwareInputNode();
+
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
         // AudioNode interface
         virtual void process(ContextRenderLock &, size_t framesToProcess) override;
