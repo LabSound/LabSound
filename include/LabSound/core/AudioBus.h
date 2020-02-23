@@ -91,6 +91,9 @@ public:
     // Creates a new AudioBus by cloning an existing one
     static std::unique_ptr<AudioBus> createByCloning(const AudioBus * sourceBus);
 
+    // Creates a new AudioBus by cloning an existing one
+    static std::unique_ptr<AudioBus> createByCloning(const AudioBus* sourceBus);
+
     // Scales all samples by the same amount.
     void scale(float scale);
 

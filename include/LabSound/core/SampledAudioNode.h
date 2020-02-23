@@ -6,6 +6,7 @@
 #define SampledAudioNode_h
 
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/PannerNode.h"

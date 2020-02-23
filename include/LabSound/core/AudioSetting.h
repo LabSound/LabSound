@@ -125,6 +125,15 @@ public:
             _valueChanged();
     }
 
+    // nb: Invoking setBus will create and cache a duplicate of the supplied bus.
+    void setBus(const AudioBus* incoming, bool notify = true)
+    {
+        std::unique_ptr<AudioBus> new_bus = AudioBus::createByCloning(incoming);
+        _valBus = std::move(new_bus);
+        if (notify && _valueChanged)
+            _valueChanged();
+    }
+
     void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
 };
 
