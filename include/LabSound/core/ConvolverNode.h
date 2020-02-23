@@ -88,13 +88,16 @@ protected:
     virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
     double now() const { return _now; }
+
+    void _activateNewImpulse();
+
     double _now = 0.0;
     float _scale = 1.f; // normalization value
     sp_data * _sp = nullptr;
 
     // Normalize the impulse response or not. Must default to true.
-    std::shared_ptr<AudioSetting> m_normalize;
-    std::shared_ptr<AudioBus> _impulseResponseClip;
+    std::shared_ptr<AudioSetting> _normalize;
+    std::shared_ptr<AudioSetting> _impulseResponseClip;
 
     struct ReverbKernel
     {

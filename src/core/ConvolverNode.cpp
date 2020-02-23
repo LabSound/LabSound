@@ -98,16 +98,23 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
 
 ConvolverNode::ConvolverNode()
 : AudioScheduledSourceNode()
-, m_normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
+, _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
+, _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
 {
-    m_settings.push_back(m_normalize);
-    m_normalize->setBool(true);
+    m_settings.push_back(_impulseResponseClip);
+    m_settings.push_back(_normalize);
+    _normalize->setBool(true);
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
     initialize();
 
     lab::sp_create(&_sp);
+
+    _impulseResponseClip->setValueChanged([this]()
+    {
+        this->_activateNewImpulse();
+    });
 }
 
 ConvolverNode::~ConvolverNode()
@@ -117,38 +124,42 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-bool ConvolverNode::normalize() const { return m_normalize->valueBool(); }
+bool ConvolverNode::normalize() const { return _normalize->valueBool(); }
 void ConvolverNode::setNormalize(bool new_n)
 {
     bool n = normalize();
     if (new_n == n)
         return;
 
-    size_t len = _impulseResponseClip->length();
-    if (n && _scale != 1.f)
+    auto clip = _impulseResponseClip->valueBus();
+    if (clip)
     {
-        // undo previous normalization
-        float s = 1.f / _scale;
-        for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
+        size_t len = clip->length();
+        if (n && _scale != 1.f)
         {
-            float * data = _impulseResponseClip->channel(i)->mutableData();
-            for (int j = 0; j < len; ++j)
-                data[j] *= s;
+            // undo previous normalization
+            float s = 1.f / _scale;
+            for (int i = 0; i < clip->numberOfChannels(); ++i)
+            {
+                float* data = clip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= s;
+            }
         }
-    }
-    if (!n)
-    {
-        // wasn't previously normalized, so normalize
-        _scale = calculateNormalizationScale(_impulseResponseClip.get());
-        for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
+        if (!n)
         {
-            float * data = _impulseResponseClip->channel(i)->mutableData();
-            for (int j = 0; j < len; ++j)
-                data[j] *= _scale;
+            // wasn't previously normalized, so normalize
+            _scale = calculateNormalizationScale(clip.get());
+            for (int i = 0; i < clip->numberOfChannels(); ++i)
+            {
+                float* data = clip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= _scale;
+            }
         }
     }
 
-    m_normalize->setBool(new_n);
+    _normalize->setBool(new_n);
 }
 
 void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
@@ -157,22 +168,28 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
     if (!bus)
         return;
 
-    size_t len = bus->length();
-    _impulseResponseClip = std::make_shared<AudioBus>(bus->numberOfChannels(), len);
-    _impulseResponseClip->copyFrom(*bus.get());
+    auto new_bus = AudioBus::createByCloning(bus.get());
+    _impulseResponseClip->setBus(new_bus.get());
+    _activateNewImpulse();
+}
 
+void ConvolverNode::_activateNewImpulse()
+{
+    auto clip = _impulseResponseClip->valueBus();
+    size_t len = clip->length();
+    _scale = 1;
     if (normalize())
     {
-        float scale = calculateNormalizationScale(bus.get());
-        for (int i = 0; i < _impulseResponseClip->numberOfChannels(); ++i)
+        _scale = calculateNormalizationScale(clip.get());
+        for (int i = 0; i < clip->numberOfChannels(); ++i)
         {
-            float * data = _impulseResponseClip->channel(i)->mutableData();
+            float * data = clip->channel(i)->mutableData();
             for (int j = 0; j < len; ++j)
-                data[j] *= scale;
+                data[j] *= _scale;
         }
     }
 
-    int c = static_cast<int>(_impulseResponseClip->numberOfChannels());
+    int c = static_cast<int>(clip->numberOfChannels());
     for (int i = 0; i < c; ++i)
     {
         // create one kernel per IR channel
@@ -180,7 +197,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 
         // ft doesn't own the data; it does retain a pointer to it.
         sp_ftbl_bind(_sp, &kernel.ft,
-                     _impulseResponseClip->channel(0)->mutableData(), _impulseResponseClip->channel(0)->length());
+            clip->channel(0)->mutableData(), clip->channel(0)->length());
 
         sp_conv_create(&kernel.conv);
         sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
@@ -191,7 +208,7 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
     start(0);
 }
 
-std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const { return _impulseResponseClip; }
+std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const { return _impulseResponseClip->valueBus(); }
 
 void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
