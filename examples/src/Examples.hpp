@@ -839,33 +839,33 @@ struct ex_dalek_filter : public labsound_example
 #ifdef USE_LIVE
             input = lab::MakeAudioHardwareInputNode(r);
             context->connect(vcInverter1, input, 0, 0);
-            context->connect(vcDiode4->node(), input, 0, 0);
+            context->connect(vcDiode4, input, 0, 0);
 #else
             audioClipNode->setBus(r, audioClip);
             //context->connect(vcInverter1, audioClipNode, 0, 0); // dimitri
-            context->connect(vcDiode4->node(), audioClipNode, 0, 0);
+            context->connect(vcDiode4, audioClipNode, 0, 0);
             audioClipNode->start(0.f);
 #endif
 
-            context->connect(vcDiode3->node(), vcInverter1, 0, 0);
+            context->connect(vcDiode3, vcInverter1, 0, 0);
 
             // Then the Vin side
             context->connect(vInGain, vIn, 0, 0);
             context->connect(vInInverter1, vInGain, 0, 0);
             context->connect(vcInverter1, vInGain, 0, 0);
-            context->connect(vcDiode4->node(), vInGain, 0, 0);
+            context->connect(vcDiode4, vInGain, 0, 0);
 
             context->connect(vInInverter2, vInInverter1, 0, 0);
-            context->connect(vInDiode2->node(), vInInverter1, 0, 0);
-            context->connect(vInDiode1->node(), vInInverter2, 0, 0);
+            context->connect(vInDiode2, vInInverter1, 0, 0);
+            context->connect(vInDiode1, vInInverter2, 0, 0);
 
             // Finally connect the four diodes to the destination via the output-stage compressor and master gain node
-            context->connect(vInInverter3, vInDiode1->node(), 0, 0);
-            context->connect(vInInverter3, vInDiode2->node(), 0, 0);
+            context->connect(vInInverter3, vInDiode1, 0, 0);
+            context->connect(vInInverter3, vInDiode2, 0, 0);
 
             context->connect(compressor, vInInverter3, 0, 0);
-            context->connect(compressor, vcDiode3->node(), 0, 0);
-            context->connect(compressor, vcDiode4->node(), 0, 0);
+            context->connect(compressor, vcDiode3, 0, 0);
+            context->connect(compressor, vcDiode4, 0, 0);
 
             context->connect(outGain, compressor, 0, 0);
             context->connect(context->device(), outGain, 0, 0);

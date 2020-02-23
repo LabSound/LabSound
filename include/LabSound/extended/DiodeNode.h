@@ -12,18 +12,23 @@ namespace lab {
     // params:
     // settings: distortion
     //
-    class DiodeNode
+    class DiodeNode : public WaveShaperNode
     {
-        void setCurve();
+        void _precalc();
+
         std::shared_ptr<WaveShaperNode> waveShaper;
         std::shared_ptr<AudioSetting> _distortion;
+        std::shared_ptr<AudioSetting> _vb; // curve shape control
+        std::shared_ptr<AudioSetting> _vl; // curve shape control
 
-        float vb, vl;  // parameters controlling the shape of the curve
     public:
 
         DiodeNode();
         void setDistortion(float distortion = 1.0);
-        std::shared_ptr<WaveShaperNode> node() const { return waveShaper; }
+
+        std::shared_ptr<AudioSetting> distortion() const { return _distortion; };
+        std::shared_ptr<AudioSetting> vb() const { return _vb; };
+        std::shared_ptr<AudioSetting> vl() const { return _vl; }
     };
     
 }
