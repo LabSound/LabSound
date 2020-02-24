@@ -1250,3 +1250,39 @@ struct ex_wavepot_dsp : public labsound_example
         context.reset();
     }
 };
+
+
+///////////////////////////////
+//    ex_granulation_node    //
+///////////////////////////////
+
+struct ex_granulation_node : public labsound_example
+{
+    virtual void play(int argc, char** argv) override final
+    {
+        std::unique_ptr<lab::AudioContext> context;
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+
+        auto grain_source = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_Gs1.wav", argc, argv);
+        if (!grain_source) return;
+
+        std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>();
+        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>();
+        gain->gain()->setValue(0.25f);
+
+        {
+            ContextRenderLock r(context.get(), "ex_granulation_node");
+            granulation_node->setGrainSource(r, grain_source);
+        }
+
+        context->connect(gain, granulation_node, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
+
+        granulation_node->start(0.0f);
+
+        Wait(std::chrono::seconds(10));
+    }
+};
+
+

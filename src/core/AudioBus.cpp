@@ -186,22 +186,21 @@ std::unique_ptr<AudioBus> AudioBus::createBufferFromRange(const AudioBus* source
     return audioBus;
 }
 
-std::unique_ptr<AudioBus> AudioBus::createByCloning(const AudioBus* sourceBus)
+std::unique_ptr<AudioBus> AudioBus::createByCloning(const AudioBus * sourceBus)
 {
-    size_t numberOfSourceFrames = sourceBus->length();
-    size_t numberOfChannels = sourceBus->numberOfChannels();
+    const size_t numberOfSourceFrames = sourceBus->length();
+    const size_t numberOfChannels = sourceBus->numberOfChannels();
 
-    std::unique_ptr<AudioBus> audioBus(new AudioBus(numberOfChannels, numberOfSourceFrames));
-    audioBus->setSampleRate(sourceBus->sampleRate());
+    std::unique_ptr<AudioBus> clonedBus(new AudioBus(numberOfChannels, numberOfSourceFrames));
+    clonedBus->setSampleRate(sourceBus->sampleRate());
 
 	for (size_t i = 0; i < numberOfChannels; ++i)
 	{
-		audioBus->channel(i)->copyFromRange(sourceBus->channel(i), 0, numberOfSourceFrames);
+        clonedBus->channel(i)->copyFromRange(sourceBus->channel(i), 0, numberOfSourceFrames);
 	}
 
-    return audioBus;
+    return std::move(clonedBus);
 }
-
 
 float AudioBus::maxAbsValue() const
 {

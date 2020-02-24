@@ -26,7 +26,6 @@
 // In the future, this class could do all kinds of clever things, like setting up the context,
 // handling recording functionality, etc.
 
-
 #include <string>
 #include <vector>
 
