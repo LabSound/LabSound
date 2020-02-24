@@ -29,7 +29,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context,
     const AudioStreamConfig inputConfig)
     : m_context(context), outConfig(outputConfig), inConfig(inputConfig)
 {
-    // Ensure that input and output samplerates match
+    // Ensure that input and output sample rates match
     if (inputConfig.device_index != -1)
     {
         ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
@@ -49,7 +49,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context,
     }
 
     // This is the "final node" in the chain. It will pull on all others from this input. 
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addInput(std::make_unique<AudioNodeInput>(this));
 
     // Node-specific default mixing rules.
     //m_channelCount = outputConfig.desired_channels;

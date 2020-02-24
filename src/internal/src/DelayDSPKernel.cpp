@@ -83,6 +83,11 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
     /// is it not just a setting? If it's actually an audio rate signal, then delayTime should be switched back
     /// from AudioSetting to AudioParam.
     delayTime = delayProcessor() ? delayProcessor()->delayTime()->valueFloat() : m_desiredDelayFrames / sampleRate;
+
+    // Make sure the delay time is in a valid range.
+    delayTime = min(maxTime, delayTime);
+    delayTime = max(0.0, delayTime);
+
     if (m_firstTime)
     {
         m_currentDelayTime = delayTime;

@@ -12,18 +12,14 @@
 namespace lab
 {
 
-// WebAudio:
-// "The maxDelayTime parameter is optional and specifies the
-//  maximum delay time in seconds allowed for the delay line."
-const double maximumAllowedDelayTime = 128;
 
-DelayNode::DelayNode(float sampleRate, double maxDelayTime) : AudioBasicProcessorNode()
+DelayNode::DelayNode(float sampleRate, double maxDelayTime) 
+: AudioBasicProcessorNode()
 {
-    if (maxDelayTime <= 0 || maxDelayTime >= maximumAllowedDelayTime)
-    {
-         throw std::out_of_range("Delay time exceeds limit of 128 seconds");
-    }
-    m_processor.reset(new DelayProcessor(sampleRate, 1, maxDelayTime));
+    if (maxDelayTime < 0)
+        maxDelayTime = 0;   // delay node can't predict the future
+
+    m_processor = std::make_unique<DelayProcessor>(sampleRate, 1, maxDelayTime);
 
     m_settings.push_back(delayProcessor()->delayTime());
 

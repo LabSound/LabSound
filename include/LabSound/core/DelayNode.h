@@ -38,7 +38,7 @@ class DelayNode : public AudioBasicProcessorNode
     DelayProcessor * delayProcessor();
 public:
     // default maximum delay of 100ms
-    DelayNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, double maxDelayTime = 0.1);
+    DelayNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, double maxDelayTime = 2.0);
     std::shared_ptr<AudioSetting> delayTime();
 };
 
