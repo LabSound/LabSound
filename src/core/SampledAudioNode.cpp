@@ -19,10 +19,7 @@
 
 #include <algorithm>
 
-using namespace std;
-
-namespace lab
-{
+using namespace lab;
 
 const double DefaultGrainDuration = 0.020;  // 20ms
 
@@ -39,9 +36,9 @@ SampledAudioNode::SampledAudioNode()
 , m_loopEnd(std::make_shared<AudioSetting>("loopEnd", "END ", AudioSetting::Type::Float))
 , m_grainDuration(DefaultGrainDuration)
 {
-    m_gain = make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 1.0);
-    m_playbackRate = make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, MaxRate);
-    m_detune = make_shared<AudioParam>("detune", "DTUNE", 0.0, -1.e6f, 1.e6f);
+    m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 1.0);
+    m_playbackRate = std::make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, MaxRate);
+    m_detune = std::make_shared<AudioParam>("detune", "DTUNE", 0.0, -1.e6f, 1.e6f);
 
     m_params.push_back(m_gain);
     m_params.push_back(m_playbackRate);
@@ -459,22 +456,22 @@ void SampledAudioNode::setLoop(bool loop)
     m_isLooping->setBool(loop);
 }
 
-// Loop times in seconds.
 double SampledAudioNode::loopStart() const
 {
-    return m_loopStart->valueFloat();
-}
-double SampledAudioNode::loopEnd() const
-{
-    return m_loopEnd->valueFloat();
-}
-void SampledAudioNode::setLoopStart(double loopStart)
-{
-    m_loopStart->setFloat(static_cast<float>(loopStart));
-}
-void SampledAudioNode::setLoopEnd(double loopEnd)
-{
-    m_loopEnd->setFloat(static_cast<float>(loopEnd));
+    return m_loopStart->valueFloat(); // seconds
 }
 
-}  // namespace lab
+double SampledAudioNode::loopEnd() const
+{
+    return m_loopEnd->valueFloat(); // seconds
+}
+
+void SampledAudioNode::setLoopStart(double loopStart)
+{
+    m_loopStart->setFloat(static_cast<float>(loopStart)); // seconds
+}
+
+void SampledAudioNode::setLoopEnd(double loopEnd)
+{
+    m_loopEnd->setFloat(static_cast<float>(loopEnd)); // seconds
+}

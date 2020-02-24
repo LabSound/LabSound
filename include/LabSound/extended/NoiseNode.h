@@ -14,9 +14,6 @@ namespace lab
 {
     class AudioSetting;
 
-    // params:
-    // settings: type
-    //
     class NoiseNode : public AudioScheduledSourceNode
     {
 

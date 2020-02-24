@@ -53,6 +53,7 @@
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SupersawNode.h"
+#include "LabSound/extended/GranulationNode.h"
 
 #include <memory>
 
