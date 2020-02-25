@@ -18,6 +18,8 @@ Coming Soon!
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 
+#include <random>
+
 using namespace lab;
 
 GranulationNode::GranulationNode() : AudioScheduledSourceNode()
