@@ -21,18 +21,10 @@ namespace lab
 
         SupersawNode();
         virtual ~SupersawNode();
-        
-        std::shared_ptr<AudioSetting> attack() const;
-        std::shared_ptr<AudioSetting> decay() const;
-        std::shared_ptr<AudioSetting> sustain() const;
-        std::shared_ptr<AudioSetting> release() const;
 
         std::shared_ptr<AudioSetting> sawCount() const;
         std::shared_ptr<AudioParam> frequency() const;
         std::shared_ptr<AudioParam> detune() const;
-
-        void noteOn(double when);
-        void noteOff(ContextRenderLock&, double when);
 
         void update(ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
 

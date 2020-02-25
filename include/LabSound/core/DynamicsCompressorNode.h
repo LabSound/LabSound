@@ -12,6 +12,13 @@ namespace lab {
 
 class DynamicsCompressor;
 
+// Fun trick:
+//
+// source ---> gain(100) ---> dynamics_compressor ---> output
+//
+// sounds like an old radio
+//
+
 class DynamicsCompressorNode : public AudioNode
 {
     

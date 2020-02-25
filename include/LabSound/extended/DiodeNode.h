@@ -8,9 +8,15 @@
 
 namespace lab {
 
-    //@tofix - DiodeNode should subclass waveShaper, then the create method will work
+    // The diode node, used in conjunction with a gain node, will modulate
+    // a source so that it sounds like audio being over-driven through a vacuum tube diode.
+    //
+    //  source -+-> diode ----> gain_level
+    //          |               |
+    //          +-------------> gain ---------------> outpuot
+    //
     // params:
-    // settings: distortion
+    // settings: distortion, vb, vl
     //
     class DiodeNode : public WaveShaperNode
     {

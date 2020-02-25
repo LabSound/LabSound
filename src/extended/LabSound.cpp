@@ -96,6 +96,7 @@ namespace lab
             "DynamicsCompressor",
 //            "Function",
             "Gain",
+            "Granulation",
             "Noise",
             "Oscillator",
             "Panner",
