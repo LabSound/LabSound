@@ -54,26 +54,11 @@ namespace lab
                 {
                     sample_accurate_time += sample_increment;
 
-                    //if (sample_accurate_time >= sample->length()) 
-                    //{
-                    //    sample_accurate_time -= sample->length();
-                    //    std::cout << ">>>>> greater: " << sample_accurate_time << std::endl;
-                    //}
-                    //else if (sample_accurate_time < 0) 
-                    //{
-                    //    sample_accurate_time += sample->length();
-                    //    std::cout << "less: " << sample_accurate_time << std::endl;
-                    //}
-
                     // Looping behavior
                     if (sample_accurate_time >= grain_end) 
                     {
                         sample_accurate_time = grain_start;
                     }
-                    //else if (sample_accurate_time < 0) 
-                    //{
-                    //    sample_accurate_time += grain_duration;
-                    //}
 
                     const uint64_t approximate_sample_index = std::floor(sample_accurate_time);
                     const double remainder = sample_accurate_time - approximate_sample_index;
