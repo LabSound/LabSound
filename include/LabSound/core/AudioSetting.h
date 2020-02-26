@@ -26,26 +26,29 @@ class AudioSetting
 public:
     enum class Type
     {
-        None,
-        Bool,
-        Integer,
-        Float,
-        Enumeration,
-        Bus
-    };
+    public:
+        enum class Type
+        {
+            None,
+            Bool,
+            Integer,
+            Float,
+            Enumeration,
+            Bus
+        };
 
-private:
-    std::string _name;
-    std::string _shortName;
+    private:
+        std::string _name;
+        std::string _shortName;
 
-    Type _type;
-    float _valf = 0;
-    uint32_t _vali = 0;
-    bool _valb = false;
-    std::shared_ptr<AudioBus> _valBus;
+        Type _type;
+        float _valf    = 0;
+        uint32_t _vali = 0;
+        bool _valb     = false;
+        std::shared_ptr<AudioBus> _valBus;
 
-    std::function<void()> _valueChanged;
-    char const * const * _enums = nullptr;
+        std::function<void()> _valueChanged;
+        char const * const * _enums = nullptr;
 
 public:
     explicit AudioSetting(const std::string & n, const std::string & sn, Type t)
@@ -83,10 +86,8 @@ public:
     Type type() const { return _type; }
     char const * const * enums() const { return _enums; }
 
-    bool valueBool() const { return _valb; }
-    float valueFloat() const { return _valf; }
-    uint32_t valueUint32() const { return _vali; }
-    std::shared_ptr<AudioBus> valueBus() const { return _valBus; }
+        explicit AudioSetting(const std::string & n, const std::string & sn, char const * const * enums)
+            : _name(n), _shortName(sn), _type(Type::Enumeration), _enums(enums) {}
 
     void setBool(bool v, bool notify = true)
     {
@@ -125,17 +126,10 @@ public:
             _valueChanged();
     }
 
-    // nb: Invoking setBus will create and cache a duplicate of the supplied bus.
-    void setBus(const AudioBus* incoming, bool notify = true)
-    {
-        std::unique_ptr<AudioBus> new_bus = AudioBus::createByCloning(incoming);
-        _valBus = std::move(new_bus);
-        if (notify && _valueChanged)
-            _valueChanged();
-    }
+        void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
+    };
 
-    void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
-};
+}  // namespace lab
 
 }  // namespace lab
 
