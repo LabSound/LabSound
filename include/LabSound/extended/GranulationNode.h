@@ -97,6 +97,7 @@ namespace lab
         bool RenderGranulation(ContextRenderLock &, AudioBus *, size_t destinationFrameOffset, size_t numberOfFrames);
 
         std::vector<grain> grain_pool;
+        std::shared_ptr<lab::AudioBus> window_bus;
 
     public:
 
