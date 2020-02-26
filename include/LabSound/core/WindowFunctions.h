@@ -18,18 +18,40 @@ namespace lab
         hann,            // generalized raised cosine, order 1, aka the raised cosine window
         hamming,         // generalized raised cosine, order 1 (modified hann)
         blackman,        // generalized raised cosine, order 2
-        nutall,          // generalized raised cosine, order 3 (continuous first derivative)
+        nutall,          // generalized raised cosine, order 3
         blackman_harris, // generalized raised cosine, order 3
         blackman_nutall, // generalized raised cosine, order 3
         hann_poisson,    // Hann window multiplied by a Poisson window
-        gaussian50,      // gaussian with a sigma of 0.5
+        gaussian50,      // gaussian with a sigma of 0.50
         gaussian25,      // gaussian with a sigma of 0.25
         welch,           // 
         bartlett,        // aka the (symmetric) triangular window
         bartlett_hann,   // 
-        parzen,          // B-spline, order 4, a triangle shape
+        parzen,          // B-spline, order 4 (a triangle shape)
         flat_top,        // generalized raised cosine, order 4
         lanczos          // aka the sinc window
+    };
+
+    static constexpr char const * const s_window_types[] = 
+    {
+        "rectangle",       
+        "cosine",          
+        "hann",            
+        "hamming",         
+        "blackman",        
+        "nutall",          
+        "blackman_harris", 
+        "blackman_nutall", 
+        "hann_poisson",    
+        "gaussian50",      
+        "gaussian25",      
+        "welch",           
+        "bartlett",        
+        "bartlett_hann",   
+        "parzen",          
+        "flat_top",        
+        "lanczos",
+        nullptr
     };
 
     static constexpr float WINDOW_PI = 3.14159265358979323846f;

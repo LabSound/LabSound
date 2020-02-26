@@ -6,6 +6,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
+#include "LabSound/core/WindowFunctions.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Util.h"
@@ -15,8 +16,30 @@
 
 using namespace lab;
 
-GranulationNode::GranulationNode() : AudioScheduledSourceNode(), m_sourceBus(std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus))
+GranulationNode::GranulationNode() : AudioScheduledSourceNode()
 {
+    // Sample that will be granulated
+    grainSourceBus = std::make_shared<AudioSetting>("GrainSource", "GSRC", AudioSetting::Type::Bus);
+
+    // Windowing function that will be applied as an evelope to each grain during playback
+    windowFunc = std::make_shared<AudioSetting>("WindowFunction", "WINF", s_window_types);
+    windowFunc->setEnumeration(static_cast<int>(WindowFunction::bartlett), true);
+
+    // Total number of grains that will be allocated
+    numGrains = std::make_shared<AudioParam>("NumGrains", "NGRN", 8.f, 1.f, 256.f, 1.f);
+
+    // Duration of each grain in seconds (currently fixed but ideally will be configurable per-grain)
+    grainDuration = std::make_shared<AudioParam>("GrainDuration", "GDUR", 0.1f, 0.01f, 0.5f);
+
+    // The min/max positional offset (given in a normalized 0-1 range) from which a grain should
+    // be sampled from grainSourceBus. These numbers are used to inform the range of a random
+    // number generator. 
+    grainPositionMin = std::make_shared<AudioParam>("PositionMin", "GMIN", 0.0f, 0.0f, 0.99f);
+    grainPositionMax = std::make_shared<AudioParam>("PositionMax", "GMAX", 1.0f, 0.01f, 1.0f);
+
+    // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
+    grainPlaybackFreq = std::make_shared<AudioParam>("PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f);
+
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
@@ -86,36 +109,43 @@ bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bu
 
 bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<AudioBus> buffer)
 {
-    ASSERT(m_sourceBus);
+    ASSERT(grainSourceBus);
 
-    m_sourceBus->setBus(buffer.get());
+    // Granulation Settings Sanity Check
+    std::cout << "GranulationNode::WindowFunction    " << s_window_types[windowFunc->valueUint32()] << std::endl;
+    std::cout << "GranulationNode::numGrains         " << numGrains->value(r) << std::endl;
+    std::cout << "GranulationNode::grainDuration     " << grainDuration->value(r) << std::endl;
+    std::cout << "GranulationNode::grainPositionMin  " << grainPositionMin->value(r) << std::endl;
+    std::cout << "GranulationNode::grainPositionMax  " << grainPositionMax->value(r) << std::endl;
+    std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value(r) << std::endl;
+
+    grainSourceBus->setBus(buffer.get());
     output(0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
 
-    UniformRandomGenerator rnd;
-
-    auto sample_to_granulate = m_sourceBus->valueBus();
-    const float * sample_ptr = sample_to_granulate->channel(0)->data();
-    const size_t sample_length = sample_to_granulate->channel(0)->length();
-
-    // Setup grains
-    const float grain_duration_seconds = 0.5f; 
-    const uint64_t grain_duration_samples = grain_duration_seconds * r.context()->sampleRate();
-    std::vector<float> grain_window(grain_duration_samples, 1.f);
-    lab::ApplyWindowFunctionInplace(WindowFunction::rectangle, grain_window.data(), grain_window.size());
+    // Compute useful values
+    const float grain_duration_seconds = grainDuration->value(r);
+    const uint64_t grain_duration_samples = static_cast<uint64_t>(grain_duration_seconds * r.context()->sampleRate());
 
     // Setup window/envelope
+    std::vector<float> grain_window(grain_duration_samples, 1.f);
+    lab::ApplyWindowFunctionInplace(static_cast<WindowFunction>(windowFunc->valueUint32()), grain_window.data(), grain_window.size());
+
     window_bus.reset(new lab::AudioBus(1, grain_duration_samples));
     window_bus->setSampleRate(r.context()->sampleRate());
+
     float * windowData = window_bus->channel(0)->mutableData();
     for (uint32_t sample = 0; sample < grain_window.size(); ++sample)
     {
         windowData[sample] = grain_window[sample];
     }
 
-    // Number of grains... 
-    for (int i = 0; i < 128; ++i)
+    // Setup grains
+    UniformRandomGenerator rnd;
+    auto sample_to_granulate = grainSourceBus->valueBus();
+    for (int i = 0; i < numGrains->value(r); ++i)
     {
-        grain_pool.emplace_back(grain(sample_to_granulate, window_bus, r.context()->sampleRate(), rnd.random_float(), grain_duration_seconds, 1.0));
+        const float random_pos_offset = rnd.random_float(grainPositionMin->value(r), grainPositionMax->value(r));
+        grain_pool.emplace_back(grain(sample_to_granulate, window_bus, r.context()->sampleRate(), random_pos_offset, grain_duration_seconds, grainPlaybackFreq->value(r)));
     }
 
     return true;

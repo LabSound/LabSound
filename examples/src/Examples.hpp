@@ -1264,24 +1264,36 @@ struct ex_granulation_node : public labsound_example
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
-        auto grain_source = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_Gs1.wav", argc, argv);
+        //toliet_flush_lever_water_gurgle_01.wav
+        auto grain_source = MakeBusFromSampleFile("samples/pretty_rhodes_delay.wav", argc, argv);
         if (!grain_source) return;
 
         std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>();
         std::shared_ptr<GainNode> gain = std::make_shared<GainNode>();
-        gain->gain()->setValue(0.25f);
+        std::shared_ptr<RecorderNode> recorder;
+        gain->gain()->setValue(0.75f);
 
         {
             ContextRenderLock r(context.get(), "ex_granulation_node");
+            recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
+            context->addAutomaticPullNode(recorder);
+            recorder->mixToMono(false);
+            recorder->startRecording();
+
             granulation_node->setGrainSource(r, grain_source);
         }
 
         context->connect(gain, granulation_node, 0, 0);
         context->connect(context->device(), gain, 0, 0);
+        context->connect(recorder, gain, 0, 0);
 
         granulation_node->start(0.0f);
 
         Wait(std::chrono::seconds(10));
+
+        recorder->stopRecording();
+        context->removeAutomaticPullNode(recorder);
+        recorder->writeRecordingToWav("ex_granulation_node.wav");
     }
 };
 
