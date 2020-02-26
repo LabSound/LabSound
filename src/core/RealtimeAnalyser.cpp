@@ -4,7 +4,9 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/core/WindowFunctions.h"
 
+#include "LabSound/extended/Util.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -31,35 +33,6 @@ const uint32_t RealtimeAnalyser::MinFFTSize = 32;
 const uint32_t RealtimeAnalyser::MaxFFTSize = 2048;
 const uint32_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-inline uint32_t RoundNextPow2(uint32_t v)
-{
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
-}
-    
-inline void ApplyBlackmanWindow(float * p, uint32_t n)
-{
-    // Blackman window
-    double alpha = 0.16;
-    double a0 = 0.5 * (1 - alpha);
-    double a1 = 0.5;
-    double a2 = 0.5 * alpha;
-    
-    for (uint32_t i = 0; i < n; ++i) 
-    {
-        double x = static_cast<double>(i) / static_cast<double>(n);
-        double window = a0 - a1 * cos(2 * piDouble * x) + a2 * cos(4 * piDouble * x);
-        p[i] *= float(window);
-    }
-
-}
-
 RealtimeAnalyser::RealtimeAnalyser(uint32_t fftSize)
     : m_inputBuffer(InputBufferSize)
     , m_writeIndex(0)
@@ -76,10 +49,7 @@ RealtimeAnalyser::RealtimeAnalyser(uint32_t fftSize)
     m_magnitudeBuffer.allocate(size / 2);
 }
 
-RealtimeAnalyser::~RealtimeAnalyser()
-{
-
-}
+RealtimeAnalyser::~RealtimeAnalyser() {}
 
 void RealtimeAnalyser::reset()
 {
@@ -141,8 +111,8 @@ void RealtimeAnalyser::doFFTAnalysis()
     uint32_t fftSize = this->fftSize();
     
     AudioFloatArray temporaryBuffer(fftSize);
-    float* inputBuffer = m_inputBuffer.data();
-    float* tempP = temporaryBuffer.data();
+    float * inputBuffer = m_inputBuffer.data();
+    float * tempP = temporaryBuffer.data();
 
     // Take the previous fftSize values from the input buffer and copy into the temporary buffer.
     size_t writeIndex = m_writeIndex;
@@ -157,7 +127,7 @@ void RealtimeAnalyser::doFFTAnalysis()
     }
 
     // Window the input samples.
-    ApplyBlackmanWindow(tempP, fftSize);
+    ApplyWindowFunctionInplace(WindowFunction::blackman, tempP, fftSize);
     
     // Do the analysis.
     m_analysisFrame->doFFT(tempP);
@@ -299,4 +269,5 @@ void RealtimeAnalyser::getByteTimeDomainData(std::vector<uint8_t>& destinationAr
 }
 
 } // namespace lab
+
 

@@ -3,131 +3,244 @@
 
 #pragma once
 
+#ifndef lab_window_functions_h
+#define lab_window_functions_h
+
 #include <cmath>
 #include <vector>
 
 namespace lab
 {
-
-enum WindowType
-{
-    window_rectangle,
-    window_hamming,
-    window_hanning,
-    window_hanningz,
-    window_blackman,
-    window_blackman_harris,
-    window_gaussian,
-    window_welch,
-    window_bartlett,
-    window_parzen
-};
-
-inline void applyWindow(WindowType wType, std::vector<float> & buffer)
-{
-    static const float WINDOW_PI = 3.14159265358979323846f;
-    static const float WINDOW_TAU = 6.28318530717958647693f;
-
-    const int bSize = static_cast<int>(buffer.size());
-
-    switch (wType)
+    enum class WindowFunction
     {
+        rectangle,       // aka the boxcar or Dirichlet window
+        cosine,          // aka the sine window
+        hann,            // generalized raised cosine, order 1, aka the raised cosine window
+        hamming,         // generalized raised cosine, order 1 (modified hann)
+        blackman,        // generalized raised cosine, order 2
+        nutall,          // generalized raised cosine, order 3 (continuous first derivative)
+        blackman_harris, // generalized raised cosine, order 3
+        blackman_nutall, // generalized raised cosine, order 3
+        hann_poisson,    // Hann window multiplied by a Poisson window
+        gaussian50,      // gaussian with a sigma of 0.5
+        gaussian25,      // gaussian with a sigma of 0.25
+        welch,           // 
+        bartlett,        // aka the (symmetric) triangular window
+        bartlett_hann,   // 
+        parzen,          // B-spline, order 4, a triangle shape
+        flat_top,        // generalized raised cosine, order 4
+        lanczos          // aka the sinc window
+    };
 
-        case window_rectangle:
-        {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.5;
-            }
-        }
-        break;
+    static constexpr float WINDOW_PI = 3.14159265358979323846f;
+    static constexpr float WINDOW_TAU = 6.28318530717958647693f;
 
-        case window_hamming:
+    // Inspired by https://github.com/idiap/libssp/blob/master/ssp/window.cpp
+    // These are implementations of the generalized raised cosine window, up to order 4
+    // https://ccrma.stanford.edu/~jos/sasp/Hann_Hanning_Raised_Cosine.html
+    namespace detail
+    {
+        inline float sinc(const float x) 
         {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.54f - 0.46f * cos(WINDOW_TAU * i / (bSize));
-            }
+            return (x == 0.0) ? 1.0 : std::sin(x * WINDOW_PI) / (x * WINDOW_PI);
         }
-        break;
 
-        case window_hanning:
+        inline float gen_cosine_1(const float max_index, const uint32_t idx, const float alpha, const float beta) 
         {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.5f - (0.5f * cos(WINDOW_TAU * i / (bSize)));
-            }
+            return alpha - beta * std::cos((WINDOW_TAU * idx) / max_index);
         }
-        break;
 
-        case window_hanningz:
+        inline float gen_cosine_2(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma) 
         {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.5f * (1.0f - cos(WINDOW_TAU * i / (bSize)));
-            }
+            return gen_cosine_1(max_index, idx, alpha, beta) + gamma * std::cos((2 * WINDOW_TAU * idx) / max_index);
         }
-        break;
 
-        case window_blackman:
+        inline float gen_cosine_3(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma, const float delta) 
         {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.42f - 0.50f * cos(WINDOW_TAU * i / (bSize - 1.0f)) + 0.08f * cos(4.0f * WINDOW_TAU * i / (bSize - 1.0f));
-            }
+            return gen_cosine_2(max_index, idx, alpha, beta, gamma) - delta * std::cos((3 * WINDOW_TAU * idx) / max_index);
         }
-        break;
 
-        case window_blackman_harris:
+        inline float gen_cosine_4(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma, const float delta, const float epsilon) 
         {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 0.35875f - 0.48829f * cos(WINDOW_TAU * i / (bSize - 1.0f)) + 0.14128f * 
-                    cos(2.0f * WINDOW_TAU * i / (bSize - 1.0f)) - 0.01168f * cos(3.0f * WINDOW_TAU * i / (bSize - 1.0f));
-            }
+            return gen_cosine_3(max_index, idx, alpha, beta, gamma, delta) + epsilon * std::cos((4 * WINDOW_TAU * idx) / max_index);
         }
-        break;
 
-        case window_gaussian:
+        inline float gaussian(const float max_index, const uint32_t idx, const float sigma)
         {
-            float a, b, c = 0.5;
-            int n;
-            for (n = 0; n < bSize; n++)
-            {
-                a = (n - c * (bSize - 1)) / (sqrt(c) * (bSize - 1));
-                b = -c * sqrt(a);
-                buffer[n] *= exp(b);
-            }
+            const float fract = (idx - (max_index * 0.5f)) / (sigma * (max_index * 0.5f));
+            return std::exp(-0.5f * (fract * fract));
         }
-        break;
-
-        case window_welch:
-        {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 1.0f - sqrt((2.0f * i - bSize) / (bSize + 1.0f));
-            }
-        }
-        break;
-
-        case window_bartlett:
-        {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 1.0f - abs(2.0f * (i / bSize) - 1.0f);
-            }
-        }
-        break;
-
-        case window_parzen:
-        {
-            for (int i = 0; i < bSize; i++)
-            {
-                buffer[i] *= 1.0f - abs((2.0f * i - bSize) / (bSize + 1.0f));
-            }
-        }
-        break;
     }
-}
 
-}  // End namespace lab
+    // Reference https://github.com/spurious/snd-mirror/blob/master/clm.c
+    inline void ApplyWindowFunctionInplace(const WindowFunction type, float * buffer, const uint32_t window_size)
+    {
+        const float max_index = static_cast<float>(window_size) - 1.f;
+
+        switch (type)
+        {
+            case WindowFunction::rectangle:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] = 1.f; // or * 0.5f?
+                }
+            }
+            break;
+
+            case WindowFunction::cosine:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= std::sin((WINDOW_PI * i) / max_index);
+                }
+            }
+            break;
+
+            case WindowFunction::hann:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_1(max_index, i, 0.5f, 0.5f);  
+                }
+            }
+            break;
+
+            case WindowFunction::hamming:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_1(max_index, i, 0.54, 0.46);
+                }
+            }
+            break;
+
+            case WindowFunction::blackman:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_2(max_index, i, 0.42f, 0.50f, 0.08f);
+                }
+            }
+            break;
+
+            case WindowFunction::nutall:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_3(max_index, i, 0.355768f, 0.487396f, 0.144232f, 0.012604f);
+                }
+            }
+            break;
+
+            case WindowFunction::blackman_harris:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_3(max_index, i, 0.35875f, 0.48829f, 0.14128f, 0.01168f);
+                }
+            }
+            break;
+
+            case WindowFunction::blackman_nutall:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_3(max_index, i, 0.3635819f, 0.4891775f, 0.1365995f, 0.0106411f);
+                }
+            }
+            break;
+
+            case WindowFunction::hann_poisson:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    const float alpha = 2.f;
+                    const float a	  = 1.f - std::cos((WINDOW_TAU*i) / max_index);
+                    const float b	  = (-alpha * std::abs(max_index - 2.0 * i)) / max_index;
+                    buffer[i] *= 0.5f * a * exp(b); 
+                }
+            }
+            break;
+
+            case WindowFunction::gaussian50:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gaussian(max_index, i, 0.50f);
+                }
+            }
+            break;
+
+            case WindowFunction::gaussian25:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gaussian(max_index, i, 0.25f);
+                }
+            }
+            break;
+
+            case WindowFunction::welch:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    const float num   = i - (max_index * 0.5f);
+                    const float denom = (window_size + 1.f) * 0.5f;
+                    const float fract = num / denom;
+                    buffer[i] *= 1.f - fract * fract;
+                }
+            }
+            break;
+
+            case WindowFunction::bartlett:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= 2.f / (window_size - 1.f) * (max_index / 2.f - std::abs(i - max_index / 2.f));
+                }
+            }
+            break;
+
+            case WindowFunction::bartlett_hann:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_2(max_index, i, 0.63f, 0.48f, 0.38f);
+                }
+            }
+            break;
+
+            case WindowFunction::parzen:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= 1.f - abs((2.f * i - window_size) / (window_size + 1.f));
+                }
+            }
+            break;
+
+            case WindowFunction::flat_top:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::gen_cosine_4(max_index, i, 1.f, 1.93f, 1.29f, 0.388f, 0.028f);
+                }
+            }
+            break;
+
+            case WindowFunction::lanczos:
+            {
+                for (uint32_t i = 0; i < window_size; ++i)
+                {
+                    buffer[i] *= detail::sinc(2.f * i / max_index - 1.f);
+                }
+            }
+            break;
+        }
+
+    }
+
+}  // namespace lab
+
+#endif // end lab_window_functions_h

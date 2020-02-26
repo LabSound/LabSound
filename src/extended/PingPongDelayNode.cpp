@@ -36,11 +36,6 @@ namespace lab
         SetFeedback(0.5f);
         SetLevel(1.0f);
     }
-    
-    PingPongDelayNode::~PingPongDelayNode()
-    {
-
-    }
 
     void PingPongDelayNode::SetTempo(float t)
     { 

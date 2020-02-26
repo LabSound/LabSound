@@ -6,13 +6,39 @@
 
 #include <string>
 #include <algorithm>
+#include <random>
 
 #define NO_COPY(C) C(const C &) = delete; C & operator = (const C &) = delete
 #define NO_MOVE(C) NO_COPY(C); C(C &&) = delete; C & operator = (const C &&) = delete
 
-
 namespace lab {
     
+    class UniformRandomGenerator
+    {
+        std::random_device rd;
+        std::mt19937_64 gen;
+        std::uniform_real_distribution<float> dist_full { 0.f, 1.f };
+    public:
+        UniformRandomGenerator() : rd(), gen(rd()) { }
+        float random_float() { return dist_full(gen); } // [0.f, 1.f]
+        float random_float(float max) { std::uniform_real_distribution<float> dist_user(0.f, max); return dist_user(gen); }
+        float random_float(float min, float max) { std::uniform_real_distribution<float> dist_user(min, max); return dist_user(gen); }
+        uint32_t random_uint(uint32_t max) { std::uniform_int_distribution<uint32_t> dist_int(0, max); return dist_int(gen); }
+        int32_t random_int(int32_t min, int32_t max) { std::uniform_int_distribution<int32_t> dist_int(min, max); return dist_int(gen); }
+    };
+
+    inline uint32_t RoundNextPow2(uint32_t v)
+    {
+        v--;
+        v |= v >> 1;
+        v |= v >> 2;
+        v |= v >> 4;
+        v |= v >> 8;
+        v |= v >> 16;
+        v++;
+        return v;
+    }
+
     template <typename S, typename T>
     inline T clampTo(S value, T min, T max)
     {

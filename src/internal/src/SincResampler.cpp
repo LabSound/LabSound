@@ -84,7 +84,8 @@ void SincResampler::initializeKernel()
     {
         double subsampleOffset = static_cast<double>(offsetIndex) / m_numberOfKernelOffsets;
 
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) 
+        {
             // Compute the sinc() with offset.
             double s = sincScaleFactor * piDouble * (i - halfSize - subsampleOffset);
             double sinc = !s ? 1.0 : sin(s) / s;

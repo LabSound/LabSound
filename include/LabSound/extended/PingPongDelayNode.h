@@ -45,7 +45,6 @@ namespace lab
     public:
 
         PingPongDelayNode(float sampleRate, float tempo);
-        virtual ~PingPongDelayNode();
 
         void SetTempo(float t);
         void SetFeedback(float f);

@@ -204,7 +204,7 @@ namespace lab
         }
 
         // http://www.ni.com/white-paper/4844/en/
-        applyWindow(lab::window_blackman, window);
+        ApplyWindowFunctionInplace(WindowFunction::blackman, window.data(), window.size());
         internalNode->fft->forward(window);
 
         // similar to cinder audio2 Scope object, although Scope smooths spectral samples frame by frame
