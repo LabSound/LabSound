@@ -10,6 +10,7 @@
 
 #include "internal/VectorMath.h"
 
+#include <math.h>
 #include <limits>
 
 using namespace lab;
