@@ -22,66 +22,63 @@ struct AnalyserNode::Detail
     }
     RealtimeAnalyser * m_analyser = nullptr;
 
-    std::shared_ptr<AudioSetting> _fftSize;
-    std::shared_ptr<AudioSetting> _minDecibels;
-    std::shared_ptr<AudioSetting> _maxDecibels;
-    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
-};
+        _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
 
-void AnalyserNode::shared_construction(size_t fftSize)
-{
-    _detail = new Detail;
+        _detail->_fftSize               = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
+        _detail->_minDecibels           = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
+        _detail->_maxDecibels           = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
+        _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
 
     _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
 
-    _detail->_fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
-    _detail->_minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
-    _detail->_maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
-    _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
+                // restore other values
+                _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
+                _detail->m_analyser->setMaxDecibels(_detail->_maxDecibels->valueFloat());
+            });
 
-    _detail->_fftSize->setUint32(static_cast<uint32_t>(fftSize));
-    _detail->_fftSize->setValueChanged(
-        [this]() {
-            delete _detail->m_analyser;
-            _detail->m_analyser = new RealtimeAnalyser(_detail->_fftSize->valueUint32());
+        _detail->_minDecibels->setFloat(-100.f);
+        _detail->_minDecibels->setValueChanged(
+            [this]() {
+                _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
+            });
 
-            // restore other values
-            _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
-            _detail->m_analyser->setMaxDecibels(_detail->_maxDecibels->valueFloat());
-        });
+        _detail->_maxDecibels->setFloat(-30.f);
+        _detail->_maxDecibels->setValueChanged(
+            [this]() {
+                _detail->m_analyser->setMaxDecibels(_detail->_minDecibels->valueFloat());
+            });
 
-    _detail->_minDecibels->setFloat(-100.f);
-    _detail->_minDecibels->setValueChanged(
-        [this]() {
-            _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
-        });
+        _detail->_smoothingTimeConstant->setFloat(0.8f);
+        _detail->_smoothingTimeConstant->setValueChanged(
+            [this]() {
+                _detail->m_analyser->setSmoothingTimeConstant(_detail->_smoothingTimeConstant->valueFloat());
+            });
 
-    _detail->_maxDecibels->setFloat(-30.f);
-    _detail->_maxDecibels->setValueChanged(
-        [this]() {
-            _detail->m_analyser->setMaxDecibels(_detail->_minDecibels->valueFloat());
-        });
+        m_settings.push_back(_detail->_fftSize);
+        m_settings.push_back(_detail->_minDecibels);
+        m_settings.push_back(_detail->_maxDecibels);
+        m_settings.push_back(_detail->_smoothingTimeConstant);
 
-    _detail->_smoothingTimeConstant->setFloat(0.8f);
-    _detail->_smoothingTimeConstant->setValueChanged(
-        [this]() {
-            _detail->m_analyser->setSmoothingTimeConstant(_detail->_smoothingTimeConstant->valueFloat());
-        });
+        // N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
+        initialize();
+    }
 
-    m_settings.push_back(_detail->_fftSize);
-    m_settings.push_back(_detail->_minDecibels);
-    m_settings.push_back(_detail->_maxDecibels);
-    m_settings.push_back(_detail->_smoothingTimeConstant);
+    AnalyserNode::AnalyserNode(size_t fftSize)
+        : AudioBasicInspectorNode(1)
+    {
+        shared_construction(fftSize);
+    }
 
-    // N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
-    initialize();
-}
+    AnalyserNode::AnalyserNode()
+        : AudioBasicInspectorNode(1)
+    {
+        shared_construction(1024u);
+    }
 
-AnalyserNode::AnalyserNode(size_t fftSize)
-    : AudioBasicInspectorNode(1)
-{
-    shared_construction(fftSize);
-}
+    AnalyserNode::~AnalyserNode()
+    {
+        uninitialize();
+    }
 
 AnalyserNode::AnalyserNode()
     : AudioBasicInspectorNode(1)
@@ -89,10 +86,8 @@ AnalyserNode::AnalyserNode()
     shared_construction(1024u);
 }
 
-AnalyserNode::~AnalyserNode()
-{
-    uninitialize();
-}
+    void AnalyserNode::setMaxDecibels(double k) { _detail->_maxDecibels->setFloat(static_cast<float>(k)); }
+    double AnalyserNode::maxDecibels() const { return _detail->m_analyser->maxDecibels(); }
 
 void AnalyserNode::setMinDecibels(double k)
 {
@@ -152,13 +147,17 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
     if (array.size() == frequencyBinCount())
         resample = false;
 
-    if (resample)
-    {
-        size_t src_size = frequencyBinCount();
-        std::vector<uint8_t> buff(src_size);
-        _detail->m_analyser->getByteFrequencyData(buff);
+    size_t AnalyserNode::frequencyBinCount() const { return _detail->m_analyser->frequencyBinCount(); }
+    void AnalyserNode::getFloatFrequencyData(std::vector<float> & array) { _detail->m_analyser->getFloatFrequencyData(array); }
+    void AnalyserNode::getFloatTimeDomainData(std::vector<float> & array) { _detail->m_analyser->getFloatTimeDomainData(array); }
+    void AnalyserNode::getByteTimeDomainData(std::vector<uint8_t> & array) { _detail->m_analyser->getByteTimeDomainData(array); }
 
-        if (array.size() > buff.size())
+    void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resample)
+    {
+        if (array.size() == frequencyBinCount())
+            resample = false;
+
+        if (resample)
         {
             // upsample via linear interpolation
             size_t steps = array.size();
@@ -166,10 +165,17 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
             float u = 0;
             for (size_t step = 0; step < steps; ++steps, u += u_step)
             {
-                float t = u * src_size;
-                size_t u0 = static_cast<size_t>(t);
-                t = t - static_cast<float>(u0);
-                array[step] = static_cast<uint8_t>(buff[u0] * t + buff[u0 + 1] * (1.f - t));
+                // upsample via linear interpolation
+                size_t steps = array.size();
+                float u_step = 1.f / static_cast<float>(steps);
+                float u      = 0;
+                for (size_t step = 0; step < steps; ++steps, u += u_step)
+                {
+                    float t     = u * src_size;
+                    size_t u0   = static_cast<size_t>(t);
+                    t           = t - static_cast<float>(u0);
+                    array[step] = static_cast<uint8_t>(buff[u0] * t + buff[u0 + 1] * (1.f - t));
+                }
             }
         }
         else
@@ -184,20 +190,30 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
             float error = 0;
             for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
             {
-                array[u] = std::max(array[u], buff[step]);
-                error += d_err;
-                if (error > 0.5f)
+                // down sample by taking the max of accumulated bins, stepped across using Bresenham.
+                // @cbb a convolution like lanczos would be better if the bins are to be treated as splines
+                float d_src = static_cast<float>(src_size);
+                float d_dst = static_cast<float>(array.size());
+                float d_err = d_dst / d_src;
+                std::memset(&array[0], 0, array.size());
+                size_t u    = 0;
+                float error = 0;
+                for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
                 {
-                    ++u;
-                    error -= 1.f;
+                    array[u] = std::max(array[u], buff[step]);
+                    error += d_err;
+                    if (error > 0.5f)
+                    {
+                        ++u;
+                        error -= 1.f;
+                    }
+                    ASSERT(u < src_size);
                 }
-                ASSERT(u < src_size);
             }
         }
+        else
+            _detail->m_analyser->getByteFrequencyData(array);
     }
-    else
-        _detail->m_analyser->getByteFrequencyData(array);
-}
 
 void AnalyserNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
@@ -205,22 +221,31 @@ void AnalyserNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     if (!isInitialized() || !input(0)->isConnected())
     {
-        outputBus->zero();
-        return;
+        AudioBus * outputBus = output(0)->bus(r);
+
+        if (!isInitialized() || !input(0)->isConnected())
+        {
+            outputBus->zero();
+            return;
+        }
+
+        AudioBus * inputBus = input(0)->bus(r);
+
+        // Give the analyser the audio which is passing through this AudioNode.
+        _detail->m_analyser->writeInput(r, inputBus, framesToProcess);
+
+        // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
+        // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
+        if (inputBus != outputBus)
+        {
+            outputBus->copyFrom(*inputBus);
+        }
     }
 
-    AudioBus * inputBus = input(0)->bus(r);
-
-    // Give the analyser the audio which is passing through this AudioNode.
-    _detail->m_analyser->writeInput(r, inputBus, framesToProcess);
-
-    // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
-    // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
-    if (inputBus != outputBus)
+    void AnalyserNode::reset(ContextRenderLock &)
     {
-        outputBus->copyFrom(*inputBus);
+        _detail->m_analyser->reset();
     }
-}
 
 void AnalyserNode::reset(ContextRenderLock &)
 {
