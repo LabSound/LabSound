@@ -7,67 +7,61 @@
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 
-namespace lab {
-
-class AudioSetting;
-
-// If the analyserNode is intended to run without it's output
-// being connected to an AudioDestination, the AnalyserNode must be 
-// registered with the AudioContext, via addAutomaticPullNode.
-
-// params:
-// settings: fftSize, minDecibels, maxDecibels, smoothingTimeConstant
-//
-class AnalyserNode : public AudioBasicInspectorNode 
+namespace lab
 {
-public:
+    class AudioSetting;
 
-    AnalyserNode(); // defaults to 1024
-    AnalyserNode(size_t fftSize);
-    virtual ~AnalyserNode();
-    
-    // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    // If the analyserNode is intended to run without it's output
+    // being connected to an AudioDestination, the AnalyserNode must be
+    // registered with the AudioContext via addAutomaticPullNode.
 
-    void setFftSize(ContextRenderLock&, size_t fftSize);
-    size_t fftSize() const;
+    // params:
+    // settings: fftSize, minDecibels, maxDecibels, smoothingTimeConstant
+    //
+    class AnalyserNode : public AudioBasicInspectorNode
+    {
+        void shared_construction(size_t fftSize);
 
-    // a value large enough to hold all the data return from get*FrequencyData
-    size_t frequencyBinCount() const;
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    void setMinDecibels(double k);
-    double minDecibels() const;
+        struct Detail;
+        Detail * _detail = nullptr;
 
-    void setMaxDecibels(double k);
-    double maxDecibels() const;
+    public:
+        AnalyserNode();
+        AnalyserNode(size_t fftSize);
+        virtual ~AnalyserNode();
 
-    void setSmoothingTimeConstant(double k);
-    double smoothingTimeConstant() const;
+        virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+        virtual void reset(ContextRenderLock &) override;
 
-    // frequency bins, reported in db
-    /// @TODO, add a normalization option to perform the same normalization as 
-    ///    getByteFrequency data.
-    void getFloatFrequencyData(std::vector<float>& array);
+        void setFftSize(ContextRenderLock &, size_t fftSize);
+        size_t fftSize() const;
 
-    // frequency bins, reported as a linear mapping of minDecibels to maxDecibles
-    //    onto 0-255.
-    // if resample is true, then the computed values will be resampled using a
-    // sinc kernel to the size of the supplied array.
-    void getByteFrequencyData(std::vector<uint8_t>& array, bool resample=false);
-    void getFloatTimeDomainData(std::vector<float>& array);
-    void getByteTimeDomainData(std::vector<uint8_t>& array);
+        // a value large enough to hold all the data return from get*FrequencyData
+        size_t frequencyBinCount() const;
 
-private:
-    void shared_construction(size_t fftSize);
+        void setMinDecibels(double k);
+        double minDecibels() const;
 
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+        void setMaxDecibels(double k);
+        double maxDecibels() const;
 
-    struct Detail;
-    Detail* _detail = nullptr;
-};
+        void setSmoothingTimeConstant(double k);
+        double smoothingTimeConstant() const;
 
-} // namespace lab
+        // frequency bins, reported in db
+        // @TODO, add a normalization option to perform the same normalization as getByteFrequency data.
+        void getFloatFrequencyData(std::vector<float> & array);
 
-#endif // AnalyserNode_h
+        // frequency bins, reported as a linear mapping of minDecibels to maxDecibles onto 0-255.
+        // if resample is true, then the computed values will be linearly resampled
+        void getByteFrequencyData(std::vector<uint8_t> & array, bool resample = false);
+        void getFloatTimeDomainData(std::vector<float> & array);
+        void getByteTimeDomainData(std::vector<uint8_t> & array);
+    };
+
+}  // namespace lab
+
+#endif  // AnalyserNode_h
