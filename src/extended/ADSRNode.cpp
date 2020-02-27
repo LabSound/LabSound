@@ -180,7 +180,7 @@ namespace lab
         void noteOn(double now)
         {
             m_noteOnTime = now;
-            m_noteOffTime = FLT_MAX;
+            m_noteOffTime = std::numeric_limits<float>::max;
             m_on_scheduled = true;
             m_phase = Phase::OFF;
         }
