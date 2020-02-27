@@ -10,8 +10,8 @@
 
 #include "internal/VectorMath.h"
 
+#include <float.h>
 #include <math.h>
-#include <limits>
 
 using namespace lab;
 
@@ -180,7 +180,7 @@ namespace lab
         void noteOn(double now)
         {
             m_noteOnTime = now;
-            m_noteOffTime = std::numeric_limits<double>::max;
+            m_noteOffTime = DBL_MAX;
             m_on_scheduled = true;
             m_phase = Phase::OFF;
         }
