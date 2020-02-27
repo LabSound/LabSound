@@ -102,8 +102,7 @@ private:
     struct Internals;
     std::unique_ptr<Internals> m_internal;
 
-    // @TODO migrate most of the internal datastructures such as PendingConnection
-    // into Internals as there's no need to expose these at all.
+    // @TODO migrate most of the internal datastructures such as PendingConnection into Internals as there's no need to expose these at all.
     struct Internals;
     std::unique_ptr<Internals> m_internal;
 
