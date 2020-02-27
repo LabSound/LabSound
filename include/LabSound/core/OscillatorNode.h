@@ -38,9 +38,7 @@ namespace lab
     protected:
 
         void _setType(OscillatorType type);
-
         float m_sampleRate;
-
         double _lab_phase = 0;  // new sine oscillator
 
         std::shared_ptr<AudioParam> m_amplitude;  // default 1
@@ -53,11 +51,6 @@ namespace lab
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-        void setWaveTable(std::shared_ptr<WaveTable> table);
-
-        // Returns true if there are sample-accurate timeline parameter changes.
-        bool calculateSampleAccuratePhaseIncrements(ContextRenderLock &, size_t framesToProcess);
-
         virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
         void process_oscillator(ContextRenderLock & r, int frames);
@@ -65,23 +58,12 @@ namespace lab
         // One of the waveform types defined in the enum.
         std::shared_ptr<AudioSetting> m_type;
 
-        bool m_firstRender;
-
-        // m_virtualReadIndex is a sample-frame index into the buffer
-        double m_virtualReadIndex;
+        bool m_firstRender {true};
 
         AudioFloatArray m_phaseIncrements;
         AudioFloatArray m_biasValues;
         AudioFloatArray m_detuneValues;
         AudioFloatArray m_amplitudeValues;
-
-        std::shared_ptr<WaveTable> m_waveTable;
-
-        // Cache the wave tables for different waveform types, except CUSTOM.
-        static std::shared_ptr<WaveTable> s_waveTableSine;
-        static std::shared_ptr<WaveTable> s_waveTableSquare;
-        static std::shared_ptr<WaveTable> s_waveTableSawtooth;
-        static std::shared_ptr<WaveTable> s_waveTableTriangle;
     };
 
 }  // namespace lab
