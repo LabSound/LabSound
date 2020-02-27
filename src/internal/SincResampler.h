@@ -43,8 +43,9 @@ protected:
     // This is the number of destination frames we generate per processing pass on the buffer.
     size_t m_blockSize{512};
 
-    // Source is copied into this buffer for each processing pass.
-    AudioFloatArray m_inputBuffer;
+        // m_virtualSourceIndex is an index on the source input buffer with sub-sample precision.
+        // It must be double precision to avoid drift.
+        double m_virtualSourceIndex {0};
 
     const float * m_source{nullptr};
     size_t m_sourceFramesAvailable{0};
@@ -55,6 +56,14 @@ protected:
     // The buffer is primed once at the very beginning of processing.
     bool m_isBufferPrimed{false};
 };
+
+}  // namespace lab
+
+#endif  // SincResampler_h
+
+        // The buffer is primed once at the very beginning of processing.
+        bool m_isBufferPrimed {false};
+    };
 
 }  // namespace lab
 
