@@ -43,12 +43,15 @@ int main(int argc, char *argv[]) try
     Example<ex_dalek_filter> dalek_filter;
     Example<ex_redalert_synthesis> redalert_synthesis;
     Example<ex_wavepot_dsp> wavepot_dsp;
-    Example<ex_granulation_node> granulation;
+    #if 0
+    Coming Soon!
+        Example<ex_granulation_node> granulation;
+    #endif
 
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        granulation.ex->play(argc, argv);
+        simple.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;

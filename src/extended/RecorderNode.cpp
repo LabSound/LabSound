@@ -124,7 +124,7 @@ void RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         fileData->samples.swap(m_data);
     }
         
-    fileData->sampleRate   = outConfig.desired_samplerate;
+    fileData->sampleRate   = static_cast<int>(outConfig.desired_samplerate);
     fileData->channelCount = outConfig.desired_channels;
     fileData->sourceFormat = nqr::PCM_FLT;
 

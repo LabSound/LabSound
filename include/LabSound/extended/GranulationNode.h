@@ -1,3 +1,6 @@
+#if 0
+Coming Soon!
+
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
@@ -120,3 +123,4 @@ namespace lab
 
 #endif // end labsound_granulation_node_h
 
+#endif

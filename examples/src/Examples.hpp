@@ -1259,7 +1259,8 @@ struct ex_wavepot_dsp : public labsound_example
     }
 };
 
-
+#if 0
+Coming Soon!
 ///////////////////////////////
 //    ex_granulation_node    //
 ///////////////////////////////
@@ -1304,5 +1305,5 @@ struct ex_granulation_node : public labsound_example
         recorder->writeRecordingToWav("ex_granulation_node.wav");
     }
 };
-
+#endif
 
