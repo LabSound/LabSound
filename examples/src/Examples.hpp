@@ -2,6 +2,7 @@
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
 #include "ExamplesCommon.h"
+#include "LabSound/extended/Util.h"
 
 /////////////////////////////////////
 //    Example Utility Functions    //
@@ -252,6 +253,8 @@ struct ex_frequency_modulation : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
+        UniformRandomGenerator fmrng;
+
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
@@ -288,7 +291,7 @@ struct ex_frequency_modulation : public labsound_example
             chainDelay = std::make_shared<DelayNode>(context->sampleRate(), 4);
             chainDelay->delayTime()->setFloat(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
 
-            // Set up processing chain:
+            // Set up FM processing chain:
             context->connect(modulatorGain, modulator, 0, 0);  // Modulator to Gain
             context->connectParam(osc->frequency(), modulatorGain, 0);  // Gain to frequency parameter
             context->connect(trigger, osc, 0, 0);  // Osc to ADSR
@@ -299,27 +302,32 @@ struct ex_frequency_modulation : public labsound_example
             context->connect(context->device(), signalGain, 0, 0);  // signalGain to DAC
         }
 
-        int now = 0;
+        double now_in_ms = 0;
         while (true)
         {
-            float cF = (float) std::uniform_int_distribution<int>(80, 440)(randomgenerator);
-            osc->frequency()->setValue(cF);
+            const float carrier_freq = fmrng.random_float(80.f, 440.f);
+            osc->frequency()->setValue(carrier_freq);
 
-            float f = (float) std::uniform_int_distribution<int>(4, 512)(randomgenerator);
-            modulator->frequency()->setValue(f);
-            std::cout << "Modulator Frequency: " << f << std::endl;
+            const float mod_freq = fmrng.random_float(4.f, 512.f);
+            modulator->frequency()->setValue(mod_freq);
 
-            float g = (float) std::uniform_int_distribution<int>(16, 1024)(randomgenerator);
-            modulatorGain->gain()->setValue(g);
-            std::cout << "Gain: " << g << std::endl;
+            const float mod_gain = fmrng.random_float(16.f, 1024.f);
+            modulatorGain->gain()->setValue(mod_gain);
 
-            trigger->noteOn(now);
-            trigger->set((std::uniform_real_distribution<float>(0.25f, 0.5f)(randomgenerator)), 0.50f, 0.50f, 0, 0);
+            const float attack_length = fmrng.random_float(0.25f, 0.5f);
+            trigger->set(attack_length, 0.50f, 0.50f, 0, 0);
+            trigger->noteOn(now_in_ms);
 
-            auto nextDelay = 512;
-            now += nextDelay;
+            const uint32_t delay_time_ms = 500;
+            now_in_ms += delay_time_ms;
 
-            Wait(std::chrono::milliseconds(nextDelay));
+            std::cout << "[ex_frequency_modulation] car_freq: " << carrier_freq << std::endl;
+            std::cout << "[ex_frequency_modulation] mod_freq: " << mod_freq << std::endl;
+            std::cout << "[ex_frequency_modulation] mod_gain: " << mod_gain << std::endl;
+
+            Wait(std::chrono::milliseconds(delay_time_ms));
+
+            if (now_in_ms >= 10000) break;
         };
     }
 };
