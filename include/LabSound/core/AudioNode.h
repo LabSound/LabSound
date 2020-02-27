@@ -21,213 +21,209 @@
 
 namespace lab
 {
-
-enum PanningMode
-{
-    PANNING_NONE = 0,
-    EQUALPOWER = 1,
-    HRTF = 2,
-    _PanningModeCount = 3
-};
-
-enum FilterType
-{
-    FILTER_NONE = 0,
-    LOWPASS = 1,
-    HIGHPASS = 2,
-    BANDPASS = 3,
-    LOWSHELF = 4,
-    HIGHSHELF = 5,
-    PEAKING = 6,
-    NOTCH = 7,
-    ALLPASS = 8,
-    _FilterTypeCount = 9
+    enum PanningMode
+    {
+        PANNING_NONE      = 0,
+        EQUALPOWER        = 1,
+        HRTF              = 2,
+        _PanningModeCount = 3
     };
 
-enum OscillatorType
-{
-    OSCILLATOR_NONE = 0,
-    SINE = 1,
-    SQUARE = 2,
-    SAWTOOTH = 3,
-    TRIANGLE = 4,
-    CUSTOM = 5,
-    _OscillatorCount = 6
-};
-
-class AudioContext;
-class AudioNodeInput;
-class AudioNodeOutput;
-class AudioParam;
-class AudioSetting;
-class ContextGraphLock;
-class ContextRenderLock;
-
-// An AudioNode is the basic building block for handling audio within an AudioContext.
-// It may be an audio source, an intermediate processing module, or an audio destination.
-// Each AudioNode can have inputs and/or outputs.
-// An AudioHardwareDeviceNode has one input and no outputs and represents the final destination to the audio hardware.
-// Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
-class AudioNode
-{
-public:
-
-    enum
+    enum FilterType
     {
-        ProcessingSizeInFrames = 128
+        FILTER_NONE      = 0,
+        LOWPASS          = 1,
+        HIGHPASS         = 2,
+        BANDPASS         = 3,
+        LOWSHELF         = 4,
+        HIGHSHELF        = 5,
+        PEAKING          = 6,
+        NOTCH            = 7,
+        ALLPASS          = 8,
+        _FilterTypeCount = 9
     };
 
-    AudioNode() = default;
-    virtual ~AudioNode();
-
-    // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
-    // This is to save the cost of a dynamic_cast when scheduling nodes.
-    virtual bool isScheduledNode() const { return false; }
-
-    virtual bool hasBang() const { return false; }
-    virtual void bang(ContextRenderLock &) {}
-    // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
-    // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
-    // Called from context's audio thread.
-    virtual void process(ContextRenderLock &, size_t framesToProcess) = 0;
-
-    // Resets DSP processing state (clears delay lines, filter memory, etc.)
-    // Called from context's audio thread.
-    virtual void reset(ContextRenderLock &) = 0;
-
-    // No significant resources should be allocated until initialize() is called.
-    // Processing may not occur until a node is initialized.
-    virtual void initialize();
-    virtual void uninitialize();
-
-    bool isInitialized() const { return m_isInitialized; }
-
-    size_t numberOfInputs() const { return m_inputs.size(); }
-    size_t numberOfOutputs() const { return m_outputs.size(); }
-
-    std::shared_ptr<AudioNodeInput> input(size_t index);
-    std::shared_ptr<AudioNodeOutput> output(size_t index);
-
-    // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
-    // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
-    // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
-    // Called from context's audio thread.
-    void processIfNecessary(ContextRenderLock & r, size_t framesToProcess);
-
-    // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
-    // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
-    // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput*);
-
-    // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
-    virtual double tailTime(ContextRenderLock & r) const = 0;
-
-    // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
-    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
-    // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
-    virtual double latencyTime(ContextRenderLock & r) const = 0;
-
-    // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
-    // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
-    virtual bool propagatesSilence(ContextRenderLock & r) const;
-
-    bool inputsAreSilent(ContextRenderLock &);
-    void silenceOutputs(ContextRenderLock &);
-    void unsilenceOutputs(ContextRenderLock &);
-
-    size_t channelCount();
-    void setChannelCount(ContextGraphLock & g, size_t channelCount);
-
-    ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
-
-    ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
-    void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
-
-    // returns a vector of parameter names
-    std::vector<std::string> paramNames() const;
-    std::vector<std::string> paramShortNames() const;
-
-    // returns a vector of setting names
-    std::vector<std::string> settingNames() const;
-    std::vector<std::string> settingShortNames() const;
-
-    // USER FACING FUNCTIONS >
-
-    std::shared_ptr<AudioParam> param(char const * const str);
-    std::shared_ptr<AudioSetting> setting(char const * const str);
-
-    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
-    std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
-
-    // USER FACING FUNCTIONS <
-
-protected:
-    virtual void clearPannerNode() {}
-
-    // Inputs and outputs must be created before the AudioNode is initialized.
-    // It is only legal to call this during a constructor.
-    void addInput(std::unique_ptr<AudioNodeInput> input);
-    void addOutput(std::unique_ptr<AudioNodeOutput> output);
-
-    // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
-    // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
-    // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess);
-
-    // Force all inputs to take any channel interpretation changes into account.
-    void updateChannelsForInputs(ContextGraphLock&);
-
-private:
-
-    friend class AudioContext;
-
-    volatile bool m_isInitialized{ false };
-
-    std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
-    std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
-
-    double m_lastProcessingTime{ -1.0 };
-    double m_lastNonSilentTime{ -1.0 };
-
-    float audibleThreshold() const { return 0.05f; }
-
-    // starts an immediate ramp to zero in preparation for disconnection
-    void scheduleDisconnect()
+    enum OscillatorType
     {
-        m_disconnectSchedule = 1.f;
-        m_connectSchedule = 1.f;
-    }
+        OSCILLATOR_NONE  = 0,
+        SINE             = 1,
+        SQUARE           = 2,
+        SAWTOOTH         = 3,
+        TRIANGLE         = 4,
+        CUSTOM           = 5,
+        _OscillatorCount = 6
+    };
 
-    // returns true if the disconnection ramp has reached zero.
-    // This is intended to allow the AudioContext to manage popping artifacts
-    bool disconnectionReady() const { return m_disconnectSchedule >= 0.f && m_disconnectSchedule <= audibleThreshold(); }
+    class AudioContext;
+    class AudioNodeInput;
+    class AudioNodeOutput;
+    class AudioParam;
+    class AudioSetting;
+    class ContextGraphLock;
+    class ContextRenderLock;
 
-    // starts an immediate ramp to unity due to being newly connected to a graph
-    void scheduleConnect()
+    // An AudioNode is the basic building block for handling audio within an AudioContext.
+    // It may be an audio source, an intermediate processing module, or an audio destination.
+    // Each AudioNode can have inputs and/or outputs.
+    // An AudioHardwareDeviceNode has one input and no outputs and represents the final destination to the audio hardware.
+    // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
+    class AudioNode
     {
-        m_disconnectSchedule = -1.f;
-        m_connectSchedule = 0.f;
-    }
+    public:
+        enum
+        {
+            ProcessingSizeInFrames = 128
+        };
 
-    // returns true if the connection has ramped to unity
-    // This is intended to signal when the danger of possible popping artifacts has passed
-    bool connectionReady() const { return m_connectSchedule > (1.f - audibleThreshold()); }
+        AudioNode() = default;
+        virtual ~AudioNode();
 
-    std::atomic<float> m_disconnectSchedule{ -1.f };
-    std::atomic<float> m_connectSchedule{ 0.f };
+        // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
+        // This is to save the cost of a dynamic_cast when scheduling nodes.
+        virtual bool isScheduledNode() const { return false; }
 
-protected:
-    std::vector<std::shared_ptr<AudioParam>> m_params;
-    std::vector<std::shared_ptr<AudioSetting>> m_settings;
+        virtual bool hasBang() const { return false; }
+        virtual void bang(ContextRenderLock &) {}
+        // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
+        // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
+        // Called from context's audio thread.
+        virtual void process(ContextRenderLock &, size_t framesToProcess) = 0;
 
-    size_t m_channelCount {0};
+        // Resets DSP processing state (clears delay lines, filter memory, etc.)
+        // Called from context's audio thread.
+        virtual void reset(ContextRenderLock &) = 0;
 
-    ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
-    ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
-};
+        // No significant resources should be allocated until initialize() is called.
+        // Processing may not occur until a node is initialized.
+        virtual void initialize();
+        virtual void uninitialize();
 
-} // namespace lab
+        bool isInitialized() const { return m_isInitialized; }
 
-#endif // AudioNode_h
+        size_t numberOfInputs() const { return m_inputs.size(); }
+        size_t numberOfOutputs() const { return m_outputs.size(); }
 
+        std::shared_ptr<AudioNodeInput> input(size_t index);
+        std::shared_ptr<AudioNodeOutput> output(size_t index);
+
+        // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
+        // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
+        // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
+        // Called from context's audio thread.
+        void processIfNecessary(ContextRenderLock & r, size_t framesToProcess);
+
+        // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
+        // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
+        // Called from main thread.
+        virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
+
+        // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
+        virtual double tailTime(ContextRenderLock & r) const = 0;
+
+        // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
+        // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
+        // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
+        virtual double latencyTime(ContextRenderLock & r) const = 0;
+
+        // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
+        // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
+        virtual bool propagatesSilence(ContextRenderLock & r) const;
+
+        bool inputsAreSilent(ContextRenderLock &);
+        void silenceOutputs(ContextRenderLock &);
+        void unsilenceOutputs(ContextRenderLock &);
+
+        size_t channelCount();
+        void setChannelCount(ContextGraphLock & g, size_t channelCount);
+
+        ChannelCountMode channelCountMode() const { return m_channelCountMode; }
+        void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
+
+        ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
+        void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
+
+        // returns a vector of parameter names
+        std::vector<std::string> paramNames() const;
+        std::vector<std::string> paramShortNames() const;
+
+        // returns a vector of setting names
+        std::vector<std::string> settingNames() const;
+        std::vector<std::string> settingShortNames() const;
+
+        // USER FACING FUNCTIONS >
+
+        std::shared_ptr<AudioParam> param(char const * const str);
+        std::shared_ptr<AudioSetting> setting(char const * const str);
+
+        std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
+        std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
+
+        // USER FACING FUNCTIONS <
+
+    protected:
+        virtual void clearPannerNode() {}
+
+        // Inputs and outputs must be created before the AudioNode is initialized.
+        // It is only legal to call this during a constructor.
+        void addInput(std::unique_ptr<AudioNodeInput> input);
+        void addOutput(std::unique_ptr<AudioNodeOutput> output);
+
+        // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
+        // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
+        // Called from context's audio thread.
+        virtual void pullInputs(ContextRenderLock &, size_t framesToProcess);
+
+        // Force all inputs to take any channel interpretation changes into account.
+        void updateChannelsForInputs(ContextGraphLock &);
+
+    private:
+        friend class AudioContext;
+
+        volatile bool m_isInitialized {false};
+
+        std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
+        std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
+
+        double m_lastProcessingTime {-1.0};
+        double m_lastNonSilentTime {-1.0};
+
+        float audibleThreshold() const { return 0.05f; }
+
+        // starts an immediate ramp to zero in preparation for disconnection
+        void scheduleDisconnect()
+        {
+            m_disconnectSchedule = 1.f;
+            m_connectSchedule    = 1.f;
+        }
+
+        // returns true if the disconnection ramp has reached zero.
+        // This is intended to allow the AudioContext to manage popping artifacts
+        bool disconnectionReady() const { return m_disconnectSchedule >= 0.f && m_disconnectSchedule <= audibleThreshold(); }
+
+        // starts an immediate ramp to unity due to being newly connected to a graph
+        void scheduleConnect()
+        {
+            m_disconnectSchedule = -1.f;
+            m_connectSchedule    = 0.f;
+        }
+
+        // returns true if the connection has ramped to unity
+        // This is intended to signal when the danger of possible popping artifacts has passed
+        bool connectionReady() const { return m_connectSchedule > (1.f - audibleThreshold()); }
+
+        std::atomic<float> m_disconnectSchedule {-1.f};
+        std::atomic<float> m_connectSchedule {0.f};
+
+    protected:
+        std::vector<std::shared_ptr<AudioParam>> m_params;
+        std::vector<std::shared_ptr<AudioSetting>> m_settings;
+
+        size_t m_channelCount {0};
+
+        ChannelCountMode m_channelCountMode {ChannelCountMode::Max};
+        ChannelInterpretation m_channelInterpretation {ChannelInterpretation::Speakers};
+    };
+
+}  // namespace lab
+
+#endif  // AudioNode_h
