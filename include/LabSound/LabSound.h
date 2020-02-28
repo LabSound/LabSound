@@ -7,18 +7,15 @@
 #define LABSOUND_H
 
 // WebAudio Public API
+#include "LabSound/core/AudioDevice.h"
+#include "LabSound/core/NullDeviceNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
-#include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
-#include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/BiquadFilterNode.h"
 #include "LabSound/core/ChannelMergerNode.h"
@@ -27,7 +24,6 @@
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/PannerNode.h"
 #include "LabSound/core/SampledAudioNode.h"
@@ -43,32 +39,30 @@
 #include "LabSound/extended/GranulationNode.h"
 #include "LabSound/extended/NoiseNode.h"
 #include "LabSound/extended/PWMNode.h"
-#include "LabSound/extended/PdNode.h"
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/PingPongDelayNode.h"
 #include "LabSound/extended/PowerMonitorNode.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/RecorderNode.h"
-#include "LabSound/extended/SampledInstrumentNode.h"
-#include "LabSound/extended/SfxrNode.h"
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SupersawNode.h"
-
-#include <memory>
+#include "LabSound/extended/SfxrNode.h"
+#include "LabSound/extended/PdNode.h"
 
 namespace lab
 {
-const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-const uint32_t GetDefaultOutputAudioDeviceIndex();
-const uint32_t GetDefaultInputAudioDeviceIndex();
+    const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
+    const uint32_t GetDefaultOutputAudioDeviceIndex();
+    const uint32_t GetDefaultInputAudioDeviceIndex();
 
-std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
-std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
+    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
 
-std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
+    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
 
-char const * const * const AudioNodeNames();
+    char const * const * const AudioNodeNames();
 }
 
 #endif
+
