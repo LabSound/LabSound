@@ -87,8 +87,8 @@ void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*eleva
         }
     }
 
-    desiredGainL = cos(0.5 * piDouble * desiredPanPosition);
-    desiredGainR = sin(0.5 * piDouble * desiredPanPosition);
+    desiredGainL = cos(0.5 * static_cast<double>(LAB_PI) * desiredPanPosition);
+    desiredGainR = sin(0.5 * static_cast<double>(LAB_PI) * desiredPanPosition);
 
     // Don't de-zipper on first render call.
     if (m_isFirstRender)

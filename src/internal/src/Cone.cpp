@@ -29,7 +29,7 @@ double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientat
 
     // Angle between the source orientation vector and the source-listener vector
     double dotProduct = dot(sourceToListener, normalizedSourceOrientation);
-    double angle = 180.0 * acos(dotProduct) / piDouble;
+    double angle = 180.0 * acos(dotProduct) / static_cast<double>(LAB_PI);
     double absAngle = fabs(angle);
 
     // Divide by 2.0 here since API is entire angle (not half-angle)

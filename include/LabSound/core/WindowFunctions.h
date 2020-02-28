@@ -50,10 +50,8 @@ static constexpr char const * const s_window_types[] = {
     "parzen",
     "flat_top",
     "lanczos",
-    nullptr};
-
-static constexpr float WINDOW_PI = 3.14159265358979323846f;
-static constexpr float WINDOW_TAU = 6.28318530717958647693f;
+    nullptr
+};
 
 // Inspired by https://github.com/idiap/libssp/blob/master/ssp/window.cpp
 // These are implementations of the generalized raised cosine window, up to order 4
@@ -62,27 +60,27 @@ namespace detail
 {
     inline float sinc(const float x)
     {
-        return (x == 0.0) ? 1.0 : std::sin(x * WINDOW_PI) / (x * WINDOW_PI);
+        return (x == 0.0) ? 1.0 : std::sin(x * static_cast<float>(LAB_PI)) / (x * static_cast<float>(LAB_PI));
     }
 
     inline float gen_cosine_1(const float max_index, const uint32_t idx, const float alpha, const float beta)
     {
-        return alpha - beta * std::cos((WINDOW_TAU * idx) / max_index);
+        return alpha - beta * std::cos((static_cast<float>(LAB_TAU) * idx) / max_index);
     }
 
     inline float gen_cosine_2(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma)
     {
-        return gen_cosine_1(max_index, idx, alpha, beta) + gamma * std::cos((2 * WINDOW_TAU * idx) / max_index);
+        return gen_cosine_1(max_index, idx, alpha, beta) + gamma * std::cos((2 * static_cast<float>(LAB_TAU) * idx) / max_index);
     }
 
     inline float gen_cosine_3(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma, const float delta)
     {
-        return gen_cosine_2(max_index, idx, alpha, beta, gamma) - delta * std::cos((3 * WINDOW_TAU * idx) / max_index);
+        return gen_cosine_2(max_index, idx, alpha, beta, gamma) - delta * std::cos((3 * static_cast<float>(LAB_TAU) * idx) / max_index);
     }
 
     inline float gen_cosine_4(const float max_index, const uint32_t idx, const float alpha, const float beta, const float gamma, const float delta, const float epsilon)
     {
-        return gen_cosine_3(max_index, idx, alpha, beta, gamma, delta) + epsilon * std::cos((4 * WINDOW_TAU * idx) / max_index);
+        return gen_cosine_3(max_index, idx, alpha, beta, gamma, delta) + epsilon * std::cos((4 * static_cast<float>(LAB_TAU) * idx) / max_index);
     }
 
     inline float gaussian(const float max_index, const uint32_t idx, const float sigma)
@@ -112,7 +110,7 @@ inline void ApplyWindowFunctionInplace(const WindowFunction type, float * buffer
         {
             for (uint32_t i = 0; i < window_size; ++i)
             {
-                buffer[i] *= std::sin((WINDOW_PI * i) / max_index);
+                buffer[i] *= std::sin((static_cast<float>(LAB_PI) * i) / max_index);
             }
         }
         break;
@@ -176,7 +174,7 @@ inline void ApplyWindowFunctionInplace(const WindowFunction type, float * buffer
             for (uint32_t i = 0; i < window_size; ++i)
             {
                 const float alpha = 2.f;
-                const float a = 1.f - std::cos((WINDOW_TAU * i) / max_index);
+                const float a = 1.f - std::cos((static_cast<float>(LAB_TAU) * i) / max_index);
                 const float b = (-alpha * std::abs(max_index - 2.0 * i)) / max_index;
                 buffer[i] *= 0.5f * a * exp(b);
             }

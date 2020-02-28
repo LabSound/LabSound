@@ -75,8 +75,8 @@ void DynamicsCompressor::setEmphasisStageParameters(unsigned stageIndex, float g
     float gk = 1 - gain / 20;
     float f1 = normalizedFrequency * gk;
     float f2 = normalizedFrequency / gk;
-    float r1 = expf(-f1 * piFloat);
-    float r2 = expf(-f2 * piFloat);
+    float r1 = expf(-f1 * static_cast<float>(LAB_PI));
+    float r2 = expf(-f2 * static_cast<float>(LAB_PI));
 
     ASSERT(m_numberOfChannels == m_preFilterPacks.size());
 

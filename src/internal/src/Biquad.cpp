@@ -182,7 +182,7 @@ void Biquad::setLowpassParams(double cutoff, double resonance)
         double g = pow(10.0, 0.05 * resonance);
         double d = sqrt((4 - sqrt(16 - 16 / (g * g))) / 2);
 
-        double theta = piDouble * cutoff;
+        double theta = static_cast<double>(LAB_PI) * cutoff;
         double sn = 0.5 * d * sin(theta);
         double beta = 0.5 * (1 - sn) / (1 + sn);
         double gamma = (0.5 + beta) * cos(theta);
@@ -223,7 +223,7 @@ void Biquad::setHighpassParams(double cutoff, double resonance)
         double g = pow(10.0, 0.05 * resonance);
         double d = sqrt((4 - sqrt(16 - 16 / (g * g))) / 2);
 
-        double theta = piDouble * cutoff;
+        double theta = static_cast<double>(LAB_PI) * cutoff;
         double sn = 0.5 * d * sin(theta);
         double beta = 0.5 * (1 - sn) / (1 + sn);
         double gamma = (0.5 + beta) * cos(theta);
@@ -274,7 +274,7 @@ void Biquad::setLowShelfParams(double frequency, double dbGain)
     }
     else if (frequency > 0)
     {
-        double w0 = piDouble * frequency;
+        double w0 = static_cast<double>(LAB_PI) * frequency;
         double S = 1;  // filter slope (1 is max value)
         double alpha = 0.5 * sin(w0) * sqrt((A + 1 / A) * (1 / S - 1) + 2);
         double k = cos(w0);
@@ -314,7 +314,7 @@ void Biquad::setHighShelfParams(double frequency, double dbGain)
     }
     else if (frequency > 0)
     {
-        double w0 = piDouble * frequency;
+        double w0 = static_cast<double>(LAB_PI) * frequency;
         double S = 1;  // filter slope (1 is max value)
         double alpha = 0.5 * sin(w0) * sqrt((A + 1 / A) * (1 / S - 1) + 2);
         double k = cos(w0);
@@ -353,7 +353,7 @@ void Biquad::setPeakingParams(double frequency, double Q, double dbGain)
     {
         if (Q > 0)
         {
-            double w0 = piDouble * frequency;
+            double w0 = static_cast<double>(LAB_PI) * frequency;
             double alpha = sin(w0) / (2 * Q);
             double k = cos(w0);
 
@@ -395,7 +395,7 @@ void Biquad::setAllpassParams(double frequency, double Q)
     {
         if (Q > 0)
         {
-            double w0 = piDouble * frequency;
+            double w0 = static_cast<double>(LAB_PI) * frequency;
             double alpha = sin(w0) / (2 * Q);
             double k = cos(w0);
 
@@ -437,7 +437,7 @@ void Biquad::setNotchParams(double frequency, double Q)
     {
         if (Q > 0)
         {
-            double w0 = piDouble * frequency;
+            double w0 = static_cast<double>(LAB_PI) * frequency;
             double alpha = sin(w0) / (2 * Q);
             double k = cos(w0);
 
@@ -477,7 +477,7 @@ void Biquad::setBandpassParams(double frequency, double Q)
 
     if (frequency > 0 && frequency < 1)
     {
-        double w0 = piDouble * frequency;
+        double w0 = static_cast<double>(LAB_PI) * frequency;
         if (Q > 0)
         {
             double alpha = sin(w0) / (2 * Q);
@@ -564,7 +564,7 @@ void Biquad::getFrequencyResponse(size_t nFrequencies,
 
     for (size_t k = 0; k < nFrequencies; ++k)
     {
-        double omega = -piDouble * frequency[k];
+        double omega = -static_cast<double>(LAB_PI) * frequency[k];
         complex<double> z = complex<double>(cos(omega), sin(omega));
         complex<double> numerator = b0 + (b1 + b2 * z) * z;
         complex<double> denominator = complex<double>(1, 0) + (a1 + a2 * z) * z;
