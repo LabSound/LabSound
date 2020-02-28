@@ -1,321 +1,287 @@
-// SPDX-License-Identifier: BSD-2-Clause
-// Copyright (C) 2015, The LabSound Authors. All rights reserved.
+// License: BSD 2 Clause
+// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/ADSRNode.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
-#include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/core/AudioBus.h"
 
 #include "internal/VectorMath.h"
 
-#include <float.h>
-#include <math.h>
+#include <limits>
 
 using namespace lab;
 
 namespace lab
 {
-/////////////////////////////////////
-// Private ADSRNode Implementation //
-/////////////////////////////////////
+    ///////////////////////////////////////////
+    // ADSRNode::ADSRNodeImpl Implementation //
+    ///////////////////////////////////////////
 
-class ADSRNode::ADSRNodeInternal : public lab::AudioProcessor
-{
-
-public:
-    enum class Phase
+    class ADSRNode::ADSRNodeImpl : public lab::AudioProcessor
     {
-        OFF,
-        ATTACK,
-        DECAY,
-        SUSTAIN,
-        RELEASE
+        float cached_sample_rate;
+
+    public:
+
+        ADSRNodeImpl() : AudioProcessor(2)
+        {
+            envelope.reserve(AudioNode::ProcessingSizeInFrames * 4);
+
+            m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATKT", AudioSetting::Type::Float);
+            m_attackTime->setFloat(0.125f); // 125ms
+
+            m_attackLevel = std::make_shared<AudioSetting>("attackLevel", "ATKL", AudioSetting::Type::Float);
+            m_attackLevel->setFloat(1.0f); // 1.0f
+
+            m_decayTime = std::make_shared<AudioSetting>("decayTime", "DCYT", AudioSetting::Type::Float);
+            m_decayTime->setFloat(0.125f); // 125ms
+
+            m_sustainLevel = std::make_shared<AudioSetting>("sustainLevel", "SUSL", AudioSetting::Type::Float);
+            m_sustainLevel->setFloat(0.5f); // 0.5f
+
+            m_releaseTime = std::make_shared<AudioSetting>("ReleaseTime", "RELT", AudioSetting::Type::Float);
+            m_releaseTime->setFloat(0.125f); // 125ms
+        }
+
+        virtual ~ADSRNodeImpl() {}
+
+        virtual void initialize() override { }
+        virtual void uninitialize() override { }
+
+        // Processes the source to destination bus. The number of channels must match in source and destination.
+        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, size_t framesToProcess) override
+        {
+            if (!numberOfChannels())
+                return;
+
+            if (m_noteOnTime >= 0)
+            {
+                cached_sample_rate = r.context()->sampleRate();
+
+                // If there's an active envelope value and we begin this node, we first
+                // rapidly push the value to zero before beginning the new attack
+                if (currentEnvelope > 0)
+                {
+                    m_zeroSteps = 16;
+                    m_zeroStepSize = -currentEnvelope / 16.0f;
+                }
+                else m_zeroSteps = 0;
+
+                m_attackTimeTarget = m_noteOnTime + m_attackTime->valueFloat();
+
+                m_attackSteps = static_cast<int>(m_attackTime->valueFloat() * cached_sample_rate);
+                m_attackStepSize = m_attackLevel->valueFloat() / m_attackSteps;
+
+                m_decayTimeTarget = m_attackTimeTarget + m_decayTime->valueFloat();
+
+                m_decaySteps = static_cast<int>(m_decayTime->valueFloat() * cached_sample_rate);
+                m_decayStepSize = (m_sustainLevel->valueFloat() - m_attackLevel->valueFloat()) / m_decaySteps;
+
+                m_releaseSteps = 0;
+
+                m_noteOffTime = std::numeric_limits<double>::max();
+                m_noteOnTime = -std::numeric_limits<double>::max();
+            }
+
+            // We handle both the 1 -> N and N -> N case here.
+            const float * source = sourceBus->channelByType(Channel::First)->data();
+
+            // this will only ever happen once, so if heap contention is an issue it should only ever cause one glitch
+            // what would be better, alloca? What does webaudio do elsewhere for this sort of thing?
+            // -> See the .reserve() call in the constructor; impact should be minimized.
+            if (envelope.size() < framesToProcess)
+            {
+                envelope.resize(framesToProcess);
+            }
+
+            const float sustain_lvl = m_sustainLevel->valueFloat();
+
+            for (size_t i = 0; i < framesToProcess; ++i)
+            {
+                if (m_zeroSteps > 0)
+                {
+                    // Pull envelope to zero
+                    --m_zeroSteps;
+                    currentEnvelope += m_zeroStepSize;
+                    envelope[i] = currentEnvelope;
+                }
+                else if (m_attackSteps > 0)
+                {
+                    // Do the attack
+                    --m_attackSteps;
+                    currentEnvelope += m_attackStepSize;
+                    envelope[i] = currentEnvelope;
+                }
+                else if (m_decaySteps > 0)
+                {
+                    // Do the decay
+                    --m_decaySteps;
+                    currentEnvelope += m_decayStepSize;
+                    envelope[i] = currentEnvelope;
+                }
+                else if (m_releaseSteps > 0)
+                {
+                    // Do the release
+                    --m_releaseSteps;
+                    currentEnvelope += m_releaseStepSize;
+                    envelope[i] = currentEnvelope;
+                }
+                else
+                {
+                    // Otherwise do the sustain
+                    currentEnvelope = (m_noteOffTime == std::numeric_limits<double>::max()) ? sustain_lvl : 0;
+                    envelope[i] = currentEnvelope;
+                }
+            }
+
+            const size_t numChannels = numberOfChannels();
+            for (size_t channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+            {
+                if (sourceBus->numberOfChannels() == numChannels)
+                {
+                    source = sourceBus->channel(channelIndex)->data();
+                }
+
+                float * destination = destinationBus->channel(channelIndex)->mutableData();
+
+                VectorMath::vmul(source, 1, &envelope[0], 1, destination, 1, framesToProcess);
+            }
+        }
+
+        virtual void reset() override { }
+
+        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+        void noteOn(const double time)
+        {
+            m_noteOnTime = time;
+        }
+
+        void noteOff(const double time)
+        {
+            // note off at any time except while a note is on, has no effect
+            m_noteOnTime = -std::numeric_limits<double>::max();
+
+            if (m_noteOffTime == std::numeric_limits<double>::max())
+            {
+                m_noteOffTime = time + m_releaseTime->valueFloat();
+                m_releaseSteps = static_cast<int>(m_releaseTime->valueFloat() * cached_sample_rate);
+                m_releaseStepSize = -m_sustainLevel->valueFloat() / m_releaseSteps;
+            }
+        }
+
+        int m_zeroSteps;
+        float m_zeroStepSize;
+
+        int m_attackSteps;
+        float m_attackStepSize;
+
+        int m_decaySteps;
+        float m_decayStepSize;
+
+        int m_releaseSteps;
+        float m_releaseStepSize;
+
+        double m_attackTimeTarget;
+        double m_decayTimeTarget;
+
+        double m_noteOnTime { -std::numeric_limits<double>::max() };
+        double m_noteOffTime {0.0};
+
+        float currentEnvelope {0.f};
+        std::vector<float> envelope;
+
+        std::shared_ptr<AudioSetting> m_attackTime;
+        std::shared_ptr<AudioSetting> m_attackLevel;
+        std::shared_ptr<AudioSetting> m_decayTime;
+        std::shared_ptr<AudioSetting> m_sustainLevel;
+        std::shared_ptr<AudioSetting> m_releaseTime;
     };
 
-    ADSRNodeInternal()
-        : AudioProcessor(1)
-        , m_noteOnTime(-1.)
-        , m_noteOffTime(0)
-        , m_currentGain(0)
+    /////////////////////
+    // Public ADSRNode //
+    /////////////////////
+
+    ADSRNode::ADSRNode() : lab::AudioBasicProcessorNode()
     {
-        m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATCK", AudioSetting::Type::Float);
-        m_attackTime->setFloat(0.1f);
-        m_attackLevel = std::make_shared<AudioSetting>("attackLevel", "ALVL", AudioSetting::Type::Float);
-        m_attackLevel->setFloat(1.0f);
-        m_holdTime = std::make_shared<AudioSetting>("holdTime", "HOLD", AudioSetting::Type::Float);
-        m_holdTime->setFloat(0.1f);
-        m_decayTime = std::make_shared<AudioSetting>("decayTime", "DECY", AudioSetting::Type::Float);
-        m_decayTime->setFloat(0.05f);
-        m_sustainLevel = std::make_shared<AudioSetting>("sustain", "SUS ", AudioSetting::Type::Float);
-        m_sustainLevel->setFloat(0.75f);
-        m_releaseTime = std::make_shared<AudioSetting>("release", "REL ", AudioSetting::Type::Float);
-        m_releaseTime->setFloat(0.0625f);
+        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
+        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
+
+        m_processor.reset(new ADSRNodeImpl());
+        adsr_impl = static_cast<ADSRNodeImpl*>(m_processor.get());
+
+        m_settings.push_back(adsr_impl->m_attackTime);
+        m_settings.push_back(adsr_impl->m_attackLevel);
+        m_settings.push_back(adsr_impl->m_decayTime);
+        m_settings.push_back(adsr_impl->m_sustainLevel);
+        m_settings.push_back(adsr_impl->m_releaseTime);
+
+        initialize();
     }
 
-    virtual ~ADSRNodeInternal() {}
-
-    virtual void initialize() override { m_initialized = true; }
-
-    virtual void uninitialize() override {}
-
-    // Processes the source to destination bus. The number of channels must match in source and destination.
-    virtual void process(ContextRenderLock & r,
-                         const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus,
-                         size_t framesToProcess) override
+    ADSRNode::~ADSRNode()
     {
-        size_t source_channels = sourceBus->numberOfChannels();
-        size_t dest_channels = destinationBus->numberOfChannels();
+        uninitialize();
+    }
 
-        float oosr = 1.f / r.context()->sampleRate();
+    void ADSRNode::noteOn(const double when)
+    {
+        adsr_impl->noteOn(when);
+    }
 
-        if (!isInitialized() || !source_channels || !dest_channels)
+    void ADSRNode::noteOff(double when)
+    {
+        adsr_impl->noteOff(when);
+    }
+
+    void ADSRNode::bang(const double time)
+    {
+        adsr_impl->noteOn(0);
+
+        if (time > 0.f)
         {
-            destinationBus->zero();
-            return;
+            adsr_impl->noteOff(time);
         }
-
-        float quantum_duration = float(framesToProcess) * oosr;
-        if (m_on_scheduled)
-            m_noteOnTime -= quantum_duration;
-        if (m_off_scheduled)
-            m_noteOffTime -= quantum_duration;
-
-        if (m_noteOnTime > quantum_duration || (!m_on_scheduled && m_phase == Phase::OFF))
+        else
         {
-            // quick bail out if the scheduled start hasn't arrived, after decrementing scheduling
-            m_noteOnTime -= quantum_duration;
-            m_noteOffTime -= quantum_duration;
-            destinationBus->zero();
-            return;
-        }
-
-        // prepare a frame accurate start
-        size_t silence = 0;
-        if (m_noteOnTime > 0)
-            silence = static_cast<size_t>(m_noteOnTime * oosr);
-
-        if (gainValues.size() < framesToProcess)
-            gainValues.resize(framesToProcess);
-
-        float s = m_sustainLevel->valueFloat();
-        bool done = false;
-        for (size_t i = 0; i < framesToProcess; ++i)
-        {
-            if (i < silence)
-            {
-                gainValues[i] = 0;
-                continue;
-            }
-            switch (m_phase)
-            {
-                case Phase::OFF:
-                    m_currentGain = 0.f;
-                    m_gainSteps = static_cast<int>(m_attackTime->valueFloat() * r.context()->sampleRate());
-                    m_gainStepSize = m_attackLevel->valueFloat() / m_gainSteps;
-                    m_phase = Phase::ATTACK;
-                    m_on_scheduled = false;
-                    break;
-
-                case Phase::ATTACK:
-                    --m_gainSteps;
-                    m_currentGain += m_gainStepSize;
-                    gainValues[i] = m_currentGain;
-                    if (m_gainSteps <= 0)
-                    {
-                        m_gainSteps = static_cast<int>(m_decayTime->valueFloat() * r.context()->sampleRate());
-                        m_gainStepSize = (m_sustainLevel->valueFloat() - m_attackLevel->valueFloat()) / m_gainSteps;
-                        m_phase = Phase::DECAY;
-                    }
-                    break;
-
-                case Phase::DECAY:
-                    --m_gainSteps;
-                    m_currentGain += m_gainStepSize;
-                    gainValues[i] = m_currentGain;
-                    if (m_gainSteps <= 0)
-                    {
-                        m_phase = Phase::SUSTAIN;
-                    }
-                    break;
-
-                case Phase::SUSTAIN:
-                    if (m_noteOffTime > 0)
-                    {
-                        gainValues[i] = m_currentGain;
-                        m_noteOffTime -= oosr;
-                    }
-                    else
-                    {
-                        m_gainSteps = static_cast<int>(m_releaseTime->valueFloat() * r.context()->sampleRate());
-                        m_gainStepSize = -m_sustainLevel->valueFloat() / m_gainSteps;
-                        m_phase = Phase::RELEASE;
-                    }
-                    break;
-
-                case Phase::RELEASE:
-                    --m_gainSteps;
-                    m_currentGain += m_gainStepSize;
-                    gainValues[i] = m_currentGain;
-                    if (m_gainSteps <= 0 || fabs(m_currentGain) < 0.0001f)
-                    {
-                        done = true;
-                    }
-                    break;
-            }
-        }
-
-        if (done)
-            m_phase = Phase::OFF;
-
-        for (size_t channelIndex = 0; channelIndex < dest_channels; ++channelIndex)
-        {
-            const float * source;
-            if (channelIndex < source_channels)
-                source = sourceBus->channel(channelIndex)->data();
-            else
-                source = sourceBus->channel(source_channels - 1)->data();
-
-            float * destination = destinationBus->channel(channelIndex)->mutableData();
-            VectorMath::vmul(source, 1, &gainValues[0], 1, destination, 1, framesToProcess);
+            // @todo - impulse
         }
     }
 
-    virtual void reset() override {}
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    void noteOn(double now)
+    void ADSRNode::set(float attack_time, float attack_level, float decay_time, float sustain_level, float release_time)
     {
-        m_noteOnTime = now;
-        m_noteOffTime = DBL_MAX;
-        m_on_scheduled = true;
-        m_phase = Phase::OFF;
+        adsr_impl->m_attackTime->setFloat(attack_time);
+        adsr_impl->m_attackLevel->setFloat(attack_level);
+        adsr_impl->m_decayTime->setFloat(decay_time);
+        adsr_impl->m_sustainLevel->setFloat(sustain_level);
+        adsr_impl->m_releaseTime->setFloat(release_time);
     }
 
-    void noteOff(ContextRenderLock & r, double now)
+    // clang-format off
+    std::shared_ptr<AudioSetting> ADSRNode::attackTime() const   { return adsr_impl->m_attackTime;   }
+    std::shared_ptr<AudioSetting> ADSRNode::attackLevel() const  { return adsr_impl->m_attackLevel;  }
+    std::shared_ptr<AudioSetting> ADSRNode::decayTime() const    { return adsr_impl->m_decayTime;    } 
+    std::shared_ptr<AudioSetting> ADSRNode::sustainLevel() const { return adsr_impl->m_sustainLevel; }
+    std::shared_ptr<AudioSetting> ADSRNode::releaseTime() const  { return adsr_impl->m_releaseTime;  }
+    //clang-format on
+
+    bool ADSRNode::finished(ContextRenderLock& r)
     {
-        m_off_scheduled = true;
-        m_noteOffTime = now;
+        if (!r.context())
+            return true;
+
+        double now = r.context()->currentTime();
+
+        if (now > adsr_impl->m_noteOffTime)
+        {
+            adsr_impl->m_noteOffTime = 0;
+        }
+
+        return now > adsr_impl->m_noteOffTime;
     }
 
-    bool m_on_scheduled = false;
-    bool m_off_scheduled = false;
-    Phase m_phase = Phase::OFF;
-
-    int m_gainSteps;
-    float m_gainStepSize;
-    float m_currentGain;
-
-    double m_noteOnTime, m_noteOffTime;
-
-    std::vector<float> gainValues;
-
-    std::shared_ptr<AudioSetting> m_attackTime;
-    std::shared_ptr<AudioSetting> m_attackLevel;
-    std::shared_ptr<AudioSetting> m_holdTime;
-    std::shared_ptr<AudioSetting> m_decayTime;
-    std::shared_ptr<AudioSetting> m_sustainLevel;
-    std::shared_ptr<AudioSetting> m_releaseTime;
-};
-
-/////////////////////
-// Public ADSRNode //
-/////////////////////
-
-ADSRNode::ADSRNode()
-    : lab::AudioBasicProcessorNode()
-{
-    m_processor.reset(new ADSRNodeInternal());
-
-    internalNode = static_cast<ADSRNodeInternal *>(m_processor.get());
-
-    m_settings.push_back(internalNode->m_attackTime);
-    m_settings.push_back(internalNode->m_attackLevel);
-    m_settings.push_back(internalNode->m_holdTime);
-    m_settings.push_back(internalNode->m_decayTime);
-    m_settings.push_back(internalNode->m_sustainLevel);
-    m_settings.push_back(internalNode->m_releaseTime);
-
-    initialize();
-    m_processor->initialize();
-}
-
-ADSRNode::~ADSRNode()
-{
-    uninitialize();
-}
-
-void ADSRNode::bang(ContextRenderLock & r)
-{
-    internalNode->noteOn(0);
-    internalNode->noteOff(r, internalNode->m_holdTime->valueFloat());
-}
-
-void ADSRNode::noteOn(double when)
-{
-    internalNode->noteOn(when);
-}
-
-void ADSRNode::noteOff(ContextRenderLock & r, double when)
-{
-    internalNode->noteOff(r, when);
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::attackTime() const
-{
-    return internalNode->m_attackTime;
-}
-
-void ADSRNode::set(float aT, float aL, float d, float s, float r)
-{
-    internalNode->m_attackTime->setFloat(aT);
-    internalNode->m_attackLevel->setFloat(aL);
-    internalNode->m_decayTime->setFloat(d);
-    internalNode->m_sustainLevel->setFloat(s);
-    internalNode->m_releaseTime->setFloat(r);
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::attackLevel() const
-{
-    return internalNode->m_attackLevel;
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::decayTime() const
-{
-    return internalNode->m_decayTime;
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::holdTime() const
-{
-    return internalNode->m_holdTime;
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::sustainLevel() const
-{
-    return internalNode->m_sustainLevel;
-}
-
-std::shared_ptr<AudioSetting> ADSRNode::releaseTime() const
-{
-    return internalNode->m_releaseTime;
-}
-
-bool ADSRNode::finished(ContextRenderLock & r)
-{
-    if (!r.context())
-        return true;
-
-    double now = r.context()->currentTime();
-
-    if (now > internalNode->m_noteOffTime)
-    {
-        internalNode->m_noteOffTime = 0;
-    }
-
-    return now > internalNode->m_noteOffTime;
-}
-
-}  // End namespace lab
+} // End namespace lab

@@ -13,33 +13,46 @@ namespace lab
 
 class ADSRNode : public AudioBasicProcessorNode, public BangInterface
 {
-    class ADSRNodeInternal;
-    ADSRNodeInternal * internalNode;
+    class ADSRNodeImpl;
+    ADSRNodeImpl * adsr_impl;
 
 public:
     ADSRNode();
     virtual ~ADSRNode();
 
-    // bang will attack, hold, decay, release
-    virtual void bang(ContextRenderLock & rl) override;
+    // noteOn() will start applying an envelope to the incoming signal. The node will
+    // progress through attack_time, ramping to attack_level. decay_time will settle the
+    // the amplitude at sustain_level and continue indefinitely. Using the default |when|
+    // value of 0.0, the envelope will begin immediately, otherwise delayed until
+    // |when| seconds in the future. If sustain_level is 0, then noteOn produces a short
+    // envelope between (attack_time + decay_time) without using any of the remaining 
+    // stages via noteOff(). Calling noteOn() many times is OK, but if a current
+    // envelope has not finished, the behavior is to quickly decay to zero and begin
+    // the new attack. 
+    void noteOn(const double when = 0.0);
 
-    // noteOn will attack, noteOff will decay, release
-    // If noteOn is called before noteOff has finished, a pop can occur. Polling
-    // finished and avoiding noteOn while finished is true can avoid the popping.
-    void noteOn(double when);
-    void noteOff(ContextRenderLock &, double when);
+    // If started using noteOn(), noteOff()` will progress the envelope from sustain_level
+    // to 0.0 over the release_time period. Using the default |when| value of 0.0, the envelope 
+    // will end immediately, otherwise delayed until |when| seconds in the future. 
+    void noteOff(const double when = 0.0);
 
-    bool finished(ContextRenderLock &);  // if a noteOff has been issued, finished will be true after the release period
+    // ADSR bang() will issue a noteOn/noteOff pair. If a length value is given, it will start
+    // immediately and finish after (now + length). If length is the default value (0.f), then
+    // bang will issue an impulse, a single 1.0 sample at the beginning of the render quanta.
+    virtual void bang(const double length = 0.0) override final;
 
-    void set(float aT, float aL, float d, float s, float r);
+    // This function will return true after the release period (only if a noteOff has been issued). 
+    bool finished(ContextRenderLock &);
+
+    void set(float attack_time, float attack_level, float decay_time, float sustain_level, float release_time);
 
     std::shared_ptr<AudioSetting> attackTime() const;  // Duration in seconds
     std::shared_ptr<AudioSetting> attackLevel() const;  // Level
     std::shared_ptr<AudioSetting> decayTime() const;  // Duration in seconds
-    std::shared_ptr<AudioSetting> holdTime() const;  // Duration in seconds
     std::shared_ptr<AudioSetting> sustainLevel() const;  // Level
     std::shared_ptr<AudioSetting> releaseTime() const;  // Duration in seconds
 };
+
 }
 
 #endif

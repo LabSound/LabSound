@@ -315,8 +315,8 @@ struct ex_frequency_modulation : public labsound_example
             modulatorGain->gain()->setValue(mod_gain);
 
             const float attack_length = fmrng.random_float(0.25f, 0.5f);
-            trigger->set(attack_length, 0.50f, 0.50f, 0, 0);
-            trigger->noteOn(now_in_ms);
+            trigger->set(attack_length, 0.50f, 0.50f, 0.50f, 0.1);
+            trigger->noteOn(0.0);
 
             const uint32_t delay_time_ms = 500;
             now_in_ms += delay_time_ms;

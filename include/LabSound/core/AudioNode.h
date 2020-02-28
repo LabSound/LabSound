@@ -64,7 +64,7 @@ class ContextRenderLock;
 
 struct BangInterface
 {
-    virtual void bang(ContextRenderLock &) = 0;
+    virtual void bang(const double length = 0.0) = 0;
 };
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.

@@ -661,7 +661,7 @@ SfxrNode::~SfxrNode()
     uninitialize();
 }
 
-void SfxrNode::bang(ContextRenderLock &)
+void SfxrNode::bang(const double length)
 {
     start(0);
     sfxr->ResetSample(true);
