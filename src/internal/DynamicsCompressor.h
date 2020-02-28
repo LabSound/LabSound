@@ -12,7 +12,8 @@
 
 #include <vector>
 
-namespace lab {
+namespace lab
+{
 
 class AudioBus;
 
@@ -21,12 +22,11 @@ class AudioBus;
 // of the loudest parts of the signal and raises the volume of the softest parts,
 // making the sound richer, fuller, and more controlled.
 
-class DynamicsCompressor 
+class DynamicsCompressor
 {
 
 public:
-
-    enum 
+    enum
     {
         ParamThreshold,
         ParamKnee,
@@ -71,16 +71,17 @@ protected:
     float m_lastAnchor;
     float m_lastFilterStageGain;
 
-    typedef struct {
+    typedef struct
+    {
         ZeroPole filters[4];
     } ZeroPoleFilterPack4;
 
     // Per-channel emphasis filters.
-    std::vector<std::unique_ptr<ZeroPoleFilterPack4> > m_preFilterPacks;
-    std::vector<std::unique_ptr<ZeroPoleFilterPack4> > m_postFilterPacks;
+    std::vector<std::unique_ptr<ZeroPoleFilterPack4>> m_preFilterPacks;
+    std::vector<std::unique_ptr<ZeroPoleFilterPack4>> m_postFilterPacks;
 
-    std::unique_ptr<const float*[]> m_sourceChannels;
-    std::unique_ptr<float*[]> m_destinationChannels;
+    std::unique_ptr<const float * []> m_sourceChannels;
+    std::unique_ptr<float * []> m_destinationChannels;
 
     void setEmphasisStageParameters(unsigned stageIndex, float gain, float normalizedFrequency /* 0 -> 1 */);
     void setEmphasisParameters(float gain, float anchorFreq, float filterStageRatio);
@@ -89,6 +90,6 @@ protected:
     DynamicsCompressorKernel m_compressor;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DynamicsCompressor_h
+#endif  // DynamicsCompressor_h

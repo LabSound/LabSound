@@ -2,15 +2,16 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "internal/Assertions.h"
 #include "internal/Distance.h"
+#include "internal/Assertions.h"
 
 #include <algorithm>
 #include <math.h>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 DistanceEffect::DistanceEffect()
 {
@@ -25,13 +26,14 @@ double DistanceEffect::gain(double distance)
     if (m_isClamped)
         distance = max(distance, m_refDistance);
 
-    switch (m_model) {
-    case ModelLinear:
-        return linearGain(distance);
-    case ModelInverse:
-        return inverseGain(distance);
-    case ModelExponential:
-        return exponentialGain(distance);
+    switch (m_model)
+    {
+        case ModelLinear:
+            return linearGain(distance);
+        case ModelInverse:
+            return inverseGain(distance);
+        case ModelExponential:
+            return exponentialGain(distance);
     }
     ASSERT_NOT_REACHED();
     return 0.0;
@@ -54,5 +56,4 @@ double DistanceEffect::exponentialGain(double distance)
     return pow(distance / m_refDistance, -m_rolloffFactor);
 }
 
-} // namespace lab
-
+}  // namespace lab

@@ -9,9 +9,11 @@
 
 #include "internal/FFTFrame.h"
 
-namespace lab {
+namespace lab
+{
 
-class FFTConvolver {
+class FFTConvolver
+{
 public:
     // fftSize must be a power of two
     FFTConvolver(size_t fftSize);
@@ -23,7 +25,7 @@ public:
     // The input to output latency is equal to fftSize / 2
     //
     // Processing in-place is allowed...
-    void process(FFTFrame* fftKernel, const float* sourceP, float* destP, size_t framesToProcess);
+    void process(FFTFrame * fftKernel, const float * sourceP, float * destP, size_t framesToProcess);
 
     void reset();
 
@@ -43,6 +45,6 @@ private:
     AudioFloatArray m_lastOverlapBuffer;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // FFTConvolver_h
+#endif  // FFTConvolver_h

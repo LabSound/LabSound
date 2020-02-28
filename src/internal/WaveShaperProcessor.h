@@ -29,9 +29,9 @@ public:
 
     struct Curve
     {
-        explicit Curve(std::mutex& m, const std::vector<float> & c)
-        : lock(m)
-        , curve(c)
+        explicit Curve(std::mutex & m, const std::vector<float> & c)
+            : lock(m)
+            , curve(c)
         {
         }
         ~Curve() = default;

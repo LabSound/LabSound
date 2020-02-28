@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/extended/AudioContextLock.h"
-#include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioSourceProvider.h"
+#include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/DenormalDisabler.h"
 #include "internal/Assertions.h"
+#include "internal/DenormalDisabler.h"
 
 // Non platform-specific helper functions
 
 using namespace lab;
 
 void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames,
-    const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
+                     const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
     if (!ctx) return;
@@ -49,7 +49,7 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
     if (optional_hardware_input && src)
     {
         optional_hardware_input->set(src);
-    } 
+    }
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
     AudioBus * renderedBus = required_inlet->pull(renderLock, dst, frames);

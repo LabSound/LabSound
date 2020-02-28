@@ -3,11 +3,11 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/NullDeviceNode.h"
-#include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
-#include "LabSound/core/AudioNodeInput.h"
 
 #include "internal/Assertions.h"
 
@@ -15,10 +15,13 @@
 
 using namespace lab;
 
-static const size_t offlineRenderSizeQuantum = 128;    
+static const size_t offlineRenderSizeQuantum = 128;
 
-NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds) 
-    : m_lengthSeconds(lengthSeconds), m_context(context), outConfig(outputConfig), m_numChannels(outputConfig.desired_channels)
+NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds)
+    : m_lengthSeconds(lengthSeconds)
+    , m_context(context)
+    , outConfig(outputConfig)
+    , m_numChannels(outputConfig.desired_channels)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
@@ -55,7 +58,7 @@ void NullDeviceNode::uninitialize()
 
     if (m_renderThread.joinable())
     {
-       m_renderThread.join();
+        m_renderThread.join();
     }
 
     AudioNode::uninitialize();
@@ -63,15 +66,15 @@ void NullDeviceNode::uninitialize()
 
 void NullDeviceNode::start()
 {
-    if (!m_startedRendering) 
+    if (!m_startedRendering)
     {
         m_startedRendering = true;
         shouldExit = false;
 
         m_renderThread = std::thread(&NullDeviceNode::offlineRender, this);
-        
+
         // @tofix - ability to update main thread from here. Currently blocks until complete
-        if (m_renderThread.joinable()) 
+        if (m_renderThread.joinable())
         {
             m_renderThread.join();
         }
@@ -114,7 +117,7 @@ const AudioStreamConfig NullDeviceNode::getOutputConfig() const
 
 const AudioStreamConfig NullDeviceNode::getInputConfig() const
 {
-    return {}; 
+    return {};
 }
 
 void NullDeviceNode::offlineRender()
@@ -127,10 +130,10 @@ void NullDeviceNode::offlineRender()
     ASSERT(isRenderBusAllocated);
     if (!isRenderBusAllocated)
         return;
-    
+
     bool isAudioContextInitialized = m_context->isInitialized();
     ASSERT(isAudioContextInitialized);
-    if (!isAudioContextInitialized) 
+    if (!isAudioContextInitialized)
         return;
 
     // Break up the desired length into smaller "render quantum" sized pieces.

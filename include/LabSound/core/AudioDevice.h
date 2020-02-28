@@ -7,108 +7,108 @@
 #ifndef lab_audiodevice_h
 #define lab_audiodevice_h
 
+#include <chrono>
 #include <stddef.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <chrono>
 
 namespace lab
 {
-    class AudioBus;
-    class AudioContext;
-    class AudioNodeInput;
-    class AudioHardwareInput;
-    class AudioDevice;
+class AudioBus;
+class AudioContext;
+class AudioNodeInput;
+class AudioHardwareInput;
+class AudioDevice;
 
-    /////////////////////////////////////////////
-    //   Audio Device Configuration Settings   //
-    /////////////////////////////////////////////
+/////////////////////////////////////////////
+//   Audio Device Configuration Settings   //
+/////////////////////////////////////////////
 
-    struct AudioDeviceInfo
-    {
-        int32_t index{-1};
-        std::string identifier;
-        uint32_t num_output_channels{0};
-        uint32_t num_input_channels{0};
-        std::vector<float> supported_samplerates;
-        float nominal_samplerate{0};
-        bool is_default_output{false};
-        bool is_default_input{false};
-    };
+struct AudioDeviceInfo
+{
+    int32_t index{-1};
+    std::string identifier;
+    uint32_t num_output_channels{0};
+    uint32_t num_input_channels{0};
+    std::vector<float> supported_samplerates;
+    float nominal_samplerate{0};
+    bool is_default_output{false};
+    bool is_default_input{false};
+};
 
-    // Input and Output
-    struct AudioStreamConfig
-    {
-        int32_t device_index{-1};
-        uint32_t desired_channels{0};
-        float desired_samplerate{0};
-    };
+// Input and Output
+struct AudioStreamConfig
+{
+    int32_t device_index{-1};
+    uint32_t desired_channels{0};
+    float desired_samplerate{0};
+};
 
-    // low bit of current_sample_frame indexes time point 0 or 1
-    // (so that time and epoch are written atomically, after the alternative epoch has been filled in)
-    struct SamplingInfo
-    {
-        uint64_t current_sample_frame{0};
-        double current_time{0.0};
-        float sampling_rate{0.0};
-        std::chrono::high_resolution_clock::time_point epoch[2];
-    };
+// low bit of current_sample_frame indexes time point 0 or 1
+// (so that time and epoch are written atomically, after the alternative epoch has been filled in)
+struct SamplingInfo
+{
+    uint64_t current_sample_frame{0};
+    double current_time{0.0};
+    float sampling_rate{0.0};
+    std::chrono::high_resolution_clock::time_point epoch[2];
+};
 
-    // This is a free function to consolidate and implement the required functionality to take buffers
-    // from the hardware (both input and output) and begin pulling the graph until fully rendered per quanta. 
-    // This was formerly a function found on the removed `AudioDestinationNode` class (removed
-    // to de-complicate some annoying inheritance chains). 
-    // 
-    // `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance, 
-    // the `AudioHardwareDeviceNode` or the `NullDeviceNode`. 
-    void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames, 
-        const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
+// This is a free function to consolidate and implement the required functionality to take buffers
+// from the hardware (both input and output) and begin pulling the graph until fully rendered per quanta.
+// This was formerly a function found on the removed `AudioDestinationNode` class (removed
+// to de-complicate some annoying inheritance chains).
+//
+// `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance,
+// the `AudioHardwareDeviceNode` or the `NullDeviceNode`.
+void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames,
+                const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
-    ///////////////////////////////////
-    //   AudioDeviceRenderCallback   //
-    ///////////////////////////////////
+///////////////////////////////////
+//   AudioDeviceRenderCallback   //
+///////////////////////////////////
 
-    // `render()` is called periodically to get the next render quantum of audio into destinationBus.
-    // Optional audio input is given in src (if not nullptr). This structure also keeps
-    // track of timing information with respect to the callback.
-    class AudioDeviceRenderCallback
-    {
-        AudioStreamConfig outputConfig;
-        AudioStreamConfig inputConfig;
-        friend class AudioDevice;
-    public:
-        virtual ~AudioDeviceRenderCallback() {}
-        virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) = 0;
-        virtual void start() = 0;
-        virtual void stop() = 0;
+// `render()` is called periodically to get the next render quantum of audio into destinationBus.
+// Optional audio input is given in src (if not nullptr). This structure also keeps
+// track of timing information with respect to the callback.
+class AudioDeviceRenderCallback
+{
+    AudioStreamConfig outputConfig;
+    AudioStreamConfig inputConfig;
+    friend class AudioDevice;
 
-        virtual const SamplingInfo getSamplingInfo() const = 0;
-        virtual const AudioStreamConfig getOutputConfig() const = 0;
-        virtual const AudioStreamConfig getInputConfig() const = 0;
-    };
+public:
+    virtual ~AudioDeviceRenderCallback() {}
+    virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) = 0;
+    virtual void start() = 0;
+    virtual void stop() = 0;
 
-    /////////////////////
-    //   AudioDevice   //
-    /////////////////////
+    virtual const SamplingInfo getSamplingInfo() const = 0;
+    virtual const AudioStreamConfig getOutputConfig() const = 0;
+    virtual const AudioStreamConfig getInputConfig() const = 0;
+};
 
-    // The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to
-    // render/output the next render quantum of audio. It optionally will pass in local/live audio
-    // input when it calls `render()`.
-    class AudioDevice
-    {
-    public:
+/////////////////////
+//   AudioDevice   //
+/////////////////////
 
-        static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-        static uint32_t GetDefaultOutputAudioDeviceIndex();
-        static uint32_t GetDefaultInputAudioDeviceIndex();
-        static AudioDevice * MakePlatformSpecificDevice(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+// The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to
+// render/output the next render quantum of audio. It optionally will pass in local/live audio
+// input when it calls `render()`.
+class AudioDevice
+{
+public:
+    static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
+    static uint32_t GetDefaultOutputAudioDeviceIndex();
+    static uint32_t GetDefaultInputAudioDeviceIndex();
+    static AudioDevice * MakePlatformSpecificDevice(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
 
-        virtual ~AudioDevice() {}
-        virtual void start() = 0;
-        virtual void stop() = 0;
-    };
+    virtual ~AudioDevice() {}
+    virtual void start() = 0;
+    virtual void stop() = 0;
+};
 
-} // lab
+}  // lab
 
-#endif // lab_audiodevice_h
+#endif  // lab_audiodevice_h

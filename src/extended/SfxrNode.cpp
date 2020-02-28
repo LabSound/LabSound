@@ -180,9 +180,9 @@
 
 #include <math.h>
 #include <memory.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 using namespace std;
 using namespace lab;
@@ -192,28 +192,37 @@ inline uint32_t rnd(uint32_t n)
 {
     if (n == 1)
         return ((rand() & 0x7fff) > 0x3fff) ? 1 : 0;
-    return rand() % (n+1);
+    return rand() % (n + 1);
 }
 
 #define PI 3.14159265f
 
 inline float frnd(float range)
 {
-    return (float)rnd(10000)/10000*range;
+    return (float) rnd(10000) / 10000 * range;
 }
 
-inline float rndr(float from, float to) {
+inline float rndr(float from, float to)
+{
     return frnd(1) * (to - from) + from;
 }
 
-inline float sqr(float a) { return a * a; }
-inline float cube(float a) { return a * a * a; }
-inline float flurp(float a) { return a / (1.0f - a); }
+inline float sqr(float a)
+{
+    return a * a;
+}
+inline float cube(float a)
+{
+    return a * a * a;
+}
+inline float flurp(float a)
+{
+    return a / (1.0f - a);
+}
 
-
-class SfxrNode::Sfxr {
+class SfxrNode::Sfxr
+{
 public:
-
     int wave_type;
 
     float p_base_freq;
@@ -250,7 +259,6 @@ public:
     float master_vol;
 
     float sound_vol;
-
 
     bool playing_sample;
     int phase;
@@ -298,43 +306,43 @@ public:
     void ResetParams();
     void ResetSample(bool restart);
     void PlaySample();
-    void SynthSample(size_t length, float* buffer, FILE* file);
+    void SynthSample(size_t length, float * buffer, FILE * file);
 };
 
 void SfxrNode::Sfxr::ResetParams()
 {
-    wave_type=0;
+    wave_type = 0;
 
-    p_base_freq=0.3f;
-    p_freq_limit=0.0f;
-    p_freq_ramp=0.0f;
-    p_freq_dramp=0.0f;
-    p_duty=0.0f;
-    p_duty_ramp=0.0f;
+    p_base_freq = 0.3f;
+    p_freq_limit = 0.0f;
+    p_freq_ramp = 0.0f;
+    p_freq_dramp = 0.0f;
+    p_duty = 0.0f;
+    p_duty_ramp = 0.0f;
 
-    p_vib_strength=0.0f;
-    p_vib_speed=0.0f;
-    p_vib_delay=0.0f;
+    p_vib_strength = 0.0f;
+    p_vib_speed = 0.0f;
+    p_vib_delay = 0.0f;
 
-    p_env_attack=0.0f;
-    p_env_sustain=0.3f;
-    p_env_decay=0.4f;
-    p_env_punch=0.0f;
+    p_env_attack = 0.0f;
+    p_env_sustain = 0.3f;
+    p_env_decay = 0.4f;
+    p_env_punch = 0.0f;
 
-    filter_on=false;
-    p_lpf_resonance=0.0f;
-    p_lpf_freq=1.0f;
-    p_lpf_ramp=0.0f;
-    p_hpf_freq=0.0f;
-    p_hpf_ramp=0.0f;
+    filter_on = false;
+    p_lpf_resonance = 0.0f;
+    p_lpf_freq = 1.0f;
+    p_lpf_ramp = 0.0f;
+    p_hpf_freq = 0.0f;
+    p_hpf_ramp = 0.0f;
 
-    p_pha_offset=0.0f;
-    p_pha_ramp=0.0f;
+    p_pha_offset = 0.0f;
+    p_pha_ramp = 0.0f;
 
-    p_repeat_speed=0.0f;
+    p_repeat_speed = 0.0f;
 
-    p_arp_speed=0.0f;
-    p_arp_mod=0.0f;
+    p_arp_speed = 0.0f;
+    p_arp_mod = 0.0f;
 
     wav_bits = 16;
     wav_freq = 44100;
@@ -342,237 +350,236 @@ void SfxrNode::Sfxr::ResetParams()
     master_vol = 0.05f;
 }
 
-
 void SfxrNode::Sfxr::ResetSample(bool restart)
 {
-    if(!restart)
-        phase=0;
-    fperiod=100.0/(p_base_freq*p_base_freq+0.001);
-    period=(int)fperiod;
-    fmaxperiod=100.0/(p_freq_limit*p_freq_limit+0.001);
-    fslide=1.0-pow((double)p_freq_ramp, 3.0)*0.01;
-    fdslide=-pow((double)p_freq_dramp, 3.0)*0.000001;
-    square_duty=0.5f-p_duty*0.5f;
-    square_slide=-p_duty_ramp*0.00005f;
-    if(p_arp_mod>=0.0f)
-        arp_mod=1.0-pow((double)p_arp_mod, 2.0)*0.9;
+    if (!restart)
+        phase = 0;
+    fperiod = 100.0 / (p_base_freq * p_base_freq + 0.001);
+    period = (int) fperiod;
+    fmaxperiod = 100.0 / (p_freq_limit * p_freq_limit + 0.001);
+    fslide = 1.0 - pow((double) p_freq_ramp, 3.0) * 0.01;
+    fdslide = -pow((double) p_freq_dramp, 3.0) * 0.000001;
+    square_duty = 0.5f - p_duty * 0.5f;
+    square_slide = -p_duty_ramp * 0.00005f;
+    if (p_arp_mod >= 0.0f)
+        arp_mod = 1.0 - pow((double) p_arp_mod, 2.0) * 0.9;
     else
-        arp_mod=1.0+pow((double)p_arp_mod, 2.0)*10.0;
-    arp_time=0;
-    arp_limit=(int)(pow(1.0f-p_arp_speed, 2.0f)*20000+32);
-    if(p_arp_speed==1.0f)
-        arp_limit=0;
-    if(!restart)
+        arp_mod = 1.0 + pow((double) p_arp_mod, 2.0) * 10.0;
+    arp_time = 0;
+    arp_limit = (int) (pow(1.0f - p_arp_speed, 2.0f) * 20000 + 32);
+    if (p_arp_speed == 1.0f)
+        arp_limit = 0;
+    if (!restart)
     {
         // reset filter
-        fltp=0.0f;
-        fltdp=0.0f;
-        fltw=pow(p_lpf_freq, 3.0f)*0.1f;
-        fltw_d=1.0f+p_lpf_ramp*0.0001f;
-        fltdmp=5.0f/(1.0f+pow(p_lpf_resonance, 2.0f)*20.0f)*(0.01f+fltw);
-        if(fltdmp>0.8f) fltdmp=0.8f;
-        fltphp=0.0f;
-        flthp=pow(p_hpf_freq, 2.0f)*0.1f;
-        flthp_d=1.0f+p_hpf_ramp*0.0003f;
+        fltp = 0.0f;
+        fltdp = 0.0f;
+        fltw = pow(p_lpf_freq, 3.0f) * 0.1f;
+        fltw_d = 1.0f + p_lpf_ramp * 0.0001f;
+        fltdmp = 5.0f / (1.0f + pow(p_lpf_resonance, 2.0f) * 20.0f) * (0.01f + fltw);
+        if (fltdmp > 0.8f) fltdmp = 0.8f;
+        fltphp = 0.0f;
+        flthp = pow(p_hpf_freq, 2.0f) * 0.1f;
+        flthp_d = 1.0f + p_hpf_ramp * 0.0003f;
         // reset vibrato
-        vib_phase=0.0f;
-        vib_speed=pow(p_vib_speed, 2.0f)*0.01f;
-        vib_amp=p_vib_strength*0.5f;
+        vib_phase = 0.0f;
+        vib_speed = pow(p_vib_speed, 2.0f) * 0.01f;
+        vib_amp = p_vib_strength * 0.5f;
         // reset envelope
-        env_vol=0.0f;
-        env_stage=0;
-        env_time=0;
-        env_length[0]=(int)(p_env_attack*p_env_attack*100000.0f);
-        env_length[1]=(int)(p_env_sustain*p_env_sustain*100000.0f);
-        env_length[2]=(int)(p_env_decay*p_env_decay*100000.0f);
+        env_vol = 0.0f;
+        env_stage = 0;
+        env_time = 0;
+        env_length[0] = (int) (p_env_attack * p_env_attack * 100000.0f);
+        env_length[1] = (int) (p_env_sustain * p_env_sustain * 100000.0f);
+        env_length[2] = (int) (p_env_decay * p_env_decay * 100000.0f);
 
-        fphase=pow(p_pha_offset, 2.0f)*1020.0f;
-        if(p_pha_offset<0.0f) fphase=-fphase;
-        fdphase=pow(p_pha_ramp, 2.0f)*1.0f;
-        if(p_pha_ramp<0.0f) fdphase=-fdphase;
-        iphase=abs((int)fphase);
-        ipp=0;
-        for(int i=0;i<1024;i++)
-            phaser_buffer[i]=0.0f;
+        fphase = pow(p_pha_offset, 2.0f) * 1020.0f;
+        if (p_pha_offset < 0.0f) fphase = -fphase;
+        fdphase = pow(p_pha_ramp, 2.0f) * 1.0f;
+        if (p_pha_ramp < 0.0f) fdphase = -fdphase;
+        iphase = abs((int) fphase);
+        ipp = 0;
+        for (int i = 0; i < 1024; i++)
+            phaser_buffer[i] = 0.0f;
 
-        for(int i=0;i<32;i++)
-            noise_buffer[i]=frnd(2.0f)-1.0f;
+        for (int i = 0; i < 32; i++)
+            noise_buffer[i] = frnd(2.0f) - 1.0f;
 
-        rep_time=0;
-        rep_limit=(int)(pow(1.0f-p_repeat_speed, 2.0f)*20000+32);
-        if(p_repeat_speed==0.0f)
-            rep_limit=0;
+        rep_time = 0;
+        rep_limit = (int) (pow(1.0f - p_repeat_speed, 2.0f) * 20000 + 32);
+        if (p_repeat_speed == 0.0f)
+            rep_limit = 0;
     }
 }
 
 void SfxrNode::Sfxr::PlaySample()
 {
     ResetSample(false);
-    playing_sample=true;
+    playing_sample = true;
 }
 
-void SfxrNode::Sfxr::SynthSample(size_t length, float* buffer, FILE* file)
+void SfxrNode::Sfxr::SynthSample(size_t length, float * buffer, FILE * file)
 {
-    for(int i=0;i<length;i++)
+    for (int i = 0; i < length; i++)
     {
-        if(!playing_sample)
+        if (!playing_sample)
             break;
 
         rep_time++;
-        if(rep_limit!=0 && rep_time>=rep_limit)
+        if (rep_limit != 0 && rep_time >= rep_limit)
         {
-            rep_time=0;
+            rep_time = 0;
             ResetSample(true);
         }
 
         // frequency envelopes/arpeggios
         arp_time++;
-        if(arp_limit!=0 && arp_time>=arp_limit)
+        if (arp_limit != 0 && arp_time >= arp_limit)
         {
-            arp_limit=0;
-            fperiod*=arp_mod;
+            arp_limit = 0;
+            fperiod *= arp_mod;
         }
-        fslide+=fdslide;
-        fperiod*=fslide;
-        if(fperiod>fmaxperiod)
+        fslide += fdslide;
+        fperiod *= fslide;
+        if (fperiod > fmaxperiod)
         {
-            fperiod=fmaxperiod;
-            if(p_freq_limit>0.0f)
-                playing_sample=false;
+            fperiod = fmaxperiod;
+            if (p_freq_limit > 0.0f)
+                playing_sample = false;
         }
         float rfperiod = static_cast<float>(fperiod);
-        if(vib_amp>0.0f)
+        if (vib_amp > 0.0f)
         {
-            vib_phase+=vib_speed;
-            rfperiod = static_cast<float>(fperiod*(1.0+sin(vib_phase)*vib_amp));
+            vib_phase += vib_speed;
+            rfperiod = static_cast<float>(fperiod * (1.0 + sin(vib_phase) * vib_amp));
         }
-        period=(int)rfperiod;
-        if(period<8) period=8;
-        square_duty+=square_slide;
-        if(square_duty<0.0f) square_duty=0.0f;
-        if(square_duty>0.5f) square_duty=0.5f;
+        period = (int) rfperiod;
+        if (period < 8) period = 8;
+        square_duty += square_slide;
+        if (square_duty < 0.0f) square_duty = 0.0f;
+        if (square_duty > 0.5f) square_duty = 0.5f;
         // volume envelope
         env_time++;
-        if(env_time>env_length[env_stage])
+        if (env_time > env_length[env_stage])
         {
-            env_time=0;
+            env_time = 0;
             env_stage++;
-            if(env_stage==3)
-                playing_sample=false;
+            if (env_stage == 3)
+                playing_sample = false;
         }
-        if(env_stage==0)
-            env_vol=(float)env_time/env_length[0];
-        if(env_stage==1)
-            env_vol=1.0f+pow(1.0f-(float)env_time/env_length[1], 1.0f)*2.0f*p_env_punch;
-        if(env_stage==2)
-            env_vol=1.0f-(float)env_time/env_length[2];
+        if (env_stage == 0)
+            env_vol = (float) env_time / env_length[0];
+        if (env_stage == 1)
+            env_vol = 1.0f + pow(1.0f - (float) env_time / env_length[1], 1.0f) * 2.0f * p_env_punch;
+        if (env_stage == 2)
+            env_vol = 1.0f - (float) env_time / env_length[2];
 
         // phaser step
-        fphase+=fdphase;
-        iphase=abs((int)fphase);
-        if(iphase>1023) iphase=1023;
+        fphase += fdphase;
+        iphase = abs((int) fphase);
+        if (iphase > 1023) iphase = 1023;
 
-        if(flthp_d!=0.0f)
+        if (flthp_d != 0.0f)
         {
-            flthp*=flthp_d;
-            if(flthp<0.00001f) flthp=0.00001f;
-            if(flthp>0.1f) flthp=0.1f;
+            flthp *= flthp_d;
+            if (flthp < 0.00001f) flthp = 0.00001f;
+            if (flthp > 0.1f) flthp = 0.1f;
         }
 
-        float ssample=0.0f;
-        for(int si=0;si<8;si++) // 8x supersampling
+        float ssample = 0.0f;
+        for (int si = 0; si < 8; si++)  // 8x supersampling
         {
-            float sample=0.0f;
+            float sample = 0.0f;
             phase++;
-            if(phase>=period)
+            if (phase >= period)
             {
                 //                phase=0;
-                phase%=period;
-                if(wave_type==NOISE)
-                    for(int i=0;i<32;i++)
-                        noise_buffer[i]=frnd(2.0f)-1.0f;
+                phase %= period;
+                if (wave_type == NOISE)
+                    for (int i = 0; i < 32; i++)
+                        noise_buffer[i] = frnd(2.0f) - 1.0f;
             }
             // base waveform
-            float fp=(float)phase/period;
-            switch(wave_type)
+            float fp = (float) phase / period;
+            switch (wave_type)
             {
-                case 0: // square
-                    if(fp<square_duty)
-                        sample=0.5f;
+                case 0:  // square
+                    if (fp < square_duty)
+                        sample = 0.5f;
                     else
-                        sample=-0.5f;
+                        sample = -0.5f;
                     break;
-                case 1: // sawtooth
-                    sample=1.0f-fp*2;
+                case 1:  // sawtooth
+                    sample = 1.0f - fp * 2;
                     break;
-                case 2: // sine
-                    sample=(float)sin(fp*2*PI);
+                case 2:  // sine
+                    sample = (float) sin(fp * 2 * PI);
                     break;
-                case 3: // noise
-                    sample=noise_buffer[phase*32/period];
+                case 3:  // noise
+                    sample = noise_buffer[phase * 32 / period];
                     break;
             }
             // lp filter
-            float pp=fltp;
-            fltw*=fltw_d;
-            if(fltw<0.0f) fltw=0.0f;
-            if(fltw>0.1f) fltw=0.1f;
-            if(p_lpf_freq!=1.0f)
+            float pp = fltp;
+            fltw *= fltw_d;
+            if (fltw < 0.0f) fltw = 0.0f;
+            if (fltw > 0.1f) fltw = 0.1f;
+            if (p_lpf_freq != 1.0f)
             {
-                fltdp+=(sample-fltp)*fltw;
-                fltdp-=fltdp*fltdmp;
+                fltdp += (sample - fltp) * fltw;
+                fltdp -= fltdp * fltdmp;
             }
             else
             {
-                fltp=sample;
-                fltdp=0.0f;
+                fltp = sample;
+                fltdp = 0.0f;
             }
-            fltp+=fltdp;
+            fltp += fltdp;
             // hp filter
-            fltphp+=fltp-pp;
-            fltphp-=fltphp*flthp;
-            sample=fltphp;
+            fltphp += fltp - pp;
+            fltphp -= fltphp * flthp;
+            sample = fltphp;
             // phaser
-            phaser_buffer[ipp&1023]=sample;
-            sample+=phaser_buffer[(ipp-iphase+1024)&1023];
-            ipp=(ipp+1)&1023;
+            phaser_buffer[ipp & 1023] = sample;
+            sample += phaser_buffer[(ipp - iphase + 1024) & 1023];
+            ipp = (ipp + 1) & 1023;
             // final accumulation and envelope application
-            ssample+=sample*env_vol;
+            ssample += sample * env_vol;
         }
-        ssample=ssample/8*master_vol;
+        ssample = ssample / 8 * master_vol;
 
-        ssample*=2.0f*sound_vol;
+        ssample *= 2.0f * sound_vol;
 
-        if(buffer!=NULL)
+        if (buffer != NULL)
         {
-            if(ssample>1.0f) ssample=1.0f;
-            if(ssample<-1.0f) ssample=-1.0f;
-            *buffer++=ssample;
+            if (ssample > 1.0f) ssample = 1.0f;
+            if (ssample < -1.0f) ssample = -1.0f;
+            *buffer++ = ssample;
         }
-        if(file!=NULL)
+        if (file != NULL)
         {
             // quantize depending on format
             // accumulate/count to accomodate variable sample rate?
-            ssample*=4.0f; // arbitrary gain to get reasonable output volume...
-            if(ssample>1.0f) ssample=1.0f;
-            if(ssample<-1.0f) ssample=-1.0f;
-            filesample+=ssample;
+            ssample *= 4.0f;  // arbitrary gain to get reasonable output volume...
+            if (ssample > 1.0f) ssample = 1.0f;
+            if (ssample < -1.0f) ssample = -1.0f;
+            filesample += ssample;
             fileacc++;
-            if(wav_freq==44100 || fileacc==2)
+            if (wav_freq == 44100 || fileacc == 2)
             {
-                filesample/=fileacc;
-                fileacc=0;
-                if(wav_bits==16)
+                filesample /= fileacc;
+                fileacc = 0;
+                if (wav_bits == 16)
                 {
-                    short isample=(short)(filesample*32000);
+                    short isample = (short) (filesample * 32000);
                     fwrite(&isample, 1, 2, file);
                 }
                 else
                 {
-                    unsigned char isample=(unsigned char)(filesample*127+128);
+                    unsigned char isample = (unsigned char) (filesample * 127 + 128);
                     fwrite(&isample, 1, 1, file);
                 }
-                filesample=0.0f;
+                filesample = 0.0f;
             }
             file_sampleswritten++;
         }
@@ -582,516 +589,567 @@ void SfxrNode::Sfxr::SynthSample(size_t length, float* buffer, FILE* file)
 // _______________________
 // Node Interface
 
-namespace lab {
+namespace lab
+{
 
-    char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
+char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
 
-    SfxrNode::SfxrNode(float sampleRate) : AudioScheduledSourceNode(), sfxr(new SfxrNode::Sfxr())
+SfxrNode::SfxrNode(float sampleRate)
+    : AudioScheduledSourceNode()
+    , sfxr(new SfxrNode::Sfxr())
+{
+    // Output is always mono.
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+
+    _waveType = make_shared<AudioSetting>("waveType", "WAVE", s_waveTypes);
+    _attack = make_shared<AudioParam>("attack", "ATCK", 0, 0, 1);
+    _sustainTime = make_shared<AudioParam>("sustain", "SUS ", 0.3, 0, 1);
+    _sustainPunch = make_shared<AudioParam>("sustainPunch", "SUSP", 0, 0, 1);
+    _startFrequency = make_shared<AudioParam>("startFrequency", "SFRQ", 0.3, 0, 1);
+    _minFrequency = make_shared<AudioParam>("minFrequency", "MFRQ", 0, 0, 1);
+    _decayTime = make_shared<AudioParam>("decay", "DECY", 0.4f, 0, 1);
+    _slide = make_shared<AudioParam>("slide", "SLID", 0, -1, 1);
+    _deltaSlide = make_shared<AudioParam>("deltaSlide", "DSLD", 0, 0, 1);
+    _vibratoDepth = make_shared<AudioParam>("vibratoDepth", "VIBD", 0, 0, 1);
+    _vibratoSpeed = make_shared<AudioParam>("vibratoSpeed", "VIBS", 0, 0, 1);
+    _changeAmount = make_shared<AudioParam>("changeAmount", "CHGA", 0, -1, 1);
+    _changeSpeed = make_shared<AudioParam>("changeSpeed", "CHGS", 0, 0, 1);
+    _squareDuty = make_shared<AudioParam>("squareDuty", "DUTY", 0, 0, 1);
+    _dutySweep = make_shared<AudioParam>("dutySweep", "DSWP", 0, -1, 1);
+    _repeatSpeed = make_shared<AudioParam>("repeatSpeed", "REPS", 0, 0, 1);
+    _phaserOffset = make_shared<AudioParam>("phaserOffset", "PHSO", 0, -1, 1);
+    _phaserSweep = make_shared<AudioParam>("phaserSweep", "PHSS", 0, -1, 1);
+    _lpFilterCutoff = make_shared<AudioParam>("lpFiterCutoff", "LPFC", 1.0f, 0, 1);
+    _lpFilterCutoffSweep = make_shared<AudioParam>("lpFilterCutoffSweep", "LPFS", 0, -1, 1);
+    _lpFiterResonance = make_shared<AudioParam>("lpFiterResonance", "LPFR", 0, 0, 1);
+    _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", "HPFC", 0, 0, 1);
+    _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", "HPFS", 0, -1, 1);
+
+    m_settings.push_back(_waveType);
+    m_params.push_back(_attack);
+    m_params.push_back(_sustainTime);
+    m_params.push_back(_sustainPunch);
+    m_params.push_back(_startFrequency);
+    m_params.push_back(_minFrequency);
+    m_params.push_back(_decayTime);
+    m_params.push_back(_slide);
+    m_params.push_back(_deltaSlide);
+    m_params.push_back(_vibratoDepth);
+    m_params.push_back(_vibratoSpeed);
+    m_params.push_back(_changeAmount);
+    m_params.push_back(_changeSpeed);
+    m_params.push_back(_squareDuty);
+    m_params.push_back(_dutySweep);
+    m_params.push_back(_repeatSpeed);
+    m_params.push_back(_phaserOffset);
+    m_params.push_back(_phaserSweep);
+    m_params.push_back(_lpFilterCutoff);
+    m_params.push_back(_lpFilterCutoffSweep);
+    m_params.push_back(_lpFiterResonance);
+    m_params.push_back(_hpFilterCutoff);
+    m_params.push_back(_hpFilterCutoffSweep);
+
+    sfxr->ResetParams();
+    sfxr->ResetSample(true);
+    sfxr->PlaySample();
+
+    initialize();
+}
+
+SfxrNode::~SfxrNode()
+{
+    uninitialize();
+}
+
+void SfxrNode::bang(ContextRenderLock &)
+{
+    start(0);
+    sfxr->ResetSample(true);
+    sfxr->PlaySample();
+}
+
+void SfxrNode::process(ContextRenderLock & r, size_t framesToProcess)
+{
+    AudioBus * outputBus = output(0)->bus(r);
+
+    if (!isInitialized() || !outputBus->numberOfChannels())
     {
-        // Output is always mono.
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-        _waveType = make_shared<AudioSetting>("waveType", "WAVE", s_waveTypes);
-        _attack = make_shared<AudioParam>("attack", "ATCK", 0, 0, 1);
-        _sustainTime = make_shared<AudioParam>("sustain", "SUS ", 0.3, 0, 1);
-        _sustainPunch = make_shared<AudioParam>("sustainPunch", "SUSP", 0, 0, 1);
-        _startFrequency = make_shared<AudioParam>("startFrequency", "SFRQ", 0.3, 0, 1);
-        _minFrequency = make_shared<AudioParam>("minFrequency", "MFRQ", 0, 0, 1);
-        _decayTime = make_shared<AudioParam>("decay", "DECY", 0.4f, 0, 1);
-        _slide = make_shared<AudioParam>("slide", "SLID", 0, -1, 1);
-        _deltaSlide = make_shared<AudioParam>("deltaSlide", "DSLD", 0, 0, 1);
-        _vibratoDepth = make_shared<AudioParam>("vibratoDepth", "VIBD", 0, 0, 1);
-        _vibratoSpeed = make_shared<AudioParam>("vibratoSpeed", "VIBS", 0, 0, 1);
-        _changeAmount = make_shared<AudioParam>("changeAmount", "CHGA", 0, -1, 1);
-        _changeSpeed = make_shared<AudioParam>("changeSpeed", "CHGS", 0, 0, 1);
-        _squareDuty = make_shared<AudioParam>("squareDuty", "DUTY", 0, 0, 1);
-        _dutySweep = make_shared<AudioParam>("dutySweep", "DSWP", 0, -1, 1);
-        _repeatSpeed = make_shared<AudioParam>("repeatSpeed", "REPS", 0, 0, 1);
-        _phaserOffset = make_shared<AudioParam>("phaserOffset", "PHSO", 0, -1, 1);
-        _phaserSweep = make_shared<AudioParam>("phaserSweep", "PHSS", 0, -1, 1);
-        _lpFilterCutoff = make_shared<AudioParam>("lpFiterCutoff", "LPFC", 1.0f, 0, 1);
-        _lpFilterCutoffSweep = make_shared<AudioParam>("lpFilterCutoffSweep", "LPFS", 0, -1, 1);
-        _lpFiterResonance = make_shared<AudioParam>("lpFiterResonance", "LPFR", 0, 0, 1);
-        _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", "HPFC", 0, 0, 1);
-        _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", "HPFS", 0, -1, 1);
-
-        m_settings.push_back(_waveType);
-        m_params.push_back(_attack);
-        m_params.push_back(_sustainTime);
-        m_params.push_back(_sustainPunch);
-        m_params.push_back(_startFrequency);
-        m_params.push_back(_minFrequency);
-        m_params.push_back(_decayTime);
-        m_params.push_back(_slide);
-        m_params.push_back(_deltaSlide);
-        m_params.push_back(_vibratoDepth);
-        m_params.push_back(_vibratoSpeed);
-        m_params.push_back(_changeAmount);
-        m_params.push_back(_changeSpeed);
-        m_params.push_back(_squareDuty);
-        m_params.push_back(_dutySweep);
-        m_params.push_back(_repeatSpeed);
-        m_params.push_back(_phaserOffset);
-        m_params.push_back(_phaserSweep);
-        m_params.push_back(_lpFilterCutoff);
-        m_params.push_back(_lpFilterCutoffSweep);
-        m_params.push_back(_lpFiterResonance);
-        m_params.push_back(_hpFilterCutoff);
-        m_params.push_back(_hpFilterCutoffSweep);
-
-        sfxr->ResetParams();
-        sfxr->ResetSample(true);
-        sfxr->PlaySample();
-
-        initialize();
+        outputBus->zero();
+        return;
     }
 
-    SfxrNode::~SfxrNode()
+    size_t quantumFrameOffset;
+    size_t nonSilentFramesToProcess;
+
+    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+
+    if (!nonSilentFramesToProcess)
     {
-        uninitialize();
+        outputBus->zero();
+        return;
     }
 
-    void SfxrNode::bang(ContextRenderLock&) 
-    {
-        start(0);
-        sfxr->ResetSample(true);
-        sfxr->PlaySample();
+    float * destP = outputBus->channel(0)->mutableData();
+
+    // Start rendering at the correct offset.
+    destP += quantumFrameOffset;
+    size_t n = nonSilentFramesToProcess;
+
+#define UPDATE(typ, cur, val)                    \
+    {                                            \
+        typ v = static_cast<typ>(val->value(r)); \
+        if (sfxr->cur != v)                      \
+        {                                        \
+            needUpdate = true;                   \
+            sfxr->cur = v;                       \
+        }                                        \
     }
 
-    void SfxrNode::process(ContextRenderLock& r, size_t framesToProcess)
+    bool needUpdate = false;
     {
-        AudioBus* outputBus = output(0)->bus(r);
-
-        if (!isInitialized() || !outputBus->numberOfChannels()) {
-            outputBus->zero();
-            return;
-        }
-
-        size_t quantumFrameOffset;
-        size_t nonSilentFramesToProcess;
-
-        updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
-
-        if (!nonSilentFramesToProcess) {
-            outputBus->zero();
-            return;
-        }
-
-        float* destP = outputBus->channel(0)->mutableData();
-
-        // Start rendering at the correct offset.
-        destP += quantumFrameOffset;
-        size_t n = nonSilentFramesToProcess;
-
-#define UPDATE(typ, cur, val) \
-{ typ v = static_cast<typ>(val->value(r)); if (sfxr->cur != v) { needUpdate = true; sfxr->cur = v;} }
-
-        bool needUpdate = false;
+        int v = _waveType->valueUint32();
+        if (sfxr->wave_type != v)
         {
-            int v = _waveType->valueUint32();
-            if (sfxr->wave_type != v)
-            {
-                needUpdate = true;
-                sfxr->wave_type = v;
-            }
+            needUpdate = true;
+            sfxr->wave_type = v;
         }
-            
-        UPDATE(float, p_base_freq, _startFrequency)
-        UPDATE(float, p_freq_limit, _minFrequency)
-        UPDATE(float, p_freq_ramp, _slide)
-        UPDATE(float, p_freq_dramp, _deltaSlide)
-        UPDATE(float, p_duty, _squareDuty)
-        UPDATE(float, p_duty_ramp, _dutySweep)
+    }
 
-        UPDATE(float, p_vib_strength, _vibratoDepth)
-        UPDATE(float, p_vib_speed, _vibratoSpeed)
+    UPDATE(float, p_base_freq, _startFrequency)
+    UPDATE(float, p_freq_limit, _minFrequency)
+    UPDATE(float, p_freq_ramp, _slide)
+    UPDATE(float, p_freq_dramp, _deltaSlide)
+    UPDATE(float, p_duty, _squareDuty)
+    UPDATE(float, p_duty_ramp, _dutySweep)
 
-        UPDATE(float, p_env_attack, _attack)
-        UPDATE(float, p_env_sustain, _sustainTime)
-        UPDATE(float, p_env_decay, _decayTime)
-        UPDATE(float, p_env_punch, _sustainPunch)
+    UPDATE(float, p_vib_strength, _vibratoDepth)
+    UPDATE(float, p_vib_speed, _vibratoSpeed)
 
-        UPDATE(float, p_lpf_resonance, _lpFiterResonance)
-        sfxr->filter_on = sfxr->p_lpf_resonance > 0;
-        UPDATE(float, p_lpf_freq, _lpFilterCutoff)
-        UPDATE(float, p_lpf_ramp, _lpFilterCutoffSweep)
-        UPDATE(float, p_hpf_freq, _hpFilterCutoff)
-        UPDATE(float, p_hpf_ramp, _hpFilterCutoffSweep)
+    UPDATE(float, p_env_attack, _attack)
+    UPDATE(float, p_env_sustain, _sustainTime)
+    UPDATE(float, p_env_decay, _decayTime)
+    UPDATE(float, p_env_punch, _sustainPunch)
 
-        UPDATE(float, p_pha_offset, _phaserOffset)
-        UPDATE(float, p_pha_ramp, _phaserSweep)
+    UPDATE(float, p_lpf_resonance, _lpFiterResonance)
+    sfxr->filter_on = sfxr->p_lpf_resonance > 0;
+    UPDATE(float, p_lpf_freq, _lpFilterCutoff)
+    UPDATE(float, p_lpf_ramp, _lpFilterCutoffSweep)
+    UPDATE(float, p_hpf_freq, _hpFilterCutoff)
+    UPDATE(float, p_hpf_ramp, _hpFilterCutoffSweep)
 
-        UPDATE(float, p_repeat_speed, _repeatSpeed)
-        UPDATE(float, p_arp_speed, _changeSpeed)
-        UPDATE(float, p_arp_mod, _changeAmount)
+    UPDATE(float, p_pha_offset, _phaserOffset)
+    UPDATE(float, p_pha_ramp, _phaserSweep)
 
-        if (needUpdate)
-            sfxr->ResetSample(false);
+    UPDATE(float, p_repeat_speed, _repeatSpeed)
+    UPDATE(float, p_arp_speed, _changeSpeed)
+    UPDATE(float, p_arp_mod, _changeAmount)
+
+    if (needUpdate)
+        sfxr->ResetSample(false);
 
 #undef UPDATE
 
-        float* fbuf = (float*) alloca(sizeof(float) * n);
-        memset(fbuf, 0, sizeof(float) * n);
-        sfxr->SynthSample(n, fbuf, NULL);
-        while (n--)
-        {
-            float f = fbuf[n];
-            if (f < -1.0f) f = -1.0f;
-            else if (f > 1.0f) f = 1.0f;
-            *destP++ = f;
-        }
-
-        outputBus->clearSilentFlag();
-    }
-
-    void SfxrNode::reset(ContextRenderLock&)
+    float * fbuf = (float *) alloca(sizeof(float) * n);
+    memset(fbuf, 0, sizeof(float) * n);
+    sfxr->SynthSample(n, fbuf, NULL);
+    while (n--)
     {
+        float f = fbuf[n];
+        if (f < -1.0f)
+            f = -1.0f;
+        else if (f > 1.0f)
+            f = 1.0f;
+        *destP++ = f;
     }
 
-    bool SfxrNode::propagatesSilence(ContextRenderLock & r) const
-    {
-        return !isPlayingOrScheduled() || hasFinished();
-    }
+    outputBus->clearSilentFlag();
+}
 
+void SfxrNode::reset(ContextRenderLock &)
+{
+}
+
+bool SfxrNode::propagatesSilence(ContextRenderLock & r) const
+{
+    return !isPlayingOrScheduled() || hasFinished();
+}
 
 // ____________________________________
 // Some default sounds
 
-    // parameters for default sounds found here -
-    // https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
+// parameters for default sounds found here -
+// https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
 
-    void SfxrNode::setDefaultBeep() {
-        // Wave shape
-        _waveType->setEnumeration(SQUARE);
+void SfxrNode::setDefaultBeep()
+{
+    // Wave shape
+    _waveType->setEnumeration(SQUARE);
 
-        // Envelope
-        _attack->setValue(0);
-        _sustainTime->setValue(0.3f);
-        _sustainPunch->setValue(0);
-        _decayTime->setValue(0.4f);
+    // Envelope
+    _attack->setValue(0);
+    _sustainTime->setValue(0.3f);
+    _sustainPunch->setValue(0);
+    _decayTime->setValue(0.4f);
 
-        // Tone
-        _startFrequency->setValue(0.3f);
-        _minFrequency->setValue(0);
+    // Tone
+    _startFrequency->setValue(0.3f);
+    _minFrequency->setValue(0);
+    _slide->setValue(0);
+    _deltaSlide->setValue(0);
+
+    // Vibrato
+    _vibratoDepth->setValue(0);
+    _vibratoSpeed->setValue(0);
+
+    // Tonal change
+    _changeAmount->setValue(0);
+    _changeSpeed->setValue(0);
+
+    // Square wave duty (proportion of time signal is high vs. low)
+    _squareDuty->setValue(0);
+    _dutySweep->setValue(0);
+
+    // Repeat
+    _repeatSpeed->setValue(0);
+
+    // Flanger
+    _phaserOffset->setValue(0);
+    _phaserSweep->setValue(0);
+
+    // Low-pass filter
+    _lpFilterCutoff->setValue(1);
+    _lpFilterCutoffSweep->setValue(0);
+    _lpFiterResonance->setValue(0);
+    _hpFilterCutoff->setValue(0);
+    _hpFilterCutoffSweep->setValue(0);
+
+    // Sample parameters
+    sfxr->sound_vol = 0.5f;
+    sfxr->wav_freq = 44100;
+    sfxr->wav_bits = 16;
+}
+
+void SfxrNode::coin()
+{
+    setDefaultBeep();
+    _startFrequency->setValue(0.4f + frnd(0.5f));
+    _attack->setValue(0);
+    _sustainTime->setValue(0.1f);
+    _decayTime->setValue(0.1f + frnd(0.4f));
+    _sustainPunch->setValue(0.3f + frnd(0.3f));
+    if (rnd(1))
+    {
+        _changeSpeed->setValue(0.5f + frnd(0.2f));
+        _changeAmount->setValue(0.2f + frnd(0.4f));
+    }
+}
+
+/// @TODO the audioParams should be read into buffers in the case that they are time varying
+void SfxrNode::laser(ContextRenderLock & r)
+{
+    setDefaultBeep();
+    _waveType->setEnumeration(rnd(2));
+    if (_waveType->valueUint32() == SINE && rnd(1))
+        _waveType->setEnumeration(rnd(1));
+    if (rnd(2) == 0)
+    {
+        _startFrequency->setValue(0.3f + frnd(0.6f));
+        _minFrequency->setValue(frnd(0.1f));
+        _slide->setValue(-0.35f - frnd(0.3f));
+    }
+    else
+    {
+        _startFrequency->setValue(0.5f + frnd(0.5f));
+        _minFrequency->setValue(_startFrequency->value(r) - 0.2f - frnd(0.6f));
+        if (_minFrequency->value(r) < 0.2f) _minFrequency->setValue(0.2f);
+        _slide->setValue(-0.15f - frnd(0.2f));
+    }
+    if (_waveType->valueUint32() == SAWTOOTH)
+        _squareDuty->setValue(1);
+    if (rnd(1))
+    {
+        _squareDuty->setValue(frnd(0.5f));
+        _dutySweep->setValue(frnd(0.2f));
+    }
+    else
+    {
+        _squareDuty->setValue(0.4f + frnd(0.5f));
+        _dutySweep->setValue(-frnd(0.7f));
+    }
+    _attack->setValue(0);
+    _sustainTime->setValue(0.1f + frnd(0.2f));
+    _decayTime->setValue(frnd(0.4f));
+    if (rnd(1))
+        _sustainPunch->setValue(frnd(0.3f));
+    if (rnd(2) == 0)
+    {
+        _phaserOffset->setValue(frnd(0.2f));
+        _phaserSweep->setValue(-frnd(0.2f));
+    }
+    _hpFilterCutoff->setValue(frnd(0.3f));
+}
+
+void SfxrNode::explosion()
+{
+    setDefaultBeep();
+    _waveType->setEnumeration(NOISE);
+    if (rnd(1))
+    {
+        _startFrequency->setValue(sqr(0.1f + frnd(0.4f)));
+        _slide->setValue(-0.1f + frnd(0.4f));
+    }
+    else
+    {
+        _startFrequency->setValue(sqr(0.2f + frnd(0.7f)));
+        _slide->setValue(-0.2f - frnd(0.2f));
+    }
+    if (rnd(4) == 0)
         _slide->setValue(0);
-        _deltaSlide->setValue(0);
-
-        // Vibrato
-        _vibratoDepth->setValue(0);
-        _vibratoSpeed->setValue(0);
-
-        // Tonal change
-        _changeAmount->setValue(0);
-        _changeSpeed->setValue(0);
-
-        // Square wave duty (proportion of time signal is high vs. low)
-        _squareDuty->setValue(0);
-        _dutySweep->setValue(0);
-
-        // Repeat
-        _repeatSpeed->setValue(0);
-
-        // Flanger
-        _phaserOffset->setValue(0);
-        _phaserSweep->setValue(0);
-
-        // Low-pass filter
-        _lpFilterCutoff->setValue(1);
-        _lpFilterCutoffSweep->setValue(0);
-        _lpFiterResonance->setValue(0);
-        _hpFilterCutoff->setValue(0);
-        _hpFilterCutoffSweep->setValue(0);
-
-        // Sample parameters
-        sfxr->sound_vol = 0.5f;
-        sfxr->wav_freq = 44100;
-        sfxr->wav_bits = 16;
+    if (rnd(2) == 0)
+        _repeatSpeed->setValue(0.3f + frnd(0.5f));
+    _attack->setValue(0);
+    _sustainTime->setValue(0.1f + frnd(0.3f));
+    _decayTime->setValue(frnd(0.5f));
+    if (rnd(1))
+    {
+        _phaserOffset->setValue(-0.3f + frnd(0.9f));
+        _phaserSweep->setValue(-frnd(0.3f));
     }
-
-    void SfxrNode::coin() {
-        setDefaultBeep();
-        _startFrequency->setValue(0.4f + frnd(0.5f));
-        _attack->setValue(0);
-        _sustainTime->setValue(0.1f);
-        _decayTime->setValue(0.1f + frnd(0.4f));
-        _sustainPunch->setValue(0.3f + frnd(0.3f));
-        if (rnd(1)) {
-            _changeSpeed->setValue(0.5f + frnd(0.2f));
-            _changeAmount->setValue(0.2f + frnd(0.4f));
-        }
+    _sustainPunch->setValue(0.2f + frnd(0.6f));
+    if (rnd(1))
+    {
+        _vibratoDepth->setValue(frnd(0.7f));
+        _vibratoSpeed->setValue(frnd(0.6f));
     }
+    if (rnd(2) == 0)
+    {
+        _changeSpeed->setValue(0.6f + frnd(0.3f));
+        _changeAmount->setValue(0.8f - frnd(1.6f));
+    }
+}
 
-    /// @TODO the audioParams should be read into buffers in the case that they are time varying
-    void SfxrNode::laser(ContextRenderLock& r) {
-        setDefaultBeep();
-        _waveType->setEnumeration(rnd(2));
-        if(_waveType->valueUint32() == SINE && rnd(1))
-            _waveType->setEnumeration(rnd(1));
-        if (rnd(2) == 0) {
-            _startFrequency->setValue(0.3f + frnd(0.6f));
-            _minFrequency->setValue(frnd(0.1f));
-            _slide->setValue(-0.35f - frnd(0.3f));
-        } else {
-            _startFrequency->setValue(0.5f + frnd(0.5f));
-            _minFrequency->setValue(_startFrequency->value(r) - 0.2f - frnd(0.6f));
-            if (_minFrequency->value(r) < 0.2f) _minFrequency->setValue(0.2f);
-            _slide->setValue(-0.15f - frnd(0.2f));
-        }
-        if (_waveType->valueUint32() == SAWTOOTH)
-            _squareDuty->setValue(1);
-        if (rnd(1)) {
-            _squareDuty->setValue(frnd(0.5f));
-            _dutySweep->setValue(frnd(0.2f));
-        } else {
-            _squareDuty->setValue(0.4f + frnd(0.5f));
-            _dutySweep->setValue(-frnd(0.7f));
-        }
-        _attack->setValue(0);
-        _sustainTime->setValue(0.1f + frnd(0.2f));
-        _decayTime->setValue(frnd(0.4f));
+void SfxrNode::powerUp()
+{
+    setDefaultBeep();
+    if (rnd(1))
+    {
+        _waveType->setEnumeration(SAWTOOTH);
+        _squareDuty->setValue(1);
+    }
+    else
+    {
+        _squareDuty->setValue(frnd(0.6f));
+    }
+    _startFrequency->setValue(0.2f + frnd(0.3f));
+    if (rnd(1))
+    {
+        _slide->setValue(0.1f + frnd(0.4f));
+        _repeatSpeed->setValue(0.4f + frnd(0.4f));
+    }
+    else
+    {
+        _slide->setValue(0.05f + frnd(0.2f));
         if (rnd(1))
-            _sustainPunch->setValue(frnd(0.3f));
-        if (rnd(2) == 0) {
-            _phaserOffset->setValue(frnd(0.2f));
-            _phaserSweep->setValue(-frnd(0.2f));
-        }
-        _hpFilterCutoff->setValue(frnd(0.3f));
-    }
-
-    void SfxrNode::explosion() {
-        setDefaultBeep();
-        _waveType->setEnumeration(NOISE);
-        if (rnd(1)) {
-            _startFrequency->setValue(sqr(0.1f + frnd(0.4f)));
-            _slide->setValue(-0.1f + frnd(0.4f));
-        } else {
-            _startFrequency->setValue(sqr(0.2f + frnd(0.7f)));
-            _slide->setValue(-0.2f - frnd(0.2f));
-        }
-        if (rnd(4) == 0)
-            _slide->setValue(0);
-        if (rnd(2) == 0)
-            _repeatSpeed->setValue(0.3f + frnd(0.5f));
-        _attack->setValue(0);
-        _sustainTime->setValue(0.1f + frnd(0.3f));
-        _decayTime->setValue(frnd(0.5f));
-        if (rnd(1)) {
-            _phaserOffset->setValue(-0.3f + frnd(0.9f));
-            _phaserSweep->setValue(-frnd(0.3f));
-        }
-        _sustainPunch->setValue(0.2f + frnd(0.6f));
-        if (rnd(1)) {
+        {
             _vibratoDepth->setValue(frnd(0.7f));
             _vibratoSpeed->setValue(frnd(0.6f));
         }
-        if (rnd(2) == 0) {
-            _changeSpeed->setValue(0.6f + frnd(0.3f));
-            _changeAmount->setValue(0.8f - frnd(1.6f));
-        }
     }
+    _attack->setValue(0);
+    _sustainTime->setValue(frnd(0.4f));
+    _decayTime->setValue(0.1f + frnd(0.4f));
+}
 
-    void SfxrNode::powerUp() {
-        setDefaultBeep();
-        if (rnd(1)) {
-            _waveType->setEnumeration(SAWTOOTH);
-            _squareDuty->setValue(1);
-        }
-        else {
-            _squareDuty->setValue(frnd(0.6f));
-        }
-        _startFrequency->setValue(0.2f + frnd(0.3f));
-        if (rnd(1)) {
-            _slide->setValue(0.1f + frnd(0.4f));
-            _repeatSpeed->setValue(0.4f + frnd(0.4f));
-        }
-        else {
-            _slide->setValue(0.05f + frnd(0.2f));
-            if (rnd(1)) {
-                _vibratoDepth->setValue(frnd(0.7f));
-                _vibratoSpeed->setValue(frnd(0.6f));
-            }
-        }
-        _attack->setValue(0);
-        _sustainTime->setValue(frnd(0.4f));
-        _decayTime->setValue(0.1f + frnd(0.4f));
-    }
-
-    /// @TODO remove need for context lock see above
-    void SfxrNode::hit(ContextRenderLock& r) {
-        setDefaultBeep();
-        _waveType->setEnumeration(rnd(2));
-        if (_waveType->valueUint32() == SINE)
-            _waveType->setEnumeration(NOISE);
-        if (_waveType->valueUint32() == SQUARE)
-            _squareDuty->setValue(frnd(0.6f));
-        if (_waveType->valueUint32() == SAWTOOTH)
-            _squareDuty->setValue(1);
-        _startFrequency->setValue(0.2f + frnd(0.6f));
-        _slide->setValue(-0.3f - frnd(0.4f));
-        _attack->setValue(0);
-        _sustainTime->setValue(frnd(0.1f));
-        _decayTime->setValue(0.1f + frnd(0.2f));
-        if (rnd(1))
-            _hpFilterCutoff->setValue(frnd(0.3f));
-    }
-
-    void SfxrNode::jump() {
-        setDefaultBeep();
-        _waveType->setEnumeration(SQUARE);
+/// @TODO remove need for context lock see above
+void SfxrNode::hit(ContextRenderLock & r)
+{
+    setDefaultBeep();
+    _waveType->setEnumeration(rnd(2));
+    if (_waveType->valueUint32() == SINE)
+        _waveType->setEnumeration(NOISE);
+    if (_waveType->valueUint32() == SQUARE)
         _squareDuty->setValue(frnd(0.6f));
-        _startFrequency->setValue(0.3f + frnd(0.3f));
-        _slide->setValue(0.1f + frnd(0.2f));
-        _attack->setValue(0);
-        _sustainTime->setValue(0.1f + frnd(0.3f));
-        _decayTime->setValue(0.1f + frnd(0.2f));
-        if (rnd(1))
-            _hpFilterCutoff->setValue(frnd(0.3f));
-        if (rnd(1))
-            _lpFilterCutoff->setValue(1 - frnd(0.6f));
+    if (_waveType->valueUint32() == SAWTOOTH)
+        _squareDuty->setValue(1);
+    _startFrequency->setValue(0.2f + frnd(0.6f));
+    _slide->setValue(-0.3f - frnd(0.4f));
+    _attack->setValue(0);
+    _sustainTime->setValue(frnd(0.1f));
+    _decayTime->setValue(0.1f + frnd(0.2f));
+    if (rnd(1))
+        _hpFilterCutoff->setValue(frnd(0.3f));
+}
+
+void SfxrNode::jump()
+{
+    setDefaultBeep();
+    _waveType->setEnumeration(SQUARE);
+    _squareDuty->setValue(frnd(0.6f));
+    _startFrequency->setValue(0.3f + frnd(0.3f));
+    _slide->setValue(0.1f + frnd(0.2f));
+    _attack->setValue(0);
+    _sustainTime->setValue(0.1f + frnd(0.3f));
+    _decayTime->setValue(0.1f + frnd(0.2f));
+    if (rnd(1))
+        _hpFilterCutoff->setValue(frnd(0.3f));
+    if (rnd(1))
+        _lpFilterCutoff->setValue(1 - frnd(0.6f));
+}
+
+/// @TODO remove need for context lock see above
+void SfxrNode::select(ContextRenderLock & r)
+{
+    setDefaultBeep();
+    _waveType->setEnumeration(rnd(1));
+    if (_waveType->valueUint32() == SQUARE)
+        _squareDuty->setValue(frnd(0.6f));
+    else
+        _squareDuty->setValue(1);
+    _startFrequency->setValue(0.2f + frnd(0.4f));
+    _attack->setValue(0);
+    _sustainTime->setValue(0.1f + frnd(0.1f));
+    _decayTime->setValue(frnd(0.2f));
+    _hpFilterCutoff->setValue(0.1f);
+}
+
+void SfxrNode::mutate(ContextRenderLock & r)
+{
+    if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1f) - 0.05f);
+}
+
+/// @TODO remove need for context lock see above
+void SfxrNode::randomize(ContextRenderLock & r)
+{
+    if (rnd(1))
+        _startFrequency->setValue(cube(frnd(2) - 1) + 0.5f);
+    else
+        _startFrequency->setValue(sqr(frnd(1)));
+    _minFrequency->setValue(0);
+    _slide->setValue(powf(frnd(2) - 1, 5));
+    if (_startFrequency->value(r) > 0.7 && _slide->value(r) > 0.2)
+        _slide->setValue(-_slide->value(r));
+    if (_startFrequency->value(r) < 0.2 && _slide->value(r) < -0.05)
+        _slide->setValue(-_slide->value(r));
+    _deltaSlide->setValue(powf(frnd(2) - 1, 3));
+    _squareDuty->setValue(frnd(2) - 1);
+    _dutySweep->setValue(powf(frnd(2) - 1, 3));
+    _vibratoDepth->setValue(powf(frnd(2) - 1, 3));
+    _vibratoSpeed->setValue(rndr(-1, 1));
+    _attack->setValue(cube(rndr(0, 1)));
+    _sustainTime->setValue(sqr(rndr(0, 1)));
+    _decayTime->setValue(rndr(0, 1));
+    _sustainPunch->setValue(powf(frnd(0.8f), 2));
+    if (_attack->value(r) + _sustainTime->value(r) + _decayTime->value(r) < 0.2f)
+    {
+        _sustainTime->setValue(_sustainTime->value(r) + 0.2f + frnd(0.3f));
+        _decayTime->setValue(_decayTime->value(r) + 0.2f + frnd(0.3f));
     }
+    _lpFiterResonance->setValue(rndr(-1, 1));
+    _lpFilterCutoff->setValue(1 - powf(frnd(1), 3));
+    _lpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 3));
+    if (_lpFilterCutoff->value(r) < 0.1 && _lpFilterCutoffSweep->value(r) < -0.05f)
+        _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value(r));
+    _hpFilterCutoff->setValue(powf(frnd(1), 5));
+    _hpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 5));
+    _phaserOffset->setValue(powf(frnd(2) - 1, 3));
+    _phaserSweep->setValue(powf(frnd(2) - 1, 3));
+    _repeatSpeed->setValue(frnd(2) - 1);
+    _changeSpeed->setValue(frnd(2) - 1);
+    _changeAmount->setValue(frnd(2) - 1);
+}
 
-    /// @TODO remove need for context lock see above
-    void SfxrNode::select(ContextRenderLock& r) {
-        setDefaultBeep();
-        _waveType->setEnumeration(rnd(1));
-        if (_waveType->valueUint32() == SQUARE)
-            _squareDuty->setValue(frnd(0.6f));
-        else
-            _squareDuty->setValue(1);
-        _startFrequency->setValue(0.2f + frnd(0.4f));
-        _attack->setValue(0);
-        _sustainTime->setValue(0.1f + frnd(0.1f));
-        _decayTime->setValue(frnd(0.2f));
-        _hpFilterCutoff->setValue(0.1f);
-    }
+//------------------------------------------------------------------------
 
-    void SfxrNode::mutate(ContextRenderLock& r) {
-        if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1f) - 0.05f);
-        if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1f) - 0.05f);
-    }
+// Conversion math was found here https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
+// and inverted as necessary.
 
-    /// @TODO remove need for context lock see above
-    void SfxrNode::randomize(ContextRenderLock& r) {
-        if (rnd(1))
-            _startFrequency->setValue(cube(frnd(2) - 1) + 0.5f);
-        else
-            _startFrequency->setValue(sqr(frnd(1)));
-        _minFrequency->setValue(0);
-        _slide->setValue(powf(frnd(2) - 1, 5));
-        if (_startFrequency->value(r) > 0.7 && _slide->value(r) > 0.2)
-            _slide->setValue(-_slide->value(r));
-        if (_startFrequency->value(r) < 0.2 && _slide->value(r) < -0.05)
-            _slide->setValue(-_slide->value(r));
-        _deltaSlide->setValue(powf(frnd(2) - 1, 3));
-        _squareDuty->setValue(frnd(2) - 1);
-        _dutySweep->setValue(powf(frnd(2) - 1, 3));
-        _vibratoDepth->setValue(powf(frnd(2) - 1, 3));
-        _vibratoSpeed->setValue(rndr(-1, 1));
-        _attack->setValue(cube(rndr(0, 1)));
-        _sustainTime->setValue(sqr(rndr(0, 1)));
-        _decayTime->setValue(rndr(0, 1));
-        _sustainPunch->setValue(powf(frnd(0.8f), 2));
-        if (_attack->value(r) + _sustainTime->value(r) + _decayTime->value(r) < 0.2f) {
-            _sustainTime->setValue(_sustainTime->value(r) + 0.2f + frnd(0.3f));
-            _decayTime->setValue(_decayTime->value(r) + 0.2f + frnd(0.3f));
-        }
-        _lpFiterResonance->setValue(rndr(-1, 1));
-        _lpFilterCutoff->setValue(1 - powf(frnd(1), 3));
-        _lpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 3));
-        if (_lpFilterCutoff->value(r) < 0.1 && _lpFilterCutoffSweep->value(r) < -0.05f)
-            _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value(r));
-        _hpFilterCutoff->setValue(powf(frnd(1), 5));
-        _hpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 5));
-        _phaserOffset->setValue(powf(frnd(2) - 1, 3));
-        _phaserSweep->setValue(powf(frnd(2) - 1, 3));
-        _repeatSpeed->setValue(frnd(2) - 1);
-        _changeSpeed->setValue(frnd(2) - 1);
-        _changeAmount->setValue(frnd(2) - 1);
-    }
+const float OVERSAMPLING = 8.0f;
 
-    //------------------------------------------------------------------------
+float SfxrNode::envelopeTimeInSeconds(float p)
+{
+    return p * p * 100000.0f / 44100.0f;
+}
 
-    // Conversion math was found here https://github.com/grumdrig/jsfxr/blob/master/sfxr.js
-    // and inverted as necessary.
+float SfxrNode::envelopeTimeInSfxrUnits(float p)
+{
+    return sqrtf(p * 44100.0f / 100000.0f);
+}
 
-    const float OVERSAMPLING = 8.0f;
+const float vibMagic = 44100 * 10 / 64.0f;
+float SfxrNode::vibratoInSfxrUnits(float hz)
+{
+    float ret = hz * 100.0f;
+    ret /= vibMagic;
+    return sqrt(ret);
+}
+float SfxrNode::vibratoInHz(float sfxr)
+{
+    float ret = vibMagic * sqr(sfxr) / 100;
+    return ret;
+}
 
-    float SfxrNode::envelopeTimeInSeconds(float p) {
-        return p * p * 100000.0f / 44100.0f;
-    }
+float SfxrNode::frequencyInSfxrUnits(float p)
+{
+    p /= OVERSAMPLING * 441.0f;
+    p -= 0.001f;
+    if (p < 0) p = 0;
+    return sqrt(p);
+}
+float SfxrNode::frequencyInHz(float sfxr)
+{
+    float p = sfxr * sfxr;
+    p += 0.001f;
+    p *= OVERSAMPLING * 441.0f;
+    return p;
+}
 
-    float SfxrNode::envelopeTimeInSfxrUnits(float p) {
-        return sqrtf(p * 44100.0f / 100000.0f);
-    }
+float SfxrNode::filterFreqInHz(float sfxr)
+{
+    if (sfxr >= 1.0f)
+        return 44100.0f;
 
-    const float vibMagic = 44100 * 10 / 64.0f;
-    float SfxrNode::vibratoInSfxrUnits(float hz) {
-        float ret = hz * 100.0f;
-        ret /= vibMagic;
-        return sqrt(ret);
-    }
-    float SfxrNode::vibratoInHz(float sfxr) {
-        float ret = vibMagic * sqr(sfxr) / 100;
-        return ret;
-    }
+    return OVERSAMPLING * 44100.0f * flurp(cube(sfxr) / 10);
+}
+float SfxrNode::filterFreqInSfxrUnits(float hz)
+{
+    if (hz >= 44100.0f)
+        return 1.0f;
 
-    float SfxrNode::frequencyInSfxrUnits(float p) {
-        p /= OVERSAMPLING * 441.0f;
-        p -= 0.001f;
-        if (p < 0) p = 0;
-        return sqrt(p);
-    }
-    float SfxrNode::frequencyInHz(float sfxr) {
-        float p = sfxr * sfxr;
-        p += 0.001f;
-        p *= OVERSAMPLING * 441.0f;
-        return p;
-    }
+    // if y = K x / (1 - x), then x = y / (y + K)
+    float s3 = hz / (hz + (OVERSAMPLING * 44100.0f));
+    return powf(s3, 1.0f / 3.0f);
+}
 
+//------------------------------------------------------------------------
 
-    float SfxrNode::filterFreqInHz(float sfxr) {
-        if (sfxr >= 1.0f)
-            return 44100.0f;
+void SfxrNode::setStartFrequencyInHz(float hz)
+{
+    _startFrequency->setValue(frequencyInSfxrUnits(hz));
+}
 
-        return OVERSAMPLING * 44100.0f * flurp(cube(sfxr) / 10);
-    }
-    float SfxrNode::filterFreqInSfxrUnits(float hz) {
-        if (hz >= 44100.0f)
-            return 1.0f;
+void SfxrNode::setVibratoSpeedInHz(float hz)
+{
+    _vibratoSpeed->setValue(vibratoInSfxrUnits(hz));
+}
 
-        // if y = K x / (1 - x), then x = y / (y + K)
-        float s3 = hz / (hz + (OVERSAMPLING * 44100.0f));
-        return powf(s3, 1.0f/3.0f);
-    }
-
-    //------------------------------------------------------------------------
-
-    void SfxrNode::setStartFrequencyInHz(float hz) {
-        _startFrequency->setValue(frequencyInSfxrUnits(hz));
-    }
-
-    void SfxrNode::setVibratoSpeedInHz(float hz) {
-        _vibratoSpeed->setValue(vibratoInSfxrUnits(hz));
-    }
-
-
-} // namespace lab
+}  // namespace lab

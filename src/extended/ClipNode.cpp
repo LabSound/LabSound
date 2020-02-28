@@ -27,7 +27,6 @@ namespace lab
 
 static char const * const s_ClipModes[ClipNode::Mode::_Count + 1] = {"Clip", "Tanh", nullptr};
 
-
 class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
 public:

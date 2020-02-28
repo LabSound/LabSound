@@ -5,7 +5,8 @@
 #ifndef Distance_h
 #define Distance_h
 
-namespace lab {
+namespace lab
+{
 
 // Distance models are defined according to the OpenAL specification:
 // http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm.
@@ -13,8 +14,7 @@ class DistanceEffect
 {
 
 public:
-
-    enum ModelType 
+    enum ModelType
     {
         ModelLinear = 0,
         ModelInverse = 1,
@@ -45,7 +45,6 @@ public:
     double rolloffFactor() const { return m_rolloffFactor; }
 
 protected:
-
     double linearGain(double distance);
     double inverseGain(double distance);
     double exponentialGain(double distance);
@@ -58,6 +57,6 @@ protected:
     double m_rolloffFactor = 1.0;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // Distance_h
+#endif  // Distance_h

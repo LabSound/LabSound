@@ -7,11 +7,13 @@
 
 #include "LabSound/core/FloatPoint3D.h"
 
-namespace lab {
+namespace lab
+{
 
 // Cone gain is defined according to the OpenAL specification
 
-class ConeEffect {
+class ConeEffect
+{
 public:
     ConeEffect();
 
@@ -34,6 +36,6 @@ protected:
     double m_outerGain;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // Cone_h
+#endif  // Cone_h

@@ -8,7 +8,8 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
-namespace lab {
+namespace lab
+{
 
 class DynamicsCompressor;
 
@@ -21,9 +22,8 @@ class DynamicsCompressor;
 
 class DynamicsCompressorNode : public AudioNode
 {
-    
+
 public:
-    
     DynamicsCompressorNode();
     virtual ~DynamicsCompressorNode();
 
@@ -56,6 +56,6 @@ private:
     std::shared_ptr<AudioParam> m_release;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DynamicsCompressorNode_h
+#endif  // DynamicsCompressorNode_h

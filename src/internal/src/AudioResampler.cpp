@@ -11,8 +11,9 @@
 #include <algorithm>
 
 using namespace std;
- 
-namespace lab {
+
+namespace lab
+{
 
 const double AudioResampler::MaxRate = 8.0;
 
@@ -36,25 +37,27 @@ void AudioResampler::configureChannels(unsigned numberOfChannels)
 {
     unsigned currentSize = (unsigned) m_kernels.size();
     if (numberOfChannels == currentSize)
-        return; // already setup
+        return;  // already setup
 
     // First deal with adding or removing kernels.
-    if (numberOfChannels > currentSize) {
+    if (numberOfChannels > currentSize)
+    {
         for (unsigned i = currentSize; i < numberOfChannels; ++i)
             m_kernels.push_back(std::unique_ptr<AudioResamplerKernel>(new AudioResamplerKernel(this)));
-    } else
+    }
+    else
         m_kernels.resize(numberOfChannels);
 
     // Reconfigure our source bus to the new channel size.
     m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
 }
 
-void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider, AudioBus* destinationBus, size_t framesToProcess)
+void AudioResampler::process(ContextRenderLock & r, AudioSourceProvider * provider, AudioBus * destinationBus, size_t framesToProcess)
 {
     ASSERT(provider);
     if (!provider)
         return;
-        
+
     unsigned numberOfChannels = (unsigned) m_kernels.size();
 
     // Make sure our configuration matches the bus we're rendering to.
@@ -64,14 +67,15 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
         return;
 
     // Setup the source bus.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
         // Figure out how many frames we need to get from the provider, and a pointer to the buffer.
         size_t framesNeeded;
-        float* fillPointer = m_kernels[i]->getSourcePointer(framesToProcess, &framesNeeded);
+        float * fillPointer = m_kernels[i]->getSourcePointer(framesToProcess, &framesNeeded);
         ASSERT(fillPointer);
         if (!fillPointer)
             return;
-            
+
         m_sourceBus->setChannelMemory(i, fillPointer, framesNeeded);
     }
 
@@ -80,8 +84,9 @@ void AudioResampler::process(ContextRenderLock& r, AudioSourceProvider* provider
 
     // Now that we have the source data, resample each channel into the destination bus.
     // FIXME: optimize for the common stereo case where it's faster to process both left/right channels in the same inner loop.
-    for (unsigned i = 0; i < numberOfChannels; ++i) {
-        float* destination = destinationBus->channel(i)->mutableData();
+    for (unsigned i = 0; i < numberOfChannels; ++i)
+    {
+        float * destination = destinationBus->channel(i)->mutableData();
         m_kernels[i]->process(r, destination, framesToProcess);
     }
 }
@@ -90,7 +95,7 @@ void AudioResampler::setRate(double rate)
 {
     if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0)
         return;
-    
+
     m_rate = min(AudioResampler::MaxRate, rate);
 }
 
@@ -101,4 +106,4 @@ void AudioResampler::reset()
         m_kernels[i]->reset();
 }
 
-} // namespace lab
+}  // namespace lab

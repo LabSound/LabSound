@@ -7,13 +7,13 @@
 #define LABSOUND_H
 
 // WebAudio Public API
-#include "LabSound/core/AudioHardwareDeviceNode.h"
-#include "LabSound/core/AudioHardwareInputNode.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioDevice.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeInput.h"
@@ -27,12 +27,12 @@
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/GainNode.h"
+#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/PannerNode.h"
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/WaveShaperNode.h"
-#include "LabSound/core/AudioDevice.h"
 
 // LabSound Extended Public API
 #include "LabSound/extended/ADSRNode.h"
@@ -40,6 +40,7 @@
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/DiodeNode.h"
 #include "LabSound/extended/FunctionNode.h"
+#include "LabSound/extended/GranulationNode.h"
 #include "LabSound/extended/NoiseNode.h"
 #include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/PdNode.h"
@@ -53,22 +54,21 @@
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SupersawNode.h"
-#include "LabSound/extended/GranulationNode.h"
 
 #include <memory>
 
 namespace lab
 {
-    const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-    const uint32_t GetDefaultOutputAudioDeviceIndex();
-    const uint32_t GetDefaultInputAudioDeviceIndex();
+const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
+const uint32_t GetDefaultOutputAudioDeviceIndex();
+const uint32_t GetDefaultInputAudioDeviceIndex();
 
-    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
+std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
 
-    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
+std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
 
-    char const * const * const AudioNodeNames();
+char const * const * const AudioNodeNames();
 }
 
 #endif

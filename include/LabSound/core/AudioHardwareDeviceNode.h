@@ -5,21 +5,21 @@
 #ifndef audio_hardware_io_node_hpp
 #define audio_hardware_io_node_hpp
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioDevice.h"
+#include "LabSound/core/AudioNode.h"
 
-namespace lab {
+namespace lab
+{
 
 class AudioBus;
 class AudioContext;
 class AudioHardwareInput;
 struct AudioSourceProvider;
 
-class AudioHardwareDeviceNode : public AudioNode, public AudioDeviceRenderCallback 
+class AudioHardwareDeviceNode : public AudioNode, public AudioDeviceRenderCallback
 {
 protected:
-
-    // AudioNode interface 
+    // AudioNode interface
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
@@ -34,12 +34,11 @@ protected:
     const AudioStreamConfig inConfig;
 
 public:
-
     AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioHardwareDeviceNode();
-    
-    // AudioNode interface  
-    virtual void process(ContextRenderLock &, size_t) override {} // AudioHardwareDeviceNode is pulled by hardware so this is never called
+
+    // AudioNode interface
+    virtual void process(ContextRenderLock &, size_t) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
@@ -55,6 +54,6 @@ public:
     AudioSourceProvider * AudioHardwareInputProvider();
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // end audio_hardware_io_node_hpp
+#endif  // end audio_hardware_io_node_hpp

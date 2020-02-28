@@ -3,10 +3,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/ChannelMergerNode.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
 
 #include "internal/Assertions.h"
 
@@ -16,11 +16,11 @@ namespace lab
 {
 
 ChannelMergerNode::ChannelMergerNode(size_t numberOfInputs_)
-: AudioNode()
+    : AudioNode()
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize(); // initialize only sets a flag, no need to allocate memory according to input count
+    initialize();  // initialize only sets a flag, no need to allocate memory according to input count
 }
 
 void ChannelMergerNode::addInputs(size_t n)
@@ -30,7 +30,7 @@ void ChannelMergerNode::addInputs(size_t n)
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 }
 
-void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
+void ChannelMergerNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     auto output = this->output(0);
     ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
@@ -55,8 +55,8 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
             // Merge channels from this particular input.
             for (size_t j = 0; j < numberOfInputChannels; ++j)
             {
-                AudioChannel* inputChannel = input->bus(r)->channel(j);
-                AudioChannel* outputChannel = output->bus(r)->channel(outputChannelIndex);
+                AudioChannel * inputChannel = input->bus(r)->channel(j);
+                AudioChannel * outputChannel = output->bus(r)->channel(outputChannelIndex);
 
                 outputChannel->copyFrom(inputChannel);
                 ++outputChannelIndex;
@@ -67,14 +67,13 @@ void ChannelMergerNode::process(ContextRenderLock& r, size_t framesToProcess)
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
-void ChannelMergerNode::reset(ContextRenderLock&)
+void ChannelMergerNode::reset(ContextRenderLock &)
 {
-
 }
 
 // Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
 // number of channels of our output.
-void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     // Count how many channels we have all together from all of the inputs.
     size_t numberOfOutputChannels = 0;
@@ -85,7 +84,7 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
 
         if (input->isConnected())
         {
-           numberOfOutputChannels += input->bus(r)->numberOfChannels();
+            numberOfOutputChannels += input->bus(r)->numberOfChannels();
         }
     }
 
@@ -101,4 +100,4 @@ void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock& r, Audi
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace lab
+}  // namespace lab

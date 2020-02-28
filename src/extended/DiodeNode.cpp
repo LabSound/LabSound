@@ -14,9 +14,9 @@ namespace lab
 // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
 
 DiodeNode::DiodeNode()
-: _distortion(std::make_shared<AudioSetting>("distortion", "DSTR", AudioSetting::Type::Float))
-, _vb(std::make_shared<AudioSetting>("vb", "VB  ", AudioSetting::Type::Float))
-, _vl(std::make_shared<AudioSetting>("vl", "VL  ", AudioSetting::Type::Float))
+    : _distortion(std::make_shared<AudioSetting>("distortion", "DSTR", AudioSetting::Type::Float))
+    , _vb(std::make_shared<AudioSetting>("vb", "VB  ", AudioSetting::Type::Float))
+    , _vl(std::make_shared<AudioSetting>("vl", "VL  ", AudioSetting::Type::Float))
 {
     _vb->setFloat(0.2f);
     _vl->setFloat(0.4f);
@@ -25,13 +25,13 @@ DiodeNode::DiodeNode()
     m_settings.push_back(_vb);
     m_settings.push_back(_vl);
 
-    _distortion->setValueChanged([this](){
+    _distortion->setValueChanged([this]() {
         this->_precalc();
     });
-    _vb->setValueChanged([this](){
+    _vb->setValueChanged([this]() {
         this->_precalc();
     });
-    _vl->setValueChanged([this](){
+    _vl->setValueChanged([this]() {
         this->_precalc();
     });
 
@@ -77,4 +77,4 @@ void DiodeNode::_precalc()
     setCurve(std::move(wsCurve));
 }
 
-} // lab
+}  // lab

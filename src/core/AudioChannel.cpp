@@ -12,79 +12,82 @@
 
 namespace lab
 {
-    void AudioChannel::resizeSmaller(size_t newLength)
+void AudioChannel::resizeSmaller(size_t newLength)
+{
+    ASSERT(newLength <= m_length);
+    if (newLength <= m_length) m_length = newLength;
+}
+
+void AudioChannel::scale(float scale)
+{
+    if (isSilent()) return;
+    VectorMath::vsmul(data(), 1, &scale, mutableData(), 1, length());
+}
+
+void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
+{
+    bool isSafe = (sourceChannel && sourceChannel->length() >= length());
+    ASSERT(isSafe);
+    if (!isSafe) return;
+
+    if (sourceChannel->isSilent())
     {
-        ASSERT(newLength <= m_length);
-        if (newLength <= m_length) m_length = newLength;
+        zero();
+        return;
     }
+    memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
+}
 
-    void AudioChannel::scale(float scale)
+void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame)
+{
+    // Check that range is safe for reading from sourceChannel.
+    bool isRangeSafe = sourceChannel && startFrame < endFrame && endFrame <= sourceChannel->length();
+    ASSERT(isRangeSafe);
+    if (!isRangeSafe) return;
+
+    if (sourceChannel->isSilent() && isSilent()) return;
+
+    // Check that this channel has enough space.
+    size_t rangeLength = endFrame - startFrame;
+    bool isRangeLengthSafe = rangeLength <= length();
+    ASSERT(isRangeLengthSafe);
+
+    if (!isRangeLengthSafe) return;
+
+    const float * source = sourceChannel->data();
+    float * destination = mutableData();
+
+    if (sourceChannel->isSilent())
     {
-        if (isSilent()) return;
-        VectorMath::vsmul(data(), 1, &scale, mutableData(), 1, length());
-    }
-
-    void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
-    {
-        bool isSafe = (sourceChannel && sourceChannel->length() >= length());
-        ASSERT(isSafe);
-        if (!isSafe) return;
-
-        if (sourceChannel->isSilent())
-        {
+        if (rangeLength == length())
             zero();
-            return;
-        }
-        memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
+        else
+            memset(destination, 0, sizeof(float) * rangeLength);
     }
+    else
+        memcpy(destination, source + startFrame, sizeof(float) * rangeLength);
+}
 
-    void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame)
-    {
-        // Check that range is safe for reading from sourceChannel.
-        bool isRangeSafe = sourceChannel && startFrame < endFrame && endFrame <= sourceChannel->length();
-        ASSERT(isRangeSafe);
-        if (!isRangeSafe) return;
+void AudioChannel::sumFrom(const AudioChannel * sourceChannel)
+{
+    bool isSafe = sourceChannel && sourceChannel->length() >= length();
+    ASSERT(isSafe);
 
-        if (sourceChannel->isSilent() && isSilent()) return;
+    if (!isSafe) return;
 
-        // Check that this channel has enough space.
-        size_t rangeLength = endFrame - startFrame;
-        bool isRangeLengthSafe = rangeLength <= length();
-        ASSERT(isRangeLengthSafe);
+    if (sourceChannel->isSilent()) return;
+    if (isSilent())
+        copyFrom(sourceChannel);
+    else
+        VectorMath::vadd(data(), 1, sourceChannel->data(), 1, mutableData(), 1, length());
+}
 
-        if (!isRangeLengthSafe) return;
-
-        const float * source = sourceChannel->data();
-        float * destination = mutableData();
-
-        if (sourceChannel->isSilent())
-        {
-            if (rangeLength == length()) zero();
-            else memset(destination, 0, sizeof(float) * rangeLength);
-        }
-        else memcpy(destination, source + startFrame, sizeof(float) * rangeLength);
-
-    }
-
-    void AudioChannel::sumFrom(const AudioChannel * sourceChannel)
-    {
-        bool isSafe = sourceChannel && sourceChannel->length() >= length();
-        ASSERT(isSafe);
-
-        if (!isSafe) return;
-
-        if (sourceChannel->isSilent()) return;
-        if (isSilent()) copyFrom(sourceChannel);
-        else VectorMath::vadd(data(), 1, sourceChannel->data(), 1, mutableData(), 1, length());
-    }
-
-    float AudioChannel::maxAbsValue() const
-    {
-        if (isSilent())  return 0;
-        float max = 0;
-        VectorMath::vmaxmgv(data(), 1, &max, length());
-        return max;
-    }
+float AudioChannel::maxAbsValue() const
+{
+    if (isSilent()) return 0;
+    float max = 0;
+    VectorMath::vmaxmgv(data(), 1, &max, length());
+    return max;
+}
 
 }  // lab
-

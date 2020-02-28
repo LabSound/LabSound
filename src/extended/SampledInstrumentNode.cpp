@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-
 #include "LabSound/extended/SampledInstrumentNode.h"
 
 /*
 #include "internal/ConfigMacros.h"
 
-#include <string>
 #include <fstream>
-#include <streambuf>
 #include <stdlib.h>
+#include <streambuf>
+#include <string>
 
 namespace lab 
 {

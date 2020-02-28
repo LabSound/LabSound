@@ -11,32 +11,32 @@
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/DelayNode.h"
 
-namespace lab 
+namespace lab
 {
-    class BPMDelay : public DelayNode 
+class BPMDelay : public DelayNode
+{
+    float tempo;
+    int noteDivision;
+    std::vector<float> times;
+
+    void recomputeDelay()
     {
-        float tempo;
-        int noteDivision; 
-        std::vector<float> times;
+        float dT = float(60.0f * noteDivision) / tempo;
+        delayTime()->setFloat(dT);
+    }
 
-        void recomputeDelay()
-        {
-            float dT = float(60.0f * noteDivision) / tempo;
-            delayTime()->setFloat(dT);
-        }
-            
-    public:
-        BPMDelay(float sampleRate, float tempo);
-        virtual ~BPMDelay();
+public:
+    BPMDelay(float sampleRate, float tempo);
+    virtual ~BPMDelay();
 
-        void SetTempo(float newTempo)
-        {
-            tempo = newTempo;    
-            recomputeDelay();
-        }
+    void SetTempo(float newTempo)
+    {
+        tempo = newTempo;
+        recomputeDelay();
+    }
 
-        void SetDelayIndex(TempoSync value);
-    };
+    void SetDelayIndex(TempoSync value);
+};
 }
 
 #endif

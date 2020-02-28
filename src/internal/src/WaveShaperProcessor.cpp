@@ -4,15 +4,16 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/WaveShaperProcessor.h"
-#include "internal/WaveShaperDSPKernel.h"
 #include "internal/Assertions.h"
+#include "internal/WaveShaperDSPKernel.h"
+#include "internal/WaveShaperProcessor.h"
 
-namespace lab {
-    
-WaveShaperProcessor::WaveShaperProcessor(size_t numberOfChannels) : AudioDSPKernelProcessor(numberOfChannels)
+namespace lab
 {
 
+WaveShaperProcessor::WaveShaperProcessor(size_t numberOfChannels)
+    : AudioDSPKernelProcessor(numberOfChannels)
+{
 }
 
 WaveShaperProcessor::~WaveShaperProcessor()
@@ -31,9 +32,9 @@ void WaveShaperProcessor::setCurve(std::vector<float> && curve)
     std::swap(m_newCurve, curve);
 }
 
-void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void WaveShaperProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, size_t framesToProcess)
 {
-    if (!isInitialized() || !r.context()) 
+    if (!isInitialized() || !r.context())
     {
         destination->zero();
         return;
@@ -46,9 +47,9 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
         std::swap(m_curve, m_newCurve);
         m_newCurve.clear();
     }
-    
+
     const bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() && source->numberOfChannels() == m_kernels.size();
-    
+
     if (!channelCountMatches)
         return;
 
@@ -59,10 +60,9 @@ void WaveShaperProcessor::process(ContextRenderLock& r, const AudioBus* source, 
     }
 }
 
-std::unique_ptr<WaveShaperProcessor::Curve> WaveShaperProcessor::curve() 
-{ 
-    return std::unique_ptr<WaveShaperProcessor::Curve>(new WaveShaperProcessor::Curve(m_curveWrite, m_curve)); 
+std::unique_ptr<WaveShaperProcessor::Curve> WaveShaperProcessor::curve()
+{
+    return std::unique_ptr<WaveShaperProcessor::Curve>(new WaveShaperProcessor::Curve(m_curveWrite, m_curve));
 }
 
-
-} // namespace lab
+}  // namespace lab

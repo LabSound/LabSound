@@ -5,38 +5,39 @@
 #ifndef BiquadProcessor_h
 #define BiquadProcessor_h
 
-#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioParam.h"
 
-#include "internal/Biquad.h"
 #include "internal/AudioDSPKernel.h"
 #include "internal/AudioDSPKernelProcessor.h"
+#include "internal/Biquad.h"
 
-namespace lab {
+namespace lab
+{
 
 // BiquadProcessor is an AudioDSPKernelProcessor which uses Biquad objects to implement several common filters.
 
-class BiquadProcessor : public AudioDSPKernelProcessor {
+class BiquadProcessor : public AudioDSPKernelProcessor
+{
 public:
-
     BiquadProcessor(size_t numberOfChannels, bool autoInitialize);
 
     virtual ~BiquadProcessor();
-    
-    virtual AudioDSPKernel* createKernel();
-        
-    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess);
+
+    virtual AudioDSPKernel * createKernel();
+
+    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, size_t framesToProcess);
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextRenderLock&,
+    void getFrequencyResponse(ContextRenderLock &,
                               size_t nFrequencies,
-                              const float* frequencyHz,
-                              float* magResponse,
-                              float* phaseResponse);
+                              const float * frequencyHz,
+                              float * magResponse,
+                              float * phaseResponse);
 
-    void checkForDirtyCoefficients(ContextRenderLock&);
-    
+    void checkForDirtyCoefficients(ContextRenderLock &);
+
     bool filterCoefficientsDirty() const { return m_filterCoefficientsDirty; }
     bool hasSampleAccurateValues() const { return m_hasSampleAccurateValues; }
 
@@ -63,6 +64,6 @@ private:
     bool m_hasSampleAccurateValues;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // BiquadProcessor_h
+#endif  // BiquadProcessor_h

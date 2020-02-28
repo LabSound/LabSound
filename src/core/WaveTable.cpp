@@ -2,9 +2,9 @@
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/WaveTable.h"
 #include "LabSound/core/AudioArray.h"
+#include "LabSound/core/OscillatorNode.h"
 
 #include "internal/Assertions.h"
 #include "internal/FFTFrame.h"
@@ -12,8 +12,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <exception>
+#include <iostream>
 
 // The number of bands per octave.  Each octave will have this many entries in the wave tables.
 const unsigned kNumberOfOctaveBands = 3;
@@ -24,14 +24,14 @@ const unsigned kMaxPeriodicWaveSize = 16384;
 
 const float CentsPerRange = 1200 / kNumberOfOctaveBands;
 
-namespace lab 
+namespace lab
 {
-    
+
 using namespace VectorMath;
 
 WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform)
-: m_centsPerRange(CentsPerRange)
-, m_sampleRate(sampleRate)
+    : m_centsPerRange(CentsPerRange)
+    , m_sampleRate(sampleRate)
 {
     float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -40,13 +40,13 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform)
     // Compute the number of ranges needed to cover the entire frequency range, assuming
     // kNumberOfOctaveBands per octave.
     m_numberOfRanges = static_cast<size_t>(0.5f + kNumberOfOctaveBands * log2f(static_cast<float>(periodicWaveSize())));
-    
+
     generateBasicWaveform(basicWaveform);
 }
 
 WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
-: m_centsPerRange(CentsPerRange)
-, m_sampleRate(sampleRate)
+    : m_centsPerRange(CentsPerRange)
+    , m_sampleRate(sampleRate)
 {
     float nyquist = 0.5f * m_sampleRate;
     m_lowestFundamentalFrequency = nyquist / maxNumberOfPartials();
@@ -55,10 +55,10 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::
     // Compute the number of ranges needed to cover the entire frequency range, assuming
     // kNumberOfOctaveBands per octave.
     m_numberOfRanges = static_cast<size_t>(0.5f + kNumberOfOctaveBands * log2f(static_cast<float>(periodicWaveSize())));
-    
+
     bool isGood = real.size() == imag.size() && real.size() > 0;
 
-    if (isGood) 
+    if (isGood)
     {
         createBandLimitedTables(&real[0], &imag[0], real.size());
     }
@@ -70,7 +70,6 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::
 
 WaveTable::~WaveTable()
 {
-
 }
 
 unsigned WaveTable::periodicWaveSize() const
@@ -84,8 +83,8 @@ unsigned WaveTable::periodicWaveSize() const
 
     return kMaxPeriodicWaveSize;
 }
-    
-void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, float* &lowerWaveData, float* &higherWaveData, float& tableInterpolationFactor)
+
+void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, float *& lowerWaveData, float *& higherWaveData, float & tableInterpolationFactor)
 {
     // Negative frequencies are allowed, in which case we alias to the positive frequency.
     fundamentalFrequency = std::abs(fundamentalFrequency);
@@ -108,7 +107,7 @@ void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, floa
 
     lowerWaveData = m_bandLimitedTables[rangeIndex2]->data();
     higherWaveData = m_bandLimitedTables[rangeIndex1]->data();
-    
+
     // Ranges from 0 -> 1 to interpolate between lower -> higher.
     tableInterpolationFactor = pitchRange - rangeIndex1;
 }
@@ -135,24 +134,25 @@ size_t WaveTable::numberOfPartialsForRange(size_t rangeIndex) const
 // Convert into time-domain wave tables.
 // One table is created for each range for non-aliasing playback at different playback rates.
 // Thus, higher ranges have more high-frequency partials culled out.
-void WaveTable::createBandLimitedTables(const float* realData, const float* imagData, size_t numberOfComponents)
+void WaveTable::createBandLimitedTables(const float * realData, const float * imagData, size_t numberOfComponents)
 {
     float normalizationScale = 1.f;
 
     size_t fftSize = periodicWaveSize();
     size_t halfSize = fftSize / 2 + 1;
     size_t i;
-    
+
     numberOfComponents = std::min(numberOfComponents, halfSize);
 
     m_bandLimitedTables.reserve(numberOfRanges());
 
-    for (size_t rangeIndex = 0; rangeIndex < numberOfRanges(); ++rangeIndex) {
-        
+    for (size_t rangeIndex = 0; rangeIndex < numberOfRanges(); ++rangeIndex)
+    {
+
         // This FFTFrame is used to cull partials (represented by frequency bins).
         FFTFrame frame(fftSize);
-        float* realP = frame.realData();
-        float* imagP = frame.imagData();
+        float * realP = frame.realData();
+        float * imagP = frame.imagData();
 
         // Copy from loaded frequency data and generate the complex conjugate because of the way the
         // inverse FFT is defined versus the values in the arrays.  Note also that although the IFFT
@@ -167,11 +167,12 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
 
         // If fewer components were provided than 1/2 FFT size, then clear the remaining bins.
         // We also need to cull the aliasing partials for this pitch range.
-        for (i = std::min(numberOfComponents, numberOfPartials + 1); i < halfSize; ++i) {
+        for (i = std::min(numberOfComponents, numberOfPartials + 1); i < halfSize; ++i)
+        {
             realP[i] = 0;
             imagP[i] = 0;
         }
-        
+
         // Clear packed-nyquist and any DC-offset.
         realP[0] = 0;
         imagP[0] = 0;
@@ -180,11 +181,12 @@ void WaveTable::createBandLimitedTables(const float* realData, const float* imag
         m_bandLimitedTables.push_back(std::unique_ptr<lab::AudioFloatArray>(new lab::AudioFloatArray(periodicWaveSize())));
 
         // Apply an inverse FFT to generate the time-domain table data.
-        float* data = m_bandLimitedTables[rangeIndex]->data();
+        float * data = m_bandLimitedTables[rangeIndex]->data();
         frame.doInverseFFT(data);
 
         // For the first range (which has the highest power), calculate its peak value then compute normalization scale.
-        if (!rangeIndex) {
+        if (!rangeIndex)
+        {
             float maxValue;
             vmaxmgv(data, 1, &maxValue, fftSize);
 
@@ -204,16 +206,16 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
 
     lab::AudioFloatArray real(halfSize);
     lab::AudioFloatArray imag(halfSize);
-    float* realP = real.data();
-    float* imagP = imag.data();
+    float * realP = real.data();
+    float * imagP = imag.data();
 
     // Clear DC and Nyquist.
     realP[0] = 0;
     imagP[0] = 0;
-    
+
     const float piFloat = float(3.14159265358979323846);
 
-    for (unsigned n = 1; n < halfSize; ++n) 
+    for (unsigned n = 1; n < halfSize; ++n)
     {
         float piFactor = 2 / (n * piFloat);
 
@@ -225,53 +227,57 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
         //   = 2/pi*integrate(f(x)*sin(n*x), x, 0, pi)
         // since f(x) is an odd function.
 
-        float b; // Coefficient for sin().
+        float b;  // Coefficient for sin().
 
         // Calculate Fourier coefficients depending on the shape. Note that the overall scaling
         // (magnitude) of the waveforms is normalized in createBandLimitedTables().
-        switch (shape) {
-        case OscillatorType::SINE:
-            // Standard sine wave function.
-            b = (n == 1) ? 1.f : 0;
-            break;
-        case OscillatorType::SQUARE:
-            // Square-shaped waveform with the first half its maximum value and the second half its
-            // minimum value.
-            //
-            // See http://mathworld.wolfram.com/FourierSeriesSquareWave.html
-            //
-            // b[n] = 2/n/pi*(1-(-1)^n)
-            //      = 4/n/pi for n odd and 0 otherwise.
-            //      = 2*(2/(n*pi)) for n odd
-            b = (n & 1) ? 2 * piFactor : 0;
-            break;
-        case OscillatorType::SAWTOOTH:
-            // Sawtooth-shaped waveform with the first half ramping from zero to maximum and the
-            // second half from minimum to zero.
-            //
-            // b[n] = -2*(-1)^n/pi/n
-            //      = (2/(n*pi))*(-1)^(n+1)
-            b = piFactor * ((n & 1) ? 1 : -1);
-            break;
-        case OscillatorType::TRIANGLE:
-            // Triangle-shaped waveform going from 0 at time 0 to 1 at time pi/2 and back to 0 at
-            // time pi.
-            //
-            // See http://mathworld.wolfram.com/FourierSeriesTriangleWave.html
-            //
-            // b[n] = 8*sin(pi*k/2)/(pi*k)^2
-            //      = 8/pi^2/n^2*(-1)^((n-1)/2) for n odd and 0 otherwise
-            //      = 2*(2/(n*pi))^2 * (-1)^((n-1)/2)
-            if (n & 1) {
-                b = 2 * (piFactor * piFactor) * ((((n - 1) >> 1) & 1) ? -1 : 1);
-            } else {
+        switch (shape)
+        {
+            case OscillatorType::SINE:
+                // Standard sine wave function.
+                b = (n == 1) ? 1.f : 0;
+                break;
+            case OscillatorType::SQUARE:
+                // Square-shaped waveform with the first half its maximum value and the second half its
+                // minimum value.
+                //
+                // See http://mathworld.wolfram.com/FourierSeriesSquareWave.html
+                //
+                // b[n] = 2/n/pi*(1-(-1)^n)
+                //      = 4/n/pi for n odd and 0 otherwise.
+                //      = 2*(2/(n*pi)) for n odd
+                b = (n & 1) ? 2 * piFactor : 0;
+                break;
+            case OscillatorType::SAWTOOTH:
+                // Sawtooth-shaped waveform with the first half ramping from zero to maximum and the
+                // second half from minimum to zero.
+                //
+                // b[n] = -2*(-1)^n/pi/n
+                //      = (2/(n*pi))*(-1)^(n+1)
+                b = piFactor * ((n & 1) ? 1 : -1);
+                break;
+            case OscillatorType::TRIANGLE:
+                // Triangle-shaped waveform going from 0 at time 0 to 1 at time pi/2 and back to 0 at
+                // time pi.
+                //
+                // See http://mathworld.wolfram.com/FourierSeriesTriangleWave.html
+                //
+                // b[n] = 8*sin(pi*k/2)/(pi*k)^2
+                //      = 8/pi^2/n^2*(-1)^((n-1)/2) for n odd and 0 otherwise
+                //      = 2*(2/(n*pi))^2 * (-1)^((n-1)/2)
+                if (n & 1)
+                {
+                    b = 2 * (piFactor * piFactor) * ((((n - 1) >> 1) & 1) ? -1 : 1);
+                }
+                else
+                {
+                    b = 0;
+                }
+                break;
+            default:
+                ASSERT_NOT_REACHED();
                 b = 0;
-            }
-            break;
-        default:
-            ASSERT_NOT_REACHED();
-            b = 0;
-            break;
+                break;
         }
 
         realP[n] = 0;
@@ -281,5 +287,4 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
     createBandLimitedTables(realP, imagP, halfSize);
 }
 
-} // namespace lab
-
+}  // namespace lab

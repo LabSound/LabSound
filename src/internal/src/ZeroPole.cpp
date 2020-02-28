@@ -5,10 +5,10 @@
 #include "internal/ZeroPole.h"
 #include "internal/DenormalDisabler.h"
 
-namespace lab 
+namespace lab
 {
 
-void ZeroPole::process(const float *source, float *destination, size_t framesToProcess)
+void ZeroPole::process(const float * source, float * destination, size_t framesToProcess)
 {
     float zero = m_zero;
     float pole = m_pole;
@@ -16,12 +16,12 @@ void ZeroPole::process(const float *source, float *destination, size_t framesToP
     // Gain compensation to make 0dB @ 0Hz
     const float k1 = 1 / (1 - zero);
     const float k2 = 1 - pole;
-    
+
     // Member variables to locals.
     float lastX = m_lastX;
     float lastY = m_lastY;
 
-    while (framesToProcess--) 
+    while (framesToProcess--)
     {
         float input = *source++;
 
@@ -35,11 +35,11 @@ void ZeroPole::process(const float *source, float *destination, size_t framesToP
 
         *destination++ = output2;
     }
-    
+
     // Locals to member variables. Flush denormals here so we don't
     // slow down the inner loop above.
     m_lastX = DenormalDisabler::flushDenormalFloatToZero(lastX);
     m_lastY = DenormalDisabler::flushDenormalFloatToZero(lastY);
 }
 
-} // lab
+}  // lab

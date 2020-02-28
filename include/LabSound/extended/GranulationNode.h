@@ -8,9 +8,9 @@ Coming Soon!
 #define labsound_granulation_node_h
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioSetting.h"
-#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioSetting.h"
 
 namespace lab
 {
@@ -121,6 +121,6 @@ namespace lab
     
 } // end namespace lab
 
-#endif // end labsound_granulation_node_h
+#endif  // end labsound_granulation_node_h
 
 #endif

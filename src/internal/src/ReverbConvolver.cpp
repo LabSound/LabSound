@@ -4,13 +4,14 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
+#include "internal/Assertions.h"
 #include "internal/ReverbConvolver.h"
 #include "internal/VectorMath.h"
-#include "internal/Assertions.h"
 
 #include "LabSound/core/AudioBus.h"
 
-namespace lab {
+namespace lab
+{
 
 using namespace VectorMath;
 
@@ -23,17 +24,17 @@ const int InputBufferSize = 8 * 16384;
 // This was found to be a good value on Mac OS X, and may work well on other platforms as well, assuming
 // the very rough scheduling latencies are similar on these time-scales.  Of course, this code may need to be
 // tuned for individual platforms if this assumption is found to be incorrect.
-const size_t RealtimeFrameLimit = 8192  + 4096; // ~278msec @ 44.1KHz
+const size_t RealtimeFrameLimit = 8192 + 4096;  // ~278msec @ 44.1KHz
 
 const size_t MinFFTSize = 128;
 const size_t MaxRealtimeFFTSize = 2048;
 
-ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSliceSize, size_t maxFFTSize, size_t convolverRenderPhase, bool useBackgroundThreads)
+ReverbConvolver::ReverbConvolver(AudioChannel * impulseResponse, size_t renderSliceSize, size_t maxFFTSize, size_t convolverRenderPhase, bool useBackgroundThreads)
     : m_impulseResponseLength(impulseResponse->length())
     , m_accumulationBuffer(impulseResponse->length() + renderSliceSize)
     , m_inputBuffer(InputBufferSize)
-    , m_minFFTSize(MinFFTSize) // First stage will have this size - successive stages will double in size each time
-    , m_maxFFTSize(maxFFTSize) // until we hit m_maxFFTSize
+    , m_minFFTSize(MinFFTSize)  // First stage will have this size - successive stages will double in size each time
+    , m_maxFFTSize(maxFFTSize)  // until we hit m_maxFFTSize
     , m_useBackgroundThreads(useBackgroundThreads)
     , m_wantsToExit(false)
     , m_moreInputBuffered(false)
@@ -48,7 +49,7 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
     // Otherwise, assume we're being run from a command-line tool.
     bool hasRealtimeConstraint = useBackgroundThreads;
 
-    const float* response = impulseResponse->data();
+    const float * response = impulseResponse->data();
     size_t totalResponseLength = impulseResponse->length();
 
     // The total latency is zero because the direct-convolution is used in the leading portion.
@@ -57,7 +58,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
     size_t stageOffset = 0;
     int i = 0;
     size_t fftSize = m_minFFTSize;
-    while (stageOffset < totalResponseLength) {
+    while (stageOffset < totalResponseLength)
+    {
         size_t stageSize = fftSize / 2;
 
         // For the last stage, it's possible that stageOffset is such that we're straddling the end
@@ -71,13 +73,14 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
         bool useDirectConvolver = !stageOffset;
 
         std::unique_ptr<ReverbConvolverStage> stage(
-                new ReverbConvolverStage(response, totalResponseLength, reverbTotalLatency,
-                                         stageOffset, stageSize, fftSize, renderPhase, renderSliceSize,
-                                         &m_accumulationBuffer, useDirectConvolver));
+            new ReverbConvolverStage(response, totalResponseLength, reverbTotalLatency,
+                                     stageOffset, stageSize, fftSize, renderPhase, renderSliceSize,
+                                     &m_accumulationBuffer, useDirectConvolver));
 
         bool isBackgroundStage = false;
 
-        if (this->useBackgroundThreads() && stageOffset > RealtimeFrameLimit) {
+        if (this->useBackgroundThreads() && stageOffset > RealtimeFrameLimit)
+        {
             m_backgroundStages.push_back(std::move(stage));
             isBackgroundStage = true;
         }
@@ -87,7 +90,8 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
         stageOffset += stageSize;
         ++i;
 
-        if (!useDirectConvolver) {
+        if (!useDirectConvolver)
+        {
             // Figure out next FFT size
             fftSize *= 2;
         }
@@ -103,13 +107,12 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulseResponse, size_t renderSli
         // @tofix - proper notification when thread is completed with condition variable
         m_backgroundThread = std::thread(&ReverbConvolver::backgroundThreadEntry, this);
     }
-
 }
 
 ReverbConvolver::~ReverbConvolver()
 {
     // Wait for background thread to stop
-    if (useBackgroundThreads()) 
+    if (useBackgroundThreads())
     {
         m_wantsToExit = true;
 
@@ -126,10 +129,10 @@ ReverbConvolver::~ReverbConvolver()
 
 void ReverbConvolver::backgroundThreadEntry()
 {
-    while (!m_wantsToExit) 
+    while (!m_wantsToExit)
     {
         // Wait for realtime thread to give us more input
-        m_moreInputBuffered = false;        
+        m_moreInputBuffered = false;
         {
             std::unique_lock<std::mutex> locker(m_backgroundThreadLock);
             while (!m_moreInputBuffered && !m_wantsToExit)
@@ -139,11 +142,12 @@ void ReverbConvolver::backgroundThreadEntry()
         // Process all of the stages until their read indices reach the input buffer's write index
         int writeIndex = m_inputBuffer.writeIndex();
 
-        // Even though it doesn't seem like every stage needs to maintain its own version of readIndex 
+        // Even though it doesn't seem like every stage needs to maintain its own version of readIndex
         // we do this in case we want to run in more than one background thread.
         int readIndex;
 
-        while ((readIndex = m_backgroundStages[0]->inputReadIndex()) != writeIndex) { // FIXME: do better to detect buffer overrun...
+        while ((readIndex = m_backgroundStages[0]->inputReadIndex()) != writeIndex)
+        {  // FIXME: do better to detect buffer overrun...
             // The ReverbConvolverStages need to process in amounts which evenly divide half the FFT size
             const int SliceSize = MinFFTSize / 2;
 
@@ -154,15 +158,15 @@ void ReverbConvolver::backgroundThreadEntry()
     }
 }
 
-void ReverbConvolver::process(ContextRenderLock&, const AudioChannel* sourceChannel, AudioChannel* destinationChannel, size_t framesToProcess)
+void ReverbConvolver::process(ContextRenderLock &, const AudioChannel * sourceChannel, AudioChannel * destinationChannel, size_t framesToProcess)
 {
     bool isSafe = sourceChannel && destinationChannel && sourceChannel->length() >= framesToProcess && destinationChannel->length() >= framesToProcess;
     ASSERT(isSafe);
     if (!isSafe)
         return;
-        
-    const float* source = sourceChannel->data();
-    float* destination = destinationChannel->mutableData();
+
+    const float * source = sourceChannel->data();
+    float * destination = destinationChannel->mutableData();
     bool isDataSafe = source && destination;
     ASSERT(isDataSafe);
     if (!isDataSafe)
@@ -177,15 +181,15 @@ void ReverbConvolver::process(ContextRenderLock&, const AudioChannel* sourceChan
 
     // Finally read from accumulation buffer
     m_accumulationBuffer.readAndClear(destination, framesToProcess);
-        
+
     // Now that we've buffered more input, wake up our background thread.
-    
+
     // Not using a MutexLocker looks strange, but we use a tryLock() instead because this is run on the real-time
     // thread where it is a disaster for the lock to be contended (causes audio glitching).  It's OK if we fail to
     // signal from time to time, since we'll get to it the next time we're called.  We're called repeatedly
-    // and frequently (around every 3ms).  The background thread is processing well into the future and has a considerable amount of 
+    // and frequently (around every 3ms).  The background thread is processing well into the future and has a considerable amount of
     // leeway here...
-    if (m_backgroundThreadLock.try_lock()) 
+    if (m_backgroundThreadLock.try_lock())
     {
         m_moreInputBuffered = true;
         m_backgroundThreadCondition.notify_one();
@@ -210,4 +214,4 @@ size_t ReverbConvolver::latencyFrames() const
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

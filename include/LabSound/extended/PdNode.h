@@ -11,9 +11,9 @@
 
 namespace pd
 {
-    class PdBase;
-    class PdMidiReceiver;
-    class PdReceiver;
+class PdBase;
+class PdMidiReceiver;
+class PdReceiver;
 }
 
 namespace lab
@@ -21,24 +21,21 @@ namespace lab
 
 class PureDataNode : public AudioBasicProcessorNode
 {
-    
+
 public:
-    
     PureDataNode(AudioContext *, float sampleRate);
     virtual ~PureDataNode();
-    
+
     pd::PdBase & pd() const;
-    
+
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-    
+
 private:
-    
     class PureDataNodeInternal;
     PureDataNodeInternal * data;
-    
 };
 
-} // end namespace lab
+}  // end namespace lab
 
 #endif

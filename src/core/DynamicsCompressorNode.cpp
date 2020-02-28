@@ -9,8 +9,8 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/DynamicsCompressor.h"
 #include "internal/Assertions.h"
+#include "internal/DynamicsCompressor.h"
 
 using namespace std;
 
@@ -67,7 +67,7 @@ void DynamicsCompressorNode::process(ContextRenderLock & r, size_t framesToProce
     m_reduction->setValue(reduction);
 }
 
-void DynamicsCompressorNode::reset(ContextRenderLock&)
+void DynamicsCompressorNode::reset(ContextRenderLock &)
 {
     m_dynamicsCompressor->reset();
 }
@@ -102,4 +102,4 @@ double DynamicsCompressorNode::latencyTime(ContextRenderLock & r) const
     return m_dynamicsCompressor->latencyTime(r);
 }
 
-} // end namespace lab
+}  // end namespace lab

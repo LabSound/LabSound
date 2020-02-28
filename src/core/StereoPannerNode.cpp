@@ -3,21 +3,20 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/StereoPannerNode.h"
-#include "LabSound/core/SampledAudioNode.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/Mixing.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Macros.h"
+#include "LabSound/core/Mixing.h"
+#include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/extended/Util.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/Panner.h"
-#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
-
+#include "internal/AudioUtilities.h"
+#include "internal/Panner.h"
 
 namespace lab
 {
@@ -26,7 +25,6 @@ class Spatializer
 {
 
 public:
-
     // @tofix - this only supports equal power
     enum PanningModel
     {
@@ -41,11 +39,10 @@ public:
 
     virtual ~Spatializer()
     {
-
     }
 
     // Handle sample-accurate panning by AudioParam automation.
-    virtual void panWithSampleAccurateValues(const AudioBus* inputBus, AudioBus* outputBus, const float* panValues, size_t framesToProcess)
+    virtual void panWithSampleAccurateValues(const AudioBus * inputBus, AudioBus * outputBus, const float * panValues, size_t framesToProcess)
     {
         size_t numberOfInputChannels = inputBus->numberOfChannels();
 
@@ -63,11 +60,11 @@ public:
         if (!isOutputSafe)
             return;
 
-        const float* sourceL = inputBus->channel(0)->data();
-        const float* sourceR = numberOfInputChannels > Channels::Mono ? inputBus->channel(1)->data() : sourceL;
+        const float * sourceL = inputBus->channel(0)->data();
+        const float * sourceR = numberOfInputChannels > Channels::Mono ? inputBus->channel(1)->data() : sourceL;
 
-        float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
-        float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
+        float * destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+        float * destinationR = outputBus->channelByType(Channel::Right)->mutableData();
 
         if (!sourceL || !sourceR || !destinationL || !destinationR)
             return;
@@ -122,11 +119,10 @@ public:
                 }
             }
         }
-
     }
 
     // Handle de-zippered panning to a target value.
-    virtual void panToTargetValue(const AudioBus* inputBus, AudioBus* outputBus, float panValue, size_t framesToProcess)
+    virtual void panToTargetValue(const AudioBus * inputBus, AudioBus * outputBus, float panValue, size_t framesToProcess)
     {
         size_t numberOfInputChannels = inputBus->numberOfChannels();
 
@@ -144,11 +140,11 @@ public:
         if (!isOutputSafe)
             return;
 
-        const float* sourceL = inputBus->channel(0)->data();
-        const float* sourceR = numberOfInputChannels > Channels::Mono ? inputBus->channel(1)->data() : sourceL;
+        const float * sourceL = inputBus->channel(0)->data();
+        const float * sourceR = numberOfInputChannels > Channels::Mono ? inputBus->channel(1)->data() : sourceL;
 
-        float* destinationL = outputBus->channelByType(Channel::Left)->mutableData();
-        float* destinationR = outputBus->channelByType(Channel::Right)->mutableData();
+        float * destinationL = outputBus->channelByType(Channel::Left)->mutableData();
+        float * destinationR = outputBus->channelByType(Channel::Right)->mutableData();
 
         if (!sourceL || !sourceR || !destinationL || !destinationR)
             return;
@@ -184,12 +180,12 @@ public:
                 *destinationL++ = static_cast<float>(inputL * gainL);
                 *destinationR++ = static_cast<float>(inputL * gainR);
             }
-
         }
         // For stereo source case.
         else
         {
-            while (n--) {
+            while (n--)
+            {
                 float inputL = *sourceL++;
                 float inputR = *sourceR++;
 
@@ -228,11 +224,10 @@ public:
         // No-op
     }
 
-    virtual double tailTime(ContextRenderLock & r) const {  return 0; }
+    virtual double tailTime(ContextRenderLock & r) const { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const { return 0; }
 
 private:
-
     bool m_isFirstRender = true;
     double m_pan = 0.0;
 
@@ -240,12 +235,12 @@ private:
 
     // Use a 50ms smoothing / de-zippering time-constant.
     const float SmoothingTimeConstant = 0.050f;
-
 };
 
 using namespace std;
 
-StereoPannerNode::StereoPannerNode(const float sampleRate) : AudioNode()
+StereoPannerNode::StereoPannerNode(const float sampleRate)
+    : AudioNode()
 {
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
@@ -265,7 +260,7 @@ StereoPannerNode::~StereoPannerNode()
     uninitialize();
 }
 
-void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
+void StereoPannerNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -275,7 +270,7 @@ void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    AudioBus* inputBus = input(0)->bus(r);
+    AudioBus * inputBus = input(0)->bus(r);
 
     if (!inputBus)
     {
@@ -299,7 +294,6 @@ void StereoPannerNode::process(ContextRenderLock& r, size_t framesToProcess)
     {
         m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r), framesToProcess);
     }
-
 }
 
 void StereoPannerNode::reset(ContextRenderLock &)
@@ -320,4 +314,4 @@ void StereoPannerNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-} // namespace lab
+}  // namespace lab

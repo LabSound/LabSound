@@ -2,25 +2,26 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/Macros.h"
 #include "internal/WaveShaperDSPKernel.h"
-#include "internal/WaveShaperProcessor.h"
+#include "LabSound/core/Macros.h"
 #include "internal/Assertions.h"
+#include "internal/WaveShaperProcessor.h"
 
 #include <algorithm>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
-void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, float* destination, size_t framesToProcess)
+void WaveShaperDSPKernel::process(ContextRenderLock &, const float * source, float * destination, size_t framesToProcess)
 {
     ASSERT(source && destination && waveShaperProcessor());
 
     // Curve object locks the curve during processing
     std::unique_ptr<WaveShaperProcessor::Curve> c = waveShaperProcessor()->curve();
 
-    if (c->curve.size() == 0) 
+    if (c->curve.size() == 0)
     {
         // Act as "straight wire" pass-through if no curve is set.
         memcpy(destination, source, sizeof(float) * framesToProcess);
@@ -32,14 +33,14 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
 
     ASSERT(curveData);
 
-    if (!curveData || !curveLength) 
+    if (!curveData || !curveLength)
     {
         memcpy(destination, source, sizeof(float) * framesToProcess);
         return;
     }
 
     // Apply waveshaping curve.
-    for (unsigned i = 0; i < framesToProcess; ++i) 
+    for (unsigned i = 0; i < framesToProcess; ++i)
     {
         const float input = source[i];
 
@@ -54,4 +55,4 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float* source, floa
     }
 }
 
-} // namespace lab
+}  // namespace lab

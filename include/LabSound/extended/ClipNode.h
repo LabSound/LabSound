@@ -9,33 +9,35 @@
 
 namespace lab
 {
-    // ClipNode clips a signal, using either thresholding or tanh
-    //
-    // params: a, b
-    // settings: mode
-    //
-    class ClipNode : public AudioBasicProcessorNode
+// ClipNode clips a signal, using either thresholding or tanh
+//
+// params: a, b
+// settings: mode
+//
+class ClipNode : public AudioBasicProcessorNode
+{
+    class ClipNodeInternal;
+    ClipNodeInternal * internalNode;
+
+public:
+    enum Mode
     {
-        class ClipNodeInternal;
-        ClipNodeInternal * internalNode;
-        
-    public:
-        enum Mode { CLIP = 0, 
-                    TANH = 1,
-                    _Count = 2 };
-
-        ClipNode();
-        virtual ~ClipNode();
-
-        void setMode(Mode m);
-
-        // in CLIP mode, a is the min value, and b is the max value.
-        // in TANH mode, a is the overall gain, and b is the input gain.
-        // The higher the input gain the more severe the distortion.
-        std::shared_ptr<AudioParam> aVal();
-        std::shared_ptr<AudioParam> bVal();
+        CLIP = 0,
+        TANH = 1,
+        _Count = 2
     };
-    
+
+    ClipNode();
+    virtual ~ClipNode();
+
+    void setMode(Mode m);
+
+    // in CLIP mode, a is the min value, and b is the max value.
+    // in TANH mode, a is the overall gain, and b is the input gain.
+    // The higher the input gain the more severe the distortion.
+    std::shared_ptr<AudioParam> aVal();
+    std::shared_ptr<AudioParam> bVal();
+};
 }
 
 #endif

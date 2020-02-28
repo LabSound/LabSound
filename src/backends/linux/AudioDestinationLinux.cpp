@@ -5,8 +5,8 @@
 #include "AudioDestinationLinux.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include <rtaudio/RtAudio.h>
@@ -46,8 +46,8 @@ unsigned long AudioDestination::maxChannelCount()
 }
 
 AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, size_t numChannels, float sampleRate)
-: m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
+    : m_callback(callback)
+    , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
@@ -97,13 +97,12 @@ void AudioDestinationLinux::configure()
 
     try
     {
-       dac.openStream(
+        dac.openStream(
             outDeviceInfo.probed && outDeviceInfo.isDefaultOutput ? &outputParams : nullptr,
             inDeviceInfo.probed && inDeviceInfo.isDefaultInput ? &inputParams : nullptr,
             RTAUDIO_FLOAT32,
-            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options
-        );
-     }
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
+    }
     catch (RtAudioError & e)
     {
         e.printMessage();
@@ -137,8 +136,8 @@ void AudioDestinationLinux::stop()
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
-    float *myOutputBufferOfFloats = (float*) outputBuffer;
-    float *myInputBufferOfFloats = (float*) inputBuffer;
+    float * myOutputBufferOfFloats = (float *) outputBuffer;
+    float * myInputBufferOfFloats = (float *) inputBuffer;
 
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
@@ -167,17 +166,17 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
 
 int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
 {
-    float *fBufOut = (float*) outputBuffer;
+    float * fBufOut = (float *) outputBuffer;
 
     // Buffer is nBufferFrames * channels
     // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationLinux * audioDestination = static_cast<AudioDestinationLinux*>(userData);
+    AudioDestinationLinux * audioDestination = static_cast<AudioDestinationLinux *>(userData);
 
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

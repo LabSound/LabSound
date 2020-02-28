@@ -12,22 +12,21 @@
 
 #include "miniaudio.h"
 
-namespace lab 
+namespace lab
 {
 
 class AudioDevice_Miniaudio : public AudioDevice
 {
-    RingBufferT<float>* _ring = nullptr;
+    RingBufferT<float> * _ring = nullptr;
     float * _scratch = nullptr;
     AudioDeviceRenderCallback & _callback;
-    AudioBus* _renderBus = nullptr;
-    AudioBus* _inputBus = nullptr;
+    AudioBus * _renderBus = nullptr;
+    AudioBus * _inputBus = nullptr;
     ma_device _device;
     int _remainder = 0;
     SamplingInfo samplingInfo;
 
 public:
-
 #ifdef _MSC_VER
     // satisfy ma_device alignment requirements for msvc.
     void * operator new(size_t i) { return _mm_malloc(i, 64); }
@@ -39,7 +38,7 @@ public:
 
     AudioStreamConfig outputConfig;
     AudioStreamConfig inputConfig;
-    float authoritativeDeviceSampleRateAtRuntime {0.f};
+    float authoritativeDeviceSampleRateAtRuntime{0.f};
 
     // AudioDevice Interface
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
@@ -47,6 +46,6 @@ public:
     virtual void stop() override final;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // labsound_audiodevice_miniaudio_hpp
+#endif  // labsound_audiodevice_miniaudio_hpp

@@ -186,7 +186,6 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
                 if (_lab_phase > 2. * M_PI)
                     _lab_phase -= 2. * M_PI;
             }
-        }
         break;
     }
 
@@ -262,3 +261,4 @@ bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
 {
     return !isPlayingOrScheduled() || hasFinished();
 }
+

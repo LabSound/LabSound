@@ -9,20 +9,21 @@
 
 namespace lab
 {
-   class WaveShaperProcessor;
+class WaveShaperProcessor;
 
 class WaveShaperNode : public AudioBasicProcessorNode
 {
     WaveShaperProcessor * waveShaperProcessor();
+
 public:
     WaveShaperNode();
-    virtual ~WaveShaperNode() = default;    
+    virtual ~WaveShaperNode() = default;
 
     // setCurve will take ownership of curve
     void setCurve(std::vector<float> && curve);
     std::vector<float> & curve();
 };
 
-} // namespace lab
+}  // namespace lab
 
 #endif

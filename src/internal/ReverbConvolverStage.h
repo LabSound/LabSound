@@ -9,25 +9,27 @@
 
 #include "internal/FFTFrame.h"
 
-namespace lab {
+namespace lab
+{
 
 class ReverbAccumulationBuffer;
 class ReverbConvolver;
 class FFTConvolver;
 class DirectConvolver;
-    
+
 // A ReverbConvolverStage represents the convolution associated with a sub-section of a large impulse response.
 // It incorporates a delay line to account for the offset of the sub-section within the larger impulse response.
-class ReverbConvolverStage {
+class ReverbConvolverStage
+{
 public:
     // renderPhase is useful to know so that we can manipulate the pre versus post delay so that stages will perform
     // their heavy work (FFT processing) on different slices to balance the load in a real-time thread.
-    ReverbConvolverStage(const float* impulseResponse, size_t responseLength, size_t reverbTotalLatency, size_t stageOffset, size_t stageLength, size_t fftSize, size_t renderPhase, size_t renderSliceSize, ReverbAccumulationBuffer*, bool directMode = false);
+    ReverbConvolverStage(const float * impulseResponse, size_t responseLength, size_t reverbTotalLatency, size_t stageOffset, size_t stageLength, size_t fftSize, size_t renderPhase, size_t renderSliceSize, ReverbAccumulationBuffer *, bool directMode = false);
 
     // WARNING: framesToProcess must be such that it evenly divides the delay buffer size (stage_offset).
-    void process(const float* source, size_t framesToProcess);
+    void process(const float * source, size_t framesToProcess);
 
-    void processInBackground(ReverbConvolver* convolver, size_t framesToProcess);
+    void processInBackground(ReverbConvolver * convolver, size_t framesToProcess);
 
     void reset();
 
@@ -40,7 +42,7 @@ private:
 
     AudioFloatArray m_preDelayBuffer;
 
-    ReverbAccumulationBuffer* m_accumulationBuffer;
+    ReverbAccumulationBuffer * m_accumulationBuffer;
     int m_accumulationReadIndex;
     int m_inputReadIndex;
 
@@ -56,6 +58,6 @@ private:
     std::unique_ptr<DirectConvolver> m_directConvolver;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // ReverbConvolverStage_h
+#endif  // ReverbConvolverStage_h

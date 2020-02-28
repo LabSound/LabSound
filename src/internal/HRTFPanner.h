@@ -9,14 +9,13 @@
 #include "internal/FFTConvolver.h"
 #include "internal/Panner.h"
 
-namespace lab 
+namespace lab
 {
 
 class HRTFPanner : public Panner
 {
 
 public:
-
     HRTFPanner(const float sampleRate);
     virtual ~HRTFPanner();
 
@@ -31,10 +30,9 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const override;
 
 private:
-
     // Given an azimuth angle in the range -180 -> +180, returns the corresponding azimuth index for the database,
     // and azimuthBlend which is an interpolation value from 0 -> 1.
-    int calculateDesiredAzimuthIndexAndBlend(double azimuth, double& azimuthBlend);
+    int calculateDesiredAzimuthIndexAndBlend(double azimuth, double & azimuthBlend);
 
     // We maintain two sets of convolvers for smooth cross-faded interpolations when
     // then azimuth and elevation are dynamically changing.
@@ -47,7 +45,7 @@ private:
     // initiating a new transition.
 
     // Selects either the convolver set (m_convolverL1, m_convolverR1) or (m_convolverL2, m_convolverR2).
-    enum CrossfadeSelection 
+    enum CrossfadeSelection
     {
         CrossfadeSelection1,
         CrossfadeSelection2
@@ -83,6 +81,6 @@ private:
     AudioFloatArray m_tempR2;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // HRTFPanner_h
+#endif  // HRTFPanner_h

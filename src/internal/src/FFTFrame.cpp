@@ -10,24 +10,25 @@
 #include <stdio.h>
 #endif
 
-#include <complex>
 #include "LabSound/core/Macros.h"
+#include <complex>
 
-namespace lab {
-    
+namespace lab
+{
+
 typedef std::complex<double> Complex;
 
-void FFTFrame::doPaddedFFT(const float* data, size_t dataSize)
+void FFTFrame::doPaddedFFT(const float * data, size_t dataSize)
 {
     // Zero-pad the impulse response
-    AudioFloatArray paddedResponse(fftSize()); // zero-initialized
+    AudioFloatArray paddedResponse(fftSize());  // zero-initialized
     paddedResponse.copyToRange(data, 0, dataSize);
 
     // Get the frequency-domain version of padded response
     doFFT(paddedResponse.data());
 }
 
-std::unique_ptr<FFTFrame> FFTFrame::createInterpolatedFrame(const FFTFrame& frame1, const FFTFrame& frame2, double x)
+std::unique_ptr<FFTFrame> FFTFrame::createInterpolatedFrame(const FFTFrame & frame1, const FFTFrame & frame2, double x)
 {
     std::unique_ptr<FFTFrame> newFrame(new FFTFrame(frame1.fftSize()));
 
@@ -45,17 +46,17 @@ std::unique_ptr<FFTFrame> FFTFrame::createInterpolatedFrame(const FFTFrame& fram
     return newFrame;
 }
 
-void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTFrame& frame2, double interp)
+void FFTFrame::interpolateFrequencyComponents(const FFTFrame & frame1, const FFTFrame & frame2, double interp)
 {
     // FIXME : with some work, this method could be optimized
 
-    float* realP = realData();
-    float* imagP = imagData();
+    float * realP = realData();
+    float * imagP = imagData();
 
-    const float* realP1 = frame1.realData();
-    const float* imagP1 = frame1.imagData();
-    const float* realP2 = frame2.realData();
-    const float* imagP2 = frame2.imagData();
+    const float * realP1 = frame1.realData();
+    const float * imagP1 = frame1.imagData();
+    const float * realP2 = frame2.realData();
+    const float * imagP2 = frame2.imagData();
 
     m_FFTSize = frame1.fftSize();
     m_log2FFTSize = frame1.log2FFTSize();
@@ -72,7 +73,8 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
 
     int n = m_FFTSize / 2;
 
-    for (int i = 1; i < n; ++i) {
+    for (int i = 1; i < n; ++i)
+    {
         Complex c1(realP1[i], imagP1[i]);
         Complex c2(realP2[i], imagP2[i]);
 
@@ -89,13 +91,14 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
         double magdbdiff = mag1db - mag2db;
 
         // Empirical tweak to retain higher-frequency zeroes
-        double threshold =  (i > 16) ? 5.0 : 2.0;
+        double threshold = (i > 16) ? 5.0 : 2.0;
 
-        if (magdbdiff < -threshold && mag1db < 0.0) 
+        if (magdbdiff < -threshold && mag1db < 0.0)
         {
             s1 = pow(s1, 0.75);
             s2 = 1.0 - s1;
-        } else if (magdbdiff > threshold && mag2db < 0.0)
+        }
+        else if (magdbdiff > threshold && mag2db < 0.0)
         {
             s2 = pow(s2, 0.75);
             s1 = 1.0 - s2;
@@ -151,8 +154,8 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame& frame1, const FFTF
 
 double FFTFrame::extractAverageGroupDelay()
 {
-    float* realP = realData();
-    float* imagP = imagData();
+    float * realP = realData();
+    float * imagP = imagData();
 
     double aveSum = 0.0;
     double weightSum = 0.0;
@@ -163,7 +166,7 @@ double FFTFrame::extractAverageGroupDelay()
     const double kSamplePhaseDelay = (2.0 * piDouble) / double(fftSize());
 
     // Calculate weighted average group delay
-    for (int i = 0; i < halfSize; i++) 
+    for (int i = 0; i < halfSize; i++)
     {
         Complex c(realP[i], imagP[i]);
         double mag = abs(c);
@@ -203,15 +206,16 @@ void FFTFrame::addConstantGroupDelay(double sampleFrameDelay)
 {
     int halfSize = fftSize() / 2;
 
-    float* realP = realData();
-    float* imagP = imagData();
+    float * realP = realData();
+    float * imagP = imagData();
 
     const double kSamplePhaseDelay = (2.0 * piDouble) / double(fftSize());
 
     double phaseAdj = -sampleFrameDelay * kSamplePhaseDelay;
 
     // Add constant group delay
-    for (int i = 1; i < halfSize; i++) {
+    for (int i = 1; i < halfSize; i++)
+    {
         Complex c(realP[i], imagP[i]);
         double mag = abs(c);
         double phase = arg(c);
@@ -228,15 +232,16 @@ void FFTFrame::addConstantGroupDelay(double sampleFrameDelay)
 #ifndef NDEBUG
 void FFTFrame::print()
 {
-    FFTFrame& frame = *this;
-    float* realP = frame.realData();
-    float* imagP = frame.imagData();
+    FFTFrame & frame = *this;
+    float * realP = frame.realData();
+    float * imagP = frame.imagData();
     LOG("**** \n");
     LOG("DC = %f : nyquist = %f\n", realP[0], imagP[0]);
 
     int n = m_FFTSize / 2;
 
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i < n; i++)
+    {
         double mag = sqrt(realP[i] * realP[i] + imagP[i] * imagP[i]);
         double phase = atan2(realP[i], imagP[i]);
 
@@ -244,6 +249,6 @@ void FFTFrame::print()
     }
     LOG("****\n");
 }
-#endif // NDEBUG
+#endif  // NDEBUG
 
-} // namespace lab
+}  // namespace lab

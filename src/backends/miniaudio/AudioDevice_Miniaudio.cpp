@@ -7,8 +7,8 @@
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
 
@@ -40,31 +40,34 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 
     ma_result result;
     ma_context context;
-    ma_device_info* pPlaybackDeviceInfos;
+    ma_device_info * pPlaybackDeviceInfos;
     ma_uint32 playbackDeviceCount;
-    ma_device_info* pCaptureDeviceInfos;
+    ma_device_info * pCaptureDeviceInfos;
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
 
-    if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
+    if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS)
+    {
         LOG_ERROR("Failed to initialize miniaudio context");
         return {};
     }
 
     result = ma_context_get_devices(&context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
-    if (result != MA_SUCCESS) {
+    if (result != MA_SUCCESS)
+    {
         LOG_ERROR("Failed to retrieve audio device information.\n");
         return {};
     }
 
-    for (iDevice = 0; iDevice < playbackDeviceCount; ++iDevice) 
+    for (iDevice = 0; iDevice < playbackDeviceCount; ++iDevice)
     {
         AudioDeviceInfo lab_device_info;
         lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&context, ma_device_type_playback, 
-            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
+        if (ma_context_get_device_info(&context, ma_device_type_playback,
+                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice])
+            != MA_SUCCESS)
             continue;
 
         lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].maxChannels;
@@ -78,20 +81,22 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         s_devices.push_back(lab_device_info);
     }
 
-    for (iDevice = 0; iDevice < captureDeviceCount; ++iDevice) {
+    for (iDevice = 0; iDevice < captureDeviceCount; ++iDevice)
+    {
         AudioDeviceInfo lab_device_info;
         lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
         if (ma_context_get_device_info(&context, ma_device_type_capture,
-            &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice]) != MA_SUCCESS)
+                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice])
+            != MA_SUCCESS)
             continue;
 
         lab_device_info.num_output_channels = 0;
-        lab_device_info.num_input_channels = 2;// pCaptureDeviceInfos[iDevice].maxChannels;
+        lab_device_info.num_input_channels = 2;  // pCaptureDeviceInfos[iDevice].maxChannels;
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].minSampleRate));
         lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = 48000.f;// static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
+        lab_device_info.nominal_samplerate = 48000.f;  // static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
@@ -101,7 +106,6 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     ma_context_uninit(&context);
     return s_devices;
 }
-
 
 uint32_t AudioDevice::GetDefaultOutputAudioDeviceIndex()
 {
@@ -125,29 +129,29 @@ uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
     throw std::runtime_error("no miniaudio devices available!");
 }
 
-
-
 namespace
 {
-    void outputCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
+    void outputCallback(ma_device * pDevice, void * pOutput, const void * pInput, ma_uint32 frameCount)
     {
         // Buffer is nBufferFrames * channels, interleaved
-        float* fBufOut = (float*)pOutput;
-        AudioDevice_Miniaudio* ad = reinterpret_cast<AudioDevice_Miniaudio*>(pDevice->pUserData);
+        float * fBufOut = (float *) pOutput;
+        AudioDevice_Miniaudio * ad = reinterpret_cast<AudioDevice_Miniaudio *>(pDevice->pUserData);
         memset(fBufOut, 0, sizeof(float) * frameCount * ad->outputConfig.desired_channels);
-        ad->render(frameCount, pOutput, const_cast<void*>(pInput));
+        ad->render(frameCount, pOutput, const_cast<void *>(pInput));
     }
 }
 
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback, 
-    const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
+                                                      const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
 {
     return new AudioDevice_Miniaudio(callback, outputConfig, inputConfig);
 }
 
-AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callback, 
-    const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig) 
-        : _callback(callback), outputConfig(_outputConfig), inputConfig(_inputConfig)
+AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callback,
+                                             const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig)
+    : _callback(callback)
+    , outputConfig(_outputConfig)
+    , inputConfig(_inputConfig)
 {
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
     deviceConfig.playback.format = ma_format_f32;
@@ -187,10 +191,9 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
         free(_scratch);
 }
 
-
 void AudioDevice_Miniaudio::start()
 {
-    ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f); // something went very wrong
+    ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
     samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
     if (ma_device_start(&_device) != MA_SUCCESS)
     {
@@ -246,17 +249,17 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             int samples = _remainder < numberOfFrames ? _remainder : numberOfFrames;
             for (int i = 0; i < out_channels; ++i)
             {
-                int src_stride = 1; // de-interleaved
-                int dst_stride = out_channels; // interleaved
-                AudioChannel* channel = _renderBus->channel(i);
+                int src_stride = 1;  // de-interleaved
+                int dst_stride = out_channels;  // interleaved
+                AudioChannel * channel = _renderBus->channel(i);
                 VectorMath::vclip(channel->data() + kRenderQuantum - _remainder, src_stride,
                                   &kLowThreshold, &kHighThreshold,
                                   pOut + i, dst_stride, samples);
             }
             pOut += out_channels * samples;
 
-            numberOfFrames -= samples; // deduct samples actually copied to output
-            _remainder -= samples; // deduct samples remaining from last render() invocation
+            numberOfFrames -= samples;  // deduct samples actually copied to output
+            _remainder -= samples;  // deduct samples remaining from last render() invocation
         }
         else
         {
@@ -267,9 +270,9 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
                 _ring->read(_scratch, in_channels * kRenderQuantum);
                 for (int i = 0; i < in_channels; ++i)
                 {
-                    int src_stride = in_channels; // interleaved
-                    int dst_stride = 1; // de-interleaved
-                    AudioChannel* channel = _inputBus->channel(i);
+                    int src_stride = in_channels;  // interleaved
+                    int dst_stride = 1;  // de-interleaved
+                    AudioChannel * channel = _inputBus->channel(i);
                     VectorMath::vclip(_scratch + i, src_stride,
                                       &kLowThreshold, &kHighThreshold,
                                       channel->mutableData(), dst_stride, kRenderQuantum);

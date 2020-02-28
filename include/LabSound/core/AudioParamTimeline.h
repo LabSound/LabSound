@@ -16,7 +16,7 @@ class AudioParamTimeline
 {
 
 public:
-    AudioParamTimeline() { }
+    AudioParamTimeline() {}
 
     void setValueAtTime(float value, float time);
     void linearRampToValueAtTime(float value, float time);
@@ -40,7 +40,6 @@ public:
     bool hasValues() { return m_events.size() > 0; }
 
 private:
-
     // @tofix - move to implementation file to hide from public API
 
     class ParamEvent
