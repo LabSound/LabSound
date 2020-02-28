@@ -9,6 +9,7 @@
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "internal/Assertions.h"
+#include <algorithm>
 
 namespace lab
 {
@@ -183,7 +184,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
             float error = 0;
             for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
             {
-                array[u] = max(array[u], buff[step]);
+                array[u] = std::max(array[u], buff[step]);
                 error += d_err;
                 if (error > 0.5f)
                 {
