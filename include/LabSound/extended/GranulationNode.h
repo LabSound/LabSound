@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
+#include <algorithm>
 #include <cmath>
 
 namespace lab
