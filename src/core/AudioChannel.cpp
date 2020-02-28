@@ -35,6 +35,8 @@ void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
         zero();
         return;
     }
+    memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
+}
 
 void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame)
 {

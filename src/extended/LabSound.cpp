@@ -100,7 +100,7 @@ namespace
         "Oscillator",
         "Panner",
 #ifdef PD
-            "PureData",
+        "PureData",
 #endif
         "PeakCompressor",
         "PingPongDelay",
@@ -117,10 +117,10 @@ namespace
         nullptr};
 }
 
-    char const * const * const AudioNodeNames()
-    {
-        return NodeNames;
-    }
+char const * const * const AudioNodeNames()
+{
+    return NodeNames;
+}
 
 }  // lab
 

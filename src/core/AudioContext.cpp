@@ -279,7 +279,7 @@ void AudioContext::update()
     const float frameLengthInMilliseconds = (sampleRate() / (float) AudioNode::ProcessingSizeInFrames) / 1000.f;  // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
     const uint32_t graphTickDurationUs = static_cast<uint32_t>(graphTickDurationMs * 1000.f);  // = ~5550us
-    
+
     ASSERT(frameLengthInMilliseconds);
     ASSERT(graphTickDurationMs);
     ASSERT(graphTickDurationUs);
@@ -554,7 +554,7 @@ void AudioContext::startOfflineRendering()
     // This takes the function of `lazyInitialize()` but for offline contexts
     if (m_isOfflineContext)
     {
-         device_callback->start();
+        device_callback->start();
     }
     else
     {

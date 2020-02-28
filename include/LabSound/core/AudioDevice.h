@@ -12,7 +12,6 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <chrono>
 
 namespace lab
 {
@@ -112,4 +111,4 @@ public:
 
 }  // lab
 
-#endif // lab_audiodevice_h
+#endif  // lab_audiodevice_h

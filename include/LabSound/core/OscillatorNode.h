@@ -27,13 +27,13 @@ public:
     virtual void process(ContextRenderLock &, size_t framesToProcess) override;
     virtual void reset(ContextRenderLock &) override;
 
-        OscillatorType type() const;
-        void setType(OscillatorType type);
+    OscillatorType type() const;
+    void setType(OscillatorType type);
 
-        std::shared_ptr<AudioParam> amplitude() { return m_amplitude; }
-        std::shared_ptr<AudioParam> frequency() { return m_frequency; }
-        std::shared_ptr<AudioParam> detune() { return m_detune; }
-        std::shared_ptr<AudioParam> bias() { return m_bias; }
+    std::shared_ptr<AudioParam> amplitude() { return m_amplitude; }
+    std::shared_ptr<AudioParam> frequency() { return m_frequency; }
+    std::shared_ptr<AudioParam> detune() { return m_detune; }
+    std::shared_ptr<AudioParam> bias() { return m_bias; }
 
 protected:
     void _setType(OscillatorType type);
@@ -46,23 +46,24 @@ protected:
     std::shared_ptr<AudioParam> m_frequency;  // hz
     std::shared_ptr<AudioParam> m_bias;  // default 0
 
-        // Detune value (deviating from the frequency) in Cents.
-        std::shared_ptr<AudioParam> m_detune;
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-        void setWaveTable(std::shared_ptr<WaveTable> table);
+    // Returns true if there are sample-accurate timeline parameter changes.
+    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock &, size_t framesToProcess);
 
     // Returns true if there are sample-accurate timeline parameter changes.
     bool calculateSampleAccuratePhaseIncrements(ContextRenderLock &, size_t framesToProcess);
 
-        virtual bool propagatesSilence(ContextRenderLock & r) const override;
+    void process_oscillator(ContextRenderLock & r, int frames);
 
-        void process_oscillator(ContextRenderLock & r, int frames);
+    // One of the waveform types defined in the enum.
+    std::shared_ptr<AudioSetting> m_type;
 
-        // One of the waveform types defined in the enum.
-        std::shared_ptr<AudioSetting> m_type;
+    bool m_firstRender;
 
     bool m_firstRender;
 

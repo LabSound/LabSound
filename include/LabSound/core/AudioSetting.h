@@ -26,29 +26,26 @@ class AudioSetting
 public:
     enum class Type
     {
-    public:
-        enum class Type
-        {
-            None,
-            Bool,
-            Integer,
-            Float,
-            Enumeration,
-            Bus
-        };
+        None,
+        Bool,
+        Integer,
+        Float,
+        Enumeration,
+        Bus
+    };
 
-    private:
-        std::string _name;
-        std::string _shortName;
+private:
+    std::string _name;
+    std::string _shortName;
 
-        Type _type;
-        float _valf    = 0;
-        uint32_t _vali = 0;
-        bool _valb     = false;
-        std::shared_ptr<AudioBus> _valBus;
+    Type _type;
+    float _valf = 0;
+    uint32_t _vali = 0;
+    bool _valb = false;
+    std::shared_ptr<AudioBus> _valBus;
 
-        std::function<void()> _valueChanged;
-        char const * const * _enums = nullptr;
+    std::function<void()> _valueChanged;
+    char const * const * _enums = nullptr;
 
 public:
     explicit AudioSetting(const std::string & n, const std::string & sn, Type t)
@@ -126,8 +123,8 @@ public:
             _valueChanged();
     }
 
-        void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
-    };
+    void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
+};
 
 }  // namespace lab
 

@@ -128,75 +128,50 @@ using namespace VectorMath;
                     _lab_phase -= 2. * M_PI;
             }
         }
+        break;
 
-        // fetch the bias values
-        float * bias = m_biasValues.data();
-        if (m_bias->hasSampleAccurateValues())
+        case OscillatorType::SAWTOOTH:
         {
-            m_bias->calculateSampleAccurateValues(r, bias, framesToProcess);
-        }
-        else
-        {
-            m_bias->smooth(r);
-            float b = m_bias->smoothedValue();
             for (int i = 0; i < framesToProcess; ++i)
-                bias[i] = b;
-        }
-
-        // calculate and write the wave
-        float * destP = outputBus->channel(0)->mutableData();
-
-        OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
-        switch (type)
-        {
-            case OscillatorType::SINE:
             {
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(_lab_phase)));
-                    _lab_phase += phaseIncrements[i];
-                }
-
+                float amp = amplitudes[i];
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / M_PI * _lab_phase));
+                _lab_phase += phaseIncrements[i];
                 if (_lab_phase > 2. * M_PI)
                     _lab_phase -= 2. * M_PI;
             }
-            break;
+        }
+        break;
 
-            case OscillatorType::SQUARE:
+        case OscillatorType::TRIANGLE:
+        {
+            for (int i = 0; i < framesToProcess; ++i)
             {
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    float amp = amplitudes[i];
-                    destP[i]  = static_cast<float>(bias[i] + (_lab_phase < M_PI ? amp : -amp));
-                    _lab_phase += phaseIncrements[i];
-                    if (_lab_phase > 2. * M_PI)
-                        _lab_phase -= 2. * M_PI;
-                }
+                float amp = amplitudes[i];
+                if (_lab_phase < M_PI)
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * _lab_phase);
+                else
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * _lab_phase);
+
+                _lab_phase += phaseIncrements[i];
+                if (_lab_phase > 2. * M_PI)
+                    _lab_phase -= 2. * M_PI;
             }
-            break;
+        }
+        break;
+    }
 
-            case OscillatorType::SAWTOOTH:
-            {
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    float amp = amplitudes[i];
-                    destP[i]  = static_cast<float>(bias[i] + amp - (amp / M_PI * _lab_phase));
-                    _lab_phase += phaseIncrements[i];
-                    if (_lab_phase > 2. * M_PI)
-                        _lab_phase -= 2. * M_PI;
-                }
-            }
-            break;
+    outputBus->clearSilentFlag();
+}
 
-            case OscillatorType::TRIANGLE:
-            {
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    float amp = amplitudes[i];
-                    if (_lab_phase < M_PI)
-                        destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * _lab_phase);
-                    else
-                        destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * _lab_phase);
+/// @TODO delete these, and only have a single wave table
+/// The interface should be that the user supplies a Bus, and then the wave table
+/// will be computed from the bus.
+
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSine = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSquare = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableSawtooth = 0;
+std::shared_ptr<WaveTable> OscillatorNode::s_waveTableTriangle = 0;
 
 static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {
     "None", "Sine", "Square", "Sawtooth", "Triangle", "Custom",
@@ -275,10 +250,7 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
 
         float finalScale = m_waveTable->rateScale();
 
-        if (m_frequency->hasSampleAccurateValues())
-        {
-            hasSampleAccurateValues = true;
-            hasFrequencyChanges     = true;
+    AudioBus * outputBus = output(0)->bus(r);
 
             // Get the sample-accurate frequency values in preparation for conversion to phase increments.
             // They will be converted to phase increments below.
@@ -382,45 +354,43 @@ void OscillatorNode::_setType(OscillatorType type)
     m_type->setUint32(static_cast<uint32_t>(type), false);
 }
 
-        if (!hasSampleAccurateValues)
+        if (hasSampleAccurateValues)
         {
-            frequency         = m_frequency->smoothedValue();
-            float detune      = m_detune->smoothedValue();
-            float detuneScale = powf(2, detune / 1200);
-            frequency *= detuneScale;
+            incr = *phaseIncrements++;
+
+            frequency = invRateScale * incr;
             m_waveTable->waveDataForFundamentalFrequency(frequency, lowerWaveData, higherWaveData, tableInterpolationFactor);
         }
 
-        float incr              = frequency * rateScale;
-        float * phaseIncrements = m_phaseIncrements.data();
+        float sample1Lower = lowerWaveData[readIndex];
+        float sample2Lower = lowerWaveData[readIndex2];
+        float sample1Higher = higherWaveData[readIndex];
+        float sample2Higher = higherWaveData[readIndex2];
 
-        unsigned readIndexMask = waveTableSize - 1;
+        // Linearly interpolate within each table (lower and higher).
+        float interpolationFactor = static_cast<float>(virtualReadIndex) - readIndex;
+        float sampleHigher = (1 - interpolationFactor) * sample1Higher + interpolationFactor * sample2Higher;
+        float sampleLower = (1 - interpolationFactor) * sample1Lower + interpolationFactor * sample2Lower;
 
-        // Start rendering at the correct offset.
-        destP += quantumFrameOffset;
-        size_t n = nonSilentFramesToProcess;
+        // Then interpolate between the two tables.
+        float sample = (1 - tableInterpolationFactor) * sampleHigher + tableInterpolationFactor * sampleLower;
 
-        while (n--)
-        {
-            unsigned readIndex  = static_cast<unsigned>(virtualReadIndex);
-            unsigned readIndex2 = readIndex + 1;
+        *destP++ = sample;
 
-            // Contain within valid range.
-            readIndex  = readIndex & readIndexMask;
-            readIndex2 = readIndex2 & readIndexMask;
+        // Increment virtual read index and wrap virtualReadIndex into the range 0 -> waveTableSize.
+        virtualReadIndex += incr;
+        virtualReadIndex -= floor(virtualReadIndex * invWaveTableSize) * waveTableSize;
+    }
 
-            if (hasSampleAccurateValues)
-            {
-                incr = *phaseIncrements++;
+    m_virtualReadIndex = virtualReadIndex;
 
-                frequency = invRateScale * incr;
-                m_waveTable->waveDataForFundamentalFrequency(frequency, lowerWaveData, higherWaveData, tableInterpolationFactor);
-            }
+    outputBus->clearSilentFlag();
+}
 
-            float sample1Lower  = lowerWaveData[readIndex];
-            float sample2Lower  = lowerWaveData[readIndex2];
-            float sample1Higher = higherWaveData[readIndex];
-            float sample2Higher = higherWaveData[readIndex2];
+void OscillatorNode::reset(ContextRenderLock &)
+{
+    m_virtualReadIndex = 0;
+}
 
 void OscillatorNode::setWaveTable(std::shared_ptr<WaveTable> waveTable)
 {
@@ -428,8 +398,10 @@ void OscillatorNode::setWaveTable(std::shared_ptr<WaveTable> waveTable)
     m_type->setUint32(static_cast<uint32_t>(OscillatorType::CUSTOM), false);  // set the value, but don't notify as that would recurse
 }
 
-            // Then interpolate between the two tables.
-            float sample = (1 - tableInterpolationFactor) * sampleHigher + tableInterpolationFactor * sampleLower;
+bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
+{
+    return !isPlayingOrScheduled() || hasFinished();
+}
 
             *destP++ = sample;
 
