@@ -70,7 +70,7 @@ struct ex_simple : public labsound_example
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
 
-        oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
+        oscillator = std::make_shared<OscillatorNode>();
         gain = std::make_shared<GainNode>();
         gain->gain()->setValue(0.0625f);
 
@@ -166,7 +166,7 @@ struct ex_offline_rendering : public labsound_example
             gain->gain()->setValue(0.125f);
 
             // osc -> gain -> recorder
-            oscillator = std::make_shared<OscillatorNode>(context->sampleRate());
+            oscillator = std::make_shared<OscillatorNode>();
             context->connect(gain, oscillator, 0, 0);
             context->connect(recorder, gain, 0, 0);
             oscillator->frequency()->setValue(880.f);
@@ -218,7 +218,7 @@ struct ex_tremolo : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_tremolo");
 
-            modulator = std::make_shared<OscillatorNode>(context->sampleRate());
+            modulator = std::make_shared<OscillatorNode>();
             modulator->setType(OscillatorType::SINE);
             modulator->start(0);
             modulator->frequency()->setValue(8.0f);
@@ -226,7 +226,7 @@ struct ex_tremolo : public labsound_example
             modulatorGain = std::make_shared<GainNode>();
             modulatorGain->gain()->setValue(10);
 
-            osc = std::make_shared<OscillatorNode>(context->sampleRate());
+            osc = std::make_shared<OscillatorNode>();
             osc->setType(OscillatorType::TRIANGLE);
             osc->frequency()->setValue(440);
             osc->start(0);
@@ -269,13 +269,13 @@ struct ex_frequency_modulation : public labsound_example
         std::shared_ptr<DelayNode> chainDelay;
 
         {
-            modulator = std::make_shared<OscillatorNode>(context->sampleRate());
+            modulator = std::make_shared<OscillatorNode>();
             modulator->setType(OscillatorType::SQUARE);
             modulator->start(0);
 
             modulatorGain = std::make_shared<GainNode>();
 
-            osc = std::make_shared<OscillatorNode>(context->sampleRate());
+            osc = std::make_shared<OscillatorNode>();
             osc->setType(OscillatorType::SQUARE);
             osc->frequency()->setValue(300);
             osc->start(0);
@@ -351,8 +351,8 @@ struct ex_runtime_graph_update : public labsound_example
             context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
             {
-                oscillator1 = std::make_shared<OscillatorNode>(context->sampleRate());
-                oscillator2 = std::make_shared<OscillatorNode>(context->sampleRate());
+                oscillator1 = std::make_shared<OscillatorNode>();
+                oscillator2 = std::make_shared<OscillatorNode>();
 
                 gain = std::make_shared<GainNode>();
                 gain->gain()->setValue(0.50);
@@ -805,7 +805,7 @@ struct ex_dalek_filter : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_dalek_filter");
 
-            vIn = std::make_shared<OscillatorNode>(context->sampleRate());
+            vIn = std::make_shared<OscillatorNode>();
             vIn->frequency()->setValue(30.0f);
             vIn->start(0.f);
 
@@ -963,14 +963,14 @@ struct ex_redalert_synthesis : public labsound_example
 
             outputGainFunction->start(0);
 
-            osc = std::make_shared<OscillatorNode>(context->sampleRate());
+            osc = std::make_shared<OscillatorNode>();
             osc->setType(OscillatorType::SAWTOOTH);
             osc->frequency()->setValue(220);
             osc->start(0);
             oscGain = std::make_shared<GainNode>();
             oscGain->gain()->setValue(0.5f);
 
-            resonator = std::make_shared<OscillatorNode>(context->sampleRate());
+            resonator = std::make_shared<OscillatorNode>();
             resonator->setType(OscillatorType::SINE);
             resonator->frequency()->setValue(220);
             resonator->start(0);

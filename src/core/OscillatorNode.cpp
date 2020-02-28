@@ -22,7 +22,10 @@
 
 using namespace lab;
 
-void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProcess)
+static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {"None", "Sine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
+
+OscillatorNode::OscillatorNode() 
+    : m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
 using namespace VectorMath;
 
@@ -191,7 +194,7 @@ OscillatorNode::OscillatorNode(const float sampleRate)
     // convert frequencies to phase increments
     for (int i = 0; i < framesToProcess; ++i)
     {
-        phaseIncrements[i] = static_cast<float>(2.f * M_PI * phaseIncrements[i] / m_sampleRate);
+        phaseIncrements[i] = static_cast<float>(2.f * M_PI * phaseIncrements[i] / sample_rate);
     }
 
     // fetch the amplitudes
@@ -219,7 +222,9 @@ OscillatorNode::OscillatorNode(const float sampleRate)
         m_bias->smooth(r);
         float b = m_bias->smoothedValue();
         for (int i = 0; i < framesToProcess; ++i)
+        {
             bias[i] = b;
+        }
     }
 
     // calculate and write the wave
@@ -232,8 +237,8 @@ OscillatorNode::OscillatorNode(const float sampleRate)
         {
             for (int i = 0; i < framesToProcess; ++i)
             {
-                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(_lab_phase)));
-                _lab_phase += phaseIncrements[i];
+                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
+                phase += phaseIncrements[i];
             }
 
 void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
@@ -263,10 +268,10 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i]  = static_cast<float>(bias[i] + (_lab_phase < M_PI ? amp : -amp));
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                destP[i] = static_cast<float>(bias[i] + (phase < M_PI ? amp : -amp));
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
         }
         break;
@@ -276,10 +281,10 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i]  = static_cast<float>(bias[i] + amp - (amp / M_PI * _lab_phase));
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / M_PI * phase));
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
         }
         break;
@@ -289,20 +294,21 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                if (_lab_phase < M_PI)
-                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * _lab_phase);
+                if (phase < M_PI)
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * phase);
                 else
-                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * _lab_phase);
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * phase);
 
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
         }
         break;
     }
 
-    outputBus->clearSilentFlag();
+        outputBus->clearSilentFlag();
+    }
 }
 
 static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {"None", "Sine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
@@ -422,10 +428,6 @@ bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
     }
 
     return;
-}
-
-void OscillatorNode::reset(ContextRenderLock &)
-{
 }
 
 bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
