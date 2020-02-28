@@ -175,7 +175,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
-    _ring = new RingBufferT<float>();
+    _ring = new cinder::RingBufferT<float>();
     _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
     _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
 }
