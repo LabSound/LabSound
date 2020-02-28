@@ -213,11 +213,9 @@ void WaveTable::generateBasicWaveform(OscillatorType shape)
     realP[0] = 0;
     imagP[0] = 0;
 
-    const float piFloat = float(3.14159265358979323846);
-
     for (unsigned n = 1; n < halfSize; ++n)
     {
-        float piFactor = 2 / (n * piFloat);
+        float piFactor = 2 / (n * static_cast<float>(LAB_PI));
 
         // All waveforms are odd functions with a positive slope at time 0. Hence the coefficients
         // for cos() are always 0.

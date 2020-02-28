@@ -354,7 +354,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock & r, double * outAzimuth,
 
     FloatPoint3D projectedSource = normalize(sourceListener - upProjection * up);
 
-    azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / piDouble;
+    azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / static_cast<double>(LAB_PI);
     fixNANs(azimuth);  // avoid illegal values
 
     // Source in front or behind the listener
@@ -369,7 +369,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock & r, double * outAzimuth,
         azimuth = 450.0 - azimuth;
 
     // Elevation
-    double elevation = 90.0 - 180.0 * acos(dot(sourceListener, up)) / piDouble;
+    double elevation = 90.0 - 180.0 * acos(dot(sourceListener, up)) / static_cast<double>(LAB_PI);
     fixNANs(elevation);  // avoid illegal values
 
     if (elevation > 90.0)

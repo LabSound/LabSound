@@ -278,7 +278,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
         float desiredGain = m_detectorAverage;
 
         // Pre-warp so we get desiredGain after sin() warp below.
-        float scaledDesiredGain = asinf(desiredGain) / (0.5f * piFloat);
+        float scaledDesiredGain = asinf(desiredGain) / (0.5f * static_cast<float>(LAB_PI));
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Deal with envelopes
@@ -418,7 +418,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                 }
 
                 // Warp pre-compression gain to smooth out sharp exponential transition points.
-                float postWarpCompressorGain = sinf(0.5f * piFloat * compressorGain);
+                float postWarpCompressorGain = sinf(0.5f * static_cast<float>(LAB_PI) * compressorGain);
 
                 // Calculate total gain using master gain and effect blend.
                 float totalGain = dryMix + wetMix * masterLinearGain * postWarpCompressorGain;

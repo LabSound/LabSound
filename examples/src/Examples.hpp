@@ -1070,7 +1070,7 @@ struct ex_wavepot_dsp : public labsound_example
 
     float quickSin(float x, float t)
     {
-        return std::sin(2.0f * float(M_PI) * t * x);
+        return std::sin(2.0f * float(static_cast<float>(LAB_PI)) * t * x);
     }
 
     float quickSaw(float x, float t)

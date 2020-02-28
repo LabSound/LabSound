@@ -4,7 +4,7 @@
 #include "LabSound/core/Macros.h"
 #include "internal/Assertions.h"
 
-#if defined(WEBAUDIO_KISSFFT)
+#if defined(USE_KISS_FFT)
 
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"

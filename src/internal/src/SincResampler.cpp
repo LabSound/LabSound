@@ -81,13 +81,13 @@ void SincResampler::initializeKernel()
         for (int i = 0; i < n; ++i)
         {
             // Compute the sinc() with offset.
-            double s = sincScaleFactor * piDouble * (i - halfSize - subsampleOffset);
+            double s = sincScaleFactor * static_cast<double>(LAB_PI) * (i - halfSize - subsampleOffset);
             double sinc = !s ? 1.0 : sin(s) / s;
             sinc *= sincScaleFactor;
 
             // Compute Blackman window, matching the offset of the sinc().
             double x = (i - subsampleOffset) / n;
-            double window = a0 - a1 * cos(2.0 * piDouble * x) + a2 * cos(4.0 * piDouble * x);
+            double window = a0 - a1 * cos(2.0 * static_cast<double>(LAB_PI) * x) + a2 * cos(4.0 * static_cast<double>(LAB_PI) * x);
 
             // Window the sinc() function and store at the correct offset.
             m_kernelStorage[static_cast<size_t>(i) + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);

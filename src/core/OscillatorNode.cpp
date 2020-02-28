@@ -140,7 +140,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t fram
     // convert frequencies to phase increments
     for (int i = 0; i < framesToProcess; ++i)
     {
-        phaseIncrements[i] = static_cast<float>(2.f * M_PI * phaseIncrements[i] / sample_rate);
+        phaseIncrements[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI) * phaseIncrements[i] / sample_rate);
     }
 
     // fetch the amplitudes
@@ -187,8 +187,8 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t fram
                 phase += phaseIncrements[i];
             }
 
-            if (phase > 2. * M_PI)
-                phase -= 2. * M_PI;
+            if (phase > 2. * static_cast<float>(LAB_PI))
+                phase -= 2. * static_cast<float>(LAB_PI);
         }
         break;
 
@@ -197,10 +197,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t fram
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i] = static_cast<float>(bias[i] + (phase < M_PI ? amp : -amp));
+                destP[i] = static_cast<float>(bias[i] + (phase < static_cast<float>(LAB_PI) ? amp : -amp));
                 phase += phaseIncrements[i];
-                if (phase > 2. * M_PI)
-                    phase -= 2. * M_PI;
+                if (phase > 2. * static_cast<float>(LAB_PI))
+                    phase -= 2. * static_cast<float>(LAB_PI);
             }
         }
         break;
@@ -210,10 +210,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t fram
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i] = static_cast<float>(bias[i] + amp - (amp / M_PI * phase));
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / static_cast<float>(LAB_PI) * phase));
                 phase += phaseIncrements[i];
-                if (phase > 2. * M_PI)
-                    phase -= 2. * M_PI;
+                if (phase > 2. * static_cast<float>(LAB_PI))
+                    phase -= 2. * static_cast<float>(LAB_PI);
             }
         }
         break;
@@ -223,14 +223,14 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t fram
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                if (phase < M_PI)
-                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * phase);
+                if (phase < static_cast<float>(LAB_PI))
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / static_cast<float>(LAB_PI)) * phase);
                 else
-                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * phase);
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / static_cast<float>(LAB_PI)) * phase);
 
                 phase += phaseIncrements[i];
-                if (phase > 2. * M_PI)
-                    phase -= 2. * M_PI;
+                if (phase > 2. * static_cast<float>(LAB_PI))
+                    phase -= 2. * static_cast<float>(LAB_PI);
             }
             break;
         }

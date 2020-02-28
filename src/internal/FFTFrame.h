@@ -13,19 +13,19 @@
 #include <vector>
 
 #if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
-#define USE_ACCELERATE_FFT 1
+  #define USE_ACCELERATE_FFT 1
 #else
-#define USE_ACCELERATE_FFT 0
+  #define USE_ACCELERATE_FFT 0
 #endif
 
 #if USE_ACCELERATE_FFT
-#include <Accelerate/Accelerate.h>
-#endif  // !USE_ACCELERATE_FFT
+  #include <Accelerate/Accelerate.h>
+#endif 
 
-#if defined(WEBAUDIO_KISSFFT)
+#if defined(USE_KISS_FFT)
 #include <kissfft/kiss_fft.hpp>
 #include <kissfft/kiss_fftr.hpp>
-#endif  // USE(WEBAUDIO_KISSFFT)
+#endif
 
 namespace lab
 {
@@ -90,9 +90,9 @@ private:
     DSPSplitComplex m_frame;
     AudioFloatArray m_realData;
     AudioFloatArray m_imagData;
-#else  // !USE_ACCELERATE_FFT
+#endif
 
-#if defined(WEBAUDIO_KISSFFT)
+#if defined(USE_KISS_FFT)
     kiss_fftr_cfg mFFT;
     kiss_fftr_cfg mIFFT;
 
@@ -105,7 +105,6 @@ private:
     AudioFloatArray m_imagData;
 #endif
 
-#endif  // !USE_ACCELERATE_FFT
 };
 
 }  // namespace lab

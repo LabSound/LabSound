@@ -82,7 +82,7 @@ public:
                 m_pan = clampTo(*panValues++, -1.0, 1.0);
 
                 // Pan from left to right [-1; 1] will be normalized as [0; 1].
-                panRadian = (m_pan * 0.5 + 0.5) * piOverTwoDouble;
+                panRadian = (m_pan * 0.5 + 0.5) * static_cast<double>(LAB_HALF_PI);
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -102,7 +102,7 @@ public:
                 m_pan = clampTo(*panValues++, -1.0, 1.0);
 
                 // Normalize [-1; 0] to [0; 1]. Do nothing when [0; 1].
-                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * piOverTwoDouble;
+                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * static_cast<double>(LAB_HALF_PI);
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -172,7 +172,7 @@ public:
                 m_pan += (targetPan - m_pan) * smoothingConstant;
 
                 // Pan from left to right [-1; 1] will be normalized as [0; 1].
-                panRadian = (m_pan * 0.5 + 0.5) * piOverTwoDouble;
+                panRadian = (m_pan * 0.5 + 0.5) * static_cast<double>(LAB_HALF_PI);
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -194,7 +194,7 @@ public:
                 // Normalize [-1; 0] to [0; 1] for the left pan position (<= 0), and
                 // do nothing when [0; 1].
 
-                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * piOverTwoDouble;
+                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * static_cast<double>(LAB_HALF_PI);
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);

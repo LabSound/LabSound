@@ -118,32 +118,32 @@ void FFTFrame::interpolateFrequencyComponents(const FFTFrame & frame1, const FFT
         lastPhase2 = phase2;
 
         // Unwrap phase deltas
-        if (deltaPhase1 > piDouble)
-            deltaPhase1 -= 2.0 * piDouble;
-        if (deltaPhase1 < -piDouble)
-            deltaPhase1 += 2.0 * piDouble;
-        if (deltaPhase2 > piDouble)
-            deltaPhase2 -= 2.0 * piDouble;
-        if (deltaPhase2 < -piDouble)
-            deltaPhase2 += 2.0 * piDouble;
+        if (deltaPhase1 > static_cast<double>(LAB_PI))
+            deltaPhase1 -= 2.0 * static_cast<double>(LAB_PI);
+        if (deltaPhase1 < -static_cast<double>(LAB_PI))
+            deltaPhase1 += 2.0 * static_cast<double>(LAB_PI);
+        if (deltaPhase2 > static_cast<double>(LAB_PI))
+            deltaPhase2 -= 2.0 * static_cast<double>(LAB_PI);
+        if (deltaPhase2 < -static_cast<double>(LAB_PI))
+            deltaPhase2 += 2.0 * static_cast<double>(LAB_PI);
 
         // Blend group-delays
         double deltaPhaseBlend;
 
-        if (deltaPhase1 - deltaPhase2 > piDouble)
-            deltaPhaseBlend = s1 * deltaPhase1 + s2 * (2.0 * piDouble + deltaPhase2);
-        else if (deltaPhase2 - deltaPhase1 > piDouble)
-            deltaPhaseBlend = s1 * (2.0 * piDouble + deltaPhase1) + s2 * deltaPhase2;
+        if (deltaPhase1 - deltaPhase2 > static_cast<double>(LAB_PI))
+            deltaPhaseBlend = s1 * deltaPhase1 + s2 * (2.0 * static_cast<double>(LAB_PI) + deltaPhase2);
+        else if (deltaPhase2 - deltaPhase1 > static_cast<double>(LAB_PI))
+            deltaPhaseBlend = s1 * (2.0 * static_cast<double>(LAB_PI) + deltaPhase1) + s2 * deltaPhase2;
         else
             deltaPhaseBlend = s1 * deltaPhase1 + s2 * deltaPhase2;
 
         phaseAccum += deltaPhaseBlend;
 
         // Unwrap
-        if (phaseAccum > piDouble)
-            phaseAccum -= 2.0 * piDouble;
-        if (phaseAccum < -piDouble)
-            phaseAccum += 2.0 * piDouble;
+        if (phaseAccum > static_cast<double>(LAB_PI))
+            phaseAccum -= 2.0 * static_cast<double>(LAB_PI);
+        if (phaseAccum < -static_cast<double>(LAB_PI))
+            phaseAccum += 2.0 * static_cast<double>(LAB_PI);
 
         Complex c = std::polar(mag, phaseAccum);
 
@@ -163,7 +163,7 @@ double FFTFrame::extractAverageGroupDelay()
 
     int halfSize = fftSize() / 2;
 
-    const double kSamplePhaseDelay = (2.0 * piDouble) / double(fftSize());
+    const double kSamplePhaseDelay = (2.0 * static_cast<double>(LAB_PI)) / double(fftSize());
 
     // Calculate weighted average group delay
     for (int i = 0; i < halfSize; i++)
@@ -176,10 +176,10 @@ double FFTFrame::extractAverageGroupDelay()
         lastPhase = phase;
 
         // Unwrap
-        if (deltaPhase < -piDouble)
-            deltaPhase += 2.0 * piDouble;
-        if (deltaPhase > piDouble)
-            deltaPhase -= 2.0 * piDouble;
+        if (deltaPhase < -static_cast<double>(LAB_PI))
+            deltaPhase += 2.0 * static_cast<double>(LAB_PI);
+        if (deltaPhase > static_cast<double>(LAB_PI))
+            deltaPhase -= 2.0 * static_cast<double>(LAB_PI);
 
         aveSum += mag * deltaPhase;
         weightSum += mag;
@@ -209,7 +209,7 @@ void FFTFrame::addConstantGroupDelay(double sampleFrameDelay)
     float * realP = realData();
     float * imagP = imagData();
 
-    const double kSamplePhaseDelay = (2.0 * piDouble) / double(fftSize());
+    const double kSamplePhaseDelay = (2.0 * static_cast<double>(LAB_PI)) / double(fftSize());
 
     double phaseAdj = -sampleFrameDelay * kSamplePhaseDelay;
 
