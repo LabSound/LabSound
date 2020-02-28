@@ -8,6 +8,8 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
+#include <algorithm>
+#include <cmath>
 
 namespace lab
 {
@@ -36,7 +38,7 @@ class GranulationNode : public AudioScheduledSourceNode
         {
             grain_start = sample->length() * _position_offset;
             grain_duration = _duration * static_cast<double>(sample_rate);
-            grain_end = std::min(sample->length(), grain_start + grain_duration);
+            grain_end = std::min(static_cast<double>(sample->length()), grain_start + grain_duration);
 
             playback_frequency = (1.0 / _duration) * _speed;
             sample_accurate_time = (playback_frequency > 0) ? grain_start : grain_end;
