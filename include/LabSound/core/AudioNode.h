@@ -62,6 +62,11 @@ class AudioSetting;
 class ContextGraphLock;
 class ContextRenderLock;
 
+struct BangInterface
+{
+    virtual void bang(ContextRenderLock &) = 0;
+};
+
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs.
@@ -82,8 +87,6 @@ public:
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
 
-    virtual bool hasBang() const { return false; }
-    virtual void bang(ContextRenderLock &) {}
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.

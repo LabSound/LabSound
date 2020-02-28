@@ -11,7 +11,7 @@
 namespace lab
 {
 
-class ADSRNode : public AudioBasicProcessorNode
+class ADSRNode : public AudioBasicProcessorNode, public BangInterface
 {
     class ADSRNodeInternal;
     ADSRNodeInternal * internalNode;
@@ -21,8 +21,7 @@ public:
     virtual ~ADSRNode();
 
     // bang will attack, hold, decay, release
-    virtual bool hasBang() const override { return true; }
-    virtual void bang(ContextRenderLock &) override;
+    virtual void bang(ContextRenderLock & rl) override;
 
     // noteOn will attack, noteOff will decay, release
     // If noteOn is called before noteOff has finished, a pop can occur. Polling
