@@ -5,6 +5,8 @@
 #ifndef AudioChannel_h
 #define AudioChannel_h
 
+#include <stddef.h>
+
 namespace lab
 {
 
