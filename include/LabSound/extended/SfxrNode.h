@@ -76,7 +76,7 @@ public:
         NOISE
     };
 
-    virtual void bang(ContextRenderLock & rl) override;
+    virtual void bang(const double length = 0.0) override;
 
     // some presets
     void setDefaultBeep();
