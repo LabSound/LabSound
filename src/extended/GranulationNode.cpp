@@ -1,7 +1,3 @@
-
-#if 0
-Coming Soon!
-
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
@@ -187,5 +183,3 @@ bool GranulationNode::propagatesSilence(ContextRenderLock & r) const
 {
     return !isPlayingOrScheduled() || hasFinished();
 }
-
-#endif

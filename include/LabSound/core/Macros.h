@@ -68,6 +68,4 @@
 #define LAB_LN_10       2.3025850929940459
 #define LAB_INV_LN_10   0.4342944819032517
 
-
 #endif  // end labsound_macros_h
-
