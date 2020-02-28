@@ -182,7 +182,7 @@ void WaveTable::createBandLimitedTables(const float * realData, const float * im
 
         // Apply an inverse FFT to generate the time-domain table data.
         float * data = m_bandLimitedTables[rangeIndex]->data();
-        frame.doInverseFFT(data);
+        frame.computeInverseFFT(data);
 
         // For the first range (which has the highest power), calculate its peak value then compute normalization scale.
         if (!rangeIndex)

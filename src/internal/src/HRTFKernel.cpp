@@ -37,10 +37,10 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, size_t analysisFFT
     ASSERT(uint64_t(1) << static_cast<uint64_t>(log2(analysisFFTSize)) == analysisFFTSize);
 
     FFTFrame estimationFrame(analysisFFTSize);
-    estimationFrame.doFFT(impulseP);
+    estimationFrame.computeForwardFFT(impulseP);
 
     float frameDelay = static_cast<float>(estimationFrame.extractAverageGroupDelay());
-    estimationFrame.doInverseFFT(impulseP);
+    estimationFrame.computeInverseFFT(impulseP);
 
     return frameDelay;
 }
@@ -84,7 +84,7 @@ std::unique_ptr<AudioChannel> HRTFKernel::createImpulseResponse()
 
     // Add leading delay back in.
     fftFrame.addConstantGroupDelay(m_frameDelay);
-    fftFrame.doInverseFFT(channel->mutableData());
+    fftFrame.computeInverseFFT(channel->mutableData());
 
     return channel;
 }

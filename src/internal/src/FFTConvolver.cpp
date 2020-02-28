@@ -65,9 +65,9 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
         {
 
             // The input buffer is now filled (get frequency-domain version)
-            m_frame.doFFT(m_inputBuffer.data());
+            m_frame.computeForwardFFT(m_inputBuffer.data());
             m_frame.multiply(*fftKernel);
-            m_frame.doInverseFFT(m_outputBuffer.data());
+            m_frame.computeInverseFFT(m_outputBuffer.data());
 
             // Overlap-add 1st half from previous time
             vadd(m_outputBuffer.data(), 1, m_lastOverlapBuffer.data(), 1, m_outputBuffer.data(), 1, halfSize);

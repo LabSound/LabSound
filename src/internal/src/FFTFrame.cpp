@@ -25,7 +25,7 @@ void FFTFrame::doPaddedFFT(const float * data, size_t dataSize)
     paddedResponse.copyToRange(data, 0, dataSize);
 
     // Get the frequency-domain version of padded response
-    doFFT(paddedResponse.data());
+    computeForwardFFT(paddedResponse.data());
 }
 
 std::unique_ptr<FFTFrame> FFTFrame::createInterpolatedFrame(const FFTFrame & frame1, const FFTFrame & frame2, double x)
@@ -37,11 +37,11 @@ std::unique_ptr<FFTFrame> FFTFrame::createInterpolatedFrame(const FFTFrame & fra
     // In the time-domain, the 2nd half of the response must be zero, to avoid circular convolution aliasing...
     int fftSize = newFrame->fftSize();
     AudioFloatArray buffer(fftSize);
-    newFrame->doInverseFFT(buffer.data());
+    newFrame->computeInverseFFT(buffer.data());
     buffer.zeroRange(fftSize / 2, fftSize);
 
     // Put back into frequency domain.
-    newFrame->doFFT(buffer.data());
+    newFrame->computeForwardFFT(buffer.data());
 
     return newFrame;
 }
