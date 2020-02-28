@@ -9,6 +9,7 @@
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "internal/Assertions.h"
+#include <algorithm>
 
 namespace lab
 {
@@ -178,7 +179,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
             float d_src = static_cast<float>(src_size);
             float d_dst = static_cast<float>(array.size());
             float d_err = d_dst / d_src;
-            std::memset(&array[0], 0, array.size());
+            memset(&array[0], 0, array.size());
             size_t u = 0;
             float error = 0;
             for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
