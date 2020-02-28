@@ -12,7 +12,7 @@
 namespace lab
 {
 
-class SfxrNode : public lab::AudioScheduledSourceNode
+class SfxrNode : public AudioScheduledSourceNode, public BangInterface
 {
 public:
     SfxrNode(float sampleRate);
@@ -76,8 +76,7 @@ public:
         NOISE
     };
 
-    virtual bool hasBang() const override { return true; }
-    virtual void bang(ContextRenderLock &) override;
+    virtual void bang(ContextRenderLock & rl) override;
 
     // some presets
     void setDefaultBeep();
