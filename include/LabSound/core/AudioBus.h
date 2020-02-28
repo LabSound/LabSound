@@ -8,6 +8,7 @@
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/AudioChannel.h"
 #include "LabSound/core/AudioArray.h"
+#include <memory>
 #include <vector>
 #include <iostream>
 
