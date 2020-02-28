@@ -1259,8 +1259,6 @@ struct ex_wavepot_dsp : public labsound_example
     }
 };
 
-#if 0
-Coming Soon!
 ///////////////////////////////
 //    ex_granulation_node    //
 ///////////////////////////////
@@ -1273,8 +1271,7 @@ struct ex_granulation_node : public labsound_example
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
-        //toliet_flush_lever_water_gurgle_01.wav
-        auto grain_source = MakeBusFromSampleFile("samples/pretty_rhodes_delay.wav", argc, argv);
+        auto grain_source = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         if (!grain_source) return;
 
         std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>();
@@ -1305,5 +1302,3 @@ struct ex_granulation_node : public labsound_example
         recorder->writeRecordingToWav("ex_granulation_node.wav");
     }
 };
-#endif
-

@@ -9,6 +9,8 @@
 #include <cmath>
 #include <vector>
 
+#include "LabSound/core/Macros.h"
+
 namespace lab
 {
 enum class WindowFunction
@@ -128,7 +130,7 @@ inline void ApplyWindowFunctionInplace(const WindowFunction type, float * buffer
         {
             for (uint32_t i = 0; i < window_size; ++i)
             {
-                buffer[i] *= detail::gen_cosine_1(max_index, i, 0.54, 0.46);
+                buffer[i] *= detail::gen_cosine_1(max_index, i, 0.54f, 0.46f);
             }
         }
         break;
@@ -175,7 +177,7 @@ inline void ApplyWindowFunctionInplace(const WindowFunction type, float * buffer
             {
                 const float alpha = 2.f;
                 const float a = 1.f - std::cos((static_cast<float>(LAB_TAU) * i) / max_index);
-                const float b = (-alpha * std::abs(max_index - 2.0 * i)) / max_index;
+                const float b = (-alpha * std::abs(max_index - 2.f * i)) / max_index;
                 buffer[i] *= 0.5f * a * exp(b);
             }
         }
