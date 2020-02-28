@@ -189,5 +189,3 @@ bool GranulationNode::propagatesSilence(ContextRenderLock & r) const
 }
 
 #endif
-
-    

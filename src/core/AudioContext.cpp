@@ -3,13 +3,13 @@
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
-#include "LabSound/core/AudioHardwareInputNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -17,8 +17,8 @@
 
 #include "readerwriterqueue/readerwriterqueue.h"
 
-#include <queue>
 #include <assert.h>
+#include <queue>
 #include <stdio.h>
 
 namespace lab
@@ -56,21 +56,24 @@ struct PendingConnection
 
 struct AudioContext::Internals
 {
-    Internals(bool a) : autoDispatchEvents(a) {}
+    Internals(bool a)
+        : autoDispatchEvents(a)
+    {
+    }
     ~Internals() = default;
 
     moodycamel::ReaderWriterQueue<std::function<void()>> enqueuedEvents;
     bool autoDispatchEvents;
-    
+
     struct CompareScheduledTime
     {
         bool operator()(const PendingConnection & p1, const PendingConnection & p2)
         {
             if (!p1.destination || !p2.destination) return false;
-            if (!p2.destination->isScheduledNode()) return false; // src cannot be compared
-            if (!p1.destination->isScheduledNode()) return false; // dest cannot be compared
-            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode*>(p2.destination.get());
-            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode*>(p1.destination.get());
+            if (!p2.destination->isScheduledNode()) return false;  // src cannot be compared
+            if (!p1.destination->isScheduledNode()) return false;  // dest cannot be compared
+            AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode *>(p2.destination.get());
+            AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode *>(p1.destination.get());
             return ap2->startTime() < ap1->startTime();
         }
     };
@@ -80,7 +83,7 @@ struct AudioContext::Internals
 };
 
 // Constructor for realtime rendering
-AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents) 
+AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
     : m_isOfflineContext(isOffline)
 {
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
@@ -92,7 +95,7 @@ AudioContext::~AudioContext()
     // LOG can block.
     // LOG("Begin AudioContext::~AudioContext()");
 
-    if (!isOfflineContext()) 
+    if (!isOfflineContext())
         graphKeepAlive = 0.25f;
 
     updateThreadShouldRun = false;
@@ -124,14 +127,14 @@ void AudioContext::lazyInitialize()
         {
             if (m_device.get())
             {
-                graphKeepAlive = 0.25f; // pump the graph for the first 0.25 seconds
+                graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
                 graphUpdateThread = std::thread(&AudioContext::update, this);
 
                 if (!isOfflineContext())
                 {
                     // This starts the audio thread and all audio rendering.
                     // The destination node's provideInput() method will now be called repeatedly to render audio.
-                    // Each time provideInput() is called, a portion of the audio stream is rendered. 
+                    // Each time provideInput() is called, a portion of the audio stream is rendered.
 
                     device_callback->start();
                 }
@@ -163,7 +166,7 @@ void AudioContext::uninitialize()
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
 
-    updateAutomaticPullNodes(); // added for the case where an NullDeviceNode needs to update the graph
+    updateAutomaticPullNodes();  // added for the case where an NullDeviceNode needs to update the graph
 
     m_isInitialized = false;
 }
@@ -247,10 +250,10 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, uint32_t index)
 
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
 {
-    if (!param) 
+    if (!param)
         throw std::invalid_argument("No parameter specified");
 
-    if (index >= driver->numberOfOutputs()) 
+    if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
     m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
@@ -269,15 +272,14 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
     cv.notify_all();
 }
 
-
 void AudioContext::update()
 {
     LOG("Begin UpdateGraphThread");
 
-    const float frameLengthInMilliseconds = (sampleRate() / (float)AudioNode::ProcessingSizeInFrames) / 1000.f; // = ~0.345ms @ 44.1k/128
+    const float frameLengthInMilliseconds = (sampleRate() / (float) AudioNode::ProcessingSizeInFrames) / 1000.f;  // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
     const uint32_t graphTickDurationUs = static_cast<uint32_t>(graphTickDurationMs * 1000.f);  // = ~5550us
-    
+
     ASSERT(frameLengthInMilliseconds);
     ASSERT(graphTickDurationMs);
     ASSERT(graphTickDurationUs);
@@ -343,82 +345,81 @@ void AudioContext::update()
 
                 switch (connection.type)
                 {
-                case ConnectionType::Connect:
-                {
-                    // requeue this node if the scheduled time is > 100ms away
-                    if (connection.destination && connection.destination->isScheduledNode())
+                    case ConnectionType::Connect:
                     {
-                        AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode*>(connection.destination.get());
-                        if (node->startTime() > now + 0.1)
+                        // requeue this node if the scheduled time is > 100ms away
+                        if (connection.destination && connection.destination->isScheduledNode())
                         {
-                            m_internal->pendingNodeConnections.pop();  // pop from current queue
-                            skippedConnections.push_back(connection); // save for later
+                            AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode *>(connection.destination.get());
+                            if (node->startTime() > now + 0.1)
+                            {
+                                m_internal->pendingNodeConnections.pop();  // pop from current queue
+                                skippedConnections.push_back(connection);  // save for later
+                                continue;
+                            }
+                        }
+
+                        connection.source->scheduleConnect();
+
+                        AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+                    }
+                    break;
+
+                    case ConnectionType::Disconnect:
+                    {
+                        connection.type = ConnectionType::FinishDisconnect;
+                        skippedConnections.push_back(connection);  // save for later
+                        if (connection.source)
+                        {
+                            // if source and destination are specified, then we don't ramp out the destination
+                            // source all by itself will be completely disconnected
+                            connection.source->scheduleDisconnect();
+                        }
+                        else if (connection.destination)
+                        {
+                            // destination all by itself will be completely disconnected
+                            connection.destination->scheduleDisconnect();
+                        }
+                        graphKeepAlive = updateThreadShouldRun ? connection.duration : graphKeepAlive;
+                    }
+                    break;
+
+                    // @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
+                    case ConnectionType::FinishDisconnect:
+                    {
+                        if (connection.duration > 0)
+                        {
+                            connection.duration -= delta;
+                            skippedConnections.push_back(connection);
                             continue;
                         }
-                    }
 
-                    connection.source->scheduleConnect();
-
-                    AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
-                }
-                break;
-
-                case ConnectionType::Disconnect:
-                {
-                    connection.type = ConnectionType::FinishDisconnect;
-                    skippedConnections.push_back(connection); // save for later
-                    if (connection.source)
-                    {
-                        // if source and destination are specified, then we don't ramp out the destination
-                        // source all by itself will be completely disconnected
-                        connection.source->scheduleDisconnect();
-                    }
-                    else if (connection.destination)
-                    {
-                        // destination all by itself will be completely disconnected
-                        connection.destination->scheduleDisconnect();
-                    }
-                    graphKeepAlive = updateThreadShouldRun ? connection.duration : graphKeepAlive;
-                }
-                break;
-
-                // @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
-                case ConnectionType::FinishDisconnect:
-                {
-                    if (connection.duration > 0)
-                    {
-                        connection.duration -= delta;
-                        skippedConnections.push_back(connection);
-                        continue;
-                    }
-
-                    if (connection.source && connection.destination)
-                    {
-                        AudioNodeInput::disconnect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
-                    }
-                    else if (connection.destination)
-                    {
-                        for (unsigned int out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                        if (connection.source && connection.destination)
                         {
-                            auto output = connection.destination->output(out);
-                            if (!output) continue;
+                            AudioNodeInput::disconnect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
+                        }
+                        else if (connection.destination)
+                        {
+                            for (unsigned int out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                            {
+                                auto output = connection.destination->output(out);
+                                if (!output) continue;
 
-                            AudioNodeOutput::disconnectAll(gLock, output);
+                                AudioNodeOutput::disconnectAll(gLock, output);
+                            }
+                        }
+                        else if (connection.source)
+                        {
+                            for (unsigned int out = 0; out < connection.source->numberOfOutputs(); ++out)
+                            {
+                                auto output = connection.source->output(out);
+                                if (!output) continue;
+
+                                AudioNodeOutput::disconnectAll(gLock, output);
+                            }
                         }
                     }
-                    else if (connection.source)
-                    {
-                        for (unsigned int out = 0; out < connection.source->numberOfOutputs(); ++out)
-                        {
-                            auto output = connection.source->output(out);
-                            if (!output) continue;
-
-                            AudioNodeOutput::disconnectAll(gLock, output);
-                        }
-                    }
-
-                }
-                break;
+                    break;
                 }
             }
 
@@ -427,10 +428,9 @@ void AudioContext::update()
             {
                 m_internal->pendingNodeConnections.push(sc);
             }
-
         }
 
-        if (lk.owns_lock()) 
+        if (lk.owns_lock())
             lk.unlock();
     }
 
@@ -490,10 +490,10 @@ void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t frame
     }
 }
 
-void AudioContext::enqueueEvent(std::function<void()>& fn)
+void AudioContext::enqueueEvent(std::function<void()> & fn)
 {
     m_internal->enqueuedEvents.enqueue(fn);
-    cv.notify_all(); // processing thread must dispatch events
+    cv.notify_all();  // processing thread must dispatch events
 }
 
 void AudioContext::dispatchEvents()
@@ -509,7 +509,7 @@ void AudioContext::setDeviceNode(std::shared_ptr<AudioNode> device)
 {
     m_device = device;
 
-    if (auto * callback = dynamic_cast<AudioDeviceRenderCallback*>(device.get()))
+    if (auto * callback = dynamic_cast<AudioDeviceRenderCallback *>(device.get()))
     {
         device_callback = callback;
     }
@@ -550,7 +550,7 @@ void AudioContext::startOfflineRendering()
     // This takes the function of `lazyInitialize()` but for offline contexts
     if (m_isOfflineContext)
     {
-         device_callback->start();
+        device_callback->start();
     }
     else
     {
@@ -558,4 +558,4 @@ void AudioContext::startOfflineRendering()
     }
 }
 
-} // End namespace lab
+}  // End namespace lab

@@ -2,10 +2,10 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/Macros.h"
 #include "internal/SincResampler.h"
-#include "internal/Assertions.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
+#include "internal/Assertions.h"
 
 #ifdef __SSE2__
 #include <emmintrin.h>
@@ -42,181 +42,188 @@ using namespace std;
 
 namespace lab
 {
-    SincResampler::SincResampler(double scaleFactor, size_t kernelSize, size_t numberOfKernelOffsets)
-        : m_scaleFactor(scaleFactor), m_kernelSize(kernelSize), m_numberOfKernelOffsets(numberOfKernelOffsets), m_kernelStorage(m_kernelSize * (m_numberOfKernelOffsets + 1)), m_inputBuffer(m_blockSize + m_kernelSize)
+SincResampler::SincResampler(double scaleFactor, size_t kernelSize, size_t numberOfKernelOffsets)
+    : m_scaleFactor(scaleFactor)
+    , m_kernelSize(kernelSize)
+    , m_numberOfKernelOffsets(numberOfKernelOffsets)
+    , m_kernelStorage(m_kernelSize * (m_numberOfKernelOffsets + 1))
+    , m_inputBuffer(m_blockSize + m_kernelSize)
+{
+    initializeKernel();
+}
+
+void SincResampler::initializeKernel()
+{
+    // Blackman window parameters.
+    double alpha = 0.16;
+    double a0 = 0.5 * (1.0 - alpha);
+    double a1 = 0.5;
+    double a2 = 0.5 * alpha;
+
+    // sincScaleFactor is basically the normalized cutoff frequency of the low-pass filter.
+    double sincScaleFactor = m_scaleFactor > 1.0 ? 1.0 / m_scaleFactor : 1.0;
+
+    // The sinc function is an idealized brick-wall filter, but since we're windowing it the
+    // transition from pass to stop does not happen right away. So we should adjust the
+    // lowpass filter cutoff slightly downward to avoid some aliasing at the very high-end.
+    // FIXME: this value is empirical and to be more exact should vary depending on m_kernelSize.
+    sincScaleFactor *= 0.9;
+
+    int n = static_cast<int>(m_kernelSize);
+    int halfSize = n / 2;
+
+    // Generates a set of windowed sinc() kernels.
+    // We generate a range of sub-sample offsets from 0.0 to 1.0.
+    for (size_t offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex)
     {
-        initializeKernel();
-    }
+        double subsampleOffset = static_cast<double>(offsetIndex) / m_numberOfKernelOffsets;
 
-    void SincResampler::initializeKernel()
-    {
-        // Blackman window parameters.
-        double alpha = 0.16;
-        double a0    = 0.5 * (1.0 - alpha);
-        double a1    = 0.5;
-        double a2    = 0.5 * alpha;
-
-        // sincScaleFactor is basically the normalized cutoff frequency of the low-pass filter.
-        double sincScaleFactor = m_scaleFactor > 1.0 ? 1.0 / m_scaleFactor : 1.0;
-
-        // The sinc function is an idealized brick-wall filter, but since we're windowing it the
-        // transition from pass to stop does not happen right away. So we should adjust the
-        // lowpass filter cutoff slightly downward to avoid some aliasing at the very high-end.
-        // FIXME: this value is empirical and to be more exact should vary depending on m_kernelSize.
-        sincScaleFactor *= 0.9;
-
-        int n        = static_cast<int>(m_kernelSize);
-        int halfSize = n / 2;
-
-        // Generates a set of windowed sinc() kernels.
-        // We generate a range of sub-sample offsets from 0.0 to 1.0.
-        for (size_t offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex)
+        for (int i = 0; i < n; ++i)
         {
-            double subsampleOffset = static_cast<double>(offsetIndex) / m_numberOfKernelOffsets;
+            // Compute the sinc() with offset.
+            double s = sincScaleFactor * piDouble * (i - halfSize - subsampleOffset);
+            double sinc = !s ? 1.0 : sin(s) / s;
+            sinc *= sincScaleFactor;
 
-            for (int i = 0; i < n; ++i)
-            {
-                // Compute the sinc() with offset.
-                double s    = sincScaleFactor * piDouble * (i - halfSize - subsampleOffset);
-                double sinc = !s ? 1.0 : sin(s) / s;
-                sinc *= sincScaleFactor;
+            // Compute Blackman window, matching the offset of the sinc().
+            double x = (i - subsampleOffset) / n;
+            double window = a0 - a1 * cos(2.0 * piDouble * x) + a2 * cos(4.0 * piDouble * x);
 
-                // Compute Blackman window, matching the offset of the sinc().
-                double x      = (i - subsampleOffset) / n;
-                double window = a0 - a1 * cos(2.0 * piDouble * x) + a2 * cos(4.0 * piDouble * x);
-
-                // Window the sinc() function and store at the correct offset.
-                m_kernelStorage[static_cast<size_t>(i) + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);
-            }
+            // Window the sinc() function and store at the correct offset.
+            m_kernelStorage[static_cast<size_t>(i) + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);
         }
     }
+}
 
-    void SincResampler::consumeSource(float * buffer, size_t numberOfSourceFrames)
+void SincResampler::consumeSource(float * buffer, size_t numberOfSourceFrames)
+{
+    ASSERT(m_sourceProvider);
+    if (!m_sourceProvider)
+        return;
+
+    // Wrap the provided buffer by an AudioBus for use by the source provider.
+    AudioBus bus(1, numberOfSourceFrames, false);
+
+    // @fixme: Find a way to make the following const-correct:
+    bus.setChannelMemory(0, buffer, numberOfSourceFrames);
+
+    m_sourceProvider->provideInput(&bus, numberOfSourceFrames);
+}
+
+namespace
+{
+    // BufferSourceProvider is an AudioSourceProvider wrapping an in-memory buffer.
+    class BufferSourceProvider : public AudioSourceProvider
     {
-        ASSERT(m_sourceProvider);
-        if (!m_sourceProvider)
-            return;
+        const float * m_source;
+        size_t m_sourceFramesAvailable;
 
-        // Wrap the provided buffer by an AudioBus for use by the source provider.
-        AudioBus bus(1, numberOfSourceFrames, false);
-
-        // @fixme: Find a way to make the following const-correct:
-        bus.setChannelMemory(0, buffer, numberOfSourceFrames);
-
-        m_sourceProvider->provideInput(&bus, numberOfSourceFrames);
-    }
-
-    namespace
-    {
-        // BufferSourceProvider is an AudioSourceProvider wrapping an in-memory buffer.
-        class BufferSourceProvider : public AudioSourceProvider
+    public:
+        BufferSourceProvider(const float * source, size_t numberOfSourceFrames)
+            : m_source(source)
+            , m_sourceFramesAvailable(numberOfSourceFrames)
         {
-            const float * m_source;
-            size_t m_sourceFramesAvailable;
-
-        public:
-            BufferSourceProvider(const float * source, size_t numberOfSourceFrames)
-                : m_source(source), m_sourceFramesAvailable(numberOfSourceFrames) {}
-
-            // Consumes samples from the in-memory buffer.
-            virtual void provideInput(AudioBus * bus, size_t framesToProcess)
-            {
-                ASSERT(m_source && bus);
-                if (!m_source || !bus)
-                    return;
-
-                float * buffer = bus->channel(0)->mutableData();
-
-                // Clamp to number of frames available and zero-pad.
-                size_t framesToCopy = min(m_sourceFramesAvailable, framesToProcess);
-                memcpy(buffer, m_source, sizeof(float) * framesToCopy);
-
-                // Zero-pad if necessary.
-                if (framesToCopy < framesToProcess)
-                    memset(buffer + framesToCopy, 0, sizeof(float) * (framesToProcess - framesToCopy));
-
-                m_sourceFramesAvailable -= framesToCopy;
-                m_source += framesToCopy;
-            }
-        };
-
-    }  // namespace
-
-    void SincResampler::process(const float * source, float * destination, size_t numberOfSourceFrames)
-    {
-        // Resample an in-memory buffer using an AudioSourceProvider.
-        BufferSourceProvider sourceProvider(source, numberOfSourceFrames);
-
-        size_t numberOfDestinationFrames = static_cast<size_t>(numberOfSourceFrames / m_scaleFactor);
-        size_t remaining = numberOfDestinationFrames;
-
-        while (remaining)
-        {
-            size_t framesThisTime = min(remaining, m_blockSize);
-            process(&sourceProvider, destination, framesThisTime);
-
-            destination += framesThisTime;
-            remaining -= framesThisTime;
-        }
-    }
-
-    void SincResampler::process(AudioSourceProvider * sourceProvider, float * destination, size_t framesToProcess)
-    {
-        bool isGood = sourceProvider && m_blockSize > m_kernelSize && m_inputBuffer.size() >= m_blockSize + m_kernelSize && !(m_kernelSize % 2);
-
-        ASSERT(isGood);
-        if (!isGood) return;
-
-        m_sourceProvider = sourceProvider;
-
-        size_t numberOfDestinationFrames = framesToProcess;
-
-        // Setup various region pointers in the buffer (see diagram above).
-        float * r0 = m_inputBuffer.data() + m_kernelSize / 2;
-        float * r1 = m_inputBuffer.data();
-        float * r2 = r0;
-        float * r3 = r0 + m_blockSize - m_kernelSize / 2;
-        float * r4 = r0 + m_blockSize;
-        float * r5 = r0 + m_kernelSize / 2;
-
-        // Step (1)
-        // Prime the input buffer at the start of the input stream.
-        if (!m_isBufferPrimed)
-        {
-            consumeSource(r0, m_blockSize + m_kernelSize / 2);
-            m_isBufferPrimed = true;
         }
 
-        // Step (2)
-
-        while (numberOfDestinationFrames)
+        // Consumes samples from the in-memory buffer.
+        virtual void provideInput(AudioBus * bus, size_t framesToProcess)
         {
-            while (m_virtualSourceIndex < m_blockSize)
-            {
-                // m_virtualSourceIndex lies in between two kernel offsets so figure out what they are.
-                int sourceIndexI          = static_cast<int>(m_virtualSourceIndex);
-                double subsampleRemainder = m_virtualSourceIndex - sourceIndexI;
+            ASSERT(m_source && bus);
+            if (!m_source || !bus)
+                return;
 
-                double virtualOffsetIndex = subsampleRemainder * m_numberOfKernelOffsets;
-                int offsetIndex           = static_cast<int>(virtualOffsetIndex);
+            float * buffer = bus->channel(0)->mutableData();
 
-                float * k1 = m_kernelStorage.data() + offsetIndex * m_kernelSize;
-                float * k2 = k1 + m_kernelSize;
+            // Clamp to number of frames available and zero-pad.
+            size_t framesToCopy = min(m_sourceFramesAvailable, framesToProcess);
+            memcpy(buffer, m_source, sizeof(float) * framesToCopy);
 
-                // Initialize input pointer based on quantized m_virtualSourceIndex.
-                float * inputP = r1 + sourceIndexI;
+            // Zero-pad if necessary.
+            if (framesToCopy < framesToProcess)
+                memset(buffer + framesToCopy, 0, sizeof(float) * (framesToProcess - framesToCopy));
 
-                // We'll compute "convolutions" for the two kernels which straddle m_virtualSourceIndex
-                float sum1 = 0;
-                float sum2 = 0;
+            m_sourceFramesAvailable -= framesToCopy;
+            m_source += framesToCopy;
+        }
+    };
 
-                // Figure out how much to weight each kernel's "convolution".
-                double kernelInterpolationFactor = virtualOffsetIndex - offsetIndex;
+}  // namespace
 
-                // Generate a single output sample.
-                int n = static_cast<int>(m_kernelSize);
+void SincResampler::process(const float * source, float * destination, size_t numberOfSourceFrames)
+{
+    // Resample an in-memory buffer using an AudioSourceProvider.
+    BufferSourceProvider sourceProvider(source, numberOfSourceFrames);
 
-// clang-format off
+    size_t numberOfDestinationFrames = static_cast<size_t>(numberOfSourceFrames / m_scaleFactor);
+    size_t remaining = numberOfDestinationFrames;
+
+    while (remaining)
+    {
+        size_t framesThisTime = min(remaining, m_blockSize);
+        process(&sourceProvider, destination, framesThisTime);
+
+        destination += framesThisTime;
+        remaining -= framesThisTime;
+    }
+}
+
+void SincResampler::process(AudioSourceProvider * sourceProvider, float * destination, size_t framesToProcess)
+{
+    bool isGood = sourceProvider && m_blockSize > m_kernelSize && m_inputBuffer.size() >= m_blockSize + m_kernelSize && !(m_kernelSize % 2);
+
+    ASSERT(isGood);
+    if (!isGood) return;
+
+    m_sourceProvider = sourceProvider;
+
+    size_t numberOfDestinationFrames = framesToProcess;
+
+    // Setup various region pointers in the buffer (see diagram above).
+    float * r0 = m_inputBuffer.data() + m_kernelSize / 2;
+    float * r1 = m_inputBuffer.data();
+    float * r2 = r0;
+    float * r3 = r0 + m_blockSize - m_kernelSize / 2;
+    float * r4 = r0 + m_blockSize;
+    float * r5 = r0 + m_kernelSize / 2;
+
+    // Step (1)
+    // Prime the input buffer at the start of the input stream.
+    if (!m_isBufferPrimed)
+    {
+        consumeSource(r0, m_blockSize + m_kernelSize / 2);
+        m_isBufferPrimed = true;
+    }
+
+    // Step (2)
+
+    while (numberOfDestinationFrames)
+    {
+        while (m_virtualSourceIndex < m_blockSize)
+        {
+            // m_virtualSourceIndex lies in between two kernel offsets so figure out what they are.
+            int sourceIndexI = static_cast<int>(m_virtualSourceIndex);
+            double subsampleRemainder = m_virtualSourceIndex - sourceIndexI;
+
+            double virtualOffsetIndex = subsampleRemainder * m_numberOfKernelOffsets;
+            int offsetIndex = static_cast<int>(virtualOffsetIndex);
+
+            float * k1 = m_kernelStorage.data() + offsetIndex * m_kernelSize;
+            float * k2 = k1 + m_kernelSize;
+
+            // Initialize input pointer based on quantized m_virtualSourceIndex.
+            float * inputP = r1 + sourceIndexI;
+
+            // We'll compute "convolutions" for the two kernels which straddle m_virtualSourceIndex
+            float sum1 = 0;
+            float sum2 = 0;
+
+            // Figure out how much to weight each kernel's "convolution".
+            double kernelInterpolationFactor = virtualOffsetIndex - offsetIndex;
+
+            // Generate a single output sample.
+            int n = static_cast<int>(m_kernelSize);
+
+            // clang-format off
                 #define CONVOLVE_ONE_SAMPLE \
                     input = *inputP++;      \
                     sum1 += input * *k1;    \
@@ -426,31 +433,31 @@ namespace lab
 #endif
                 }
 
-                // clang-format on
+            // clang-format on
 
-                // Linearly interpolate the two "convolutions".
-                *destination++ = static_cast<float>((1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2);
+            // Linearly interpolate the two "convolutions".
+            *destination++ = static_cast<float>((1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2);
 
-                // Advance the virtual index.
-                m_virtualSourceIndex += m_scaleFactor;
+            // Advance the virtual index.
+            m_virtualSourceIndex += m_scaleFactor;
 
-                --numberOfDestinationFrames;
-                if (!numberOfDestinationFrames)
-                    return;
-            }
-
-            // Wrap back around to the start.
-            m_virtualSourceIndex -= m_blockSize;
-
-            // Step (3) Copy r3 to r1 and r4 to r2.
-            // This wraps the last input frames back to the start of the buffer.
-            memcpy(r1, r3, sizeof(float) * (m_kernelSize / 2));
-            memcpy(r2, r4, sizeof(float) * (m_kernelSize / 2));
-
-            // Step (4)
-            // Refresh the buffer with more input.
-            consumeSource(r5, m_blockSize);
+            --numberOfDestinationFrames;
+            if (!numberOfDestinationFrames)
+                return;
         }
+
+        // Wrap back around to the start.
+        m_virtualSourceIndex -= m_blockSize;
+
+        // Step (3) Copy r3 to r1 and r4 to r2.
+        // This wraps the last input frames back to the start of the buffer.
+        memcpy(r1, r3, sizeof(float) * (m_kernelSize / 2));
+        memcpy(r2, r4, sizeof(float) * (m_kernelSize / 2));
+
+        // Step (4)
+        // Refresh the buffer with more input.
+        consumeSource(r5, m_blockSize);
     }
+}
 
 }  // namespace lab

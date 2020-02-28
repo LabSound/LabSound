@@ -4,19 +4,21 @@
 
 #include "LabSound/core/AudioNode.h"
 
-#include "internal/DelayDSPKernel.h"
-#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
+#include "internal/AudioUtilities.h"
+#include "internal/DelayDSPKernel.h"
 
 #include <algorithm>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
-const float SmoothingTimeConstant = 0.020f; // 20ms
+const float SmoothingTimeConstant = 0.020f;  // 20ms
 
-DelayDSPKernel::DelayDSPKernel( DelayProcessor * processor, float sampleRate) : AudioDSPKernel(processor)
+DelayDSPKernel::DelayDSPKernel(DelayProcessor * processor, float sampleRate)
+    : AudioDSPKernel(processor)
     , m_writeIndex(0)
     , m_firstTime(true)
     , m_delayTimes(AudioNode::ProcessingSizeInFrames)
@@ -36,7 +38,11 @@ DelayDSPKernel::DelayDSPKernel( DelayProcessor * processor, float sampleRate) : 
     m_smoothingRate = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, sampleRate);
 }
 
-DelayDSPKernel::DelayDSPKernel(double maxDelayTime, float sampleRate) : AudioDSPKernel(), m_maxDelayTime(maxDelayTime), m_writeIndex(0), m_firstTime(true)
+DelayDSPKernel::DelayDSPKernel(double maxDelayTime, float sampleRate)
+    : AudioDSPKernel()
+    , m_maxDelayTime(maxDelayTime)
+    , m_writeIndex(0)
+    , m_firstTime(true)
 {
     ASSERT(maxDelayTime > 0.0);
     if (maxDelayTime <= 0.0)
@@ -60,10 +66,10 @@ size_t DelayDSPKernel::bufferLengthForDelay(double maxDelayTime, double sampleRa
     return 1 + AudioUtilities::timeToSampleFrame(maxDelayTime, sampleRate);
 }
 
-void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void DelayDSPKernel::process(ContextRenderLock & r, const float * source, float * destination, size_t framesToProcess)
 {
     size_t bufferLength = m_buffer.size();
-    float* buffer = m_buffer.data();
+    float * buffer = m_buffer.data();
 
     ASSERT(bufferLength);
     if (!bufferLength)
@@ -75,10 +81,10 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
 
     float sampleRate = r.context()->sampleRate();
     double delayTime = 0;
-    float* delayTimes = m_delayTimes.data();
+    float * delayTimes = m_delayTimes.data();
     double maxTime = maxDelayTime();
 
- #if 1
+#if 1
     /// @TODO before deleting the else clause here, is there a legitimate reason to have the delayTime be automated?
     /// is it not just a setting? If it's actually an audio rate signal, then delayTime should be switched back
     /// from AudioSetting to AudioParam.
@@ -99,27 +105,33 @@ void DelayDSPKernel::process(ContextRenderLock& r, const float* source, float* d
 
     if (sampleAccurate)
         delayProcessor()->delayTime()->calculateSampleAccurateValues(r, delayTimes, framesToProcess);
-    else {
+    else
+    {
         delayTime = delayProcessor() ? delayProcessor()->delayTime()->finalValue(r) : m_desiredDelayFrames / sampleRate;
 
         // Make sure the delay time is in a valid range.
         delayTime = min(maxTime, delayTime);
         delayTime = max(0.0, delayTime);
 
-        if (m_firstTime) {
+        if (m_firstTime)
+        {
             m_currentDelayTime = delayTime;
             m_firstTime = false;
         }
     }
 #endif
 
-    for (unsigned i = 0; i < framesToProcess; ++i) {
-        if (sampleAccurate) {
+    for (unsigned i = 0; i < framesToProcess; ++i)
+    {
+        if (sampleAccurate)
+        {
             delayTime = delayTimes[i];
             delayTime = std::min(maxTime, delayTime);
             delayTime = std::max(0.0, delayTime);
             m_currentDelayTime = delayTime;
-        } else {
+        }
+        else
+        {
             // Approach desired delay time.
             m_currentDelayTime += (delayTime - m_currentDelayTime) * m_smoothingRate;
         }
@@ -164,4 +176,4 @@ double DelayDSPKernel::latencyTime(ContextRenderLock & r) const
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

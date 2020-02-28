@@ -13,13 +13,13 @@
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/HRTFDatabaseLoader.h"
-#include "internal/HRTFPanner.h"
-#include "internal/Panner.h"
+#include "internal/Assertions.h"
 #include "internal/Cone.h"
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
-#include "internal/Assertions.h"
+#include "internal/HRTFDatabaseLoader.h"
+#include "internal/HRTFPanner.h"
+#include "internal/Panner.h"
 
 using namespace std;
 
@@ -39,31 +39,30 @@ static char const * const s_panning_models[lab::PanningMode::_PanningModeCount +
     "Linear", "Inverse", "Exponential", nullptr};
 
 PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
-: AudioNode()
-, m_orientationX(std::make_shared<AudioParam>("orientationX", "OR X", 0.f, -1.f, 1.f))
-, m_orientationY(std::make_shared<AudioParam>("orientationY", "OR Y", 0.f, -1.f, 1.f))
-, m_orientationZ(std::make_shared<AudioParam>("orientationZ", "OR Z", 0.f, -1.f, 1.f))
-, m_velocityX(std::make_shared<AudioParam>("velocityX", "VELX", 0.f, -1000.f, 1000.f))
-, m_velocityY(std::make_shared<AudioParam>("velocityY", "VELY", 0.f, -1000.f, 1000.f))
-, m_velocityZ(std::make_shared<AudioParam>("velocityZ", "VELZ", 0.f, -1000.f, 1000.f))
-, m_positionX(std::make_shared<AudioParam>("positionX", "POSX", 0.f, -1.e6f, 1.e6f))
-, m_positionY(std::make_shared<AudioParam>("positionY", "POSY", 0.f, -1.e6f, 1.e6f))
-, m_positionZ(std::make_shared<AudioParam>("positionZ", "POSZ", 0.f, -1.e6f, 1.e6f))
-, m_distanceModel(std::make_shared<AudioSetting>("distanceModel", "DSTM", s_distance_models))
-, m_refDistance(std::make_shared<AudioSetting>("refDistance", "REFD", AudioSetting::Type::Float))
-, m_maxDistance(std::make_shared<AudioSetting>("maxDistance", "MAXD", AudioSetting::Type::Float))
-, m_rolloffFactor(std::make_shared<AudioSetting>("rolloffFactor", "ROLL", AudioSetting::Type::Float))
-, m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle", "CONI", AudioSetting::Type::Float))
-, m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle", "CONO", AudioSetting::Type::Float))
-, m_panningModel(std::make_shared<AudioSetting>("panningMode", "PANM", s_panning_models))
-, m_sampleRate(sampleRate)
+    : AudioNode()
+    , m_orientationX(std::make_shared<AudioParam>("orientationX", "OR X", 0.f, -1.f, 1.f))
+    , m_orientationY(std::make_shared<AudioParam>("orientationY", "OR Y", 0.f, -1.f, 1.f))
+    , m_orientationZ(std::make_shared<AudioParam>("orientationZ", "OR Z", 0.f, -1.f, 1.f))
+    , m_velocityX(std::make_shared<AudioParam>("velocityX", "VELX", 0.f, -1000.f, 1000.f))
+    , m_velocityY(std::make_shared<AudioParam>("velocityY", "VELY", 0.f, -1000.f, 1000.f))
+    , m_velocityZ(std::make_shared<AudioParam>("velocityZ", "VELZ", 0.f, -1000.f, 1000.f))
+    , m_positionX(std::make_shared<AudioParam>("positionX", "POSX", 0.f, -1.e6f, 1.e6f))
+    , m_positionY(std::make_shared<AudioParam>("positionY", "POSY", 0.f, -1.e6f, 1.e6f))
+    , m_positionZ(std::make_shared<AudioParam>("positionZ", "POSZ", 0.f, -1.e6f, 1.e6f))
+    , m_distanceModel(std::make_shared<AudioSetting>("distanceModel", "DSTM", s_distance_models))
+    , m_refDistance(std::make_shared<AudioSetting>("refDistance", "REFD", AudioSetting::Type::Float))
+    , m_maxDistance(std::make_shared<AudioSetting>("maxDistance", "MAXD", AudioSetting::Type::Float))
+    , m_rolloffFactor(std::make_shared<AudioSetting>("rolloffFactor", "ROLL", AudioSetting::Type::Float))
+    , m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle", "CONI", AudioSetting::Type::Float))
+    , m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle", "CONO", AudioSetting::Type::Float))
+    , m_panningModel(std::make_shared<AudioSetting>("panningMode", "PANM", s_panning_models))
+    , m_sampleRate(sampleRate)
 {
     if (searchPath.length())
     {
-        auto stripSlash = [&](const std::string & path) -> std::string
-        {
-            if (path[path.size()-1] == '/' || path[path.size()-1] == '\\')
-                return path.substr(0, path.size()-1);
+        auto stripSlash = [&](const std::string & path) -> std::string {
+            if (path[path.size() - 1] == '/' || path[path.size() - 1] == '\\')
+                return path.substr(0, path.size() - 1);
             return path;
         };
         LOG("Initializing HRTF Database");
@@ -97,51 +96,44 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
                     throw std::invalid_argument("invalid distance model");
                     break;
             }
-        }
-    );
+        });
     m_settings.push_back(m_distanceModel);
 
     m_refDistance->setValueChanged(
         [this]() {
             m_distanceEffect->setRefDistance(m_refDistance->valueFloat());
-        }
-    );
+        });
     m_settings.push_back(m_refDistance);
 
     m_maxDistance->setValueChanged(
         [this]() {
             m_distanceEffect->setMaxDistance(m_maxDistance->valueFloat());
-        }
-    );
+        });
     m_settings.push_back(m_maxDistance);
 
     m_rolloffFactor->setValueChanged(
         [this]() {
             m_distanceEffect->setRolloffFactor(m_maxDistance->valueFloat());
-        }
-    );
+        });
     m_settings.push_back(m_rolloffFactor);
 
     m_coneInnerAngle->setValueChanged(
         [this]() {
             m_coneEffect->setInnerAngle(m_coneInnerAngle->valueFloat());
-        }
-    );
+        });
     m_settings.push_back(m_coneInnerAngle);
 
     m_coneOuterAngle->setValueChanged(
         [this]() {
             m_coneEffect->setOuterAngle(m_coneOuterAngle->valueFloat());
-        }
-    );
+        });
     m_settings.push_back(m_coneOuterAngle);
 
     m_panningModel->setUint32(static_cast<uint32_t>(EQUALPOWER));
     m_panningModel->setValueChanged(
         [this]() {
             setPanningModel(static_cast<PanningMode>(m_panningModel->valueUint32()));
-        }
-    );
+        });
 
     // Node-specific default mixing rules.
     m_channelCount = 2;
@@ -206,7 +198,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
     m_velocityZ->setValue(velocity.z);
 }
 
-void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+void PannerNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)
 {
     // We override pullInputs(), so we can detect new AudioNodes which have connected to us when new connections are made.
     // These AudioNodes need to be made aware of this PannerNode in order to handle doppler shift pitch changes.
@@ -220,7 +212,7 @@ void PannerNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
 
 void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* destination = output(0)->bus(r);
+    AudioBus * destination = output(0)->bus(r);
 
     if (!isInitialized() || !input(0)->isConnected() || !m_panner.get())
     {
@@ -228,7 +220,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
         return;
     }
 
-    AudioBus* source = input(0)->bus(r);
+    AudioBus * source = input(0)->bus(r);
 
     if (!source)
     {
@@ -268,9 +260,9 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     destination->copyWithGainFrom(*destination, &m_lastGain, totalGain);
 }
 
-void PannerNode::reset(ContextRenderLock&)
+void PannerNode::reset(ContextRenderLock &)
 {
-    m_lastGain = -1.0; // force to snap to initial gain
+    m_lastGain = -1.0;  // force to snap to initial gain
     if (m_panner.get())
         m_panner->reset();
 }
@@ -303,9 +295,7 @@ void PannerNode::setPanningModel(PanningMode model)
             default:
                 throw std::invalid_argument("invalid panning model");
         }
-
     }
-
 }
 
 void PannerNode::setDistanceModel(DistanceModel model)
@@ -317,7 +307,7 @@ PannerNode::DistanceModel PannerNode::distanceModel()
     return static_cast<PannerNode::DistanceModel>(m_distanceModel->valueUint32());
 }
 
-void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, double* outElevation)
+void PannerNode::getAzimuthElevation(ContextRenderLock & r, double * outAzimuth, double * outElevation)
 {
     // FIXME: we should cache azimuth and elevation (if possible), so we only re-calculate if a change has been made.
 
@@ -327,14 +317,14 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     // Calculate the source-listener vector
     FloatPoint3D listenerPosition = {
-                                        listener->positionX()->value(r),
-                                        listener->positionY()->value(r),
-                                        listener->positionZ()->value(r) };
+        listener->positionX()->value(r),
+        listener->positionY()->value(r),
+        listener->positionZ()->value(r)};
 
     FloatPoint3D sourceListener = {
-                                        positionX()->value(r),
-                                        positionY()->value(r),
-                                        positionZ()->value(r) };
+        positionX()->value(r),
+        positionY()->value(r),
+        positionZ()->value(r)};
 
     sourceListener = normalize(sourceListener - listenerPosition);
 
@@ -348,15 +338,14 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     // Align axes
     FloatPoint3D listenerFront = normalize(FloatPoint3D{
-                                        listener->forwardX()->value(r),
-                                        listener->forwardY()->value(r),
-                                        listener->forwardZ()->value(r) }
-                                    );
+        listener->forwardX()->value(r),
+        listener->forwardY()->value(r),
+        listener->forwardZ()->value(r)});
 
     FloatPoint3D listenerUp = {
-                                        listener->upX()->value(r),
-                                        listener->upY()->value(r),
-                                        listener->upZ()->value(r) };
+        listener->upX()->value(r),
+        listener->upY()->value(r),
+        listener->upZ()->value(r)};
 
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
     FloatPoint3D up = cross(listenerRight, listenerFront);
@@ -366,7 +355,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
     FloatPoint3D projectedSource = normalize(sourceListener - upProjection * up);
 
     azimuth = 180.0 * acos(dot(projectedSource, listenerRight)) / piDouble;
-    fixNANs(azimuth); // avoid illegal values
+    fixNANs(azimuth);  // avoid illegal values
 
     // Source in front or behind the listener
     double frontBack = dot(projectedSource, listenerFront);
@@ -381,7 +370,7 @@ void PannerNode::getAzimuthElevation(ContextRenderLock& r, double* outAzimuth, d
 
     // Elevation
     double elevation = 90.0 - 180.0 * acos(dot(sourceListener, up)) / piDouble;
-    fixNANs(elevation); // avoid illegal values
+    fixNANs(elevation);  // avoid illegal values
 
     if (elevation > 90.0)
         elevation = 180.0 - elevation;
@@ -408,13 +397,13 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
         double speedOfSound = listener->speedOfSound()->value(r);
 
         const FloatPoint3D sourceVelocity = {
-                                                    velocityX()->value(r),
-                                                    velocityY()->value(r),
-                                                    velocityZ()->value(r) };
+            velocityX()->value(r),
+            velocityY()->value(r),
+            velocityZ()->value(r)};
         const FloatPoint3D listenerVelocity = {
-                                                    listener->velocityX()->value(r),
-                                                    listener->velocityY()->value(r),
-                                                    listener->velocityZ()->value(r) };
+            listener->velocityX()->value(r),
+            listener->velocityY()->value(r),
+            listener->velocityZ()->value(r)};
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);
@@ -424,14 +413,14 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
         {
             // Calculate the source to listener vector
             FloatPoint3D listenerPosition = {
-                                                    listener->positionX()->value(r),
-                                                    listener->positionY()->value(r),
-                                                    listener->positionZ()->value(r) };
+                listener->positionX()->value(r),
+                listener->positionY()->value(r),
+                listener->positionZ()->value(r)};
 
             FloatPoint3D sourceToListener = {
-                                                    positionX()->value(r),
-                                                    positionY()->value(r),
-                                                    positionZ()->value(r) };
+                positionX()->value(r),
+                positionY()->value(r),
+                positionZ()->value(r)};
 
             sourceToListener = sourceToListener - listenerPosition;
 
@@ -448,7 +437,7 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
             sourceProjection = min(sourceProjection, scaledSpeedOfSound);
 
             dopplerShift = ((speedOfSound - dopplerFactor * listenerProjection) / (speedOfSound - dopplerFactor * sourceProjection));
-            fixNANs(dopplerShift); // avoid illegal values
+            fixNANs(dopplerShift);  // avoid illegal values
 
             // Limit the pitch shifting to 4 octaves up and 3 octaves down.
             if (dopplerShift > 16.0)
@@ -461,22 +450,21 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
     return static_cast<float>(dopplerShift);
 }
 
-float PannerNode::distanceConeGain(ContextRenderLock& r)
+float PannerNode::distanceConeGain(ContextRenderLock & r)
 {
     auto listener = r.context()->listener();
 
     FloatPoint3D listenerPosition = {
-                                                    listener->positionX()->value(r),
-                                                    listener->positionY()->value(r),
-                                                    listener->positionZ()->value(r) };
+        listener->positionX()->value(r),
+        listener->positionY()->value(r),
+        listener->positionZ()->value(r)};
 
     FloatPoint3D position = {
-                                                    positionX()->value(r),
-                                                    positionY()->value(r),
-                                                    positionZ()->value(r) };
+        positionX()->value(r),
+        positionY()->value(r),
+        positionZ()->value(r)};
 
-
-    double listenerDistance = magnitude(position - listenerPosition); // "distanceTo"
+    double listenerDistance = magnitude(position - listenerPosition);  // "distanceTo"
 
     double distanceGain = m_distanceEffect->gain(listenerDistance);
 
@@ -485,9 +473,9 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     // FIXME: could optimize by caching coneGain
 
     FloatPoint3D orientation = {
-                                                    orientationX()->value(r),
-                                                    orientationY()->value(r),
-                                                    orientationZ()->value(r) };
+        orientationX()->value(r),
+        orientationY()->value(r),
+        orientationZ()->value(r)};
 
     double coneGain = m_coneEffect->gain(position, orientation, listenerPosition);
 
@@ -496,14 +484,14 @@ float PannerNode::distanceConeGain(ContextRenderLock& r)
     return float(distanceGain * coneGain);
 }
 
-void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNode* node)
+void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode * node)
 {
     ASSERT(node);
     if (!node)
         return;
 
     // First check if this node is an SampledAudioNode.
-    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode*>(node))
+    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode *>(node))
     {
         bufferSourceNode->setPannerNode(this);
     }
@@ -518,32 +506,74 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock& r, AudioNo
             for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);
-                AudioNode* connectedNode = connectedOutput->node();
-                notifyAudioSourcesConnectedToNode(r, connectedNode); // recurse
+                AudioNode * connectedNode = connectedOutput->node();
+                notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
             }
         }
     }
 }
 
-float PannerNode::refDistance() { return static_cast<float>(m_distanceEffect->refDistance()); }
-void PannerNode::setRefDistance(float refDistance) { m_refDistance->setFloat(refDistance); }
+float PannerNode::refDistance()
+{
+    return static_cast<float>(m_distanceEffect->refDistance());
+}
+void PannerNode::setRefDistance(float refDistance)
+{
+    m_refDistance->setFloat(refDistance);
+}
 
-float PannerNode::maxDistance() { return static_cast<float>(m_distanceEffect->maxDistance()); }
-void PannerNode::setMaxDistance(float maxDistance) { m_maxDistance->setFloat(maxDistance); }
+float PannerNode::maxDistance()
+{
+    return static_cast<float>(m_distanceEffect->maxDistance());
+}
+void PannerNode::setMaxDistance(float maxDistance)
+{
+    m_maxDistance->setFloat(maxDistance);
+}
 
-float PannerNode::rolloffFactor() { return static_cast<float>(m_distanceEffect->rolloffFactor()); }
-void PannerNode::setRolloffFactor(float rolloffFactor) { m_rolloffFactor->setFloat(rolloffFactor); }
+float PannerNode::rolloffFactor()
+{
+    return static_cast<float>(m_distanceEffect->rolloffFactor());
+}
+void PannerNode::setRolloffFactor(float rolloffFactor)
+{
+    m_rolloffFactor->setFloat(rolloffFactor);
+}
 
-float PannerNode::coneInnerAngle() const { return static_cast<float>(m_coneEffect->innerAngle()); }
-void PannerNode::setConeInnerAngle(float angle) { m_coneInnerAngle->setFloat(angle); }
+float PannerNode::coneInnerAngle() const
+{
+    return static_cast<float>(m_coneEffect->innerAngle());
+}
+void PannerNode::setConeInnerAngle(float angle)
+{
+    m_coneInnerAngle->setFloat(angle);
+}
 
-float PannerNode::coneOuterAngle() const { return static_cast<float>(m_coneEffect->outerAngle()); }
-void PannerNode::setConeOuterAngle(float angle) { m_coneOuterAngle->setFloat(angle); }
+float PannerNode::coneOuterAngle() const
+{
+    return static_cast<float>(m_coneEffect->outerAngle());
+}
+void PannerNode::setConeOuterAngle(float angle)
+{
+    m_coneOuterAngle->setFloat(angle);
+}
 
-float PannerNode::coneOuterGain() const { return static_cast<float>(m_coneEffect->outerGain()); }
-void PannerNode::setConeOuterGain(float angle) { m_coneEffect->setOuterGain(angle); }
+float PannerNode::coneOuterGain() const
+{
+    return static_cast<float>(m_coneEffect->outerGain());
+}
+void PannerNode::setConeOuterGain(float angle)
+{
+    m_coneEffect->setOuterGain(angle);
+}
 
-double PannerNode::tailTime(ContextRenderLock & r) const { return m_panner ? m_panner->tailTime(r) : 0; }
-double PannerNode::latencyTime(ContextRenderLock & r) const { return m_panner ? m_panner->latencyTime(r) : 0; }
+double PannerNode::tailTime(ContextRenderLock & r) const
+{
+    return m_panner ? m_panner->tailTime(r) : 0;
+}
+double PannerNode::latencyTime(ContextRenderLock & r) const
+{
+    return m_panner ? m_panner->latencyTime(r) : 0;
+}
 
-} // namespace lab
+}  // namespace lab

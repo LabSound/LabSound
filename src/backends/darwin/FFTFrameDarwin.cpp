@@ -2,7 +2,6 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-
 #include "LabSound/core/Macros.h"
 
 #if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
@@ -11,7 +10,8 @@
 #include "internal/FFTFrame.h"
 #include "internal/VectorMath.h"
 
-namespace lab {
+namespace lab
+{
 
 const int kMaxFFTPow2Size = 24;
 
@@ -50,7 +50,7 @@ FFTFrame::FFTFrame()
 }
 
 // Copy constructor
-FFTFrame::FFTFrame(const FFTFrame& frame)
+FFTFrame::FFTFrame(const FFTFrame & frame)
     : m_FFTSize(frame.m_FFTSize)
     , m_log2FFTSize(frame.m_log2FFTSize)
     , m_FFTSetup(frame.m_FFTSetup)
@@ -69,39 +69,39 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 
 FFTFrame::~FFTFrame()
 {
-
 }
-    
+
 void FFTFrame::cleanup()
 {
     if (!fftSetups)
         return;
-    
-    for (int i = 0; i < kMaxFFTPow2Size; ++i) {
+
+    for (int i = 0; i < kMaxFFTPow2Size; ++i)
+    {
         if (fftSetups[i])
             vDSP_destroy_fftsetup(fftSetups[i]);
     }
-    
+
     free(fftSetups);
     fftSetups = 0;
 }
-    
-void FFTFrame::multiply(const FFTFrame& frame)
-{
-    FFTFrame& frame1 = *this;
-    const FFTFrame& frame2 = frame;
 
-    float* realP1 = frame1.realData();
-    float* imagP1 = frame1.imagData();
-    const float* realP2 = frame2.realData();
-    const float* imagP2 = frame2.imagData();
+void FFTFrame::multiply(const FFTFrame & frame)
+{
+    FFTFrame & frame1 = *this;
+    const FFTFrame & frame2 = frame;
+
+    float * realP1 = frame1.realData();
+    float * imagP1 = frame1.imagData();
+    const float * realP2 = frame2.realData();
+    const float * imagP2 = frame2.imagData();
 
     size_t halfSize = m_FFTSize / 2;
     float real0 = realP1[0];
     float imag0 = imagP1[0];
 
     // Complex multiply
-    VectorMath::zvmul(realP1, imagP1, realP2, imagP2, realP1, imagP1, halfSize); 
+    VectorMath::zvmul(realP1, imagP1, realP2, imagP2, realP1, imagP1, halfSize);
 
     // Multiply the packed DC/nyquist component
     realP1[0] = real0 * realP2[0];
@@ -115,16 +115,16 @@ void FFTFrame::multiply(const FFTFrame& frame)
     VectorMath::vsmul(imagP1, 1, &scale, imagP1, 1, halfSize);
 }
 
-void FFTFrame::doFFT(const float* data)
+void FFTFrame::doFFT(const float * data)
 {
-    vDSP_ctoz((DSPComplex*)data, 2, &m_frame, 1, m_FFTSize / 2);
+    vDSP_ctoz((DSPComplex *) data, 2, &m_frame, 1, m_FFTSize / 2);
     vDSP_fft_zrip(m_FFTSetup, &m_frame, 1, m_log2FFTSize, FFT_FORWARD);
 }
 
-void FFTFrame::doInverseFFT(float* data)
+void FFTFrame::doInverseFFT(float * data)
 {
     vDSP_fft_zrip(m_FFTSetup, &m_frame, 1, m_log2FFTSize, FFT_INVERSE);
-    vDSP_ztoc(&m_frame, 1, (DSPComplex*)data, 2, m_FFTSize / 2);
+    vDSP_ztoc(&m_frame, 1, (DSPComplex *) data, 2, m_FFTSize / 2);
 
     // Do final scaling so that x == IFFT(FFT(x))
     float scale = 0.5f / m_FFTSize;
@@ -133,8 +133,9 @@ void FFTFrame::doInverseFFT(float* data)
 
 FFTSetup FFTFrame::fftSetupForSize(size_t fftSize)
 {
-    if (!fftSetups) {
-        fftSetups = (FFTSetup*)malloc(sizeof(FFTSetup) * kMaxFFTPow2Size);
+    if (!fftSetups)
+    {
+        fftSetups = (FFTSetup *) malloc(sizeof(FFTSetup) * kMaxFFTPow2Size);
         memset(fftSetups, 0, sizeof(FFTSetup) * kMaxFFTPow2Size);
     }
 
@@ -146,16 +147,16 @@ FFTSetup FFTFrame::fftSetupForSize(size_t fftSize)
     return fftSetups[pow2size];
 }
 
-float* FFTFrame::realData() const
+float * FFTFrame::realData() const
 {
     return m_frame.realp;
 }
-    
-float* FFTFrame::imagData() const
+
+float * FFTFrame::imagData() const
 {
     return m_frame.imagp;
 }
 
-} // namespace lab
+}  // namespace lab
 
-#endif // #if OS(DARWIN)
+#endif  // #if OS(DARWIN)

@@ -5,10 +5,11 @@
 #ifndef AudioSummingJunction_h
 #define AudioSummingJunction_h
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-namespace lab {
+namespace lab
+{
 
 class AudioContext;
 class AudioNodeOutput;
@@ -18,45 +19,48 @@ class ContextRenderLock;
 
 // An AudioSummingJunction represents a point where zero, one, or more AudioNodeOutputs connect.
 
-class AudioSummingJunction {
-    
+class AudioSummingJunction
+{
+
 public:
-    
     explicit AudioSummingJunction();
     virtual ~AudioSummingJunction();
 
     // This must be called whenever we modify m_outputs.
-    void changedOutputs(ContextGraphLock&);
-    
+    void changedOutputs(ContextGraphLock &);
+
     // This copies m_outputs to m_renderingOutputs. See comments for these lists below.
-    void updateRenderingState(ContextRenderLock& r);
+    void updateRenderingState(ContextRenderLock & r);
 
     // will count expired pointers
     size_t numberOfConnections() const { return m_connectedOutputs.size(); }
-    
+
     // Rendering code accesses its version of the current connections here.
-    size_t numberOfRenderingConnections(ContextRenderLock&) const;
-    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, size_t i) {
-        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
-    
-    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock&, size_t i) const {
-        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr; }
-    
+    size_t numberOfRenderingConnections(ContextRenderLock &) const;
+    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, size_t i)
+    {
+        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr;
+    }
+
+    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, size_t i) const
+    {
+        return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr;
+    }
+
     bool isConnected() const { return numberOfConnections() > 0; }
 
-    virtual void didUpdate(ContextRenderLock&) = 0;
+    virtual void didUpdate(ContextRenderLock &) = 0;
 
     void junctionConnectOutput(std::shared_ptr<AudioNodeOutput>);
     void junctionDisconnectOutput(std::shared_ptr<AudioNodeOutput>);
-	void junctionDisconnectAllOutputs();
+    void junctionDisconnectAllOutputs();
     void setDirty() { m_renderingStateNeedUpdating = true; }
-    
-    static void handleDirtyAudioSummingJunctions(ContextRenderLock& r);
+
+    static void handleDirtyAudioSummingJunctions(ContextRenderLock & r);
 
     bool isConnected(std::shared_ptr<AudioNodeOutput> o) const;
 
 protected:
-    
     // m_outputs contains the AudioNodeOutputs representing current connections.
     // The rendering code should never use this directly, but instead uses m_renderingOutputs.
     std::vector<std::weak_ptr<AudioNodeOutput>> m_connectedOutputs;
@@ -71,6 +75,6 @@ protected:
     bool m_renderingStateNeedUpdating;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioSummingJunction_h
+#endif  // AudioSummingJunction_h

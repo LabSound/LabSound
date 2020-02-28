@@ -7,23 +7,23 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-namespace lab {
+namespace lab
+{
 
-    class AudioDSPKernelProcessor;
-    
+class AudioDSPKernelProcessor;
+
 // AudioDSPKernel does the processing for one channel of an AudioDSPKernelProcessor.
 
-class AudioDSPKernel 
+class AudioDSPKernel
 {
 public:
-
     AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor);
     AudioDSPKernel();
 
     virtual ~AudioDSPKernel() {}
 
     // Subclasses must override process() to do the processing and reset() to reset DSP state.
-    virtual void process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) = 0;
+    virtual void process(ContextRenderLock &, const float * source, float * destination, size_t framesToProcess) = 0;
     virtual void reset() = 0;
 
     AudioDSPKernelProcessor * processor() { return m_kernelProcessor; }
@@ -33,10 +33,9 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
-
-    AudioDSPKernelProcessor* m_kernelProcessor;
+    AudioDSPKernelProcessor * m_kernelProcessor;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioDSPKernel_h
+#endif  // AudioDSPKernel_h

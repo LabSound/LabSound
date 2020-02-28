@@ -3,13 +3,16 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/AudioDSPKernelProcessor.h"
-#include "internal/AudioDSPKernel.h"
 #include "internal/Assertions.h"
+#include "internal/AudioDSPKernel.h"
 
-namespace lab {
+namespace lab
+{
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
-AudioDSPKernelProcessor::AudioDSPKernelProcessor(size_t numberOfChannels) : AudioProcessor(numberOfChannels), m_hasJustReset(true)
+AudioDSPKernelProcessor::AudioDSPKernelProcessor(size_t numberOfChannels)
+    : AudioProcessor(numberOfChannels)
+    , m_hasJustReset(true)
 {
 }
 
@@ -23,7 +26,7 @@ void AudioDSPKernelProcessor::initialize()
     // Create processing kernels, one per channel.
     for (unsigned i = 0; i < numberOfChannels(); ++i)
         m_kernels.push_back(std::unique_ptr<AudioDSPKernel>(createKernel()));
-        
+
     m_initialized = true;
     m_hasJustReset = true;
 }
@@ -32,19 +35,20 @@ void AudioDSPKernelProcessor::uninitialize()
 {
     if (!isInitialized())
         return;
-        
+
     m_kernels.clear();
 
     m_initialized = false;
 }
 
-void AudioDSPKernelProcessor::process(ContextRenderLock& r, const AudioBus* source, AudioBus* destination, size_t framesToProcess)
+void AudioDSPKernelProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, size_t framesToProcess)
 {
     ASSERT(source && destination);
     if (!source || !destination)
         return;
-        
-    if (!isInitialized()) {
+
+    if (!isInitialized())
+    {
         destination->zero();
         return;
     }
@@ -53,10 +57,10 @@ void AudioDSPKernelProcessor::process(ContextRenderLock& r, const AudioBus* sour
     ASSERT(channelCountMatches);
     if (!channelCountMatches)
         return;
-        
+
     for (unsigned i = 0; i < m_kernels.size(); ++i)
         m_kernels[i]->process(r, source->channel(i)->data(),
-                                 destination->channel(i)->mutableData(), framesToProcess);
+                              destination->channel(i)->mutableData(), framesToProcess);
 }
 
 // Resets filter state
@@ -85,4 +89,4 @@ double AudioDSPKernelProcessor::latencyTime(ContextRenderLock & r) const
     return !m_kernels.empty() ? (*m_kernels.begin())->latencyTime(r) : 0;
 }
 
-} // namespace lab
+}  // namespace lab

@@ -7,8 +7,8 @@
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
 
@@ -23,8 +23,7 @@ namespace lab
 
 std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 {
-    std::vector<std::string> rt_audio_apis
-    {
+    std::vector<std::string> rt_audio_apis{
         "unspecified",
         "linux_alsa",
         "linux_pulse",
@@ -34,8 +33,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         "windows_wasapi",
         "windows_asio",
         "windows_directsound",
-        "rtaudio_dummy"
-    };
+        "rtaudio_dummy"};
 
     RtAudio rt;
     if (rt.getDeviceCount() <= 0) throw std::runtime_error("no rtaudio devices available!");
@@ -91,8 +89,8 @@ uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
     return rt.getDefaultInputDevice();
 }
 
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback, 
-    const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
+                                                      const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
 {
     return new AudioDevice_RtAudio(callback, outputConfig, inputConfig);
 }
@@ -105,9 +103,11 @@ const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback, 
-    const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig) 
-        : _callback(callback), outputConfig(_outputConfig), inputConfig(_inputConfig)
+AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
+                                         const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig)
+    : _callback(callback)
+    , outputConfig(_outputConfig)
+    , inputConfig(_inputConfig)
 {
     if (rtaudio_ctx.getDeviceCount() < 1)
     {
@@ -155,17 +155,17 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
     try
     {
         rtaudio_ctx.openStream(&outputParams, (inputParams.nChannels > 0) ? &inputParams : nullptr, RTAUDIO_FLOAT32,
-            static_cast<unsigned int>(authoritativeDeviceSampleRateAtRuntime), &bufferFrames, &rt_audio_callback, this, &options);
+                               static_cast<unsigned int>(authoritativeDeviceSampleRateAtRuntime), &bufferFrames, &rt_audio_callback, this, &options);
     }
     catch (const RtAudioError & e)
     {
-        LOG_ERROR(e.getMessage().c_str()); 
+        LOG_ERROR(e.getMessage().c_str());
     }
 }
 
 AudioDevice_RtAudio::~AudioDevice_RtAudio()
 {
-    if (rtaudio_ctx.isStreamOpen()) 
+    if (rtaudio_ctx.isStreamOpen())
     {
         rtaudio_ctx.closeStream();
     }
@@ -173,16 +173,28 @@ AudioDevice_RtAudio::~AudioDevice_RtAudio()
 
 void AudioDevice_RtAudio::start()
 {
-    ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f); // something went very wrong
+    ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
     samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
-    try { rtaudio_ctx.startStream(); }
-    catch (const RtAudioError & e) { LOG_ERROR(e.getMessage().c_str()); }
+    try
+    {
+        rtaudio_ctx.startStream();
+    }
+    catch (const RtAudioError & e)
+    {
+        LOG_ERROR(e.getMessage().c_str());
+    }
 }
 
 void AudioDevice_RtAudio::stop()
 {
-    try { rtaudio_ctx.stopStream(); }
-    catch (const RtAudioError & e) { LOG_ERROR(e.getMessage().c_str()); }
+    try
+    {
+        rtaudio_ctx.stopStream();
+    }
+    catch (const RtAudioError & e)
+    {
+        LOG_ERROR(e.getMessage().c_str());
+    }
     samplingInfo = {};
 }
 

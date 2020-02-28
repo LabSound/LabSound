@@ -14,35 +14,42 @@
 #define __func__ __FUNCTION__
 #endif
 
-#define CRASH() ((void)0)
+#define CRASH() ((void) 0)
 
-#define ASSERT(assertion)                                       \
-(!(assertion) ?                                                 \
-(LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion),   \
-CRASH()) :                                                      \
-(void)0)
+#define ASSERT(assertion)                                              \
+    (!(assertion) ?                                                    \
+         (LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion), \
+          CRASH()) :                                                   \
+         (void) 0)
 
-#define ASSERT_AT(assertion, file, line, function)              \
-(!(assertion) ?                                                 \
-(LabSoundAssertLog(file, line, function, #assertion),           \
-CRASH()) :                                                      \
-(void)0)
+#define ASSERT_AT(assertion, file, line, function)             \
+    (!(assertion) ?                                            \
+         (LabSoundAssertLog(file, line, function, #assertion), \
+          CRASH()) :                                           \
+         (void) 0)
 
-#define ASSERT_NOT_REACHED() do {                               \
-LabSoundAssertLog(__FILE__, __LINE__, __func__, 0);             \
-CRASH() ;                                                       \
-} while (0)
+#define ASSERT_NOT_REACHED()                                \
+    do                                                      \
+    {                                                       \
+        LabSoundAssertLog(__FILE__, __LINE__, __func__, 0); \
+        CRASH();                                            \
+    } while (0)
 
-#define ASSERT_WITH_MESSAGE(assertion, ...) do                  \
-if (!(assertion)) {                                             \
-LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion);     \
-CRASH() ;                                                       \
-} while (0)
+#define ASSERT_WITH_MESSAGE(assertion, ...)                              \
+    do                                                                   \
+        if (!(assertion))                                                \
+        {                                                                \
+            LabSoundAssertLog(__FILE__, __LINE__, __func__, #assertion); \
+            CRASH();                                                     \
+        }                                                                \
+    while (0)
 
-#define FATAL(...) do {                                         \
-LabSoundLog(__FILE__, __LINE__, __VA_ARGS__);                   \
-CRASH() ;                                                       \
-} while (0)
+#define FATAL(...)                                    \
+    do                                                \
+    {                                                 \
+        LabSoundLog(__FILE__, __LINE__, __VA_ARGS__); \
+        CRASH();                                      \
+    } while (0)
 
 #define ASSERT_UNUSED(variable, assertion) ASSERT(assertion)
 

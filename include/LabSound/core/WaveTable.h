@@ -8,17 +8,16 @@
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/AudioNode.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace lab
 {
 
-class WaveTable 
+class WaveTable
 {
 
 public:
-
     WaveTable(const float sampleRate, OscillatorType basicWaveform);
     WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
@@ -30,7 +29,7 @@ public:
     // at this fundamental frequency. The lower wavetable is the next range containing fewer partials than the higher wavetable.
     // Interpolation between these two tables can be made according to tableInterpolationFactor.
     // Where values from 0 -> 1 interpolate between lower -> higher.
-    void waveDataForFundamentalFrequency(float, float* &lowerWaveData, float* &higherWaveData, float& tableInterpolationFactor);
+    void waveDataForFundamentalFrequency(float, float *& lowerWaveData, float *& higherWaveData, float & tableInterpolationFactor);
 
     // Returns the scalar multiplier to the oscillator frequency to calculate wave table phase increment.
     float rateScale() const { return m_rateScale; }
@@ -38,7 +37,6 @@ public:
     unsigned periodicWaveSize() const;
 
 private:
-
     void generateBasicWaveform(OscillatorType);
 
     unsigned m_numberOfRanges;
@@ -59,11 +57,11 @@ private:
     size_t numberOfPartialsForRange(size_t rangeIndex) const;
 
     // Creates tables based on numberOfComponents Fourier coefficients.
-    void createBandLimitedTables(const float* real, const float* imag, size_t numberOfComponents);
+    void createBandLimitedTables(const float * real, const float * imag, size_t numberOfComponents);
 
-    std::vector<std::unique_ptr<AudioFloatArray> > m_bandLimitedTables;
+    std::vector<std::unique_ptr<AudioFloatArray>> m_bandLimitedTables;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // WaveTable_h
+#endif  // WaveTable_h

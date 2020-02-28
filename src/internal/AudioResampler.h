@@ -5,27 +5,29 @@
 #ifndef AudioResampler_h
 #define AudioResampler_h
 
-#include "LabSound/core/AudioSourceProvider.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioSourceProvider.h"
 
 #include "internal/AudioResamplerKernel.h"
 
 #include <vector>
 
-namespace lab {
+namespace lab
+{
 
 // AudioResampler resamples the audio stream from an AudioSourceProvider.
 // The audio stream may be single or multi-channel.
 // The default constructor defaults to single-channel (mono).
 
-class AudioResampler {
+class AudioResampler
+{
 public:
     AudioResampler();
     AudioResampler(unsigned numberOfChannels);
-    ~AudioResampler() { }
-    
+    ~AudioResampler() {}
+
     // Given an AudioSourceProvider, process() resamples the source stream into destinationBus.
-    void process(ContextRenderLock&, AudioSourceProvider*, AudioBus* destinationBus, size_t framesToProcess);
+    void process(ContextRenderLock &, AudioSourceProvider *, AudioBus * destinationBus, size_t framesToProcess);
 
     // Resets the processing state.
     void reset();
@@ -40,10 +42,10 @@ public:
 
 private:
     double m_rate;
-    std::vector<std::unique_ptr<AudioResamplerKernel> > m_kernels;
+    std::vector<std::unique_ptr<AudioResamplerKernel>> m_kernels;
     std::unique_ptr<AudioBus> m_sourceBus;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioResampler_h
+#endif  // AudioResampler_h

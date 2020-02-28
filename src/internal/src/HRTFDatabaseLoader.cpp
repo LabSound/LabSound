@@ -3,8 +3,8 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/HRTFDatabaseLoader.h"
-#include "internal/HRTFDatabase.h"
 #include "internal/Assertions.h"
+#include "internal/HRTFDatabase.h"
 
 #include <iostream>
 
@@ -25,9 +25,9 @@ std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::MakeHRTFLoaderSingleton(
 }
 
 HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & searchPath)
-: m_loading(false)
-, m_databaseSampleRate(sampleRate)
-, searchPath(searchPath)
+    : m_loading(false)
+    , m_databaseSampleRate(sampleRate)
+    , searchPath(searchPath)
 {
     ASSERT(!s_loader.get());
 }
@@ -35,13 +35,13 @@ HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & sea
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
 {
     waitForLoaderThreadCompletion();
-    
+
     if (m_databaseLoaderThread.joinable()) m_databaseLoaderThread.join();
 
     m_hrtfDatabase.reset();
-    
+
     ASSERT(this == s_loader.get());
-    
+
     s_loader.reset();
 }
 
@@ -49,7 +49,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
 void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader * threadData)
 {
     std::lock_guard<std::mutex> locker(threadData->m_threadLock);
-    HRTFDatabaseLoader * loader = reinterpret_cast<HRTFDatabaseLoader*>(threadData);
+    HRTFDatabaseLoader * loader = reinterpret_cast<HRTFDatabaseLoader *>(threadData);
     ASSERT(loader);
 
     threadData->m_loading = true;
@@ -60,7 +60,7 @@ void HRTFDatabaseLoader::databaseLoaderEntry(HRTFDatabaseLoader * threadData)
 void HRTFDatabaseLoader::load()
 {
     m_hrtfDatabase.reset(new HRTFDatabase(m_databaseSampleRate, searchPath));
-    
+
     if (!m_hrtfDatabase.get())
     {
         LOG_ERROR("HRTF database not loaded");
@@ -70,7 +70,7 @@ void HRTFDatabaseLoader::load()
 void HRTFDatabaseLoader::loadAsynchronously()
 {
     std::lock_guard<std::mutex> lock(m_threadLock);
-    
+
     if (!m_hrtfDatabase.get() && !m_loading)
     {
         m_databaseLoaderThread = std::thread(databaseLoaderEntry, this);
@@ -97,4 +97,4 @@ HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()
     return s_loader->database();
 }
 
-} // namespace lab
+}  // namespace lab

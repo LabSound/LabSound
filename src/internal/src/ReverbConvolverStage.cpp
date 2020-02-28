@@ -4,19 +4,20 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/ReverbConvolverStage.h"
-#include "internal/VectorMath.h"
+#include "internal/Assertions.h"
 #include "internal/ReverbAccumulationBuffer.h"
 #include "internal/ReverbConvolver.h"
+#include "internal/ReverbConvolverStage.h"
 #include "internal/ReverbInputBuffer.h"
-#include "internal/Assertions.h"
+#include "internal/VectorMath.h"
 
-namespace lab {
+namespace lab
+{
 
 using namespace VectorMath;
 
-ReverbConvolverStage::ReverbConvolverStage(const float* impulseResponse, size_t, size_t reverbTotalLatency, size_t stageOffset, size_t stageLength,
-                                           size_t fftSize, size_t renderPhase, size_t renderSliceSize, ReverbAccumulationBuffer* accumulationBuffer, bool directMode)
+ReverbConvolverStage::ReverbConvolverStage(const float * impulseResponse, size_t, size_t reverbTotalLatency, size_t stageOffset, size_t stageLength,
+                                           size_t fftSize, size_t renderPhase, size_t renderSliceSize, ReverbAccumulationBuffer * accumulationBuffer, bool directMode)
     : m_accumulationBuffer(accumulationBuffer)
     , m_accumulationReadIndex(0)
     , m_inputReadIndex(0)
@@ -25,11 +26,14 @@ ReverbConvolverStage::ReverbConvolverStage(const float* impulseResponse, size_t,
     ASSERT(impulseResponse);
     ASSERT(accumulationBuffer);
 
-    if (!m_directMode) {
+    if (!m_directMode)
+    {
         m_fftKernel = std::unique_ptr<FFTFrame>(new FFTFrame(fftSize));
         m_fftKernel->doPaddedFFT(impulseResponse + stageOffset, stageLength);
         m_fftConvolver = std::unique_ptr<FFTConvolver>(new FFTConvolver(fftSize));
-    } else {
+    }
+    else
+    {
         m_directKernel = std::unique_ptr<AudioFloatArray>(new AudioFloatArray(fftSize / 2));
         m_directKernel->copyToRange(impulseResponse + stageOffset, 0, fftSize / 2);
         m_directConvolver = std::unique_ptr<DirectConvolver>(new DirectConvolver(renderSliceSize));
@@ -41,7 +45,8 @@ ReverbConvolverStage::ReverbConvolverStage(const float* impulseResponse, size_t,
 
     // But, the FFT convolution itself incurs fftSize / 2 latency, so subtract this out...
     size_t halfSize = fftSize / 2;
-    if (!m_directMode) {
+    if (!m_directMode)
+    {
         ASSERT(totalDelay >= halfSize);
         if (totalDelay >= halfSize)
             totalDelay -= halfSize;
@@ -56,33 +61,34 @@ ReverbConvolverStage::ReverbConvolverStage(const float* impulseResponse, size_t,
 
     m_postDelayLength = totalDelay - m_preDelayLength;
     m_preReadWriteIndex = 0;
-    m_framesProcessed = 0; // total frames processed so far
+    m_framesProcessed = 0;  // total frames processed so far
 
     size_t delayBufferSize = m_preDelayLength < fftSize ? fftSize : m_preDelayLength;
     delayBufferSize = delayBufferSize < renderSliceSize ? renderSliceSize : delayBufferSize;
     m_preDelayBuffer.allocate(delayBufferSize);
 }
 
-void ReverbConvolverStage::processInBackground(ReverbConvolver* convolver, size_t framesToProcess)
+void ReverbConvolverStage::processInBackground(ReverbConvolver * convolver, size_t framesToProcess)
 {
-    ReverbInputBuffer* inputBuffer = convolver->inputBuffer();
-    float* source = inputBuffer->directReadFrom(&m_inputReadIndex, framesToProcess);
+    ReverbInputBuffer * inputBuffer = convolver->inputBuffer();
+    float * source = inputBuffer->directReadFrom(&m_inputReadIndex, framesToProcess);
     process(source, framesToProcess);
 }
 
-void ReverbConvolverStage::process(const float* source, size_t framesToProcess)
+void ReverbConvolverStage::process(const float * source, size_t framesToProcess)
 {
     ASSERT(source);
     if (!source)
         return;
-    
+
     // Deal with pre-delay stream : note special handling of zero delay.
 
-    const float* preDelayedSource;
-    float* preDelayedDestination;
-    float* temporaryBuffer;
+    const float * preDelayedSource;
+    float * preDelayedDestination;
+    float * temporaryBuffer;
     bool isTemporaryBufferSafe = false;
-    if (m_preDelayLength > 0) {
+    if (m_preDelayLength > 0)
+    {
         // Handles both the read case (call to process() ) and the write case (memcpy() )
         bool isPreDelaySafe = m_preReadWriteIndex + framesToProcess <= m_preDelayBuffer.size();
         ASSERT(isPreDelaySafe);
@@ -93,25 +99,30 @@ void ReverbConvolverStage::process(const float* source, size_t framesToProcess)
 
         preDelayedDestination = m_preDelayBuffer.data() + m_preReadWriteIndex;
         preDelayedSource = preDelayedDestination;
-        temporaryBuffer = m_temporaryBuffer.data();        
-    } else {
+        temporaryBuffer = m_temporaryBuffer.data();
+    }
+    else
+    {
         // Zero delay
         preDelayedDestination = 0;
         preDelayedSource = source;
         temporaryBuffer = m_preDelayBuffer.data();
-        
+
         isTemporaryBufferSafe = framesToProcess <= m_preDelayBuffer.size();
     }
-    
+
     ASSERT(isTemporaryBufferSafe);
     if (!isTemporaryBufferSafe)
         return;
 
-    if (m_framesProcessed < m_preDelayLength) {
+    if (m_framesProcessed < m_preDelayLength)
+    {
         // For the first m_preDelayLength frames don't process the convolver, instead simply buffer in the pre-delay.
         // But while buffering the pre-delay, we still need to update our index.
         m_accumulationBuffer->updateReadIndex(&m_accumulationReadIndex, framesToProcess);
-    } else {
+    }
+    else
+    {
         // Now, run the convolution (into the delay buffer).
         // An expensive FFT will happen every fftSize / 2 frames.
         // We process in-place here...
@@ -125,7 +136,8 @@ void ReverbConvolverStage::process(const float* source, size_t framesToProcess)
     }
 
     // Finally copy input to pre-delay.
-    if (m_preDelayLength > 0) {
+    if (m_preDelayLength > 0)
+    {
         memcpy(preDelayedDestination, source, sizeof(float) * framesToProcess);
         m_preReadWriteIndex += framesToProcess;
 
@@ -143,11 +155,11 @@ void ReverbConvolverStage::reset()
         m_fftConvolver->reset();
     else
         m_directConvolver->reset();
-    
+
     m_preDelayBuffer.zero();
     m_accumulationReadIndex = 0;
     m_inputReadIndex = 0;
     m_framesProcessed = 0;
 }
 
-} // namespace lab
+}  // namespace lab

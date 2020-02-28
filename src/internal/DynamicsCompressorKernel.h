@@ -7,25 +7,24 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-namespace lab 
+namespace lab
 {
 
 class ContextRenderLock;
-    
-class DynamicsCompressorKernel 
+
+class DynamicsCompressorKernel
 {
 
 public:
-
     DynamicsCompressorKernel(unsigned numberOfChannels);
 
     void setNumberOfChannels(unsigned);
 
     // Performs stereo-linked compression.
-    void process(ContextRenderLock&,
+    void process(ContextRenderLock &,
                  const float * sourceChannels[],
                  float * destinationChannels[],
                  unsigned numberOfChannels,
@@ -43,8 +42,7 @@ public:
                  float releaseZone1,
                  float releaseZone2,
                  float releaseZone3,
-                 float releaseZone4
-                 );
+                 float releaseZone4);
 
     void reset();
 
@@ -53,7 +51,6 @@ public:
     float meteringGain() const { return m_meteringGain; }
 
 protected:
-    
     float m_detectorAverage;
     float m_compressorGain;
 
@@ -62,13 +59,22 @@ protected:
     float m_meteringGain;
 
     // Lookahead section.
-    enum { MaxPreDelayFrames = 1024 };
-    enum { MaxPreDelayFramesMask = MaxPreDelayFrames - 1 };
-    enum { DefaultPreDelayFrames = 256 }; // setPreDelayTime() will override this initial value
+    enum
+    {
+        MaxPreDelayFrames = 1024
+    };
+    enum
+    {
+        MaxPreDelayFramesMask = MaxPreDelayFrames - 1
+    };
+    enum
+    {
+        DefaultPreDelayFrames = 256
+    };  // setPreDelayTime() will override this initial value
     unsigned m_lastPreDelayFrames;
     void setPreDelayTime(float time, float sampleRate);
 
-    std::vector< std::unique_ptr<AudioFloatArray> > m_preDelayBuffers;
+    std::vector<std::unique_ptr<AudioFloatArray>> m_preDelayBuffers;
 
     int m_preDelayReadIndex;
     int m_preDelayWriteIndex;
@@ -86,7 +92,7 @@ protected:
     // Amount of input change in dB required for 1 dB of output change.
     // This applies to the portion of the curve above m_kneeThresholdDb (see below).
     float m_ratio;
-    float m_slope; // Inverse ratio.
+    float m_slope;  // Inverse ratio.
 
     // The input to output change below the threshold is linear 1:1.
     float m_linearThreshold;
@@ -105,6 +111,6 @@ protected:
     float m_K;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DynamicsCompressorKernel_h
+#endif  // DynamicsCompressorKernel_h

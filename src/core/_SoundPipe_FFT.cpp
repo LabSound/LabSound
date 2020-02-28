@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 #ifdef _MSC_VER
 // disable unreferenced local variable, 32 to 64 bit cast warnings, double to float warnings
-#pragma warning(disable: 4101)
+#pragma warning(disable : 4101)
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4305)
 #endif
@@ -154,7 +154,7 @@ T POW2(T m)
     return T(1) << m;
 }
 
-    /* initialize constants in ftable */
+/* initialize constants in ftable */
 int sp_ftbl_init(sp_data * sp, sp_ftbl * ft, size_t size)
 {
     ft->size = size;
@@ -168,7 +168,7 @@ int sp_ftbl_init(sp_data * sp, sp_ftbl * ft, size_t size)
 
 int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size)
 {
-    *ft = (sp_ftbl*) malloc(sizeof(sp_ftbl));
+    *ft = (sp_ftbl *) malloc(sizeof(sp_ftbl));
     sp_ftbl * ftp = *ft;
     ftp->tbl = tbl;
     sp_ftbl_init(sp, ftp, size);
@@ -189,7 +189,7 @@ int sp_create(sp_data ** spp)
     *spp = (sp_data *) malloc(sizeof(sp_data));
     sp_data * sp = *spp;
     sp->nchan = 1;
-    SPFLOAT * out = (SPFLOAT*) malloc(sizeof(SPFLOAT) * sp->nchan);
+    SPFLOAT * out = (SPFLOAT *) malloc(sizeof(SPFLOAT) * sp->nchan);
     *out = 0;
     sp->out = out;
     sp->sr = 44100;
@@ -327,7 +327,7 @@ static void set_buf_pointers(sp_conv * p,
 
 int sp_conv_create(sp_conv ** p)
 {
-    *p = (sp_conv*) malloc(sizeof(sp_conv));
+    *p = (sp_conv *) malloc(sizeof(sp_conv));
     return SP_OK;
 }
 
@@ -3634,4 +3634,4 @@ void sp_fft_destroy(sp_fft * fft)
     free(fft->BRLowCpx);
 }
 
-} // lab
+}  // lab

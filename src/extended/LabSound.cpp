@@ -17,112 +17,110 @@
 
 namespace lab
 {
-    const std::vector<AudioDeviceInfo> MakeAudioDeviceList()
+const std::vector<AudioDeviceInfo> MakeAudioDeviceList()
+{
+    LOG("MakeAudioDeviceList()");
+    return AudioDevice::MakeAudioDeviceList();
+}
+
+const uint32_t GetDefaultOutputAudioDeviceIndex()
+{
+    LOG("GetDefaultOutputAudioDeviceIndex()");
+    return AudioDevice::GetDefaultOutputAudioDeviceIndex();
+}
+
+const uint32_t GetDefaultInputAudioDeviceIndex()
+{
+    LOG("GetDefaultInputAudioDeviceIndex()");
+    return AudioDevice::GetDefaultInputAudioDeviceIndex();
+}
+
+std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+{
+    LOG("MakeRealtimeAudioContext()");
+
+    std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
+    ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), outputConfig, inputConfig));
+    ctx->lazyInitialize();
+    return ctx;
+}
+
+std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds)
+{
+    LOG("MakeOfflineAudioContext()");
+
+    const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
+
+    std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
+    ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), offlineConfig, secondsToRun));
+    ctx->lazyInitialize();
+    return ctx;
+}
+
+std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
+{
+    LOG("MakeAudioHardwareInputNode()");
+
+    auto device = r.context()->device();
+
+    if (device)
     {
-        LOG("MakeAudioDeviceList()");
-        return AudioDevice::MakeAudioDeviceList();
-    }
-
-    const uint32_t GetDefaultOutputAudioDeviceIndex()
-    {
-        LOG("GetDefaultOutputAudioDeviceIndex()");
-        return AudioDevice::GetDefaultOutputAudioDeviceIndex();
-    }
-
-    const uint32_t GetDefaultInputAudioDeviceIndex()
-    {
-        LOG("GetDefaultInputAudioDeviceIndex()");
-        return AudioDevice::GetDefaultInputAudioDeviceIndex();
-    }
-
-    std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
-    {
-        LOG("MakeRealtimeAudioContext()");
-
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-        ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), outputConfig, inputConfig));
-        ctx->lazyInitialize();
-        return ctx;
-    }
-
-    std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds)
-    {
-        LOG("MakeOfflineAudioContext()");
-
-        const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-
-        std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-        ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), offlineConfig, secondsToRun));
-        ctx->lazyInitialize();
-        return ctx;
-    }
-
-    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
-    {
-        LOG("MakeAudioHardwareInputNode()");
-
-        auto device = r.context()->device();
-
-        if (device)
+        if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
         {
-            if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
-            {
-                std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(hardwareDevice->AudioHardwareInputProvider()));
-                return inputNode;
-            }
-            else
-            {
-                throw std::runtime_error("Cannot create AudioHardwareInputNode. Context does not own an AudioHardwareInputNode.");
-            }
+            std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(hardwareDevice->AudioHardwareInputProvider()));
+            return inputNode;
         }
-        return {};
-    }
-
-    namespace
-    {
-        char const * const NodeNames[] =
+        else
         {
-            "ADSR",
-            "Analyser",
-//            "AudioBasicProcessor",
-//            "AudioHardwareSource",
-            "BiquadFilter",
-            "ChannelMerger",
-            "ChannelSplitter",
-            "Clip",
-            "Convolver",
-            "Delay",
-            "Diode",
-            "DynamicsCompressor",
-//            "Function",
-            "Gain",
-            "Granulation",
-            "Noise",
-            "Oscillator",
-            "Panner",
-#ifdef PD
-            "PureData",
-#endif
-            "PeakCompressor",
-            "PingPongDelay",
-            "PowerMonitor",
-            "PWM",
-            "Recorder",
-            "SampledAudio",
-            "Sfxr",
-            "Spatialization",
-            "SpectralMonitor",
-            "StereoPanner",
-            "SuperSaw",
-            "WaveShaper",
-            nullptr
-        };
+            throw std::runtime_error("Cannot create AudioHardwareInputNode. Context does not own an AudioHardwareInputNode.");
+        }
     }
+    return {};
+}
 
-    char const * const * const AudioNodeNames()
-    {
-        return NodeNames;
-    }
+namespace
+{
+    char const * const NodeNames[] = {
+        "ADSR",
+        "Analyser",
+        //            "AudioBasicProcessor",
+        //            "AudioHardwareSource",
+        "BiquadFilter",
+        "ChannelMerger",
+        "ChannelSplitter",
+        "Clip",
+        "Convolver",
+        "Delay",
+        "Diode",
+        "DynamicsCompressor",
+        //            "Function",
+        "Gain",
+        "Granulation",
+        "Noise",
+        "Oscillator",
+        "Panner",
+#ifdef PD
+        "PureData",
+#endif
+        "PeakCompressor",
+        "PingPongDelay",
+        "PowerMonitor",
+        "PWM",
+        "Recorder",
+        "SampledAudio",
+        "Sfxr",
+        "Spatialization",
+        "SpectralMonitor",
+        "StereoPanner",
+        "SuperSaw",
+        "WaveShaper",
+        nullptr};
+}
+
+char const * const * const AudioNodeNames()
+{
+    return NodeNames;
+}
 
 }  // lab
 

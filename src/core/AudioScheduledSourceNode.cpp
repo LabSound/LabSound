@@ -30,8 +30,8 @@ AudioScheduledSourceNode::AudioScheduledSourceNode()
 {
 }
 
-void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus, 
-    size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
+void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus,
+                                                    size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
 {
 
     if (!outputBus)
@@ -147,7 +147,7 @@ void AudioScheduledSourceNode::start(double when)
     }
 
     m_pendingStartTime = when;
-    m_endTime = UnknownTime;            // clear previous stop()s.
+    m_endTime = UnknownTime;  // clear previous stop()s.
     m_playbackState = SCHEDULED_STATE;
 }
 

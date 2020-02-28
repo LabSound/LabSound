@@ -10,35 +10,33 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
-namespace lab 
+namespace lab
 {
-    class SupersawNode : public AudioScheduledSourceNode 
-    {
-        class SupersawNodeInternal;
-        std::unique_ptr<SupersawNodeInternal> internalNode;
+class SupersawNode : public AudioScheduledSourceNode
+{
+    class SupersawNodeInternal;
+    std::unique_ptr<SupersawNodeInternal> internalNode;
 
-    public:
+public:
+    SupersawNode();
+    virtual ~SupersawNode();
 
-        SupersawNode();
-        virtual ~SupersawNode();
+    std::shared_ptr<AudioSetting> sawCount() const;
+    std::shared_ptr<AudioParam> frequency() const;
+    std::shared_ptr<AudioParam> detune() const;
 
-        std::shared_ptr<AudioSetting> sawCount() const;
-        std::shared_ptr<AudioParam> frequency() const;
-        std::shared_ptr<AudioParam> detune() const;
+    void update(ContextRenderLock & r);  // call if sawCount is changed. CBB: update automatically
 
-        void update(ContextRenderLock& r); // call if sawCount is changed. CBB: update automatically
+private:
+    virtual void process(ContextRenderLock &, size_t) override;
 
-    private:
+    virtual void reset(ContextRenderLock &) override {}
 
-        virtual void process(ContextRenderLock&, size_t) override;
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-        virtual void reset(ContextRenderLock&) override { }
-
-        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-        virtual bool propagatesSilence(ContextRenderLock & r) const override;
-    };
+    virtual bool propagatesSilence(ContextRenderLock & r) const override;
+};
 }
 
 #endif

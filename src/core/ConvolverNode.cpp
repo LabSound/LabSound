@@ -10,10 +10,11 @@
 #include "internal/VectorMath.h"
 #include <cmath>
 
-namespace lab {
+namespace lab
+{
 
-using std::isnan;
 using std::isinf;
+using std::isnan;
 
 // from _SoundPipe_FFT.cpp
 struct sp_conv;
@@ -31,7 +32,7 @@ int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
 
 //------------------------------------------------------------------------------
 // calculateNormalizationScale is adapted from webkit's Reverb.cpp, and carried the license:
-// Empirical gain calibration tested across many impulse responses to ensure 
+// Empirical gain calibration tested across many impulse responses to ensure
 // perceived volume is same as dry (unprocessed) signal
 const float GainCalibration = -58;
 const float GainCalibrationSampleRate = 44100;
@@ -77,7 +78,6 @@ static float calculateNormalizationScale(AudioBus * response)
 }
 //------------------------------------------------------------------------------
 
-
 ConvolverNode::ReverbKernel::ReverbKernel(ReverbKernel && rh) noexcept
     : conv(rh.conv)
     , ft(rh.ft)
@@ -95,11 +95,10 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
         lab::sp_conv_destroy(&conv);
 }
 
-
 ConvolverNode::ConvolverNode()
-: AudioScheduledSourceNode()
-, _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
-, _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
+    : AudioScheduledSourceNode()
+    , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
+    , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
 {
     m_settings.push_back(_impulseResponseClip);
     m_settings.push_back(_normalize);
@@ -111,8 +110,7 @@ ConvolverNode::ConvolverNode()
 
     lab::sp_create(&_sp);
 
-    _impulseResponseClip->setValueChanged([this]()
-    {
+    _impulseResponseClip->setValueChanged([this]() {
         this->_activateNewImpulse();
     });
 }
@@ -124,7 +122,10 @@ ConvolverNode::~ConvolverNode()
     uninitialize();
 }
 
-bool ConvolverNode::normalize() const { return _normalize->valueBool(); }
+bool ConvolverNode::normalize() const
+{
+    return _normalize->valueBool();
+}
 void ConvolverNode::setNormalize(bool new_n)
 {
     bool n = normalize();
@@ -141,7 +142,7 @@ void ConvolverNode::setNormalize(bool new_n)
             float s = 1.f / _scale;
             for (int i = 0; i < clip->numberOfChannels(); ++i)
             {
-                float* data = clip->channel(i)->mutableData();
+                float * data = clip->channel(i)->mutableData();
                 for (int j = 0; j < len; ++j)
                     data[j] *= s;
             }
@@ -152,7 +153,7 @@ void ConvolverNode::setNormalize(bool new_n)
             _scale = calculateNormalizationScale(clip.get());
             for (int i = 0; i < clip->numberOfChannels(); ++i)
             {
-                float* data = clip->channel(i)->mutableData();
+                float * data = clip->channel(i)->mutableData();
                 for (int j = 0; j < len; ++j)
                     data[j] *= _scale;
             }
@@ -197,7 +198,7 @@ void ConvolverNode::_activateNewImpulse()
 
         // ft doesn't own the data; it does retain a pointer to it.
         sp_ftbl_bind(_sp, &kernel.ft,
-            clip->channel(0)->mutableData(), clip->channel(0)->length());
+                     clip->channel(0)->mutableData(), clip->channel(0)->length());
 
         sp_conv_create(&kernel.conv);
         sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
@@ -208,7 +209,10 @@ void ConvolverNode::_activateNewImpulse()
     start(0);
 }
 
-std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const { return _impulseResponseClip->valueBus(); }
+std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const
+{
+    return _impulseResponseClip->valueBus();
+}
 
 void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
@@ -225,7 +229,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
     if (!outputBus->numberOfChannels())
     {
         output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
-        outputBus = output(0)->bus(r); // set number of channels invalidates the pointer
+        outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
     }
 
     size_t quantumFrameOffset;
@@ -284,4 +288,4 @@ bool ConvolverNode::propagatesSilence(ContextRenderLock & r) const
     return !isPlayingOrScheduled() || hasFinished();
 }
 
-} // lab::Sound
+}  // lab::Sound

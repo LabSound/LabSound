@@ -9,38 +9,39 @@
 #include "internal/Biquad.h"
 #include "internal/BiquadProcessor.h"
 
-namespace lab {
+namespace lab
+{
 
 class BiquadProcessor;
 
 // BiquadDSPKernel is an AudioDSPKernel and is responsible for filtering one channel of a BiquadProcessor using a Biquad object.
 
-class BiquadDSPKernel : public AudioDSPKernel 
+class BiquadDSPKernel : public AudioDSPKernel
 {
-public:  
-
-    explicit BiquadDSPKernel(BiquadProcessor* processor) : AudioDSPKernel(processor)
+public:
+    explicit BiquadDSPKernel(BiquadProcessor * processor)
+        : AudioDSPKernel(processor)
     {
     }
-    
+
     // AudioDSPKernel
-    virtual void process(ContextRenderLock& r, const float* source, float* dest, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock & r, const float * source, float * dest, size_t framesToProcess) override;
     virtual void reset() override { m_biquad.reset(); }
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextRenderLock& r,
+    void getFrequencyResponse(ContextRenderLock & r,
                               size_t nFrequencies,
-                              const float* frequencyHz,
-                              float* magResponse,
-                              float* phaseResponse);
+                              const float * frequencyHz,
+                              float * magResponse,
+                              float * phaseResponse);
 
     virtual double tailTime(ContextRenderLock & r) const override;
     virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
     Biquad m_biquad;
-    BiquadProcessor* biquadProcessor() { return static_cast<BiquadProcessor*>(processor()); }
+    BiquadProcessor * biquadProcessor() { return static_cast<BiquadProcessor *>(processor()); }
 
     // To prevent audio glitches when parameters are changed,
     // dezippering is used to slowly change the parameters.
@@ -49,9 +50,9 @@ protected:
     // used. If |forceUpdate| is true, we update the coefficients even
     // if they are not dirty. (Used when computing the frequency
     // response.)
-    void updateCoefficientsIfNecessary(ContextRenderLock& r, bool useSmoothing, bool forceUpdate);
+    void updateCoefficientsIfNecessary(ContextRenderLock & r, bool useSmoothing, bool forceUpdate);
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // BiquadDSPKernel_h
+#endif  // BiquadDSPKernel_h

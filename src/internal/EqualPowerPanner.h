@@ -11,14 +11,13 @@ namespace lab
 {
 
 // Common type of stereo panner as found in normal audio mixing equipment.
-class EqualPowerPanner : public Panner 
+class EqualPowerPanner : public Panner
 {
 
 public:
-
     EqualPowerPanner(const float sampleRate);
 
-    virtual void pan(ContextRenderLock&, double azimuth, double elevation,
+    virtual void pan(ContextRenderLock &, double azimuth, double elevation,
                      const AudioBus * inputBus, AudioBus * outputBuf,
                      size_t framesToProcess) override;
 
@@ -28,15 +27,14 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
 private:
-
     // For smoothing / de-zippering
     bool m_isFirstRender = true;
     double m_smoothingConstant;
-    
+
     double m_gainL = 0.0;
     double m_gainR = 0.0;
 };
 
-} // namespace lab
+}  // namespace lab
 
 #endif

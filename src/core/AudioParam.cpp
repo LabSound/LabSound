@@ -27,17 +27,17 @@ const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
 AudioParam::AudioParam(const std::string & name, const std::string & shortName, double defaultValue, double minValue, double maxValue, unsigned units)
-: AudioSummingJunction()
-, m_name(name)
-, m_shortName(shortName)
-, m_value(defaultValue)
-, m_defaultValue(defaultValue)
-, m_minValue(minValue)
-, m_maxValue(maxValue)
-, m_units(units)
-, m_smoothedValue(defaultValue)
-, m_smoothingConstant(DefaultSmoothingConstant)
-, m_data(new Data())
+    : AudioSummingJunction()
+    , m_name(name)
+    , m_shortName(shortName)
+    , m_value(defaultValue)
+    , m_defaultValue(defaultValue)
+    , m_minValue(minValue)
+    , m_maxValue(maxValue)
+    , m_units(units)
+    , m_smoothedValue(defaultValue)
+    , m_smoothingConstant(DefaultSmoothingConstant)
+    , m_data(new Data())
 {
 }
 
@@ -91,7 +91,7 @@ bool AudioParam::smooth(ContextRenderLock & r)
         m_smoothedValue += (m_value - m_smoothedValue) * m_smoothingConstant;
 
         // If we get close enough then snap to actual value.
-        if (fabs(m_smoothedValue - m_value) < SnapThreshold) // @fixme: the threshold needs to be adjustable depending on range - but this is OK general purpose value.
+        if (fabs(m_smoothedValue - m_value) < SnapThreshold)  // @fixme: the threshold needs to be adjustable depending on range - but this is OK general purpose value.
             m_smoothedValue = m_value;
     }
 
@@ -219,11 +219,11 @@ void AudioParam::disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam> pa
 
 void AudioParam::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam> param)
 {
-	for (auto i : param->m_connectedOutputs)
+    for (auto i : param->m_connectedOutputs)
     {
-		auto j = i.lock();
-		if (j)
+        auto j = i.lock();
+        if (j)
             j->removeParam(g, param);
-	}
-	param->junctionDisconnectAllOutputs();
+    }
+    param->junctionDisconnectAllOutputs();
 }

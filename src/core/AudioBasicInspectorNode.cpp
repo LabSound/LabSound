@@ -4,13 +4,15 @@
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AnalyserNode.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
 
-namespace lab {
+namespace lab
+{
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(int outputChannelCount) : AudioNode()
+AudioBasicInspectorNode::AudioBasicInspectorNode(int outputChannelCount)
+    : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outputChannelCount)));
@@ -20,20 +22,21 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(int outputChannelCount) : Audio
 // We override pullInputs() as an optimization allowing this node to take advantage of in-place processing,
 // where the input is simply passed through unprocessed to the output.
 // Note: this only applies if the input and output channel counts match.
-void AudioBasicInspectorNode::pullInputs(ContextRenderLock& r, size_t framesToProcess)
+void AudioBasicInspectorNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)
 {
     // Render input stream - try to render directly into output bus for pass-through processing where process() doesn't need to do anything...
     input(0)->pull(r, output(0)->bus(r), framesToProcess);
 }
 
-void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     if (input != this->input(0).get())
         return;
-    
+
     size_t numberOfChannels = input->numberOfChannels(r);
 
-    if (numberOfChannels != output(0)->numberOfChannels()) {
+    if (numberOfChannels != output(0)->numberOfChannels())
+    {
         // This will propagate the channel count to any nodes connected further downstream in the graph.
         output(0)->setNumberOfChannels(r, numberOfChannels);
     }
@@ -41,5 +44,4 @@ void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock& r
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace lab
-
+}  // namespace lab

@@ -12,12 +12,11 @@
 namespace lab
 {
 
-
-DelayNode::DelayNode(float sampleRate, double maxDelayTime) 
-: AudioBasicProcessorNode()
+DelayNode::DelayNode(float sampleRate, double maxDelayTime)
+    : AudioBasicProcessorNode()
 {
     if (maxDelayTime < 0)
-        maxDelayTime = 0;   // delay node can't predict the future
+        maxDelayTime = 0;  // delay node can't predict the future
 
     m_processor = std::make_unique<DelayProcessor>(sampleRate, 1, maxDelayTime);
 
@@ -33,7 +32,7 @@ std::shared_ptr<AudioSetting> DelayNode::delayTime()
 
 DelayProcessor * DelayNode::delayProcessor()
 {
-    return static_cast<DelayProcessor*>(processor());
+    return static_cast<DelayProcessor *>(processor());
 }
 
-} // lab
+}  // lab

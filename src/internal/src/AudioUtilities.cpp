@@ -7,33 +7,35 @@
 
 #include "LabSound/core/Macros.h"
 
-namespace lab { namespace AudioUtilities {
-
-float decibelsToLinear(float decibels)
+namespace lab
 {
-    return powf(10, 0.05f * decibels);
-}
-
-float linearToDecibels(float linear)
+namespace AudioUtilities
 {
-    // It's not possible to calculate decibels for a zero linear value since it would be -Inf.
-    // -1000.0 dB represents a very tiny linear value in case we ever reach this case.
-    if (!linear)
-        return -1000;
-        
-    return 20 * log10f(linear);
-}
 
-double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
-{
-    return 1 - exp(-1 / (sampleRate * timeConstant));
-}
+    float decibelsToLinear(float decibels)
+    {
+        return powf(10, 0.05f * decibels);
+    }
 
-size_t timeToSampleFrame(double time, double sampleRate)
-{
-    ASSERT(time >= 0);
-    return static_cast<size_t>(round(time * sampleRate));
-}
-    
-} } // end AudioUtilites & lab
+    float linearToDecibels(float linear)
+    {
+        // It's not possible to calculate decibels for a zero linear value since it would be -Inf.
+        // -1000.0 dB represents a very tiny linear value in case we ever reach this case.
+        if (!linear)
+            return -1000;
 
+        return 20 * log10f(linear);
+    }
+
+    double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
+    {
+        return 1 - exp(-1 / (sampleRate * timeConstant));
+    }
+
+    size_t timeToSampleFrame(double time, double sampleRate)
+    {
+        ASSERT(time >= 0);
+        return static_cast<size_t>(round(time * sampleRate));
+    }
+}
+}  // end AudioUtilites & lab
