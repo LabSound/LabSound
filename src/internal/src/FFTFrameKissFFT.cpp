@@ -20,12 +20,7 @@ const int kMaxFFTPow2Size = 24;
 
 // Normal constructor: allocates for a given fftSize.
 FFTFrame::FFTFrame(size_t fftSize)
-    : m_FFTSize(fftSize)
-    , m_log2FFTSize(static_cast<unsigned>(log2((double) fftSize)))
-    , mFFT(0)
-    , mIFFT(0)
-    , m_realData(fftSize / 2 + 1)
-    , m_imagData(fftSize / 2 + 1)
+    : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double) fftSize))), mFFT(0), mIFFT(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1)
 {
     // We only allow power of two.
     ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -45,22 +40,13 @@ FFTFrame::FFTFrame(size_t fftSize)
 }
 
 // Creates a blank/empty frame (interpolate() must later be called).
-FFTFrame::FFTFrame()
-    : m_FFTSize(0)
-    , m_log2FFTSize(0)
-    , mFFT(0)
-    , mIFFT(0)
+FFTFrame::FFTFrame() : m_FFTSize(0), m_log2FFTSize(0), mFFT(0), mIFFT(0)
 {
 }
 
 // Copy constructor.
-FFTFrame::FFTFrame(const FFTFrame & frame)
-    : m_FFTSize(frame.m_FFTSize)
-    , m_log2FFTSize(frame.m_log2FFTSize)
-    , mFFT(0)
-    , mIFFT(0)
-    , m_realData(frame.m_FFTSize / 2)
-    , m_imagData(frame.m_FFTSize / 2)
+FFTFrame::FFTFrame(const FFTFrame & frame) 
+    : m_FFTSize(frame.m_FFTSize), m_log2FFTSize(frame.m_log2FFTSize), mFFT(0), mIFFT(0), m_realData(frame.m_FFTSize / 2), m_imagData(frame.m_FFTSize / 2)
 {
     mFFT = kiss_fftr_alloc(m_FFTSize, 0, nullptr, nullptr);
     mIFFT = kiss_fftr_alloc(m_FFTSize, 1, nullptr, nullptr);
@@ -105,7 +91,7 @@ void FFTFrame::multiply(const FFTFrame & frame)
     imagP1[0] = imag0 * imagP2[0];
 }
 
-void FFTFrame::doFFT(const float * data)
+void FFTFrame::computeForwardFFT(const float * data)
 {
     kiss_fftr(mFFT, data, m_cpxOutputData);
 
@@ -115,7 +101,7 @@ void FFTFrame::doFFT(const float * data)
     VectorMath::vdeintlve(outputData, m_realData.data(), m_imagData.data(), m_FFTSize);
 }
 
-void FFTFrame::doInverseFFT(float * data)
+void FFTFrame::computeInverseFFT(float * data)
 {
     const uint32_t inputSize = m_FFTSize / 2 + 1;
 

@@ -134,7 +134,7 @@ void RealtimeAnalyser::doFFTAnalysis()
     ApplyWindowFunctionInplace(WindowFunction::blackman, tempP, fftSize);
 
     // Do the analysis.
-    m_analysisFrame->doFFT(tempP);
+    m_analysisFrame->computeForwardFFT(tempP);
 
     float * realP = m_analysisFrame->realData();
     float * imagP = m_analysisFrame->imagData();

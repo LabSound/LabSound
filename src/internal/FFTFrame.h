@@ -43,8 +43,8 @@ public:
     FFTFrame(const FFTFrame & frame);
     ~FFTFrame();
 
-    void doFFT(const float * data);
-    void doInverseFFT(float * data);
+    void computeForwardFFT(const float * data);
+    void computeInverseFFT(float * data);
     void multiply(const FFTFrame & frame);  // multiplies ourself with frame : effectively operator*=()
 
     float * realData() const;
