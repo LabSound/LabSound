@@ -86,7 +86,7 @@ public:
             saws.clear();
 
             for (int i = 0; i < n; ++i)
-                sawStorage.emplace_back(std::make_shared<OscillatorNode>(sampleRate));
+                sawStorage.emplace_back(std::make_shared<OscillatorNode>());
 
             for (int i = 0; i < n; ++i)
                 saws.push_back(sawStorage[i].get());

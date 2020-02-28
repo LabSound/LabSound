@@ -11,6 +11,7 @@
 
 namespace lab
 {
+
 class AudioBus;
 class AudioContext;
 class AudioSetting;
@@ -20,12 +21,19 @@ class AudioSetting;
 //
 class OscillatorNode : public AudioScheduledSourceNode
 {
+    bool m_firstRender {true};
+    double phase = 0.0;
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+    virtual bool propagatesSilence(ContextRenderLock & r) const override;
+    std::shared_ptr<AudioSetting> m_type;
+
 public:
-    OscillatorNode(const float sampleRate);
+    OscillatorNode();
     virtual ~OscillatorNode();
 
     virtual void process(ContextRenderLock &, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock &) override;
+    virtual void reset(ContextRenderLock &) override { }
 
     OscillatorType type() const;
     void setType(OscillatorType type);
@@ -35,28 +43,12 @@ public:
     std::shared_ptr<AudioParam> detune() { return m_detune; }
     std::shared_ptr<AudioParam> bias() { return m_bias; }
 
-    void _setType(OscillatorType type);
-    float m_sampleRate;
-    double _lab_phase = 0;  // new sine oscillator
+    std::shared_ptr<AudioParam> m_amplitude; // default 1.0
+    std::shared_ptr<AudioParam> m_frequency; // hz
+    std::shared_ptr<AudioParam> m_bias;      // default 0.0
+    std::shared_ptr<AudioParam> m_detune;    // Detune value in Cents.
 
-    std::shared_ptr<AudioParam> m_amplitude;  // default 1
-    std::shared_ptr<AudioParam> m_frequency;  // hz
-    std::shared_ptr<AudioParam> m_bias;  // default 0
-
-    // Detune value (deviating from the frequency) in Cents.
-    std::shared_ptr<AudioParam> m_detune;
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    virtual bool propagatesSilence(ContextRenderLock & r) const override;
-
-    void process_oscillator(ContextRenderLock & r, int frames);
-
-    // One of the waveform types defined in the enum.
-    std::shared_ptr<AudioSetting> m_type;
-
-    bool m_firstRender {true};
+    void process_oscillator(ContextRenderLock & r, const size_t frames);
 
     AudioFloatArray m_phaseIncrements;
     AudioFloatArray m_biasValues;

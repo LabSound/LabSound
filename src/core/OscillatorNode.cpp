@@ -22,7 +22,49 @@
 
 using namespace lab;
 
-void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProcess)
+static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {"None", "Sine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
+
+OscillatorNode::OscillatorNode() 
+    : m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
+{
+    m_type = std::make_shared<AudioSetting>("type", "TYPE", s_types);
+    m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
+    m_detune = std::make_shared<AudioParam>("detune", "DTUN", 0, -4800, 4800);
+    m_amplitude = std::make_shared<AudioParam>("amplitude", "AMPL", 1, 0, 100000);
+    m_bias = std::make_shared<AudioParam>("bias", "BIAS", 0, -1000000, 100000);
+
+    m_params.push_back(m_frequency);
+    m_params.push_back(m_amplitude);
+    m_params.push_back(m_bias);
+    m_params.push_back(m_detune);
+
+    m_type->setValueChanged([this]() { setType(OscillatorType(m_type->valueUint32())); });
+    m_settings.push_back(m_type);
+
+    setType(OscillatorType::SINE);
+
+    // An oscillator is always mono.
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+
+    initialize();
+}
+
+OscillatorNode::~OscillatorNode()
+{
+    uninitialize();
+}
+
+OscillatorType OscillatorNode::type() const
+{
+    return OscillatorType(m_type->valueUint32());
+}
+
+void OscillatorNode::setType(OscillatorType type)
+{
+    m_type->setUint32(static_cast<uint32_t>(type));
+}
+
+void OscillatorNode::process_oscillator(ContextRenderLock & r, const size_t framesToProcess)
 {
     AudioBus * outputBus = output(0)->bus(r);
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
@@ -31,7 +73,9 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
         return;
     }
 
-    size_t quantumFrameOffset       = 0;
+    const float sample_rate = r.context()->sampleRate();
+
+    size_t quantumFrameOffset = 0;
     size_t nonSilentFramesToProcess = 0;
     updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
@@ -96,7 +140,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
     // convert frequencies to phase increments
     for (int i = 0; i < framesToProcess; ++i)
     {
-        phaseIncrements[i] = static_cast<float>(2.f * M_PI * phaseIncrements[i] / m_sampleRate);
+        phaseIncrements[i] = static_cast<float>(2.f * M_PI * phaseIncrements[i] / sample_rate);
     }
 
     // fetch the amplitudes
@@ -124,7 +168,9 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
         m_bias->smooth(r);
         float b = m_bias->smoothedValue();
         for (int i = 0; i < framesToProcess; ++i)
+        {
             bias[i] = b;
+        }
     }
 
     // calculate and write the wave
@@ -137,12 +183,12 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
         {
             for (int i = 0; i < framesToProcess; ++i)
             {
-                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(_lab_phase)));
-                _lab_phase += phaseIncrements[i];
+                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
+                phase += phaseIncrements[i];
             }
 
-            if (_lab_phase > 2. * M_PI)
-                _lab_phase -= 2. * M_PI;
+            if (phase > 2. * M_PI)
+                phase -= 2. * M_PI;
         }
         break;
 
@@ -151,10 +197,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i]  = static_cast<float>(bias[i] + (_lab_phase < M_PI ? amp : -amp));
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                destP[i] = static_cast<float>(bias[i] + (phase < M_PI ? amp : -amp));
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
         }
         break;
@@ -164,10 +210,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                destP[i]  = static_cast<float>(bias[i] + amp - (amp / M_PI * _lab_phase));
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / M_PI * phase));
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
         }
         break;
@@ -177,68 +223,20 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int framesToProce
             for (int i = 0; i < framesToProcess; ++i)
             {
                 float amp = amplitudes[i];
-                if (_lab_phase < M_PI)
-                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * _lab_phase);
+                if (phase < M_PI)
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / float(M_PI)) * phase);
                 else
-                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * _lab_phase);
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / float(M_PI)) * phase);
 
-                _lab_phase += phaseIncrements[i];
-                if (_lab_phase > 2. * M_PI)
-                    _lab_phase -= 2. * M_PI;
+                phase += phaseIncrements[i];
+                if (phase > 2. * M_PI)
+                    phase -= 2. * M_PI;
             }
-        break;
+            break;
+        }
+
+        outputBus->clearSilentFlag();
     }
-
-    outputBus->clearSilentFlag();
-}
-
-static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {"None", "Sine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
-
-OscillatorNode::OscillatorNode(const float sampleRate)
-    : m_sampleRate(sampleRate), m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
-{
-    m_type      = std::make_shared<AudioSetting>("type", "TYPE", s_types);
-    m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
-    m_detune    = std::make_shared<AudioParam>("detune", "DTUN", 0, -4800, 4800);
-    m_amplitude = std::make_shared<AudioParam>("amplitude", "AMPL", 1, 0, 100000);
-    m_bias      = std::make_shared<AudioParam>("bias", "BIAS", 0, -1000000, 100000);
-
-    m_params.push_back(m_frequency);
-    m_params.push_back(m_amplitude);
-    m_params.push_back(m_bias);
-    m_params.push_back(m_detune);
-
-    m_type->setValueChanged([this]() { _setType(OscillatorType(m_type->valueUint32())); });
-    m_settings.push_back(m_type);
-
-    // Sets up default wavetable.
-    setType(OscillatorType::SINE);
-
-    // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-    initialize();
-}
-
-OscillatorNode::~OscillatorNode()
-{
-    uninitialize();
-}
-
-OscillatorType OscillatorNode::type() const
-{
-    return OscillatorType(m_type->valueUint32());
-}
-
-void OscillatorNode::setType(OscillatorType type)
-{
-    m_type->setUint32(static_cast<uint32_t>(type));
-}
-
-void OscillatorNode::_setType(OscillatorType type)
-{
-    if (type == OscillatorType::CUSTOM) return;  // @todo - not yet implemented
-    m_type->setUint32(static_cast<uint32_t>(type), false);
 }
 
 void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
@@ -253,12 +251,7 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
     return;
 }
 
-void OscillatorNode::reset(ContextRenderLock &)
-{
-}
-
 bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
 {
     return !isPlayingOrScheduled() || hasFinished();
 }
-
