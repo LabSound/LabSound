@@ -60,7 +60,7 @@ namespace detail
 {
     inline float sinc(const float x)
     {
-        return (x == 0.0) ? 1.0 : std::sin(x * static_cast<float>(LAB_PI)) / (x * static_cast<float>(LAB_PI));
+        return (x == 0.0f) ? 1.0f : std::sin(x * static_cast<float>(LAB_PI)) / (x * static_cast<float>(LAB_PI));
     }
 
     inline float gen_cosine_1(const float max_index, const uint32_t idx, const float alpha, const float beta)

@@ -43,7 +43,7 @@ void Occluders::removeOccluder(int id)
 float Occluders::occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & listenerPos) const
 {
     float occlusionAttenuation = 1.0f;
-    for (auto i : occluders)
+    for (const auto & i : occluders)
     {
         FloatPoint3D occPos(i.second.x, i.second.y, i.second.z);
 
@@ -53,7 +53,6 @@ float Occluders::occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & 
         if (t <= 0 || t >= 1)
             continue;
 
-        //printf("param(%f), dist: %f\n", t, d);
         float maxAtten = i.second.maxAttenuation;
 
         if (d <= i.second.innerRadius)

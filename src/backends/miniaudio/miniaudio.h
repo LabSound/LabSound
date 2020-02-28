@@ -4706,8 +4706,6 @@ IMPLEMENTATION
 #endif
 
 #ifdef MA_WIN32
-#include <mmreg.h>
-#include <mmsystem.h>
 #include <objbase.h>
 #include <windows.h>
 #else

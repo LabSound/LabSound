@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "LabSound/core/ConcurrentQueue.h"
+
 namespace lab
 {
 

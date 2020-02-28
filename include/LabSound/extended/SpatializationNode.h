@@ -19,7 +19,7 @@ struct Occluder
     float outerRadius;
     float maxAttenuation;
 
-    Occluder() {}
+    Occluder() { }
 
     Occluder(float x, float y, float z, float radius)
         : x(x)
@@ -55,31 +55,25 @@ struct Occluder
 
 class Occluders
 {
+    std::map<int, Occluder> occluders;
 
 public:
     void setOccluder(int id, float x, float y, float z, float radius);
-
     void removeOccluder(int id);
-
     float occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & listenerPos) const;
-
-private:
-    std::map<int, Occluder> occluders;
 };
 
 typedef std::shared_ptr<Occluders> OccludersPtr;
 
 class SpatializationNode : public PannerNode
 {
-public:
-    SpatializationNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
-    virtual ~SpatializationNode() = default;
-
-    void setOccluders(OccludersPtr ptr);
-
-private:
     virtual float distanceConeGain(ContextRenderLock & r);
     std::shared_ptr<Occluders> occluders;
+
+public:
+    SpatializationNode(float sampleRate);
+    virtual ~SpatializationNode() = default;
+    void setOccluders(OccludersPtr ptr);
 };
 }
 

@@ -12,7 +12,7 @@
 #include <iostream>
 #include <kissfft/kiss_fftr.hpp>
 
-// To use this implementation, add WTF_USE_WEBAUDIO_KISSFFT=1 to the list of preprocessor defines
+// To use this implementation, add USE_KISS_FFT=1 to the list of preprocessor defines
 namespace lab
 {
 

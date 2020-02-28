@@ -59,18 +59,17 @@ endif()
 
 
 # FFT
-
 if (IOS)
-    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/FFTFrameAppleAcclerate.cpp")
 elseif (APPLE)
-    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/FFTFrameAppleAcclerate.cpp")
 elseif (WIN32)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 elseif (UNIX)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 endif()
 
-# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameDarwin
+# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameAppleAcclerate
 set(ooura_src
     "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
     "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")

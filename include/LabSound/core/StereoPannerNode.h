@@ -23,7 +23,7 @@ class Spatializer;
 class StereoPannerNode : public AudioNode
 {
 public:
-    StereoPannerNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
+    StereoPannerNode(const float sampleRate);
 
     virtual ~StereoPannerNode();
 

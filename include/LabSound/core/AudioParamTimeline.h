@@ -40,6 +40,7 @@ public:
     bool hasValues() { return m_events.size() > 0; }
 
 private:
+
     // @tofix - move to implementation file to hide from public API
 
     class ParamEvent

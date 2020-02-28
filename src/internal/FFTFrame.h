@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-#if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
+#if defined(LABSOUND_PLATFORM_OSX) && !defined(USE_KISS_FFT)
   #define USE_ACCELERATE_FFT 1
 #else
   #define USE_ACCELERATE_FFT 0

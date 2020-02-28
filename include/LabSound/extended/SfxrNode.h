@@ -15,7 +15,7 @@ namespace lab
 class SfxrNode : public lab::AudioScheduledSourceNode
 {
 public:
-    SfxrNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE);
+    SfxrNode(float sampleRate);
     virtual ~SfxrNode();
 
     // AudioNode
