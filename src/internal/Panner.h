@@ -14,31 +14,23 @@ namespace lab
 class AudioBus;
 class ContextRenderLock;
 
+// clang-format off
 class Panner
 {
 public:
-    Panner(const float sampleRate, PanningMode mode)
-        : m_sampleRate(sampleRate)
-        , m_panningModel(mode)
-    {
-    }
-    virtual ~Panner(){};
-
+    Panner(const float sampleRate, PanningMode mode) : m_sampleRate(sampleRate) , m_panningModel(mode) {}
+    virtual ~Panner() {};
     PanningMode panningModel() const { return m_panningModel; }
-
     virtual void pan(ContextRenderLock & r, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess) = 0;
-
     virtual void reset() = 0;
-
     virtual double tailTime(ContextRenderLock & r) const = 0;
     virtual double latencyTime(ContextRenderLock & r) const = 0;
-
 protected:
-    float m_sampleRate{0};
-
+    float m_sampleRate {0.f};
     PanningMode m_panningModel;
 };
+// clang-format on
 
-}  // lab
+} 
 
 #endif

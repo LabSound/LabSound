@@ -30,8 +30,7 @@ class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
 {
 
 public:
-    PeakCompNodeInternal()
-        : AudioProcessor(2)
+    PeakCompNodeInternal() : AudioProcessor(2)
     {
         m_threshold = std::make_shared<AudioParam>("threshold", "THRS", 0, 0, -1e6f);
         m_ratio = std::make_shared<AudioParam>("ratio", "RATI", 1, 0, 10);
@@ -188,7 +187,8 @@ public:
 
     // Resets filter state
     virtual void reset() override
-    { /* @tofix */
+    { 
+        // @tofix
     }
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
@@ -206,22 +206,27 @@ std::shared_ptr<AudioParam> PeakCompNode::threshold() const
 {
     return internalNode->m_threshold;
 }
+
 std::shared_ptr<AudioParam> PeakCompNode::ratio() const
 {
     return internalNode->m_ratio;
 }
+
 std::shared_ptr<AudioParam> PeakCompNode::attack() const
 {
     return internalNode->m_attack;
 }
+
 std::shared_ptr<AudioParam> PeakCompNode::release() const
 {
     return internalNode->m_release;
 }
+
 std::shared_ptr<AudioParam> PeakCompNode::makeup() const
 {
     return internalNode->m_makeup;
 }
+
 std::shared_ptr<AudioParam> PeakCompNode::knee() const
 {
     return internalNode->m_knee;

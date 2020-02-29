@@ -501,7 +501,7 @@ struct ex_peak_compressor : public labsound_example
 
             filter = std::make_shared<BiquadFilterNode>();
             filter->setType(lab::FilterType::LOWPASS);
-            filter->frequency()->setValue(2800.0f);
+            filter->frequency()->setValue(880.0f);
 
             peakComp = std::make_shared<PeakCompNode>();
             context->connect(peakComp, filter, 0, 0);
