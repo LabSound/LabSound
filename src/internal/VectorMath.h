@@ -14,7 +14,6 @@ namespace lab
 
 namespace VectorMath
 {
-
     // Vector scalar multiply and then add.
     void vsma(const float * sourceP, int sourceStride, const float * scale, float * destP, int destStride, size_t framesToProcess);
 
