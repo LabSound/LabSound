@@ -10,10 +10,6 @@
 #include <algorithm>
 #include <stdio.h>
 
-#if defined(LABSOUND_PLATFORM_OSX)
-#include <Accelerate/Accelerate.h>
-#endif
-
 using namespace std;
 
 namespace lab
@@ -23,29 +19,15 @@ const int kBufferSize = 1024;
 
 Biquad::Biquad()
 {
-#if defined(LABSOUND_PLATFORM_OSX)
-    // Allocate two samples more for filter history
-    m_inputBuffer.allocate(kBufferSize + 2);
-    m_outputBuffer.allocate(kBufferSize + 2);
-#endif
-
     // Initialize as pass-thru (straight-wire, no filter effect)
     setNormalizedCoefficients(1, 0, 0, 1, 0, 0);
-
     reset();  // clear filter memory
 }
 
-Biquad::~Biquad()
-{
-}
+Biquad::~Biquad() { }
 
 void Biquad::process(const float * sourceP, float * destP, size_t framesToProcess)
 {
-#if defined(LABSOUND_PLATFORM_OSX)
-    // Use vecLib if available
-    processFast(sourceP, destP, framesToProcess);
-#else
-
     int n = framesToProcess;
 
     // Create local copies of member variables
@@ -87,81 +69,11 @@ void Biquad::process(const float * sourceP, float * destP, size_t framesToProces
     m_b2 = b2;
     m_a1 = a1;
     m_a2 = a2;
-#endif
 }
-
-#if defined(LABSOUND_PLATFORM_OSX)
-
-// Here we have optimized version using Accelerate.framework
-
-void Biquad::processFast(const float * sourceP, float * destP, size_t framesToProcess)
-{
-    double filterCoefficients[5];
-    filterCoefficients[0] = m_b0;
-    filterCoefficients[1] = m_b1;
-    filterCoefficients[2] = m_b2;
-    filterCoefficients[3] = m_a1;
-    filterCoefficients[4] = m_a2;
-
-    double * inputP = m_inputBuffer.data();
-    double * outputP = m_outputBuffer.data();
-
-    double * input2P = inputP + 2;
-    double * output2P = outputP + 2;
-
-    // Break up processing into smaller slices (kBufferSize) if necessary.
-
-    int n = framesToProcess;
-
-    while (n > 0)
-    {
-        int framesThisTime = n < kBufferSize ? n : kBufferSize;
-
-        // Copy input to input buffer
-        for (int i = 0; i < framesThisTime; ++i)
-            input2P[i] = *sourceP++;
-
-        processSliceFast(inputP, outputP, filterCoefficients, framesThisTime);
-
-        // Copy output buffer to output (converts float -> double).
-        for (int i = 0; i < framesThisTime; ++i)
-            *destP++ = static_cast<float>(output2P[i]);
-
-        n -= framesThisTime;
-    }
-}
-
-void Biquad::processSliceFast(double * sourceP, double * destP, double * coefficientsP, size_t framesToProcess)
-{
-    // Use double-precision for filter stability
-    vDSP_deq22D(sourceP, 1, coefficientsP, destP, 1, framesToProcess);
-
-    // Save history.  Note that sourceP and destP reference m_inputBuffer and m_outputBuffer respectively.
-    // These buffers are allocated (in the constructor) with space for two extra samples so it's OK to access
-    // array values two beyond framesToProcess.
-    sourceP[0] = sourceP[framesToProcess - 2 + 2];
-    sourceP[1] = sourceP[framesToProcess - 1 + 2];
-    destP[0] = destP[framesToProcess - 2 + 2];
-    destP[1] = destP[framesToProcess - 1 + 2];
-}
-
-#endif  // OS(DARWIN)
 
 void Biquad::reset()
 {
-#if defined(LABSOUND_PLATFORM_OSX)
-    // Two extra samples for filter history
-    double * inputP = m_inputBuffer.data();
-    inputP[0] = 0;
-    inputP[1] = 0;
-
-    double * outputP = m_outputBuffer.data();
-    outputP[0] = 0;
-    outputP[1] = 0;
-
-#else
     m_x1 = m_x2 = m_y1 = m_y2 = 0;
-#endif
 }
 
 void Biquad::setLowpassParams(double cutoff, double resonance)

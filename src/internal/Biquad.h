@@ -51,16 +51,12 @@ public:
     // Filter response at a set of n frequencies. The magnitude and
     // phase response are returned in magResponse and phaseResponse.
     // The phase response is in radians.
-    void getFrequencyResponse(size_t nFrequencies,
-                              const float * frequency,
-                              float * magResponse,
-                              float * phaseResponse);
+    void getFrequencyResponse(size_t nFrequencies, const float * frequency, float * magResponse, float * phaseResponse);
 
 private:
     void setNormalizedCoefficients(double b0, double b1, double b2, double a0, double a1, double a2);
 
     // Filter coefficients. The filter is defined as
-    //
     // y[n] + m_a1*y[n-1] + m_a2*y[n-2] = m_b0*x[n] + m_b1*x[n-1] + m_b2*x[n-2].
     double m_b0;
     double m_b1;
@@ -68,18 +64,11 @@ private:
     double m_a1;
     double m_a2;
 
-#if defined(LABSOUND_PLATFORM_OSX)
-    void processFast(const float * sourceP, float * destP, size_t framesToProcess);
-    void processSliceFast(double * sourceP, double * destP, double * coefficientsP, size_t framesToProcess);
-    AudioDoubleArray m_inputBuffer;
-    AudioDoubleArray m_outputBuffer;
-#else
     // Filter memory
     double m_x1;  // input delayed by 1 sample
     double m_x2;  // input delayed by 2 samples
     double m_y1;  // output delayed by 1 sample
     double m_y2;  // output delayed by 2 samples
-#endif
 };
 
 }  // namespace lab
