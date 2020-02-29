@@ -13,12 +13,12 @@ namespace lab
 class AudioDSPKernelProcessor;
 
 // AudioDSPKernel does the processing for one channel of an AudioDSPKernelProcessor.
-
 class AudioDSPKernel
 {
 public:
-    AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor);
-    AudioDSPKernel();
+
+    AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor) : m_kernelProcessor(kernelProcessor) {}
+    AudioDSPKernel() = default;
 
     virtual ~AudioDSPKernel() {}
 
@@ -33,9 +33,10 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
-    AudioDSPKernelProcessor * m_kernelProcessor;
+    AudioDSPKernelProcessor * m_kernelProcessor {nullptr};
 };
 
 }  // namespace lab
 
 #endif  // AudioDSPKernel_h
+
