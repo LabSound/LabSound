@@ -57,3 +57,4 @@ double DistanceEffect::exponentialGain(double distance)
 }
 
 }  // namespace lab
+
