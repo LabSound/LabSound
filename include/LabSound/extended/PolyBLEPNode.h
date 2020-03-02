@@ -27,8 +27,9 @@ class AudioSetting;
  *     \ref Polynomial Band-limited Step Functions (PolyBLEP) (Valimaki et. al 2010)
  *     \ref Improved Polynomial Transition Regions Algorithm for Alias-Suppressed Signal Synthesis(EPTR) (Ambrits and Bank, 2013)
  *     \ref Rounding Corners with BLAMP (PolyBLAMP) - (Esqueda, Valimaki, et. al 2016)
- * http://www.martin-finke.de/blog/articles/audio-plugins-018-polyblep-oscillator/
- * http://metafunction.co.uk/all-about-digital-oscillators-part-2-blits-bleps/
+ * [1] http://www.martin-finke.de/blog/articles/audio-plugins-018-polyblep-oscillator/
+ * [2] http://metafunction.co.uk/all-about-digital-oscillators-part-2-blits-bleps/
+ * [3] https://www.experimentalscene.com/articles/minbleps.php
  */
 
 enum class PolyBLEPType
