@@ -121,12 +121,14 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
     RtAudio::StreamParameters outputParams;
     outputParams.deviceId = outputConfig.device_index;
     outputParams.nChannels = outputConfig.desired_channels;
-    LOG("using output device idx %i", outputConfig.device_index);
+    LOG("using output device idx: %i", outputConfig.device_index);
+    if (outputConfig.device_index >= 0) LOG("using output device name: %s", rtaudio_ctx.getDeviceInfo(outputParams.deviceId).name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = inputConfig.device_index;
     inputParams.nChannels = inputConfig.desired_channels;
-    LOG("using input device idx %i", inputConfig.device_index);
+    LOG("using input device idx: %i", inputConfig.device_index);
+    if (inputConfig.device_index >= 0) LOG("using input device name: %s", rtaudio_ctx.getDeviceInfo(inputParams.deviceId).name.c_str());
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
