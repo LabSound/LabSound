@@ -41,9 +41,7 @@ AudioNodeOutput::~AudioNodeOutput()
 
 void AudioNodeOutput::setNumberOfChannels(ContextRenderLock & r, size_t numberOfChannels)
 {
-    if (m_numberOfChannels == numberOfChannels)
-        return;
-
+    if (m_numberOfChannels == numberOfChannels) return;
     m_desiredNumberOfChannels = numberOfChannels;
     m_internalBus.reset(new AudioBus(numberOfChannels, AudioNode::ProcessingSizeInFrames));
 }
@@ -88,6 +86,9 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, s
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
+
+    m_internalBus->setSampleRate(r.context()->sampleRate());
+    bus(r)->setSampleRate(r.context()->sampleRate());
 
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // We try to do in-place processing (using inPlaceBus) if at all possible,

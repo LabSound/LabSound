@@ -92,7 +92,7 @@ void RealtimeAnalyser::writeInput(ContextRenderLock & r, AudioBus * bus, size_t 
     memcpy(dest, source, sizeof(float) * framesToProcess);
 
     // Sum all channels in one if numberOfChannels > 1.
-    size_t numberOfChannels = bus->numberOfChannels();
+    const size_t numberOfChannels = bus->numberOfChannels();
     if (numberOfChannels > 1)
     {
         for (size_t i = 1; i < numberOfChannels; i++)

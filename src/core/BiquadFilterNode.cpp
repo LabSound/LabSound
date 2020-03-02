@@ -218,7 +218,6 @@ BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
 BiquadFilterNode::~BiquadFilterNode()
 {
     if (isInitialized()) uninitialize();
-    if (biquad_impl) delete biquad_impl;
 }
 
 void BiquadFilterNode::setType(FilterType type)
@@ -233,7 +232,7 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock & r, const std::ve
 
 FilterType BiquadFilterNode::type() const
 {
-    return type();
+    return (FilterType) biquad_impl->m_type->valueUint32();
 }
 
 std::shared_ptr<AudioParam> BiquadFilterNode::frequency()
