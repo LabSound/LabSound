@@ -49,6 +49,7 @@
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/SfxrNode.h"
 #include "LabSound/extended/PdNode.h"
+#include "LabSound/extended/PolyBLEPNode.h"
 
 namespace lab
 {
