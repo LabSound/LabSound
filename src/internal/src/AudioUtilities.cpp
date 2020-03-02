@@ -7,35 +7,26 @@
 
 #include "LabSound/core/Macros.h"
 
-namespace lab
+float lab::AudioUtilities::decibelsToLinear(float decibels)
 {
-namespace AudioUtilities
-{
-
-    float decibelsToLinear(float decibels)
-    {
-        return powf(10, 0.05f * decibels);
-    }
-
-    float linearToDecibels(float linear)
-    {
-        // It's not possible to calculate decibels for a zero linear value since it would be -Inf.
-        // -1000.0 dB represents a very tiny linear value in case we ever reach this case.
-        if (!linear)
-            return -1000;
-
-        return 20 * log10f(linear);
-    }
-
-    double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
-    {
-        return 1 - exp(-1 / (sampleRate * timeConstant));
-    }
-
-    size_t timeToSampleFrame(double time, double sampleRate)
-    {
-        ASSERT(time >= 0);
-        return static_cast<size_t>(round(time * sampleRate));
-    }
+    return std::pow(10.f, 0.05f * decibels);
 }
-}  // end AudioUtilites & lab
+
+float lab::AudioUtilities::linearToDecibels(float linear)
+{
+    // It's not possible to calculate decibels for a zero linear value since it would be -Inf.
+    // -1000.0 dB represents a very tiny linear value in case we ever reach this case.
+    if (!linear) return -1000.0;
+    return (20.f * std::log10(linear));
+}
+
+double lab::AudioUtilities::discreteTimeConstantForSampleRate(double timeConstant, double sampleRate)
+{
+    return 1.0 - std::exp(-1.0 / (sampleRate * timeConstant));
+}
+
+size_t lab::AudioUtilities::timeToSampleFrame(double time, double sampleRate)
+{
+    ASSERT(time >= 0);
+    return static_cast<size_t>(std::round(time * sampleRate));
+}

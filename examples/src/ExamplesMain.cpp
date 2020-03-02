@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        granulation.ex->play(argc, argv);
+        playback_events.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;

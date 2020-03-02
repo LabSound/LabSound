@@ -2,8 +2,8 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef AudioUtilities_h
-#define AudioUtilities_h
+#ifndef lab_audio_utilities_h
+#define lab_audio_utilities_h
 
 #include <sys/types.h>
 
@@ -12,7 +12,6 @@ namespace lab
 
 namespace AudioUtilities
 {
-
     // Standard functions for converting to and from decibel values from linear.
     float linearToDecibels(float);
     float decibelsToLinear(float);
@@ -24,8 +23,8 @@ namespace AudioUtilities
 
     // Convert the time to a sample frame at the given sample rate.
     size_t timeToSampleFrame(double time, double sampleRate);
-}  // AudioUtilites
+}
 
 }  // lab
 
-#endif  // AudioUtilities_h
+#endif  // lab_audio_utilities_h
