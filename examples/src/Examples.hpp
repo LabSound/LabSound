@@ -79,8 +79,8 @@ struct ex_simple : public labsound_example
             ContextRenderLock r(context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
         }
-        context->connect(gain, musicClipNode, 0, 0);
-        musicClipNode->start(0.0f);
+        context->connect(context->device(), musicClipNode, 0, 0);
+        musicClipNode->schedule(0.0);
 
         // osc -> gain -> destination
         context->connect(gain, oscillator, 0, 0);
@@ -111,21 +111,18 @@ struct ex_playback_events : public labsound_example
         if (!musicClip)
             return;
 
-        auto gain = std::make_shared<GainNode>();
-        gain->gain()->setValue(0.0625f);
-
-        auto musicClipNode = std::make_shared<SampledAudioNode>();
+        auto sampledAudio = std::make_shared<SampledAudioNode>();
         {
             ContextRenderLock r(context.get(), "ex_playback_events");
-            musicClipNode->setBus(r, musicClip);
+            sampledAudio->setBus(r, musicClip);
         }
-        context->connect(gain, musicClipNode, 0, 0);
-        context->connect(context->device(), gain, 0, 0);
+        context->connect(context->device(), sampledAudio, 0, 0);
 
-        musicClipNode->setOnEnded([]() {
-            std::cout << "audio clip finished" << std::endl;
+        sampledAudio->setOnEnded([]() {
+            std::cout << "sampledAudio finished..." << std::endl;
         });
-        musicClipNode->start(0.0f);
+
+        sampledAudio->schedule(0.0);
 
         Wait(std::chrono::seconds(6));
     }
@@ -176,7 +173,7 @@ struct ex_offline_rendering : public labsound_example
             musicClipNode = std::make_shared<SampledAudioNode>();
             context->connect(recorder, musicClipNode, 0, 0);
             musicClipNode->setBus(r, musicClip);
-            musicClipNode->start(0.0f);
+            musicClipNode->schedule(0.0);
         }
 
         context->offlineRenderCompleteCallback = [&context, &recorder, offlineConfig]() {
@@ -315,7 +312,7 @@ struct ex_frequency_modulation : public labsound_example
             modulatorGain->gain()->setValue(mod_gain);
 
             const float attack_length = fmrng.random_float(0.25f, 0.5f);
-            trigger->set(attack_length, 0.50f, 0.50f, 0.50f, 0.1);
+            trigger->set(attack_length, 0.50f, 0.50f, 0.50f, 0.1f);
             trigger->noteOn(0.0);
 
             const uint32_t delay_time_ms = 500;
@@ -491,7 +488,9 @@ struct ex_peak_compressor : public labsound_example
         std::shared_ptr<AudioBus> hihat = MakeBusFromSampleFile("samples/hihat.wav", argc, argv);
         std::shared_ptr<AudioBus> snare = MakeBusFromSampleFile("samples/snare.wav", argc, argv);
 
-        std::vector<std::shared_ptr<SampledAudioNode>> samples;
+        std::shared_ptr<SampledAudioNode> kick_node = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<SampledAudioNode> hihat_node = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<SampledAudioNode> snare_node = std::make_shared<SampledAudioNode>();
 
         std::shared_ptr<BiquadFilterNode> filter;
         std::shared_ptr<PeakCompNode> peakComp;
@@ -501,46 +500,39 @@ struct ex_peak_compressor : public labsound_example
 
             filter = std::make_shared<BiquadFilterNode>();
             filter->setType(lab::FilterType::LOWPASS);
-            filter->frequency()->setValue(880.0f);
+            filter->frequency()->setValue(1800.f);
 
             peakComp = std::make_shared<PeakCompNode>();
             context->connect(peakComp, filter, 0, 0);
             context->connect(context->device(), peakComp, 0, 0);
 
-            auto schedule_node = [&](std::shared_ptr<AudioBus> sample, std::shared_ptr<AudioNode> destination, const float time) {
-                auto s = std::make_shared<SampledAudioNode>();
-                s->setBus(r, sample);
-                context->connect(destination, s, 0, 0);
-                s->start(time);
-                samples.push_back(s);
-            };
+            kick_node->setBus(r, kick);
+            context->connect(filter, kick_node, 0, 0);
 
-            float startTime = 0.25f;
-            float eighthNoteTime = 1.0f / 4.0f;
-            for (int bar = 0; bar < 2; bar++)
+            hihat_node->setBus(r, hihat);
+            context->connect(filter, hihat_node, 0, 0);
+
+            snare_node->setBus(r, snare);
+            context->connect(filter, snare_node, 0, 0);
+
+            // Speed Metal
+            double startTime = 0.1f;
+            double eighthNoteTime = 1.0f / 16.0f;
+            for (int bar = 0; bar < 32; bar++)
             {
-                float time = startTime + bar * 8 * eighthNoteTime;
+                const double time = startTime + bar * 8 * eighthNoteTime;
 
-                schedule_node(kick, filter, time);
-                schedule_node(kick, filter, time + 4 * eighthNoteTime);
+                kick_node->schedule(time);
+                kick_node->schedule(time + 4 * eighthNoteTime);
 
-                schedule_node(snare, filter, time + 2 * eighthNoteTime);
-                schedule_node(snare, filter, time + 6 * eighthNoteTime);
-
-                for (int i = 0; i < 8; ++i)
-                {
-                    schedule_node(hihat, filter, time + i * eighthNoteTime);
-                }
+                snare_node->schedule(time + 2 * eighthNoteTime);
+                snare_node->schedule(time + 6 * eighthNoteTime);
+                
+                for (int i = 0; i < 8; ++i) hihat_node->schedule(time + 6 * eighthNoteTime);
             }
         }
 
         Wait(std::chrono::seconds(10));
-
-        // Scheduled nodes need to be explicitly cleaned up before the context
-        for (auto s : samples)
-        {
-            s.reset();
-        }
 
         context.reset();
     }
@@ -568,14 +560,14 @@ struct ex_stereo_panning : public labsound_example
 
             audioClipNode->setBus(r, audioClip);
             context->connect(stereoPanner, audioClipNode, 0, 0);
-            audioClipNode->start(0.0f);
+            audioClipNode->schedule(0.0);
 
             context->connect(context->device(), stereoPanner, 0, 0);
         }
 
         if (audioClipNode)
         {
-            audioClipNode->setLoop(true);
+            audioClipNode->isLooping()->setBool(true, false);
 
             const int seconds = 8;
 
@@ -626,12 +618,13 @@ struct ex_hrtf_spatialization : public labsound_example
 
             audioClipNode->setBus(r, audioClip);
             context->connect(panner, audioClipNode, 0, 0);
-            audioClipNode->start(0.0f);
+            audioClipNode->schedule(0.0);
         }
 
         if (audioClipNode)
         {
-            audioClipNode->setLoop(true);
+            audioClipNode->isLooping()->setBool(true, false);
+
             context->listener()->setPosition({0, 0, 0});
             panner->setVelocity(4, 0, 0);
 
@@ -708,7 +701,8 @@ struct ex_convolution_reverb : public labsound_example
             voiceNode = std::make_shared<SampledAudioNode>();
             voiceNode->setBus(r, voiceClip);
             context->connect(dryGain, voiceNode, 0, 0);
-            voiceNode->start(0.0f);
+
+            voiceNode->schedule(0.0);
 
             context->connect(context->device(), outputGain, 0, 0);
         }
@@ -757,9 +751,7 @@ struct ex_misc : public labsound_example
 
             context->connect(pingping->input, audioClipNode, 0, 0);
 
-            //audioClipNode->start(0.0f);
-            audioClipNode->start(0.25f);
-            //audioClipNode->start(0.5f);
+            audioClipNode->schedule(0.25);
         }
 
         Wait(std::chrono::seconds(10));
