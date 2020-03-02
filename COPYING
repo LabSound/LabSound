@@ -51,3 +51,7 @@ http://wavepot.com/stagas/unexpected-token
 Soundpipe, MIT License (exerpts taken for the ConvolverNode backend)
 Copyright (c) 2015 Paul Batchelor
 https://github.com/PaulBatchelor/Soundpipe/blob/master/LICENSE
+
+PolyBLEP, WDL/IPlug License 
+Copyright (c) 2017 Martin Finke (C++ port of the WTFPL licensed PolyBLEP by Tale)
+https://github.com/martinfinke/PolyBLEP

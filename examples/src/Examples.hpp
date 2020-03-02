@@ -1294,3 +1294,60 @@ struct ex_granulation_node : public labsound_example
         recorder->writeRecordingToWav("ex_granulation_node.wav");
     }
 };
+
+////////////////////////
+//    ex_poly_blep    //
+////////////////////////
+
+struct ex_poly_blep : public labsound_example
+{
+    virtual void play(int argc, char** argv) override final
+    {
+        std::unique_ptr<lab::AudioContext> context;
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+
+        std::shared_ptr<PolyBLEPNode> polyBlep = std::make_shared<PolyBLEPNode>();
+        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>();
+
+        gain->gain()->setValue(1.0f);
+        context->connect(gain, polyBlep, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
+
+        polyBlep->frequency()->setValue(220.f);
+        polyBlep->setType(PolyBLEPType::TRIANGLE);
+        polyBlep->start(0.0f);
+
+        std::vector<PolyBLEPType> blepWaveforms = 
+        {
+            PolyBLEPType::TRIANGLE,
+            PolyBLEPType::SQUARE,
+            PolyBLEPType::RECTANGLE,
+            PolyBLEPType::SAWTOOTH,
+            PolyBLEPType::RAMP,
+            PolyBLEPType::MODIFIED_TRIANGLE,
+            PolyBLEPType::MODIFIED_SQUARE,
+            PolyBLEPType::HALF_WAVE_RECTIFIED_SINE,
+            PolyBLEPType::FULL_WAVE_RECTIFIED_SINE,
+            PolyBLEPType::TRIANGULAR_PULSE,
+            PolyBLEPType::TRAPEZOID_FIXED,
+            PolyBLEPType::TRAPEZOID_VARIABLE
+        };
+
+        double now_in_ms = 0;
+        int waveformIndex = 0;
+        while (true)
+        {
+            const uint32_t delay_time_ms = 500;
+            now_in_ms += delay_time_ms;
+
+            auto waveform = blepWaveforms[waveformIndex % blepWaveforms.size()];
+            polyBlep->setType(waveform);
+
+            Wait(std::chrono::milliseconds(delay_time_ms));
+
+            waveformIndex++;
+            if (now_in_ms >= 10000) break;
+        };
+    }
+};

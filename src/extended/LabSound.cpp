@@ -83,8 +83,8 @@ namespace
     char const * const NodeNames[] = {
         "ADSR",
         "Analyser",
-        //            "AudioBasicProcessor",
-        //            "AudioHardwareSource",
+        // "AudioBasicProcessor",
+        // "AudioHardwareSource",
         "BiquadFilter",
         "ChannelMerger",
         "ChannelSplitter",
@@ -93,7 +93,7 @@ namespace
         "Delay",
         "Diode",
         "DynamicsCompressor",
-        //            "Function",
+        // "Function",
         "Gain",
         "Granulation",
         "Noise",
@@ -104,6 +104,7 @@ namespace
 #endif
         "PeakCompressor",
         "PingPongDelay",
+        "PolyBLEP",
         "PowerMonitor",
         "PWM",
         "Recorder",
@@ -113,7 +114,7 @@ namespace
         "SpectralMonitor",
         "StereoPanner",
         "SuperSaw",
-        "WaveShaper",
+        "WaveShaper", 
         nullptr};
 }
 

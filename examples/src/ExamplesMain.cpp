@@ -44,11 +44,12 @@ int main(int argc, char *argv[]) try
     Example<ex_redalert_synthesis> redalert_synthesis;
     Example<ex_wavepot_dsp> wavepot_dsp;
     Example<ex_granulation_node> granulation;
+    Example<ex_poly_blep> poly_blep;
 
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        playback_events.ex->play(argc, argv);
+        poly_blep.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;
