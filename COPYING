@@ -28,10 +28,6 @@ KissFFT, 3 Clause BSD
 Copyright (c) Mark Borgerding
 https://github.com/mborgerding/kissfft/blob/master/COPYING
 
-The Synthesis Toolkit in C++ (STK), Non-binding Modified MIT
-Copyright (c) Perry R. Cook and Gary P. Scavone
-https://github.com/thestk/stk/blob/master/LICENSE
-
 Ooura FFT Library, Permissive Custom
 Copyright (c) Takuya OOURA
 http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html
@@ -43,3 +39,15 @@ https://github.com/grimfang4/sfxr/blob/master/sfxr/LICENSE.txt
 ReaderWriterQueue, 2 Clause BSD
 Copyright (c) Cameron Desrocher
 https://github.com/cameron314/readerwriterqueue/blob/master/LICENSE.md
+
+miniaudio, Public Domain
+Authored by David Reid
+https://github.com/dr-soft/miniaudio/blob/master/LICENSE
+
+"Unexpected Token" from Wavepot, MIT License
+Authored by Stagas
+http://wavepot.com/stagas/unexpected-token
+
+Soundpipe, MIT License (exerpts taken for the ConvolverNode backend)
+Copyright (c) 2015 Paul Batchelor
+https://github.com/PaulBatchelor/Soundpipe/blob/master/LICENSE
