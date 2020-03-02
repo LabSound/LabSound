@@ -16,6 +16,21 @@ class AudioBus;
 class AudioContext;
 class AudioSetting;
 
+/*
+ * Anti-aliased (sometimes called virtual analog) digital oscillators that approximate the behavior of 
+ * their analog counterparters is an active area of DSP research. Some seminal techniques are outlined
+ * below with several references that inform this implementation. 
+ *     \ref Band-limited Impulse Trains (BLIT) (Stilson & Smith 1996)
+ *     \ref Band-limited Step Functions (BLEP) (Brandt 2001, Leary & Bright 2009)
+ *     \ref MiniBLEP (minimum phase lowpass filtered prior to BLEP integration) (Brandt 2001)
+ *     \ref Differentiated Parabolic Waveform Oscillators (DPW) (Valimaki 2010)
+ *     \ref Polynomial Band-limited Step Functions (PolyBLEP) (Valimaki et. al 2010)
+ *     \ref Improved Polynomial Transition Regions Algorithm for Alias-Suppressed Signal Synthesis(EPTR) (Ambrits and Bank, 2013)
+ *     \ref Rounding Corners with BLAMP (PolyBLAMP) - (Esqueda, Valimaki, et. al 2016)
+ * http://www.martin-finke.de/blog/articles/audio-plugins-018-polyblep-oscillator/
+ * http://metafunction.co.uk/all-about-digital-oscillators-part-2-blits-bleps/
+ */
+
 enum class PolyBLEPType
 {
     TRIANGLE,
