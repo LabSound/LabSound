@@ -21,38 +21,42 @@
 
 namespace lab
 {
+
+// clang-format off
 enum PanningMode
 {
     PANNING_NONE = 0,
-    EQUALPOWER = 1,
-    HRTF = 2,
-    _PanningModeCount = 3
+    EQUALPOWER   = 1,
+    HRTF         = 2,
+    _PanningModeCount
 };
 
 enum FilterType
 {
     FILTER_NONE = 0,
-    LOWPASS = 1,
-    HIGHPASS = 2,
-    BANDPASS = 3,
-    LOWSHELF = 4,
-    HIGHSHELF = 5,
-    PEAKING = 6,
-    NOTCH = 7,
-    ALLPASS = 8,
-    _FilterTypeCount = 9
+    LOWPASS     = 1,
+    HIGHPASS    = 2,
+    BANDPASS    = 3,
+    LOWSHELF    = 4,
+    HIGHSHELF   = 5,
+    PEAKING     = 6,
+    NOTCH       = 7,
+    ALLPASS     = 8,
+    _FilterTypeCount
 };
 
 enum OscillatorType
 {
     OSCILLATOR_NONE = 0,
-    SINE = 1,
-    SQUARE = 2,
-    SAWTOOTH = 3,
-    TRIANGLE = 4,
-    CUSTOM = 5,
-    _OscillatorCount = 6
+    SINE            = 1,
+    FAST_SINE       = 2,
+    SQUARE          = 3,
+    SAWTOOTH        = 4,
+    TRIANGLE        = 5,
+    CUSTOM          = 6,
+    _OscillatorTypeCount
 };
+// clang-format on
 
 class AudioContext;
 class AudioNodeInput;
@@ -249,3 +253,4 @@ private:
 }  // namespace lab
 
 #endif  // AudioNode_h
+

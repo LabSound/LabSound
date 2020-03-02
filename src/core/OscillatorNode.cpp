@@ -19,10 +19,32 @@
 #include "internal/VectorMath.h"
 
 #include <algorithm>
+#include <emmintrin.h>
 
 using namespace lab;
 
-static char const * const s_types[OscillatorType::_OscillatorCount + 1] = {"None", "Sine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
+// https://www.musicdsp.org/en/latest/Synthesis/13-sine-calculation.html
+// phase should be between between -LAB_PI and +LAB_PI
+inline float burk_fast_sine(const double phase) 
+{
+    // Factorial coefficients.
+    const float IF3 = 1.0 / (2 * 3);
+    const float IF5 = IF3 / (4 * 5);
+    const float IF7 = IF5 / (6 * 7);
+    const float IF9 = IF7 / (8 * 9);
+    const float IF11 = IF9 / (10 * 11);
+
+    // Wrap phase back into region where results are more accurate. 
+    float x = (phase > +LAB_HALF_PI) ? +(LAB_PI - phase)
+           : ((phase < -LAB_HALF_PI) ? -(LAB_PI + phase) : phase);
+
+    float x2 = (x * x);
+
+    // Taylor expansion out to x**11/11! factored into multiply-adds 
+    return x * (x2 * (x2 * (x2 * (x2 * ((x2 * (-IF11)) + IF9) - IF7) + IF5) - IF3) + 1);
+}
+
+static char const * const s_types[] = {"None", "Sine", "FastSine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
 
 OscillatorNode::OscillatorNode() 
     : m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
@@ -239,7 +261,10 @@ OscillatorNode::OscillatorNode(const float sampleRate)
             {
                 destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
                 phase += phaseIncrements[i];
+                if (phase > 2. * static_cast<float>(LAB_PI)) phase -= 2. * static_cast<float>(LAB_PI);
             }
+            break;
+        }
 
 void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
@@ -261,7 +286,6 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
             // They will be converted to phase increments below.
             m_frequency->calculateSampleAccurateValues(r, phaseIncrements, framesToProcess);
         }
-        break;
 
         case OscillatorType::SQUARE:
         {
@@ -273,9 +297,9 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
                 if (phase > 2. * static_cast<float>(LAB_PI))
                     phase -= 2. * static_cast<float>(LAB_PI);
             }
+            break;
         }
-        break;
-
+       
         case OscillatorType::SAWTOOTH:
         {
             for (int i = 0; i < framesToProcess; ++i)
@@ -286,9 +310,9 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
                 if (phase > 2. * static_cast<float>(LAB_PI))
                     phase -= 2. * static_cast<float>(LAB_PI);
             }
+            break;
         }
-        break;
-
+       
         case OscillatorType::TRIANGLE:
         {
             for (int i = 0; i < framesToProcess; ++i)
@@ -298,7 +322,7 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
                     destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / static_cast<float>(LAB_PI)) * phase);
                 else
                     destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / static_cast<float>(LAB_PI)) * phase);
-
+       
                 phase += phaseIncrements[i];
                 if (phase > 2. * static_cast<float>(LAB_PI))
                     phase -= 2. * static_cast<float>(LAB_PI);
