@@ -77,9 +77,13 @@ void AudioChannel::sumFrom(const AudioChannel * sourceChannel)
 
     if (sourceChannel->isSilent()) return;
     if (isSilent())
+    {
         copyFrom(sourceChannel);
+    }
     else
+    {
         VectorMath::vadd(data(), 1, sourceChannel->data(), 1, mutableData(), 1, length());
+    }
 }
 
 float AudioChannel::maxAbsValue() const

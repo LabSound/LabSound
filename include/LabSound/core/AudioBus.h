@@ -76,21 +76,6 @@ public:
     // Returns true if the channel count and frame-size match.
     bool topologyMatches(const AudioBus & sourceBus) const;
 
-    // Creates a new buffer from a range in the source buffer.
-    // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, size_t startFrame, size_t endFrame);
-
-    // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
-    // setSampleRate() must have been previously called on sourceBus.
-    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus * sourceBus, bool mixToMono, float newSampleRate);
-
-    // Creates a new AudioBus by mixing all the channels down to mono.
-    // If sourceBus is already mono, then the returned AudioBus will simply be a copy.
-    static std::unique_ptr<AudioBus> createByMixingToMono(const AudioBus * sourceBus);
-
-    // Creates a new AudioBus by cloning an existing one
-    static std::unique_ptr<AudioBus> createByCloning(const AudioBus * sourceBus);
-
     // Scales all samples by the same amount.
     void scale(float scale);
 
@@ -120,7 +105,25 @@ public:
 
     bool isFirstTime() { return m_isFirstTime; }
 
+    // Static Functions
+
+    // Creates a new buffer from a range in the source buffer.
+    // 0 may be returned if the range does not fit in the sourceBuffer
+    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, size_t startFrame, size_t endFrame);
+
+    // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
+    // setSampleRate() must have been previously called on sourceBus.
+    static std::unique_ptr<AudioBus> createBySampleRateConverting(const AudioBus * sourceBus, bool mixToMono, float newSampleRate);
+
+    // Creates a new AudioBus by mixing all the channels down to mono.
+    // If sourceBus is already mono, then the returned AudioBus will simply be a copy.
+    static std::unique_ptr<AudioBus> createByMixingToMono(const AudioBus * sourceBus);
+
+    // Creates a new AudioBus by cloning an existing one
+    static std::unique_ptr<AudioBus> createByCloning(const AudioBus * sourceBus);
+
 protected:
+
     AudioBus() = default;
 
     void speakersCopyFrom(const AudioBus &);
@@ -130,18 +133,14 @@ protected:
     void speakersSumFrom5_1_ToMono(const AudioBus &);
     void speakersSumFrom7_1_ToMono(const AudioBus &);
 
-    size_t m_length = 0;
-
-    std::vector<std::unique_ptr<AudioChannel>> m_channels;
-
-    int m_layout = LayoutCanonical;
-
-    float m_busGain = 1.0f;
-
     std::unique_ptr<AudioFloatArray> m_dezipperGainValues;
+    std::vector<std::unique_ptr<AudioChannel>> m_channels;
 
     bool m_isFirstTime = true;
     float m_sampleRate = 0.0f;
+    float m_busGain = 1.0f;
+    int m_layout = LayoutCanonical;
+    size_t m_length = 0;
 };
 
 }  // lab

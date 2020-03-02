@@ -19,43 +19,28 @@ using namespace std;
 namespace lab
 {
 
-const double UnknownTime = -1;
-
 AudioScheduledSourceNode::AudioScheduledSourceNode()
-    : m_playbackState(UNSCHEDULED_STATE)
-    , m_pendingStartTime(UnknownTime)
-    , m_startTime(0)
-    , m_pendingEndTime(UnknownTime)
-    , m_endTime(UnknownTime)
 {
 }
 
-void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus,
-                                                    size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
+void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus, size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
 {
-
-    if (!outputBus)
-        return;
-
-    if (quantumFrameSize != AudioNode::ProcessingSizeInFrames)
-        return;
-
+    if (!outputBus)  return;
+    if (quantumFrameSize != AudioNode::ProcessingSizeInFrames) return;
     AudioContext * context = r.context();
-
-    if (!context)
-        return;
+    if (!context) return;
 
     // not atomic, but will largely prevent the times from being updated
     // by another thread during the update calculations.
-    if (m_pendingEndTime > UnknownTime)
+    if (m_pendingEndTime > UNKNOWN_TIME)
     {
         m_endTime = m_pendingEndTime;
-        m_pendingEndTime = UnknownTime;
+        m_pendingEndTime = UNKNOWN_TIME;
     }
-    if (m_pendingStartTime > UnknownTime)
+    if (m_pendingStartTime > UNKNOWN_TIME)
     {
         m_startTime = m_pendingStartTime;
-        m_pendingStartTime = UnknownTime;
+        m_pendingStartTime = UNKNOWN_TIME;
     }
 
     const float sampleRate = r.context()->sampleRate();
@@ -67,11 +52,13 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
     uint64_t quantumStartFrame = context->currentSampleFrame();
     uint64_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
     uint64_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
-    uint64_t endFrame = m_endTime == UnknownTime ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
+    uint64_t endFrame = m_endTime == UNKNOWN_TIME ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
 
     // If end time is known and it's already passed, then don't do any more rendering
-    if (m_endTime != UnknownTime && endFrame <= quantumStartFrame)
+    if (m_endTime != UNKNOWN_TIME && endFrame <= quantumStartFrame)
+    {
         finish(r);
+    }
 
     // If unscheduled, or finished, or out of time, output silence
     if (m_playbackState == UNSCHEDULED_STATE || m_playbackState == FINISHED_STATE || startFrame >= quantumEndFrame)
@@ -104,13 +91,15 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
     if (quantumFrameOffset)
     {
         for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
-            memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
+        {
+            std::memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
+        }
     }
 
     // Handle silence after we're done playing.
     // If the end time is somewhere in the middle of this time quantum, then zero out the
     // frames from the end time to the very end of the quantum.
-    if (m_endTime != UnknownTime && endFrame >= quantumStartFrame && endFrame < quantumEndFrame)
+    if (m_endTime != UNKNOWN_TIME && endFrame >= quantumStartFrame && endFrame < quantumEndFrame)
     {
         size_t zeroStartFrame = endFrame - quantumStartFrame;
         size_t framesToZero = quantumFrameSize - zeroStartFrame;
@@ -120,13 +109,13 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
 
         if (isSafe)
         {
-            if (framesToZero > nonSilentFramesToProcess)
-                nonSilentFramesToProcess = 0;
-            else
-                nonSilentFramesToProcess -= framesToZero;
+            if (framesToZero > nonSilentFramesToProcess) nonSilentFramesToProcess = 0;
+            else nonSilentFramesToProcess -= framesToZero;
 
             for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
-                memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
+            {
+                std::memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
+            }
         }
 
         finish(r);
@@ -147,7 +136,7 @@ void AudioScheduledSourceNode::start(double when)
     }
 
     m_pendingStartTime = when;
-    m_endTime = UnknownTime;  // clear previous stop()s.
+    m_endTime = UNKNOWN_TIME;  // clear previous stop()s.
     m_playbackState = SCHEDULED_STATE;
 }
 
@@ -168,14 +157,14 @@ void AudioScheduledSourceNode::stop(double when)
 
 void AudioScheduledSourceNode::reset(ContextRenderLock &)
 {
-    m_pendingEndTime = UnknownTime;
+    m_pendingEndTime = UNKNOWN_TIME;
     m_playbackState = UNSCHEDULED_STATE;
 }
 
 void AudioScheduledSourceNode::finish(ContextRenderLock & r)
 {
     m_playbackState = FINISHED_STATE;
-    r.context()->enqueueEvent(m_onEnded);
+    if (m_onEnded) r.context()->enqueueEvent(m_onEnded);
 }
 
 }  // namespace lab

@@ -260,12 +260,8 @@ void AudioBus::copyFrom(const AudioBus & sourceBus, ChannelInterpretation channe
     {
         switch (channelInterpretation)
         {
-            case ChannelInterpretation::Speakers:
-                speakersCopyFrom(sourceBus);
-                break;
-            case ChannelInterpretation::Discrete:
-                discreteCopyFrom(sourceBus);
-                break;
+            case ChannelInterpretation::Speakers: speakersCopyFrom(sourceBus); break;
+            case ChannelInterpretation::Discrete: discreteCopyFrom(sourceBus); break;
             default:
                 ASSERT_NOT_REACHED();
         }
@@ -290,12 +286,8 @@ void AudioBus::sumFrom(const AudioBus & sourceBus, ChannelInterpretation channel
     {
         switch (channelInterpretation)
         {
-            case ChannelInterpretation::Speakers:
-                speakersSumFrom(sourceBus);
-                break;
-            case ChannelInterpretation::Discrete:
-                discreteSumFrom(sourceBus);
-                break;
+            case ChannelInterpretation::Speakers: speakersSumFrom(sourceBus); break;
+            case ChannelInterpretation::Discrete: discreteSumFrom(sourceBus);  break;
             default:
                 ASSERT_NOT_REACHED();
         }
@@ -568,7 +560,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     if (numberOfChannels > MaxBusChannels) return;
 
     // If it is copying from the same bus and no need to change gain, just return.
-    if (this == &sourceBus && *lastMixGain == targetGain && targetGain == 1)
+    if ((this == &sourceBus) && (*lastMixGain == targetGain) && (targetGain == 1))
     {
         return;
     }

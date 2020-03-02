@@ -15,10 +15,13 @@ class AudioBus;
 
 class AudioScheduledSourceNode : public AudioNode
 {
+    static constexpr double UNKNOWN_TIME = -1.0;
+    std::function<void()> m_onEnded;
+
 public:
     // These are the possible states an AudioScheduledSourceNode can be in:
     // UNSCHEDULED_STATE - Initial playback state. Created, but not yet scheduled.
-    // SCHEDULED_STATE - Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing.
+    // SCHEDULED_STATE - Scheduled to play, but not yet playing.
     // PLAYING_STATE - Generating sound.
     enum PlaybackState
     {
@@ -52,6 +55,7 @@ public:
     void setOnEnded(std::function<void()> fn) { m_onEnded = fn; }
 
 protected:
+
     // Get frame information for the current time quantum.
     // We handle the transition into PLAYING_STATE and FINISHED_STATE here,
     // zeroing out portions of the outputBus which are outside the range of startFrame and endFrame.
@@ -66,14 +70,14 @@ protected:
     // Called when there is no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock &);
 
-    PlaybackState m_playbackState;
+    PlaybackState m_playbackState {UNSCHEDULED_STATE};
 
     // m_startTime is the time to start playing based on the context's timeline.
     // 0 or a time less than the context's current time means as soon as the
     // next audio buffer is processed.
     //
-    double m_pendingStartTime;
-    double m_startTime;  // in seconds
+    double m_pendingStartTime {UNKNOWN_TIME};
+    double m_startTime {0.0};  // in seconds
 
     // m_endTime is the time to stop playing based on the context's timeline.
     // 0 or a time less than the context's current time means as soon as the
@@ -84,10 +88,8 @@ protected:
     // else
     //    it will stop when the end of the AudioBuffer has been reached.
     //
-    double m_pendingEndTime;
-    double m_endTime;  // in seconds
-
-    std::function<void()> m_onEnded;
+    double m_pendingEndTime {UNKNOWN_TIME};
+    double m_endTime {UNKNOWN_TIME};  // in seconds
 };
 
 }  // namespace lab
