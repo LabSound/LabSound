@@ -25,7 +25,7 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
     void offlineRender();
     bool m_startedRendering{false};
     uint32_t m_numChannels;
-    float m_lengthSeconds;
+    double m_lengthSeconds;
 
     AudioContext * m_context;
 
@@ -33,7 +33,7 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
     SamplingInfo info;
 
 public:
-    NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const float lengthSeconds);
+    NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const double lengthSeconds);
     virtual ~NullDeviceNode();
 
     virtual const char* name() const override { return "NulLDevice"; }

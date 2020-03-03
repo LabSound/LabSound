@@ -58,7 +58,7 @@ namespace lab
     const uint32_t GetDefaultInputAudioDeviceIndex();
 
     std::unique_ptr<AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds);
+    std::unique_ptr<AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, double recordTimeMilliseconds);
 
     std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
 

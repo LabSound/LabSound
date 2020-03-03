@@ -45,11 +45,11 @@ std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamCon
     return ctx;
 }
 
-std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds)
+std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, double recordTimeMilliseconds)
 {
     LOG("MakeOfflineAudioContext()");
 
-    const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
+    const double secondsToRun = recordTimeMilliseconds * 0.001;
 
     std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
     ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(*ctx.get(), offlineConfig, secondsToRun));
