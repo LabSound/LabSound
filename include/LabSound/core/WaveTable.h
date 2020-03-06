@@ -39,7 +39,7 @@ public:
 private:
     void generateBasicWaveform(OscillatorType);
 
-    unsigned m_numberOfRanges;
+    int m_numberOfRanges;
     float m_centsPerRange;
 
     // The lowest frequency (in Hertz) where playback will include all of the partials.
@@ -49,15 +49,15 @@ private:
     float m_sampleRate;
     float m_rateScale;
 
-    size_t numberOfRanges() const { return m_numberOfRanges; }
+    int numberOfRanges() const { return m_numberOfRanges; }
 
     // Maximum possible number of partials (before culling).
-    size_t maxNumberOfPartials() const;
+    int maxNumberOfPartials() const;
 
-    size_t numberOfPartialsForRange(size_t rangeIndex) const;
+    int numberOfPartialsForRange(int rangeIndex) const;
 
     // Creates tables based on numberOfComponents Fourier coefficients.
-    void createBandLimitedTables(const float * real, const float * imag, size_t numberOfComponents);
+    void createBandLimitedTables(const float * real, const float * imag, int numberOfComponents);
 
     std::vector<std::unique_ptr<AudioFloatArray>> m_bandLimitedTables;
 };

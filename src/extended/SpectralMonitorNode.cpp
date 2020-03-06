@@ -26,7 +26,7 @@ using namespace lab;
 struct FFT
 {
 public:
-    FFT(size_t size)
+    FFT(int size)
         : size(size)
     {
         oouraIp = (int *) calloc(2 + (int) sqrt(size / 2), sizeof(int));
@@ -46,7 +46,7 @@ public:
         ooura::rdft(static_cast<int>(size), 1, &waveform[0], oouraIp, oouraW);
     }
 
-    size_t size;
+    int size;
     int * oouraIp;
     float * oouraW;
 };
@@ -69,11 +69,11 @@ public:
     void setWindowSize(int s)
     {
         cursor = 0;
-        windowSize->setUint32(static_cast<size_t>(s));
+        windowSize->setUint32(static_cast<int>(s));
 
         buffer.resize(s);
 
-        for (size_t i = 0; i < s; ++i)
+        for (int i = 0; i < s; ++i)
         {
             buffer[i] = 0;
         }
@@ -84,7 +84,7 @@ public:
 
     float _db;
 
-    size_t cursor;
+    int cursor;
 
     std::vector<float> buffer;
     std::recursive_mutex magMutex;
@@ -113,7 +113,7 @@ SpectralMonitorNode::~SpectralMonitorNode()
     delete internalNode;
 }
 
-void SpectralMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
+void SpectralMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.
@@ -128,7 +128,7 @@ void SpectralMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
     }
 
     AudioBus * bus = input(0)->bus(r);
-    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess;
+    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
     if (!isBusGood)
     {
         outputBus->zero();
@@ -138,36 +138,36 @@ void SpectralMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
     // specific to this node
     {
         std::vector<const float *> channels;
-        size_t numberOfChannels = bus->numberOfChannels();
-        for (size_t c = 0; c < numberOfChannels; ++c)
+        int numberOfChannels = bus->numberOfChannels();
+        for (int c = 0; c < numberOfChannels; ++c)
             channels.push_back(bus->channel(c)->data());
 
-        size_t sz = internalNode->windowSize->valueUint32();
+        int sz = internalNode->windowSize->valueUint32();
 
         // if the fft is smaller than the quantum, just grab a chunk
-        if (sz < framesToProcess)
+        if (sz < bufferSize)
         {
             internalNode->cursor = 0;
-            framesToProcess = internalNode->windowSize->valueUint32();
+            bufferSize = internalNode->windowSize->valueUint32();
         }
 
         // if the quantum overlaps the end of the window, just fill up the buffer
-        if (internalNode->cursor + framesToProcess > sz)
-            framesToProcess = sz - internalNode->cursor;
+        if (internalNode->cursor + bufferSize > sz)
+            bufferSize = sz - internalNode->cursor;
 
         {
             std::lock_guard<std::recursive_mutex> lock(internalNode->magMutex);
 
             internalNode->buffer.resize(sz);
 
-            for (size_t i = 0; i < framesToProcess; ++i)
+            for (int i = 0; i < bufferSize; ++i)
             {
                 internalNode->buffer[i + internalNode->cursor] = 0;
             }
 
-            for (unsigned c = 0; c < numberOfChannels; ++c)
+            for (int c = 0; c < numberOfChannels; ++c)
             {
-                for (size_t i = 0; i < framesToProcess; ++i)
+                for (int i = 0; i < bufferSize; ++i)
                 {
                     float p = channels[c][i];
                     internalNode->buffer[i + internalNode->cursor] += p;
@@ -176,8 +176,8 @@ void SpectralMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
         }
 
         // advance the cursor
-        internalNode->cursor += framesToProcess;
-        if (internalNode->cursor >= internalNode->windowSize->valueUint32())
+        internalNode->cursor += bufferSize;
+        if (internalNode->cursor >= static_cast<int>(internalNode->windowSize->valueUint32()))
             internalNode->cursor = 0;
     }
     // to here
@@ -206,7 +206,7 @@ void SpectralMonitorNode::spectralMag(std::vector<float> & result)
     }
 
     // http://www.ni.com/white-paper/4844/en/
-    ApplyWindowFunctionInplace(WindowFunction::blackman, window.data(), window.size());
+    ApplyWindowFunctionInplace(WindowFunction::blackman, window.data(), static_cast<int>(window.size()));
     internalNode->fft->forward(window);
 
     // similar to cinder audio2 Scope object, although Scope smooths spectral samples frame by frame
@@ -216,7 +216,7 @@ void SpectralMonitorNode::spectralMag(std::vector<float> & result)
     // compute normalized magnitude spectrum
     /// @TODO @tofix - break this into vector Cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
     const float kMagScale = 1.0f;  /// detail->windowSize;
-    for (size_t i = 0; i < window.size(); i += 2)
+    for (int i = 0; i < window.size(); i += 2)
     {
         float re = window[i];
         float im = window[i + 1];

@@ -23,7 +23,7 @@ class AudioNodeOutput
 {
 public:
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
-    AudioNodeOutput(AudioNode * audioNode, size_t numberOfChannels, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+    AudioNodeOutput(AudioNode * audioNode, int numberOfChannels, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
@@ -32,21 +32,21 @@ public:
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize, int offset, int count);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     AudioBus * bus(ContextRenderLock &) const;
 
     // renderingFanOutCount() is the number of AudioNodeInputs that we're connected to during rendering.
     // Unlike fanOutCount() it will not change during the course of a render quantum.
-    size_t renderingFanOutCount() const;
+    int renderingFanOutCount() const;
 
     // renderingParamFanOutCount() is the number of AudioParams that we're connected to during rendering.
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
-    size_t renderingParamFanOutCount() const;
+    int renderingParamFanOutCount() const;
 
-    void setNumberOfChannels(ContextRenderLock &, size_t);
-    size_t numberOfChannels() const { return m_numberOfChannels; }
+    void setNumberOfChannels(ContextRenderLock &, int);
+    int numberOfChannels() const { return m_numberOfChannels; }
     bool isChannelCountKnown() const { return numberOfChannels() > 0; }
 
     bool isConnected() { return fanOutCount() > 0 || paramFanOutCount() > 0; }
@@ -75,12 +75,12 @@ private:
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
     // It must be called with the context's graph lock.
-    size_t fanOutCount();
+    int fanOutCount();
 
     // Similar to fanOutCount(), paramFanOutCount() is the number of AudioParams that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingParamFanOutCount() should be used.
     // It must be called with the context's graph lock.
-    size_t paramFanOutCount();
+    int paramFanOutCount();
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
@@ -91,8 +91,8 @@ private:
 
     // m_numberOfChannels will only be changed in the audio thread.
     // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread
-    size_t m_numberOfChannels;
-    size_t m_desiredNumberOfChannels;
+    int m_numberOfChannels;
+    int m_desiredNumberOfChannels;
 
     // m_internalBus and m_inPlaceBus must only be changed in the audio thread with the context's render lock (or constructor).
     std::unique_ptr<AudioBus> m_internalBus;
@@ -106,8 +106,8 @@ private:
 private:
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
-    size_t m_renderingFanOutCount;
-    size_t m_renderingParamFanOutCount;
+    int m_renderingFanOutCount;
+    int m_renderingParamFanOutCount;
 
     std::set<std::shared_ptr<AudioParam>> m_params;
     typedef std::set<AudioParam *>::iterator ParamsIterator;

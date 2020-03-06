@@ -22,7 +22,7 @@ public:
     // Memory can be externally referenced, or can be internally allocated with an AudioFloatArray.
 
     // Reference an external buffer.
-    AudioChannel(float * storage, size_t length)
+    AudioChannel(float * storage, int length)
         : m_length(length)
         , m_rawPointer(storage)
         , m_silent(false)
@@ -30,7 +30,7 @@ public:
     }
 
     // Manage storage for us.
-    explicit AudioChannel(size_t length)
+    explicit AudioChannel(int length)
         : m_length(length)
         , m_silent(true)
     {
@@ -46,7 +46,7 @@ public:
 
     // Redefine the memory for this channel.
     // storage represents external memory not managed by this object.
-    void set(float * storage, size_t length)
+    void set(float * storage, int length)
     {
         m_memBuffer.reset();  // clean up managed storage
         m_rawPointer = storage;
@@ -55,11 +55,11 @@ public:
     }
 
     // How many sample-frames do we contain?
-    size_t length() const { return m_length; }
+    int length() const { return m_length; }
 
     // resizeSmaller() can only be called with a new length <= the current length.
     // The data stored in the bus will remain undisturbed.
-    void resizeSmaller(size_t newLength);
+    void resizeSmaller(int newLength);
 
     // Direct access to PCM sample data. Non-const accessor clears silent flag.
     float * mutableData()
@@ -102,7 +102,7 @@ public:
     void copyFrom(const AudioChannel * sourceChannel);
 
     // Copies the given range from the source channel.
-    void copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame);
+    void copyFromRange(const AudioChannel * sourceChannel, int startFrame, int endFrame);
 
     // Sums (with unity gain) from the source channel.
     void sumFrom(const AudioChannel * sourceChannel);
@@ -111,7 +111,7 @@ public:
     float maxAbsValue() const;
 
 private:
-    size_t m_length = 0;
+    int m_length = 0;
     float * m_rawPointer = nullptr;
     std::unique_ptr<AudioFloatArray> m_memBuffer;
     bool m_silent = true;

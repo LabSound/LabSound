@@ -26,7 +26,7 @@ class AudioDSPKernelProcessor : public AudioProcessor
 {
 public:
     // numberOfChannels may be later changed if object is not yet in an "initialized" state
-    AudioDSPKernelProcessor(size_t numberOfChannels);
+    AudioDSPKernelProcessor(int numberOfChannels);
     virtual ~AudioDSPKernelProcessor() {}
 
     // Subclasses create the appropriate type of processing kernel here.
@@ -36,7 +36,7 @@ public:
     // AudioProcessor methods
     virtual void initialize() override;
     virtual void uninitialize() override;
-    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, int framesToProcess) override;
     virtual void reset() override;
 
     virtual double tailTime(ContextRenderLock & r) const override;

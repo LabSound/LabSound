@@ -23,7 +23,7 @@ AudioScheduledSourceNode::AudioScheduledSourceNode()
 {
 }
 
-void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_t quantumFrameSize, AudioBus * outputBus, size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess)
+void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, int quantumFrameSize, AudioBus * outputBus, int & quantumFrameOffset, int & nonSilentFramesToProcess)
 {
     if (!outputBus)  return;
     if (quantumFrameSize != AudioNode::ProcessingSizeInFrames) return;
@@ -49,10 +49,10 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
     // quantumEndFrame       : End frame of the current time quantum.
     // startFrame            : Start frame for this source.
     // endFrame              : End frame for this source.
-    uint64_t quantumStartFrame = context->currentSampleFrame();
-    uint64_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
-    uint64_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
-    uint64_t endFrame = m_endTime == UNKNOWN_TIME ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
+    int64_t quantumStartFrame = context->currentSampleFrame();
+    int64_t quantumEndFrame = quantumStartFrame + quantumFrameSize;
+    int64_t startFrame = AudioUtilities::timeToSampleFrame(m_startTime, sampleRate);
+    int64_t endFrame = m_endTime == UNKNOWN_TIME ? 0 : AudioUtilities::timeToSampleFrame(m_endTime, sampleRate);
 
     // If end time is known and it's already passed, then don't do any more rendering
     if (m_endTime != UNKNOWN_TIME && endFrame <= quantumStartFrame)
@@ -75,8 +75,8 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
         m_playbackState = PLAYING_STATE;
     }
 
-    quantumFrameOffset = startFrame > quantumStartFrame ? startFrame - quantumStartFrame : 0;
-    quantumFrameOffset = std::min(quantumFrameOffset, quantumFrameSize);  // clamp to valid range
+    quantumFrameOffset = startFrame > quantumStartFrame ? static_cast<int>(startFrame - quantumStartFrame) : 0;
+    quantumFrameOffset = quantumFrameOffset < quantumFrameSize ? quantumFrameOffset : quantumFrameSize;  // clamp to valid range
     nonSilentFramesToProcess = quantumFrameSize - quantumFrameOffset;
 
     if (!nonSilentFramesToProcess)
@@ -90,7 +90,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
     // Zero any initial frames representing silence leading up to a rendering start time in the middle of the quantum.
     if (quantumFrameOffset)
     {
-        for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
+        for (int i = 0; i < outputBus->numberOfChannels(); ++i)
         {
             std::memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
         }
@@ -101,8 +101,8 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
     // frames from the end time to the very end of the quantum.
     if (m_endTime != UNKNOWN_TIME && endFrame >= quantumStartFrame && endFrame < quantumEndFrame)
     {
-        size_t zeroStartFrame = endFrame - quantumStartFrame;
-        size_t framesToZero = quantumFrameSize - zeroStartFrame;
+        int zeroStartFrame = static_cast<int>(endFrame - quantumStartFrame);
+        int framesToZero = quantumFrameSize - zeroStartFrame;
 
         bool isSafe = zeroStartFrame < quantumFrameSize && framesToZero <= quantumFrameSize && zeroStartFrame + framesToZero <= quantumFrameSize;
         ASSERT(isSafe);
@@ -112,7 +112,7 @@ void AudioScheduledSourceNode::updateSchedulingInfo(ContextRenderLock & r, size_
             if (framesToZero > nonSilentFramesToProcess) nonSilentFramesToProcess = 0;
             else nonSilentFramesToProcess -= framesToZero;
 
-            for (unsigned i = 0; i < outputBus->numberOfChannels(); ++i)
+            for (int i = 0; i < outputBus->numberOfChannels(); ++i)
             {
                 std::memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
             }

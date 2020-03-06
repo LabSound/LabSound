@@ -21,13 +21,13 @@ class RealtimeAnalyser
     RealtimeAnalyser(const RealtimeAnalyser &);  // noncopyable
 
 public:
-    RealtimeAnalyser(uint32_t fftSize);
+    RealtimeAnalyser(int fftSize);
     virtual ~RealtimeAnalyser();
 
     void reset();
 
-    uint32_t fftSize() const { return m_fftSize; }
-    void setFftSize(uint32_t fftSize);
+    int fftSize() const { return m_fftSize; }
+    void setFftSize(int fftSize);
 
     uint32_t frequencyBinCount() const { return m_fftSize / 2; }
 
@@ -45,23 +45,23 @@ public:
     void getFloatTimeDomainData(std::vector<float> &);  // LabSound
     void getByteTimeDomainData(std::vector<uint8_t> &);
 
-    void writeInput(ContextRenderLock & r, AudioBus *, size_t framesToProcess);
+    void writeInput(ContextRenderLock & r, AudioBus *, int bufferSize);
 
     static const double DefaultSmoothingTimeConstant;
     static const double DefaultMinDecibels;
     static const double DefaultMaxDecibels;
 
-    static const uint32_t DefaultFFTSize;
-    static const uint32_t MinFFTSize;
-    static const uint32_t MaxFFTSize;
-    static const uint32_t InputBufferSize;
+    static const int DefaultFFTSize;
+    static const int MinFFTSize;
+    static const int MaxFFTSize;
+    static const int InputBufferSize;
 
 private:
     // The audio thread writes the input audio here.
     AudioFloatArray m_inputBuffer;
-    size_t m_writeIndex;
+    int m_writeIndex;
 
-    uint32_t m_fftSize;
+    int m_fftSize;
     std::unique_ptr<FFTFrame> m_analysisFrame;
     void doFFTAnalysis();
 

@@ -25,7 +25,7 @@ public:
 
     // AudioDSPKernel
     virtual void process(ContextRenderLock &,
-                         const float * source, float * dest, size_t framesToProcess) override;
+                         const float * source, float * dest, int framesToProcess) override;
     virtual void reset() override {}
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }

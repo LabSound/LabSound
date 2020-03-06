@@ -69,7 +69,7 @@ public:
 
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
-    void calculateSampleAccurateValues(ContextRenderLock &, float * values, size_t numberOfValues);
+    void calculateSampleAccurateValues(ContextRenderLock &, float * values, int numberOfValues);
 
     // Connect an audio-rate signal to control this parameter.
     static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
@@ -78,8 +78,8 @@ public:
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
-    void calculateFinalValues(ContextRenderLock & r, float * values, size_t numberOfValues, bool sampleAccurate);
-    void calculateTimelineValues(ContextRenderLock & r, float * values, size_t numberOfValues);
+    void calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate);
+    void calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues);
 
     std::string m_name;
     std::string m_shortName;

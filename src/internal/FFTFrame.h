@@ -37,7 +37,7 @@ class FFTFrame
 
 public:
     FFTFrame();  // creates a blank/empty frame for later use with createInterpolatedFrame()
-    FFTFrame(size_t fftSize);
+    FFTFrame(int fftSize);
 
     // Copy
     FFTFrame(const FFTFrame & frame);
@@ -57,20 +57,20 @@ public:
     // Interpolates from frame1 -> frame2 as x goes from 0.0 -> 1.0
     static std::unique_ptr<FFTFrame> createInterpolatedFrame(const FFTFrame & frame1, const FFTFrame & frame2, double x);
 
-    void doPaddedFFT(const float * data, size_t dataSize);  // zero-padding with dataSize <= fftSize
+    void doPaddedFFT(const float * data, int dataSize);  // zero-padding with dataSize <= fftSize
     double extractAverageGroupDelay();
     void addConstantGroupDelay(double sampleFrameDelay);
 
-    size_t fftSize() const { return m_FFTSize; }
-    size_t log2FFTSize() const { return m_log2FFTSize; }
+    int fftSize() const { return m_FFTSize; }
+    int log2FFTSize() const { return m_log2FFTSize; }
 
 #if USE_ACCELERATE_FFT
     static void cleanup();
 #endif
 
 private:
-    size_t m_FFTSize;
-    size_t m_log2FFTSize;
+    int m_FFTSize;
+    int m_log2FFTSize;
 
     void interpolateFrequencyComponents(const FFTFrame & frame1, const FFTFrame & frame2, double x);
 
@@ -81,7 +81,7 @@ private:
     }
     DSPSplitComplex dspSplitComplex() const { return m_frame; }
 
-    static FFTSetup fftSetupForSize(size_t fftSize);
+    static FFTSetup fftSetupForSize(int fftSize);
 
     static FFTSetup * fftSetups;
 

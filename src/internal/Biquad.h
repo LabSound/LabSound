@@ -24,7 +24,7 @@ public:
     Biquad();
     virtual ~Biquad();
 
-    void process(const float * sourceP, float * destP, size_t framesToProcess);
+    void process(const float * sourceP, float * destP, int framesToProcess);
 
     // frequency is 0 - 1 normalized, resonance and dbGain are in decibels.
     // Q is a unitless quality factor.

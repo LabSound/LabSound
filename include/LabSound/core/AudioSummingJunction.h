@@ -33,16 +33,16 @@ public:
     void updateRenderingState(ContextRenderLock & r);
 
     // will count expired pointers
-    size_t numberOfConnections() const { return m_connectedOutputs.size(); }
+    int numberOfConnections() const { return static_cast<int>(m_connectedOutputs.size()); }
 
     // Rendering code accesses its version of the current connections here.
-    size_t numberOfRenderingConnections(ContextRenderLock &) const;
-    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, size_t i)
+    int numberOfRenderingConnections(ContextRenderLock &) const;
+    std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, int i)
     {
         return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr;
     }
 
-    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, size_t i) const
+    const std::shared_ptr<AudioNodeOutput> renderingOutput(ContextRenderLock &, int i) const
     {
         return i < m_renderingOutputs.size() ? m_renderingOutputs[i].lock() : nullptr;
     }

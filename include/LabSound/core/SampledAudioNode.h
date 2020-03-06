@@ -82,11 +82,11 @@ public:
     void schedule(double when, double grainOffset, double grainDuration);
 
     // Returns true if we're finished.
-    bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, size_t index, size_t framesToProcess);
-    bool renderSample(ContextRenderLock & r, AudioBus * bus, size_t destinationSampleOffset, size_t frameSize);
+    bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, int index, int framesToProcess);
+    bool renderSample(ContextRenderLock & r, AudioBus * bus, int destinationSampleOffset, int frameSize);
     void setPitchRate(ContextRenderLock & r, const float rate) { m_totalPitchRate = rate; }
 
-    virtual void process(ContextRenderLock & r, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock & r, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock & r) override;
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -143,7 +143,7 @@ public:
     SampledAudioNode();
     virtual ~SampledAudioNode();
 
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);

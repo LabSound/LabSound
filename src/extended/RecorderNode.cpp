@@ -31,7 +31,7 @@ RecorderNode::~RecorderNode()
     uninitialize();
 }
 
-void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
+void RecorderNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -46,7 +46,7 @@ void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // =====> should this follow the WebAudio pattern have a writer object to call here?
     AudioBus * bus = input(0)->bus(r);
-    bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= framesToProcess);
+    bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= bufferSize);
 
     ASSERT(isBusGood);
     if (!isBusGood)
@@ -58,9 +58,9 @@ void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
     if (m_recording)
     {
         std::vector<const float *> channels;
-        const size_t inputBusNumChannels = bus->numberOfChannels();
+        const int inputBusNumChannels = bus->numberOfChannels();
 
-        for (size_t i = 0; i < inputBusNumChannels; ++i)
+        for (int i = 0; i < inputBusNumChannels; ++i)
         {
             channels.push_back(bus->channel(i)->data());
         }
@@ -69,23 +69,23 @@ void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
         // use the tightest loop possible since this is part of the processing step
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-        m_data.reserve(framesToProcess * (m_mixToMono ? 1 : inputBusNumChannels));
+        m_data.reserve(bufferSize * (m_mixToMono ? 1 : inputBusNumChannels));
 
         if (m_mixToMono)
         {
             if (inputBusNumChannels == Channels::Mono)
             {
-                for (size_t i = 0; i < framesToProcess; ++i)
+                for (int i = 0; i < bufferSize; ++i)
                 {
                     m_data.push_back(channels[0][i]);
                 }
             }
             else
             {
-                for (size_t i = 0; i < framesToProcess; ++i)
+                for (int i = 0; i < bufferSize; ++i)
                 {
                     float val = 0;
-                    for (size_t c = 0; c < inputBusNumChannels; ++c)
+                    for (int c = 0; c < inputBusNumChannels; ++c)
                     {
                         val += channels[c][i];
                     }
@@ -96,9 +96,9 @@ void RecorderNode::process(ContextRenderLock & r, size_t framesToProcess)
         }
         else
         {
-            for (size_t i = 0; i < framesToProcess; ++i)
+            for (int i = 0; i < bufferSize; ++i)
             {
-                for (size_t c = 0; c < inputBusNumChannels; ++c)
+                for (int c = 0; c < inputBusNumChannels; ++c)
                 {
                     m_data.push_back(channels[c][i]);
                 }

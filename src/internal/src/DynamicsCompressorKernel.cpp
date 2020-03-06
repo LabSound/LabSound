@@ -60,7 +60,7 @@ void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime, float sampleRate)
 {
     // Re-configure look-ahead section pre-delay if delay time has changed.
-    unsigned preDelayFrames = preDelayTime * sampleRate;
+    int preDelayFrames = static_cast<int>(preDelayTime * sampleRate);
     if (preDelayFrames > MaxPreDelayFrames - 1)
         preDelayFrames = MaxPreDelayFrames - 1;
 
@@ -113,7 +113,7 @@ float DynamicsCompressorKernel::slopeAt(float x, float k)
     if (x < m_linearThreshold)
         return 1;
 
-    float x2 = x * 1.001;
+    float x2 = x * 1.001f;
 
     float xDb = linearToDecibels(x);
     float x2Db = linearToDecibels(x2);
@@ -188,7 +188,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        const float * sourceChannels[],
                                        float * destinationChannels[],
                                        unsigned numberOfChannels,
-                                       size_t framesToProcess,
+                                       int framesToProcess,
                                        float dbThreshold,
                                        float dbKnee,
                                        float ratio,

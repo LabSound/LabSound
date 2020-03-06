@@ -15,7 +15,7 @@
 
 using namespace lab;
 
-static const size_t offlineRenderSizeQuantum = 128;
+static const int offlineRenderSizeQuantum = 128;
 
 NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds)
     : m_lengthSeconds(lengthSeconds)
@@ -100,7 +100,7 @@ void NullDeviceNode::stop()
     info = {};
 }
 
-void NullDeviceNode::render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info)
+void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
     pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
 }
@@ -137,7 +137,7 @@ void NullDeviceNode::offlineRender()
         return;
 
     // Break up the desired length into smaller "render quantum" sized pieces.
-    size_t framesToProcess = static_cast<size_t>((m_lengthSeconds * outConfig.desired_samplerate) / offlineRenderSizeQuantum);
+    int framesToProcess = static_cast<int>((m_lengthSeconds * outConfig.desired_samplerate) / offlineRenderSizeQuantum);
 
     LOG("offline rendering started");
 
@@ -148,7 +148,7 @@ void NullDeviceNode::offlineRender()
         render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
 
         // Update sampling info
-        const int32_t index = 1 - (info.current_sample_frame & 1);
+        const int index = 1 - (info.current_sample_frame & 1);
         const uint64_t t = info.current_sample_frame & ~1;
         info.current_sample_frame = t + offlineRenderSizeQuantum + index;
         info.current_time = info.current_sample_frame / static_cast<double>(info.sampling_rate);

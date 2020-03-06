@@ -74,16 +74,16 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
     // Only an AudioHardwareDeviceNode should call this.
-    void processAutomaticPullNodes(ContextRenderLock &, size_t framesToProcess);
+    void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
-    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcIdx = 0);
-    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx = 0, uint32_t srcidx = 0);
+    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
+    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
 
     // completely disconnect the node from the graph
-    void disconnect(std::shared_ptr<AudioNode> node, uint32_t destIdx = 0);
+    void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);
 
-    void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
-    void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index);
+    void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
+    void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
     void holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node);
 

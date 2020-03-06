@@ -62,7 +62,7 @@ struct SamplingInfo
 //
 // `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance,
 // the `AudioHardwareDeviceNode` or the `NullDeviceNode`.
-void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, size_t frames,
+void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, int frames,
                 const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
 ///////////////////////////////////
@@ -80,7 +80,7 @@ class AudioDeviceRenderCallback
 
 public:
     virtual ~AudioDeviceRenderCallback() {}
-    virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) = 0;
+    virtual void render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
 

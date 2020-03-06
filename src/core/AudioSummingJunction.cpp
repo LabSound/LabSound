@@ -51,9 +51,9 @@ bool AudioSummingJunction::isConnected(std::shared_ptr<AudioNodeOutput> o) const
     return false;
 }
 
-size_t AudioSummingJunction::numberOfRenderingConnections(ContextRenderLock &) const
+int AudioSummingJunction::numberOfRenderingConnections(ContextRenderLock &) const
 {
-    size_t count = 0;
+    int count = 0;
     for (auto i : m_renderingOutputs)
     {
         if (!i.expired())

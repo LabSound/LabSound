@@ -35,16 +35,16 @@ struct PendingConnection
     ConnectionType type;
     std::shared_ptr<AudioNode> destination;
     std::shared_ptr<AudioNode> source;
-    uint32_t destIndex;
-    uint32_t srcIndex;
+    int destIndex;
+    int srcIndex;
     float duration = 0.1f;
 
     PendingConnection(
         std::shared_ptr<AudioNode> destination,
         std::shared_ptr<AudioNode> source,
         ConnectionType t,
-        uint32_t destIndex = 0,
-        uint32_t srcIndex = 0)
+        int destIndex = 0,
+        int srcIndex = 0)
         : type(t)
         , destination(destination)
         , source(source)
@@ -79,7 +79,7 @@ struct AudioContext::Internals
     };
 
     std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
-    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, ConnectionType, uint32_t>> pendingParamConnections;
+    std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, ConnectionType, int>> pendingParamConnections;
 };
 
 // Constructor for realtime rendering
@@ -215,7 +215,7 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
     handleAutomaticSources();
 }
 
-void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
+void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
 {
     if (!destination) throw std::runtime_error("Cannot connect to null destination");
     if (!source) throw std::runtime_error("Cannot connect from null source");
@@ -226,7 +226,7 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
     cv.notify_all();
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, uint32_t destIdx, uint32_t srcIdx)
+void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
 {
     if (!destination && !source)
         return;
@@ -238,7 +238,7 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
     cv.notify_all();
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> node, uint32_t index)
+void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
 {
     if (!node)
         return;
@@ -248,7 +248,7 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, uint32_t index)
     cv.notify_all();
 }
 
-void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
+void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
 {
     if (!param)
         throw std::invalid_argument("No parameter specified");
@@ -260,7 +260,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     cv.notify_all();
 }
 
-void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, uint32_t index)
+void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
 {
     if (!param)
         throw std::invalid_argument("No parameter specified");
@@ -400,7 +400,7 @@ void AudioContext::update()
                         }
                         else if (connection.destination)
                         {
-                            for (unsigned int out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                            for (int out = 0; out < connection.destination->numberOfOutputs(); ++out)
                             {
                                 auto output = connection.destination->output(out);
                                 if (!output) continue;
@@ -410,7 +410,7 @@ void AudioContext::update()
                         }
                         else if (connection.source)
                         {
-                            for (unsigned int out = 0; out < connection.source->numberOfOutputs(); ++out)
+                            for (int out = 0; out < connection.source->numberOfOutputs(); ++out)
                             {
                                 auto output = connection.source->output(out);
                                 if (!output) continue;
@@ -482,11 +482,11 @@ void AudioContext::updateAutomaticPullNodes()
     }
 }
 
-void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, size_t framesToProcess)
+void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, int framesToProcess)
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
     {
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess, 0, framesToProcess);
     }
 }
 

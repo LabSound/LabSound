@@ -38,13 +38,13 @@ public:
     virtual ~AudioHardwareDeviceNode();
 
     // AudioNode interface
-    virtual void process(ContextRenderLock &, size_t) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 
     // AudioDeviceRenderCallback interface
-    virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) override;
+    virtual void render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info) override;
     virtual void start() override;
     virtual void stop() override;
     virtual const SamplingInfo getSamplingInfo() const override;

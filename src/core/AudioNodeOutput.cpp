@@ -24,7 +24,7 @@ namespace
     std::mutex outputMutex;
 }
 
-AudioNodeOutput::AudioNodeOutput(AudioNode * node, size_t numberOfChannels, size_t processingSizeInFrames)
+AudioNodeOutput::AudioNodeOutput(AudioNode * node, int numberOfChannels, int processingSizeInFrames)
     : m_node(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
@@ -39,7 +39,7 @@ AudioNodeOutput::~AudioNodeOutput()
 {
 }
 
-void AudioNodeOutput::setNumberOfChannels(ContextRenderLock & r, size_t numberOfChannels)
+void AudioNodeOutput::setNumberOfChannels(ContextRenderLock & r, int numberOfChannels)
 {
     if (m_numberOfChannels == numberOfChannels) return;
     m_desiredNumberOfChannels = numberOfChannels;
@@ -82,7 +82,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock & r)
     }
 }
 
-AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize, int offset, int count)
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
@@ -107,7 +107,7 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, s
     if (!n)
         return bus(r);
 
-    n->processIfNecessary(r, framesToProcess);
+    n->processIfNecessary(r, bufferSize, offset, count);
     return bus(r);
 }
 
@@ -118,22 +118,22 @@ AudioBus * AudioNodeOutput::bus(ContextRenderLock & r) const
     return m_inPlaceBus ? m_inPlaceBus : m_internalBus.get();
 }
 
-size_t AudioNodeOutput::fanOutCount()
+int AudioNodeOutput::fanOutCount()
 {
-    return m_inputs.size();
+    return static_cast<int>(m_inputs.size());
 }
 
-size_t AudioNodeOutput::paramFanOutCount()
+int AudioNodeOutput::paramFanOutCount()
 {
-    return m_params.size();
+    return static_cast<int>(m_params.size());
 }
 
-size_t AudioNodeOutput::renderingFanOutCount() const
+int AudioNodeOutput::renderingFanOutCount() const
 {
     return m_renderingFanOutCount;
 }
 
-size_t AudioNodeOutput::renderingParamFanOutCount() const
+int AudioNodeOutput::renderingParamFanOutCount() const
 {
     return m_renderingParamFanOutCount;
 }

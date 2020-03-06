@@ -123,7 +123,7 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
     m_platformAudioDevice->start();
 };
 
-void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info)
+void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
     pull_graph(m_context, input(0).get(), src, dst, frames, info, m_audioHardwareInput);
     last_info = info;

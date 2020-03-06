@@ -26,7 +26,7 @@ GranulationNode::GranulationNode() : AudioScheduledSourceNode()
     windowFunc->setEnumeration(static_cast<int>(WindowFunction::bartlett), true);
 
     // Total number of grains that will be allocated
-    numGrains = std::make_shared<AudioParam>("NumGrains", "NGRN", 8.f, 1.f, 256.f, 1.f);
+    numGrains = std::make_shared<AudioParam>("NumGrains", "NGRN", 8.f, 1.f, 256.f, 1);
 
     // Duration of each grain in seconds (currently fixed but ideally will be configurable per-grain)
     grainDuration = std::make_shared<AudioParam>("GrainDuration", "GDUR", 0.1f, 0.01f, 0.5f);
@@ -54,13 +54,13 @@ void GranulationNode::reset(ContextRenderLock&)
 
 }
 
-bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bus, size_t destinationFrameOffset, size_t numberOfFrames)
+bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bus, int destinationFrameOffset, int numberOfFrames)
 {
     if (!r.context())
         return false;
 
     // Sanity check destinationFrameOffset, numberOfFrames.
-    const size_t destinationLength = out_bus->length();
+    const int destinationLength = out_bus->length();
 
     bool isLengthGood = destinationLength <= 4096 && numberOfFrames <= 4096;
     ASSERT(isLengthGood);
@@ -82,7 +82,7 @@ bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bu
     {
         for (int i = 0; i < grain_pool.size(); ++i)
         {
-            grain_pool[i].tick(grain_sum_buffer.data(), grain_sum_buffer.size());
+            grain_pool[i].tick(grain_sum_buffer.data(), static_cast<int>(grain_sum_buffer.size()));
         }
 
         for (int f = 0; f < numberOfFrames; ++f)
@@ -128,9 +128,9 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
 
     // Setup window/envelope
     std::vector<float> grain_window(grain_duration_samples, 1.f);
-    lab::ApplyWindowFunctionInplace(static_cast<WindowFunction>(windowFunc->valueUint32()), grain_window.data(), grain_window.size());
+    lab::ApplyWindowFunctionInplace(static_cast<WindowFunction>(windowFunc->valueUint32()), grain_window.data(), static_cast<int>(grain_window.size()));
 
-    window_bus.reset(new lab::AudioBus(1, grain_duration_samples));
+    window_bus.reset(new lab::AudioBus(1, static_cast<int>(grain_duration_samples)));
     window_bus->setSampleRate(r.context()->sampleRate());
 
     float * windowData = window_bus->channel(0)->mutableData();
@@ -151,7 +151,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     return true;
 }
 
-void GranulationNode::process(ContextRenderLock& r, size_t framesToProcess)
+void GranulationNode::process(ContextRenderLock& r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -161,9 +161,9 @@ void GranulationNode::process(ContextRenderLock& r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset;
-    size_t bufferFramesToProcess;
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, bufferFramesToProcess);
+    int quantumFrameOffset;
+    int bufferFramesToProcess;
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, bufferFramesToProcess);
 
     if (!bufferFramesToProcess)
     {

@@ -36,16 +36,16 @@ class GranulationNode : public AudioScheduledSourceNode
         grain(std::shared_ptr<AudioBus> _sample, std::shared_ptr<AudioBus> _window, const float sample_rate,
               const double _position_offset, const double _duration, const double _speed) : sample(_sample), window(_window)
         {
-            grain_start = sample->length() * _position_offset;
-            grain_duration = _duration * static_cast<double>(sample_rate);
+            grain_start = static_cast<uint64_t>(sample->length() * _position_offset);
+            grain_duration = static_cast<uint64_t>(_duration * sample_rate);
             grain_end = std::min(static_cast<uint64_t>(sample->length()), grain_start + grain_duration);
 
             playback_frequency = (1.0 / _duration) * _speed;
-            sample_accurate_time = (playback_frequency > 0) ? grain_start : grain_end;
+            sample_accurate_time = static_cast<double>((playback_frequency > 0) ? grain_start : grain_end);
             sample_increment = (playback_frequency != 0.0) ? grain_duration / (sample_rate / playback_frequency) : 0.0;
         }
 
-        void tick(float * out_buffer, const size_t num_frames)
+        void tick(float * out_buffer, const int num_frames)
         {
             const float * windowSamples = window->channel(0)->data();
 
@@ -60,10 +60,10 @@ class GranulationNode : public AudioScheduledSourceNode
                     // Looping behavior
                     if (sample_accurate_time >= grain_end)
                     {
-                        sample_accurate_time = grain_start;
+                        sample_accurate_time = static_cast<double>(grain_start);
                     }
 
-                    const uint64_t approximate_sample_index = std::floor(sample_accurate_time);
+                    const uint64_t approximate_sample_index = static_cast<uint64_t>(std::floor(sample_accurate_time));
                     const double remainder = sample_accurate_time - approximate_sample_index;
 
                     uint64_t left = approximate_sample_index;
@@ -92,7 +92,7 @@ class GranulationNode : public AudioScheduledSourceNode
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    bool RenderGranulation(ContextRenderLock &, AudioBus *, size_t destinationFrameOffset, size_t numberOfFrames);
+    bool RenderGranulation(ContextRenderLock &, AudioBus *, int destinationFrameOffset, int numberOfFrames);
 
     std::vector<grain> grain_pool;
     std::shared_ptr<lab::AudioBus> window_bus;
@@ -101,7 +101,7 @@ public:
     GranulationNode();
     virtual ~GranulationNode();
 
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override;
 
     bool setGrainSource(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);

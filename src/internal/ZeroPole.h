@@ -21,7 +21,7 @@ class ZeroPole
 public:
     ZeroPole() {}
 
-    void process(const float * source, float * destination, size_t framesToProcess);
+    void process(const float * source, float * destination, int bufferSize, int offset, int count);
 
     // Reset filter state.
     void reset()

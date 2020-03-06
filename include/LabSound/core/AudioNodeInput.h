@@ -26,7 +26,7 @@ class AudioNodeInput : public AudioSummingJunction
     std::unique_ptr<AudioBus> m_internalSummingBus;
 
 public:
-    explicit AudioNodeInput(AudioNode * audioNode, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+    explicit AudioNodeInput(AudioNode * audioNode, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeInput();
 
     // AudioSummingJunction
@@ -43,7 +43,7 @@ public:
     // In the case of multiple connections, the result is summed onto the internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize, int offset, int count);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
     AudioBus * bus(ContextRenderLock &);
@@ -54,7 +54,7 @@ public:
 
     // The number of channels of the connection with the largest number of channels.
     // Only valid during render quantum because it is dependent on the active bus
-    size_t numberOfChannels(ContextRenderLock &) const;
+    int numberOfChannels(ContextRenderLock &) const;
 };
 
 }  // namespace lab

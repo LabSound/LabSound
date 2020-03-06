@@ -668,7 +668,7 @@ void SfxrNode::bang(const double length)
     sfxr->PlaySample();
 }
 
-void SfxrNode::process(ContextRenderLock & r, size_t framesToProcess)
+void SfxrNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -678,10 +678,10 @@ void SfxrNode::process(ContextRenderLock & r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset;
-    size_t nonSilentFramesToProcess;
+    int quantumFrameOffset;
+    int nonSilentFramesToProcess;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess)
     {
@@ -693,7 +693,7 @@ void SfxrNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;
-    size_t n = nonSilentFramesToProcess;
+    int n = nonSilentFramesToProcess;
 
 #define UPDATE(typ, cur, val)                    \
     {                                            \

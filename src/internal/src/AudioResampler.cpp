@@ -52,7 +52,7 @@ void AudioResampler::configureChannels(unsigned numberOfChannels)
     m_sourceBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfChannels, 0, false));
 }
 
-void AudioResampler::process(ContextRenderLock & r, AudioSourceProvider * provider, AudioBus * destinationBus, size_t framesToProcess)
+void AudioResampler::process(ContextRenderLock & r, AudioSourceProvider * provider, AudioBus * destinationBus, int framesToProcess)
 {
     ASSERT(provider);
     if (!provider)
@@ -70,7 +70,7 @@ void AudioResampler::process(ContextRenderLock & r, AudioSourceProvider * provid
     for (unsigned i = 0; i < numberOfChannels; ++i)
     {
         // Figure out how many frames we need to get from the provider, and a pointer to the buffer.
-        size_t framesNeeded;
+        int framesNeeded;
         float * fillPointer = m_kernels[i]->getSourcePointer(framesToProcess, &framesNeeded);
         ASSERT(fillPointer);
         if (!fillPointer)

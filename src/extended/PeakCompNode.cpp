@@ -54,7 +54,7 @@ public:
     virtual void uninitialize() override {}
 
     // Processes the source to destination bus.  The number of channels must match in source and destination.
-    virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus, size_t framesToProcess) override
+    virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus, int framesToProcess) override
     {
         // Get sample rate
         internalSampleRate = r.context()->sampleRate();
@@ -120,8 +120,8 @@ public:
 
         // Handle both the 1 -> N and N -> N case here.
         const float * source[16];
-        size_t numChannels = numberOfChannels();
-        for (size_t i = 0; i < numChannels; ++i)
+        int numChannels = numberOfChannels();
+        for (int i = 0; i < numChannels; ++i)
         {
             if (sourceBus->numberOfChannels() == numChannels)
                 source[i] = sourceBus->channel(i)->data();
@@ -130,13 +130,13 @@ public:
         }
 
         float * dest[16];
-        for (size_t i = 0; i < numChannels; ++i)
+        for (int i = 0; i < numChannels; ++i)
             dest[i] = destinationBus->channel(i)->mutableData();
 
-        for (size_t i = 0; i < framesToProcess; ++i)
+        for (int i = 0; i < framesToProcess; ++i)
         {
             float peakEnv = 0;
-            for (unsigned int j = 0; j < numChannels; ++j)
+            for (int j = 0; j < numChannels; ++j)
             {
                 peakEnv += source[j][i];
             }
@@ -149,7 +149,7 @@ public:
             // Knee smoothening and gain reduction
             kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);
 
-            for (unsigned int j = 0; j < numChannels; ++j)
+            for (int j = 0; j < numChannels; ++j)
             {
                 dest[j][i] = static_cast<float>(source[j][i] * kneeRecursive[0] * makeupGain);
             }

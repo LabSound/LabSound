@@ -32,7 +32,7 @@ public:
     OscillatorNode();
     virtual ~OscillatorNode();
 
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override { }
 
     OscillatorType type() const;
@@ -48,7 +48,7 @@ public:
     std::shared_ptr<AudioParam> m_bias;      // default 0.0
     std::shared_ptr<AudioParam> m_detune;    // Detune value in Cents.
 
-    void process_oscillator(ContextRenderLock & r, const size_t frames);
+    void process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count);
 
     AudioFloatArray m_phaseIncrements;
     AudioFloatArray m_biasValues;

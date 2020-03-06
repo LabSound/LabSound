@@ -94,7 +94,7 @@ public:
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
-    virtual void process(ContextRenderLock &, size_t framesToProcess) = 0;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) = 0;
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
@@ -107,17 +107,17 @@ public:
 
     bool isInitialized() const { return m_isInitialized; }
 
-    size_t numberOfInputs() const { return m_inputs.size(); }
-    size_t numberOfOutputs() const { return m_outputs.size(); }
+    int numberOfInputs() const { return static_cast<int>(m_inputs.size()); }
+    int numberOfOutputs() const { return static_cast<int>(m_outputs.size()); }
 
-    std::shared_ptr<AudioNodeInput> input(size_t index);
-    std::shared_ptr<AudioNodeOutput> output(size_t index);
+    std::shared_ptr<AudioNodeInput> input(int index);
+    std::shared_ptr<AudioNodeOutput> output(int index);
 
     // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
-    void processIfNecessary(ContextRenderLock & r, size_t framesToProcess);
+    void processIfNecessary(ContextRenderLock & r, int bufferSize, int offset, int count);
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
@@ -140,8 +140,8 @@ public:
     void silenceOutputs(ContextRenderLock &);
     void unsilenceOutputs(ContextRenderLock &);
 
-    size_t channelCount();
-    void setChannelCount(ContextGraphLock & g, size_t channelCount);
+    int channelCount();
+    void setChannelCount(ContextGraphLock & g, int channelCount);
 
     ChannelCountMode channelCountMode() const { return m_channelCountMode; }
     void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
@@ -178,7 +178,7 @@ protected:
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock &, size_t framesToProcess);
+    virtual void pullInputs(ContextRenderLock &, int bufferSize, int offset, int count);
 
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock &);
@@ -225,7 +225,7 @@ protected:
     std::vector<std::shared_ptr<AudioParam>> m_params;
     std::vector<std::shared_ptr<AudioSetting>> m_settings;
 
-    size_t m_channelCount{0};
+    int m_channelCount{0};
 
     ChannelCountMode m_channelCountMode{ChannelCountMode::Max};
     ChannelInterpretation m_channelInterpretation{ChannelInterpretation::Speakers};

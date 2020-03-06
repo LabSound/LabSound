@@ -33,18 +33,18 @@ public:
     // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
     // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
     // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
-    AudioBus(size_t numberOfChannels, size_t length, bool allocate = true);
+    AudioBus(int numberOfChannels, int length, bool allocate = true);
 
     // Tells the given channel to use an externally allocated buffer.
-    void setChannelMemory(size_t channelIndex, float * storage, size_t length);
+    void setChannelMemory(int channelIndex, float * storage, int length);
 
     // Channels
-    size_t numberOfChannels() const { return m_channels.size(); }
+    int numberOfChannels() const { return static_cast<int>(m_channels.size()); }
 
     // Use this when looping over channels
-    AudioChannel * channel(size_t channel) { return m_channels[channel].get(); }
+    AudioChannel * channel(int channel) { return m_channels[channel].get(); }
 
-    const AudioChannel * channel(size_t channel) const
+    const AudioChannel * channel(int channel) const
     {
         return const_cast<AudioBus *>(this)->m_channels[channel].get();
     }
@@ -54,11 +54,11 @@ public:
     const AudioChannel * channelByType(Channel type) const;
 
     // Number of sample-frames
-    size_t length() const { return m_length; }
+    int length() const { return m_length; }
 
     // resizeSmaller() can only be called with a new length <= the current length.
     // The data stored in the bus will remain undisturbed.
-    void resizeSmaller(size_t newLength);
+    void resizeSmaller(int newLength);
 
     // Sample-rate : 0.0 if unknown or "don't care"
     float sampleRate() const { return m_sampleRate; }
@@ -95,7 +95,7 @@ public:
     void copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain, float targetGain);
 
     // Copies the sourceBus by scaling with sample-accurate gain values.
-    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float * gainValues, size_t numberOfGainValues);
+    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float * gainValues, int numberOfGainValues);
 
     // Returns maximum absolute value across all channels (useful for normalization).
     float maxAbsValue() const;
@@ -109,7 +109,7 @@ public:
 
     // Creates a new buffer from a range in the source buffer.
     // 0 may be returned if the range does not fit in the sourceBuffer
-    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, size_t startFrame, size_t endFrame);
+    static std::unique_ptr<AudioBus> createBufferFromRange(const AudioBus * sourceBus, int startFrame, int endFrame);
 
     // Creates a new AudioBus by sample-rate converting sourceBus to the newSampleRate.
     // setSampleRate() must have been previously called on sourceBus.
@@ -140,7 +140,7 @@ protected:
     float m_sampleRate = 0.0f;
     float m_busGain = 1.0f;
     int m_layout = LayoutCanonical;
-    size_t m_length = 0;
+    int m_length = 0;
 };
 
 }  // lab

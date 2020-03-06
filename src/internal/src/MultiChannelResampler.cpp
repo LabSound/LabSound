@@ -29,7 +29,7 @@ namespace
 
         // provideInput() will be called once for each channel, starting with the first channel.
         // Each time it's called, it will provide the next channel of data.
-        virtual void provideInput(AudioBus * bus, size_t framesToProcess)
+        virtual void provideInput(AudioBus * bus, int framesToProcess)
         {
             bool isBusGood = bus && bus->numberOfChannels() == 1;
             ASSERT(isBusGood);
@@ -68,7 +68,7 @@ namespace
         std::unique_ptr<AudioBus> m_multiChannelBus;
         unsigned m_numberOfChannels;
         unsigned m_currentChannel;
-        size_t m_framesToProcess;  // Used to verify that all channels ask for the same amount.
+        int m_framesToProcess;  // Used to verify that all channels ask for the same amount.
     };
 
 }  // namespace
@@ -81,14 +81,14 @@ MultiChannelResampler::MultiChannelResampler(double scaleFactor, unsigned number
         m_kernels.push_back(std::unique_ptr<SincResampler>(new SincResampler(scaleFactor)));
 }
 
-void MultiChannelResampler::process(ContextRenderLock &, AudioSourceProvider * provider, AudioBus * destination, size_t framesToProcess)
+void MultiChannelResampler::process(ContextRenderLock &, AudioSourceProvider * provider, AudioBus * destination, int framesToProcess)
 {
     // The provider can provide us with multi-channel audio data. But each of our single-channel resamplers (kernels)
     // below requires a provider which provides a single unique channel of data.
     // channelProvider wraps the original multi-channel provider and dishes out one channel at a time.
     ChannelProvider channelProvider(provider, m_numberOfChannels);
 
-    for (unsigned channelIndex = 0; channelIndex < m_numberOfChannels; ++channelIndex)
+    for (int channelIndex = 0; channelIndex < m_numberOfChannels; ++channelIndex)
     {
         // Depending on the sample-rate scale factor, and the internal buffering used in a SincResampler
         // kernel, this call to process() will only sometimes call provideInput() on the channelProvider.

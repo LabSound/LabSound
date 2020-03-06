@@ -43,7 +43,7 @@ NoiseNode::NoiseType NoiseNode::type() const
     return NoiseType(_type->valueUint32());
 }
 
-void NoiseNode::process(ContextRenderLock & r, size_t framesToProcess)
+void NoiseNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -53,10 +53,10 @@ void NoiseNode::process(ContextRenderLock & r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset;
-    size_t nonSilentFramesToProcess;
+    int quantumFrameOffset;
+    int nonSilentFramesToProcess;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess)
     {
@@ -68,7 +68,7 @@ void NoiseNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;
-    size_t n = nonSilentFramesToProcess;
+    int n = nonSilentFramesToProcess;
 
     switch (NoiseType(_type->valueUint32()))
     {

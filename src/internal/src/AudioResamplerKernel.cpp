@@ -13,7 +13,7 @@ using namespace std;
 namespace lab
 {
 
-const size_t AudioResamplerKernel::MaxFramesToProcess = 128;
+const int AudioResamplerKernel::MaxFramesToProcess = 128;
 
 AudioResamplerKernel::AudioResamplerKernel(AudioResampler * resampler)
     : m_resampler(resampler)
@@ -26,7 +26,7 @@ AudioResamplerKernel::AudioResamplerKernel(AudioResampler * resampler)
     m_lastValues[1] = 0.0f;
 }
 
-float * AudioResamplerKernel::getSourcePointer(size_t framesToProcess, size_t * numberOfSourceFramesNeededP)
+float * AudioResamplerKernel::getSourcePointer(int framesToProcess, int * numberOfSourceFramesNeededP)
 {
     ASSERT(framesToProcess <= MaxFramesToProcess);
 
@@ -38,7 +38,7 @@ float * AudioResamplerKernel::getSourcePointer(size_t framesToProcess, size_t * 
 
     // Determine how many input frames we'll need.
     // We need to fill the buffer up to and including endIndex (so add 1) but we've already buffered m_fillIndex frames from last time.
-    size_t framesNeeded = 1 + endIndex - m_fillIndex;
+    int framesNeeded = 1 + endIndex - m_fillIndex;
     if (numberOfSourceFramesNeededP)
         *numberOfSourceFramesNeededP = framesNeeded;
 
@@ -51,7 +51,7 @@ float * AudioResamplerKernel::getSourcePointer(size_t framesToProcess, size_t * 
     return m_sourceBuffer.data() + m_fillIndex;
 }
 
-void AudioResamplerKernel::process(ContextRenderLock &, float * destination, size_t framesToProcess)
+void AudioResamplerKernel::process(ContextRenderLock &, float * destination, int framesToProcess)
 {
     ASSERT(framesToProcess <= MaxFramesToProcess);
 

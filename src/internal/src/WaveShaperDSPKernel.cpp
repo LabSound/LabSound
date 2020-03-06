@@ -14,7 +14,7 @@ using namespace std;
 namespace lab
 {
 
-void WaveShaperDSPKernel::process(ContextRenderLock &, const float * source, float * destination, size_t framesToProcess)
+void WaveShaperDSPKernel::process(ContextRenderLock &, const float * source, float * destination, int framesToProcess)
 {
     ASSERT(source && destination && waveShaperProcessor());
 
@@ -29,7 +29,7 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float * source, flo
     }
 
     float const * curveData = c->curve.data();
-    size_t curveLength = c->curve.size();
+    int curveLength = static_cast<int>(c->curve.size());
 
     ASSERT(curveData);
 
@@ -40,16 +40,16 @@ void WaveShaperDSPKernel::process(ContextRenderLock &, const float * source, flo
     }
 
     // Apply waveshaping curve.
-    for (unsigned i = 0; i < framesToProcess; ++i)
+    for (int i = 0; i < framesToProcess; ++i)
     {
         const float input = source[i];
 
         // Calculate an index based on input -1 -> +1 with 0 being at the center of the curve data.
-        size_t index = static_cast<size_t>((curveLength * (input + 1)) / 2);
+        int index = static_cast<size_t>((curveLength * (input + 1)) / 2);
 
         // Clip index to the input range of the curve.
         // This takes care of input outside of nominal range -1 -> +1
-        index = max(index, size_t(0));
+        index = max(index, 0);
         index = min(index, curveLength - 1);
         destination[i] = curveData[index];
     }

@@ -42,11 +42,12 @@ public:
     }
 
     // Handle sample-accurate panning by AudioParam automation.
-    virtual void panWithSampleAccurateValues(const AudioBus * inputBus, AudioBus * outputBus, const float * panValues, size_t framesToProcess)
+    virtual void panWithSampleAccurateValues(const AudioBus * inputBus, AudioBus * outputBus, const float * panValues, int framesToProcess)
     {
         size_t numberOfInputChannels = inputBus->numberOfChannels();
 
-        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
+        bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || 
+            inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
 
         ASSERT(isInputSafe);
 
@@ -82,7 +83,7 @@ public:
                 m_pan = clampTo(*panValues++, -1.0, 1.0);
 
                 // Pan from left to right [-1; 1] will be normalized as [0; 1].
-                panRadian = (m_pan * 0.5 + 0.5) * static_cast<double>(LAB_HALF_PI);
+                panRadian = (m_pan * 0.5 + 0.5) * LAB_HALF_PI;
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -102,7 +103,7 @@ public:
                 m_pan = clampTo(*panValues++, -1.0, 1.0);
 
                 // Normalize [-1; 0] to [0; 1]. Do nothing when [0; 1].
-                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * static_cast<double>(LAB_HALF_PI);
+                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * LAB_HALF_PI;
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -172,7 +173,7 @@ public:
                 m_pan += (targetPan - m_pan) * smoothingConstant;
 
                 // Pan from left to right [-1; 1] will be normalized as [0; 1].
-                panRadian = (m_pan * 0.5 + 0.5) * static_cast<double>(LAB_HALF_PI);
+                panRadian = (m_pan * 0.5 + 0.5) * LAB_HALF_PI;
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -194,7 +195,7 @@ public:
                 // Normalize [-1; 0] to [0; 1] for the left pan position (<= 0), and
                 // do nothing when [0; 1].
 
-                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * static_cast<double>(LAB_HALF_PI);
+                panRadian = (m_pan <= 0 ? m_pan + 1 : m_pan) * LAB_HALF_PI;
 
                 gainL = std::cos(panRadian);
                 gainR = std::sin(panRadian);
@@ -260,7 +261,7 @@ StereoPannerNode::~StereoPannerNode()
     uninitialize();
 }
 
-void StereoPannerNode::process(ContextRenderLock & r, size_t framesToProcess)
+void StereoPannerNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -281,18 +282,18 @@ void StereoPannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     if (m_pan->hasSampleAccurateValues())
     {
         // Apply sample-accurate panning specified by AudioParam automation.
-        ASSERT(framesToProcess <= m_sampleAccuratePanValues->size());
+        ASSERT(bufferSize <= m_sampleAccuratePanValues->size());
 
-        if (framesToProcess <= m_sampleAccuratePanValues->size())
+        if (bufferSize <= m_sampleAccuratePanValues->size())
         {
             float * panValues = m_sampleAccuratePanValues->data();
-            m_pan->calculateSampleAccurateValues(r, panValues, framesToProcess);
-            m_stereoPanner->panWithSampleAccurateValues(inputBus, outputBus, panValues, framesToProcess);
+            m_pan->calculateSampleAccurateValues(r, panValues, bufferSize);
+            m_stereoPanner->panWithSampleAccurateValues(inputBus, outputBus, panValues, bufferSize);
         }
     }
     else
     {
-        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r), framesToProcess);
+        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r), bufferSize);
     }
 }
 

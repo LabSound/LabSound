@@ -18,11 +18,11 @@ namespace detail
 {
 std::shared_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono)
 {
-    size_t numSamples = audioData->samples.size();
+    int numSamples = static_cast<int>(audioData->samples.size());
     if (!numSamples) return nullptr;
 
-    size_t length = int(numSamples / audioData->channelCount);
-    const size_t busChannelCount = mixToMono ? 1 : (audioData->channelCount);
+    int length = int(numSamples / audioData->channelCount);
+    const int busChannelCount = mixToMono ? 1 : (audioData->channelCount);
 
     std::vector<float> planarSamples(numSamples);
 
@@ -41,14 +41,14 @@ std::shared_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mix
         float * leftSamples = planarSamples.data();
         float * rightSamples = planarSamples.data() + length;
 
-        for (size_t i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             destinationMono[i] = 0.5f * (leftSamples[i] + rightSamples[i]);
         }
     }
     else
     {
-        for (size_t i = 0; i < busChannelCount; ++i)
+        for (int i = 0; i < busChannelCount; ++i)
         {
             std::memcpy(audioBus->channel(i)->mutableData(), planarSamples.data() + (i * length), length * sizeof(float));
         }

@@ -143,7 +143,7 @@ SupersawNode::~SupersawNode()
     uninitialize();
 }
 
-void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess)
+void SupersawNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     internalNode->update(r, true);
 
@@ -157,8 +157,8 @@ void SupersawNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     AudioBus * dst = nullptr;
     internalNode->gainNode->input(0)->bus(r)->zero();
-    AudioBus * renderedBus = internalNode->gainNode->input(0)->pull(r, dst, framesToProcess);
-    internalNode->gainNode->process(r, framesToProcess);
+    AudioBus * renderedBus = internalNode->gainNode->input(0)->pull(r, dst, bufferSize, offset, count);
+    internalNode->gainNode->process(r, bufferSize, offset, count);
     AudioBus * inputBus = internalNode->gainNode->output(0)->bus(r);
     outputBus->copyFrom(*inputBus);
     outputBus->clearSilentFlag();

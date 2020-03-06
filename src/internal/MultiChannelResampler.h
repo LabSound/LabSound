@@ -22,7 +22,7 @@ public:
     MultiChannelResampler(double scaleFactor, unsigned numberOfChannels);
 
     // Process given AudioSourceProvider for streaming applications.
-    void process(ContextRenderLock &, AudioSourceProvider *, AudioBus * destination, size_t framesToProcess);
+    void process(ContextRenderLock &, AudioSourceProvider *, AudioBus * destination, int framesToProcess);
 
 private:
     // FIXME: the mac port can have a more highly optimized implementation based on CoreAudio
@@ -32,7 +32,7 @@ private:
     // Each channel will be resampled using a high-quality SincResampler.
     std::vector<std::unique_ptr<SincResampler>> m_kernels;
 
-    unsigned m_numberOfChannels;
+    int m_numberOfChannels;
 };
 
 }  // namespace lab

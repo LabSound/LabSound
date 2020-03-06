@@ -45,11 +45,11 @@ static float calculateNormalizationScale(AudioBus * response)
 {
     // Normalize by RMS power
     size_t numberOfChannels = response->numberOfChannels();
-    size_t length = response->length();
+    int length = response->length();
 
     float power = 0;
 
-    for (size_t i = 0; i < numberOfChannels; ++i)
+    for (int i = 0; i < numberOfChannels; ++i)
     {
         float channelPower = 0;
         VectorMath::vsvesq(response->channel(i)->data(), 1, &channelPower, length);
@@ -214,7 +214,7 @@ std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const
     return _impulseResponseClip->valueBus();
 }
 
-void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
+void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
     AudioBus * inputBus = input(0)->bus(r);
@@ -232,10 +232,10 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
         outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
     }
 
-    size_t quantumFrameOffset;
-    size_t nonSilentFramesToProcess;
+    int quantumFrameOffset;
+    int nonSilentFramesToProcess;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
     int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
@@ -254,7 +254,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
     {
         int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
         lab::sp_conv * conv = _kernels[kernel].conv;
-        float * destP = outputBus->channel(i)->mutableData();
+        float* destP = outputBus->channel(i)->mutableData() + offset;
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
@@ -264,7 +264,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
             float const * data = input_bus->channel(in_channel)->data();
             size_t c = input_bus->channel(in_channel)->length();
-            for (int j = 0; j < framesToProcess; ++j)
+            for (int j = 0; j < count; ++j)
             {
                 lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
                 lab::SPFLOAT out = 0.f;
@@ -274,7 +274,7 @@ void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
         }
     }
 
-    _now += double(framesToProcess) / r.context()->sampleRate();
+    _now += double(count) / r.context()->sampleRate();
     outputBus->clearSilentFlag();
 }
 

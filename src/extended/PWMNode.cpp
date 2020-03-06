@@ -37,7 +37,7 @@ public:
     // Processes the source to destination bus.  The number of channels must match in source and destination.
     virtual void process(ContextRenderLock &,
                          const lab::AudioBus * source, lab::AudioBus * destination,
-                         size_t framesToProcess) override
+                         int framesToProcess) override
     {
         if (!numberOfChannels())
             return;
@@ -52,7 +52,7 @@ public:
         else
         {
             float * destP = destination->channel(0)->mutableData();
-            size_t n = framesToProcess;
+            int n = framesToProcess;
             while (n--)
             {
                 float carrier = *carrierP++;

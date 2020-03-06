@@ -94,6 +94,61 @@ struct ex_simple : public labsound_example
     }
 };
 
+
+
+
+
+/////////////////////
+//    ex_osc_pop   //
+/////////////////////
+
+// ex_osc_pop to test oscillator start/stop popping (it shouldn't pop). 
+struct ex_osc_pop : public labsound_example
+{
+    virtual void play(int argc, char** argv) override final
+    {
+        std::unique_ptr<lab::AudioContext> context;
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+
+        std::shared_ptr<OscillatorNode> oscillator;
+        std::shared_ptr<RecorderNode> recorder;
+        std::shared_ptr<GainNode> gain;
+        {
+            ContextRenderLock r(context.get(), "ex_osc_pop");
+            oscillator = std::make_shared<OscillatorNode>();
+
+            gain = std::make_shared<GainNode>();
+            gain->gain()->setValue(1);
+
+            // osc -> destination
+            context->connect(gain, oscillator, 0, 0);
+            context->connect(context->device(), gain, 0, 0);
+
+            oscillator->frequency()->setValue(1000.f);
+            oscillator->setType(OscillatorType::SINE);
+
+            recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
+            context->addAutomaticPullNode(recorder);
+            recorder->startRecording();
+            context->connect(recorder, gain, 0, 0);
+        }
+
+        for (int i = 0; i < 10; ++i)
+        {
+            oscillator->start(0.f);
+            Wait(std::chrono::milliseconds(250));
+            oscillator->stop(0.f);
+            Wait(std::chrono::milliseconds(250));
+        }
+
+        recorder->stopRecording();
+        context->removeAutomaticPullNode(recorder);
+        recorder->writeRecordingToWav("ex_osc_pop.wav");// , false);
+    }
+};
+
+
 //////////////////////////////
 //    ex_playback_events    //
 //////////////////////////////
@@ -584,6 +639,7 @@ struct ex_stereo_panning : public labsound_example
             Wait(std::chrono::seconds(seconds));
 
             controlThreadTest.join();
+
         }
         else
         {

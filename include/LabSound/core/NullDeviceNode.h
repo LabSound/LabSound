@@ -43,11 +43,11 @@ public:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    virtual void process(ContextRenderLock &, size_t) override {}  // NullDeviceNode is pulled by its own internal thread so this is never called
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override {}  // NullDeviceNode is pulled by its own internal thread so this is never called
     virtual void reset(ContextRenderLock &) override{};  // @fixme
 
     // AudioDeviceRenderCallback interface
-    virtual void render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info) override final;
+    virtual void render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info) override final;
     virtual void start() override final;
     virtual void stop() override final;
     virtual const SamplingInfo getSamplingInfo() const override final;

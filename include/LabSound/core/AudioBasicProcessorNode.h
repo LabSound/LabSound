@@ -24,8 +24,8 @@ public:
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
-    virtual void pullInputs(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void pullInputs(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
@@ -34,7 +34,7 @@ public:
     virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *) override;
 
     // Returns the number of channels for both the input and the output.
-    size_t numberOfChannels();
+    int numberOfChannels();
 
 protected:
     virtual double tailTime(ContextRenderLock & r) const override;

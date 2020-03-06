@@ -22,7 +22,7 @@ namespace lab
 // This represents the initial delay before the most energetic part of the impulse response.
 // The sample-frame delay is removed from the impulseP impulse response, and this value  is returned.
 // the length of the passed in AudioChannel must be a power of 2.
-inline float ExtractAverageGroupDelay(AudioChannel * channel, size_t analysisFFTSize)
+inline float ExtractAverageGroupDelay(AudioChannel * channel, int analysisFFTSize)
 {
     ASSERT(channel);
 
@@ -45,7 +45,7 @@ inline float ExtractAverageGroupDelay(AudioChannel * channel, size_t analysisFFT
     return frameDelay;
 }
 
-HRTFKernel::HRTFKernel(AudioChannel * channel, size_t fftSize, float sampleRate)
+HRTFKernel::HRTFKernel(AudioChannel * channel, int fftSize, float sampleRate)
     : m_frameDelay(0)
     , m_sampleRate(sampleRate)
 {
@@ -55,18 +55,18 @@ HRTFKernel::HRTFKernel(AudioChannel * channel, size_t fftSize, float sampleRate)
     m_frameDelay = ExtractAverageGroupDelay(channel, fftSize / 2);
 
     float * impulseResponse = channel->mutableData();
-    size_t responseLength = channel->length();
+    int responseLength = channel->length();
 
     // We need to truncate to fit into 1/2 the FFT size (with zero padding) in order to do proper convolution.
-    size_t truncatedResponseLength = std::min(responseLength, fftSize / 2);  // truncate if necessary to max impulse response length allowed by FFT
+    int truncatedResponseLength = std::min(responseLength, fftSize / 2);  // truncate if necessary to max impulse response length allowed by FFT
 
     // Quick fade-out (apply window) at truncation point
-    unsigned numberOfFadeOutFrames = static_cast<unsigned>(sampleRate / 4410);  // 10 sample-frames @44.1KHz sample-rate
+    int numberOfFadeOutFrames = static_cast<unsigned>(sampleRate / 4410);  // 10 sample-frames @44.1KHz sample-rate
     ASSERT(numberOfFadeOutFrames < truncatedResponseLength);
 
     if (numberOfFadeOutFrames < truncatedResponseLength)
     {
-        for (size_t i = truncatedResponseLength - numberOfFadeOutFrames; i < truncatedResponseLength; ++i)
+        for (int i = truncatedResponseLength - numberOfFadeOutFrames; i < truncatedResponseLength; ++i)
         {
             float x = 1.0f - static_cast<float>(i - (truncatedResponseLength - numberOfFadeOutFrames)) / numberOfFadeOutFrames;
             impulseResponse[i] *= x;

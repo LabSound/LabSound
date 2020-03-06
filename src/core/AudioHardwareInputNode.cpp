@@ -28,7 +28,7 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
     uninitialize();
 }
 
-void AudioHardwareInputNode::process(ContextRenderLock & r, size_t numberOfFrames)
+void AudioHardwareInputNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -63,7 +63,8 @@ void AudioHardwareInputNode::process(ContextRenderLock & r, size_t numberOfFrame
     // a format change, so we output silence in this case.
     if (r.context())
     {
-        m_audioSourceProvider->provideInput(outputBus, numberOfFrames);
+        // provide entire buffer
+        m_audioSourceProvider->provideInput(outputBus, bufferSize);
     }
     else
     {

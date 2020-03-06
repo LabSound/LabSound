@@ -65,7 +65,7 @@ public:
     PolyBLEPNode();
     virtual ~PolyBLEPNode();
 
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override { }
 
     PolyBLEPType type() const;
@@ -77,7 +77,7 @@ public:
     std::shared_ptr<AudioParam> m_amplitude; // default 1.0
     std::shared_ptr<AudioParam> m_frequency; // hz
 
-    void processPolyBLEP(ContextRenderLock & r, const size_t frames);
+    void processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count);
 
     AudioFloatArray m_amplitudeValues;
 };

@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 static void kf_bfly2(
         kiss_fft_cpx * Fout,
-        const size_t fstride,
+        const int fstride,
         const kiss_fft_cfg st,
         int m
         )
@@ -43,7 +43,7 @@ static void kf_bfly2(
 
 static void kf_bfly4(
         kiss_fft_cpx * Fout,
-        const size_t fstride,
+        const int fstride,
         const kiss_fft_cfg st,
         const size_t m
         )
@@ -91,7 +91,7 @@ static void kf_bfly4(
 
 static void kf_bfly3(
          kiss_fft_cpx * Fout,
-         const size_t fstride,
+         const int fstride,
          const kiss_fft_cfg st,
          size_t m
          )
@@ -135,7 +135,7 @@ static void kf_bfly3(
 
 static void kf_bfly5(
         kiss_fft_cpx * Fout,
-        const size_t fstride,
+        const int fstride,
         const kiss_fft_cfg st,
         int m
         )
@@ -197,7 +197,7 @@ static void kf_bfly5(
 /* perform the butterfly for one stage of a mixed radix FFT */
 static void kf_bfly_generic(
         kiss_fft_cpx * Fout,
-        const size_t fstride,
+        const int fstride,
         const kiss_fft_cfg st,
         int m,
         int p
@@ -238,7 +238,7 @@ static
 void kf_work(
         kiss_fft_cpx * Fout,
         const kiss_fft_cpx * f,
-        const size_t fstride,
+        const int fstride,
         int in_stride,
         int * factors,
         const kiss_fft_cfg st
@@ -336,7 +336,7 @@ void kf_factor(int n,int * facbuf)
  * The return value is a contiguous block of memory, allocated with malloc.  As such,
  * It can be freed with free(), rather than a kiss_fft-specific function.
  * */
-kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem )
+kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem, size_t* lenmem )
 {
     kiss_fft_cfg st=NULL;
     size_t memneeded = sizeof(struct kiss_fft_state)

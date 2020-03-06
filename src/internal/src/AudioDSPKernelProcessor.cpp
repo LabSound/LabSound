@@ -10,7 +10,7 @@ namespace lab
 {
 
 // setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
-AudioDSPKernelProcessor::AudioDSPKernelProcessor(size_t numberOfChannels)
+AudioDSPKernelProcessor::AudioDSPKernelProcessor(int numberOfChannels)
     : AudioProcessor(numberOfChannels)
     , m_hasJustReset(true)
 {
@@ -24,7 +24,7 @@ void AudioDSPKernelProcessor::initialize()
     ASSERT(!m_kernels.size());
 
     // Create processing kernels, one per channel.
-    for (unsigned i = 0; i < numberOfChannels(); ++i)
+    for (int i = 0; i < numberOfChannels(); ++i)
         m_kernels.push_back(std::unique_ptr<AudioDSPKernel>(createKernel()));
 
     m_initialized = true;
@@ -41,7 +41,7 @@ void AudioDSPKernelProcessor::uninitialize()
     m_initialized = false;
 }
 
-void AudioDSPKernelProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, size_t framesToProcess)
+void AudioDSPKernelProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, int framesToProcess)
 {
     ASSERT(source && destination);
     if (!source || !destination)

@@ -27,7 +27,7 @@ EqualPowerPanner::EqualPowerPanner(const float sampleRate)
 {
 }
 
-void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*elevation*/, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess)
+void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*elevation*/, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess)
 {
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, r.context()->sampleRate());
 

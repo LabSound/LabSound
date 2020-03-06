@@ -18,7 +18,7 @@ namespace lab
 
 typedef std::complex<double> Complex;
 
-void FFTFrame::doPaddedFFT(const float * data, size_t dataSize)
+void FFTFrame::doPaddedFFT(const float * data, int dataSize)
 {
     // Zero-pad the impulse response
     AudioFloatArray paddedResponse(fftSize());  // zero-initialized

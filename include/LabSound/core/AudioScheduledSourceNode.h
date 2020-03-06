@@ -64,8 +64,8 @@ protected:
     // quantumFrameOffset    : Offset frame in this time quantum to start rendering.
     // nonSilentFramesToProcess : Number of frames rendering non-silence (will be <= quantumFrameSize).
     void updateSchedulingInfo(ContextRenderLock &,
-                              size_t quantumFrameSize, AudioBus * outputBus,
-                              size_t & quantumFrameOffset, size_t & nonSilentFramesToProcess);
+                              int quantumFrameSize, AudioBus * outputBus,
+                              int & quantumFrameOffset, int & nonSilentFramesToProcess);
 
     // Called when there is no more sound to play or the noteOff/stop() time has been reached.
     void finish(ContextRenderLock &);
