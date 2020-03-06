@@ -198,7 +198,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
     m_velocityZ->setValue(velocity.z);
 }
 
-void PannerNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)
+void PannerNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     // We override pullInputs(), so we can detect new AudioNodes which have connected to us when new connections are made.
     // These AudioNodes need to be made aware of this PannerNode in order to handle doppler shift pitch changes.
@@ -207,10 +207,10 @@ void PannerNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)
     if (!ac)
         return;
 
-    AudioNode::pullInputs(r, framesToProcess);
+    AudioNode::pullInputs(r, bufferSize, offset, count);
 }
 
-void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
+void PannerNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * destination = output(0)->bus(r);
 
@@ -247,7 +247,7 @@ void PannerNode::process(ContextRenderLock & r, size_t framesToProcess)
     double elevation;
     getAzimuthElevation(r, &azimuth, &elevation);
 
-    m_panner->pan(r, azimuth, elevation, source, destination, framesToProcess);
+    m_panner->pan(r, azimuth, elevation, source + offset, destination + offset, count);
 
     // Get the distance and cone gain.
     float totalGain = distanceConeGain(r);
@@ -498,12 +498,12 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioN
     else
     {
         // Go through all inputs to this node.
-        for (unsigned i = 0; i < node->numberOfInputs(); ++i)
+        for (int i = 0; i < node->numberOfInputs(); ++i)
         {
-            auto input = node->input(i);
+            auto& input = node->input(i);
 
             // For each input, go through all of its connections, looking for SampledAudioNodes.
-            for (unsigned j = 0; j < input->numberOfRenderingConnections(r); ++j)
+            for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);
                 AudioNode * connectedNode = connectedOutput->node();

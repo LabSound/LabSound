@@ -56,7 +56,7 @@ void SampledAudioVoice::schedule(double when, double grainOffset, double grainDu
     m_startRequested = true;
 }
 
-bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, size_t index, size_t framesToProcess)
+bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, int index, int framesToProcess)
 {
     if (!m_isLooping->valueBool())
     {
@@ -77,7 +77,7 @@ bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r
     return false;
 }
 
-bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size_t destinationSampleOffset, size_t frameSize)
+bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int destinationSampleOffset, int frameSize)
 {
     if (!r.context())
         return false;
@@ -97,7 +97,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
         return false;
 
     // Sanity check destinationSampleOffset, frameSize.
-    size_t destinationLength = bus->length();
+    int destinationLength = bus->length();
 
     bool isLengthGood = destinationLength <= 4096 && frameSize <= 4096;
     ASSERT(isLengthGood);
@@ -110,14 +110,14 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
         return false;
 
     // Offset the pointers to the correct offset frame.
-    size_t writeIndex = destinationSampleOffset;
+    int writeIndex = destinationSampleOffset;
 
-    size_t bufferLength = srcBus->length();
+    int bufferLength = srcBus->length();
     double bufferSampleRate = srcBus->sampleRate();
 
     // Avoid converting from time to sample-frames twice by computing
     // the grain end time first before computing the sample frame.
-    size_t endFrame = m_isGrain ? AudioUtilities::timeToSampleFrame(m_grainOffset + m_grainDuration, bufferSampleRate) : bufferLength;
+    int endFrame = m_isGrain ? AudioUtilities::timeToSampleFrame(m_grainOffset + m_grainDuration, bufferSampleRate) : bufferLength;
 
     // This is a HACK to allow for HRTF tail-time - avoids glitch at end.
     // FIXME: implement tailTime for each AudioNode for a more general solution to this problem.
@@ -186,7 +186,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
             if (readIndex >= endFrame)
             {
                 readIndex -= deltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(r, bus, static_cast<unsigned int>(writeIndex), static_cast<size_t>(samplesToProcess)))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, samplesToProcess))
                 {
                     break;
                 }
@@ -198,11 +198,11 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
     {
         while (samplesToProcess--)
         {
-            unsigned readIndex = static_cast<unsigned>(virtualReadIndex);
+            int readIndex = static_cast<int>(virtualReadIndex);
             double interpolationFactor = virtualReadIndex - readIndex;
 
             // For linear interpolation we need the next sample-frame too.
-            unsigned readIndex2 = readIndex + 1;
+            int readIndex2 = readIndex + 1;
 
             if (readIndex2 >= bufferLength)
             {
@@ -238,7 +238,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
             if (virtualReadIndex >= virtualEndFrame)
             {
                 virtualReadIndex -= virtualDeltaFrames;
-                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, static_cast<size_t>(samplesToProcess)))
+                if (renderSilenceAndFinishIfNotLooping(r, bus, writeIndex, samplesToProcess))
                 {
                     break;
                 }
@@ -253,7 +253,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
     return true;
 }
 
-void SampledAudioVoice::process(ContextRenderLock & r, size_t framesToProcess)
+void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     if (!m_sourceBus->valueBus() || !isInitialized() || !r.context() || !m_inPlaceBus)
     {
@@ -305,15 +305,15 @@ void SampledAudioVoice::process(ContextRenderLock & r, size_t framesToProcess)
         // When aligned to the sample-frame the playback will be identical to the PCM data stored in the buffer.
         // Since playbackRate == 1 is very common, it's worth considering quality.
 
-        // @todo consistently pick double or size_t through this entire API chain.
+        // @todo consistently pick double or int through this entire API chain.
         m_virtualReadIndex = static_cast<double>(AudioUtilities::timeToSampleFrame(m_grainOffset, static_cast<double>(m_sourceBus->valueBus()->sampleRate())));
         m_startRequested = false;
     }
 
     // Update sample-accurate scheduling
-    size_t quantumFrameOffset;
-    size_t bufferFramesToProcess;
-    updateSchedulingInfo(r, framesToProcess, m_inPlaceBus.get(), quantumFrameOffset, bufferFramesToProcess);
+    int quantumFrameOffset;
+    int bufferFramesToProcess;
+    updateSchedulingInfo(r, bufferSize, m_inPlaceBus.get(), quantumFrameOffset, bufferFramesToProcess);
 
     if (!bufferFramesToProcess)
     {
@@ -379,7 +379,7 @@ SampledAudioNode::~SampledAudioNode()
     if (isInitialized()) uninitialize();
 }
 
-void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
+void SampledAudioNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
 
     if (m_onEnded)
@@ -416,11 +416,11 @@ void SampledAudioNode::process(ContextRenderLock & r, size_t framesToProcess)
     for (auto & v : voices) 
     {
         v->setPitchRate(r,(float) totalPitchRate(r));
-        v->process(r, framesToProcess);
+        v->process(r, bufferSize, offset, count);
     }
 
     auto outputBus = output(0)->bus(r);
-    const size_t numberOfChannels = outputBus->numberOfChannels();
+    const int numberOfChannels = outputBus->numberOfChannels();
 
     if (!m_summingBus)
     {

@@ -49,7 +49,7 @@ public:
     // Processes the source to destination bus.
     virtual void process(ContextRenderLock & r,
                          const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus,
-                         size_t framesToProcess) override
+                         int framesToProcess) override
     {
         int srcChannels = (int) sourceBus->numberOfChannels();
         int dstChannels = (int) destinationBus->numberOfChannels();
@@ -77,7 +77,7 @@ public:
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
                 float * destination = destinationBus->channel(channelIndex)->mutableData();
-                for (size_t i = 0; i < framesToProcess; ++i)
+                for (int i = 0; i < framesToProcess; ++i)
                 {
                     *destination++ = outputGain * tanhf(inputGain * source[i]);
                 }
@@ -93,7 +93,7 @@ public:
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
                 float * destination = destinationBus->channel(channelIndex)->mutableData();
-                for (size_t i = 0; i < framesToProcess; ++i)
+                for (int i = 0; i < framesToProcess; ++i)
                 {
                     float d = source[i];
 

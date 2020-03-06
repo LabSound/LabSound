@@ -30,15 +30,15 @@ void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
     }
 }
 
-void ChannelSplitterNode::process(ContextRenderLock & r, size_t framesToProcess)
+void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * source = input(0)->bus(r);
     ASSERT(source);
-    ASSERT_UNUSED(framesToProcess, framesToProcess == source->length());
+    ASSERT_UNUSED(bufferSize, bufferSize == source->length());
 
     size_t numberOfSourceChannels = source->numberOfChannels();
 
-    for (uint32_t i = 0; i < numberOfOutputs(); ++i)
+    for (int i = 0; i < numberOfOutputs(); ++i)
     {
         AudioBus * destination = output(i)->bus(r);
         ASSERT(destination);

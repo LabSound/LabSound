@@ -34,7 +34,7 @@ GainNode::~GainNode()
     uninitialize();
 }
 
-void GainNode::process(ContextRenderLock & r, size_t framesToProcess)
+void GainNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
@@ -52,12 +52,12 @@ void GainNode::process(ContextRenderLock & r, size_t framesToProcess)
         if (gain()->hasSampleAccurateValues())
         {
             // Apply sample-accurate gain scaling for precise envelopes, grain windows, etc.
-            ASSERT(framesToProcess <= m_sampleAccurateGainValues.size());
-            if (framesToProcess <= m_sampleAccurateGainValues.size())
+            ASSERT(bufferSize <= m_sampleAccurateGainValues.size());
+            if (bufferSize <= m_sampleAccurateGainValues.size())
             {
-                float * gainValues = m_sampleAccurateGainValues.data();
-                gain()->calculateSampleAccurateValues(r, gainValues, framesToProcess);
-                outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
+                float* gainValues = m_sampleAccurateGainValues.data() + offset;
+                gain()->calculateSampleAccurateValues(r, gainValues, count);
+                outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, count);
             }
         }
         else
@@ -89,7 +89,7 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInp
     if (input != this->input(0).get())
         return;
 
-    size_t numberOfChannels = input->numberOfChannels(r);
+    int numberOfChannels = input->numberOfChannels(r);
 
     if (isInitialized() && numberOfChannels != output(0)->numberOfChannels())
     {

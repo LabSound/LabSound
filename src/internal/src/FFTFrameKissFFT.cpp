@@ -19,8 +19,9 @@ namespace lab
 const int kMaxFFTPow2Size = 24;
 
 // Normal constructor: allocates for a given fftSize.
-FFTFrame::FFTFrame(size_t fftSize)
-    : m_FFTSize(fftSize), m_log2FFTSize(static_cast<unsigned>(log2((double) fftSize))), mFFT(0), mIFFT(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1)
+FFTFrame::FFTFrame(int fftSize)
+    : m_FFTSize(fftSize), m_log2FFTSize(static_cast<int>(log2((double) fftSize)))
+    , mFFT(0), mIFFT(0), m_realData(fftSize / 2 + 1), m_imagData(fftSize / 2 + 1)
 {
     // We only allow power of two.
     ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -33,7 +34,7 @@ FFTFrame::FFTFrame(size_t fftSize)
     m_cpxInputData = new kiss_fft_cpx[mBinSize];
     m_cpxOutputData = new kiss_fft_cpx[mBinSize];
 
-    size_t nbytes = sizeof(float) * mBinSize;
+    int nbytes = sizeof(float) * mBinSize;
 
     memset(realData(), 0, nbytes);
     memset(imagData(), 0, nbytes);

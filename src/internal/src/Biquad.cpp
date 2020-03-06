@@ -26,9 +26,12 @@ Biquad::Biquad()
 
 Biquad::~Biquad() { }
 
-void Biquad::process(const float * sourceP, float * destP, size_t framesToProcess)
+void Biquad::process(const float * sourceP, float * destP, int framesToProcess)
 {
     int n = framesToProcess;
+
+    // Biquad needs to be double precision at 48khz for frequencies less than 500Hz
+    // according to multiple references.
 
     // Create local copies of member variables
     double x1 = m_x1;
@@ -44,7 +47,6 @@ void Biquad::process(const float * sourceP, float * destP, size_t framesToProces
 
     while (n--)
     {
-        // FIXME: this can be optimized by pipelining the multiply adds...
         float x = *sourceP++;
         float y = static_cast<float>(b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2);
 
@@ -57,12 +59,10 @@ void Biquad::process(const float * sourceP, float * destP, size_t framesToProces
         y1 = y;
     }
 
-    // Local variables back to member. Flush denormals here so we
-    // don't slow down the inner loop above.
-    m_x1 = DenormalDisabler::flushDenormalFloatToZero(x1);
-    m_x2 = DenormalDisabler::flushDenormalFloatToZero(x2);
-    m_y1 = DenormalDisabler::flushDenormalFloatToZero(y1);
-    m_y2 = DenormalDisabler::flushDenormalFloatToZero(y2);
+    m_x1 = x1;// DenormalDisabler::flushDenormalFloatToZero(x1);
+    m_x2 = x2;// DenormalDisabler::flushDenormalFloatToZero(x2);
+    m_y1 = y1;// DenormalDisabler::flushDenormalFloatToZero(y1);
+    m_y2 = y2;// DenormalDisabler::flushDenormalFloatToZero(y2);
 
     m_b0 = b0;
     m_b1 = b1;

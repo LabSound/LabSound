@@ -66,7 +66,7 @@ size_t DelayDSPKernel::bufferLengthForDelay(double maxDelayTime, double sampleRa
     return 1 + AudioUtilities::timeToSampleFrame(maxDelayTime, sampleRate);
 }
 
-void DelayDSPKernel::process(ContextRenderLock & r, const float * source, float * destination, size_t framesToProcess)
+void DelayDSPKernel::process(ContextRenderLock & r, const float * source, float * destination, int framesToProcess)
 {
     size_t bufferLength = m_buffer.size();
     float * buffer = m_buffer.data();
@@ -121,7 +121,7 @@ void DelayDSPKernel::process(ContextRenderLock & r, const float * source, float 
     }
 #endif
 
-    for (unsigned i = 0; i < framesToProcess; ++i)
+    for (int i = 0; i < framesToProcess; ++i)
     {
         if (sampleAccurate)
         {

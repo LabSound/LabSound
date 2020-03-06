@@ -49,7 +49,7 @@ public:
 
     DynamicsCompressor(unsigned numberOfChannels);
 
-    void process(ContextRenderLock &, const AudioBus * sourceBus, AudioBus * destinationBus, size_t framesToProcess);
+    void process(ContextRenderLock &, const AudioBus * sourceBus, AudioBus * destinationBus, int bufferSize, int offset, int count);
     void reset();
     void setNumberOfChannels(unsigned);
 

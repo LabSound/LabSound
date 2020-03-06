@@ -30,17 +30,17 @@ PowerMonitorNode::~PowerMonitorNode()
     uninitialize();
 }
 
-void PowerMonitorNode::windowSize(size_t ws)
+void PowerMonitorNode::windowSize(int ws)
 {
     _windowSize->setUint32(static_cast<uint32_t>(ws));
 }
 
-size_t PowerMonitorNode::windowSize() const
+int PowerMonitorNode::windowSize() const
 {
     return _windowSize->valueUint32();
 }
 
-void PowerMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
+void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.
@@ -55,7 +55,7 @@ void PowerMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
     }
 
     AudioBus * bus = input(0)->bus(r);
-    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess;
+    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
     if (!isBusGood)
     {
         outputBus->zero();
@@ -65,25 +65,25 @@ void PowerMonitorNode::process(ContextRenderLock & r, size_t framesToProcess)
     // specific to this node
     {
         std::vector<const float *> channels;
-        size_t numberOfChannels = bus->numberOfChannels();
-        for (size_t i = 0; i < numberOfChannels; ++i)
+        int numberOfChannels = bus->numberOfChannels();
+        for (int i = 0; i < numberOfChannels; ++i)
         {
             channels.push_back(bus->channel(i)->data());
         }
 
-        int start = static_cast<int>(framesToProcess) - static_cast<int>(_windowSize->valueUint32());
-        int end = static_cast<int>(framesToProcess);
+        int start = static_cast<int>(count) - static_cast<int>(_windowSize->valueUint32());
+        int end = static_cast<int>(count);
         if (start < 0)
             start = 0;
 
         float power = 0;
-        for (unsigned c = 0; c < numberOfChannels; ++c)
+        for (int c = 0; c < numberOfChannels; ++c)
             for (int i = start; i < end; ++i)
             {
                 float p = channels[c][i];
                 power += p * p;
             }
-        float rms = sqrtf(power / (numberOfChannels * framesToProcess));
+        float rms = sqrtf(power / (numberOfChannels * count));
 
         // Protect against accidental overload due to bad values in input stream
         const float kMinPower = 0.000125f;

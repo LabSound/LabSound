@@ -28,6 +28,7 @@ public:
 int main(int argc, char *argv[]) try
 {   
     Example<ex_simple> simple;
+    Example<ex_osc_pop> osc_pop;
     Example<ex_playback_events> playback_events;
     Example<ex_offline_rendering> offline_rendering;
     Example<ex_tremolo> tremolo;
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        poly_blep.ex->play(argc, argv);
+        osc_pop.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;

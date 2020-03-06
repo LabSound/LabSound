@@ -11,7 +11,7 @@ namespace lab
 
 using namespace VectorMath;
 
-FFTConvolver::FFTConvolver(size_t fftSize)
+FFTConvolver::FFTConvolver(int fftSize)
     : m_frame(fftSize)
     , m_readWriteIndex(0)
     , m_inputBuffer(fftSize)  // 2nd half of buffer is always zeroed
@@ -20,9 +20,9 @@ FFTConvolver::FFTConvolver(size_t fftSize)
 {
 }
 
-void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * destP, size_t framesToProcess)
+void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * destP, int framesToProcess)
 {
-    uint32_t halfSize = fftSize() / 2;
+    int halfSize = fftSize() / 2;
 
     // framesToProcess must be an exact multiple of halfSize,
     // or halfSize is a multiple of framesToProcess when halfSize > framesToProcess.
@@ -32,10 +32,10 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
     if (!isGood)
         return;
 
-    uint32_t numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
-    uint32_t divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
+    int numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
+    int divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
 
-    for (uint32_t i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize)
+    for (int i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize)
     {
         // Copy samples to input buffer (note contraint above!)
         float * inputP = m_inputBuffer.data();

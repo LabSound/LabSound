@@ -8,7 +8,7 @@
 namespace lab
 {
 
-void ZeroPole::process(const float * source, float * destination, size_t framesToProcess)
+void ZeroPole::process(const float * source, float * destination, int bufferSize, int offset, int count)
 {
     float zero = m_zero;
     float pole = m_pole;
@@ -21,7 +21,10 @@ void ZeroPole::process(const float * source, float * destination, size_t framesT
     float lastX = m_lastX;
     float lastY = m_lastY;
 
-    while (framesToProcess--)
+    source += offset;
+    destination += offset;
+
+    while (count--)
     {
         float input = *source++;
 

@@ -29,12 +29,12 @@ const double RealtimeAnalyser::DefaultMinDecibels = -100;
 const double RealtimeAnalyser::DefaultMaxDecibels = -30;
 
 // All FFT implementations are expected to handle power-of-two sizes MinFFTSize <= size <= MaxFFTSize.
-const uint32_t RealtimeAnalyser::DefaultFFTSize = 2048;
-const uint32_t RealtimeAnalyser::MinFFTSize = 32;
-const uint32_t RealtimeAnalyser::MaxFFTSize = 2048;
-const uint32_t RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
+const int RealtimeAnalyser::DefaultFFTSize = 2048;
+const int RealtimeAnalyser::MinFFTSize = 32;
+const int RealtimeAnalyser::MaxFFTSize = 2048;
+const int RealtimeAnalyser::InputBufferSize = RealtimeAnalyser::MaxFFTSize * 2;
 
-RealtimeAnalyser::RealtimeAnalyser(uint32_t fftSize)
+RealtimeAnalyser::RealtimeAnalyser(int fftSize)
     : m_inputBuffer(InputBufferSize)
     , m_writeIndex(0)
     , m_smoothingTimeConstant(DefaultSmoothingTimeConstant)
@@ -59,11 +59,11 @@ void RealtimeAnalyser::reset()
     m_magnitudeBuffer.zero();
 }
 
-void RealtimeAnalyser::setFftSize(uint32_t fftSize)
+void RealtimeAnalyser::setFftSize(int fftSize)
 {
     m_writeIndex = 0;
 
-    uint32_t size = max(min(RoundNextPow2(fftSize), MaxFFTSize), MinFFTSize);
+    int size = max(min(RoundNextPow2(fftSize), MaxFFTSize), MinFFTSize);
     m_fftSize = size;
 
     m_analysisFrame = std::unique_ptr<FFTFrame>(new FFTFrame(size));
@@ -72,7 +72,7 @@ void RealtimeAnalyser::setFftSize(uint32_t fftSize)
     m_magnitudeBuffer.allocate(size / 2);
 }
 
-void RealtimeAnalyser::writeInput(ContextRenderLock & r, AudioBus * bus, size_t framesToProcess)
+void RealtimeAnalyser::writeInput(ContextRenderLock & r, AudioBus * bus, int framesToProcess)
 {
     bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= framesToProcess && r.context();
     if (!isBusGood)
@@ -95,7 +95,7 @@ void RealtimeAnalyser::writeInput(ContextRenderLock & r, AudioBus * bus, size_t 
     const size_t numberOfChannels = bus->numberOfChannels();
     if (numberOfChannels > 1)
     {
-        for (size_t i = 1; i < numberOfChannels; i++)
+        for (int i = 1; i < numberOfChannels; i++)
         {
             source = bus->channel(i)->data();
             VectorMath::vadd(dest, 1, source, 1, dest, 1, framesToProcess);

@@ -32,7 +32,7 @@ public:
     OscillatorNode();
     virtual ~OscillatorNode();
 
-    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override { }
 
     OscillatorType type() const;
@@ -50,7 +50,7 @@ protected:
 
     double _lab_phase = 0;  // new sine oscillator
 
-    void process_oscillator(ContextRenderLock & r, const size_t frames);
+    void process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count);
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }

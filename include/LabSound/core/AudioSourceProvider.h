@@ -22,7 +22,7 @@ class AudioBus;
 // provideInput() gets called repeatedly to render time-slices of a continuous audio stream.
 struct AudioSourceProvider
 {
-    virtual void provideInput(AudioBus * bus, size_t framesToProcess) = 0;
+    virtual void provideInput(AudioBus * bus, int bufferSize) = 0;
     virtual ~AudioSourceProvider() {}
 };
 
@@ -38,7 +38,7 @@ class AudioHardwareInput : public AudioSourceProvider
     AudioBus m_sourceBus;
 
 public:
-    AudioHardwareInput(size_t channelCount)
+    AudioHardwareInput(int channelCount)
         : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
     {
     }
@@ -51,9 +51,10 @@ public:
     }
 
     // Satisfy the AudioSourceProvider interface
-    virtual void provideInput(AudioBus * destinationBus, size_t numberOfFrames)
+    virtual void provideInput(AudioBus * destinationBus, int bufferSize)
     {
-        bool isGood = destinationBus && destinationBus->length() == numberOfFrames && m_sourceBus.length() == numberOfFrames;
+        bool isGood = destinationBus && destinationBus->length() == bufferSize && m_sourceBus.length() == bufferSize;
+        //ASSERT(isGood);
         if (isGood) destinationBus->copyFrom(m_sourceBus);
     }
 };

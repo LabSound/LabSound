@@ -51,7 +51,7 @@ public:
     virtual void initialize() override {}
     virtual void uninitialize() override {}
 
-    virtual void process(ContextRenderLock & r,  const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus, size_t framesToProcess) override
+    virtual void process(ContextRenderLock & r,  const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus, int framesToProcess) override
     {
         checkForDirtyCoefficients(r);
         updateCoefficientsIfNecessary(r, true, false);

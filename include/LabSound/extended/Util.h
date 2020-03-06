@@ -31,7 +31,8 @@ public:
 };
 // clang-format on
 
-inline uint32_t RoundNextPow2(uint32_t v)
+template <typename T>
+inline T RoundNextPow2(T v)
 {
     v--;
     v |= v >> 1;

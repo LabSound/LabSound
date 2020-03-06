@@ -21,7 +21,7 @@ using namespace std;
 namespace lab
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode * node, size_t processingSizeInFrames)
+AudioNodeInput::AudioNodeInput(AudioNode * node, int processingSizeInFrames)
     : AudioSummingJunction()
     , m_node(node)
 {
@@ -65,7 +65,7 @@ void AudioNodeInput::didUpdate(ContextRenderLock & r)
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
 {
-    size_t numberOfInputChannels = numberOfChannels(r);
+    int numberOfInputChannels = numberOfChannels(r);
 
     if (numberOfInputChannels == m_internalSummingBus->numberOfChannels())
         return;
@@ -73,7 +73,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-size_t AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
+int AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
 
@@ -83,15 +83,17 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
     }
 
     // Find the number of channels of the connection with the largest number of channels.
-    size_t maxChannels = 1;  // one channel is the minimum allowed
+    int maxChannels = 1;  // one channel is the minimum allowed
 
-    size_t c = numberOfRenderingConnections(r);
-    for (size_t i = 0; i < c; ++i)
+    int c = numberOfRenderingConnections(r);
+    for (int i = 0; i < c; ++i)
     {
         auto output = renderingOutput(r, i);
         if (output)
         {
-            maxChannels = max(maxChannels, output->bus(r)->numberOfChannels());
+            int c = output->bus(r)->numberOfChannels();
+            if (c > maxChannels)
+                maxChannels = c;
         }
     }
 
@@ -122,7 +124,7 @@ AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
     return m_internalSummingBus.get();
 }
 
-AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize, int offset, int count)
 {
     updateRenderingState(r);
 
@@ -135,7 +137,7 @@ AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, si
         auto output = renderingOutput(r, 0);
         if (output)
         {
-            return output->pull(r, inPlaceBus, framesToProcess);
+            return output->pull(r, inPlaceBus, bufferSize, offset, count);
         }
 
         num_connections = 0;  // if there's a single input, but it has no output; treat this input as silent.
@@ -158,7 +160,7 @@ AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, si
         if (output)
         {
             // Render audio from this output.
-            AudioBus * connectionBus = output->pull(r, 0, framesToProcess);
+            AudioBus * connectionBus = output->pull(r, 0, bufferSize, offset, count);
 
             // Sum, with unity-gain.
             m_internalSummingBus->sumFrom(*connectionBus);

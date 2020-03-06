@@ -25,17 +25,17 @@ public:
     // Given a number of frames to process (for subsequent call to process()), it returns a pointer and numberOfSourceFramesNeeded
     // where sample data should be copied. This sample data provides the input to the resampler when process() is called.
     // framesToProcess must be less than or equal to MaxFramesToProcess.
-    float * getSourcePointer(size_t framesToProcess, size_t * numberOfSourceFramesNeeded);
+    float * getSourcePointer(int framesToProcess, int * numberOfSourceFramesNeeded);
 
     // process() resamples framesToProcess frames from the source into destination.
     // Each call to process() must be preceded by a call to getSourcePointer() so that source input may be supplied.
     // framesToProcess must be less than or equal to MaxFramesToProcess.
-    void process(ContextRenderLock &, float * destination, size_t framesToProcess);
+    void process(ContextRenderLock &, float * destination, int framesToProcess);
 
     // Resets the processing state.
     void reset();
 
-    static const size_t MaxFramesToProcess;
+    static const int MaxFramesToProcess;
 
 private:
     double rate() const;
@@ -51,7 +51,7 @@ private:
     // m_fillIndex represents how many buffered samples we have which can be as many as 2.
     // For the first call to process() (or after reset()) there will be no buffered samples.
     float m_lastValues[2];
-    unsigned m_fillIndex;
+    int m_fillIndex;
 };
 
 }  // namespace lab

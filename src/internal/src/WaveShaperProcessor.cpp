@@ -11,7 +11,7 @@
 namespace lab
 {
 
-WaveShaperProcessor::WaveShaperProcessor(size_t numberOfChannels)
+WaveShaperProcessor::WaveShaperProcessor(int numberOfChannels)
     : AudioDSPKernelProcessor(numberOfChannels)
 {
 }
@@ -32,7 +32,7 @@ void WaveShaperProcessor::setCurve(std::vector<float> && curve)
     std::swap(m_newCurve, curve);
 }
 
-void WaveShaperProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, size_t framesToProcess)
+void WaveShaperProcessor::process(ContextRenderLock & r, const AudioBus * source, AudioBus * destination, int framesToProcess)
 {
     if (!isInitialized() || !r.context())
     {

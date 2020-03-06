@@ -44,7 +44,7 @@ void AudioBasicProcessorNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void AudioBasicProcessorNode::process(ContextRenderLock & r, size_t framesToProcess)
+void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * destinationBus = output(0)->bus(r);
 
@@ -58,15 +58,16 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, size_t framesToProc
         if (!input(0)->isConnected())
             sourceBus->zero();
 
-        processor()->process(r, sourceBus, destinationBus, framesToProcess);
+        // process entire buffer
+        processor()->process(r, sourceBus, destinationBus, bufferSize);
     }
 }
 
 // Nice optimization in the very common case allowing for "in-place" processing
-void AudioBasicProcessorNode::pullInputs(ContextRenderLock & r, size_t framesToProcess)
+void AudioBasicProcessorNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(r), framesToProcess);
+    input(0)->pull(r, output(0)->bus(r), bufferSize, offset, count);
 }
 
 void AudioBasicProcessorNode::reset(ContextRenderLock &)
@@ -86,10 +87,10 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock & 
     if (!processor())
         return;
 
-    size_t numberOfChannels = input->numberOfChannels(r);
+    int numberOfChannels = input->numberOfChannels(r);
 
     bool mustPropagate = false;
-    for (size_t i = 0; i < numberOfOutputs() && !mustPropagate; ++i)
+    for (int i = 0; i < numberOfOutputs() && !mustPropagate; ++i)
     {
         mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
     }
@@ -100,7 +101,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock & 
         processor()->setNumberOfChannels(numberOfChannels);
 
         uninitialize();
-        for (unsigned int i = 0; i < numberOfOutputs(); ++i)
+        for (int i = 0; i < numberOfOutputs(); ++i)
         {
             // This will propagate the channel count to any nodes connected further down the chain...
             output(i)->setNumberOfChannels(r, numberOfChannels);
@@ -111,7 +112,7 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock & 
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-size_t AudioBasicProcessorNode::numberOfChannels()
+int AudioBasicProcessorNode::numberOfChannels()
 {
     return output(0)->numberOfChannels();
 }

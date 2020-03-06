@@ -419,7 +419,7 @@ void PolyBLEPNode::setType(PolyBLEPType type)
     m_type->setUint32(static_cast<uint32_t>(type));
 }
 
-void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, const size_t framesToProcess)
+void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
@@ -431,9 +431,9 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, const size_t framesToP
     const float sample_rate = r.context()->sampleRate();
     polyblep->setSampleRate(sample_rate);
 
-    size_t quantumFrameOffset = 0;
-    size_t nonSilentFramesToProcess = 0;
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = 0;
+    int nonSilentFramesToProcess = 0;
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess)
     {
@@ -441,28 +441,28 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, const size_t framesToP
         return;
     }
 
-    if (framesToProcess > m_amplitudeValues.size()) m_amplitudeValues.allocate(framesToProcess);
+    if (bufferSize > m_amplitudeValues.size()) m_amplitudeValues.allocate(bufferSize);
 
     // fetch the amplitudes
     float * amplitudes = m_amplitudeValues.data();
     if (m_amplitude->hasSampleAccurateValues())
     {
-        m_amplitude->calculateSampleAccurateValues(r, amplitudes, framesToProcess);
+        m_amplitude->calculateSampleAccurateValues(r, amplitudes, bufferSize);
     }
     else
     {
         m_amplitude->smooth(r);
         float amp = m_amplitude->smoothedValue();
-        for (int i = 0; i < framesToProcess; ++i) amplitudes[i] = amp;
+        for (int i = 0; i < bufferSize; ++i) amplitudes[i] = amp;
     }
 
     // calculate and write the wave
-    float * destination = outputBus->channel(0)->mutableData();
+    float* destination = outputBus->channel(0)->mutableData() + offset;
 
     polyblep->setFrequency(m_frequency->value(r));
     polyblep->setWaveform(static_cast<PolyBLEPType>(m_type->valueUint32()));
 
-    for (int i = 0; i < framesToProcess; ++i)
+    for (int i = offset; i < offset + nonSilentFramesToProcess; ++i)
     {
         destination[i] = (amplitudes[i] * static_cast<float>(polyblep->getPhaseAndIncrement()));
     }
@@ -470,9 +470,9 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, const size_t framesToP
     outputBus->clearSilentFlag();
 }
 
-void PolyBLEPNode::process(ContextRenderLock & r, size_t framesToProcess)
+void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    return processPolyBLEP(r, framesToProcess);
+    return processPolyBLEP(r, bufferSize, offset, count);
 }
 
 bool PolyBLEPNode::propagatesSilence(ContextRenderLock & r) const

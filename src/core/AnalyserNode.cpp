@@ -210,7 +210,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
         _detail->m_analyser->getByteFrequencyData(array);
 }
 
-void AnalyserNode::process(ContextRenderLock & r, size_t framesToProcess)
+void AnalyserNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -222,8 +222,8 @@ void AnalyserNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     AudioBus * inputBus = input(0)->bus(r);
 
-    // Give the analyser the audio which is passing through this AudioNode.
-    _detail->m_analyser->writeInput(r, inputBus, framesToProcess);
+    // Give the analyser all the audio which is passing through this AudioNode.
+    _detail->m_analyser->writeInput(r, inputBus, bufferSize);
 
     // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
     // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.

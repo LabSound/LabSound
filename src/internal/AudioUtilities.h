@@ -22,7 +22,7 @@ namespace AudioUtilities
     double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate);
 
     // Convert the time to a sample frame at the given sample rate.
-    size_t timeToSampleFrame(double time, double sampleRate);
+    int timeToSampleFrame(double time, double sampleRate);
 }
 
 }  // lab

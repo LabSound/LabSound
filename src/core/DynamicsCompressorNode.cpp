@@ -44,7 +44,7 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
     uninitialize();
 }
 
-void DynamicsCompressorNode::process(ContextRenderLock & r, size_t framesToProcess)
+void DynamicsCompressorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
     ASSERT(outputBus);
@@ -61,7 +61,7 @@ void DynamicsCompressorNode::process(ContextRenderLock & r, size_t framesToProce
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
-    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, framesToProcess);
+    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, offset, count);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);

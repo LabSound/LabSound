@@ -12,7 +12,7 @@
 
 namespace lab
 {
-void AudioChannel::resizeSmaller(size_t newLength)
+void AudioChannel::resizeSmaller(int newLength)
 {
     ASSERT(newLength <= m_length);
     if (newLength <= m_length) m_length = newLength;
@@ -38,7 +38,7 @@ void AudioChannel::copyFrom(const AudioChannel * sourceChannel)
     memcpy(mutableData(), sourceChannel->data(), sizeof(float) * length());
 }
 
-void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, size_t startFrame, size_t endFrame)
+void AudioChannel::copyFromRange(const AudioChannel * sourceChannel, int startFrame, int endFrame)
 {
     // Check that range is safe for reading from sourceChannel.
     bool isRangeSafe = sourceChannel && startFrame < endFrame && endFrame <= sourceChannel->length();

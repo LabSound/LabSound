@@ -14,7 +14,7 @@ using namespace lab;
 namespace lab
 {
 
-FunctionNode::FunctionNode(size_t channels)
+FunctionNode::FunctionNode(int channels)
     : AudioScheduledSourceNode()
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
@@ -26,7 +26,7 @@ FunctionNode::~FunctionNode()
     uninitialize();
 }
 
-void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
+void FunctionNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -36,10 +36,10 @@ void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
         return;
     }
 
-    size_t quantumFrameOffset;
-    size_t nonSilentFramesToProcess;
+    int quantumFrameOffset;
+    int nonSilentFramesToProcess;
 
-    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
 
     if (!nonSilentFramesToProcess)
     {
@@ -47,7 +47,7 @@ void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
         return;
     }
 
-    for (size_t i = 0; i < outputBus->numberOfChannels(); ++i)
+    for (int i = 0; i < outputBus->numberOfChannels(); ++i)
     {
         float * destP = outputBus->channel(i)->mutableData();
 
@@ -56,7 +56,7 @@ void FunctionNode::process(ContextRenderLock & r, size_t framesToProcess)
         _function(r, this, static_cast<int>(i), destP, nonSilentFramesToProcess);
     }
 
-    _now += double(framesToProcess) / r.context()->sampleRate();
+    _now += double(bufferSize) / r.context()->sampleRate();
     outputBus->clearSilentFlag();
 }
 

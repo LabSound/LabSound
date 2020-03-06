@@ -94,9 +94,9 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double & az
     return desiredAzimuthIndex;
 }
 
-void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, size_t framesToProcess)
+void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess)
 {
-    size_t numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
+    int numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
 
     bool isInputGood = inputBus && numInputChannels >= Channels::Mono && numInputChannels <= Channels::Stereo;
     ASSERT(isInputGood);
@@ -192,10 +192,10 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
     ASSERT(uint64_t(1) << static_cast<int>(log2(framesToProcess)) == framesToProcess);
     ASSERT(framesToProcess >= RenderingQuantum);
 
-    const uint32_t framesPerSegment = RenderingQuantum;
-    const uint32_t numberOfSegments = framesToProcess / framesPerSegment;
+    const int framesPerSegment = RenderingQuantum;
+    const int numberOfSegments = framesToProcess / framesPerSegment;
 
-    for (uint32_t segment = 0; segment < numberOfSegments; ++segment)
+    for (int segment = 0; segment < numberOfSegments; ++segment)
     {
         // Get the HRTFKernels and interpolated delays.
         HRTFKernel * kernelL1;

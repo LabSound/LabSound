@@ -42,7 +42,7 @@ using namespace std;
 
 namespace lab
 {
-SincResampler::SincResampler(double scaleFactor, size_t kernelSize, size_t numberOfKernelOffsets)
+SincResampler::SincResampler(double scaleFactor, int kernelSize, int numberOfKernelOffsets)
     : m_scaleFactor(scaleFactor)
     , m_kernelSize(kernelSize)
     , m_numberOfKernelOffsets(numberOfKernelOffsets)
@@ -77,7 +77,7 @@ void SincResampler::initializeKernel()
 
     // Generates a set of windowed sinc() kernels.
     // We generate a range of sub-sample offsets from 0.0 to 1.0.
-    for (size_t offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex)
+    for (int offsetIndex = 0; offsetIndex <= m_numberOfKernelOffsets; ++offsetIndex)
     {
         double subsampleOffset = static_cast<double>(offsetIndex) / m_numberOfKernelOffsets;
 
@@ -93,12 +93,12 @@ void SincResampler::initializeKernel()
             double window = a0 - a1 * cos(2.0 * static_cast<double>(LAB_PI) * x) + a2 * cos(4.0 * static_cast<double>(LAB_PI) * x);
 
             // Window the sinc() function and store at the correct offset.
-            m_kernelStorage[static_cast<size_t>(i) + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);
+            m_kernelStorage[i + offsetIndex * m_kernelSize] = static_cast<float>(sinc * window);
         }
     }
 }
 
-void SincResampler::consumeSource(float * buffer, size_t numberOfSourceFrames)
+void SincResampler::consumeSource(float * buffer, int numberOfSourceFrames)
 {
     ASSERT(m_sourceProvider);
     if (!m_sourceProvider)
@@ -119,17 +119,17 @@ namespace
     class BufferSourceProvider : public AudioSourceProvider
     {
         const float * m_source;
-        size_t m_sourceFramesAvailable;
+        int m_sourceFramesAvailable;
 
     public:
-        BufferSourceProvider(const float * source, size_t numberOfSourceFrames)
+        BufferSourceProvider(const float * source, int numberOfSourceFrames)
             : m_source(source)
             , m_sourceFramesAvailable(numberOfSourceFrames)
         {
         }
 
         // Consumes samples from the in-memory buffer.
-        virtual void provideInput(AudioBus * bus, size_t framesToProcess)
+        virtual void provideInput(AudioBus * bus, int framesToProcess)
         {
             ASSERT(m_source && bus);
             if (!m_source || !bus)
@@ -138,7 +138,7 @@ namespace
             float * buffer = bus->channel(0)->mutableData();
 
             // Clamp to number of frames available and zero-pad.
-            size_t framesToCopy = min(m_sourceFramesAvailable, framesToProcess);
+            int framesToCopy = min(m_sourceFramesAvailable, framesToProcess);
             memcpy(buffer, m_source, sizeof(float) * framesToCopy);
 
             // Zero-pad if necessary.
@@ -152,17 +152,17 @@ namespace
 
 }  // namespace
 
-void SincResampler::process(const float * source, float * destination, size_t numberOfSourceFrames)
+void SincResampler::process(const float * source, float * destination, int numberOfSourceFrames)
 {
     // Resample an in-memory buffer using an AudioSourceProvider.
     BufferSourceProvider sourceProvider(source, numberOfSourceFrames);
 
-    size_t numberOfDestinationFrames = static_cast<size_t>(numberOfSourceFrames / m_scaleFactor);
-    size_t remaining = numberOfDestinationFrames;
+    int numberOfDestinationFrames = static_cast<int>(numberOfSourceFrames / m_scaleFactor);
+    int remaining = numberOfDestinationFrames;
 
     while (remaining)
     {
-        size_t framesThisTime = min(remaining, m_blockSize);
+        int framesThisTime = min(remaining, m_blockSize);
         process(&sourceProvider, destination, framesThisTime);
 
         destination += framesThisTime;
@@ -170,7 +170,7 @@ void SincResampler::process(const float * source, float * destination, size_t nu
     }
 }
 
-void SincResampler::process(AudioSourceProvider * sourceProvider, float * destination, size_t framesToProcess)
+void SincResampler::process(AudioSourceProvider * sourceProvider, float * destination, int framesToProcess)
 {
     bool isGood = sourceProvider && m_blockSize > m_kernelSize && m_inputBuffer.size() >= m_blockSize + m_kernelSize && !(m_kernelSize % 2);
 
@@ -179,7 +179,7 @@ void SincResampler::process(AudioSourceProvider * sourceProvider, float * destin
 
     m_sourceProvider = sourceProvider;
 
-    size_t numberOfDestinationFrames = framesToProcess;
+    int numberOfDestinationFrames = framesToProcess;
 
     // Setup various region pointers in the buffer (see diagram above).
     float * r0 = m_inputBuffer.data() + m_kernelSize / 2;

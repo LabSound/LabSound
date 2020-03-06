@@ -19,10 +19,10 @@ namespace lab
 class WaveShaperProcessor : public AudioDSPKernelProcessor
 {
 public:
-    WaveShaperProcessor(size_t numberOfChannels);
+    WaveShaperProcessor(int numberOfChannels);
     virtual ~WaveShaperProcessor();
     virtual AudioDSPKernel * createKernel();
-    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, size_t framesToProcess);
+    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, int framesToProcess);
 
     // curve is moved into setCurve, and contents will be mutated safely
     void setCurve(std::vector<float> && curve);

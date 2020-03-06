@@ -52,7 +52,7 @@ namespace lab
         virtual void uninitialize() override { }
 
         // Processes the source to destination bus. The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, size_t framesToProcess) override
+        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, int framesToProcess) override
         {
             if (!numberOfChannels())
                 return;
@@ -99,7 +99,7 @@ namespace lab
 
             const float sustain_lvl = m_sustainLevel->valueFloat();
 
-            for (size_t i = 0; i < framesToProcess; ++i)
+            for (int i = 0; i < framesToProcess; ++i)
             {
                 if (m_zeroSteps > 0)
                 {
@@ -137,8 +137,8 @@ namespace lab
                 }
             }
 
-            const size_t numChannels = numberOfChannels();
-            for (size_t channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+            const int numChannels = numberOfChannels();
+            for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
             {
                 if (sourceBus->numberOfChannels() == numChannels)
                 {

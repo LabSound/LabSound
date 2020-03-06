@@ -30,10 +30,10 @@ void ChannelMergerNode::addInputs(size_t n)
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 }
 
-void ChannelMergerNode::process(ContextRenderLock & r, size_t framesToProcess)
+void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
     auto output = this->output(0);
-    ASSERT_UNUSED(framesToProcess, framesToProcess == output->bus(r)->length());
+    ASSERT_UNUSED(bufferSize, bufferSize == output->bus(r)->length());
 
     // Output bus not updated yet, so just output silence. See Note * in checkNumberOfChannelsForInput
     if (m_desiredNumberOfOutputChannels != output->numberOfChannels())
@@ -44,7 +44,7 @@ void ChannelMergerNode::process(ContextRenderLock & r, size_t framesToProcess)
 
     // Merge all the channels from all the inputs into one output.
     uint32_t outputChannelIndex = 0;
-    for (uint32_t i = 0; i < numberOfInputs(); ++i)
+    for (int i = 0; i < numberOfInputs(); ++i)
     {
         auto input = this->input(i);
 
@@ -53,7 +53,7 @@ void ChannelMergerNode::process(ContextRenderLock & r, size_t framesToProcess)
             size_t numberOfInputChannels = input->bus(r)->numberOfChannels();
 
             // Merge channels from this particular input.
-            for (size_t j = 0; j < numberOfInputChannels; ++j)
+            for (int j = 0; j < numberOfInputChannels; ++j)
             {
                 AudioChannel * inputChannel = input->bus(r)->channel(j);
                 AudioChannel * outputChannel = output->bus(r)->channel(outputChannelIndex);
@@ -76,9 +76,9 @@ void ChannelMergerNode::reset(ContextRenderLock &)
 void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     // Count how many channels we have all together from all of the inputs.
-    size_t numberOfOutputChannels = 0;
+    int numberOfOutputChannels = 0;
 
-    for (uint32_t i = 0; i < numberOfInputs(); ++i)
+    for (int i = 0; i < numberOfInputs(); ++i)
     {
         auto input = this->input(i);
 

@@ -105,7 +105,7 @@ float AudioParam::finalValue(ContextRenderLock & r)
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * values, size_t numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * values, int numberOfValues)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -114,7 +114,7 @@ void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * va
     calculateFinalValues(r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, size_t numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -142,7 +142,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, siz
     // if there are rendering connections, be sure they are ready
     updateRenderingState(r);
 
-    size_t connectionCount = numberOfRenderingConnections(r);
+    int connectionCount = numberOfRenderingConnections(r);
     if (!connectionCount)
         return;
 
@@ -160,14 +160,14 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, siz
     // point the summing bus at the values array
     m_data->m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
-    for (size_t i = 0; i < connectionCount; ++i)
+    for (int i = 0; i < connectionCount; ++i)
     {
         auto output = renderingOutput(r, i);
 
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus * connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
+        AudioBus * connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
         /// @TODO it was surprising in practice that the inputs are summed, as opposed to simply overriding.
@@ -180,7 +180,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, siz
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock & r, float * values, size_t numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues)
 {
     // Calculate values for this render quantum.
     // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).
