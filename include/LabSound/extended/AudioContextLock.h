@@ -21,30 +21,32 @@ namespace lab
 
 class ContextGraphLock
 {
-    AudioContext * m_context;
+    AudioContext * m_context = nullptr;
 
 public:
     ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
     {
+#if defined(DEBUG_LOCKS)
+        bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
+        if (reentrant)
+        {
+            LOG("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
+        }
+#endif
+
         if (context)
         {
             context->m_graphLock.lock();
             m_context = context;
             m_context->m_graphLocker = lockSuitor;
         }
-#if defined(DEBUG_LOCKS)
-        if (!m_context && context->m_graphLocker.size())
-        {
-            LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
-        }
-#endif
     }
 
     ~ContextGraphLock()
     {
         if (m_context)
         {
-            //m_context->m_graphLocker.clear();
+            m_context->m_graphLocker += '~';
             m_context->m_graphLock.unlock();
         }
     }
@@ -54,33 +56,32 @@ public:
 
 class ContextRenderLock
 {
-    AudioContext * m_context;
+    AudioContext * m_context = nullptr;
 
 public:
     ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
     {
+#if defined(DEBUG_LOCKS)
+        bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
+        if (reentrant)
+        {
+            LOG("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
+        }
+#endif
+
         if (context)
         {
             context->m_renderLock.lock();
             m_context = context;
             m_context->m_renderLocker = lockSuitor;
         }
-#if defined(DEBUG_LOCKS)
-        else if (context && context->m_renderLocker.size())
-        {
-            LOG("%s failed to acquire [RENDER] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_renderLocker.c_str());
-        }
-        else
-        {
-            LOG("%s failed to acquire [RENDER] lock.", lockSuitor.c_str());
-        }
-#endif
     }
 
     ~ContextRenderLock()
     {
         if (m_context)
         {
+            m_context->m_renderLocker += '~';
             m_context->m_renderLock.unlock();
         }
     }

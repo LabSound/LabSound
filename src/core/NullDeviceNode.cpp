@@ -144,8 +144,10 @@ void NullDeviceNode::offlineRender()
 
     while (framesToProcess > 0)
     {
-        if (shouldExit == true) return;
+        if (shouldExit == true) 
+            break;
 
+        m_context->update();
         render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
 
         // Update sampling info
