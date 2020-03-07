@@ -22,7 +22,7 @@ class SpectralMonitorNode : public AudioBasicInspectorNode
     SpectralMonitorNodeInternal * internalNode = nullptr;
 
 public:
-    SpectralMonitorNode();
+    SpectralMonitorNode(AudioContext & ac);
     virtual ~SpectralMonitorNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

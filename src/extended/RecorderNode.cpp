@@ -12,9 +12,9 @@
 
 using namespace lab;
 
-RecorderNode::RecorderNode(const AudioStreamConfig outConfig)
-    : outConfig(outConfig)
-    , AudioBasicInspectorNode(outConfig.desired_channels)
+RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
+    : AudioBasicInspectorNode(ac, outConfig.desired_channels)
+    , outConfig(outConfig) 
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outConfig.desired_channels)));

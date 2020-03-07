@@ -17,9 +17,10 @@ using namespace lab;
 
 static const int offlineRenderSizeQuantum = 128;
 
-NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, float lengthSeconds)
-    : m_lengthSeconds(lengthSeconds)
-    , m_context(context)
+NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig outputConfig, float lengthSeconds)
+    : AudioNode(ac)
+    , m_lengthSeconds(lengthSeconds)
+    , m_context(&ac)
     , outConfig(outputConfig)
     , m_numChannels(outputConfig.desired_channels)
 {
@@ -37,7 +38,7 @@ NullDeviceNode::NullDeviceNode(AudioContext * context, const AudioStreamConfig o
     info.sampling_rate = outConfig.desired_samplerate;
     info.epoch[0] = info.epoch[1] = std::chrono::high_resolution_clock::now();
 
-    ContextGraphLock glock(context, "NullDeviceNode");
+    ContextGraphLock glock(&ac, "NullDeviceNode");
     AudioNode::setChannelCount(glock, m_numChannels);
 }
 

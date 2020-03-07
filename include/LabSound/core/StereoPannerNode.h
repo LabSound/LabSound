@@ -23,7 +23,7 @@ class Spatializer;
 class StereoPannerNode : public AudioNode
 {
 public:
-    StereoPannerNode(const float sampleRate);
+    StereoPannerNode(AudioContext& ac);
 
     virtual ~StereoPannerNode();
 

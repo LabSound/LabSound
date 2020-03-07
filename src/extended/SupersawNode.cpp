@@ -26,11 +26,11 @@ namespace lab
 class SupersawNode::SupersawNodeInternal
 {
 public:
-    SupersawNodeInternal()
+    SupersawNodeInternal(AudioContext & ac)
         : cachedDetune(FLT_MAX)
         , cachedFrequency(FLT_MAX)
     {
-        gainNode = std::make_shared<GainNode>();
+        gainNode = std::make_shared<GainNode>(ac);
         sawCount = std::make_shared<AudioSetting>("sawCount", "SAWC", AudioSetting::Type::Integer);
         sawCount->setUint32(1);
         detune = std::make_shared<AudioParam>("detune", "DTUN", 1.0, 0, 120);
@@ -86,7 +86,7 @@ public:
             saws.clear();
 
             for (int i = 0; i < n; ++i)
-                sawStorage.emplace_back(std::make_shared<OscillatorNode>());
+                sawStorage.emplace_back(std::make_shared<OscillatorNode>(*context));
 
             for (int i = 0; i < n; ++i)
                 saws.push_back(sawStorage[i].get());
@@ -125,10 +125,10 @@ private:
 // Public Supersaw Node //
 //////////////////////////
 
-SupersawNode::SupersawNode()
-    : AudioScheduledSourceNode()
+SupersawNode::SupersawNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
 {
-    internalNode.reset(new SupersawNodeInternal());
+    internalNode.reset(new SupersawNodeInternal(ac));
 
     m_params.push_back(internalNode->detune);
     m_params.push_back(internalNode->frequency);

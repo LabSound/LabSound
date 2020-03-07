@@ -26,7 +26,7 @@ class BPMDelay : public DelayNode
     }
 
 public:
-    BPMDelay(float sampleRate, float tempo);
+    BPMDelay(AudioContext & ac, float tempo);
     virtual ~BPMDelay();
 
     void SetTempo(float newTempo)

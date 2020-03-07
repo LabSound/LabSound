@@ -48,8 +48,10 @@ inline float burk_fast_sine(const double phase)
 
 static char const * const s_types[] = {"None", "Sine", "FastSine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
 
-OscillatorNode::OscillatorNode() 
-    : m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
+OscillatorNode::OscillatorNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
+    , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
+    , m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
     m_type = std::make_shared<AudioSetting>("type", "TYPE", s_types);
     m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
@@ -99,9 +101,8 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
 
     const float sample_rate = r.context()->sampleRate();
 
-    int quantumFrameOffset = 0;
-    int nonSilentFramesToProcess = 0;
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)
     {

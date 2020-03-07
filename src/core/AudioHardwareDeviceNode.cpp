@@ -24,10 +24,11 @@ using namespace lab;
 //   AudioHardwareDeviceNode   //
 /////////////////////////////////
 
-AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context,
+AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
                                                  const AudioStreamConfig outputConfig,
                                                  const AudioStreamConfig inputConfig)
-    : m_context(context)
+    : AudioNode(context)
+    , m_context(&context)
     , outConfig(outputConfig)
     , inConfig(inputConfig)
 {
@@ -58,7 +59,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context,
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    ContextGraphLock glock(context, "AudioHardwareDeviceNode");
+    ContextGraphLock glock(&context, "AudioHardwareDeviceNode");
     AudioNode::setChannelCount(glock, outputConfig.desired_channels);
 
     // Info is provided by the backend every frame, but some nodes need to be constructed

@@ -27,10 +27,10 @@ using namespace lab;
 //   SampledAudioVoice   //
 ///////////////////////////
 
-SampledAudioVoice::SampledAudioVoice(float duration, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate, 
+SampledAudioVoice::SampledAudioVoice(AudioContext& ac, float duration, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate,
         std::shared_ptr<AudioParam> detune, std::shared_ptr<AudioSetting> loop, std::shared_ptr<AudioSetting> loop_s, 
         std::shared_ptr<AudioSetting> loop_e,  std::shared_ptr<AudioSetting> src_bus) 
-        : AudioScheduledSourceNode(), m_duration(duration), m_gain(gain),  m_playbackRate(rate), m_detune(detune),
+        : AudioScheduledSourceNode(ac), m_duration(duration), m_gain(gain),  m_playbackRate(rate), m_detune(detune),
         m_isLooping(loop), m_loopStart(loop_s), m_loopEnd(loop_e), m_sourceBus(src_bus)
 {
     initialize();
@@ -49,11 +49,10 @@ void SampledAudioVoice::schedule(double when, double grainOffset)
 
 void SampledAudioVoice::schedule(double when, double grainOffset, double grainDuration)
 {
-    m_requestWhen = when;
     m_requestGrainOffset = grainOffset;
     m_requestGrainDuration = grainDuration;
-    m_playbackState = SCHEDULED_STATE;
     m_startRequested = true;
+    start(when);
 }
 
 bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, int index, int framesToProcess)
@@ -71,7 +70,7 @@ bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r
             }
         }
 
-        finish(r);
+        _scheduler.finish(r);
         return true;
     }
     return false;
@@ -121,6 +120,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
 
     // This is a HACK to allow for HRTF tail-time - avoids glitch at end.
     // FIXME: implement tailTime for each AudioNode for a more general solution to this problem.
+    /// @TODO the global de-popper means tailTime can be deleted everywhere
     // https://bugs.webkit.org/show_bug.cgi?id=77224
     if (m_isGrain) endFrame += 512;
 
@@ -199,7 +199,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
         while (samplesToProcess--)
         {
             int readIndex = static_cast<int>(virtualReadIndex);
-            double interpolationFactor = virtualReadIndex - readIndex;
+            float interpolationFactor = static_cast<float>(virtualReadIndex - readIndex);
 
             // For linear interpolation we need the next sample-frame too.
             int readIndex2 = readIndex + 1;
@@ -224,11 +224,11 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
                 float * destination = bus->channel(i)->mutableData();
                 const float * source = srcBus->channel(i)->data();
 
-                double sample1 = source[readIndex];
-                double sample2 = source[readIndex2];
-                double sample = (1.0 - interpolationFactor) * sample1 + interpolationFactor * sample2;
+                float sample1 = source[readIndex];
+                float sample2 = source[readIndex2];
+                float sample = (1.f - interpolationFactor) * sample1 + interpolationFactor * sample2;
 
-                destination[writeIndex] = static_cast<float>(sample);
+                destination[writeIndex] = sample;
             }
             writeIndex++;
 
@@ -249,7 +249,6 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
     bus->clearSilentFlag();
 
     m_virtualReadIndex = virtualReadIndex;
-
     return true;
 }
 
@@ -298,7 +297,6 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize, int offse
         m_grainDuration = grainDuration;
 
         m_isGrain = true;
-        m_startTime = m_requestWhen;
 
         // We call timeToSampleFrame here since at playbackRate == 1 we don't want to go through linear interpolation
         // at a sub-sample position since it will degrade the quality.
@@ -311,9 +309,8 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize, int offse
     }
 
     // Update sample-accurate scheduling
-    int quantumFrameOffset;
-    int bufferFramesToProcess;
-    updateSchedulingInfo(r, bufferSize, m_inPlaceBus.get(), quantumFrameOffset, bufferFramesToProcess);
+    int quantumFrameOffset = offset;
+    int bufferFramesToProcess = count;
 
     if (!bufferFramesToProcess)
     {
@@ -344,7 +341,7 @@ void SampledAudioVoice::reset(ContextRenderLock & r)
 //   SampledAudioNode   //
 //////////////////////////
 
-SampledAudioNode::SampledAudioNode() : AudioNode()
+SampledAudioNode::SampledAudioNode(AudioContext & ac) : AudioNode(ac)
 {
     m_sourceBus = std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus);
     m_isLooping = std::make_shared<AudioSetting>("loop", "LOOP", AudioSetting::Type::Bool);
@@ -365,7 +362,10 @@ SampledAudioNode::SampledAudioNode() : AudioNode()
     m_settings.push_back(m_loopEnd);
 
     m_sourceBus->setValueChanged([this]() {
-        for (auto & voice : voices) voice->m_channelSetupRequested = true;
+        for (auto& voice : voices)
+        {
+            voice->m_channelSetupRequested = true;
+        }
     });
 
     // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
@@ -379,23 +379,22 @@ SampledAudioNode::~SampledAudioNode()
     if (isInitialized()) uninitialize();
 }
 
+void SampledAudioNode::setOnEnded(std::function<void()> fn) 
+{ 
+    for (auto& v : voices)
+        v->setOnEnded(fn);
+}
+
 void SampledAudioNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-
-    if (m_onEnded)
-    {
-        for (auto & v : voices)
-        {
-            v->setOnEnded(m_onEnded);
-        }
-    }
-
     std::stack<SampledAudioVoice *> free_voices;
     for (const auto & v : voices)
     {
+        v->setPitchRate(r, (float)totalPitchRate(r));
+        v->processIfNecessary(r, bufferSize, offset, count);
         if (v->isPlayingOrScheduled()) continue; // voice is occupied
-        else if (v->playbackState() == AudioScheduledSourceNode::UNSCHEDULED_STATE ||
-                 v->playbackState() == AudioScheduledSourceNode::FINISHED_STATE) { free_voices.push(v.get()); }
+        else if (v->playbackState() == SchedulingState::UNSCHEDULED ||
+                 v->playbackState() == SchedulingState::FINISHED) { free_voices.push(v.get()); }
     }
 
     if (free_voices.size())
@@ -411,12 +410,6 @@ void SampledAudioNode::process(ContextRenderLock & r, int bufferSize, int offset
             free_voices.pop();
             num_to_schedule--;
         }
-    }
-
-    for (auto & v : voices) 
-    {
-        v->setPitchRate(r,(float) totalPitchRate(r));
-        v->process(r, bufferSize, offset, count);
     }
 
     auto outputBus = output(0)->bus(r);
@@ -460,7 +453,8 @@ bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> b
     // voice creation
     for (size_t v = 0; v < MAX_NUM_VOICES; ++v)
     {
-        std::unique_ptr<SampledAudioVoice> voice(new SampledAudioVoice(duration(), m_gain, m_playbackRate, m_detune, m_isLooping, m_loopStart, m_loopEnd, m_sourceBus));
+        std::unique_ptr<SampledAudioVoice> voice(new SampledAudioVoice(*r.context(), 
+            duration(), m_gain, m_playbackRate, m_detune, m_isLooping, m_loopStart, m_loopEnd, m_sourceBus));
         voice->setOutput(r, output(0));
         voices.push_back(std::move(voice));
     }

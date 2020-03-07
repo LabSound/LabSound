@@ -16,7 +16,7 @@ class WaveShaperNode : public AudioBasicProcessorNode
     WaveShaperProcessor * waveShaperProcessor();
 
 public:
-    WaveShaperNode();
+    WaveShaperNode(AudioContext & ac);
     virtual ~WaveShaperNode() = default;
 
     // setCurve will take ownership of curve

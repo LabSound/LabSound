@@ -61,6 +61,7 @@ struct ex_simple : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
@@ -70,11 +71,11 @@ struct ex_simple : public labsound_example
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
 
-        oscillator = std::make_shared<OscillatorNode>();
-        gain = std::make_shared<GainNode>();
+        oscillator = std::make_shared<OscillatorNode>(ac);
+        gain = std::make_shared<GainNode>(ac);
         gain->gain()->setValue(0.0625f);
 
-        musicClipNode = std::make_shared<SampledAudioNode>();
+        musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
@@ -110,15 +111,16 @@ struct ex_osc_pop : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<RecorderNode> recorder;
         std::shared_ptr<GainNode> gain;
         {
             ContextRenderLock r(context.get(), "ex_osc_pop");
-            oscillator = std::make_shared<OscillatorNode>();
+            oscillator = std::make_shared<OscillatorNode>(ac);
 
-            gain = std::make_shared<GainNode>();
+            gain = std::make_shared<GainNode>(ac);
             gain->gain()->setValue(1);
 
             // osc -> destination
@@ -128,7 +130,7 @@ struct ex_osc_pop : public labsound_example
             oscillator->frequency()->setValue(1000.f);
             oscillator->setType(OscillatorType::SINE);
 
-            recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
+            recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
             context->addAutomaticPullNode(recorder);
             recorder->startRecording();
             context->connect(recorder, gain, 0, 0);
@@ -161,12 +163,13 @@ struct ex_playback_events : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         auto musicClip = MakeBusFromSampleFile("samples/mono-music-clip.wav", argc, argv);
         if (!musicClip)
             return;
 
-        auto sampledAudio = std::make_shared<SampledAudioNode>();
+        auto sampledAudio = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(context.get(), "ex_playback_events");
             sampledAudio->setBus(r, musicClip);
@@ -199,13 +202,14 @@ struct ex_offline_rendering : public labsound_example
         offlineConfig.desired_samplerate = LABSOUND_DEFAULT_SAMPLERATE;
         offlineConfig.desired_channels = LABSOUND_DEFAULT_CHANNELS;
         std::unique_ptr<lab::AudioContext> context = lab::MakeOfflineAudioContext(offlineConfig, 5000.f);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
 
-        auto recorder = std::make_shared<RecorderNode>(offlineConfig);
+        auto recorder = std::make_shared<RecorderNode>(ac, offlineConfig);
 
         context->addAutomaticPullNode(recorder);
 
@@ -214,27 +218,29 @@ struct ex_offline_rendering : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_offline_rendering");
 
-            gain = std::make_shared<GainNode>();
+            gain = std::make_shared<GainNode>(ac);
             gain->gain()->setValue(0.125f);
 
             // osc -> gain -> recorder
-            oscillator = std::make_shared<OscillatorNode>();
+            oscillator = std::make_shared<OscillatorNode>(ac);
             context->connect(gain, oscillator, 0, 0);
             context->connect(recorder, gain, 0, 0);
             oscillator->frequency()->setValue(880.f);
             oscillator->setType(OscillatorType::SINE);
             oscillator->start(0.0f);
 
-            musicClipNode = std::make_shared<SampledAudioNode>();
+            musicClipNode = std::make_shared<SampledAudioNode>(ac);
             context->connect(recorder, musicClipNode, 0, 0);
             musicClipNode->setBus(r, musicClip);
             musicClipNode->schedule(0.0);
         }
 
-        context->offlineRenderCompleteCallback = [&context, &recorder, offlineConfig]() {
+        bool complete = false;
+        context->offlineRenderCompleteCallback = [&context, &recorder, &complete, offlineConfig]() {
             recorder->stopRecording();
             context->removeAutomaticPullNode(recorder);
             recorder->writeRecordingToWav("ex_offline_rendering.wav");
+            complete = true;
         };
 
         // Offline rendering happens in a separate thread and blocks until complete.
@@ -242,7 +248,13 @@ struct ex_offline_rendering : public labsound_example
         // be outside the scope of where we make changes to the graph.
         context->startOfflineRendering();
 
-        Wait(std::chrono::seconds(1));
+        // record for one second
+        Wait(std::chrono::milliseconds(100));
+
+        while (!complete)
+        {
+            Wait(std::chrono::milliseconds(100));
+        }
     }
 };
 
@@ -259,6 +271,7 @@ struct ex_tremolo : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -270,15 +283,15 @@ struct ex_tremolo : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_tremolo");
 
-            modulator = std::make_shared<OscillatorNode>();
+            modulator = std::make_shared<OscillatorNode>(ac);
             modulator->setType(OscillatorType::SINE);
             modulator->start(0);
             modulator->frequency()->setValue(8.0f);
 
-            modulatorGain = std::make_shared<GainNode>();
+            modulatorGain = std::make_shared<GainNode>(ac);
             modulatorGain->gain()->setValue(10);
 
-            osc = std::make_shared<OscillatorNode>();
+            osc = std::make_shared<OscillatorNode>(ac);
             osc->setType(OscillatorType::TRIANGLE);
             osc->frequency()->setValue(440);
             osc->start(0);
@@ -310,6 +323,7 @@ struct ex_frequency_modulation : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -321,26 +335,26 @@ struct ex_frequency_modulation : public labsound_example
         std::shared_ptr<DelayNode> chainDelay;
 
         {
-            modulator = std::make_shared<OscillatorNode>();
+            modulator = std::make_shared<OscillatorNode>(ac);
             modulator->setType(OscillatorType::SQUARE);
             modulator->start(0);
 
-            modulatorGain = std::make_shared<GainNode>();
+            modulatorGain = std::make_shared<GainNode>(ac);
 
-            osc = std::make_shared<OscillatorNode>();
+            osc = std::make_shared<OscillatorNode>(ac);
             osc->setType(OscillatorType::SQUARE);
             osc->frequency()->setValue(300);
             osc->start(0);
 
-            trigger = std::make_shared<ADSRNode>();
+            trigger = std::make_shared<ADSRNode>(ac);
 
-            signalGain = std::make_shared<GainNode>();
+            signalGain = std::make_shared<GainNode>(ac);
             signalGain->gain()->setValue(1.0f);
 
-            feedbackTap = std::make_shared<GainNode>();
+            feedbackTap = std::make_shared<GainNode>(ac);
             feedbackTap->gain()->setValue(0.5f);
 
-            chainDelay = std::make_shared<DelayNode>(context->sampleRate(), 4);
+            chainDelay = std::make_shared<DelayNode>(ac, 4);
             chainDelay->delayTime()->setFloat(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
 
             // Set up FM processing chain:
@@ -401,12 +415,13 @@ struct ex_runtime_graph_update : public labsound_example
             std::unique_ptr<lab::AudioContext> context;
             const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
             context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+            lab::AudioContext& ac = *context.get();
 
             {
-                oscillator1 = std::make_shared<OscillatorNode>();
-                oscillator2 = std::make_shared<OscillatorNode>();
+                oscillator1 = std::make_shared<OscillatorNode>(ac);
+                oscillator2 = std::make_shared<OscillatorNode>(ac);
 
-                gain = std::make_shared<GainNode>();
+                gain = std::make_shared<GainNode>(ac);
                 gain->gain()->setValue(0.50);
 
                 // osc -> gain -> destination
@@ -457,6 +472,7 @@ struct ex_microphone_loopback : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         std::unique_ptr<lab::AudioContext> context;
+        lab::AudioContext& ac = *context.get();
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
@@ -485,6 +501,7 @@ struct ex_microphone_reverb : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         {
             std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
@@ -498,15 +515,15 @@ struct ex_microphone_reverb : public labsound_example
 
                 input = lab::MakeAudioHardwareInputNode(r);
 
-                recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
+                recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
                 context->addAutomaticPullNode(recorder);
                 recorder->mixToMono(true);
                 recorder->startRecording();
 
-                convolve = std::make_shared<ConvolverNode>();
+                convolve = std::make_shared<ConvolverNode>(ac);
                 convolve->setImpulse(impulseResponseClip);
 
-                wetGain = std::make_shared<GainNode>();
+                wetGain = std::make_shared<GainNode>(ac);
                 wetGain->gain()->setValue(0.6f);
 
                 context->connect(convolve, input, 0, 0);
@@ -538,14 +555,15 @@ struct ex_peak_compressor : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<AudioBus> kick = MakeBusFromSampleFile("samples/kick.wav", argc, argv);
         std::shared_ptr<AudioBus> hihat = MakeBusFromSampleFile("samples/hihat.wav", argc, argv);
         std::shared_ptr<AudioBus> snare = MakeBusFromSampleFile("samples/snare.wav", argc, argv);
 
-        std::shared_ptr<SampledAudioNode> kick_node = std::make_shared<SampledAudioNode>();
-        std::shared_ptr<SampledAudioNode> hihat_node = std::make_shared<SampledAudioNode>();
-        std::shared_ptr<SampledAudioNode> snare_node = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<SampledAudioNode> kick_node = std::make_shared<SampledAudioNode>(ac);
+        std::shared_ptr<SampledAudioNode> hihat_node = std::make_shared<SampledAudioNode>(ac);
+        std::shared_ptr<SampledAudioNode> snare_node = std::make_shared<SampledAudioNode>(ac);
 
         std::shared_ptr<BiquadFilterNode> filter;
         std::shared_ptr<PeakCompNode> peakComp;
@@ -553,11 +571,11 @@ struct ex_peak_compressor : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_peak_compressor");
 
-            filter = std::make_shared<BiquadFilterNode>();
+            filter = std::make_shared<BiquadFilterNode>(ac);
             filter->setType(lab::FilterType::LOWPASS);
             filter->frequency()->setValue(1800.f);
 
-            peakComp = std::make_shared<PeakCompNode>();
+            peakComp = std::make_shared<PeakCompNode>(ac);
             context->connect(peakComp, filter, 0, 0);
             context->connect(context->device(), peakComp, 0, 0);
 
@@ -605,10 +623,11 @@ struct ex_stereo_panning : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
-        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
-        auto stereoPanner = std::make_shared<StereoPannerNode>(context->sampleRate());
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
+        auto stereoPanner = std::make_shared<StereoPannerNode>(ac);
 
         {
             ContextRenderLock r(context.get(), "ex_stereo_panning");
@@ -660,11 +679,12 @@ struct ex_hrtf_spatialization : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
-        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
         std::cout << "Sample Rate is: " << context->sampleRate() << std::endl;
-        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(context->sampleRate(), "hrtf");  // note hrtf search path
+        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(ac, "hrtf");  // note hrtf search path
 
         {
             ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
@@ -716,6 +736,7 @@ struct ex_convolution_reverb : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
         std::shared_ptr<AudioBus> voiceClip = MakeBusFromFile("samples/voice.ogg", false);
@@ -730,7 +751,7 @@ struct ex_convolution_reverb : public labsound_example
         std::shared_ptr<GainNode> wetGain;
         std::shared_ptr<GainNode> dryGain;
         std::shared_ptr<SampledAudioNode> voiceNode;
-        std::shared_ptr<GainNode> outputGain = std::make_shared<GainNode>();
+        std::shared_ptr<GainNode> outputGain = std::make_shared<GainNode>(ac);
 
         {
             // voice --+-> dry -------------------+
@@ -739,12 +760,12 @@ struct ex_convolution_reverb : public labsound_example
 
             ContextRenderLock r(context.get(), "ex_convolution_reverb");
 
-            convolve = std::make_shared<ConvolverNode>();
+            convolve = std::make_shared<ConvolverNode>(ac);
             convolve->setImpulse(impulseResponseClip);
 
-            wetGain = std::make_shared<GainNode>();
+            wetGain = std::make_shared<GainNode>(ac);
             wetGain->gain()->setValue(0.5f);
-            dryGain = std::make_shared<GainNode>();
+            dryGain = std::make_shared<GainNode>(ac);
             dryGain->gain()->setValue(0.1f);
 
             context->connect(wetGain, convolve, 0, 0);
@@ -754,7 +775,7 @@ struct ex_convolution_reverb : public labsound_example
 
             outputGain->gain()->setValue(0.5f);
 
-            voiceNode = std::make_shared<SampledAudioNode>();
+            voiceNode = std::make_shared<SampledAudioNode>(ac);
             voiceNode->setBus(r, voiceClip);
             context->connect(dryGain, voiceNode, 0, 0);
 
@@ -779,6 +800,7 @@ struct ex_misc : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
         std::array<int, 8> naturalMinorScale = {0, 2, 3, 5, 7, 9, 11, 12};
@@ -791,8 +813,8 @@ struct ex_misc : public labsound_example
         auto randomTimeIndex = std::uniform_int_distribution<int>(0, static_cast<int>(delayTimes.size()) - 1);
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_As0.wav", argc, argv);
-        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
-        std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(context->sampleRate(), 240.0f);
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
+        std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(ac, 240.0f);
 
         {
             ContextRenderLock r(context.get(), "ex_misc");
@@ -827,6 +849,7 @@ struct ex_dalek_filter : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
 #ifndef USE_LIVE
         auto audioClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
@@ -853,40 +876,40 @@ struct ex_dalek_filter : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_dalek_filter");
 
-            vIn = std::make_shared<OscillatorNode>();
+            vIn = std::make_shared<OscillatorNode>(ac);
             vIn->frequency()->setValue(30.0f);
             vIn->start(0.f);
 
-            vInGain = std::make_shared<GainNode>();
+            vInGain = std::make_shared<GainNode>(ac);
             vInGain->gain()->setValue(0.5f);
 
             // GainNodes can take negative gain which represents phase inversion
-            vInInverter1 = std::make_shared<GainNode>();
+            vInInverter1 = std::make_shared<GainNode>(ac);
             vInInverter1->gain()->setValue(-1.0f);
-            vInInverter2 = std::make_shared<GainNode>();
+            vInInverter2 = std::make_shared<GainNode>(ac);
             vInInverter2->gain()->setValue(-1.0f);
 
-            vInDiode1 = std::make_shared<DiodeNode>();
-            vInDiode2 = std::make_shared<DiodeNode>();
+            vInDiode1 = std::make_shared<DiodeNode>(ac);
+            vInDiode2 = std::make_shared<DiodeNode>(ac);
 
-            vInInverter3 = std::make_shared<GainNode>();
+            vInInverter3 = std::make_shared<GainNode>(ac);
             vInInverter3->gain()->setValue(-1.0f);
 
             // Now we create the objects on the Vc side of the graph
-            vcInverter1 = std::make_shared<GainNode>();
+            vcInverter1 = std::make_shared<GainNode>(ac);
             vcInverter1->gain()->setValue(-1.0f);
 
-            vcDiode3 = std::make_shared<DiodeNode>();
-            vcDiode4 = std::make_shared<DiodeNode>();
+            vcDiode3 = std::make_shared<DiodeNode>(ac);
+            vcDiode4 = std::make_shared<DiodeNode>(ac);
 
             // A gain node to control master output levels
-            outGain = std::make_shared<GainNode>();
+            outGain = std::make_shared<GainNode>(ac);
             outGain->gain()->setValue(1.0f);
 
             // A small addition to the graph given in Parker's paper is a compressor node
             // immediately before the output. This ensures that the user's volume remains
             // somewhat constant when the distortion is increased.
-            compressor = std::make_shared<DynamicsCompressorNode>();
+            compressor = std::make_shared<DynamicsCompressorNode>(ac);
             compressor->threshold()->setValue(-14.0f);
 
             // Now we connect up the graph following the block diagram above (on the web page).
@@ -945,6 +968,7 @@ struct ex_redalert_synthesis : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;
@@ -965,7 +989,7 @@ struct ex_redalert_synthesis : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_redalert_synthesis");
 
-            sweep = std::make_shared<FunctionNode>(1);
+            sweep = std::make_shared<FunctionNode>(ac, 1);
             sweep->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess) {
                 double dt = 1.0 / r.context()->sampleRate();
                 double now = fmod(me->now(), 1.2f);
@@ -988,7 +1012,7 @@ struct ex_redalert_synthesis : public labsound_example
 
             sweep->start(0);
 
-            outputGainFunction = std::make_shared<FunctionNode>(1);
+            outputGainFunction = std::make_shared<FunctionNode>(ac, 1);
             outputGainFunction->setFunction([](ContextRenderLock & r, FunctionNode * me, int channel, float * values, size_t framesToProcess) {
                 double dt = 1.0 / r.context()->sampleRate();
                 double now = fmod(me->now(), 1.2f);
@@ -1011,22 +1035,22 @@ struct ex_redalert_synthesis : public labsound_example
 
             outputGainFunction->start(0);
 
-            osc = std::make_shared<OscillatorNode>();
+            osc = std::make_shared<OscillatorNode>(ac);
             osc->setType(OscillatorType::SAWTOOTH);
             osc->frequency()->setValue(220);
             osc->start(0);
-            oscGain = std::make_shared<GainNode>();
+            oscGain = std::make_shared<GainNode>(ac);
             oscGain->gain()->setValue(0.5f);
 
-            resonator = std::make_shared<OscillatorNode>();
+            resonator = std::make_shared<OscillatorNode>(ac);
             resonator->setType(OscillatorType::SINE);
             resonator->frequency()->setValue(220);
             resonator->start(0);
 
-            resonatorGain = std::make_shared<GainNode>();
+            resonatorGain = std::make_shared<GainNode>(ac);
             resonatorGain->gain()->setValue(0.0f);
 
-            resonanceSum = std::make_shared<GainNode>();
+            resonanceSum = std::make_shared<GainNode>(ac);
             resonanceSum->gain()->setValue(0.5f);
 
             // sweep drives oscillator frequency
@@ -1042,7 +1066,7 @@ struct ex_redalert_synthesis : public labsound_example
             context->connect(resonatorGain, resonator, 0, 0);
             context->connect(resonanceSum, resonatorGain, 0, 0);
 
-            delaySum = std::make_shared<GainNode>();
+            delaySum = std::make_shared<GainNode>(ac);
             delaySum->gain()->setValue(0.2f);
 
             // resonanceSum --+--> delay0 --+
@@ -1052,13 +1076,13 @@ struct ex_redalert_synthesis : public labsound_example
             float delays[5] = {0.015f, 0.022f, 0.035f, 0.024f, 0.011f};
             for (int i = 0; i < 5; ++i)
             {
-                delay[i] = std::make_shared<DelayNode>(context->sampleRate(), 0.04f);
+                delay[i] = std::make_shared<DelayNode>(ac, 0.04f);
                 delay[i]->delayTime()->setFloat(delays[i]);
                 context->connect(delay[i], resonanceSum, 0, 0);
                 context->connect(delaySum, delay[i], 0, 0);
             }
 
-            filterSum = std::make_shared<GainNode>();
+            filterSum = std::make_shared<GainNode>(ac);
             filterSum->gain()->setValue(0.2f);
 
             // delaySum --+--> filter0 --+
@@ -1072,7 +1096,7 @@ struct ex_redalert_synthesis : public labsound_example
             float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
             for (int i = 0; i < 4; ++i)
             {
-                filter[i] = std::make_shared<BiquadFilterNode>();
+                filter[i] = std::make_shared<BiquadFilterNode>(ac);
                 filter[i]->frequency()->setValue(centerFrequencies[i]);
                 filter[i]->q()->setValue(12.f);
                 context->connect(filter[i], delaySum, 0, 0);
@@ -1229,6 +1253,7 @@ struct ex_wavepot_dsp : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<ADSRNode> envelope;
@@ -1237,7 +1262,7 @@ struct ex_wavepot_dsp : public labsound_example
         {
             double elapsedTime = 0.;
 
-            envelope = std::make_shared<ADSRNode>();
+            envelope = std::make_shared<ADSRNode>(ac);
             envelope->set(6.0f, 0.75f, 14.0f, 0.0f, songLenSeconds);
 
             float lfo_a, lfo_b, lfo_c;
@@ -1246,7 +1271,7 @@ struct ex_wavepot_dsp : public labsound_example
             float kickWaveform, kickSample;
             float synthWaveform, synthPercussive, synthDegradedWaveform, synthSample;
 
-            grooveBox = std::make_shared<FunctionNode>(2);
+            grooveBox = std::make_shared<FunctionNode>(ac, 2);
             grooveBox->setFunction([&](ContextRenderLock & r, FunctionNode * self, int channel, float * samples, size_t framesToProcess) {
                 float dt = 1.f / r.context()->sampleRate();  // time duration of one sample
                 float now = static_cast<float>(self->now());
@@ -1318,18 +1343,19 @@ struct ex_granulation_node : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
         auto grain_source = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         if (!grain_source) return;
 
-        std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>();
-        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>();
+        std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>(ac);
+        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
         std::shared_ptr<RecorderNode> recorder;
         gain->gain()->setValue(0.75f);
 
         {
             ContextRenderLock r(context.get(), "ex_granulation_node");
-            recorder = std::make_shared<RecorderNode>(defaultAudioDeviceConfigurations.second);
+            recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
             context->addAutomaticPullNode(recorder);
             recorder->mixToMono(false);
             recorder->startRecording();
@@ -1362,9 +1388,10 @@ struct ex_poly_blep : public labsound_example
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext& ac = *context.get();
 
-        std::shared_ptr<PolyBLEPNode> polyBlep = std::make_shared<PolyBLEPNode>();
-        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>();
+        std::shared_ptr<PolyBLEPNode> polyBlep = std::make_shared<PolyBLEPNode>(ac);
+        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
 
         gain->gain()->setValue(1.0f);
         context->connect(gain, polyBlep, 0, 0);

@@ -20,7 +20,7 @@ class AudioHardwareInputNode : public AudioNode
     int m_sourceNumberOfChannels{0};
 
 public:
-    AudioHardwareInputNode(AudioSourceProvider * provider_from_context);
+    AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * provider_from_context);
     virtual ~AudioHardwareInputNode();
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }

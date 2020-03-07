@@ -206,7 +206,8 @@ namespace lab
     // Public ADSRNode //
     /////////////////////
 
-    ADSRNode::ADSRNode() : lab::AudioBasicProcessorNode()
+    ADSRNode::ADSRNode(AudioContext& ac) 
+        : AudioBasicProcessorNode(ac)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));

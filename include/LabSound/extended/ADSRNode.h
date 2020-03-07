@@ -17,7 +17,7 @@ class ADSRNode : public AudioBasicProcessorNode, public BangInterface
     ADSRNodeImpl * adsr_impl;
 
 public:
-    ADSRNode();
+    ADSRNode(AudioContext &);
     virtual ~ADSRNode();
 
     // noteOn() will start applying an envelope to the incoming signal. The node will

@@ -61,7 +61,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
 
-    PannerNode(const float sampleRate, const std::string & hrtf_root_dir_path = "");
+    PannerNode(AudioContext & ac, const std::string & hrtf_root_dir_path = "");
     virtual ~PannerNode();
 
     // AudioNode

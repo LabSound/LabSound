@@ -98,7 +98,7 @@ class GranulationNode : public AudioScheduledSourceNode
     std::shared_ptr<lab::AudioBus> window_bus;
 
 public:
-    GranulationNode();
+    GranulationNode(AudioContext & ac);
     virtual ~GranulationNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

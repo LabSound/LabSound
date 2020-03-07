@@ -15,9 +15,9 @@
 namespace lab
 {
 
-GainNode::GainNode()
-    : AudioNode()
-    , m_lastGain(1.0)
+GainNode::GainNode(AudioContext& ac)
+    : AudioNode(ac)
+    , m_lastGain(1.f)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));

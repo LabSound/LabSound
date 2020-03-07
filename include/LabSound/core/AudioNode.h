@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -66,9 +67,62 @@ class AudioSetting;
 class ContextGraphLock;
 class ContextRenderLock;
 
+enum class SchedulingState : int
+{
+    UNSCHEDULED = 0, // Initial playback state. Created, but not yet scheduled
+    SCHEDULED,       // Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing
+    PLAY_PENDING,    // Play has been scheduled.
+    FADE_IN,         // First epoch, fade in, then play
+    PLAYING,         // Generating sound
+    STOPPING,        // Transitioning to finished
+    RESETTING,       // Node is resetting to initial, unscheduled state
+    FINISHING,       // Playing has finished
+    FINISHED         // Node has finished
+};
+
+
+class AudioNodeScheduler
+{
+public:
+    AudioNodeScheduler(float sampleRate);
+    ~AudioNodeScheduler() = default;
+
+    // Scheduling.
+    void start(double when);
+    void stop(double when);
+    void finish(ContextRenderLock&);  // Called when there is no more sound to play or the noteOff/stop() time has been reached.
+    void reset();
+
+    SchedulingState playbackState() const { return _playbackState; }
+    bool hasFinished() const { return _playbackState == SchedulingState::FINISHED; }
+
+    bool update(ContextRenderLock&, int epoch_length);
+
+    SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
+
+    // epoch is a long count at sample rate; 136 years at 48kHz
+    // For use in an interstellar sound installation or radio frequency signal processing, 
+    // please consider upgrading these to uint64_t or write some rollover logic.
+
+    uint64_t _epoch = 0;        // the epoch rendered currently in the busses
+    uint64_t _epochLength = 0;  // number of frames in current epoch
+
+    uint64_t _startWhen = 0;    // requested start in epochal coordinate system
+    uint64_t _stopWhen = 0;     // requested end in epochal coordinate system
+
+    int _renderOffset = 0; // where rendering starts in the current frame
+    int _renderLength = 0; // number of rendered frames in the current frame 
+
+    float _epochWaveLength = 0; // One over the sample rate.
+
+    std::function<void()> _onEnded;
+};
+
+
 struct BangInterface
 {
     virtual void bang(const double length = 0.0) = 0;
+    std::function<void()> _bang;
 };
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
@@ -79,17 +133,21 @@ struct BangInterface
 class AudioNode
 {
 public:
-    enum
+    enum : int
     {
         ProcessingSizeInFrames = 128
     };
 
-    AudioNode() = default;
+    AudioNode() = delete;
     virtual ~AudioNode();
+
+    explicit AudioNode(AudioContext &);
 
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
+
+    virtual bool hasBang() const { return false; }
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
@@ -104,7 +162,6 @@ public:
     // Processing may not occur until a node is initialized.
     virtual void initialize();
     virtual void uninitialize();
-
     bool isInitialized() const { return m_isInitialized; }
 
     int numberOfInputs() const { return static_cast<int>(m_inputs.size()); }
@@ -183,52 +240,30 @@ protected:
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock &);
 
-private:
+protected:
     friend class AudioContext;
 
-    volatile bool m_isInitialized{false};
+    AudioNodeScheduler _scheduler;
+
+    bool m_isInitialized {false};
 
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
-    double m_lastProcessingTime{-1.0};
-    double m_lastNonSilentTime{-1.0};
-
-    float audibleThreshold() const { return 0.05f; }
-
-    // starts an immediate ramp to zero in preparation for disconnection
-    void scheduleDisconnect()
-    {
-        m_disconnectSchedule = 1.f;
-        m_connectSchedule = 1.f;
-    }
-
-    // returns true if the disconnection ramp has reached zero.
-    // This is intended to allow the AudioContext to manage popping artifacts
-    bool disconnectionReady() const { return m_disconnectSchedule >= 0.f && m_disconnectSchedule <= audibleThreshold(); }
-
-    // starts an immediate ramp to unity due to being newly connected to a graph
-    void scheduleConnect()
-    {
-        m_disconnectSchedule = -1.f;
-        m_connectSchedule = 0.f;
-    }
-
-    // returns true if the connection has ramped to unity
-    // This is intended to signal when the danger of possible popping artifacts has passed
-    bool connectionReady() const { return m_connectSchedule > (1.f - audibleThreshold()); }
-
-    std::atomic<float> m_disconnectSchedule{-1.f};
-    std::atomic<float> m_connectSchedule{0.f};
-
-protected:
     std::vector<std::shared_ptr<AudioParam>> m_params;
     std::vector<std::shared_ptr<AudioSetting>> m_settings;
 
-    int m_channelCount{0};
+    int m_channelCount{ 0 };
 
-    ChannelCountMode m_channelCountMode{ChannelCountMode::Max};
-    ChannelInterpretation m_channelInterpretation{ChannelInterpretation::Speakers};
+    ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
+    ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
+
+    // starts an immediate ramp to zero in preparation for disconnection
+    void scheduleDisconnect() { _scheduler.stop(0); }
+
+    // returns true if the disconnection ramp has reached zero.
+    // This is intended to allow the AudioContext to manage popping artifacts
+    bool disconnectionReady() const { return _scheduler._playbackState != SchedulingState::PLAYING; }
 };
 
 }  // namespace lab

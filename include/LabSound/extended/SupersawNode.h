@@ -18,7 +18,7 @@ class SupersawNode : public AudioScheduledSourceNode
     std::unique_ptr<SupersawNodeInternal> internalNode;
 
 public:
-    SupersawNode();
+    SupersawNode(AudioContext & ac);
     virtual ~SupersawNode();
 
     std::shared_ptr<AudioSetting> sawCount() const;

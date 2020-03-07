@@ -13,8 +13,9 @@ namespace lab
 // Based on the DiodeNode found at the BBC Radiophonic Workshop
 // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
 
-DiodeNode::DiodeNode()
-    : _distortion(std::make_shared<AudioSetting>("distortion", "DSTR", AudioSetting::Type::Float))
+DiodeNode::DiodeNode(AudioContext & ac)
+    : WaveShaperNode(ac)
+    , _distortion(std::make_shared<AudioSetting>("distortion", "DSTR", AudioSetting::Type::Float))
     , _vb(std::make_shared<AudioSetting>("vb", "VB  ", AudioSetting::Type::Float))
     , _vl(std::make_shared<AudioSetting>("vl", "VL  ", AudioSetting::Type::Float))
 {

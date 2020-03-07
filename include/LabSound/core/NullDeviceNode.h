@@ -33,7 +33,7 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
     SamplingInfo info;
 
 public:
-    NullDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const float lengthSeconds);
+    NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const float lengthSeconds);
     virtual ~NullDeviceNode();
 
     // AudioNode Interface

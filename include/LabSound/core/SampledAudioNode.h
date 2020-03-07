@@ -38,16 +38,15 @@ class SampledAudioVoice : public AudioScheduledSourceNode
     std::shared_ptr<AudioSetting> m_sourceBus;
 
     // Transient
-    double m_virtualReadIndex;
-    bool m_isGrain{false};
-    double m_grainOffset{0};  // in seconds
-    double m_grainDuration{0.025};  // in 25 ms                      
-    float m_lastGain{1.0f}; // m_lastGain provides continuity when we dynamically adjust the gain.
-    float m_totalPitchRate;
+    double m_virtualReadIndex{ 0 };
+    bool m_isGrain{ false };
+    double m_grainOffset{ 0 };       // in seconds
+    double m_grainDuration{ 0.025 }; // in 25 ms                      
+    float m_lastGain{ 1.0f };        // m_lastGain provides continuity when we dynamically adjust the gain.
+    float m_totalPitchRate{ 0 };
 
     // Scheduling
     bool m_startRequested{false};
-    double m_requestWhen{0};
     double m_requestGrainOffset{0};
     double m_requestGrainDuration{0};
 
@@ -63,7 +62,7 @@ public:
     bool m_channelSetupRequested{false};
     std::shared_ptr<AudioBus> m_inPlaceBus;
 
-    SampledAudioVoice(float grain_dur, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate, 
+    SampledAudioVoice(AudioContext& ac, float grain_dur, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate,
         std::shared_ptr<AudioParam> detune, std::shared_ptr<AudioSetting> loop, std::shared_ptr<AudioSetting> loop_s, 
         std::shared_ptr<AudioSetting> loop_e,  std::shared_ptr<AudioSetting> src_bus);
 
@@ -134,13 +133,12 @@ class SampledAudioNode final : public AudioNode
 
     std::vector<std::unique_ptr<SampledAudioVoice>> voices;
     std::list<ScheduleRequest> schedule_list;
-    std::function<void()> m_onEnded;
 
 public:
 
     static constexpr size_t MAX_NUM_VOICES = 32;
 
-    SampledAudioNode();
+    SampledAudioNode(AudioContext & ac);
     virtual ~SampledAudioNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
@@ -162,7 +160,7 @@ public:
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
-    void setOnEnded(std::function<void()> fn) { m_onEnded = fn; }
+    void setOnEnded(std::function<void()> fn);
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
     void setPannerNode(PannerNode *);

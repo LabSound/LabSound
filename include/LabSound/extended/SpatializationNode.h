@@ -71,7 +71,7 @@ class SpatializationNode : public PannerNode
     std::shared_ptr<Occluders> occluders;
 
 public:
-    SpatializationNode(float sampleRate);
+    SpatializationNode(AudioContext & ac);
     virtual ~SpatializationNode() = default;
     void setOccluders(OccludersPtr ptr);
 };

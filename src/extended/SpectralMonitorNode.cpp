@@ -98,8 +98,8 @@ public:
 // Public SpectralMonitorNode //
 ////////////////////////////////
 
-SpectralMonitorNode::SpectralMonitorNode()
-    : AudioBasicInspectorNode(2)
+SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
+    : AudioBasicInspectorNode(ac, 2)
     , internalNode(new SpectralMonitorNodeInternal())
 {
     m_settings.push_back(internalNode->windowSize);

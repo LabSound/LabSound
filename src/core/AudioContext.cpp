@@ -74,7 +74,7 @@ struct AudioContext::Internals
             if (!p1.destination->isScheduledNode()) return false;  // dest cannot be compared
             AudioScheduledSourceNode * ap2 = static_cast<AudioScheduledSourceNode *>(p2.destination.get());
             AudioScheduledSourceNode * ap1 = static_cast<AudioScheduledSourceNode *>(p1.destination.get());
-            return ap2->startTime() < ap1->startTime();
+            return ap2->startWhen() < ap1->startWhen();
         }
     };
 
@@ -119,34 +119,35 @@ AudioContext::~AudioContext()
 
 void AudioContext::lazyInitialize()
 {
-    if (!m_isInitialized)
+    if (m_isInitialized)
+        return;
+
+    // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
+    ASSERT(!m_isAudioThreadFinished);
+    if (m_isAudioThreadFinished)
+        return;
+
+    if (m_device.get())
     {
-        // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
-        ASSERT(!m_isAudioThreadFinished);
-        if (!m_isAudioThreadFinished)
+        graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
+        graphUpdateThread = std::thread(&AudioContext::update, this);
+
+        if (!isOfflineContext())
         {
-            if (m_device.get())
-            {
-                graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
-                graphUpdateThread = std::thread(&AudioContext::update, this);
+            // This starts the audio thread and all audio rendering.
+            // The destination node's provideInput() method will now be called repeatedly to render audio.
+            // Each time provideInput() is called, a portion of the audio stream is rendered.
 
-                if (!isOfflineContext())
-                {
-                    // This starts the audio thread and all audio rendering.
-                    // The destination node's provideInput() method will now be called repeatedly to render audio.
-                    // Each time provideInput() is called, a portion of the audio stream is rendered.
-
-                    device_callback->start();
-                }
-
-                cv.notify_all();
-            }
-            else
-            {
-                LOG_ERROR("m_device not specified");
-            }
-            m_isInitialized = true;
+            device_callback->start();
         }
+
+        cv.notify_all();
+        m_isInitialized = true;
+    }
+    else
+    {
+        LOG_ERROR("m_device not specified");
+        ASSERT(m_device);
     }
 }
 
@@ -176,26 +177,6 @@ bool AudioContext::isInitialized() const
     return m_isInitialized;
 }
 
-void AudioContext::holdSourceNodeUntilFinished(std::shared_ptr<AudioScheduledSourceNode> node)
-{
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    automaticSources.push_back(node);
-}
-
-void AudioContext::handleAutomaticSources()
-{
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    for (auto i = automaticSources.begin(); i != automaticSources.end(); ++i)
-    {
-        if ((*i)->hasFinished())
-        {
-            m_internal->pendingNodeConnections.emplace(*i, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, 0, 0);
-            i = automaticSources.erase(i);
-            if (i == automaticSources.end()) break;
-        }
-    }
-}
-
 void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
@@ -209,10 +190,9 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
 
+    /// @TODO is a repeat of handlePreRenderTasks actually correct here?
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
-
     updateAutomaticPullNodes();
-    handleAutomaticSources();
 }
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
@@ -351,7 +331,7 @@ void AudioContext::update()
                         if (connection.destination && connection.destination->isScheduledNode())
                         {
                             AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode *>(connection.destination.get());
-                            if (node->startTime() > now + 0.1)
+                            if (node->startWhen() > now + 0.1)
                             {
                                 m_internal->pendingNodeConnections.pop();  // pop from current queue
                                 skippedConnections.push_back(connection);  // save for later
@@ -359,7 +339,11 @@ void AudioContext::update()
                             }
                         }
 
-                        connection.source->scheduleConnect();
+                        // if unscheduled it should start to play as soon as possible
+                        if (!connection.source->isScheduledNode())
+                        {
+                            connection.source->_scheduler.start(0);
+                        }
 
                         AudioNodeInput::connect(gLock, connection.destination->input(connection.destIndex), connection.source->output(connection.srcIndex));
                     }
@@ -542,6 +526,11 @@ uint64_t AudioContext::currentSampleFrame() const
 
 float AudioContext::sampleRate() const
 {
+    // during construction of DeviceNodes, the device_callback will not yet be ready.
+    // sampleRate is called during AudioNode construction to initialize the scheduler, but DeviceNodes are not scheduled.
+    if (!device_callback)
+        return 0;
+
     return device_callback->getSamplingInfo().sampling_rate;
 }
 

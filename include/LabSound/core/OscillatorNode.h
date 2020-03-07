@@ -29,7 +29,7 @@ class OscillatorNode : public AudioScheduledSourceNode
     std::shared_ptr<AudioSetting> m_type;
 
 public:
-    OscillatorNode();
+    OscillatorNode(AudioContext& ac);
     virtual ~OscillatorNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

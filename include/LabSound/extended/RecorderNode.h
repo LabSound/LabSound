@@ -25,7 +25,7 @@ class RecorderNode : public AudioBasicInspectorNode
     const AudioStreamConfig outConfig;
 
 public:
-    RecorderNode(const AudioStreamConfig outConfig);
+    RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig);
     virtual ~RecorderNode();
 
     // AudioNode

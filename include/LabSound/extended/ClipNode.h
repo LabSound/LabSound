@@ -27,7 +27,7 @@ public:
         _Count = 2
     };
 
-    ClipNode();
+    ClipNode(AudioContext & ac);
     virtual ~ClipNode();
 
     void setMode(Mode m);

@@ -19,7 +19,7 @@ class BiquadFilterNode : public AudioBasicProcessorNode
     BiquadFilterNodeInternal * biquad_impl;
 
 public:
-    BiquadFilterNode();
+    BiquadFilterNode(AudioContext& ac);
     virtual ~BiquadFilterNode();
 
     FilterType type() const;

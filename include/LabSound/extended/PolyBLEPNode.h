@@ -62,7 +62,7 @@ class PolyBLEPNode : public AudioScheduledSourceNode
     std::unique_ptr<PolyBlepImpl> polyblep;
 
 public:
-    PolyBLEPNode();
+    PolyBLEPNode(AudioContext & ac);
     virtual ~PolyBLEPNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

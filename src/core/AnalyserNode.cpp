@@ -28,7 +28,7 @@ struct AnalyserNode::Detail
     std::shared_ptr<AudioSetting> _smoothingTimeConstant;
 };
 
-void AnalyserNode::shared_construction(size_t fftSize)
+void AnalyserNode::shared_construction(int fftSize)
 {
     _detail = new Detail;
 
@@ -77,14 +77,14 @@ void AnalyserNode::shared_construction(size_t fftSize)
     initialize();
 }
 
-AnalyserNode::AnalyserNode(size_t fftSize)
-    : AudioBasicInspectorNode(1)
+AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
+    : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(fftSize);
 }
 
-AnalyserNode::AnalyserNode()
-    : AudioBasicInspectorNode(1)
+AnalyserNode::AnalyserNode(AudioContext & ac)
+    : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(1024u);
 }
@@ -121,7 +121,7 @@ double AnalyserNode::smoothingTimeConstant() const
     return _detail->m_analyser->smoothingTimeConstant();
 }
 
-void AnalyserNode::setFftSize(ContextRenderLock &, size_t sz)
+void AnalyserNode::setFftSize(ContextRenderLock &, int sz)
 {
     _detail->_fftSize->setUint32(static_cast<uint32_t>(sz));
 }

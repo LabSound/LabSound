@@ -53,8 +53,8 @@ inline int TempoSyncToIndex(TempoSync in)
     }
 }
 
-BPMDelay::BPMDelay(float sampleRate, float tempo)
-    : lab::DelayNode(sampleRate, 8.0f)
+BPMDelay::BPMDelay(AudioContext & ac, float tempo)
+    : lab::DelayNode(ac, 8.0f)
     , tempo(tempo)
 {
     times = {

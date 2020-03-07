@@ -594,8 +594,8 @@ namespace lab
 
 char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
 
-SfxrNode::SfxrNode(float sampleRate)
-    : AudioScheduledSourceNode()
+SfxrNode::SfxrNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
     , sfxr(new SfxrNode::Sfxr())
 {
     // Output is always mono.
@@ -678,10 +678,8 @@ void SfxrNode::process(ContextRenderLock & r, int bufferSize, int offset, int co
         return;
     }
 
-    int quantumFrameOffset;
-    int nonSilentFramesToProcess;
-
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)
     {

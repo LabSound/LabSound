@@ -95,8 +95,8 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
         lab::sp_conv_destroy(&conv);
 }
 
-ConvolverNode::ConvolverNode()
-    : AudioScheduledSourceNode()
+ConvolverNode::ConvolverNode(AudioContext& ac)
+    : AudioScheduledSourceNode(ac)
     , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
     , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
 {
@@ -232,10 +232,8 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
         outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
     }
 
-    int quantumFrameOffset;
-    int nonSilentFramesToProcess;
-
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
     int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
@@ -262,7 +260,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
             size_t clipFrame = 0;
             AudioBus * input_bus = input(0)->bus(r);
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
-            float const * data = input_bus->channel(in_channel)->data();
+            float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;
             size_t c = input_bus->channel(in_channel)->length();
             for (int j = 0; j < count; ++j)
             {
