@@ -21,7 +21,7 @@ class AudioSetting;
 class PowerMonitorNode : public AudioBasicInspectorNode
 {
 public:
-    PowerMonitorNode();
+    PowerMonitorNode(AudioContext & ac);
 
     virtual ~PowerMonitorNode();
 

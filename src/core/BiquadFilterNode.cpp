@@ -202,7 +202,7 @@ public:
     std::unique_ptr<Biquad> the_filter;
 };
  
-BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
+BiquadFilterNode::BiquadFilterNode(AudioContext& ac) : AudioBasicProcessorNode(ac)
 {
     biquad_impl = new BiquadFilterNodeInternal();
     m_processor.reset(biquad_impl);

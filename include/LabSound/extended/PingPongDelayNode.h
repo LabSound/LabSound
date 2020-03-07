@@ -43,7 +43,7 @@ class PingPongDelayNode : public Subgraph
     std::shared_ptr<ChannelSplitterNode> splitter;
 
 public:
-    PingPongDelayNode(float sampleRate, float tempo);
+    PingPongDelayNode(AudioContext &, float tempo);
 
     void SetTempo(float t);
     void SetFeedback(float f);

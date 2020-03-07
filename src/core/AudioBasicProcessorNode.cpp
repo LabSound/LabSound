@@ -13,8 +13,8 @@
 namespace lab
 {
 
-AudioBasicProcessorNode::AudioBasicProcessorNode()
-    : AudioNode()
+AudioBasicProcessorNode::AudioBasicProcessorNode(AudioContext & ac)
+    : AudioNode(ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

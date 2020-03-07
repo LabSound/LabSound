@@ -39,7 +39,7 @@ class DelayNode : public AudioBasicProcessorNode
 
 public:
     // default maximum delay of 100ms
-    DelayNode(float sampleRate, double maxDelayTime = 2.0);
+    DelayNode(AudioContext & ac, double maxDelayTime = 2.0);
     std::shared_ptr<AudioSetting> delayTime();
 };
 

@@ -16,8 +16,9 @@
 namespace lab
 {
 
-AudioHardwareInputNode::AudioHardwareInputNode(AudioSourceProvider * audioSourceProvider)
-    : m_audioSourceProvider(audioSourceProvider)
+AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * audioSourceProvider)
+    : AudioNode(ac)
+    , m_audioSourceProvider(audioSourceProvider)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
     initialize();

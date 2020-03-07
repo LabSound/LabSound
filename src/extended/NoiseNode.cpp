@@ -16,8 +16,8 @@ namespace lab
 static char const * const s_noiseTypes[NoiseNode::NoiseType::_Count + 1] = {
     "White", "Pink", "Brown", nullptr};
 
-NoiseNode::NoiseNode()
-    : AudioScheduledSourceNode()
+NoiseNode::NoiseNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
     , _type(std::make_shared<AudioSetting>("type", "TYPE", s_noiseTypes))
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -53,10 +53,8 @@ void NoiseNode::process(ContextRenderLock & r, int bufferSize, int offset, int c
         return;
     }
 
-    int quantumFrameOffset;
-    int nonSilentFramesToProcess;
-
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)
     {

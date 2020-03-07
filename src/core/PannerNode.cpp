@@ -38,8 +38,8 @@ static char const * const s_distance_models[lab::DistanceEffect::ModelType::_Cou
 static char const * const s_panning_models[lab::PanningMode::_PanningModeCount + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
 
-PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
-    : AudioNode()
+PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
+    : AudioNode(ac)
     , m_orientationX(std::make_shared<AudioParam>("orientationX", "OR X", 0.f, -1.f, 1.f))
     , m_orientationY(std::make_shared<AudioParam>("orientationY", "OR Y", 0.f, -1.f, 1.f))
     , m_orientationZ(std::make_shared<AudioParam>("orientationZ", "OR Z", 0.f, -1.f, 1.f))
@@ -56,7 +56,7 @@ PannerNode::PannerNode(const float sampleRate, const std::string & searchPath)
     , m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle", "CONI", AudioSetting::Type::Float))
     , m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle", "CONO", AudioSetting::Type::Float))
     , m_panningModel(std::make_shared<AudioSetting>("panningMode", "PANM", s_panning_models))
-    , m_sampleRate(sampleRate)
+    , m_sampleRate(ac.sampleRate())
 {
     if (searchPath.length())
     {

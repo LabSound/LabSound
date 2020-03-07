@@ -29,7 +29,7 @@ class DiodeNode : public WaveShaperNode
     std::shared_ptr<AudioSetting> _vl;  // curve shape control
 
 public:
-    DiodeNode();
+    DiodeNode(AudioContext &);
     void setDistortion(float distortion = 1.0);
 
     std::shared_ptr<AudioSetting> distortion() const { return _distortion; };

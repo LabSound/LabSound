@@ -48,8 +48,10 @@ inline float burk_fast_sine(const double phase)
 
 static char const * const s_types[] = {"None", "Sine", "FastSine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
 
-OscillatorNode::OscillatorNode() 
-    : m_phaseIncrements(AudioNode::ProcessingSizeInFrames), m_detuneValues(AudioNode::ProcessingSizeInFrames)
+OscillatorNode::OscillatorNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
+    , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
+    , m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
 using namespace VectorMath;
 

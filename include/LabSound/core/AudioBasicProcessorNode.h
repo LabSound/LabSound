@@ -20,8 +20,8 @@ class AudioNodeInput;
 class AudioBasicProcessorNode : public AudioNode
 {
 public:
-    AudioBasicProcessorNode();
-    virtual ~AudioBasicProcessorNode() {}
+    AudioBasicProcessorNode(AudioContext &);
+    virtual ~AudioBasicProcessorNode() = default;
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

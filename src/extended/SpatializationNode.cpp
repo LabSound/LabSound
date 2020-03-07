@@ -70,8 +70,8 @@ float Occluders::occlusion(const FloatPoint3D & sourcePos, const FloatPoint3D & 
 }
 
 // @tofix - pass in HRTF loader path
-SpatializationNode::SpatializationNode(const float sampleRate)
-    : lab::PannerNode(sampleRate)
+SpatializationNode::SpatializationNode(AudioContext & ac)
+    : lab::PannerNode(ac)
 {
     initialize();
 }

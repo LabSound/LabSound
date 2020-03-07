@@ -29,7 +29,7 @@ class PeakCompNode : public lab::AudioBasicProcessorNode
     PeakCompNodeInternal * internalNode;  // We do not own this!
 
 public:
-    PeakCompNode();
+    PeakCompNode(AudioContext & ac);
     virtual ~PeakCompNode();
 
     void set(float aT, float aL, float d, float s, float r);

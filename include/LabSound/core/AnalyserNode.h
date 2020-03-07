@@ -20,7 +20,7 @@ class AudioSetting;
 //
 class AnalyserNode : public AudioBasicInspectorNode
 {
-    void shared_construction(size_t fftSize);
+    void shared_construction(int fftSize);
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -29,14 +29,14 @@ class AnalyserNode : public AudioBasicInspectorNode
     Detail * _detail = nullptr;
 
 public:
-    AnalyserNode();
-    AnalyserNode(size_t fftSize);
+    AnalyserNode(AudioContext & ac);
+    AnalyserNode(AudioContext & ac, int fftSize);
     virtual ~AnalyserNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override;
 
-    void setFftSize(ContextRenderLock &, size_t fftSize);
+    void setFftSize(ContextRenderLock &, int fftSize);
     size_t fftSize() const;
 
         virtual void process(ContextRenderLock &, size_t framesToProcess) override;

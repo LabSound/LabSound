@@ -24,7 +24,7 @@ class GainNode : public AudioNode
 {
 
 public:
-    GainNode();
+    GainNode(AudioContext& ac);
     virtual ~GainNode();
 
     // AudioNode

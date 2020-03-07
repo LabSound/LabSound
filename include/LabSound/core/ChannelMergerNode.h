@@ -15,10 +15,10 @@ class AudioContext;
 class ChannelMergerNode : public AudioNode
 {
 public:
-    ChannelMergerNode(size_t numberOfInputs = 1);
-    virtual ~ChannelMergerNode() {}
+    ChannelMergerNode(AudioContext& ac, int numberOfInputs = 1);
+    virtual ~ChannelMergerNode() = default;
 
-    void addInputs(size_t n);
+    void addInputs(int n);
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
@@ -31,7 +31,7 @@ private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    size_t m_desiredNumberOfOutputChannels = 1;  // default
+    int m_desiredNumberOfOutputChannels = 1;  // default
 };
 
 }  // namespace lab

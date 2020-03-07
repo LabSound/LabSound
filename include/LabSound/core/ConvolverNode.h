@@ -24,7 +24,7 @@ struct sp_ftbl;
 class ConvolverNode final : public AudioScheduledSourceNode
 {
 public:
-    ConvolverNode();
+    ConvolverNode(AudioContext& ac);
     virtual ~ConvolverNode();
     bool normalize() const;
     void setNormalize(bool new_n);

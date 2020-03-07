@@ -383,7 +383,8 @@ static char const * const s_polyblep_types[] = {
     "Full Wave Rectified Sine", "Triangular Pulse", "Trapezoid Fixed", "Trapezoid Variable",
     nullptr};
 
-PolyBLEPNode::PolyBLEPNode()
+PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac)
 {
     m_type = std::make_shared<AudioSetting>("type", "TYPE", s_polyblep_types);
     m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
@@ -431,9 +432,8 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
     const float sample_rate = r.context()->sampleRate();
     polyblep->setSampleRate(sample_rate);
 
-    int quantumFrameOffset = 0;
-    int nonSilentFramesToProcess = 0;
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)
     {

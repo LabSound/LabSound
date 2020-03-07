@@ -15,12 +15,14 @@ namespace lab
 class SfxrNode : public AudioScheduledSourceNode, public BangInterface
 {
 public:
-    SfxrNode(float sampleRate);
+    SfxrNode(AudioContext & ac);
     virtual ~SfxrNode();
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
     virtual void reset(ContextRenderLock &) override;
+
+    virtual bool hasBang() const override { return true; }
 
     // SfxrNode - values in sfxr units
     std::shared_ptr<AudioSetting> waveType() const { return _waveType; }

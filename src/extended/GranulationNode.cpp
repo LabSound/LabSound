@@ -16,7 +16,7 @@
 
 using namespace lab;
 
-GranulationNode::GranulationNode() : AudioScheduledSourceNode()
+GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(ac)
 {
     // Sample that will be granulated
     grainSourceBus = std::make_shared<AudioSetting>("GrainSource", "GSRC", AudioSetting::Type::Bus);
@@ -161,9 +161,8 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize, int offset, 
         return;
     }
 
-    int quantumFrameOffset;
-    int bufferFramesToProcess;
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, bufferFramesToProcess);
+    int quantumFrameOffset = offset;
+    int bufferFramesToProcess = count;
 
     if (!bufferFramesToProcess)
     {

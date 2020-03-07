@@ -12,13 +12,13 @@
 namespace lab
 {
 
-DelayNode::DelayNode(float sampleRate, double maxDelayTime)
-    : AudioBasicProcessorNode()
+DelayNode::DelayNode(AudioContext& ac, double maxDelayTime)
+    : AudioBasicProcessorNode(ac)
 {
     if (maxDelayTime < 0)
         maxDelayTime = 0;  // delay node can't predict the future
 
-    m_processor = std::make_unique<DelayProcessor>(sampleRate, 1, maxDelayTime);
+    m_processor = std::make_unique<DelayProcessor>(ac.sampleRate(), 1, maxDelayTime);
 
     m_settings.push_back(delayProcessor()->delayTime());
 

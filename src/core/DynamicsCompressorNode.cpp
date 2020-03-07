@@ -17,7 +17,8 @@ using namespace std;
 namespace lab
 {
 
-DynamicsCompressorNode::DynamicsCompressorNode()
+DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
+    : AudioNode(ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));

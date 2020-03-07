@@ -240,15 +240,15 @@ private:
 
 using namespace std;
 
-StereoPannerNode::StereoPannerNode(const float sampleRate)
-    : AudioNode()
+StereoPannerNode::StereoPannerNode(AudioContext& ac)
+    : AudioNode(ac)
 {
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_stereoPanner.reset(new Spatializer(sampleRate, Spatializer::PanningModelEqualPower));
+    m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 
     m_pan = std::make_shared<AudioParam>("pan", "PAN", 0.5, 0.0, 1.0);
     m_params.push_back(m_pan);

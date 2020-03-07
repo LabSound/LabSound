@@ -1,95 +1,46 @@
 // License: BSD 3 Clause
-// Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef AudioScheduledSourceNode_h
 #define AudioScheduledSourceNode_h
 
 #include "LabSound/core/AudioNode.h"
-#include <functional>
 
 namespace lab
 {
 
-class AudioBus;
+/*
+    AudioScheduledSourceNode adds a scheduling interface to
+    AudioNode. The scheduler is in the base class, but only nodes
+    derived from AudioScheduledSourceNode can be scheduled.
+ */
 
 class AudioScheduledSourceNode : public AudioNode
 {
-    static constexpr double UNKNOWN_TIME = -1.0;
-    std::function<void()> m_onEnded;
-
 public:
-    // These are the possible states an AudioScheduledSourceNode can be in:
-    // UNSCHEDULED_STATE - Initial playback state. Created, but not yet scheduled.
-    // SCHEDULED_STATE - Scheduled to play, but not yet playing.
-    // PLAYING_STATE - Generating sound.
-    enum PlaybackState
-    {
-        UNSCHEDULED_STATE = 0,
-        SCHEDULED_STATE = 1,
-        PLAYING_STATE = 2,
-        FINISHED_STATE = 3
-    };
+    AudioScheduledSourceNode() = delete;
+    AudioScheduledSourceNode(AudioContext & ac) : AudioNode(ac) { }
+    virtual ~AudioScheduledSourceNode() = default;
 
-    AudioScheduledSourceNode();
-    virtual ~AudioScheduledSourceNode() {}
-
-    // Scheduling.
-    void start(double when);
-    void stop(double when);
-
-    double startTime() const { return m_startTime; }
-
-    unsigned short playbackState() const { return static_cast<unsigned short>(m_playbackState); }
-
-    bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
-
-    bool hasFinished() const { return m_playbackState == FINISHED_STATE; }
-
-    virtual void reset(ContextRenderLock &) override;
-
-    // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
-    // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const override { return true; }
 
-    void setOnEnded(std::function<void()> fn) { m_onEnded = fn; }
+    bool isPlayingOrScheduled() const
+    {
+        return _scheduler._playbackState <= SchedulingState::PLAYING &&
+               _scheduler._playbackState >= SchedulingState::SCHEDULED;
+    }
 
-protected:
+    // Start time, measured as seconds from the current epochal time
+    void start(float when) { _scheduler.start(when); }
 
-    // Get frame information for the current time quantum.
-    // We handle the transition into PLAYING_STATE and FINISHED_STATE here,
-    // zeroing out portions of the outputBus which are outside the range of startFrame and endFrame.
-    //
-    // Each frame time is relative to the context's currentSampleFrame().
-    // quantumFrameOffset    : Offset frame in this time quantum to start rendering.
-    // nonSilentFramesToProcess : Number of frames rendering non-silence (will be <= quantumFrameSize).
-    void updateSchedulingInfo(ContextRenderLock &,
-                              int quantumFrameSize, AudioBus * outputBus,
-                              int & quantumFrameOffset, int & nonSilentFramesToProcess);
+    uint64_t startWhen() const { return _scheduler._startWhen; }
 
-    // Called when there is no more sound to play or the noteOff/stop() time has been reached.
-    void finish(ContextRenderLock &);
+    // Stop time, measured as seconds from the current epochal time
+    void stop(float when) { _scheduler.stop(when); }
 
-    PlaybackState m_playbackState {UNSCHEDULED_STATE};
-
-    // m_startTime is the time to start playing based on the context's timeline.
-    // 0 or a time less than the context's current time means as soon as the
-    // next audio buffer is processed.
-    //
-    double m_pendingStartTime {UNKNOWN_TIME};
-    double m_startTime {0.0};  // in seconds
-
-    // m_endTime is the time to stop playing based on the context's timeline.
-    // 0 or a time less than the context's current time means as soon as the
-    // next audio buffer is processed.
-    //
-    // If it hasn't been set explicitly,
-    //    if looping, then the sound will not stop playing
-    // else
-    //    it will stop when the end of the AudioBuffer has been reached.
-    //
-    double m_pendingEndTime {UNKNOWN_TIME};
-    double m_endTime {UNKNOWN_TIME};  // in seconds
+    SchedulingState playbackState() const { return _scheduler._playbackState; }
+    bool hasFinished() const { return _scheduler.hasFinished(); }
+    void setOnEnded(std::function<void()> fn) { _scheduler._onEnded = fn; }
 };
 
 }  // namespace lab

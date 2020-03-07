@@ -26,7 +26,7 @@ public:
         _Count = 3
     };
 
-    NoiseNode();
+    NoiseNode(AudioContext & ac);
     virtual ~NoiseNode();
 
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

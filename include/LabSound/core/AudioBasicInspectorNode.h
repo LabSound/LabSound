@@ -25,8 +25,8 @@ namespace lab
 class AudioBasicInspectorNode : public AudioNode
 {
 public:
-    AudioBasicInspectorNode(int outputChannelCount);
-    virtual ~AudioBasicInspectorNode() {}
+    AudioBasicInspectorNode(AudioContext & ac, int outputChannelCount);
+    virtual ~AudioBasicInspectorNode() = default;
 
     // AudioNode
     virtual void pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count) override;

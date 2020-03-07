@@ -123,8 +123,8 @@ public:
 // Public ClipNode //
 /////////////////////
 
-ClipNode::ClipNode()
-    : lab::AudioBasicProcessorNode()
+ClipNode::ClipNode(AudioContext & ac)
+    : lab::AudioBasicProcessorNode(ac)
 {
     internalNode = new ClipNodeInternal(this);
     m_processor.reset(internalNode);

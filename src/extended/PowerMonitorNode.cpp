@@ -14,8 +14,8 @@ namespace lab
 
 using namespace lab;
 
-PowerMonitorNode::PowerMonitorNode()
-    : AudioBasicInspectorNode(2)
+PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
+    : AudioBasicInspectorNode(ac, 2)
     , _db(0)
     , _windowSize(std::make_shared<AudioSetting>("windowSize", "WNDW", AudioSetting::Type::Integer))
 {

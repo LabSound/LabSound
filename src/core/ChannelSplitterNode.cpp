@@ -13,18 +13,18 @@
 namespace lab
 {
 
-ChannelSplitterNode::ChannelSplitterNode(size_t numberOfOutputs_)
-    : AudioNode()
+ChannelSplitterNode::ChannelSplitterNode(AudioContext& ac, int numberOfOutputs_)
+    : AudioNode(ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutputs(numberOfOutputs_);
     initialize();  // currently initialize only sets a flag; no memory is allocated in response to adding outputs
 }
 
-void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
+void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
 {
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
-    for (uint32_t i = 0; i < numberOfOutputs_; ++i)
+    for (int i = 0; i < numberOfOutputs_; ++i)
     {
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     }

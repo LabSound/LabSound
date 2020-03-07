@@ -19,6 +19,165 @@ using namespace std;
 namespace lab
 {
 
+AudioNodeScheduler::AudioNodeScheduler(float sampleRate) 
+    : _epochWaveLength(1.f / sampleRate)
+    , _epoch(0)
+    , _startWhen(std::numeric_limits<uint64_t>::max())
+    , _stopWhen(std::numeric_limits<uint64_t>::max())
+{
+    // During construction, DeviceNodes will not yet have a sampleRate, so use 1 in that case.
+    _epochWaveLength = sampleRate > 0 ? 1.f / sampleRate : 1.f;
+}
+
+bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
+{
+    uint32_t proposed_epoch = static_cast<uint32_t>(r.context()->currentSampleFrame());
+    if (_epoch >= proposed_epoch)
+        return false;
+
+    _epoch = proposed_epoch;
+    _renderOffset = 0;
+    _renderLength = epoch_length;
+
+    if (_playbackState == SchedulingState::SCHEDULED)
+    {
+        _startWhen += _epoch;
+        _playbackState = SchedulingState::PLAY_PENDING;
+    }
+    if (_playbackState == SchedulingState::FADE_IN)
+    {
+        _playbackState = SchedulingState::PLAYING;
+    }
+    if (_playbackState == SchedulingState::PLAY_PENDING)
+    {
+        if (_epoch + epoch_length >= _startWhen)
+        {
+            if (_epoch >= _startWhen)
+            {
+                _renderOffset = 0;
+                _renderLength = epoch_length;
+            }
+            else
+            {
+                _renderOffset = static_cast<int>(_startWhen - _epoch);
+                _renderLength = epoch_length - _renderOffset;
+            }
+
+            _playbackState = SchedulingState::FADE_IN;
+            _startWhen = std::numeric_limits<uint32_t>::max();
+        }
+    }
+    if (_playbackState == SchedulingState::PLAYING)
+    {
+        if (_epoch + epoch_length >= _stopWhen)
+        {
+            if (_epoch >= _stopWhen)
+                _renderLength = epoch_length - 1;
+            else
+                _renderLength = static_cast<int>(epoch_length - _stopWhen - _epoch - _renderOffset);
+
+            // be sure to trigger the damp out
+            if (_renderLength == epoch_length)
+                _renderLength = epoch_length - 1;
+
+            _playbackState = SchedulingState::STOPPING;
+        }
+    }
+    // else is here because if the state was just switched to STOPPING, it needs to render one last time before becoming UNSCHEDULED
+    else if (_playbackState == SchedulingState::STOPPING)
+    {
+        if (_epoch + epoch_length >= _stopWhen)
+        {
+            // scheduled stop has occured, so make sure it doesn't immediately trigger again
+            _stopWhen = std::numeric_limits<uint32_t>::max();
+            _playbackState = SchedulingState::UNSCHEDULED;
+        }
+    }
+
+    ASSERT(_renderOffset < epoch_length);
+
+    return true;
+}
+
+void AudioNodeScheduler::start(double when)
+{
+    // if already scheduled or playing, nothing to do
+    if (_playbackState == SchedulingState::SCHEDULED ||
+        _playbackState == SchedulingState::PLAYING)
+        return;
+
+    // treat non finite, or max values as a cancellation of stopping or resetting
+    if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
+    {
+        if (_playbackState == SchedulingState::STOPPING ||
+            _playbackState == SchedulingState::RESETTING)
+        {
+            _playbackState = SchedulingState::PLAYING;
+            _stopWhen = std::numeric_limits<uint32_t>::max();
+        }
+        return;
+    }
+
+    _startWhen = static_cast<uint32_t>(when * _epochWaveLength);
+    _playbackState = SchedulingState::SCHEDULED;
+}
+
+void AudioNodeScheduler::stop(double when)
+{
+    // if the node is on the way to a terminal state do nothing
+    if (_playbackState >= SchedulingState::STOPPING)
+        return;
+
+    // treat non-finite, and FLT_MAX as stop cancellation, if already playing
+    if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
+    {
+        // stop at a non-finite time means don't stop.
+        _stopWhen = std::numeric_limits<uint32_t>::max(); // cancel stop
+        if (_playbackState == SchedulingState::STOPPING)
+        {
+            // if in the process of stopping, set it back to scheduling to start immediately
+            _playbackState = SchedulingState::SCHEDULED;
+            _startWhen = 0;
+        }
+
+        return;
+    }
+
+    // clamp timing to now or the future
+    if (when < 0)
+        when = 0;
+
+    // let the scheduler know when to activate the STOPPING state
+    _stopWhen = _epoch + static_cast<uint32_t>(when * _epochWaveLength);
+}
+
+void AudioNodeScheduler::reset()
+{
+    _startWhen = std::numeric_limits<uint32_t>::max();;
+    _stopWhen = std::numeric_limits<uint32_t>::max();;
+    if (_playbackState != SchedulingState::UNSCHEDULED)
+        _playbackState = SchedulingState::RESETTING;
+}
+
+void AudioNodeScheduler::finish(ContextRenderLock & r)
+{
+    if (_playbackState < SchedulingState::PLAYING)
+        _playbackState = SchedulingState::FINISHING;
+    else if (_playbackState > SchedulingState::PLAYING &&
+             _playbackState < SchedulingState::FINISHED)
+        _playbackState = SchedulingState::FINISHING;
+
+    r.context()->enqueueEvent(_onEnded);
+}
+
+
+
+AudioNode::AudioNode(AudioContext & ac)
+    : _scheduler(ac.sampleRate())
+{ }
+
+
+
 AudioNode::~AudioNode()
 {
     uninitialize();
@@ -32,6 +191,11 @@ void AudioNode::initialize()
 void AudioNode::uninitialize()
 {
     m_isInitialized = false;
+}
+
+void AudioNode::reset(ContextRenderLock& r)
+{
+    _scheduler.reset();
 }
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
@@ -100,7 +264,7 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
 
 void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 {
-    for (auto input : m_inputs)
+    for (auto & input : m_inputs)
         input->changedOutputs(g);
 }
 
@@ -113,76 +277,84 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
     if (!ac)
         return;
 
-    // Ensure that we only process once per rendering quantum.
-    // This handles the "fanout" problem where an output is connected to multiple inputs.
-    // The first time we're called during this time slice we process, but after that we don't want to re-process,
-    // instead our output(s) will already have the results cached in their bus;
-    double currentTime = ac->currentTime();
-    if (m_lastProcessingTime != currentTime)
+    // outputs cache results in their busses.
+    // if the scheduler's recorded epoch is the same as the context's, the node
+    // shall bail out as it has been processed once already this epoch.
+
+    if (!_scheduler.update(r, bufferSize))
+        return;
+
+    if (_scheduler._playbackState < SchedulingState::FADE_IN ||
+        _scheduler._playbackState == SchedulingState::FINISHED)
     {
-        m_lastProcessingTime = currentTime;  // important to first update this time to accomodate feedback loops in the rendering graph
-
-        pullInputs(r, bufferSize, offset, count);
-
-        bool silentInputs = inputsAreSilent(r);
-        if (!silentInputs)
-        {
-            m_lastNonSilentTime = (ac->currentSampleFrame() + bufferSize) / static_cast<double>(ac->sampleRate());
-        }
-
-        // if this node is supposed to copy silence through, and is itself silent
-        if (silentInputs && propagatesSilence(r))
-        {
-            silenceOutputs(r);
-        }
-        else
-        {
-            process(r, bufferSize, offset, count);
-
-            float new_schedule = 0.f;
-
-            if (m_disconnectSchedule >= 0)
-            {
-                for (auto& out : m_outputs)
-                    for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
-                    {
-                        float scale = m_disconnectSchedule;
-                        float * sample = out->bus(r)->channel(i)->mutableData();
-                        int numSamples = out->bus(r)->channel(i)->length();
-                        for (int s = 0; s < numSamples; ++s)
-                        {
-                            sample[s] *= scale;
-                            scale *= 0.98f;
-                        }
-                        new_schedule = scale;
-                    }
-
-                m_disconnectSchedule = new_schedule;
-            }
-
-            new_schedule = 1.f;
-            if (m_connectSchedule < 1)
-            {
-                for (auto& out : m_outputs)
-                    for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
-                    {
-                        float scale = m_connectSchedule;
-                        float * sample = out->bus(r)->channel(i)->mutableData();
-                        int numSamples = out->bus(r)->channel(i)->length();
-                        for (int s = 0; s < numSamples; ++s)
-                        {
-                            sample[s] *= scale;
-                            scale = 1.f - ((1.f - scale) * 0.98f);
-                        }
-                        new_schedule = scale;
-                    }
-
-                m_connectSchedule = new_schedule > 0.99999f ? 1.f : new_schedule;
-            }
-
-            unsilenceOutputs(r);
-        }
+        silenceOutputs(r);
+        return;
     }
+
+    // there may need to be silence at the beginning or end of the current quantum.
+
+    int start_zeroes = _scheduler._renderOffset;
+    int final_zeroes = bufferSize - start_zeroes - _scheduler._renderLength;
+
+    // get inputs in preparation for processing
+
+    pullInputs(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+
+    //  initialize the busses with start and final zeroes.
+
+    if (start_zeroes)
+    {
+        for (auto & out : m_outputs)
+            for (int i = 0; i < out->numberOfChannels(); ++i)
+                memset(out->bus(r)->channel(i)->mutableData(), 0, sizeof(float) * start_zeroes);
+    }
+
+    if (final_zeroes)
+    {
+        for (auto & out : m_outputs)
+            for (int i = 0; i < out->numberOfChannels(); ++i)
+                memset(out->bus(r)->channel(i)->mutableData() + bufferSize - final_zeroes,
+                    0, sizeof(float) * final_zeroes);
+    }
+
+    // do the signal processing
+
+    process(r, bufferSize, start_zeroes, bufferSize - start_zeroes - final_zeroes);
+
+    // clean pops resulting from starting or stopping
+
+#define OOS(x) (float(x) / float(steps))
+    if (_scheduler._playbackState == SchedulingState::FADE_IN)
+    {
+        int steps = 64;
+
+        // damp out the first samples
+        int damp = std::min(start_zeroes + steps, bufferSize) - steps;
+        for (auto & out : m_outputs)
+            for (int i = 0; i < out->numberOfChannels(); ++i)
+            {
+                float* data = out->bus(r)->channel(i)->mutableData() + damp;
+                for (int j = 0; j < steps; ++j)
+                    data[j] *= OOS(j);
+            }
+    }
+
+    if (final_zeroes)
+    {
+        int steps = 64;
+
+        // damp out the last samples
+        int damp = std::min(bufferSize - final_zeroes + steps, bufferSize) - steps;
+        for (auto & out : m_outputs)
+            for (int i = 0; i < out->numberOfChannels(); ++i)
+            {
+                float* data = out->bus(r)->channel(i)->mutableData() + damp;
+                for (int j = 0; j < steps; ++j)
+                    data[j] *= OOS(steps - j);
+            }
+    }
+
+    unsilenceOutputs(r);
 }
 
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
@@ -198,11 +370,10 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
     }
 }
 
-bool AudioNode::propagatesSilence(ContextRenderLock & r) const
+bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
-    ASSERT(r.context());
-
-    return m_lastNonSilentTime + latencyTime(r) + tailTime(r) < r.context()->currentTime();
+    return _scheduler._playbackState < SchedulingState::FADE_IN ||
+        _scheduler._playbackState == SchedulingState::FINISHED;
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)

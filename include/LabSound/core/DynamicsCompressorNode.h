@@ -24,7 +24,7 @@ class DynamicsCompressorNode : public AudioNode
 {
 
 public:
-    DynamicsCompressorNode();
+    DynamicsCompressorNode(AudioContext& ac);
     virtual ~DynamicsCompressorNode();
 
     // AudioNode

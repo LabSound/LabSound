@@ -16,10 +16,10 @@ class ChannelSplitterNode : public AudioNode
 {
 
 public:
-    ChannelSplitterNode(size_t numberOfOutputs = 1);
-    virtual ~ChannelSplitterNode() {}
+    ChannelSplitterNode(AudioContext& ac, int numberOfOutputs = 1);
+    virtual ~ChannelSplitterNode() = default;
 
-    void addOutputs(size_t numberOfOutputs);
+    void addOutputs(int numberOfOutputs);
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;

@@ -15,7 +15,7 @@ class FunctionNode : public AudioScheduledSourceNode
 {
 
 public:
-    FunctionNode(int channels = 1);
+    FunctionNode(AudioContext & ac, int channels = 1);
     virtual ~FunctionNode();
 
     // @tofix - should this be protected with a mutex?

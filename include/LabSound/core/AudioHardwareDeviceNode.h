@@ -34,7 +34,7 @@ protected:
     const AudioStreamConfig inConfig;
 
 public:
-    AudioHardwareDeviceNode(AudioContext * context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    AudioHardwareDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioHardwareDeviceNode();
 
     // AudioNode interface

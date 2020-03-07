@@ -72,8 +72,8 @@ public:
 // Public PWMNode //
 ////////////////////
 
-PWMNode::PWMNode()
-    : lab::AudioBasicProcessorNode()
+PWMNode::PWMNode(AudioContext & ac)
+    : lab::AudioBasicProcessorNode(ac)
 {
     m_processor.reset(new PWMNodeInternal());
     internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused

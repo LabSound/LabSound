@@ -22,7 +22,7 @@ class PWMNode : public AudioBasicProcessorNode
     PWMNodeInternal * internalNode;
 
 public:
-    PWMNode();
+    PWMNode(AudioContext & ac);
     virtual ~PWMNode();
 };
 }

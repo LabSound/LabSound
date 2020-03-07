@@ -123,7 +123,6 @@ private:
 
     void uninitialize();
 
-    void handleAutomaticSources();
     void updateAutomaticPullNodes();
 
     AudioDeviceRenderCallback * device_callback{nullptr};
@@ -133,7 +132,6 @@ private:
 
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;  // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;  // vector of known pull nodes
-    std::vector<std::shared_ptr<AudioScheduledSourceNode>> automaticSources;
 };
 
 }  // End namespace lab

@@ -40,7 +40,7 @@ std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamCon
     LOG("MakeRealtimeAudioContext()");
 
     std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-    ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), outputConfig, inputConfig));
+    ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(*ctx.get(), outputConfig, inputConfig));
     ctx->lazyInitialize();
     return ctx;
 }
@@ -52,7 +52,7 @@ std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConf
     const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
     std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-    ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), offlineConfig, secondsToRun));
+    ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(*ctx.get(), offlineConfig, secondsToRun));
     ctx->lazyInitialize();
     return ctx;
 }
@@ -67,7 +67,8 @@ std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRender
     {
         if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
         {
-            std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(hardwareDevice->AudioHardwareInputProvider()));
+            std::shared_ptr<AudioHardwareInputNode> inputNode( 
+                new AudioHardwareInputNode(*r.context(), hardwareDevice->AudioHardwareInputProvider()));
             return inputNode;
         }
         else

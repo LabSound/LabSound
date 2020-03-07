@@ -15,18 +15,18 @@ using namespace std;
 namespace lab
 {
 
-ChannelMergerNode::ChannelMergerNode(size_t numberOfInputs_)
-    : AudioNode()
+ChannelMergerNode::ChannelMergerNode(AudioContext& ac, int numberOfInputs_)
+    : AudioNode(ac)
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();  // initialize only sets a flag, no need to allocate memory according to input count
 }
 
-void ChannelMergerNode::addInputs(size_t n)
+void ChannelMergerNode::addInputs(int n)
 {
     // Create the requested number of inputs.
-    for (uint32_t i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i)
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 }
 

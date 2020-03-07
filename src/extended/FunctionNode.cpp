@@ -14,8 +14,8 @@ using namespace lab;
 namespace lab
 {
 
-FunctionNode::FunctionNode(int channels)
-    : AudioScheduledSourceNode()
+FunctionNode::FunctionNode(AudioContext & ac, int channels)
+    : AudioScheduledSourceNode(ac)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
     initialize();
@@ -36,10 +36,8 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize, int offset, in
         return;
     }
 
-    int quantumFrameOffset;
-    int nonSilentFramesToProcess;
-
-    updateSchedulingInfo(r, bufferSize, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+    int quantumFrameOffset = offset;
+    int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)
     {

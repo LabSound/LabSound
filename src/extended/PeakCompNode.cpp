@@ -236,8 +236,8 @@ std::shared_ptr<AudioParam> PeakCompNode::knee() const
 // Public PeakCompNode //
 /////////////////////////
 
-PeakCompNode::PeakCompNode()
-    : lab::AudioBasicProcessorNode()
+PeakCompNode::PeakCompNode(AudioContext & ac)
+    : lab::AudioBasicProcessorNode(ac)
 {
     m_processor.reset(new PeakCompNodeInternal());
 
