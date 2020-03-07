@@ -37,6 +37,8 @@ public:
 
     void mixToMono(bool m) { m_mixToMono = m; }
 
+    float recordedLengthInSeconds() const;
+
     void writeRecordingToWav(const std::string & filenameWithWavExtension);
 };
 

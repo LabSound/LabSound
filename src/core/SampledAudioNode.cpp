@@ -52,7 +52,7 @@ void SampledAudioVoice::schedule(double when, double grainOffset, double grainDu
     m_requestGrainOffset = grainOffset;
     m_requestGrainDuration = grainDuration;
     m_startRequested = true;
-    start(when);
+    start(static_cast<float>(when));
 }
 
 bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, int index, int framesToProcess)

@@ -88,6 +88,12 @@ AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
 {
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
+
+    if (isOffline)
+    {
+        updateThreadShouldRun = 1;
+        graphKeepAlive = 0;
+    }
 }
 
 AudioContext::~AudioContext()
@@ -98,7 +104,7 @@ AudioContext::~AudioContext()
     if (!isOfflineContext())
         graphKeepAlive = 0.25f;
 
-    updateThreadShouldRun = false;
+    updateThreadShouldRun = 0;
     cv.notify_all();
 
     if (graphUpdateThread.joinable())
@@ -129,15 +135,14 @@ void AudioContext::lazyInitialize()
 
     if (m_device.get())
     {
-        graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
-        graphUpdateThread = std::thread(&AudioContext::update, this);
-
         if (!isOfflineContext())
         {
             // This starts the audio thread and all audio rendering.
             // The destination node's provideInput() method will now be called repeatedly to render audio.
             // Each time provideInput() is called, a portion of the audio stream is rendered.
 
+            graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
+            graphUpdateThread = std::thread(&AudioContext::update, this);
             device_callback->start();
         }
 
@@ -254,7 +259,7 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
 
 void AudioContext::update()
 {
-    LOG("Begin UpdateGraphThread");
+    if (!m_isOfflineContext) { LOG("Begin UpdateGraphThread"); }
 
     const float frameLengthInMilliseconds = (sampleRate() / (float) AudioNode::ProcessingSizeInFrames) / 1000.f;  // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
@@ -266,8 +271,12 @@ void AudioContext::update()
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
-    while (updateThreadShouldRun || graphKeepAlive > 0)
+    while (!m_internal->pendingNodeConnections.empty() || !m_internal->pendingParamConnections.empty() ||
+           updateThreadShouldRun != 0 || graphKeepAlive > 0)
     {
+        if (updateThreadShouldRun > 0)
+            --updateThreadShouldRun;
+
         // A `unique_lock` automatically acquires a lock on construction. The purpose of
         // this mutex is to synchronize updates to the graph from the main thread,
         // primarily through `connect(...)` and `disconnect(...)`.
@@ -294,8 +303,6 @@ void AudioContext::update()
         if (m_internal->autoDispatchEvents)
             dispatchEvents();
 
-        // if blocked on cv.wait, double check whether it's still necessary to run.
-        if (updateThreadShouldRun || graphKeepAlive > 0)
         {
             ContextGraphLock gLock(this, "AudioContext::Update()");
 
@@ -418,7 +425,7 @@ void AudioContext::update()
             lk.unlock();
     }
 
-    LOG("End UpdateGraphThread");
+    if (!m_isOfflineContext) { LOG("End UpdateGraphThread"); }
 }
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
@@ -428,6 +435,10 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
     {
         m_automaticPullNodes.insert(node);
         m_automaticPullNodesNeedUpdating = true;
+        if (!node->isScheduledNode())
+        {
+            node->_scheduler.start(0);
+        }
     }
 }
 
@@ -536,15 +547,11 @@ float AudioContext::sampleRate() const
 
 void AudioContext::startOfflineRendering()
 {
-    // This takes the function of `lazyInitialize()` but for offline contexts
-    if (m_isOfflineContext)
-    {
-        device_callback->start();
-    }
-    else
-    {
-        throw std::runtime_error("context is not setup for offline rendering");
-    }
+    if (!m_isOfflineContext)
+        throw std::runtime_error("context was not constructed for offline rendering");
+
+    m_isInitialized = true;
+    device_callback->start();
 }
 
 }  // End namespace lab

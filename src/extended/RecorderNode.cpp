@@ -116,6 +116,11 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize, int offset, in
     }
 }
 
+float RecorderNode::recordedLengthInSeconds() const
+{
+    return static_cast<float>(m_data.size()) / outConfig.desired_samplerate;
+}
+
 void RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtension)
 {
     std::unique_ptr<nqr::AudioData> fileData(new nqr::AudioData());

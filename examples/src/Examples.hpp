@@ -201,7 +201,10 @@ struct ex_offline_rendering : public labsound_example
         offlineConfig.device_index = 0;
         offlineConfig.desired_samplerate = LABSOUND_DEFAULT_SAMPLERATE;
         offlineConfig.desired_channels = LABSOUND_DEFAULT_CHANNELS;
-        std::unique_ptr<lab::AudioContext> context = lab::MakeOfflineAudioContext(offlineConfig, 5000.f);
+
+        const float recording_time_ms = 1000.f;
+
+        std::unique_ptr<lab::AudioContext> context = lab::MakeOfflineAudioContext(offlineConfig, recording_time_ms);
         lab::AudioContext& ac = *context.get();
 
         std::shared_ptr<OscillatorNode> oscillator;
@@ -238,6 +241,9 @@ struct ex_offline_rendering : public labsound_example
         bool complete = false;
         context->offlineRenderCompleteCallback = [&context, &recorder, &complete, offlineConfig]() {
             recorder->stopRecording();
+
+            printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
+
             context->removeAutomaticPullNode(recorder);
             recorder->writeRecordingToWav("ex_offline_rendering.wav");
             complete = true;
@@ -247,9 +253,6 @@ struct ex_offline_rendering : public labsound_example
         // It needs to acquire the graph + render locks, so it must
         // be outside the scope of where we make changes to the graph.
         context->startOfflineRendering();
-
-        // record for one second
-        Wait(std::chrono::milliseconds(100));
 
         while (!complete)
         {

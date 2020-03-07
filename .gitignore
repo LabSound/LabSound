@@ -108,7 +108,5 @@ xcuserdata/
 # Qmake user file
 *.pro.user
 
-assets/ex_granulation_node.wav
-assets/ex_osc_pop.wav
-/examples/src/ExamplesMain.cpp
+assets/ex_*.wav
 
