@@ -317,7 +317,16 @@ void AudioContext::update()
                 auto connection = m_internal->pendingParamConnections.front();
                 m_internal->pendingParamConnections.pop();
                 if (std::get<2>(connection) == ConnectionType::Connect)
-                    AudioParam::connect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<3>(connection)));
+                {
+                    auto connect_node = std::get<1>(connection);
+                    AudioParam::connect(gLock, std::get<0>(connection), connect_node->output(std::get<3>(connection)));
+
+                    // if unscheduled it should start to play as soon as possible
+                    if (!connect_node->isScheduledNode())
+                    {
+                        connect_node->_scheduler.start(0);
+                    }
+                }
                 else
                     AudioParam::disconnect(gLock, std::get<0>(connection), std::get<1>(connection)->output(std::get<3>(connection)));
             }

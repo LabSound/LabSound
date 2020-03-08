@@ -167,7 +167,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
         ASSERT(output);
 
         // Render audio from this output.
-        AudioBus * connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames, 0, AudioNode::ProcessingSizeInFrames);
+        AudioBus * connectionBus = output->pull(r, nullptr, AudioNode::ProcessingSizeInFrames, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
         /// @TODO it was surprising in practice that the inputs are summed, as opposed to simply overriding.
