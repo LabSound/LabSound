@@ -331,7 +331,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
         // damp out the first samples
         int damp = std::min(start_zeroes + steps, bufferSize) - steps;
         for (auto & out : m_outputs)
-            for (int i = 0; i < out->numberOfChannels(); ++i)
+            for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
             {
                 float* data = out->bus(r)->channel(i)->mutableData() + damp;
                 for (int j = 0; j < steps; ++j)

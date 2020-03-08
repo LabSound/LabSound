@@ -214,15 +214,11 @@ public:
     std::vector<std::string> settingNames() const;
     std::vector<std::string> settingShortNames() const;
 
-    // USER FACING FUNCTIONS >
-
     std::shared_ptr<AudioParam> param(char const * const str);
     std::shared_ptr<AudioSetting> setting(char const * const str);
 
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
-
-    // USER FACING FUNCTIONS <
 
 protected:
     virtual void clearPannerNode() {}

@@ -24,6 +24,8 @@ public:
 
     virtual bool hasBang() const override { return true; }
 
+    std::shared_ptr<AudioSetting> preset() const { return _preset; }
+
     // SfxrNode - values in sfxr units
     std::shared_ptr<AudioSetting> waveType() const { return _waveType; }
 
@@ -83,22 +85,23 @@ public:
     // some presets
     void setDefaultBeep();
     void coin();
-    void laser(ContextRenderLock &);
+    void laser();
     void explosion();
     void powerUp();
-    void hit(ContextRenderLock &);
+    void hit();
     void jump();
-    void select(ContextRenderLock &);
+    void select();
 
     // mutate the current sound
-    void mutate(ContextRenderLock &);
-    void randomize(ContextRenderLock &);
+    void mutate();
+    void randomize();
 
 private:
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
+    std::shared_ptr<AudioSetting> _preset;
     std::shared_ptr<AudioSetting> _waveType;
     std::shared_ptr<AudioParam> _attack;
     std::shared_ptr<AudioParam> _sustainTime;

@@ -79,6 +79,54 @@ std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRender
     return {};
 }
 
+AudioStreamConfig GetDefaultInputAudioDeviceConfiguration()
+{
+    AudioStreamConfig inputConfig;
+
+    const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
+    const uint32_t default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
+    const uint32_t default_input_device = lab::GetDefaultInputAudioDeviceIndex();
+
+    AudioDeviceInfo defaultInputInfo;
+    for (auto& info : audioDevices)
+    {
+        if (info.index == default_input_device) 
+            defaultInputInfo = info;
+    }
+
+    if (defaultInputInfo.index == -1)
+        throw std::invalid_argument("the default audio input device was requested but none were found");
+
+    inputConfig.device_index = defaultInputInfo.index;
+    inputConfig.desired_channels = std::min(uint32_t(1), defaultInputInfo.num_input_channels);
+    inputConfig.desired_samplerate = defaultInputInfo.nominal_samplerate;
+    return inputConfig;
+}
+
+AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration()
+{
+    AudioStreamConfig outputConfig;
+
+    const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
+    const uint32_t default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
+    const uint32_t default_input_device = lab::GetDefaultInputAudioDeviceIndex();
+
+    AudioDeviceInfo defaultOutputInfo;
+    for (auto& info : audioDevices)
+    {
+        if (info.index == default_output_device) 
+            defaultOutputInfo = info;
+    }
+
+    if (defaultOutputInfo.index == -1)
+        throw std::invalid_argument("the default audio output device was requested but none were found");
+
+    outputConfig.device_index = defaultOutputInfo.index;
+    outputConfig.desired_channels = std::min(uint32_t(2), defaultOutputInfo.num_output_channels);
+    outputConfig.desired_samplerate = defaultOutputInfo.nominal_samplerate;
+    return outputConfig;
+}
+
 namespace
 {
     char const * const NodeNames[] = {
