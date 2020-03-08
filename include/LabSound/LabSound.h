@@ -62,6 +62,9 @@ namespace lab
 
     std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
 
+    AudioStreamConfig GetDefaultInputAudioDeviceConfiguration();
+    AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration();
+
     char const * const * const AudioNodeNames();
 }
 

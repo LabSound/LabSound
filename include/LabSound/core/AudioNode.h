@@ -244,8 +244,6 @@ public:
     std::vector<std::string> settingNames() const;
     std::vector<std::string> settingShortNames() const;
 
-    // USER FACING FUNCTIONS >
-
     std::shared_ptr<AudioParam> param(char const * const str);
     std::shared_ptr<AudioSetting> setting(char const * const str);
 

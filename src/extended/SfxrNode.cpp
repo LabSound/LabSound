@@ -593,6 +593,8 @@ namespace lab
 {
 
 char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
+char const * const s_presets[11] = { "Default", "Coin", "Laser", "Explosion", "Power Up", "Hit", "Jump", "Select", "Mutate", "Random", nullptr };
+
 
 SfxrNode::SfxrNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac)
@@ -601,6 +603,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     // Output is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
+    _preset = make_shared<AudioSetting>("preset", "SET ", s_presets);
     _waveType = make_shared<AudioSetting>("waveType", "WAVE", s_waveTypes);
     _attack = make_shared<AudioParam>("attack", "ATCK", 0, 0, 1);
     _sustainTime = make_shared<AudioParam>("sustain", "SUS ", 0.3, 0, 1);
@@ -625,6 +628,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", "HPFC", 0, 0, 1);
     _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", "HPFS", 0, -1, 1);
 
+    m_settings.push_back(_preset);
     m_settings.push_back(_waveType);
     m_params.push_back(_attack);
     m_params.push_back(_sustainTime);
@@ -654,6 +658,24 @@ SfxrNode::SfxrNode(AudioContext & ac)
     sfxr->PlaySample();
 
     initialize();
+
+    _preset->setValueChanged([this]()
+        {
+            int value = this->_preset->valueUint32();
+            switch (value)
+            {
+            case 0: this->setDefaultBeep(); break;
+            case 1: this->coin(); break;
+            case 2: this->laser(); break;
+            case 3: this->explosion(); break;
+            case 4: this->powerUp(); break;
+            case 5: this->hit(); break;
+            case 6: this->jump(); break;
+            case 7: this->select(); break;
+            case 8: this->mutate(); break;
+            case 9: this->randomize(); break;
+            }
+        });
 }
 
 SfxrNode::~SfxrNode()
@@ -747,17 +769,18 @@ void SfxrNode::process(ContextRenderLock & r, int bufferSize, int offset, int co
 
 #undef UPDATE
 
-    float * fbuf = (float *) alloca(sizeof(float) * n);
-    memset(fbuf, 0, sizeof(float) * n);
-    sfxr->SynthSample(n, fbuf, NULL);
+    memset(destP, 0, sizeof(float) * n);
+    sfxr->SynthSample(n, destP, NULL);
+
+    /// @TODO check - does this really need clamping? If yes, should there be a comopressor of some sort here?
     while (n--)
     {
-        float f = fbuf[n];
+        float f = destP[n];
         if (f < -1.0f)
             f = -1.0f;
         else if (f > 1.0f)
             f = 1.0f;
-        *destP++ = f;
+        destP[n] = f;
     }
 
     outputBus->clearSilentFlag();
@@ -843,7 +866,7 @@ void SfxrNode::coin()
 }
 
 /// @TODO the audioParams should be read into buffers in the case that they are time varying
-void SfxrNode::laser(ContextRenderLock & r)
+void SfxrNode::laser()
 {
     setDefaultBeep();
     _waveType->setEnumeration(rnd(2));
@@ -857,13 +880,12 @@ void SfxrNode::laser(ContextRenderLock & r)
     }
     else
     {
+        ContextRenderLock r(nullptr, "laser");
         _startFrequency->setValue(0.5f + frnd(0.5f));
         _minFrequency->setValue(_startFrequency->value(r) - 0.2f - frnd(0.6f));
         if (_minFrequency->value(r) < 0.2f) _minFrequency->setValue(0.2f);
         _slide->setValue(-0.15f - frnd(0.2f));
     }
-    if (_waveType->valueUint32() == SAWTOOTH)
-        _squareDuty->setValue(1);
     if (rnd(1))
     {
         _squareDuty->setValue(frnd(0.5f));
@@ -959,7 +981,7 @@ void SfxrNode::powerUp()
 }
 
 /// @TODO remove need for context lock see above
-void SfxrNode::hit(ContextRenderLock & r)
+void SfxrNode::hit()
 {
     setDefaultBeep();
     _waveType->setEnumeration(rnd(2));
@@ -995,7 +1017,7 @@ void SfxrNode::jump()
 }
 
 /// @TODO remove need for context lock see above
-void SfxrNode::select(ContextRenderLock & r)
+void SfxrNode::select()
 {
     setDefaultBeep();
     _waveType->setEnumeration(rnd(1));
@@ -1010,8 +1032,9 @@ void SfxrNode::select(ContextRenderLock & r)
     _hpFilterCutoff->setValue(0.1f);
 }
 
-void SfxrNode::mutate(ContextRenderLock & r)
+void SfxrNode::mutate()
 {
+    ContextRenderLock r(nullptr, "mutate");
     if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
     if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
     if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
@@ -1036,8 +1059,9 @@ void SfxrNode::mutate(ContextRenderLock & r)
 }
 
 /// @TODO remove need for context lock see above
-void SfxrNode::randomize(ContextRenderLock & r)
+void SfxrNode::randomize()
 {
+    ContextRenderLock r(nullptr, "randomize");
     if (rnd(1))
         _startFrequency->setValue(cube(frnd(2) - 1) + 0.5f);
     else
