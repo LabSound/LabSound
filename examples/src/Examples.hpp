@@ -278,18 +278,14 @@ struct ex_tremolo : public labsound_example
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
-
         std::shared_ptr<OscillatorNode> osc;
-
-        std::shared_ptr<ADSRNode> trigger;
-
         {
             ContextRenderLock r(context.get(), "ex_tremolo");
 
             modulator = std::make_shared<OscillatorNode>(ac);
             modulator->setType(OscillatorType::SINE);
-            modulator->start(0);
             modulator->frequency()->setValue(8.0f);
+            modulator->start(0);
 
             modulatorGain = std::make_shared<GainNode>(ac);
             modulatorGain->gain()->setValue(10);
@@ -303,7 +299,7 @@ struct ex_tremolo : public labsound_example
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
             context->connect(modulatorGain, modulator, 0, 0);
-            context->connectParam(osc->frequency(), modulatorGain, 0);
+            context->connectParam(osc->detune(), modulatorGain, 0);
             context->connect(context->device(), osc, 0, 0);
         }
 
