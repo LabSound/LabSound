@@ -470,9 +470,9 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
     outputBus->clearSilentFlag();
 }
 
-void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize)
 {
-    return processPolyBLEP(r, bufferSize, offset, count);
+    return processPolyBLEP(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
 }
 
 bool PolyBLEPNode::propagatesSilence(ContextRenderLock & r) const

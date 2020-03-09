@@ -19,7 +19,7 @@ public:
     virtual ~SfxrNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
     virtual bool hasBang() const override { return true; }

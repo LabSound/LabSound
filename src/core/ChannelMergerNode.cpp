@@ -30,7 +30,7 @@ void ChannelMergerNode::addInputs(int n)
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 }
 
-void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
 {
     auto output = this->output(0);
     ASSERT_UNUSED(bufferSize, bufferSize == output->bus(r)->length());

@@ -29,7 +29,7 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
     uninitialize();
 }
 
-void AudioHardwareInputNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 

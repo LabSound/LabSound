@@ -22,7 +22,7 @@ public:
     void addOutputs(int numberOfOutputs);
 
     // AudioNode
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
 private:

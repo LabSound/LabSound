@@ -26,8 +26,8 @@ public:
 
     bool isPlayingOrScheduled() const
     {
-        return _scheduler._playbackState <= SchedulingState::PLAYING &&
-               _scheduler._playbackState >= SchedulingState::SCHEDULED;
+        return _scheduler._playbackState >= SchedulingState::SCHEDULED &&
+               _scheduler._playbackState <= SchedulingState::STOPPING;
     }
 
     // Start time, measured as seconds from the current epochal time

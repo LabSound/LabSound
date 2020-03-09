@@ -120,7 +120,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
 
     // This is a HACK to allow for HRTF tail-time - avoids glitch at end.
     // FIXME: implement tailTime for each AudioNode for a more general solution to this problem.
-    /// @TODO the global de-popper means tailTime can be deleted everywhere
+    /// @TODO the global de-popper means tailTime can be deleted everywhere, once it is fully implemented
     // https://bugs.webkit.org/show_bug.cgi?id=77224
     if (m_isGrain) endFrame += 512;
 
@@ -252,7 +252,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
     return true;
 }
 
-void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize)
 {
     if (!m_sourceBus->valueBus() || !isInitialized() || !r.context() || !m_inPlaceBus)
     {
@@ -309,8 +309,8 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize, int offse
     }
 
     // Update sample-accurate scheduling
-    int quantumFrameOffset = offset;
-    int bufferFramesToProcess = count;
+    int quantumFrameOffset = _scheduler._renderOffset;
+    int bufferFramesToProcess = _scheduler._renderLength;
 
     if (!bufferFramesToProcess)
     {
@@ -385,16 +385,15 @@ void SampledAudioNode::setOnEnded(std::function<void()> fn)
         v->setOnEnded(fn);
 }
 
-void SampledAudioNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void SampledAudioNode::process(ContextRenderLock & r, int bufferSize)
 {
     std::stack<SampledAudioVoice *> free_voices;
     for (const auto & v : voices)
     {
         v->setPitchRate(r, (float)totalPitchRate(r));
-        v->processIfNecessary(r, bufferSize, offset, count);
-        if (v->isPlayingOrScheduled()) continue; // voice is occupied
-        else if (v->playbackState() == SchedulingState::UNSCHEDULED ||
-                 v->playbackState() == SchedulingState::FINISHED) { free_voices.push(v.get()); }
+        v->processIfNecessary(r, bufferSize);
+        if (!v->isPlayingOrScheduled())
+            free_voices.push(v.get());
     }
 
     if (free_voices.size())

@@ -261,7 +261,7 @@ StereoPannerNode::~StereoPannerNode()
     uninitialize();
 }
 
-void StereoPannerNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 

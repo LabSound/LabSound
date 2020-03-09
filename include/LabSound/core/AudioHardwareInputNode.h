@@ -27,7 +27,7 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     // AudioNode interface
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 };
 

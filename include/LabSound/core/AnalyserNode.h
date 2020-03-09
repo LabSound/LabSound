@@ -33,7 +33,7 @@ public:
     AnalyserNode(AudioContext & ac, int fftSize);
     virtual ~AnalyserNode();
 
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
     void setFftSize(ContextRenderLock &, int fftSize);

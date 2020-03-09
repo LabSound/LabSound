@@ -24,7 +24,7 @@ public:
         _function = fn;
     }
 
-    virtual void process(ContextRenderLock & r, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock & r, int bufferSize) override;
     virtual void reset(ContextRenderLock & r) override;
 
     double now() const { return _now; }

@@ -22,10 +22,10 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, int outputCh
 // We override pullInputs() as an optimization allowing this node to take advantage of in-place processing,
 // where the input is simply passed through unprocessed to the output.
 // Note: this only applies if the input and output channel counts match.
-void AudioBasicInspectorNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioBasicInspectorNode::pullInputs(ContextRenderLock & r, int bufferSize)
 {
     // Render input stream - try to render directly into output bus for pass-through processing where process() doesn't need to do anything...
-    input(0)->pull(r, output(0)->bus(r), bufferSize, offset, count);
+    input(0)->pull(r, output(0)->bus(r), bufferSize);
 }
 
 void AudioBasicInspectorNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)

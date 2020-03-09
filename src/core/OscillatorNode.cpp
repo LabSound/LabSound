@@ -459,7 +459,7 @@ bool OscillatorNode::propagatesSilence(ContextRenderLock & r) const
 
     void OscillatorNode::reset(ContextRenderLock &)
     {
-        process_oscillator(r, bufferSize, offset, count);
+        process_oscillator(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
         return;
     }
 

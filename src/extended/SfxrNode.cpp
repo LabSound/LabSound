@@ -690,7 +690,7 @@ void SfxrNode::bang(const double length)
     sfxr->PlaySample();
 }
 
-void SfxrNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void SfxrNode::process(ContextRenderLock &r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -700,8 +700,8 @@ void SfxrNode::process(ContextRenderLock & r, int bufferSize, int offset, int co
         return;
     }
 
-    int quantumFrameOffset = offset;
-    int nonSilentFramesToProcess = count;
+    int quantumFrameOffset = _scheduler._renderOffset;
+    int nonSilentFramesToProcess = _scheduler._renderLength;
 
     if (!nonSilentFramesToProcess)
     {

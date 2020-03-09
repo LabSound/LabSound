@@ -44,7 +44,7 @@ void AudioBasicProcessorNode::uninitialize()
     AudioNode::uninitialize();
 }
 
-void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * destinationBus = output(0)->bus(r);
 
@@ -64,10 +64,10 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize, int
 }
 
 // Nice optimization in the very common case allowing for "in-place" processing
-void AudioBasicProcessorNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioBasicProcessorNode::pullInputs(ContextRenderLock & r, int bufferSize)
 {
     // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(r), bufferSize, offset, count);
+    input(0)->pull(r, output(0)->bus(r), bufferSize);
 }
 
 void AudioBasicProcessorNode::reset(ContextRenderLock &)

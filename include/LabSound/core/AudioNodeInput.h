@@ -43,7 +43,7 @@ public:
     // In the case of multiple connections, the result is summed onto the internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize, int offset, int count);
+    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
     AudioBus * bus(ContextRenderLock &);

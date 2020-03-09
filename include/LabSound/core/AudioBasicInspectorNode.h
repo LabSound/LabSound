@@ -29,7 +29,7 @@ public:
     virtual ~AudioBasicInspectorNode() = default;
 
     // AudioNode
-    virtual void pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count) override;
+    virtual void pullInputs(ContextRenderLock & r, int bufferSize) override;
     virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *) override;
 };
 

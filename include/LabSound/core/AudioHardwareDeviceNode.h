@@ -38,7 +38,7 @@ public:
     virtual ~AudioHardwareDeviceNode();
 
     // AudioNode interface
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
+    virtual void process(ContextRenderLock &, int bufferSize) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;

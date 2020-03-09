@@ -25,7 +25,7 @@ public:
     SpectralMonitorNode(AudioContext & ac);
     virtual ~SpectralMonitorNode();
 
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
     void spectralMag(std::vector<float> & result);

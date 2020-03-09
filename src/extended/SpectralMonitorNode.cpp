@@ -113,7 +113,7 @@ SpectralMonitorNode::~SpectralMonitorNode()
     delete internalNode;
 }
 
-void SpectralMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void SpectralMonitorNode::process(ContextRenderLock &r, int bufferSize)
 {
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.

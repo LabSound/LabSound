@@ -91,6 +91,10 @@ struct ex_simple : public labsound_example
         oscillator->setType(OscillatorType::SINE);
         oscillator->start(0.0f);
 
+        _nodes.push_back(oscillator);
+        _nodes.push_back(musicClipNode);
+        _nodes.push_back(gain);
+
         Wait(std::chrono::seconds(6));
     }
 };
@@ -136,17 +140,33 @@ struct ex_osc_pop : public labsound_example
             context->connect(recorder, gain, 0, 0);
         }
 
-        for (int i = 0; i < 10; ++i)
+        // retain nodes until demo end
+        _nodes.push_back(oscillator);
+        _nodes.push_back(recorder);
+        _nodes.push_back(gain);
+
+        // queue up 5 1/2 second chirps
+        for (float i = 0; i < 5.f; i += 1.f)
         {
-            oscillator->start(0.f);
-            Wait(std::chrono::milliseconds(250));
-            oscillator->stop(0.f);
-            Wait(std::chrono::milliseconds(250));
+            oscillator->start(0);
+            oscillator->stop(0.5f);
+            Wait(std::chrono::milliseconds(1000));
         }
 
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
         recorder->writeRecordingToWav("ex_osc_pop.wav");// , false);
+
+        // wait at least one context update to allow the disconnections to occur, and for any final
+        // render quantum to finish.
+        // @TODO the only safe and reasonable thing is to expose a "join" on the context that
+        // disconnects the destination node from its graph, then waits a quantum.
+
+        // @TODO the example app should have a set<shared_ptr<AudioNode>> so that the shared_ptrs
+        // are not released until the example is finished.
+
+        context->disconnect(context->device());
+        Wait(std::chrono::milliseconds(100));
     }
 };
 
@@ -437,6 +457,10 @@ struct ex_runtime_graph_update : public labsound_example
                 oscillator2->start(0.00);
             }
 
+            _nodes.push_back(oscillator1);
+            _nodes.push_back(oscillator2);
+            _nodes.push_back(gain);
+
             for (int i = 0; i < 4; ++i)
             {
                 context->disconnect(nullptr, oscillator1, 0, 0);
@@ -450,8 +474,6 @@ struct ex_runtime_graph_update : public labsound_example
 
             context->disconnect(nullptr, oscillator1, 0, 0);
             context->disconnect(nullptr, oscillator2, 0, 0);
-
-            context.reset();
         }
 
         std::cout << "OscillatorNode 1 use_count: " << oscillator1.use_count() << std::endl;
@@ -587,26 +609,34 @@ struct ex_peak_compressor : public labsound_example
             snare_node->setBus(r, snare);
             context->connect(filter, snare_node, 0, 0);
 
+            _nodes.push_back(kick_node);
+            _nodes.push_back(hihat_node);
+            _nodes.push_back(snare_node);
+            _nodes.push_back(peakComp);
+            _nodes.push_back(filter);
+
             // Speed Metal
-            double startTime = 0.1f;
-            double eighthNoteTime = 1.0f / 16.0f;
-            for (int bar = 0; bar < 32; bar++)
+            float startTime = 0.1f;
+            float bpm = 20.f;
+            float bar_length = 60.f / bpm;
+            float eighthNoteTime = bar_length / 8.0f;
+            for (float bar = 0; bar < 8; bar += 1)
             {
-                const double time = startTime + bar * 8 * eighthNoteTime;
+                float time = startTime + bar * bar_length;
 
-                kick_node->schedule(time);
-                kick_node->schedule(time + 4 * eighthNoteTime);
+                //kick_node->schedule(time);
+                //kick_node->schedule(time + 4 * eighthNoteTime);
 
-                snare_node->schedule(time + 2 * eighthNoteTime);
-                snare_node->schedule(time + 6 * eighthNoteTime);
+                //snare_node->schedule(time + 2 * eighthNoteTime);
+                //snare_node->schedule(time + 6 * eighthNoteTime);
                 
-                for (int i = 0; i < 8; ++i) hihat_node->schedule(time + 6 * eighthNoteTime);
+                float hihat_beat = 4;
+                for (float i = 0; i < hihat_beat; i += 1)
+                    hihat_node->schedule(time + bar_length * i / hihat_beat);
             }
         }
 
         Wait(std::chrono::seconds(10));
-
-        context.reset();
     }
 };
 
@@ -640,6 +670,9 @@ struct ex_stereo_panning : public labsound_example
 
         if (audioClipNode)
         {
+            _nodes.push_back(audioClipNode);
+            _nodes.push_back(stereoPanner);
+
             audioClipNode->isLooping()->setBool(true, false);
 
             const int seconds = 8;
@@ -657,7 +690,6 @@ struct ex_stereo_panning : public labsound_example
             Wait(std::chrono::seconds(seconds));
 
             controlThreadTest.join();
-
         }
         else
         {
@@ -698,6 +730,9 @@ struct ex_hrtf_spatialization : public labsound_example
 
         if (audioClipNode)
         {
+            _nodes.push_back(audioClipNode);
+            _nodes.push_back(panner);
+
             audioClipNode->isLooping()->setBool(true, false);
 
             context->listener()->setPosition({0, 0, 0});
@@ -783,6 +818,12 @@ struct ex_convolution_reverb : public labsound_example
             context->connect(context->device(), outputGain, 0, 0);
         }
 
+        _nodes.push_back(convolve);
+        _nodes.push_back(wetGain);
+        _nodes.push_back(dryGain);
+        _nodes.push_back(voiceNode);
+        _nodes.push_back(outputGain);
+
         Wait(std::chrono::seconds(20));
     }
 };
@@ -830,6 +871,9 @@ struct ex_misc : public labsound_example
 
             audioClipNode->schedule(0.25);
         }
+
+        _nodes.push_back(audioClipNode);
+        //_nodes.push_back(pingping);
 
         Wait(std::chrono::seconds(10));
     }
@@ -948,6 +992,20 @@ struct ex_dalek_filter : public labsound_example
             context->connect(outGain, compressor, 0, 0);
             context->connect(context->device(), outGain, 0, 0);
         }
+
+        _nodes.push_back(input);
+        _nodes.push_back(vIn);
+        _nodes.push_back(vInGain);
+        _nodes.push_back(vInInverter1);
+        _nodes.push_back(vInInverter2);
+        _nodes.push_back(vInInverter3);
+        _nodes.push_back(vInDiode1);
+        _nodes.push_back(vInDiode2);
+        _nodes.push_back(vcDiode3);
+        _nodes.push_back(vcDiode4);
+        _nodes.push_back(vcInverter1);
+        _nodes.push_back(outGain);
+        _nodes.push_back(compressor);
 
         Wait(std::chrono::seconds(30));
     }
@@ -1106,6 +1164,18 @@ struct ex_redalert_synthesis : public labsound_example
             context->connectParam(filterSum->gain(), outputGainFunction, 0);
             context->connect(context->device(), filterSum, 0, 0);
         }
+
+        _nodes.push_back(sweep);
+        _nodes.push_back(outputGainFunction);
+        _nodes.push_back(osc);
+        _nodes.push_back(oscGain);
+        _nodes.push_back(resonator);
+        _nodes.push_back(resonatorGain);
+        _nodes.push_back(resonanceSum);
+        _nodes.push_back(delaySum);
+        _nodes.push_back(filterSum);
+        for (int i = 0; i < 5; ++i) _nodes.push_back(delay[i]);
+        for (int i = 0; i < 5; ++i) _nodes.push_back(filter[i]);
 
         Wait(std::chrono::seconds(10));
     }
@@ -1326,6 +1396,9 @@ struct ex_wavepot_dsp : public labsound_example
             context->connect(context->device(), envelope, 0, 0);
         }
 
+        _nodes.push_back(grooveBox);
+        _nodes.push_back(envelope);
+
         Wait(std::chrono::seconds(1 + (int) songLenSeconds));
         context.reset();
     }
@@ -1367,6 +1440,10 @@ struct ex_granulation_node : public labsound_example
         context->connect(recorder, gain, 0, 0);
 
         granulation_node->start(0.0f);
+
+        _nodes.push_back(granulation_node);
+        _nodes.push_back(gain);
+        _nodes.push_back(recorder);
 
         Wait(std::chrono::seconds(10));
 
@@ -1415,6 +1492,9 @@ struct ex_poly_blep : public labsound_example
             PolyBLEPType::TRAPEZOID_FIXED,
             PolyBLEPType::TRAPEZOID_VARIABLE
         };
+
+        _nodes.push_back(polyBlep);
+        _nodes.push_back(gain);
 
         double now_in_ms = 0;
         int waveformIndex = 0;
