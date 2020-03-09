@@ -32,7 +32,7 @@ public:
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
     // Called from context's audio thread.
-    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize, int offset, int count);
+    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, int bufferSize);
 
     // bus() will contain the rendered audio after pull() is called for each rendering time quantum.
     AudioBus * bus(ContextRenderLock &) const;

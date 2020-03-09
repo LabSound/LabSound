@@ -151,7 +151,7 @@ public:
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
     // Called from context's audio thread.
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) = 0;
+    virtual void process(ContextRenderLock &, int bufferSize) = 0;
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
@@ -173,7 +173,7 @@ public:
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
-    void processIfNecessary(ContextRenderLock & r, int bufferSize, int offset, int count);
+    void processIfNecessary(ContextRenderLock & r, int bufferSize);
 
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
@@ -230,7 +230,7 @@ protected:
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock &, int bufferSize, int offset, int count);
+    virtual void pullInputs(ContextRenderLock &, int bufferSize);
 
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock &);

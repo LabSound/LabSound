@@ -490,7 +490,7 @@ void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, int framesTo
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
     {
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess, 0, framesToProcess);
+        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
     }
 }
 

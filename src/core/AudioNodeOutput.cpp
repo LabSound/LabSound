@@ -82,7 +82,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock & r)
     }
 }
 
-AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize, int offset, int count)
+AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize)
 {
     ASSERT(r.context());
     ASSERT(m_renderingFanOutCount > 0 || m_renderingParamFanOutCount > 0);
@@ -107,7 +107,7 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, i
     if (!n)
         return bus(r);
 
-    n->processIfNecessary(r, bufferSize, offset, count);
+    n->processIfNecessary(r, bufferSize);
     return bus(r);
 }
 

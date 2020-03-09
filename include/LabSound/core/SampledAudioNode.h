@@ -85,7 +85,7 @@ public:
     bool renderSample(ContextRenderLock & r, AudioBus * bus, int destinationSampleOffset, int frameSize);
     void setPitchRate(ContextRenderLock & r, const float rate) { m_totalPitchRate = rate; }
 
-    virtual void process(ContextRenderLock & r, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock & r, int bufferSize) override;
     virtual void reset(ContextRenderLock & r) override;
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -141,7 +141,7 @@ public:
     SampledAudioNode(AudioContext & ac);
     virtual ~SampledAudioNode();
 
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);

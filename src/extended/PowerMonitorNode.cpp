@@ -40,7 +40,7 @@ int PowerMonitorNode::windowSize() const
     return _windowSize->valueUint32();
 }
 
-void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
 {
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.
@@ -71,8 +71,8 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset
             channels.push_back(bus->channel(i)->data());
         }
 
-        int start = static_cast<int>(count) - static_cast<int>(_windowSize->valueUint32());
-        int end = static_cast<int>(count);
+        int start = static_cast<int>(bufferSize) - static_cast<int>(_windowSize->valueUint32());
+        int end = static_cast<int>(bufferSize);
         if (start < 0)
             start = 0;
 
@@ -83,7 +83,7 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize, int offset
                 float p = channels[c][i];
                 power += p * p;
             }
-        float rms = sqrtf(power / (numberOfChannels * count));
+        float rms = sqrtf(power / (numberOfChannels * bufferSize));
 
         // Protect against accidental overload due to bad values in input stream
         const float kMinPower = 0.000125f;

@@ -52,7 +52,7 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
     }
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
-    AudioBus * renderedBus = required_inlet->pull(renderLock, dst, frames, 0, frames);
+    AudioBus * renderedBus = required_inlet->pull(renderLock, dst, frames);
 
     if (!renderedBus)
     {

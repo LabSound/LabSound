@@ -34,7 +34,7 @@ GainNode::~GainNode()
     uninitialize();
 }
 
-void GainNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void GainNode::process(ContextRenderLock &r, int bufferSize)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
@@ -55,9 +55,15 @@ void GainNode::process(ContextRenderLock & r, int bufferSize, int offset, int co
             ASSERT(bufferSize <= m_sampleAccurateGainValues.size());
             if (bufferSize <= m_sampleAccurateGainValues.size())
             {
-                float* gainValues = m_sampleAccurateGainValues.data() + offset;
-                gain()->calculateSampleAccurateValues(r, gainValues, count);
-                outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, count);
+                float* gainValues_base = m_sampleAccurateGainValues.data();
+                float* gainValues = gainValues_base + _scheduler._renderOffset;
+                gain()->calculateSampleAccurateValues(r, gainValues, _scheduler._renderLength);
+                if (_scheduler._renderOffset > 0)
+                    memset(gainValues_base, 0, sizeof(float) * _scheduler._renderOffset);
+                int bzero_start = _scheduler._renderOffset + _scheduler._renderLength;
+                if (bzero_start < bufferSize)
+                    memset(gainValues_base + bzero_start, 0, sizeof(float) * bufferSize - bzero_start);
+                outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, m_sampleAccurateGainValues.data(), bufferSize);
             }
         }
         else

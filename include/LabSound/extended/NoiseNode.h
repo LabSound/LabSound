@@ -29,7 +29,7 @@ public:
     NoiseNode(AudioContext & ac);
     virtual ~NoiseNode();
 
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
     NoiseType type() const;

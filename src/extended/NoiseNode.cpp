@@ -43,7 +43,7 @@ NoiseNode::NoiseType NoiseNode::type() const
     return NoiseType(_type->valueUint32());
 }
 
-void NoiseNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void NoiseNode::process(ContextRenderLock &r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -53,8 +53,8 @@ void NoiseNode::process(ContextRenderLock & r, int bufferSize, int offset, int c
         return;
     }
 
-    int quantumFrameOffset = offset;
-    int nonSilentFramesToProcess = count;
+    int quantumFrameOffset = _scheduler._renderOffset;
+    int nonSilentFramesToProcess = _scheduler._renderLength;
 
     if (!nonSilentFramesToProcess)
     {

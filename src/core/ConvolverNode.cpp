@@ -214,7 +214,7 @@ std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const
     return _impulseResponseClip->valueBus();
 }
 
-void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
     AudioBus * inputBus = input(0)->bus(r);
@@ -232,8 +232,8 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
         outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
     }
 
-    int quantumFrameOffset = offset;
-    int nonSilentFramesToProcess = count;
+    int quantumFrameOffset = _scheduler._renderOffset;
+    int nonSilentFramesToProcess = _scheduler._renderLength;
 
     int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
     int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
@@ -252,7 +252,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
     {
         int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
         lab::sp_conv * conv = _kernels[kernel].conv;
-        float* destP = outputBus->channel(i)->mutableData() + offset;
+        float* destP = outputBus->channel(i)->mutableData() + _scheduler._renderOffset;
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
@@ -262,7 +262,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
             float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;
             size_t c = input_bus->channel(in_channel)->length();
-            for (int j = 0; j < count; ++j)
+            for (int j = 0; j < _scheduler._renderLength; ++j)
             {
                 lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
                 lab::SPFLOAT out = 0.f;
@@ -272,7 +272,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize, int offset, i
         }
     }
 
-    _now += double(count) / r.context()->sampleRate();
+    _now += double(_scheduler._renderLength) / r.context()->sampleRate();
     outputBus->clearSilentFlag();
 }
 

@@ -274,7 +274,7 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
         input->changedOutputs(g);
 }
 
-void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
     if (!isInitialized())
         return;
@@ -305,7 +305,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
 
     // get inputs in preparation for processing
 
-    pullInputs(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+    pullInputs(r, bufferSize);
 
     //  initialize the busses with start and final zeroes.
 
@@ -325,7 +325,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
 
     // do the signal processing
 
-    process(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+    process(r, bufferSize);
 
     // clean pops resulting from starting or stopping
 
@@ -409,14 +409,14 @@ bool AudioNode::propagatesSilence(ContextRenderLock& r) const
         _scheduler._playbackState == SchedulingState::FINISHED;
 }
 
-void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize, int offset, int count)
+void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
 {
     ASSERT(r.context());
 
     // Process all of the AudioNodes connected to our inputs.
     for (auto & in : m_inputs)
     {
-        in->pull(r, 0, bufferSize, offset, count);
+        in->pull(r, 0, bufferSize);
     }
 }
 

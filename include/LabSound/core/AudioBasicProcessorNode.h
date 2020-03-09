@@ -24,8 +24,8 @@ public:
     virtual ~AudioBasicProcessorNode() = default;
 
     // AudioNode
-    virtual void process(ContextRenderLock &, int bufferSize, int offset, int count) override;
-    virtual void pullInputs(ContextRenderLock &, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock &, int bufferSize) override;
+    virtual void pullInputs(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;

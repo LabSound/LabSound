@@ -33,7 +33,7 @@ public:
     // The supplied bus is copied for use as an impulse response.
     void setImpulse(std::shared_ptr<AudioBus> bus);
     std::shared_ptr<AudioBus> getImpulse() const;
-    virtual void process(ContextRenderLock & r, int bufferSize, int offset, int count) override;
+    virtual void process(ContextRenderLock & r, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
 protected:

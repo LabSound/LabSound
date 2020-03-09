@@ -124,7 +124,7 @@ AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
     return m_internalSummingBus.get();
 }
 
-AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize, int offset, int count)
+AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize)
 {
     updateRenderingState(r);
 
@@ -137,7 +137,7 @@ AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, in
         auto output = renderingOutput(r, 0);
         if (output)
         {
-            return output->pull(r, inPlaceBus, bufferSize, offset, count);
+            return output->pull(r, inPlaceBus, bufferSize);
         }
 
         num_connections = 0;  // if there's a single input, but it has no output; treat this input as silent.
@@ -160,7 +160,7 @@ AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, in
         if (output)
         {
             // Render audio from this output.
-            AudioBus * connectionBus = output->pull(r, 0, bufferSize, offset, count);
+            AudioBus * connectionBus = output->pull(r, 0, bufferSize);
 
             // Sum, with unity-gain.
             m_internalSummingBus->sumFrom(*connectionBus);

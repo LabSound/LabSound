@@ -267,12 +267,12 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
     outputBus->clearSilentFlag();
 }
 
-void OscillatorNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void OscillatorNode::process(ContextRenderLock & r, int bufferSize)
 {
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     if (type != OscillatorType::CUSTOM)
     {
-        process_oscillator(r, bufferSize, offset, count);
+        process_oscillator(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
         return;
     }
 

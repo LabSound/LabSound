@@ -45,6 +45,8 @@ struct labsound_example
 {
     std::mt19937 randomgenerator;
 
+    std::vector<std::shared_ptr<lab::AudioNode>> _nodes;
+
     virtual void play(int argc, char** argv) = 0;
 
     float MidiToFrequency(int midiNote)

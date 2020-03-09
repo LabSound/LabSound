@@ -30,7 +30,7 @@ void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
     }
 }
 
-void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * source = input(0)->bus(r);
     ASSERT(source);

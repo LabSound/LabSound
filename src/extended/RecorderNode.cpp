@@ -31,7 +31,7 @@ RecorderNode::~RecorderNode()
     uninitialize();
 }
 
-void RecorderNode::process(ContextRenderLock & r, int bufferSize, int offset, int count)
+void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
