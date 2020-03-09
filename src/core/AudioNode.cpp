@@ -19,19 +19,20 @@ using namespace std;
 namespace lab
 {
 
+const int start_envelope = 64;
+const int end_envelope = 64;
+
 AudioNodeScheduler::AudioNodeScheduler(float sampleRate) 
-    : _epochWaveLength(1.f / sampleRate)
+    : _sampleRate(sampleRate)
     , _epoch(0)
     , _startWhen(std::numeric_limits<uint64_t>::max())
     , _stopWhen(std::numeric_limits<uint64_t>::max())
 {
-    // During construction, DeviceNodes will not yet have a sampleRate, so use 1 in that case.
-    _epochWaveLength = sampleRate > 0 ? 1.f / sampleRate : 1.f;
 }
 
 bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
 {
-    uint32_t proposed_epoch = static_cast<uint32_t>(r.context()->currentSampleFrame());
+    uint64_t proposed_epoch = r.context()->currentSampleFrame();
     if (_epoch >= proposed_epoch)
         return false;
 
@@ -39,63 +40,68 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
     _renderOffset = 0;
     _renderLength = epoch_length;
 
-    if (_playbackState == SchedulingState::SCHEDULED)
+    switch (_playbackState)
     {
-        _startWhen += _epoch;
-        _playbackState = SchedulingState::PLAY_PENDING;
-    }
-    if (_playbackState == SchedulingState::FADE_IN)
-    {
-        _playbackState = SchedulingState::PLAYING;
-    }
-    if (_playbackState == SchedulingState::PLAY_PENDING)
-    {
-        if (_epoch + epoch_length >= _startWhen)
+    case SchedulingState::SCHEDULED:
+        // start has been called, start looking for the start time
+        if (_startWhen <= _epoch)
         {
-            if (_epoch >= _startWhen)
-            {
-                _renderOffset = 0;
-                _renderLength = epoch_length;
-            }
-            else
-            {
-                _renderOffset = static_cast<int>(_startWhen - _epoch);
-                _renderLength = epoch_length - _renderOffset;
-            }
-
+            // exactly on start, or late, get going straight away
+            _renderOffset = 0;
+            _renderLength = epoch_length;
             _playbackState = SchedulingState::FADE_IN;
-            _startWhen = std::numeric_limits<uint32_t>::max();
         }
-    }
-    if (_playbackState == SchedulingState::PLAYING)
-    {
-        if (_epoch + epoch_length >= _stopWhen)
+        else if (_startWhen < _epoch + epoch_length)
         {
-            if (_epoch >= _stopWhen)
-                _renderLength = epoch_length - 1;
-            else
-                _renderLength = static_cast<int>(epoch_length - _stopWhen - _epoch - _renderOffset);
+            // start falls within the frame
+            _renderOffset = static_cast<int>(_startWhen - _epoch);
+            _renderLength = epoch_length - _renderOffset;
+            _playbackState = SchedulingState::FADE_IN;
+        }
 
-            // be sure to trigger the damp out
-            if (_renderLength == epoch_length)
-                _renderLength = epoch_length - 1;
+        /// @TODO the case of a start and stop within one epoch needs to be special
+        /// cased, to fit this current architecture, there'd be a FADE_IN_OUT scheduling
+        /// state so that the envelope can be correctly applied.
+        // FADE_IN_OUT would transition to UNSCHEDULED.
+        break;
 
+    case SchedulingState::FADE_IN:
+        // start time has been achieved, there'll be one quantum with fade in applied.
+        _renderOffset = 0;
+        _playbackState = SchedulingState::PLAYING;
+        // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
+
+    case SchedulingState::PLAYING:
+        /// @TODO include the end envelope in the stop check so that a scheduled stop that
+        /// spans this quantum and the next ends in the current quantum
+
+        if (_stopWhen <= _epoch)
+        {
+            // exactly on start, or late, stop straight away, render a whole frame of fade out
+            _renderLength = epoch_length - _renderOffset;
             _playbackState = SchedulingState::STOPPING;
         }
-    }
-    // else is here because if the state was just switched to STOPPING, it needs to render one last time before becoming UNSCHEDULED
-    else if (_playbackState == SchedulingState::STOPPING)
-    {
+        else if (_stopWhen < _epoch + epoch_length)
+        {
+            // stop falls within the frame
+            _renderOffset = 0;
+            _renderLength = static_cast<int>(_stopWhen - _epoch);
+            _playbackState = SchedulingState::STOPPING;
+        }
+
+        // do not fall through to STOPPING because one quantum must render the fade out effect
+        break;
+
+    case SchedulingState::STOPPING:
         if (_epoch + epoch_length >= _stopWhen)
         {
             // scheduled stop has occured, so make sure it doesn't immediately trigger again
-            _stopWhen = std::numeric_limits<uint32_t>::max();
             _playbackState = SchedulingState::UNSCHEDULED;
         }
+        break;
     }
 
     ASSERT(_renderOffset < epoch_length);
-
     return true;
 }
 
@@ -113,12 +119,12 @@ void AudioNodeScheduler::start(double when)
             _playbackState == SchedulingState::RESETTING)
         {
             _playbackState = SchedulingState::PLAYING;
-            _stopWhen = std::numeric_limits<uint32_t>::max();
+            _stopWhen = std::numeric_limits<uint64_t>::max();
         }
         return;
     }
 
-    _startWhen = static_cast<uint32_t>(when * _epochWaveLength);
+    _startWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
     _playbackState = SchedulingState::SCHEDULED;
 }
 
@@ -132,7 +138,7 @@ void AudioNodeScheduler::stop(double when)
     if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
     {
         // stop at a non-finite time means don't stop.
-        _stopWhen = std::numeric_limits<uint32_t>::max(); // cancel stop
+        _stopWhen = std::numeric_limits<uint64_t>::max(); // cancel stop
         if (_playbackState == SchedulingState::STOPPING)
         {
             // if in the process of stopping, set it back to scheduling to start immediately
@@ -148,13 +154,13 @@ void AudioNodeScheduler::stop(double when)
         when = 0;
 
     // let the scheduler know when to activate the STOPPING state
-    _stopWhen = _epoch + static_cast<uint32_t>(when * _epochWaveLength);
+    _stopWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
 }
 
 void AudioNodeScheduler::reset()
 {
-    _startWhen = std::numeric_limits<uint32_t>::max();;
-    _stopWhen = std::numeric_limits<uint32_t>::max();;
+    _startWhen = std::numeric_limits<uint64_t>::max();;
+    _stopWhen = std::numeric_limits<uint64_t>::max();;
     if (_playbackState != SchedulingState::UNSCHEDULED)
         _playbackState = SchedulingState::RESETTING;
 }
@@ -163,7 +169,7 @@ void AudioNodeScheduler::finish(ContextRenderLock & r)
 {
     if (_playbackState < SchedulingState::PLAYING)
         _playbackState = SchedulingState::FINISHING;
-    else if (_playbackState > SchedulingState::PLAYING &&
+    else if (_playbackState >= SchedulingState::PLAYING &&
              _playbackState < SchedulingState::FINISHED)
         _playbackState = SchedulingState::FINISHING;
 
@@ -293,8 +299,9 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
 
     // there may need to be silence at the beginning or end of the current quantum.
 
-    int start_zeroes = _scheduler._renderOffset;
-    int final_zeroes = bufferSize - start_zeroes - _scheduler._renderLength;
+    int start_zero_count = _scheduler._renderOffset;
+    int final_zero_start = _scheduler._renderOffset + _scheduler._renderLength;
+    int final_zero_count = bufferSize - final_zero_start;
 
     // get inputs in preparation for processing
 
@@ -302,56 +309,82 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize, int of
 
     //  initialize the busses with start and final zeroes.
 
-    if (start_zeroes)
+    if (start_zero_count)
     {
         for (auto & out : m_outputs)
             for (int i = 0; i < out->numberOfChannels(); ++i)
-                memset(out->bus(r)->channel(i)->mutableData(), 0, sizeof(float) * start_zeroes);
+                memset(out->bus(r)->channel(i)->mutableData(), 0, sizeof(float) * start_zero_count);
     }
 
-    if (final_zeroes)
+    if (final_zero_count)
     {
         for (auto & out : m_outputs)
             for (int i = 0; i < out->numberOfChannels(); ++i)
-                memset(out->bus(r)->channel(i)->mutableData() + bufferSize - final_zeroes,
-                    0, sizeof(float) * final_zeroes);
+                memset(out->bus(r)->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
     }
 
     // do the signal processing
 
-    process(r, bufferSize, start_zeroes, bufferSize - start_zeroes - final_zeroes);
+    process(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
 
     // clean pops resulting from starting or stopping
 
 #define OOS(x) (float(x) / float(steps))
-    if (_scheduler._playbackState == SchedulingState::FADE_IN)
+    if (start_zero_count > 0 || _scheduler._playbackState == SchedulingState::FADE_IN)
     {
-        int steps = 64;
+        int steps = start_envelope;
+        int damp_start = start_zero_count;
+        int damp_end = start_zero_count + steps;
+        if (damp_end > bufferSize)
+        {
+            damp_end = bufferSize;
+            steps = bufferSize - start_zero_count;
+        }
 
         // damp out the first samples
-        int damp = std::min(start_zeroes + steps, bufferSize) - steps;
-        for (auto & out : m_outputs)
-            for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
-            {
-                float* data = out->bus(r)->channel(i)->mutableData() + damp;
-                for (int j = 0; j < steps; ++j)
-                    data[j] *= OOS(j);
-            }
+        if (damp_end > 0)
+            for (auto & out : m_outputs)
+                for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
+                {
+                    float* data = out->bus(r)->channel(i)->mutableData();
+                    for (int j = damp_start; j < damp_end; ++j)
+                        data[j] *= OOS(j - damp_start);
+                }
     }
 
-    if (final_zeroes)
+    if (final_zero_count > 0 || _scheduler._playbackState == SchedulingState::STOPPING)
     {
-        int steps = 64;
+        int steps = end_envelope;
+        int damp_end, damp_start;
+        if (!final_zero_count)
+        {
+            damp_end = bufferSize - final_zero_count;
+            damp_start = damp_end - steps;
+        }
+        else
+        {
+            damp_end = bufferSize - final_zero_count;
+            damp_start = damp_end - steps;
+        }
+
+        if (damp_start < 0)
+        {
+            damp_start = 0;
+            steps = damp_end;
+        }
 
         // damp out the last samples
-        int damp = std::min(bufferSize - final_zeroes + steps, bufferSize) - steps;
-        for (auto & out : m_outputs)
-            for (int i = 0; i < out->numberOfChannels(); ++i)
-            {
-                float* data = out->bus(r)->channel(i)->mutableData() + damp;
-                for (int j = 0; j < steps; ++j)
-                    data[j] *= OOS(steps - j);
-            }
+        if (steps > 0)
+        {
+            //printf("out: %d %d\n", damp_start, damp_end);
+            for (auto& out : m_outputs)
+                for (int i = 0; i < out->numberOfChannels(); ++i)
+                {
+                    float* data = out->bus(r)->channel(i)->mutableData();
+                    for (int j = damp_start; j < damp_end; ++j)
+                        data[j] *= OOS(damp_end - j);
+                }
+        }
     }
 
     unsilenceOutputs(r);

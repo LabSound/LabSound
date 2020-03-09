@@ -120,23 +120,24 @@ public:
 
         // Handle both the 1 -> N and N -> N case here.
         const float * source[16];
-        int numChannels = numberOfChannels();
-        for (int i = 0; i < numChannels; ++i)
+        int sourceNumChannels = sourceBus->numberOfChannels();
+        for (int i = 0; i < sourceNumChannels; ++i)
         {
-            if (sourceBus->numberOfChannels() == numChannels)
+            if (sourceBus->numberOfChannels() == sourceNumChannels)
                 source[i] = sourceBus->channel(i)->data();
             else
                 source[i] = sourceBus->channel(0)->data();
         }
 
         float * dest[16];
-        for (int i = 0; i < numChannels; ++i)
+        int destNumChannels = destinationBus->numberOfChannels();
+        for (int i = 0; i < destNumChannels; ++i)
             dest[i] = destinationBus->channel(i)->mutableData();
 
         for (int i = 0; i < framesToProcess; ++i)
         {
             float peakEnv = 0;
-            for (int j = 0; j < numChannels; ++j)
+            for (int j = 0; j < sourceNumChannels; ++j)
             {
                 peakEnv += source[j][i];
             }
@@ -149,7 +150,8 @@ public:
             // Knee smoothening and gain reduction
             kneeRecursive[0] = (kneeCoeffsMinus * std::max(std::min(((threshold + (ratio * (attackRecursive[0] - threshold))) / attackRecursive[0]), 1.), 0.)) + (kneeCoeffs * kneeRecursive[1]);
 
-            for (int j = 0; j < numChannels; ++j)
+            int k = std::min(sourceNumChannels, destNumChannels);
+            for (int j = 0; j < k; ++j)
             {
                 dest[j][i] = static_cast<float>(source[j][i] * kneeRecursive[0] * makeupGain);
             }

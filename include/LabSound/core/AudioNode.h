@@ -71,7 +71,6 @@ enum class SchedulingState : int
 {
     UNSCHEDULED = 0, // Initial playback state. Created, but not yet scheduled
     SCHEDULED,       // Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing
-    PLAY_PENDING,    // Play has been scheduled.
     FADE_IN,         // First epoch, fade in, then play
     PLAYING,         // Generating sound
     STOPPING,        // Transitioning to finished
@@ -113,7 +112,7 @@ public:
     int _renderOffset = 0; // where rendering starts in the current frame
     int _renderLength = 0; // number of rendered frames in the current frame 
 
-    float _epochWaveLength = 0; // One over the sample rate.
+    float _sampleRate = 1;
 
     std::function<void()> _onEnded;
 };
