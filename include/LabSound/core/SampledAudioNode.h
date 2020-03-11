@@ -46,7 +46,6 @@ class SampledAudioVoice : public AudioScheduledSourceNode
     float m_totalPitchRate{ 0 };
 
     // Scheduling
-    bool m_startRequested{false};
     double m_requestGrainOffset{0};
     double m_requestGrainDuration{0};
 
@@ -82,7 +81,7 @@ public:
 
     // Returns true if we're finished.
     bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus * bus, int index, int framesToProcess);
-    bool renderSample(ContextRenderLock & r, AudioBus * bus, int destinationSampleOffset, int frameSize);
+    bool renderSample(ContextRenderLock & r, AudioBus * bus, int quantumSize, int quantumOffset, int renderLength);
     void setPitchRate(ContextRenderLock & r, const float rate) { m_totalPitchRate = rate; }
 
     virtual void process(ContextRenderLock & r, int bufferSize) override;
@@ -99,7 +98,6 @@ class SampledAudioNode final : public AudioNode
 {
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-    virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
     std::shared_ptr<AudioSetting> m_sourceBus;
     std::unique_ptr<AudioBus> m_summingBus;
