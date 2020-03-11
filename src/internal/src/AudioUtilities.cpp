@@ -24,9 +24,3 @@ double lab::AudioUtilities::discreteTimeConstantForSampleRate(double timeConstan
 {
     return 1.0 - std::exp(-1.0 / (sampleRate * timeConstant));
 }
-
-int lab::AudioUtilities::timeToSampleFrame(double time, double sampleRate)
-{
-    ASSERT(time >= 0);
-    return static_cast<int>(std::round(time * sampleRate));
-}

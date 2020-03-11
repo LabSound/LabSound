@@ -22,7 +22,12 @@ namespace AudioUtilities
     double discreteTimeConstantForSampleRate(double timeConstant, double sampleRate);
 
     // Convert the time to a sample frame at the given sample rate.
-    int timeToSampleFrame(double time, double sampleRate);
+
+    template <typename T, typename U>
+    inline int timeToSampleFrame(T time, U sampleRate)
+    {
+        return static_cast<int>(std::round(time * sampleRate));
+    }
 }
 
 }  // lab

@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) try
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        wavepot_dsp.ex->play(argc, argv);
+        peak_compressor.ex->play(argc, argv);
     }
 
     return EXIT_SUCCESS;

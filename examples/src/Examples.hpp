@@ -614,29 +614,32 @@ struct ex_peak_compressor : public labsound_example
             _nodes.push_back(snare_node);
             _nodes.push_back(peakComp);
             _nodes.push_back(filter);
-
-            // Speed Metal
-            float startTime = 0.1f;
-            float bpm = 20.f;
-            float bar_length = 60.f / bpm;
-            float eighthNoteTime = bar_length / 8.0f;
-            for (float bar = 0; bar < 8; bar += 1)
-            {
-                float time = startTime + bar * bar_length;
-
-                //kick_node->schedule(time);
-                //kick_node->schedule(time + 4 * eighthNoteTime);
-
-                //snare_node->schedule(time + 2 * eighthNoteTime);
-                //snare_node->schedule(time + 6 * eighthNoteTime);
-                
-                float hihat_beat = 4;
-                for (float i = 0; i < hihat_beat; i += 1)
-                    hihat_node->schedule(time + bar_length * i / hihat_beat);
-            }
         }
 
-        Wait(std::chrono::seconds(10));
+        // Speed Metal
+        float startTime = 0.1f;
+        float bpm = 20.f;
+        float bar_length = 60.f / bpm;
+        float eighthNoteTime = bar_length / 8.0f;
+        for (float bar = 0; bar < 8; bar += 1)
+        {
+            float time = startTime + bar * bar_length;
+
+            //kick_node->schedule(time);
+            //kick_node->schedule(time + 4 * eighthNoteTime);
+
+            //snare_node->schedule(time + 2 * eighthNoteTime);
+            //snare_node->schedule(time + 6 * eighthNoteTime);
+                
+            float hihat_beat = 4;
+            for (float i = 0; i < hihat_beat; i += 1)
+                hihat_node->schedule(bar_length * i / hihat_beat);
+
+            // 32 voices can be playing or scheduled, so pause after each bar
+            Wait(std::chrono::milliseconds(static_cast<int>(bar_length * 1000)));
+        }
+
+        Wait(std::chrono::seconds(1000));
     }
 };
 
