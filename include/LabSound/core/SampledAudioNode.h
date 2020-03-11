@@ -59,7 +59,7 @@ class SampledAudioVoice : public AudioScheduledSourceNode
 public:
 
     bool m_channelSetupRequested{false};
-    std::shared_ptr<AudioBus> m_inPlaceBus;
+    std::shared_ptr<AudioBus> m_localBus;
 
     SampledAudioVoice(AudioContext& ac, float grain_dur, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate,
         std::shared_ptr<AudioParam> detune, std::shared_ptr<AudioSetting> loop, std::shared_ptr<AudioSetting> loop_s, 
@@ -70,7 +70,7 @@ public:
     void setOutput(ContextRenderLock & r, std::shared_ptr<AudioNodeOutput> parent_sampled_audio_node_output)
     {
         auto parentOutputBus = parent_sampled_audio_node_output->bus(r);
-        m_inPlaceBus = std::make_shared<AudioBus>(parentOutputBus->numberOfChannels(), parentOutputBus->length());
+        m_localBus = std::make_shared<AudioBus>(parentOutputBus->numberOfChannels(), parentOutputBus->length());
         m_output = parent_sampled_audio_node_output;
     }
 

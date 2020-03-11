@@ -259,7 +259,6 @@ public:
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock &);
 
-protected:
     friend class AudioContext;
 
     AudioNodeScheduler _scheduler;
