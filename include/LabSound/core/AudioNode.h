@@ -219,6 +219,8 @@ public:
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
 
+    AudioNodeScheduler _scheduler;
+
 protected:
     virtual void clearPannerNode() {}
 
@@ -235,10 +237,7 @@ protected:
     // Force all inputs to take any channel interpretation changes into account.
     void updateChannelsForInputs(ContextGraphLock &);
 
-protected:
     friend class AudioContext;
-
-    AudioNodeScheduler _scheduler;
 
     bool m_isInitialized {false};
 

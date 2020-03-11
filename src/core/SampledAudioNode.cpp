@@ -38,7 +38,7 @@ SampledAudioVoice::SampledAudioVoice(AudioContext& ac, float duration, std::shar
 
 size_t SampledAudioVoice::numberOfChannels(ContextRenderLock & r)
 {
-    return m_inPlaceBus->numberOfChannels();
+    return m_localBus->numberOfChannels();
 }
 
 void SampledAudioVoice::schedule(double when, double grainOffset)
@@ -238,9 +238,10 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, int 
 
 void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize)
 {
-    if (!m_sourceBus->valueBus() || !isInitialized() || !r.context() || !m_inPlaceBus)
+    if (!m_sourceBus->valueBus() || !isInitialized() || !r.context() || !m_localBus)
     {
-        m_inPlaceBus->zero();
+        if (m_localBus)
+           m_localBus->zero();
         return;
     }
 
@@ -248,7 +249,7 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize)
     {
         // channel count is changing, so output silence for one quantum to allow the
         // context to re-evaluate connectivity before rendering
-        m_inPlaceBus->zero();
+        m_localBus->zero();
         m_output->setNumberOfChannels(r, m_sourceBus->valueBus()->numberOfChannels());
         m_virtualReadIndex = 0;
         m_channelSetupRequested = false;
@@ -260,7 +261,7 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize)
     // In this case, if the the buffer has just been changed and we're not quite ready yet, then just output silence.
     if (numberOfChannels(r) != m_sourceBus->valueBus()->numberOfChannels())
     {
-        m_inPlaceBus->zero();
+        m_localBus->zero();
         return;
     }
 
@@ -297,20 +298,20 @@ void SampledAudioVoice::process(ContextRenderLock & r, int bufferSize)
 
     if (!bufferFramesToProcess)
     {
-        m_inPlaceBus->zero();
+        m_localBus->zero();
         return;
     }
 
     // Write sample into buffer
-    if (!renderSample(r, m_inPlaceBus.get(), bufferSize, quantumFrameOffset, bufferFramesToProcess))
+    if (!renderSample(r, m_localBus.get(), bufferSize, quantumFrameOffset, bufferFramesToProcess))
     {
-        m_inPlaceBus->zero();
+        m_localBus->zero();
         return;
     }
 
     // Apply the gain (in-place) to the output bus.
     float totalGain = m_gain->value(r);
-    m_inPlaceBus->copyWithGainFrom(*m_inPlaceBus, &m_lastGain, totalGain);
+    m_localBus->copyWithGainFrom(*m_localBus, &m_lastGain, totalGain);
 }
 
 void SampledAudioVoice::reset(ContextRenderLock & r)
@@ -370,8 +371,41 @@ void SampledAudioNode::setOnEnded(std::function<void()> fn)
 
 void SampledAudioNode::process(ContextRenderLock & r, int bufferSize)
 {
+    std::stack<SampledAudioVoice *> free_voices;
+    for (const auto & v : voices)
+    {
+        v->_scheduler.update(r, bufferSize);
+
+        if (v->isPlayingOrScheduled()) continue; // voice is occupied
+        else 
+//            if (v->playbackState() == AudioScheduledSourceNode::UNSCHEDULED_STATE ||
+  //               v->playbackState() == AudioScheduledSourceNode::FINISHED_STATE) 
+            { free_voices.push(v.get()); }
+    }
+
+    if (free_voices.size())
+    {
+        // We can pre-schedule up to num_voices into the future by cycling through the nodes. 
+        auto num_to_schedule = std::min(schedule_list.size(), free_voices.size()); // whichever is smaller (many, MAX_NUM_VOICES)
+
+        while (num_to_schedule > 0)
+        {
+            auto grain_to_schedule = schedule_list.front();
+            schedule_list.pop_front();
+            free_voices.top()->schedule(grain_to_schedule.when, grain_to_schedule.grainOffset, grain_to_schedule.grainDuration);
+            free_voices.pop();
+            num_to_schedule--;
+        }
+    }
+
+    for (auto & v : voices) 
+    {
+        v->setPitchRate(r,(float) totalPitchRate(r));
+        v->process(r, bufferSize);
+    }
+
     auto outputBus = output(0)->bus(r);
-    const int numberOfChannels = outputBus->numberOfChannels();
+    const size_t numberOfChannels = outputBus->numberOfChannels();
 
     if (!m_summingBus)
     {
@@ -380,27 +414,16 @@ void SampledAudioNode::process(ContextRenderLock & r, int bufferSize)
 
     m_summingBus->zero();
 
-    std::stack<SampledAudioVoice *> free_voices;
     for (const auto & v : voices)
     {
-        v->setPitchRate(r, (float)totalPitchRate(r));
-        v->processIfNecessary(r, bufferSize);
-        if (v->isPlayingOrScheduled())
-            m_summingBus->sumFrom(*(v->m_inPlaceBus));
-        else
-            free_voices.push(v.get());
+        if (v->isPlayingOrScheduled()) 
+        {
+            m_summingBus->sumFrom(*(v->m_localBus));
+        }
     }
 
     outputBus->copyFrom(*m_summingBus, ChannelInterpretation::Discrete);
 
-    // Lastly, pre-schedule as many voices as possible into the free voices.
-    while (schedule_list.size() > 0 && free_voices.size() > 0)
-    {
-        auto & grain_to_schedule = schedule_list.front();
-        free_voices.top()->schedule(grain_to_schedule.when, grain_to_schedule.grainOffset, grain_to_schedule.grainDuration);
-        free_voices.pop();
-        schedule_list.pop_front();
-    }
 }
 
 void SampledAudioNode::reset(ContextRenderLock & r)
