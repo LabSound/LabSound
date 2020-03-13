@@ -6,6 +6,7 @@
 #define lab_audio_utilities_h
 
 #include <sys/types.h>
+#include <cmath>
 
 namespace lab
 {
