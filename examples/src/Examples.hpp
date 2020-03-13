@@ -73,7 +73,7 @@ struct ex_simple : public labsound_example
 
         oscillator = std::make_shared<OscillatorNode>(ac);
         gain = std::make_shared<GainNode>(ac);
-        gain->gain()->setValue(0.0625f);
+        gain->gain()->setValue(0.5f);
 
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
