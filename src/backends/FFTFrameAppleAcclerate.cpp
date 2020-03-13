@@ -18,7 +18,7 @@ const int kMaxFFTPow2Size = 24;
 FFTSetup * FFTFrame::fftSetups = 0;
 
 // Normal constructor: allocates for a given fftSize
-FFTFrame::FFTFrame(size_t fftSize)
+FFTFrame::FFTFrame(int fftSize)
     : m_realData(fftSize)
     , m_imagData(fftSize)
 {
@@ -131,7 +131,7 @@ void FFTFrame::computeInverseFFT(float * data)
     vDSP_vsmul(data, 1, &scale, data, 1, m_FFTSize);
 }
 
-FFTSetup FFTFrame::fftSetupForSize(size_t fftSize)
+FFTSetup FFTFrame::fftSetupForSize(int fftSize)
 {
     if (!fftSetups)
     {
