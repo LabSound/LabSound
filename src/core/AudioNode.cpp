@@ -50,6 +50,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
             _renderOffset = 0;
             _renderLength = epoch_length;
             _playbackState = SchedulingState::FADE_IN;
+            printf("fade in\n");
         }
         else if (_startWhen < _epoch + epoch_length)
         {
@@ -57,6 +58,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
             _renderOffset = static_cast<int>(_startWhen - _epoch);
             _renderLength = epoch_length - _renderOffset;
             _playbackState = SchedulingState::FADE_IN;
+            printf("fade in\n");
         }
 
         /// @TODO the case of a start and stop within one epoch needs to be special
@@ -69,6 +71,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
         // start time has been achieved, there'll be one quantum with fade in applied.
         _renderOffset = 0;
         _playbackState = SchedulingState::PLAYING;
+        printf("playing\n");
         // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
 
     case SchedulingState::PLAYING:
@@ -80,6 +83,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
             // exactly on start, or late, stop straight away, render a whole frame of fade out
             _renderLength = epoch_length - _renderOffset;
             _playbackState = SchedulingState::STOPPING;
+            printf("stopping\n");
         }
         else if (_stopWhen < _epoch + epoch_length)
         {
@@ -87,6 +91,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
             _renderOffset = 0;
             _renderLength = static_cast<int>(_stopWhen - _epoch);
             _playbackState = SchedulingState::STOPPING;
+            printf("stopping\n");
         }
 
         // do not fall through to STOPPING because one quantum must render the fade out effect
@@ -95,7 +100,8 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
     case SchedulingState::STOPPING:
         if (_epoch + epoch_length >= _stopWhen)
         {
-            // scheduled stop has occured, so make sure it doesn't immediately trigger again
+            // scheduled stop has occured, so make sure stop doesn't immediately trigger again
+            _stopWhen = std::numeric_limits<uint64_t>::max();
             _playbackState = SchedulingState::UNSCHEDULED;
         }
         break;
