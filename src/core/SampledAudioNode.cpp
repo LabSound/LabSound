@@ -111,7 +111,7 @@ void SampledAudioVoice::updateSchedulingInfo(ContextRenderLock& r, size_t quantu
     {
         for (int i = 0; i < outputBus->numberOfChannels(); ++i)
         {
-            std::memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
+            memset(outputBus->channel(i)->mutableData(), 0, sizeof(float) * quantumFrameOffset);
         }
     }
 
@@ -133,7 +133,7 @@ void SampledAudioVoice::updateSchedulingInfo(ContextRenderLock& r, size_t quantu
 
             for (int i = 0; i < outputBus->numberOfChannels(); ++i)
             {
-                std::memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
+                memset(outputBus->channel(i)->mutableData() + zeroStartFrame, 0, sizeof(float) * framesToZero);
             }
         }
 
@@ -167,7 +167,7 @@ bool SampledAudioVoice::renderSilenceAndFinishIfNotLooping(ContextRenderLock & r
             // so generate silence for the remaining.
             for (unsigned i = 0; i < numberOfChannels(r); ++i)
             {
-                std::memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
+                memset(bus->channel(i)->mutableData() + index, 0, sizeof(float) * framesToProcess);
             }
         }
 
@@ -274,7 +274,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
             {
                 for (int sample = 0; sample < framesThisTime; ++sample)
                 {
-                    std::memcpy(bus->channel(i)->mutableData() + writeIndex, srcBus->channel(i)->data() + readIndex, sizeof(float) * framesThisTime);
+                    memcpy(bus->channel(i)->mutableData() + writeIndex, srcBus->channel(i)->data() + readIndex, sizeof(float) * framesThisTime);
                 }
             }
 
