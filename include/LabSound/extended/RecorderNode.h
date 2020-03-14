@@ -16,16 +16,19 @@ class RecorderNode : public AudioBasicInspectorNode
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    bool m_mixToMono{false};
     bool m_recording{false};
 
-    std::vector<float> m_data;  // interleaved
+    std::vector<std::vector<float>> m_data;  // non-interleaved
     mutable std::recursive_mutex m_mutex;
 
-    const AudioStreamConfig outConfig;
+    float m_sampleRate;
 
 public:
-    RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig);
+    // create a recorder
+    RecorderNode(AudioContext & r, int channelCount = 2);
+
+    // create a recorder with a specific configuration
+    RecorderNode(AudioContext & r, const AudioStreamConfig outConfig);
     virtual ~RecorderNode();
 
     // AudioNode
@@ -35,11 +38,10 @@ public:
     void startRecording() { m_recording = true; }
     void stopRecording() { m_recording = false; }
 
-    void mixToMono(bool m) { m_mixToMono = m; }
-
     float recordedLengthInSeconds() const;
 
-    void writeRecordingToWav(const std::string & filenameWithWavExtension);
+    std::shared_ptr<AudioBus> createBusFromRecording(bool mixToMono);
+    void writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono);
 };
 
 }  // end namespace lab
