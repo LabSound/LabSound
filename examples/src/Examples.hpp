@@ -259,7 +259,7 @@ struct ex_offline_rendering : public labsound_example
         }
 
         bool complete = false;
-        context->offlineRenderCompleteCallback = [&context, &recorder, &complete, offlineConfig]() {
+        context->offlineRenderCompleteCallback = [&context, &recorder, &complete]() {
             recorder->stopRecording();
 
             printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
@@ -493,7 +493,6 @@ struct ex_microphone_loopback : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         std::unique_ptr<lab::AudioContext> context;
-        lab::AudioContext& ac = *context.get();
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
@@ -677,7 +676,7 @@ struct ex_stereo_panning : public labsound_example
 
             const int seconds = 8;
 
-            std::thread controlThreadTest([&stereoPanner, seconds]() {
+            std::thread controlThreadTest([&stereoPanner]() {
                 float halfTime = seconds * 0.5f;
                 for (float i = 0; i < seconds; i += 0.01f)
                 {

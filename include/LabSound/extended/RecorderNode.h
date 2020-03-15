@@ -41,7 +41,9 @@ public:
     float recordedLengthInSeconds() const;
 
     std::shared_ptr<AudioBus> createBusFromRecording(bool mixToMono);
-    void writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono);
+
+    // returns true for success
+    bool writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono);
 };
 
 }  // end namespace lab

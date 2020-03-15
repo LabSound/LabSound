@@ -342,6 +342,8 @@ void OscillatorNode::process(ContextRenderLock & r, size_t framesToProcess)
                 phase -= 2. * static_cast<float>(LAB_PI);
         }
         break;
+            
+    default: break; // other types do nothing
     }
 
     outputBus->clearSilentFlag();

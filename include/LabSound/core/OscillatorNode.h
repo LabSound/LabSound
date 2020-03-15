@@ -21,7 +21,6 @@ class AudioSetting;
 //
 class OscillatorNode : public AudioScheduledSourceNode
 {
-    bool m_firstRender {true};
     double phase = 0.0;
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }

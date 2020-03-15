@@ -100,8 +100,8 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
 
 ConvolverNode::ConvolverNode(AudioContext& ac)
     : AudioScheduledSourceNode(ac)
-    , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
     , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
+    , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
 {
     m_settings.push_back(_impulseResponseClip);
     m_settings.push_back(_normalize);
@@ -260,7 +260,6 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
         {
-            size_t clipFrame = 0;
             AudioBus * input_bus = input(0)->bus(r);
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
             float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;

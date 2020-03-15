@@ -30,8 +30,10 @@ using namespace lab;
 SampledAudioVoice::SampledAudioVoice(AudioContext & ac, float duration, std::shared_ptr<AudioParam> gain, std::shared_ptr<AudioParam> rate, 
         std::shared_ptr<AudioParam> detune, std::shared_ptr<AudioSetting> loop, std::shared_ptr<AudioSetting> loop_s, 
         std::shared_ptr<AudioSetting> loop_e,  std::shared_ptr<AudioSetting> src_bus) 
-        : AudioNode(ac), m_duration(duration), m_gain(gain),  m_playbackRate(rate), m_detune(detune),
-        m_isLooping(loop), m_loopStart(loop_s), m_loopEnd(loop_e), m_sourceBus(src_bus)
+        : AudioNode(ac)
+        , m_gain(gain), m_playbackRate(rate), m_detune(detune)
+        , m_isLooping(loop), m_loopStart(loop_s), m_loopEnd(loop_e), m_sourceBus(src_bus)
+        , m_duration(duration)
 {
     initialize();
 }

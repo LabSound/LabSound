@@ -107,11 +107,11 @@ public:
 
     void updateCoefficientsIfNecessary(ContextRenderLock & r, bool useSmoothing, bool forceUpdate)
     {
-        bool isStable1 = m_frequency->smooth(r);
-        bool isStable2 = m_q->smooth(r);
-        bool isStable3 = m_gain->smooth(r);
-        bool isStable4 = m_detune->smooth(r);
-
+        /* bool isStable1 = */ m_frequency->smooth(r);
+        /* bool isStable2 = */ m_q->smooth(r);
+        /* bool isStable3 = */ m_gain->smooth(r);
+        /* bool isStable4 = */ m_detune->smooth(r);
+        
         if (forceUpdate || m_filterCoefficientsDirty)
         {
             double freq;

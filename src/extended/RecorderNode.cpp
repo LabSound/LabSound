@@ -113,7 +113,7 @@ float RecorderNode::recordedLengthInSeconds() const
 }
 
 
-void RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono)
+bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono)
 {
     size_t recordedChannelCount = m_data.size();
     if (!recordedChannelCount) return;
@@ -175,7 +175,8 @@ void RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
     fileData->sourceFormat = nqr::PCM_FLT;
 
     nqr::EncoderParams params = {static_cast<int>(recordedChannelCount), nqr::PCM_FLT, nqr::DITHER_NONE};
-    const int encoder_status = nqr::encode_wav_to_disk(params, fileData.get(), filenameWithWavExtension);
+    bool result = nqr::EncoderError::NoError == nqr::encode_wav_to_disk(params, fileData.get(), filenameWithWavExtension);
+    return result;
 }
 
 std::shared_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
@@ -208,7 +209,7 @@ std::shared_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
     {
         for (int i = 0; i < result_channel_count; ++i)
         {
-            std::memcpy(result_audioBus->channel(i)->mutableData(), m_data[0].data(), numSamples * sizeof(float));
+            memcpy(result_audioBus->channel(i)->mutableData(), m_data[0].data(), numSamples * sizeof(float));
         }
     }
 
