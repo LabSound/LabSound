@@ -11,7 +11,10 @@
 namespace lab
 {
 
-class ADSRNode : public AudioBasicProcessorNode, public BangInterface
+/// @TODO ADSRNode should be a scheduled node, not only a basic processor node.
+/// LabSound avoids multiple inheritance, so this requires a bit of thought.
+
+class ADSRNode : public AudioBasicProcessorNode
 {
     class ADSRNodeImpl;
     ADSRNodeImpl * adsr_impl;
@@ -39,7 +42,7 @@ public:
     // ADSR bang() will issue a noteOn/noteOff pair. If a length value is given, it will start
     // immediately and finish after (now + length). If length is the default value (0.f), then
     // bang will issue an impulse, a single 1.0 sample at the beginning of the render quanta.
-    virtual void bang(const double length = 0.0) override final;
+    virtual void bang(const double length = 0.0);
 
     // This function will return true after the release period (only if a noteOff has been issued). 
     bool finished(ContextRenderLock &);

@@ -160,7 +160,7 @@ public:
 //   SampledAudioNode   //
 //////////////////////////
 
-class SampledAudioNode final : public AudioNode
+class SampledAudioNode final : public AudioScheduledSourceNode
 {
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -199,6 +199,9 @@ class SampledAudioNode final : public AudioNode
     std::vector<std::unique_ptr<SampledAudioVoice>> voices;
     std::list<ScheduleRequest> schedule_list;
     std::function<void()> m_onEnded;
+
+    void _createVoicesForNewBus(ContextRenderLock & r);
+    bool m_resetVoices{ false };
 
 public:
 

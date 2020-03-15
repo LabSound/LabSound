@@ -115,14 +115,9 @@ public:
     float _sampleRate = 1;
 
     std::function<void()> _onEnded;
+    std::function<void(double when)> _onStart;
 };
 
-
-struct BangInterface
-{
-    virtual void bang(const double length = 0.0) = 0;
-    std::function<void()> _bang;
-};
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
@@ -145,8 +140,6 @@ public:
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
-
-    virtual bool hasBang() const { return false; }
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
