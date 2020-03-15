@@ -114,9 +114,9 @@ float RecorderNode::recordedLengthInSeconds() const
 bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono)
 {
     size_t recordedChannelCount = m_data.size();
-    if (!recordedChannelCount) return;
+    if (!recordedChannelCount) return false;
     size_t numSamples = m_data[0].size();
-    if (!numSamples) return;
+    if (!numSamples) return false;
 
     std::unique_ptr<nqr::AudioData> fileData(new nqr::AudioData());
 
