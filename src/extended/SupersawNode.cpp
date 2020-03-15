@@ -157,7 +157,7 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
 
     AudioBus * dst = nullptr;
     internalNode->gainNode->input(0)->bus(r)->zero();
-    AudioBus * renderedBus = internalNode->gainNode->input(0)->pull(r, dst, bufferSize);
+    /*AudioBus * renderedBus =*/ internalNode->gainNode->input(0)->pull(r, dst, bufferSize);
     internalNode->gainNode->process(r, bufferSize);
     AudioBus * inputBus = internalNode->gainNode->output(0)->bus(r);
     outputBus->copyFrom(*inputBus);

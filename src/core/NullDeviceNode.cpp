@@ -19,10 +19,10 @@ static const int offlineRenderSizeQuantum = 128;
 
 NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig outputConfig, float lengthSeconds)
     : AudioNode(ac)
+    , m_numChannels(outputConfig.desired_channels)
     , m_lengthSeconds(lengthSeconds)
     , m_context(&ac)
     , outConfig(outputConfig)
-    , m_numChannels(outputConfig.desired_channels)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 

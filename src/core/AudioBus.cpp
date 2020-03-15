@@ -211,7 +211,7 @@ std::unique_ptr<AudioBus> AudioBus::createByCloning(const AudioBus * sourceBus)
         clonedBus->channel(i)->copyFromRange(sourceBus->channel(i), 0, numberOfSourceFrames);
     }
 
-    return std::move(clonedBus);
+    return clonedBus;
 }
 
 float AudioBus::maxAbsValue() const

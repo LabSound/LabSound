@@ -432,7 +432,6 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
     const float sample_rate = r.context()->sampleRate();
     polyblep->setSampleRate(sample_rate);
 
-    int quantumFrameOffset = offset;
     int nonSilentFramesToProcess = count;
 
     if (!nonSilentFramesToProcess)

@@ -84,7 +84,7 @@ AudioStreamConfig GetDefaultInputAudioDeviceConfiguration()
     AudioStreamConfig inputConfig;
 
     const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
-    const uint32_t default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
+    /*const uint32_t default_output_device =*/ lab::GetDefaultOutputAudioDeviceIndex();
     const uint32_t default_input_device = lab::GetDefaultInputAudioDeviceIndex();
 
     AudioDeviceInfo defaultInputInfo;
@@ -198,5 +198,5 @@ void LabSoundAssertLog(const char * file_, int line, const char * function_, con
     const char * file = file_ ? file_ : "Unknown source file";
     const char * function = function_ ? function_ : "";
     const char * assertion = assertion_ ? assertion_ : "Assertion failed";
-    printf("Assertion: %s:%s:%d - %s\n", function, file_, line, assertion);
+    printf("Assertion: %s:%s:%d - %s\n", function, file, line, assertion);
 }

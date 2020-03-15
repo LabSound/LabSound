@@ -26,10 +26,10 @@ const int start_envelope = 64;
 const int end_envelope = 64;
 
 AudioNodeScheduler::AudioNodeScheduler(float sampleRate) 
-    : _sampleRate(sampleRate)
-    , _epoch(0)
+    : _epoch(0)
     , _startWhen(std::numeric_limits<uint64_t>::max())
     , _stopWhen(std::numeric_limits<uint64_t>::max())
+    , _sampleRate(sampleRate)
 {
 }
 
@@ -45,70 +45,80 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
 
     switch (_playbackState)
     {
-    case SchedulingState::SCHEDULED:
-        // start has been called, start looking for the start time
-        if (_startWhen <= _epoch)
-        {
-            // exactly on start, or late, get going straight away
+        case SchedulingState::UNSCHEDULED:
+            break;
+            
+        case SchedulingState::SCHEDULED:
+            // start has been called, start looking for the start time
+            if (_startWhen <= _epoch)
+            {
+                // exactly on start, or late, get going straight away
+                _renderOffset = 0;
+                _renderLength = epoch_length;
+                _playbackState = SchedulingState::FADE_IN;
+                ASN_PRINT("fade in\n");
+            }
+            else if (_startWhen < _epoch + epoch_length)
+            {
+                // start falls within the frame
+                _renderOffset = static_cast<int>(_startWhen - _epoch);
+                _renderLength = epoch_length - _renderOffset;
+                _playbackState = SchedulingState::FADE_IN;
+                ASN_PRINT("fade in\n");
+            }
+            
+            /// @TODO the case of a start and stop within one epoch needs to be special
+            /// cased, to fit this current architecture, there'd be a FADE_IN_OUT scheduling
+            /// state so that the envelope can be correctly applied.
+            // FADE_IN_OUT would transition to UNSCHEDULED.
+            break;
+            
+        case SchedulingState::FADE_IN:
+            // start time has been achieved, there'll be one quantum with fade in applied.
             _renderOffset = 0;
-            _renderLength = epoch_length;
-            _playbackState = SchedulingState::FADE_IN;
-            ASN_PRINT("fade in\n");
-        }
-        else if (_startWhen < _epoch + epoch_length)
-        {
-            // start falls within the frame
-            _renderOffset = static_cast<int>(_startWhen - _epoch);
-            _renderLength = epoch_length - _renderOffset;
-            _playbackState = SchedulingState::FADE_IN;
-            ASN_PRINT("fade in\n");
-        }
-
-        /// @TODO the case of a start and stop within one epoch needs to be special
-        /// cased, to fit this current architecture, there'd be a FADE_IN_OUT scheduling
-        /// state so that the envelope can be correctly applied.
-        // FADE_IN_OUT would transition to UNSCHEDULED.
-        break;
-
-    case SchedulingState::FADE_IN:
-        // start time has been achieved, there'll be one quantum with fade in applied.
-        _renderOffset = 0;
-        _playbackState = SchedulingState::PLAYING;
-        ASN_PRINT("playing\n");
-        // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
-
-    case SchedulingState::PLAYING:
-        /// @TODO include the end envelope in the stop check so that a scheduled stop that
-        /// spans this quantum and the next ends in the current quantum
-
-        if (_stopWhen <= _epoch)
-        {
-            // exactly on start, or late, stop straight away, render a whole frame of fade out
-            _renderLength = epoch_length - _renderOffset;
-            _playbackState = SchedulingState::STOPPING;
-            ASN_PRINT("stopping\n");
-        }
-        else if (_stopWhen < _epoch + epoch_length)
-        {
-            // stop falls within the frame
-            _renderOffset = 0;
-            _renderLength = static_cast<int>(_stopWhen - _epoch);
-            _playbackState = SchedulingState::STOPPING;
-            ASN_PRINT("stopping\n");
-        }
-
-        // do not fall through to STOPPING because one quantum must render the fade out effect
-        break;
-
-    case SchedulingState::STOPPING:
-        if (_epoch + epoch_length >= _stopWhen)
-        {
-            // scheduled stop has occured, so make sure stop doesn't immediately trigger again
-            _stopWhen = std::numeric_limits<uint64_t>::max();
-            _playbackState = SchedulingState::UNSCHEDULED;
-            ASN_PRINT("unscheduled\n");
-        }
-        break;
+            _playbackState = SchedulingState::PLAYING;
+            ASN_PRINT("playing\n");
+            // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
+            
+        case SchedulingState::PLAYING:
+            /// @TODO include the end envelope in the stop check so that a scheduled stop that
+            /// spans this quantum and the next ends in the current quantum
+            
+            if (_stopWhen <= _epoch)
+            {
+                // exactly on start, or late, stop straight away, render a whole frame of fade out
+                _renderLength = epoch_length - _renderOffset;
+                _playbackState = SchedulingState::STOPPING;
+                ASN_PRINT("stopping\n");
+            }
+            else if (_stopWhen < _epoch + epoch_length)
+            {
+                // stop falls within the frame
+                _renderOffset = 0;
+                _renderLength = static_cast<int>(_stopWhen - _epoch);
+                _playbackState = SchedulingState::STOPPING;
+                ASN_PRINT("stopping\n");
+            }
+            
+            // do not fall through to STOPPING because one quantum must render the fade out effect
+            break;
+            
+        case SchedulingState::STOPPING:
+            if (_epoch + epoch_length >= _stopWhen)
+            {
+                // scheduled stop has occured, so make sure stop doesn't immediately trigger again
+                _stopWhen = std::numeric_limits<uint64_t>::max();
+                _playbackState = SchedulingState::UNSCHEDULED;
+                ASN_PRINT("unscheduled\n");
+            }
+            break;
+            
+        case SchedulingState::RESETTING:
+            break;
+        case SchedulingState::FINISHING:
+            break;
+        case SchedulingState::FINISHED:
+            break;
     }
 
     ASSERT(_renderOffset < epoch_length);

@@ -1543,6 +1543,7 @@ static void fftrecurs(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int Ustride, int N
     }
 }
 
+#if 0
 static void ffts1(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int16_t * BRLow)
 {
     /* Compute in-place complex fft on the rows of the input array  */
@@ -1590,6 +1591,7 @@ static void ffts1(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int16_t * BRLow)
                 fftrecurs(ioptr, M, Utbl, 1, NDiffU, StageCnt); /* RADIX 8 Stages */
     }
 }
+#endif
 
 /******************
 * parts of iffts1 *
@@ -2599,6 +2601,7 @@ static void ifftrecurs(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int Ustride,
     }
 }
 
+#if 0
 static void iffts1(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int16_t * BRLow)
 {
     /* Compute in-place inverse complex fft on the rows of the input array  */
@@ -2648,6 +2651,7 @@ static void iffts1(SPFLOAT * ioptr, int M, SPFLOAT * Utbl, int16_t * BRLow)
                 ifftrecurs(ioptr, M, Utbl, 1, NDiffU, StageCnt); /* RADIX 8 Stages */
     }
 }
+#endif
 
 /******************
 * parts of rffts1 *
@@ -3593,7 +3597,6 @@ void sp_fft_init(sp_fft * fft, int M)
     SPFLOAT * utbl;
     int16_t * BRLow;
     int16_t * BRLowCpx;
-    int i;
 
     /* init cos table */
     utbl = (SPFLOAT *) malloc((POW2(M) / 4 + 1) * sizeof(SPFLOAT));
@@ -3613,16 +3616,12 @@ void sp_fft_init(sp_fft * fft, int M)
 
 void sp_fftr(sp_fft * fft, SPFLOAT * buf, int FFTsize)
 {
-    SPFLOAT * Utbl;
-    int16_t * BRLow;
     int M = log2(FFTsize);
     rffts1(buf, M, fft->utbl, fft->BRLow);
 }
 
 void sp_ifftr(sp_fft * fft, SPFLOAT * buf, int FFTsize)
 {
-    SPFLOAT * Utbl;
-    int16_t * BRLow;
     int M = log2(FFTsize);
     riffts1(buf, M, fft->utbl, fft->BRLow);
 }
