@@ -3,10 +3,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/ChannelSplitterNode.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
 
 #include "internal/Assertions.h"
 
@@ -14,24 +14,15 @@ namespace lab
 {
 
 ChannelSplitterNode::ChannelSplitterNode(size_t numberOfOutputs_)
-: AudioNode()
+    : AudioNode()
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutputs(numberOfOutputs_);
-    initialize();   // currently initialize only sets a flag; no memory is allocated in response to adding outputs
+    initialize();  // currently initialize only sets a flag; no memory is allocated in response to adding outputs
 }
 
 void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
 {
-    if (!numberOfOutputs_ || numberOfOutputs() == AudioContext::maxNumberOfChannels)
-        return;
-
-    if (numberOfOutputs_ + numberOfOutputs() > AudioContext::maxNumberOfChannels)
-    {
-        // Notify user clamping to max?
-        numberOfOutputs_ = AudioContext::maxNumberOfChannels - numberOfOutputs();
-    }
-
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
     for (uint32_t i = 0; i < numberOfOutputs_; ++i)
     {
@@ -39,9 +30,9 @@ void ChannelSplitterNode::addOutputs(size_t numberOfOutputs_)
     }
 }
 
-void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
+void ChannelSplitterNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
-    AudioBus* source = input(0)->bus(r);
+    AudioBus * source = input(0)->bus(r);
     ASSERT(source);
     ASSERT_UNUSED(framesToProcess, framesToProcess == source->length());
 
@@ -49,7 +40,7 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
 
     for (uint32_t i = 0; i < numberOfOutputs(); ++i)
     {
-        AudioBus* destination = output(i)->bus(r);
+        AudioBus * destination = output(i)->bus(r);
         ASSERT(destination);
 
         if (i < numberOfSourceChannels)
@@ -66,9 +57,8 @@ void ChannelSplitterNode::process(ContextRenderLock& r, size_t framesToProcess)
     }
 }
 
-void ChannelSplitterNode::reset(ContextRenderLock&)
+void ChannelSplitterNode::reset(ContextRenderLock &)
 {
-
 }
 
-} // namespace lab
+}  // namespace lab

@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #pragma once
@@ -8,52 +8,50 @@
 
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/GainNode.h"
-#include "LabSound/core/ChannelSplitterNode.h"
 #include "LabSound/core/ChannelMergerNode.h"
+#include "LabSound/core/ChannelSplitterNode.h"
+#include "LabSound/core/GainNode.h"
 
 #include "LabSound/extended/BPMDelay.h"
 
-namespace lab 
+namespace lab
 {
-    class ContextGraphLock;
-    class AudioContext;
+class ContextGraphLock;
+class AudioContext;
 
-    class Subgraph
-    {
-    public:
-        std::shared_ptr<GainNode> output;
-        std::shared_ptr<GainNode> input;
-        virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) = 0;
-        virtual ~Subgraph() { }
-    };
+class Subgraph
+{
+public:
+    std::shared_ptr<GainNode> output;
+    std::shared_ptr<GainNode> input;
+    virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) = 0;
+    virtual ~Subgraph() {}
+};
 
-    class PingPongDelayNode : public Subgraph
-    {
-        float tempo;
+class PingPongDelayNode : public Subgraph
+{
+    float tempo;
 
-        std::shared_ptr<BPMDelay> leftDelay;
-        std::shared_ptr<BPMDelay> rightDelay;
+    std::shared_ptr<BPMDelay> leftDelay;
+    std::shared_ptr<BPMDelay> rightDelay;
 
-        std::shared_ptr<GainNode> splitterGain;
-        std::shared_ptr<GainNode> wetGain;
-        std::shared_ptr<GainNode> feedbackGain;
+    std::shared_ptr<GainNode> splitterGain;
+    std::shared_ptr<GainNode> wetGain;
+    std::shared_ptr<GainNode> feedbackGain;
 
-        std::shared_ptr<ChannelMergerNode> merger;
-        std::shared_ptr<ChannelSplitterNode> splitter;
+    std::shared_ptr<ChannelMergerNode> merger;
+    std::shared_ptr<ChannelSplitterNode> splitter;
 
-    public:
+public:
+    PingPongDelayNode(float sampleRate, float tempo);
 
-        PingPongDelayNode(float sampleRate, float tempo);
-        virtual ~PingPongDelayNode();
+    void SetTempo(float t);
+    void SetFeedback(float f);
+    void SetLevel(float f);
+    void SetDelayIndex(TempoSync value);
 
-        void SetTempo(float t);
-        void SetFeedback(float f);
-        void SetLevel(float f);
-        void SetDelayIndex(TempoSync value);
-
-        virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) override;
-    };
+    virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) override;
+};
 }
 
 #endif

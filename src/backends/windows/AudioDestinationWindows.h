@@ -5,23 +5,23 @@
 #ifndef AudioDestinationWin_h
 #define AudioDestinationWin_h
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "internal/AudioDestination.h"
 
 #include "rtaudio/RtAudio.h"
+#include <cstdlib>
 #include <iostream>
 #include <memory>
-#include <cstdlib>
 
-namespace lab {
+namespace lab
+{
 
 class AudioDestinationWin : public AudioDestination
 {
 
 public:
-
     AudioDestinationWin(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationWin();
 
@@ -43,9 +43,8 @@ private:
     RtAudio dac;
 };
 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );
+int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioDestinationWin_h
-
+#endif  // AudioDestinationWin_h

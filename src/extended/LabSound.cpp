@@ -1,9 +1,9 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/LabSound.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/DefaultAudioDestinationNode.h"
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -17,47 +17,65 @@
 
 namespace lab
 {
-namespace Sound
+const std::vector<AudioDeviceInfo> MakeAudioDeviceList()
 {
-
-std::shared_ptr<AudioHardwareSourceNode> MakeHardwareSourceNode(ContextRenderLock & r)
-{
-    AudioSourceProvider * provider = r.context()->destination()->localAudioInputProvider();
-    std::shared_ptr<AudioHardwareSourceNode> inputNode(new AudioHardwareSourceNode(r.context()->sampleRate(), provider));
-    inputNode->setFormat(r, 1, r.context()->sampleRate());
-    return inputNode;
+    LOG("MakeAudioDeviceList()");
+    return AudioDevice::MakeAudioDeviceList();
 }
 
-std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(uint32_t numChannels, float sample_rate)
+const uint32_t GetDefaultOutputAudioDeviceIndex()
 {
-    LOG("Initialize Realtime Context");
+    LOG("GetDefaultOutputAudioDeviceIndex()");
+    return AudioDevice::GetDefaultOutputAudioDeviceIndex();
+}
+
+const uint32_t GetDefaultInputAudioDeviceIndex()
+{
+    LOG("GetDefaultInputAudioDeviceIndex()");
+    return AudioDevice::GetDefaultInputAudioDeviceIndex();
+}
+
+std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+{
+    LOG("MakeRealtimeAudioContext()");
+
     std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-    ctx->setDestinationNode(std::make_shared<lab::DefaultAudioDestinationNode>(ctx.get(), numChannels, sample_rate));
+    ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(ctx.get(), outputConfig, inputConfig));
     ctx->lazyInitialize();
     return ctx;
 }
 
-std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds)
+std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, float recordTimeMilliseconds)
 {
-    LOG("Initialize Offline Context");
+    LOG("MakeOfflineAudioContext()");
 
-    float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
+    const float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
 
     std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-    ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), LABSOUND_DEFAULT_SAMPLERATE, secondsToRun, numChannels));
+    ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(ctx.get(), offlineConfig, secondsToRun));
     ctx->lazyInitialize();
     return ctx;
 }
 
-std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(uint32_t numChannels, float recordTimeMilliseconds, float sampleRate)
+std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
 {
-    LOG("Initialize Offline Context");
+    LOG("MakeAudioHardwareInputNode()");
 
-    std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-    float secondsToRun = (float) recordTimeMilliseconds * 0.001f;
-    ctx->setDestinationNode(std::make_shared<lab::OfflineAudioDestinationNode>(ctx.get(), sampleRate, secondsToRun, numChannels));
-    ctx->lazyInitialize();
-    return ctx;
+    auto device = r.context()->device();
+
+    if (device)
+    {
+        if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
+        {
+            std::shared_ptr<AudioHardwareInputNode> inputNode(new AudioHardwareInputNode(hardwareDevice->AudioHardwareInputProvider()));
+            return inputNode;
+        }
+        else
+        {
+            throw std::runtime_error("Cannot create AudioHardwareInputNode. Context does not own an AudioHardwareInputNode.");
+        }
+    }
+    return {};
 }
 
 namespace
@@ -65,8 +83,8 @@ namespace
     char const * const NodeNames[] = {
         "ADSR",
         "Analyser",
-        "AudioBasicProcessor",
-        "AudioHardwareSource",
+        //            "AudioBasicProcessor",
+        //            "AudioHardwareSource",
         "BiquadFilter",
         "ChannelMerger",
         "ChannelSplitter",
@@ -75,8 +93,9 @@ namespace
         "Delay",
         "Diode",
         "DynamicsCompressor",
-        "Function",
+        //            "Function",
         "Gain",
+        "Granulation",
         "Noise",
         "Oscillator",
         "Panner",
@@ -95,8 +114,7 @@ namespace
         "StereoPanner",
         "SuperSaw",
         "WaveShaper",
-        nullptr
-    };
+        nullptr};
 }
 
 char const * const * const AudioNodeNames()
@@ -104,8 +122,7 @@ char const * const * const AudioNodeNames()
     return NodeNames;
 }
 
-}   // Sound
-}   // lab
+}  // lab
 
 ///////////////////////
 // Logging Utilities //
@@ -117,14 +134,13 @@ char const * const * const AudioNodeNames()
 
 void LabSoundLog(const char * file, int line, const char * fmt, ...)
 {
+    printf("[%s @ %i]\n\t", file, line);
     va_list args;
     va_start(args, fmt);
-
-    char tmp[256] = {0};
-    sprintf(tmp, "[%s @ %i]\n\t%s\n", file, line, fmt);
-    vprintf(tmp, args);
-
+    static std::vector<char> buff(1024);
+    vprintf(fmt, args);
     va_end(args);
+    printf("\n");
 }
 
 void LabSoundAssertLog(const char * file_, int line, const char * function_, const char * assertion_)

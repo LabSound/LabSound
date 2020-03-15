@@ -7,11 +7,13 @@
 
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/PannerNode.h"
 
 #include <memory>
 
-namespace lab {
+namespace lab
+{
 
 class AudioContext;
 class AudioBus;
@@ -24,16 +26,15 @@ class AudioBus;
 class SampledAudioNode final : public AudioScheduledSourceNode
 {
 public:
-
     SampledAudioNode();
     virtual ~SampledAudioNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
     bool setBus(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);
-    std::shared_ptr<AudioBus> getBus() const { return m_sourceBus; }
+    std::shared_ptr<AudioBus> getBus() const { return m_sourceBus->valueBus(); }
 
     // numberOfChannels() returns the number of output channels. This value equals the number of channels from the buffer.
     // If a new buffer is set with a different number of channels, then this value will dynamically change.
@@ -59,14 +60,13 @@ public:
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
-    void setPannerNode(PannerNode*);
+    void setPannerNode(PannerNode *);
     virtual void clearPannerNode() override;
 
     // If we are no longer playing, propagate silence ahead to downstream nodes.
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
 
 private:
-
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
@@ -77,7 +77,7 @@ private:
     bool renderSilenceAndFinishIfNotLooping(ContextRenderLock & r, AudioBus *, size_t index, size_t framesToProcess);
 
     // m_buffer holds the sample data which this node outputs.
-    std::shared_ptr<AudioBus> m_sourceBus;
+    std::shared_ptr<AudioSetting> m_sourceBus;
 
     // Exposed attributes
     std::shared_ptr<AudioParam> m_gain;
@@ -88,10 +88,11 @@ private:
     // If true, it will wrap around to the start of the buffer each time it reaches the end.
     std::shared_ptr<AudioSetting> m_isLooping;
 
-    bool m_startRequested{ false };
-    double m_requestWhen{ 0 };
-    double m_requestGrainOffset{ 0 };
-    double m_requestGrainDuration{ 0 };
+    bool m_channelSetupRequested{false};
+    bool m_startRequested{false};
+    double m_requestWhen{0};
+    double m_requestGrainOffset{0};
+    double m_requestGrainDuration{0};
 
     std::shared_ptr<AudioSetting> m_loopStart;
     std::shared_ptr<AudioSetting> m_loopEnd;
@@ -101,22 +102,22 @@ private:
     double m_virtualReadIndex;
 
     // Granular playback
-    bool m_isGrain{ false };
-    double m_grainOffset{ 0 }; // in seconds
-    double m_grainDuration{ 0 }; // in seconds
+    bool m_isGrain{false};
+    double m_grainOffset{0};  // in seconds
+    double m_grainDuration{0};  // in seconds
 
     // totalPitchRate() returns the instantaneous pitch rate (non-time preserving).
     // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, and any doppler shift from an associated panner node.
-    double totalPitchRate(ContextRenderLock&);
+    double totalPitchRate(ContextRenderLock &);
 
     // m_lastGain provides continuity when we dynamically adjust the gain.
-    float m_lastGain{ 1.0f };
+    float m_lastGain{1.0f};
 
     // We optionally keep track of a panner node which has a doppler shift that is incorporated into
     // the pitch rate. We manually manage ref-counting because we want to use RefTypeConnection.
-    PannerNode * m_pannerNode{ nullptr };
+    PannerNode * m_pannerNode{nullptr};
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // SampledAudioNode
+#endif  // SampledAudioNode

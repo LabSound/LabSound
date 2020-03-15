@@ -7,6 +7,12 @@
 
 namespace lab
 {
-    AudioDSPKernel::AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor) : m_kernelProcessor(kernelProcessor) { }
-    AudioDSPKernel::AudioDSPKernel() : m_kernelProcessor(nullptr) { }
+AudioDSPKernel::AudioDSPKernel(AudioDSPKernelProcessor * kernelProcessor)
+    : m_kernelProcessor(kernelProcessor)
+{
+}
+AudioDSPKernel::AudioDSPKernel()
+    : m_kernelProcessor(nullptr)
+{
+}
 }

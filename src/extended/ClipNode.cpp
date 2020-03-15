@@ -1,15 +1,15 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 
-#include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/ClipNode.h"
 
 #include "internal/VectorMath.h"
 
@@ -21,137 +21,138 @@ using namespace lab;
 namespace lab
 {
 
-    /////////////////////////////////////
-    // Private ClipNode Implementation //
-    /////////////////////////////////////
+/////////////////////////////////////
+// Private ClipNode Implementation //
+/////////////////////////////////////
 
-    class ClipNode::ClipNodeInternal : public lab::AudioProcessor 
+static char const * const s_ClipModes[ClipNode::Mode::_Count + 1] = {"Clip", "Tanh", nullptr};
+
+class ClipNode::ClipNodeInternal : public lab::AudioProcessor
+{
+public:
+    ClipNodeInternal(ClipNode * owner)
+        : AudioProcessor(1)
+        , _owner(owner)
     {
-    public:
+        auto fMax = std::numeric_limits<float>::max();
+        aVal = std::make_shared<AudioParam>("a", "A   ", -1.0, -fMax, fMax);
+        bVal = std::make_shared<AudioParam>("b", "B   ", 1.0, -fMax, fMax);
+        mode = std::make_shared<AudioSetting>("mode", "MODE", s_ClipModes);
+        mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
+    }
 
-        ClipNodeInternal() : AudioProcessor(2)
+    virtual ~ClipNodeInternal() {}
+
+    virtual void initialize() override {}
+    virtual void uninitialize() override {}
+
+    // Processes the source to destination bus.
+    virtual void process(ContextRenderLock & r,
+                         const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus,
+                         size_t framesToProcess) override
+    {
+        int srcChannels = (int) sourceBus->numberOfChannels();
+        int dstChannels = (int) destinationBus->numberOfChannels();
+        if (dstChannels < srcChannels)
         {
-            auto fMax = std::numeric_limits<float>::max();
-            aVal = std::make_shared<AudioParam>("a", -1.0, -fMax, fMax);
-            bVal = std::make_shared<AudioParam>("b",  1.0, -fMax, fMax);
-            mode = std::make_shared<AudioSetting>("mode");
-            mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
+            _owner->output(0)->setNumberOfChannels(r, srcChannels);
+            setNumberOfChannels(srcChannels);
         }
 
-        virtual ~ClipNodeInternal() { }
-
-        virtual void initialize() override { }
-
-        virtual void uninitialize() override { }
-
-        // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock& r,
-                             const lab::AudioBus* sourceBus, lab::AudioBus* destinationBus,
-                             size_t framesToProcess) override
+        if (!srcChannels)
         {
-            if (!numberOfChannels())
-                return;
+            destinationBus->zero();
+            return;
+        }
 
-            // We handle both the 1 -> N and N -> N case here.
-            const float* source = sourceBus->channel(0)->data();
+        ClipNode::Mode clipMode = static_cast<ClipNode::Mode>(mode->valueUint32());
 
-            // this will only ever happen once, so if heap contention is an issue it should only ever cause one glitch
-            // what would be better, alloca? What does webaudio do elsewhere for this sort of thing?
-            if (gainValues.size() < framesToProcess)
-                gainValues.resize(framesToProcess);
+        if (clipMode == ClipNode::TANH)
+        {
+            float outputGain = aVal->value(r);
+            float inputGain = bVal->value(r);
 
-            size_t numChannels = numberOfChannels();
-
-            ClipNode::Mode clipMode = static_cast<ClipNode::Mode>(mode->valueUint32());
-
-            if (clipMode == ClipNode::TANH)
+            for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
             {
-                float outputGain = aVal->value(r);
-                float inputGain = bVal->value(r);
-
-                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
+                int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
+                float const * source = sourceBus->channel(srcIndex)->data();
+                float * destination = destinationBus->channel(channelIndex)->mutableData();
+                for (size_t i = 0; i < framesToProcess; ++i)
                 {
-                    if (sourceBus->numberOfChannels() == numChannels)
-                        source = sourceBus->channel(channelIndex)->data();
-
-                    float * destination = destinationBus->channel(channelIndex)->mutableData();
-                    for (size_t i = 0; i < framesToProcess; ++i)
-                    {
-                        *destination++ = outputGain * tanhf(inputGain * source[i]);
-                    }
-                }
-            }
-            else
-            {
-                float minf = aVal->value(r);
-                float maxf = bVal->value(r);
-
-                for (unsigned int channelIndex = 0; channelIndex < numChannels; ++channelIndex)
-                {
-                    if (sourceBus->numberOfChannels() == numChannels)
-                        source = sourceBus->channel(channelIndex)->data();
-
-                    float * destination = destinationBus->channel(channelIndex)->mutableData();
-
-                    for (size_t i = 0; i < framesToProcess; ++i)
-                    {
-                        float d = source[i];
-
-                        if (d < minf)
-                            d = minf;
-                        else if (d > maxf)
-                            d = maxf;
-
-                        *destination++ = d;
-                    }
+                    *destination++ = outputGain * tanhf(inputGain * source[i]);
                 }
             }
         }
+        else
+        {
+            float minf = aVal->value(r);
+            float maxf = bVal->value(r);
 
-        virtual void reset() override { }
+            for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
+            {
+                int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
+                float const * source = sourceBus->channel(srcIndex)->data();
+                float * destination = destinationBus->channel(channelIndex)->mutableData();
+                for (size_t i = 0; i < framesToProcess; ++i)
+                {
+                    float d = source[i];
 
-        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+                    if (d < minf)
+                        d = minf;
+                    else if (d > maxf)
+                        d = maxf;
 
-        std::shared_ptr<AudioParam> aVal;
-        std::shared_ptr<AudioParam> bVal;
-        std::shared_ptr<AudioSetting> mode;
+                    *destination++ = d;
+                }
+            }
+        }
+    }
 
-        std::vector<float> gainValues;
-    };
+    virtual void reset() override {}
 
-    /////////////////////
-    // Public ClipNode //
-    /////////////////////
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    ClipNode::ClipNode() 
+    ClipNode * _owner = nullptr;
+    std::shared_ptr<AudioParam> aVal;
+    std::shared_ptr<AudioParam> bVal;
+    std::shared_ptr<AudioSetting> mode;
+};
+
+/////////////////////
+// Public ClipNode //
+/////////////////////
+
+ClipNode::ClipNode()
     : lab::AudioBasicProcessorNode()
-    {
-        internalNode = new ClipNodeInternal();
-        m_processor.reset(internalNode);
+{
+    internalNode = new ClipNodeInternal(this);
+    m_processor.reset(internalNode);
 
-        m_params.push_back(internalNode->aVal);
-        m_params.push_back(internalNode->bVal);
-        m_settings.push_back(internalNode->mode);
+    m_params.push_back(internalNode->aVal);
+    m_params.push_back(internalNode->bVal);
+    m_settings.push_back(internalNode->mode);
 
-        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
+    initialize();
+}
 
-        initialize();
-    }
+ClipNode::~ClipNode()
+{
+    uninitialize();
+}
 
-    ClipNode::~ClipNode()
-    {
-        uninitialize();
-    }
+void ClipNode::setMode(Mode m)
+{
+    internalNode->mode->setUint32(uint32_t(m));
+}
 
-    void ClipNode::setMode(Mode m)
-    {
-        internalNode->mode->setUint32(uint32_t(m));
-    }
+std::shared_ptr<AudioParam> ClipNode::aVal()
+{
+    return internalNode->aVal;
+}
+std::shared_ptr<AudioParam> ClipNode::bVal()
+{
+    return internalNode->bVal;
+}
 
-    std::shared_ptr<AudioParam> ClipNode::aVal() { return internalNode->aVal; }
-    std::shared_ptr<AudioParam> ClipNode::bVal() { return internalNode->bVal; }
-
-} // end namespace lab
-
+}  // end namespace lab

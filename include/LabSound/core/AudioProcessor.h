@@ -7,32 +7,31 @@
 
 #include <stddef.h>
 
-namespace lab 
+namespace lab
 {
-    
+
 class AudioBus;
 class ContextRenderLock;
-    
+
 // AudioProcessor is an abstract base class representing an audio signal processing object with a single input and a single output,
 // where the number of input channels equals the number of output channels. It can be used as one part of a complex DSP algorithm,
 // or as the processor for a basic (one input - one output) AudioNode.
-class AudioProcessor 
+class AudioProcessor
 {
-    
+
 public:
-    
-    AudioProcessor(unsigned numberOfChannels) : m_numberOfChannels(numberOfChannels)
+    AudioProcessor(unsigned numberOfChannels)
+        : m_numberOfChannels(numberOfChannels)
     {
     }
-
-    virtual ~AudioProcessor() { }
+    virtual ~AudioProcessor() {}
 
     // Full initialization can be done here instead of in the constructor.
     virtual void initialize() = 0;
     virtual void uninitialize() = 0;
 
     // Processes the source to destination bus.  The number of channels must match in source and destination.
-    virtual void process(ContextRenderLock&, const AudioBus* source, AudioBus* destination, size_t framesToProcess) = 0;
+    virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, size_t framesToProcess) = 0;
 
     // Resets filter state
     virtual void reset() = 0;
@@ -50,6 +49,6 @@ protected:
     size_t m_numberOfChannels;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioProcessor_h
+#endif  // AudioProcessor_h

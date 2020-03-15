@@ -7,12 +7,13 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 
-namespace lab {
+namespace lab
+{
 
 class AudioParam;
 class BiquadProcessor;
 
-class BiquadFilterNode : public AudioBasicProcessorNode 
+class BiquadFilterNode : public AudioBasicProcessorNode
 {
 
     BiquadProcessor * biquadProcessor();
@@ -20,9 +21,8 @@ class BiquadFilterNode : public AudioBasicProcessorNode
     std::shared_ptr<AudioSetting> m_type;
 
 public:
-    
     BiquadFilterNode();
-    
+
     FilterType type() const;
     void setType(FilterType type);
 
@@ -33,10 +33,9 @@ public:
 
     // Get the magnitude and phase response of the filter at the given
     // set of frequencies (in Hz). The phase response is in radians.
-    void getFrequencyResponse(ContextRenderLock&, const std::vector<float>& frequencyHz, std::vector<float>& magResponse, std::vector<float>& phaseResponse);
-
+    void getFrequencyResponse(ContextRenderLock &, const std::vector<float> & frequencyHz, std::vector<float> & magResponse, std::vector<float> & phaseResponse);
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // BiquadFilterNode_h
+#endif  // BiquadFilterNode_h

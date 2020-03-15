@@ -9,35 +9,34 @@
 #include "LabSound/core/AudioProcessor.h"
 #include <memory>
 
-namespace lab {
+namespace lab
+{
 
 class AudioBus;
 class AudioNodeInput;
 
-// AudioBasicProcessorNode is an AudioNode with one input and one output where the input and output have the same number of channels.
-class AudioBasicProcessorNode : public AudioNode 
+// AudioBasicProcessorNode is an AudioNode with one input and one output where
+//  the input and output have the same number of channels.
+class AudioBasicProcessorNode : public AudioNode
 {
-
 public:
-
     AudioBasicProcessorNode();
     virtual ~AudioBasicProcessorNode() {}
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 
     // Called in the main thread when the number of channels for the input may have changed.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *) override;
 
     // Returns the number of channels for both the input and the output.
     size_t numberOfChannels();
 
 protected:
-
     virtual double tailTime(ContextRenderLock & r) const override;
     virtual double latencyTime(ContextRenderLock & r) const override;
 
@@ -45,9 +44,8 @@ protected:
     AudioProcessor * processor() const;
 
     std::unique_ptr<AudioProcessor> m_processor;
-
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioBasicProcessorNode_h
+#endif  // AudioBasicProcessorNode_h

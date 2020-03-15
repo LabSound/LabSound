@@ -2,9 +2,9 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParamTimeline.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
@@ -16,7 +16,8 @@
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 //@tofix - is there any reason this should be per object instead of static?
 namespace
@@ -54,18 +55,18 @@ static bool isValidNumber(float x)
     return !std::isnan(x) && !std::isinf(x);
 }
 
-void AudioParamTimeline::insertEvent(const ParamEvent& event)
+void AudioParamTimeline::insertEvent(const ParamEvent & event)
 {
     // Sanity check the event. Be super careful we're not getting infected with NaN or Inf.
     bool isValid = event.type() < ParamEvent::LastType
-        && isValidNumber(event.value())
-        && isValidNumber(event.time())
-        && isValidNumber(event.timeConstant())
-        && isValidNumber(event.duration())
-        && event.duration() >= 0;
+                   && isValidNumber(event.value())
+                   && isValidNumber(event.time())
+                   && isValidNumber(event.timeConstant())
+                   && isValidNumber(event.duration())
+                   && event.duration() >= 0;
 
     ASSERT(isValid);
-    
+
     if (!isValid)
         return;
 
@@ -73,10 +74,10 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
 
     unsigned i = 0;
     float insertTime = event.time();
-    
+
     for (i = 0; i < m_events.size(); ++i)
     {
-        
+
         if (event.type() == ParamEvent::SetValueCurve)
         {
             // If this event is a SetValueCurve, make sure it doesn't overlap any existing
@@ -100,7 +101,7 @@ void AudioParamTimeline::insertEvent(const ParamEvent& event)
                 }
             }
         }
-        
+
         // Overwrite same event type and time.
         if (m_events[i].time() == insertTime && m_events[i].type() == event.type())
         {
@@ -122,22 +123,25 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     std::lock_guard<std::mutex> lock(m_eventsMutex);
 
     // Remove all events starting at startTime.
-    for (unsigned i = 0; i < m_events.size(); ++i) {
-        if (m_events[i].time() >= startTime) {
+    for (unsigned i = 0; i < m_events.size(); ++i)
+    {
+        if (m_events[i].time() >= startTime)
+        {
             m_events.erase(m_events.begin() + i, m_events.end());
             break;
         }
     }
 }
 
-float AudioParamTimeline::valueForContextTime(ContextRenderLock& r, float defaultValue, bool& hasValue)
+float AudioParamTimeline::valueForContextTime(ContextRenderLock & r, float defaultValue, bool & hasValue)
 {
     auto context = r.context();
     if (!context)
         return defaultValue;
 
     std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
-    if (!lock.owns_lock() || !m_events.size() || context->currentTime() < m_events[0].time()) {
+    if (!lock.owns_lock() || !m_events.size() || context->currentTime() < m_events[0].time())
+    {
         hasValue = false;
         return defaultValue;
     }
@@ -145,8 +149,8 @@ float AudioParamTimeline::valueForContextTime(ContextRenderLock& r, float defaul
     // Ask for just a single value.
     double sampleRate = context->sampleRate();
     double startTime = context->currentTime();
-    double endTime = startTime + 1.1 / sampleRate; // time just beyond one sample-frame
-    double controlRate = sampleRate / AudioNode::ProcessingSizeInFrames; // one parameter change per render quantum
+    double endTime = startTime + 1.1 / sampleRate;  // time just beyond one sample-frame
+    double controlRate = sampleRate / AudioNode::ProcessingSizeInFrames;  // one parameter change per render quantum
     float value = valuesForTimeRange(startTime, endTime, defaultValue, &value, 1, sampleRate, controlRate);
 
     hasValue = true;
@@ -157,7 +161,7 @@ float AudioParamTimeline::valuesForTimeRange(
     double startTime,
     double endTime,
     float defaultValue,
-    float* values,
+    float * values,
     size_t numberOfValues,
     double sampleRate,
     double controlRate)
@@ -170,7 +174,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     double startTime,
     double endTime,
     float defaultValue,
-    float* values,
+    float * values,
     size_t numberOfValues,
     double sampleRate,
     double controlRate)
@@ -180,7 +184,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
     // Return default value if there are no events matching the desired time range.
     std::unique_lock<std::mutex> lock(m_eventsMutex, std::try_to_lock);
-    if (!lock.owns_lock() || !m_events.size() || endTime <= m_events[0].time()) {
+    if (!lock.owns_lock() || !m_events.size() || endTime <= m_events[0].time())
+    {
         for (unsigned i = 0; i < numberOfValues; ++i)
             values[i] = defaultValue;
         return defaultValue;
@@ -193,7 +198,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     // If first event is after startTime then fill initial part of values buffer with defaultValue
     // until we reach the first event time.
     double firstEventTime = m_events[0].time();
-    if (firstEventTime > startTime) {
+    if (firstEventTime > startTime)
+    {
         double fillToTime = std::min(endTime, firstEventTime);
         size_t fillToFrame = AudioUtilities::timeToSampleFrame(fillToTime - startTime, sampleRate);
         fillToFrame = std::min(fillToFrame, numberOfValues);
@@ -210,9 +216,10 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     // FIXME: could try to optimize by avoiding having to iterate starting from the very first event
     // and keeping track of a "current" event index.
     int n = static_cast<int>(m_events.size());
-    for (int i = 0; i < n && writeIndex < numberOfValues; ++i) {
-        ParamEvent& event = m_events[i];
-        ParamEvent* nextEvent = i < n - 1 ? &(m_events[i + 1]) : 0;
+    for (int i = 0; i < n && writeIndex < numberOfValues; ++i)
+    {
+        ParamEvent & event = m_events[i];
+        ParamEvent * nextEvent = i < n - 1 ? &(m_events[i + 1]) : 0;
 
         // Wait until we get a more recent event.
         if (nextEvent && nextEvent->time() < currentTime)
@@ -234,19 +241,26 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
         ParamEvent::Type nextEventType = nextEvent ? static_cast<ParamEvent::Type>(nextEvent->type()) : ParamEvent::LastType /* unknown */;
 
         // First handle linear and exponential ramps which require looking ahead to the next event.
-        if (nextEventType == ParamEvent::LinearRampToValue) {
-            for (; writeIndex < fillToFrame; ++writeIndex) {
+        if (nextEventType == ParamEvent::LinearRampToValue)
+        {
+            for (; writeIndex < fillToFrame; ++writeIndex)
+            {
                 float x = static_cast<float>(currentTime - time1) * k;
                 value = (1 - x) * value1 + x * value2;
                 values[writeIndex] = value;
                 currentTime += sampleFrameTimeIncr;
             }
-        } else if (nextEventType == ParamEvent::ExponentialRampToValue) {
-            if (value1 <= 0 || value2 <= 0) {
+        }
+        else if (nextEventType == ParamEvent::ExponentialRampToValue)
+        {
+            if (value1 <= 0 || value2 <= 0)
+            {
                 // Handle negative values error case by propagating previous value.
                 for (; writeIndex < fillToFrame; ++writeIndex)
                     values[writeIndex] = value;
-            } else {
+            }
+            else
+            {
                 float numSampleFrames = static_cast<float>(deltaTime * sampleRate);
                 // The value goes exponentially from value1 to value2 in a duration of deltaTime seconds (corresponding to numSampleFrames).
                 // Compute the per-sample multiplier.
@@ -255,21 +269,24 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                 // Set the starting value of the exponential ramp. This is the same as multiplier ^
                 // AudioUtilities::timeToSampleFrame(currentTime - time1, sampleRate), but is more
                 // accurate, especially if multiplier is close to 1.
-                value = value1 * powf(value2 / value1,
-                                      AudioUtilities::timeToSampleFrame(currentTime - time1, sampleRate) / numSampleFrames);
+                value = value1 * powf(value2 / value1, AudioUtilities::timeToSampleFrame(currentTime - time1, sampleRate) / numSampleFrames);
 
-                for (; writeIndex < fillToFrame; ++writeIndex) {
+                for (; writeIndex < fillToFrame; ++writeIndex)
+                {
                     values[writeIndex] = value;
                     value *= multiplier;
                     currentTime += sampleFrameTimeIncr;
                 }
             }
-        } else {
+        }
+        else
+        {
             // Handle event types not requiring looking ahead to the next event.
-            switch (event.type()) {
-            case ParamEvent::SetValue:
-            case ParamEvent::LinearRampToValue:
-            case ParamEvent::ExponentialRampToValue:
+            switch (event.type())
+            {
+                case ParamEvent::SetValue:
+                case ParamEvent::LinearRampToValue:
+                case ParamEvent::ExponentialRampToValue:
                 {
                     currentTime = fillToTime;
 
@@ -281,7 +298,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     break;
                 }
 
-            case ParamEvent::SetTarget:
+                case ParamEvent::SetTarget:
                 {
                     currentTime = fillToTime;
 
@@ -290,7 +307,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     float timeConstant = event.timeConstant();
                     float discreteTimeConstant = static_cast<float>(AudioUtilities::discreteTimeConstantForSampleRate(timeConstant, controlRate));
 
-                    for (; writeIndex < fillToFrame; ++writeIndex) {
+                    for (; writeIndex < fillToFrame; ++writeIndex)
+                    {
                         values[writeIndex] = value;
                         value += (target - value) * discreteTimeConstant;
                     }
@@ -298,7 +316,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     break;
                 }
 
-            case ParamEvent::SetValueCurve:
+                case ParamEvent::SetValueCurve:
                 {
                     std::vector<float> & curve = event.curve();
                     float * curveData = curve.size() > 0 ? curve.data() : 0;
@@ -306,7 +324,7 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
                     // Curve events have duration, so don't just use next event time.
                     float duration = event.duration();
-                    
+
                     // How much to step the curve index for each frame.  This is basically the term
                     // (N - 1)/Td in the specification.
                     float curvePointsPerFrame = static_cast<float>((numberOfCurvePoints - 1) / duration / sampleRate);
@@ -325,20 +343,21 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
                     size_t nextEventFillToFrame = fillToFrame;
                     double nextEventFillToTime = fillToTime;
                     fillToTime = std::min(endTime, time1 + duration);
-                    
+
                     // |fillToTime| can be greater than |startTime| when the end of the
                     // setValueCurve automation has been reached, but the next automation has not
                     // yet started. In this case, |fillToTime| is clipped to |time1|+|duration|
                     // above, but |startTime| will keep increasing (because the current time is
                     // increasing).
                     fillToFrame = AudioUtilities::timeToSampleFrame(std::max(0.0, fillToTime - startTime), sampleRate);
-                    
+
                     fillToFrame = std::min(fillToFrame, numberOfValues);
 
                     // Index into the curve data using a floating-point value.
                     // We're scaling the number of curve points by the duration (see curvePointsPerFrame).
                     float curveVirtualIndex = 0;
-                    if (time1 < currentTime) {
+                    if (time1 < currentTime)
+                    {
                         // Index somewhere in the middle of the curve data.
                         // Don't use timeToSampleFrame() since we want the exact floating-point frame.
                         float frameOffset = static_cast<float>((currentTime - time1) * sampleRate);
@@ -347,7 +366,8 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 
                     // Render the stretched curve data using nearest neighbor sampling.
                     // Oversampled curve data can be provided if smoothness is desired.
-                    for (; writeIndex < fillToFrame; ++writeIndex) {
+                    for (; writeIndex < fillToFrame; ++writeIndex)
+                    {
                         // Ideally we'd use round() from MathExtras, but we're in a tight loop here
                         // and we're trading off precision for extra speed.
                         unsigned curveIndex = static_cast<unsigned>(0.5 + curveVirtualIndex);
@@ -383,4 +403,4 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
     return value;
 }
 
-} // namespace lab
+}  // namespace lab

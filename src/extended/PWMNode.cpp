@@ -1,10 +1,10 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
-#include "LabSound/core/AudioBus.h"
 
 #include "LabSound/extended/PWMNode.h"
 
@@ -12,80 +12,76 @@
 
 using namespace lab;
 
-namespace lab {
+namespace lab
+{
 
-    ////////////////////////////////////
-    // Private PWMNode Implementation //
-    ////////////////////////////////////
+////////////////////////////////////
+// Private PWMNode Implementation //
+////////////////////////////////////
 
-    class PWMNode::PWMNodeInternal : public lab::AudioProcessor
+class PWMNode::PWMNodeInternal : public lab::AudioProcessor
+{
+
+public:
+    PWMNodeInternal()
+        : AudioProcessor(2)
     {
+    }
 
-    public:
+    virtual ~PWMNodeInternal() {}
 
-        PWMNodeInternal() : AudioProcessor(2) { }
+    virtual void initialize() override {}
 
-        virtual ~PWMNodeInternal() { }
+    virtual void uninitialize() override {}
 
-        virtual void initialize() override { }
+    // Processes the source to destination bus.  The number of channels must match in source and destination.
+    virtual void process(ContextRenderLock &,
+                         const lab::AudioBus * source, lab::AudioBus * destination,
+                         size_t framesToProcess) override
+    {
+        if (!numberOfChannels())
+            return;
 
-        virtual void uninitialize() override { }
+        const float * carrierP = source->channelByType(Channel::Left)->data();
+        const float * modP = source->channelByType(Channel::Right)->data();
 
-        // Processes the source to destination bus.  The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock&,
-                             const lab::AudioBus* source, lab::AudioBus* destination,
-                             size_t framesToProcess) override
+        if (!modP && carrierP)
         {
-            if (!numberOfChannels())
-                return;
-            
-            const float* carrierP = source->channelByType(Channel::Left)->data();
-            const float* modP = source->channelByType(Channel::Right)->data();
-
-            if (!modP && carrierP) 
+            destination->copyFrom(*source);
+        }
+        else
+        {
+            float * destP = destination->channel(0)->mutableData();
+            size_t n = framesToProcess;
+            while (n--)
             {
-                destination->copyFrom(*source);
-            }
-            else 
-            {
-                float* destP = destination->channel(0)->mutableData();
-                size_t n = framesToProcess;
-                while (n--)
-                {
-                    float carrier = *carrierP++;
-                    float mod = *modP++;
-                    *destP++ = (carrier > mod) ? 1.0f : -1.0f;
-                }
+                float carrier = *carrierP++;
+                float mod = *modP++;
+                *destP++ = (carrier > mod) ? 1.0f : -1.0f;
             }
         }
-
-        virtual void reset() override { }
-
-        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-    };
-
-    ////////////////////
-    // Public PWMNode //
-    ////////////////////
-
-    PWMNode::PWMNode() : lab::AudioBasicProcessorNode()
-    {
-        m_processor.reset(new PWMNodeInternal());
-
-        internalNode = static_cast<PWMNodeInternal*>(m_processor.get()); // Currently unused
-
-        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2))); 
-
-        initialize();
     }
 
-    PWMNode::~PWMNode()
-    {
-        uninitialize();
-    }
+    virtual void reset() override {}
 
-    
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+};
+
+////////////////////
+// Public PWMNode //
+////////////////////
+
+PWMNode::PWMNode()
+    : lab::AudioBasicProcessorNode()
+{
+    m_processor.reset(new PWMNodeInternal());
+    internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused
+    initialize();
 }
 
+PWMNode::~PWMNode()
+{
+    uninitialize();
+}
+}

@@ -4,19 +4,20 @@
 
 #include "LabSound/core/Macros.h"
 
-#include "internal/DynamicsCompressorKernel.h"
+#include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 #include "internal/DenormalDisabler.h"
-#include "internal/Assertions.h"
+#include "internal/DynamicsCompressorKernel.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include <memory>
 #include <algorithm>
+#include <memory>
 
 using namespace std;
 
-namespace lab {
+namespace lab
+{
 
 using namespace AudioUtilities;
 
@@ -25,8 +26,8 @@ const float meteringReleaseTimeConstant = 0.325f;
 
 const float uninitializedValue = -1;
 
-DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels) :
-      m_lastPreDelayFrames(DefaultPreDelayFrames)
+DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels)
+    : m_lastPreDelayFrames(DefaultPreDelayFrames)
     , m_preDelayReadIndex(0)
     , m_preDelayWriteIndex(DefaultPreDelayFrames)
     , m_ratio(uninitializedValue)
@@ -47,14 +48,13 @@ DynamicsCompressorKernel::DynamicsCompressorKernel(unsigned numberOfChannels) :
 
 void DynamicsCompressorKernel::setNumberOfChannels(unsigned numberOfChannels)
 {
-    
+
     if (m_preDelayBuffers.size() == numberOfChannels)
         return;
 
     m_preDelayBuffers.clear();
     for (unsigned i = 0; i < numberOfChannels; ++i)
         m_preDelayBuffers.push_back(std::unique_ptr<AudioFloatArray>(new AudioFloatArray(MaxPreDelayFrames)));
-
 }
 
 void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime, float sampleRate)
@@ -64,7 +64,8 @@ void DynamicsCompressorKernel::setPreDelayTime(float preDelayTime, float sampleR
     if (preDelayFrames > MaxPreDelayFrames - 1)
         preDelayFrames = MaxPreDelayFrames - 1;
 
-    if (m_lastPreDelayFrames != preDelayFrames) {
+    if (m_lastPreDelayFrames != preDelayFrames)
+    {
         m_lastPreDelayFrames = preDelayFrames;
         for (unsigned i = 0; i < m_preDelayBuffers.size(); ++i)
             m_preDelayBuffers[i]->zero();
@@ -92,7 +93,8 @@ float DynamicsCompressorKernel::saturate(float x, float k)
 
     if (x < m_kneeThreshold)
         y = kneeCurve(x, k);
-    else {
+    else
+    {
         // Constant ratio after knee.
         float xDb = linearToDecibels(x);
         float yDb = m_ykneeThresholdDb + m_slope * (xDb - m_kneeThresholdDb);
@@ -134,14 +136,18 @@ float DynamicsCompressorKernel::kAtSlope(float desiredSlope)
     float maxK = 10000;
     float k = 5;
 
-    for (int i = 0; i < 15; ++i) {
+    for (int i = 0; i < 15; ++i)
+    {
         // A high value for k will more quickly asymptotically approach a slope of 0.
         float slope = slopeAt(x, k);
 
-        if (slope < desiredSlope) {
+        if (slope < desiredSlope)
+        {
             // k is too high.
             maxK = k;
-        } else {
+        }
+        else
+        {
             // k is too low.
             minK = k;
         }
@@ -155,7 +161,8 @@ float DynamicsCompressorKernel::kAtSlope(float desiredSlope)
 
 float DynamicsCompressorKernel::updateStaticCurveParameters(float dbThreshold, float dbKnee, float ratio)
 {
-    if (dbThreshold != m_dbThreshold || dbKnee != m_dbKnee || ratio != m_ratio) {
+    if (dbThreshold != m_dbThreshold || dbKnee != m_dbKnee || ratio != m_ratio)
+    {
         // Threshold and knee.
         m_dbThreshold = dbThreshold;
         m_linearThreshold = decibelsToLinear(dbThreshold);
@@ -193,8 +200,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                                        float releaseZone1,
                                        float releaseZone2,
                                        float releaseZone3,
-                                       float releaseZone4
-                                       )
+                                       float releaseZone4)
 {
     ASSERT(m_preDelayBuffers.size() == numberOfChannels);
 
@@ -239,11 +245,11 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
 
     // All of these coefficients were derived for 4th order polynomial curve fitting where the y values
     // match the evenly spaced x values as follows: (y1 : x == 0, y2 : x == 1, y3 : x == 2, y4 : x == 3)
-    float kA = 0.9999999999999998f*y1 + 1.8432219684323923e-16f*y2 - 1.9373394351676423e-16f*y3 + 8.824516011816245e-18f*y4;
-    float kB = -1.5788320352845888f*y1 + 2.3305837032074286f*y2 - 0.9141194204840429f*y3 + 0.1623677525612032f*y4;
-    float kC = 0.5334142869106424f*y1 - 1.272736789213631f*y2 + 0.9258856042207512f*y3 - 0.18656310191776226f*y4;
-    float kD = 0.08783463138207234f*y1 - 0.1694162967925622f*y2 + 0.08588057951595272f*y3 - 0.00429891410546283f*y4;
-    float kE = -0.042416883008123074f*y1 + 0.1115693827987602f*y2 - 0.09764676325265872f*y3 + 0.028494263462021576f*y4;
+    float kA = 0.9999999999999998f * y1 + 1.8432219684323923e-16f * y2 - 1.9373394351676423e-16f * y3 + 8.824516011816245e-18f * y4;
+    float kB = -1.5788320352845888f * y1 + 2.3305837032074286f * y2 - 0.9141194204840429f * y3 + 0.1623677525612032f * y4;
+    float kC = 0.5334142869106424f * y1 - 1.272736789213631f * y2 + 0.9258856042207512f * y3 - 0.18656310191776226f * y4;
+    float kD = 0.08783463138207234f * y1 - 0.1694162967925622f * y2 + 0.08588057951595272f * y3 - 0.00429891410546283f * y4;
+    float kE = -0.042416883008123074f * y1 + 0.1115693827987602f * y2 - 0.09764676325265872f * y3 + 0.028494263462021576f * y4;
 
     // x ranges from 0 -> 3       0    1    2   3
     //                           -15  -10  -5   0db
@@ -257,7 +263,7 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
     const int nDivisions = framesToProcess / nDivisionFrames;
 
     unsigned frameIndex = 0;
-    for (int i = 0; i < nDivisions; ++i) 
+    for (int i = 0; i < nDivisions; ++i)
     {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Calculate desired gain
@@ -287,7 +293,8 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
         // compressionDiffDb is the difference between current compression level and the desired level.
         float compressionDiffDb = linearToDecibels(m_compressorGain / scaledDesiredGain);
 
-        if (isReleasing) {
+        if (isReleasing)
+        {
             // Release mode - compressionDiffDb should be negative dB
             m_maxAttackCompressionDiffDb = -1;
 
@@ -316,7 +323,9 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
             float dbPerFrame = kSpacingDb / releaseFrames;
 
             envelopeRate = decibelsToLinear(dbPerFrame);
-        } else {
+        }
+        else
+        {
             // Attack mode - compressionDiffDb should be positive dB
 
             // Fix gremlins.
@@ -347,12 +356,14 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
             float compressorGain = m_compressorGain;
 
             int loopFrames = nDivisionFrames;
-            while (loopFrames--) {
+            while (loopFrames--)
+            {
                 float compressorInput = 0;
 
                 // Predelay signal, computing compression amount from un-delayed version.
-                for (unsigned i = 0; i < numberOfChannels; ++i) {
-                    float* delayBuffer = m_preDelayBuffers[i]->data();
+                for (unsigned i = 0; i < numberOfChannels; ++i)
+                {
+                    float * delayBuffer = m_preDelayBuffers[i]->data();
                     float undelayedSource = sourceChannels[i][frameIndex];
                     delayBuffer[preDelayWriteIndex] = undelayedSource;
 
@@ -394,10 +405,13 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                     detectorAverage = 1;
 
                 // Exponential approach to desired gain.
-                if (envelopeRate < 1) {
+                if (envelopeRate < 1)
+                {
                     // Attack - reduce gain to desired.
                     compressorGain += (scaledDesiredGain - compressorGain) * envelopeRate;
-                } else {
+                }
+                else
+                {
                     // Release - exponentially increase gain to 1.0
                     compressorGain *= envelopeRate;
                     compressorGain = min(1.0f, compressorGain);
@@ -417,9 +431,9 @@ void DynamicsCompressorKernel::process(ContextRenderLock & r,
                     m_meteringGain += (dbRealGain - m_meteringGain) * m_meteringReleaseK;
 
                 // Apply final gain.
-                for (unsigned i = 0; i < numberOfChannels; ++i) 
+                for (unsigned i = 0; i < numberOfChannels; ++i)
                 {
-                    float* delayBuffer = m_preDelayBuffers[i]->data();
+                    float * delayBuffer = m_preDelayBuffers[i]->data();
                     destinationChannels[i][frameIndex] = delayBuffer[preDelayReadIndex] * totalGain;
                 }
 
@@ -450,7 +464,7 @@ void DynamicsCompressorKernel::reset()
     m_preDelayReadIndex = 0;
     m_preDelayWriteIndex = DefaultPreDelayFrames;
 
-    m_maxAttackCompressionDiffDb = -1; // uninitialized state
+    m_maxAttackCompressionDiffDb = -1;  // uninitialized state
 }
 
-} // namespace lab
+}  // namespace lab

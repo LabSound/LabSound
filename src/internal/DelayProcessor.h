@@ -5,32 +5,33 @@
 #ifndef DelayProcessor_h
 #define DelayProcessor_h
 
-#include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioSetting.h"
 
 #include "internal/AudioDSPKernelProcessor.h"
 
-namespace lab {
+namespace lab
+{
 
 class AudioDSPKernel;
-    
-class DelayProcessor : public AudioDSPKernelProcessor 
+
+class DelayProcessor : public AudioDSPKernelProcessor
 {
-    std::shared_ptr<AudioParam> m_delayTime;
+    std::shared_ptr<AudioSetting> m_delayTime;
     double m_maxDelayTime;
     float m_sampleRate;
-public:
 
+public:
     DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime);
 
     virtual ~DelayProcessor();
-    
-    virtual AudioDSPKernel* createKernel();
-        
-    std::shared_ptr<AudioParam> delayTime() const { return m_delayTime; }
+
+    virtual AudioDSPKernel * createKernel();
+
+    std::shared_ptr<AudioSetting> delayTime() const { return m_delayTime; }
 
     double maxDelayTime() { return m_maxDelayTime; }
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DelayProcessor_h
+#endif  // DelayProcessor_h

@@ -3,10 +3,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -15,16 +15,15 @@
 namespace lab
 {
 
-GainNode::GainNode() 
-: AudioNode()
-, m_lastGain(1.0)
-, m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames) // FIXME: can probably share temp buffer in context
+GainNode::GainNode()
+    : AudioNode()
+    , m_lastGain(1.0)
+    , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
-    m_gain = std::make_shared<AudioParam>("gain", 1.0, 0.0, 10000.0);
-
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
+    m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 10000.0);
     m_params.push_back(m_gain);
 
     initialize();
@@ -35,37 +34,41 @@ GainNode::~GainNode()
     uninitialize();
 }
 
-void GainNode::process(ContextRenderLock& r, size_t framesToProcess)
+void GainNode::process(ContextRenderLock & r, size_t framesToProcess)
 {
     // FIXME: for some cases there is a nice optimization to avoid processing here, and let the gain change
     // happen in the summing junction input of the AudioNode we're connected to.
     // Then we can avoid all of the following:
 
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus * outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
     if (!isInitialized() || !input(0)->isConnected())
         outputBus->zero();
-    else {
-        AudioBus* inputBus = input(0)->bus(r);
+    else
+    {
+        AudioBus * inputBus = input(0)->bus(r);
 
-        if (gain()->hasSampleAccurateValues()) {
+        if (gain()->hasSampleAccurateValues())
+        {
             // Apply sample-accurate gain scaling for precise envelopes, grain windows, etc.
             ASSERT(framesToProcess <= m_sampleAccurateGainValues.size());
-            if (framesToProcess <= m_sampleAccurateGainValues.size()) {
-                float* gainValues = m_sampleAccurateGainValues.data();
+            if (framesToProcess <= m_sampleAccurateGainValues.size())
+            {
+                float * gainValues = m_sampleAccurateGainValues.data();
                 gain()->calculateSampleAccurateValues(r, gainValues, framesToProcess);
                 outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, framesToProcess);
             }
         }
-        else {
+        else
+        {
             // Apply the gain with de-zippering into the output bus.
             outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r));
         }
     }
 }
 
-void GainNode::reset(ContextRenderLock& r)
+void GainNode::reset(ContextRenderLock & r)
 {
     // Snap directly to desired gain.
     m_lastGain = gain()->value(r);
@@ -76,7 +79,7 @@ void GainNode::reset(ContextRenderLock& r)
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in which case we must safely
 // uninitialize and then re-initialize with the new channel count.
-void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInput* input)
+void GainNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     if (!input)
         return;
@@ -104,4 +107,4 @@ void GainNode::checkNumberOfChannelsForInput(ContextRenderLock& r, AudioNodeInpu
     AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
-} // namespace lab
+}  // namespace lab

@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #pragma once
@@ -19,78 +19,75 @@
 namespace lab
 {
 
-    class ContextGraphLock
+class ContextGraphLock
+{
+    AudioContext * m_context;
+
+public:
+    ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
     {
-        AudioContext * m_context;
-
-    public:
-        
-        ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
+        if (context)
         {
-            if (context)
-            {
-                context->m_graphLock.lock();
-                m_context = context;
-                m_context->m_graphLocker = lockSuitor;
-            }
+            context->m_graphLock.lock();
+            m_context = context;
+            m_context->m_graphLocker = lockSuitor;
+        }
 #if defined(DEBUG_LOCKS)
-            if (!m_context && context->m_graphLocker.size())
-            {
-                LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
-            }
-#endif
-        }
-        
-        ~ContextGraphLock()
+        if (!m_context && context->m_graphLocker.size())
         {
-            if (m_context)
-            {
-                //m_context->m_graphLocker.clear();
-                m_context->m_graphLock.unlock();
-            }
-            
+            LOG("%s failed to acquire [GRAPH] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
         }
-        
-        AudioContext * context() { return m_context; }
-    };
-    
-    class ContextRenderLock
+#endif
+    }
+
+    ~ContextGraphLock()
     {
-        AudioContext * m_context;
-
-    public:
-        
-        ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
+        if (m_context)
         {
-            if (context)
-            {
-                context->m_renderLock.lock();
-                m_context = context;
-                m_context->m_renderLocker = lockSuitor;
-            }
+            //m_context->m_graphLocker.clear();
+            m_context->m_graphLock.unlock();
+        }
+    }
+
+    AudioContext * context() { return m_context; }
+};
+
+class ContextRenderLock
+{
+    AudioContext * m_context;
+
+public:
+    ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
+    {
+        if (context)
+        {
+            context->m_renderLock.lock();
+            m_context = context;
+            m_context->m_renderLocker = lockSuitor;
+        }
 #if defined(DEBUG_LOCKS)
-            else if (context && context->m_renderLocker.size())
-            {
-                LOG("%s failed to acquire [RENDER] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_renderLocker.c_str());
-            }
-            else
-            {
-                LOG("%s failed to acquire [RENDER] lock.", lockSuitor.c_str());
-            }
-#endif
-        }
-        
-        ~ContextRenderLock()
+        else if (context && context->m_renderLocker.size())
         {
-            if (m_context)
-            {
-                m_context->m_renderLock.unlock();
-            }
+            LOG("%s failed to acquire [RENDER] lock. Currently held by: %s.", lockSuitor.c_str(), context->m_renderLocker.c_str());
         }
-        
-        AudioContext * context() { return m_context; }
-    };
+        else
+        {
+            LOG("%s failed to acquire [RENDER] lock.", lockSuitor.c_str());
+        }
+#endif
+    }
 
-} // end namespace lab
+    ~ContextRenderLock()
+    {
+        if (m_context)
+        {
+            m_context->m_renderLock.unlock();
+        }
+    }
+
+    AudioContext * context() { return m_context; }
+};
+
+}  // end namespace lab
 
 #endif

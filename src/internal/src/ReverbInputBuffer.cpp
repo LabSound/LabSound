@@ -5,7 +5,8 @@
 #include "internal/ReverbInputBuffer.h"
 #include "internal/Assertions.h"
 
-namespace lab {
+namespace lab
+{
 
 ReverbInputBuffer::ReverbInputBuffer(size_t length)
     : m_buffer(length)
@@ -13,14 +14,14 @@ ReverbInputBuffer::ReverbInputBuffer(size_t length)
 {
 }
 
-void ReverbInputBuffer::write(const float* sourceP, size_t numberOfFrames)
+void ReverbInputBuffer::write(const float * sourceP, size_t numberOfFrames)
 {
     size_t bufferLength = m_buffer.size();
     bool isCopySafe = m_writeIndex + numberOfFrames <= bufferLength;
     ASSERT(isCopySafe);
     if (!isCopySafe)
         return;
-        
+
     memcpy(m_buffer.data() + m_writeIndex, sourceP, sizeof(float) * numberOfFrames);
 
     m_writeIndex += numberOfFrames;
@@ -30,20 +31,21 @@ void ReverbInputBuffer::write(const float* sourceP, size_t numberOfFrames)
         m_writeIndex = 0;
 }
 
-float* ReverbInputBuffer::directReadFrom(int* readIndex, size_t numberOfFrames)
+float * ReverbInputBuffer::directReadFrom(int * readIndex, size_t numberOfFrames)
 {
     size_t bufferLength = m_buffer.size();
     bool isPointerGood = readIndex && *readIndex >= 0 && *readIndex + numberOfFrames <= bufferLength;
     ASSERT(isPointerGood);
-    if (!isPointerGood) {
+    if (!isPointerGood)
+    {
         // Should never happen in practice but return pointer to start of buffer (avoid crash)
         if (readIndex)
             *readIndex = 0;
         return m_buffer.data();
     }
-        
-    float* sourceP = m_buffer.data();
-    float* p = sourceP + *readIndex;
+
+    float * sourceP = m_buffer.data();
+    float * p = sourceP + *readIndex;
 
     // Update readIndex
     *readIndex = (*readIndex + numberOfFrames) % bufferLength;
@@ -57,4 +59,4 @@ void ReverbInputBuffer::reset()
     m_writeIndex = 0;
 }
 
-} // namespace lab
+}  // namespace lab

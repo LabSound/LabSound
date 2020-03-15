@@ -7,34 +7,33 @@
 
 #include "LabSound/core/AudioNode.h"
 
-namespace lab {
+namespace lab
+{
 
 class AudioContext;
 
 class ChannelMergerNode : public AudioNode
 {
 public:
-
     ChannelMergerNode(size_t numberOfInputs = 1);
     virtual ~ChannelMergerNode() {}
 
     void addInputs(size_t n);
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
     // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock&, AudioNodeInput*) override;
+    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *) override;
 
 private:
-
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    size_t m_desiredNumberOfOutputChannels = 1; // default
+    size_t m_desiredNumberOfOutputChannels = 1;  // default
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // ChannelMergerNode_h
+#endif  // ChannelMergerNode_h

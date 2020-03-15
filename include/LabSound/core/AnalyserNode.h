@@ -7,32 +7,40 @@
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
 
-//@fixme this node is actually extended
-#include "LabSound/extended/RealtimeAnalyser.h"
-
-namespace lab {
-
+namespace lab
+{
 class AudioSetting;
+
+// If the analyserNode is intended to run without it's output
+// being connected to an AudioDestination, the AnalyserNode must be
+// registered with the AudioContext via addAutomaticPullNode.
 
 // params:
 // settings: fftSize, minDecibels, maxDecibels, smoothingTimeConstant
 //
-class AnalyserNode : public AudioBasicInspectorNode 
+class AnalyserNode : public AudioBasicInspectorNode
 {
-public:
+    void shared_construction(size_t fftSize);
 
-    AnalyserNode(); // defaults to 1024
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+    struct Detail;
+    Detail * _detail = nullptr;
+
+public:
+    AnalyserNode();
     AnalyserNode(size_t fftSize);
     virtual ~AnalyserNode();
-    
-    // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
 
-    void setFftSize(ContextRenderLock&, size_t fftSize);
-    size_t fftSize() const { return m_analyser->fftSize(); }
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
-    size_t frequencyBinCount() const { return m_analyser->frequencyBinCount(); }
+    void setFftSize(ContextRenderLock &, size_t fftSize);
+    size_t fftSize() const;
+
+    // a value large enough to hold all the data return from get*FrequencyData
+    size_t frequencyBinCount() const;
 
     void setMinDecibels(double k);
     double minDecibels() const;
@@ -43,26 +51,17 @@ public:
     void setSmoothingTimeConstant(double k);
     double smoothingTimeConstant() const;
 
-    // ffi: user facing functions
-    void getFloatFrequencyData(std::vector<float>& array) { m_analyser->getFloatFrequencyData(array); }
-    void getByteFrequencyData(std::vector<uint8_t>& array) { m_analyser->getByteFrequencyData(array); }
-    void getFloatTimeDomainData(std::vector<float>& array) { m_analyser->getFloatTimeDomainData(array); } // LabSound
-    void getByteTimeDomainData(std::vector<uint8_t>& array) { m_analyser->getByteTimeDomainData(array); }
+    // frequency bins, reported in db
+    // @TODO, add a normalization option to perform the same normalization as getByteFrequency data.
+    void getFloatFrequencyData(std::vector<float> & array);
 
-private:
-    void shared_construction(size_t fftSize);
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    RealtimeAnalyser* m_analyser;
-
-    std::shared_ptr<AudioSetting> _fftSize;
-    std::shared_ptr<AudioSetting> _minDecibels;
-    std::shared_ptr<AudioSetting> _maxDecibels;
-    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
+    // frequency bins, reported as a linear mapping of minDecibels to maxDecibles onto 0-255.
+    // if resample is true, then the computed values will be linearly resampled
+    void getByteFrequencyData(std::vector<uint8_t> & array, bool resample = false);
+    void getFloatTimeDomainData(std::vector<float> & array);
+    void getByteTimeDomainData(std::vector<uint8_t> & array);
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AnalyserNode_h
+#endif  // AnalyserNode_h

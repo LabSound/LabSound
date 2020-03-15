@@ -107,3 +107,4 @@ xcuserdata/
 
 # Qmake user file
 *.pro.user
+/examples/src/ExamplesMain.cpp

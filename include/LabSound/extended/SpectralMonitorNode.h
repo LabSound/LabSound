@@ -1,5 +1,5 @@
-// License: BSD 2 Clause
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #pragma once
 
@@ -9,34 +9,33 @@
 #include "LabSound/core/AudioBasicInspectorNode.h"
 #include "LabSound/core/AudioContext.h"
 
-#include <vector>
 #include <mutex>
+#include <vector>
 
-namespace lab 
+namespace lab
 {
-    // params:
-    // settings: windowSize
-    class SpectralMonitorNode : public AudioBasicInspectorNode 
-    {
-        class SpectralMonitorNodeInternal;
-        SpectralMonitorNodeInternal* internalNode = nullptr;
-    public:
+// params:
+// settings: windowSize
+class SpectralMonitorNode : public AudioBasicInspectorNode
+{
+    class SpectralMonitorNodeInternal;
+    SpectralMonitorNodeInternal * internalNode = nullptr;
 
-        SpectralMonitorNode();
-        virtual ~SpectralMonitorNode();
+public:
+    SpectralMonitorNode();
+    virtual ~SpectralMonitorNode();
 
-        virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
-        void spectralMag(std::vector<float>& result);
-        void windowSize(size_t ws);
-        size_t windowSize() const;
+    void spectralMag(std::vector<float> & result);
+    void windowSize(unsigned int ws);
+    unsigned int windowSize() const;
 
-    private:
-
-        virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-        virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-    };
+private:
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+};
 }
 
 #endif

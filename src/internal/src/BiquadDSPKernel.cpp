@@ -3,39 +3,46 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/BiquadDSPKernel.h"
-#include "internal/BiquadProcessor.h"
 #include "internal/Assertions.h"
+#include "internal/BiquadProcessor.h"
 
 #include <limits.h>
 #include <vector>
 
-namespace lab {
+namespace lab
+{
 
 // FIXME: As a recursive linear filter, depending on its parameters, a biquad filter can have
-// an infinite tailTime. In practice, Biquad filters do not usually (except for very high resonance values) 
+// an infinite tailTime. In practice, Biquad filters do not usually (except for very high resonance values)
 // have a tailTime of longer than approx. 200ms. This value could possibly be calculated based on the
 // settings of the Biquad.
 static const double MaxBiquadDelayTime = 0.2;
 
-void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool useSmoothing, bool forceUpdate)
+void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock & r, bool useSmoothing, bool forceUpdate)
 {
-    if (forceUpdate || biquadProcessor()->filterCoefficientsDirty()) {
+    if (forceUpdate || biquadProcessor()->filterCoefficientsDirty())
+    {
         double value1;
         double value2;
         double gain;
-        double detune; // in Cents
+        double detune;  // in Cents
 
-        if (biquadProcessor()->hasSampleAccurateValues()) {
+        if (biquadProcessor()->hasSampleAccurateValues())
+        {
             value1 = biquadProcessor()->parameter1()->finalValue(r);
             value2 = biquadProcessor()->parameter2()->finalValue(r);
             gain = biquadProcessor()->parameter3()->finalValue(r);
             detune = biquadProcessor()->parameter4()->finalValue(r);
-        } else if (useSmoothing) {
+        }
+        else if (useSmoothing)
+        {
             value1 = biquadProcessor()->parameter1()->smoothedValue();
             value2 = biquadProcessor()->parameter2()->smoothedValue();
             gain = biquadProcessor()->parameter3()->smoothedValue();
             detune = biquadProcessor()->parameter4()->smoothedValue();
-        } else {
+        }
+        else
+        {
             value1 = biquadProcessor()->parameter1()->value(r);
             value2 = biquadProcessor()->parameter2()->value(r);
             gain = biquadProcessor()->parameter3()->value(r);
@@ -51,49 +58,50 @@ void BiquadDSPKernel::updateCoefficientsIfNecessary(ContextRenderLock& r, bool u
             normalizedFrequency *= pow(2, detune / 1200);
 
         // Configure the biquad with the new filter parameters for the appropriate type of filter.
-        switch (biquadProcessor()->type()) {
-        case FilterType::LOWPASS:
-            m_biquad.setLowpassParams(normalizedFrequency, value2);
-            break;
+        switch (biquadProcessor()->type())
+        {
+            case FilterType::LOWPASS:
+                m_biquad.setLowpassParams(normalizedFrequency, value2);
+                break;
 
-        case FilterType::HIGHPASS:
-            m_biquad.setHighpassParams(normalizedFrequency, value2);
-            break;
+            case FilterType::HIGHPASS:
+                m_biquad.setHighpassParams(normalizedFrequency, value2);
+                break;
 
-        case FilterType::BANDPASS:
-            m_biquad.setBandpassParams(normalizedFrequency, value2);
-            break;
+            case FilterType::BANDPASS:
+                m_biquad.setBandpassParams(normalizedFrequency, value2);
+                break;
 
-        case FilterType::LOWSHELF:
-            m_biquad.setLowShelfParams(normalizedFrequency, gain);
-            break;
+            case FilterType::LOWSHELF:
+                m_biquad.setLowShelfParams(normalizedFrequency, gain);
+                break;
 
-        case FilterType::HIGHSHELF:
-            m_biquad.setHighShelfParams(normalizedFrequency, gain);
-            break;
+            case FilterType::HIGHSHELF:
+                m_biquad.setHighShelfParams(normalizedFrequency, gain);
+                break;
 
-        case FilterType::PEAKING:
-            m_biquad.setPeakingParams(normalizedFrequency, value2, gain);
-            break;
+            case FilterType::PEAKING:
+                m_biquad.setPeakingParams(normalizedFrequency, value2, gain);
+                break;
 
-        case FilterType::NOTCH:
-            m_biquad.setNotchParams(normalizedFrequency, value2);
-            break;
+            case FilterType::NOTCH:
+                m_biquad.setNotchParams(normalizedFrequency, value2);
+                break;
 
-        case FilterType::ALLPASS:
-            m_biquad.setAllpassParams(normalizedFrequency, value2);
-            break;
-                
-        default:
-            break;
+            case FilterType::ALLPASS:
+                m_biquad.setAllpassParams(normalizedFrequency, value2);
+                break;
+
+            default:
+                break;
         }
     }
 }
 
-void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* destination, size_t framesToProcess)
+void BiquadDSPKernel::process(ContextRenderLock & r, const float * source, float * destination, size_t framesToProcess)
 {
     ASSERT(source && destination && biquadProcessor());
-    
+
     // Recompute filter coefficients if any of the parameters have changed.
     // FIXME: as an optimization, implement a way that a Biquad object can simply copy its internal filter coefficients from another Biquad object.
     // Then re-factor this code to only run for the first BiquadDSPKernel of each BiquadProcessor.
@@ -103,11 +111,11 @@ void BiquadDSPKernel::process(ContextRenderLock& r, const float* source, float* 
     m_biquad.process(source, destination, framesToProcess);
 }
 
-void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock& r,
+void BiquadDSPKernel::getFrequencyResponse(ContextRenderLock & r,
                                            size_t nFrequencies,
-                                           const float* frequencyHz,
-                                           float* magResponse,
-                                           float* phaseResponse)
+                                           const float * frequencyHz,
+                                           float * magResponse,
+                                           float * phaseResponse)
 {
     bool isGood = nFrequencies > 0 && frequencyHz && magResponse && phaseResponse;
     ASSERT(isGood);
@@ -143,4 +151,4 @@ double BiquadDSPKernel::latencyTime(ContextRenderLock & r) const
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

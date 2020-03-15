@@ -10,7 +10,8 @@
 
 #include <set>
 
-namespace lab {
+namespace lab
+{
 
 class AudioNode;
 class AudioNodeOutput;
@@ -19,18 +20,20 @@ class AudioBus;
 // An AudioNodeInput represents an input to an AudioNode and can be connected from one or more AudioNodeOutputs.
 // In the case of multiple connections, the input will act as a unity-gain summing junction, mixing all the outputs.
 // The number of channels of the input's bus is the maximum of the number of channels of all its connections.
-class AudioNodeInput : public AudioSummingJunction 
+class AudioNodeInput : public AudioSummingJunction
 {
-public:
+    AudioNode * m_node;
+    std::unique_ptr<AudioBus> m_internalSummingBus;
 
-    explicit AudioNodeInput(AudioNode *audioNode, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+public:
+    explicit AudioNodeInput(AudioNode * audioNode, size_t processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeInput();
 
     // AudioSummingJunction
-    virtual void didUpdate(ContextRenderLock&) override;
+    virtual void didUpdate(ContextRenderLock &) override;
 
     // Can be called from any thread.
-    AudioNode* node() const { return m_node; }
+    AudioNode * node() const { return m_node; }
 
     // Must be called with the context's graph lock. Static because a shared pointer to this is required
     static void connect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
@@ -40,26 +43,20 @@ public:
     // In the case of multiple connections, the result is summed onto the internal summing bus.
     // In the single connection case, it allows in-place processing where possible using inPlaceBus.
     // It returns the bus which it rendered into, returning inPlaceBus if in-place processing was performed.
-    AudioBus* pull(ContextRenderLock&, AudioBus* inPlaceBus, size_t framesToProcess);
+    AudioBus * pull(ContextRenderLock &, AudioBus * inPlaceBus, size_t framesToProcess);
 
     // bus() contains the rendered audio after pull() has been called for each time quantum.
-    AudioBus* bus(ContextRenderLock&);
-    
+    AudioBus * bus(ContextRenderLock &);
+
     // updateInternalBus() updates m_internalSummingBus appropriately for the number of channels.
     // This must be called when we own the context's graph lock in the audio thread at the very start or end of the render quantum.
-    void updateInternalBus(ContextRenderLock&);
+    void updateInternalBus(ContextRenderLock &);
 
     // The number of channels of the connection with the largest number of channels.
     // Only valid during render quantum because it is dependent on the active bus
-    size_t numberOfChannels(ContextRenderLock&) const;
-    
-private:
-
-    AudioNode * m_node;
-
-    std::unique_ptr<AudioBus> m_internalSummingBus;
+    size_t numberOfChannels(ContextRenderLock &) const;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioNodeInput_h
+#endif  // AudioNodeInput_h

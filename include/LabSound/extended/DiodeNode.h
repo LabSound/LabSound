@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef DIODE_NODE_H
@@ -6,26 +6,36 @@
 
 #include "LabSound/core/WaveShaperNode.h"
 
-namespace lab {
+namespace lab
+{
 
-    //@tofix - DiodeNode should subclass waveShaper, then the create method will work
-    // params:
-    // settings: distortion
-    //
-    class DiodeNode
-    {
-        void setCurve();
-        std::shared_ptr<WaveShaperNode> waveShaper;
-        std::shared_ptr<AudioSetting> _distortion;
+// The diode node, used in conjunction with a gain node, will modulate
+// a source so that it sounds like audio being over-driven through a vacuum tube diode.
+//
+//  source -+-> diode ----> gain_level
+//          |               |
+//          +-------------> gain ---------------> outpuot
+//
+// params:
+// settings: distortion, vb, vl
+//
+class DiodeNode : public WaveShaperNode
+{
+    void _precalc();
 
-        float vb, vl;  // parameters controlling the shape of the curve
-    public:
+    std::shared_ptr<WaveShaperNode> waveShaper;
+    std::shared_ptr<AudioSetting> _distortion;
+    std::shared_ptr<AudioSetting> _vb;  // curve shape control
+    std::shared_ptr<AudioSetting> _vl;  // curve shape control
 
-        DiodeNode();
-        void setDistortion(float distortion = 1.0);
-        std::shared_ptr<WaveShaperNode> node() const { return waveShaper; }
-    };
-    
+public:
+    DiodeNode();
+    void setDistortion(float distortion = 1.0);
+
+    std::shared_ptr<AudioSetting> distortion() const { return _distortion; };
+    std::shared_ptr<AudioSetting> vb() const { return _vb; };
+    std::shared_ptr<AudioSetting> vl() const { return _vl; }
+};
 }
 
 #endif

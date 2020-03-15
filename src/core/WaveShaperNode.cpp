@@ -26,9 +26,9 @@ std::vector<float> & WaveShaperNode::curve()
 }
 #endif
 
- WaveShaperProcessor * WaveShaperNode::waveShaperProcessor() 
- {
-     return static_cast<WaveShaperProcessor *>(m_processor.get());
- }
+WaveShaperProcessor * WaveShaperNode::waveShaperProcessor()
+{
+    return static_cast<WaveShaperProcessor *>(m_processor.get());
+}
 
-} // namespace lab
+}  // namespace lab

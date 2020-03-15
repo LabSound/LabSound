@@ -15,11 +15,10 @@ namespace lab
 {
 
 // HRTFElevation contains all of the HRTFKernels (one left ear and one right ear per azimuth angle) for a particular elevation.
-class HRTFElevation 
+class HRTFElevation
 {
 
 public:
-    
     // Loads and returns an HRTFElevation with the given HRTF database subject name and elevation from resources.
     // Normally, there will only be a single HRTF database set, but this API supports the possibility of multiple ones with different names.
     // Interpolated azimuths will be generated based on InterpolationFactor.
@@ -35,20 +34,20 @@ public:
 
     double elevationAngle() const { return m_elevationAngle; }
     unsigned numberOfAzimuths() const { return NumberOfTotalAzimuths; }
-    
+
     // Returns the left and right kernels for the given azimuth index.
     // The interpolated delays based on azimuthBlend: 0 -> 1 are returned in frameDelayL and frameDelayR.
-    void getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthIndex, HRTFKernel * & kernelL, HRTFKernel * & kernelR, double & frameDelayL, double & frameDelayR);
-    
+    void getKernelsFromAzimuth(double azimuthBlend, unsigned azimuthIndex, HRTFKernel *& kernelL, HRTFKernel *& kernelR, double & frameDelayL, double & frameDelayR);
+
     // Spacing, in degrees, between every azimuth loaded from resource.
     static const unsigned AzimuthSpacing;
-    
+
     // Number of azimuths loaded from resource.
     static const unsigned NumberOfRawAzimuths;
 
     // Interpolates by this factor to get the total number of azimuths from every azimuth loaded from resource.
     static const unsigned InterpolationFactor;
-    
+
     // Total number of azimuths after interpolation.
     static const unsigned NumberOfTotalAzimuths;
 
@@ -64,20 +63,19 @@ public:
     static bool calculateSymmetricKernelsForAzimuthElevation(HRTFDatabaseInfo * info, int azimuth, int elevation, std::shared_ptr<HRTFKernel> & kernelL, std::shared_ptr<HRTFKernel> & kernelR);
 
 private:
-
     HRTFElevation(HRTFDatabaseInfo * info, std::unique_ptr<HRTFKernelList> kernelListL, std::unique_ptr<HRTFKernelList> kernelListR, int elevation)
-    : m_kernelListL(std::move(kernelListL))
-    , m_kernelListR(std::move(kernelListR))
-    , m_elevationAngle(elevation)
+        : m_kernelListL(std::move(kernelListL))
+        , m_kernelListR(std::move(kernelListR))
+        , m_elevationAngle(elevation)
     {
     }
 
     std::unique_ptr<HRTFKernelList> m_kernelListL;
     std::unique_ptr<HRTFKernelList> m_kernelListR;
-    
+
     double m_elevationAngle;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // HRTFElevation_h
+#endif  // HRTFElevation_h

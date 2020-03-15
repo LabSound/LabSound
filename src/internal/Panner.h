@@ -5,21 +5,24 @@
 #ifndef Panner_h
 #define Panner_h
 
-#include <memory>
 #include <LabSound/core/AudioNode.h>
+#include <memory>
 
-namespace lab 
+namespace lab
 {
 
 class AudioBus;
 class ContextRenderLock;
-    
+
 class Panner
 {
 public:
-
-    Panner(const float sampleRate, PanningMode mode) : m_sampleRate(sampleRate), m_panningModel(mode) { }
-    virtual ~Panner() { };
+    Panner(const float sampleRate, PanningMode mode)
+        : m_sampleRate(sampleRate)
+        , m_panningModel(mode)
+    {
+    }
+    virtual ~Panner(){};
 
     PanningMode panningModel() const { return m_panningModel; }
 
@@ -31,12 +34,11 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
 protected:
-
-    float m_sampleRate{ 0 };
+    float m_sampleRate{0};
 
     PanningMode m_panningModel;
 };
 
-} // lab
+}  // lab
 
-#endif 
+#endif

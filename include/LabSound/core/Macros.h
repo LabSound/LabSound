@@ -1,8 +1,11 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef labsound_macros_h
 #define labsound_macros_h
+
+#define LABSOUND_DEFAULT_SAMPLERATE 48000.0f
+#define LABSOUND_DEFAULT_CHANNELS (uint32_t) lab::Channels::Stereo
 
 #if (defined(__linux) || defined(__unix) || defined(__posix) || defined(__LINUX__) || defined(__linux__))
 #define LABSOUND_PLATFORM_LINUX 1
@@ -33,8 +36,8 @@
 #if defined(LABSOUND_COMPILER_VISUAL_STUDIO)
 #include <stdint.h>
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include <cmath>
+#include <math.h>
 #endif
 
 #if defined(__ARM_NEON__)
@@ -42,12 +45,12 @@
 #endif
 
 #if defined(LABSOUND_PLATFORM_OSX) || defined(LABSOUND_PLATFORM_LINUX)
-#include <math.h>
 #include <cmath>
+#include <math.h>
 #endif
 
 #if defined(LABSOUND_PLATFORM_WINDOWS)
-    #define WEBAUDIO_KISSFFT
+#define WEBAUDIO_KISSFFT
 #endif
 
 const double piDouble = M_PI;
@@ -62,11 +65,4 @@ const float piOverFourFloat = static_cast<float>(M_PI_4);
 const double twoPiDouble = piDouble * 2.0;
 const float twoPiFloat = piFloat * 2.0f;
 
-template<typename S, typename T> inline T clampTo(S value, T min, T max)
-{
-    if (value >= static_cast<S>(max)) return max;
-    if (value <= static_cast<S>(min)) return min;
-    return static_cast<T>(value);
-}
-
-#endif // end labsound_macros_h
+#endif  // end labsound_macros_h

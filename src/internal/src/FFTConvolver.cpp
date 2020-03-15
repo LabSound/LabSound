@@ -3,17 +3,18 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/FFTConvolver.h"
-#include "internal/VectorMath.h"
 #include "internal/Assertions.h"
+#include "internal/VectorMath.h"
 
-namespace lab {
+namespace lab
+{
 
 using namespace VectorMath;
-    
+
 FFTConvolver::FFTConvolver(size_t fftSize)
     : m_frame(fftSize)
     , m_readWriteIndex(0)
-    , m_inputBuffer(fftSize) // 2nd half of buffer is always zeroed
+    , m_inputBuffer(fftSize)  // 2nd half of buffer is always zeroed
     , m_outputBuffer(fftSize)
     , m_lastOverlapBuffer(fftSize / 2)
 {
@@ -34,10 +35,10 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
     uint32_t numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
     uint32_t divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
 
-    for (uint32_t i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize) 
+    for (uint32_t i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize)
     {
         // Copy samples to input buffer (note contraint above!)
-        float* inputP = m_inputBuffer.data();
+        float * inputP = m_inputBuffer.data();
 
         // Sanity check
         bool isCopyGood1 = sourceP && inputP && m_readWriteIndex + divisionSize <= m_inputBuffer.size();
@@ -48,7 +49,7 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
         memcpy(inputP + m_readWriteIndex, sourceP, sizeof(float) * divisionSize);
 
         // Copy samples from output buffer
-        float* outputP = m_outputBuffer.data();
+        float * outputP = m_outputBuffer.data();
 
         // Sanity check
         bool isCopyGood2 = destP && outputP && m_readWriteIndex + divisionSize <= m_outputBuffer.size();
@@ -60,7 +61,7 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
         m_readWriteIndex += divisionSize;
 
         // Check if it's time to perform the next FFT
-        if (m_readWriteIndex == halfSize) 
+        if (m_readWriteIndex == halfSize)
         {
 
             // The input buffer is now filled (get frequency-domain version)
@@ -91,4 +92,4 @@ void FFTConvolver::reset()
     m_readWriteIndex = 0;
 }
 
-} // namespace lab
+}  // namespace lab

@@ -16,23 +16,20 @@ class ChannelSplitterNode : public AudioNode
 {
 
 public:
-
     ChannelSplitterNode(size_t numberOfOutputs = 1);
     virtual ~ChannelSplitterNode() {}
 
     void addOutputs(size_t numberOfOutputs);
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
 
 private:
-
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // ChannelSplitterNode_h
+#endif  // ChannelSplitterNode_h

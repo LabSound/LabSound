@@ -3,10 +3,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/Mixing.h"
 
 #include "LabSound/extended/AudioContextLock.h"
@@ -21,8 +21,9 @@ using namespace std;
 namespace lab
 {
 
-AudioNodeInput::AudioNodeInput(AudioNode* node, size_t processingSizeInFrames) 
-: AudioSummingJunction(), m_node(node)
+AudioNodeInput::AudioNodeInput(AudioNode * node, size_t processingSizeInFrames)
+    : AudioSummingJunction()
+    , m_node(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, processingSizeInFrames));
@@ -32,23 +33,22 @@ AudioNodeInput::~AudioNodeInput()
 {
 }
 
-void AudioNodeInput::connect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!junction || !toOutput || !junction->node())
         return;
 
     // return if input is already connected to this output.
-    if (junction->isConnected(toOutput))
-        return;
+    if (junction->isConnected(toOutput)) return;
 
     toOutput->addInput(g, junction);
     junction->junctionConnectOutput(toOutput);
 }
 
-void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::disconnect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!junction || !junction->node() || !toOutput) 
+    if (!junction || !junction->node() || !toOutput)
         return;
 
     if (junction->isConnected(toOutput))
@@ -58,12 +58,12 @@ void AudioNodeInput::disconnect(ContextGraphLock& g, std::shared_ptr<AudioNodeIn
     }
 }
 
-void AudioNodeInput::didUpdate(ContextRenderLock& r)
+void AudioNodeInput::didUpdate(ContextRenderLock & r)
 {
     m_node->checkNumberOfChannelsForInput(r, this);
 }
 
-void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
+void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
 {
     size_t numberOfInputChannels = numberOfChannels(r);
 
@@ -73,7 +73,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock& r)
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(numberOfInputChannels, AudioNode::ProcessingSizeInFrames));
 }
 
-size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
+size_t AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
 {
     ChannelCountMode mode = node()->channelCountMode();
 
@@ -83,7 +83,7 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     }
 
     // Find the number of channels of the connection with the largest number of channels.
-    size_t maxChannels = 1; // one channel is the minimum allowed
+    size_t maxChannels = 1;  // one channel is the minimum allowed
 
     size_t c = numberOfRenderingConnections(r);
     for (size_t i = 0; i < c; ++i)
@@ -103,17 +103,18 @@ size_t AudioNodeInput::numberOfChannels(ContextRenderLock& r) const
     return maxChannels;
 }
 
-AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
+AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
 {
     // Handle single connection specially to allow for in-place processing.
     // note: The webkit sources check for max, but I can't see how that's correct
 
     // @tofix - did I miss part of the merge?
-    if (numberOfRenderingConnections(r) == 1) // && node()->channelCountMode() == ChannelCountMode::Max)
+    if (numberOfRenderingConnections(r) == 1)  // && node()->channelCountMode() == ChannelCountMode::Max)
     {
         std::shared_ptr<AudioNodeOutput> output = renderingOutput(r, 0);
-        if (output) {
-          return output->bus(r);
+        if (output)
+        {
+            return output->bus(r);
         }
     }
 
@@ -121,27 +122,26 @@ AudioBus* AudioNodeInput::bus(ContextRenderLock& r)
     return m_internalSummingBus.get();
 }
 
-
-AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_t framesToProcess)
+AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, size_t framesToProcess)
 {
     updateRenderingState(r);
 
-    size_t c = numberOfRenderingConnections(r);
+    size_t num_connections = numberOfRenderingConnections(r);
 
     // Handle single connection case.
-    if (c == 1)
+    if (num_connections == 1)
     {
         // If this input is simply passing data through, then immediately delegate the pull request to it.
         auto output = renderingOutput(r, 0);
         if (output)
         {
-             return output->pull(r, inPlaceBus, framesToProcess);
+            return output->pull(r, inPlaceBus, framesToProcess);
         }
 
-        c = 0; // if there's a single input, but it has no output; treat this input as silent.
+        num_connections = 0;  // if there's a single input, but it has no output; treat this input as silent.
     }
 
-    if (c == 0)
+    if (num_connections == 0)
     {
         // Generate silence if we're not connected to anything, and return the silent bus
         /// @TODO a possible optimization is to flag silence and propagate it to consumers of this input.
@@ -152,13 +152,13 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     // multiple connections
     m_internalSummingBus->zero();
 
-    for (int i = 0; i < c; ++i)
+    for (int i = 0; i < num_connections; ++i)
     {
         auto output = renderingOutput(r, i);
         if (output)
         {
             // Render audio from this output.
-            AudioBus* connectionBus = output->pull(r, 0, framesToProcess);
+            AudioBus * connectionBus = output->pull(r, 0, framesToProcess);
 
             // Sum, with unity-gain.
             m_internalSummingBus->sumFrom(*connectionBus);
@@ -167,4 +167,4 @@ AudioBus* AudioNodeInput::pull(ContextRenderLock& r, AudioBus* inPlaceBus, size_
     return m_internalSummingBus.get();
 }
 
-} // namespace lab
+}  // namespace lab

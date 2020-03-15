@@ -3,7 +3,7 @@
 </p>
 
 macOS | Windows | Linux |
--------- | ------------ | -------
+----- | ------- | -------
 [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound) | [![Build status](https://ci.appveyor.com/api/projects/status/k6n5ib48t7q8wwlc?svg=true)](https://ci.appveyor.com/project/ddiakopoulos/labsound) | [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
 -----------------
 
@@ -51,13 +51,33 @@ LabSound and libnyquist require a C++14 or greater compiler.
 
 # Building with Cmake
 
-LabSound has a `CMakeLists.txt` at the root directory, and all the associated CMake files are in the `cmake/` subfolder. If you use the CMake build, it will build everything to a folder named `../local/` build directory. As always with CMake, it is recommended that you do an out-of-source build.
+LabSound has a `CMakeLists.txt` at the root directory, and all the associated CMake files are in the `cmake/` subfolder. In the following examples, the build is done in a nested build directory. This is not required, it's shown for illustrative purposes. You may put the build and the install prefix anywhere you like.
+
+On macOs and Windows:
+
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=../../labsound-distro ..
+cmake --build . --target install --config Release
+```
 
 On Linux, a backend must be selected, using one of ALSA, Pulse, or Jack. To build with ALSA:
 
 ```sh
-cmake -DLABSOUND_ASOUND=1 /path/to/LabSound
-cmake --build . --target INSTALL --config Release
+mkdir build
+cd build
+cmake -DLABSOUND_ASOUND=1 ..
+cmake --build . --target install --config Release
+```
+
+On iOS:
+
+```sh
+mkdir build
+cd build
+cmake -G "Xcode" -DCMAKE_TOOLCHAIN_FILE=../cmake/ios-toolchain.cmake -DCMAKE_INSTALL_PREFIX=../../labsound-distro-ios ..
+cmake --build . --target install --config Release
 ```
 
 # Examples

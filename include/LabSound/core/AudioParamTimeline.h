@@ -9,14 +9,14 @@
 #include <mutex>
 #include <vector>
 
-namespace lab {
+namespace lab
+{
 
-class AudioParamTimeline 
+class AudioParamTimeline
 {
 
 public:
-
-    AudioParamTimeline() { }
+    AudioParamTimeline() {}
 
     void setValueAtTime(float value, float time);
     void linearRampToValueAtTime(float value, float time);
@@ -27,28 +27,26 @@ public:
 
     // hasValue is set to true if a valid timeline value is returned.
     // otherwise defaultValue is returned.
-    float valueForContextTime(ContextRenderLock&, float defaultValue, bool& hasValue);
+    float valueForContextTime(ContextRenderLock &, float defaultValue, bool & hasValue);
 
     // Given the time range, calculates parameter values into the values buffer
     // and returns the last parameter value calculated for "values" or the defaultValue if none were calculated.
     // controlRate is the rate (number per second) at which parameter values will be calculated.
     // It should equal sampleRate for sample-accurate parameter changes, and otherwise will usually match
     // the render quantum size such that the parameter value changes once per render quantum.
-    float valuesForTimeRange(double startTime, double endTime, float defaultValue, 
-                             float* values, size_t numberOfValues, double sampleRate, double controlRate);
+    float valuesForTimeRange(double startTime, double endTime, float defaultValue,
+                             float * values, size_t numberOfValues, double sampleRate, double controlRate);
 
     bool hasValues() { return m_events.size() > 0; }
 
 private:
+    // @tofix - move to implementation file to hide from public API
 
-    // @tofix - move to implementation file to hide from public API 
-
-    class ParamEvent 
+    class ParamEvent
     {
 
     public:
-
-        enum Type 
+        enum Type
         {
             SetValue,
             LinearRampToValue,
@@ -68,17 +66,18 @@ private:
         {
         }
 
-        ParamEvent(const ParamEvent& rhs)
-        : m_type(rhs.m_type)
-        , m_value(rhs.m_value)
-        , m_time(rhs.m_time)
-        , m_timeConstant(rhs.m_timeConstant)
-        , m_duration(rhs.m_duration)
-        , m_curve(rhs.m_curve)
+        ParamEvent(const ParamEvent & rhs)
+            : m_type(rhs.m_type)
+            , m_value(rhs.m_value)
+            , m_time(rhs.m_time)
+            , m_timeConstant(rhs.m_timeConstant)
+            , m_duration(rhs.m_duration)
+            , m_curve(rhs.m_curve)
         {
         }
 
-        const ParamEvent& operator=(const ParamEvent& rhs) {
+        const ParamEvent & operator=(const ParamEvent & rhs)
+        {
 
             m_type = rhs.m_type;
             m_value = rhs.m_value;
@@ -105,13 +104,13 @@ private:
         std::vector<float> m_curve;
     };
 
-    void insertEvent(const ParamEvent&);
-    float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue, 
-                                 float* values, size_t numberOfValues, double sampleRate, double controlRate);
+    void insertEvent(const ParamEvent &);
+    float valuesForTimeRangeImpl(double startTime, double endTime, float defaultValue,
+                                 float * values, size_t numberOfValues, double sampleRate, double controlRate);
 
     std::vector<ParamEvent> m_events;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioParamTimeline_h
+#endif  // AudioParamTimeline_h

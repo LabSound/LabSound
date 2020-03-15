@@ -7,12 +7,11 @@
 
 #include "LabSound/core/Macros.h"
 
-
 // Deal with denormals. They can very seriously impact performance on x86.
 
 // Define HAVE_DENORMAL if we support flushing denormals to zero.
 #if defined(LABSOUND_PLATFORM_WINDOWS)
-    #define HAVE_DENORMAL
+#define HAVE_DENORMAL
 #endif
 #include <float.h>
 
@@ -20,13 +19,15 @@
 #define HAVE_DENORMAL
 #endif
 
-namespace lab {
+namespace lab
+{
 
 #ifdef HAVE_DENORMAL
-class DenormalDisabler {
+class DenormalDisabler
+{
 public:
     DenormalDisabler()
-            : m_savedCSR(0)
+        : m_savedCSR(0)
     {
 #if defined(LABSOUND_PLATFORM_WINDOWS)
         // Save the current state, and set mode to flush denormals.
@@ -63,19 +64,23 @@ public:
         return f;
 #endif
     }
+
 private:
 #if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
     inline int getCSR()
     {
         int result;
-        asm volatile("stmxcsr %0" : "=m" (result));
+        asm volatile("stmxcsr %0"
+                     : "=m"(result));
         return result;
     }
 
     inline void setCSR(int a)
     {
         int temp = a;
-        asm volatile("ldmxcsr %0" : : "m" (temp));
+        asm volatile("ldmxcsr %0"
+                     :
+                     : "m"(temp));
     }
 
 #endif
@@ -85,9 +90,10 @@ private:
 
 #else
 // FIXME: add implementations for other architectures and compilers
-class DenormalDisabler {
+class DenormalDisabler
+{
 public:
-    DenormalDisabler() { }
+    DenormalDisabler() {}
 
     // Assume the worst case that other architectures and compilers
     // need to flush denormals to zero manually.
@@ -99,7 +105,7 @@ public:
 
 #endif
 
-} // lab
+}  // lab
 
 #undef HAVE_DENORMAL
-#endif // DenormalDisabler_h
+#endif  // DenormalDisabler_h

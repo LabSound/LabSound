@@ -5,8 +5,8 @@
 #include "AudioDestinationWindows.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include <rtaudio/RtAudio.h>
@@ -46,8 +46,8 @@ unsigned long AudioDestination::maxChannelCount()
 }
 
 AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, size_t numChannels, float sampleRate)
-: m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
+    : m_callback(callback)
+    , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
@@ -58,7 +58,7 @@ AudioDestinationWin::AudioDestinationWin(AudioIOCallback & callback, size_t numC
 AudioDestinationWin::~AudioDestinationWin()
 {
     //dac.release(); // XXX
-     if (dac.isStreamOpen())
+    if (dac.isStreamOpen())
         dac.closeStream();
 }
 
@@ -101,8 +101,7 @@ void AudioDestinationWin::configure()
             outDeviceInfo.probed && outDeviceInfo.isDefaultOutput ? &outputParams : nullptr,
             inDeviceInfo.probed && inDeviceInfo.isDefaultInput ? &inputParams : nullptr,
             RTAUDIO_FLOAT32,
-            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options
-        );
+            (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
     {
@@ -137,8 +136,8 @@ void AudioDestinationWin::stop()
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
-    float *myOutputBufferOfFloats = (float*) outputBuffer;
-    float *myInputBufferOfFloats = (float*) inputBuffer;
+    float * myOutputBufferOfFloats = (float *) outputBuffer;
+    float * myInputBufferOfFloats = (float *) inputBuffer;
 
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
@@ -167,16 +166,16 @@ void AudioDestinationWin::render(int numberOfFrames, void * outputBuffer, void *
 
 int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
 {
-    float *fBufOut = (float*) outputBuffer;
+    float * fBufOut = (float *) outputBuffer;
 
     // Buffer is nBufferFrames * channels
     // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin*>(userData);
+    AudioDestinationWin * audioDestination = static_cast<AudioDestinationWin *>(userData);
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

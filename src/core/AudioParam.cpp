@@ -2,16 +2,16 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/Macros.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioBus.h"
+#include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
-#include "internal/AudioUtilities.h"
 #include "internal/Assertions.h"
+#include "internal/AudioUtilities.h"
 
 #include <algorithm>
 
@@ -26,30 +26,31 @@ struct AudioParam::Data
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-AudioParam::AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units)
-: AudioSummingJunction()
-, m_name(name)
-, m_value(defaultValue)
-, m_defaultValue(defaultValue)
-, m_minValue(minValue)
-, m_maxValue(maxValue)
-, m_units(units)
-, m_smoothedValue(defaultValue)
-, m_smoothingConstant(DefaultSmoothingConstant)
-, m_data(new Data())
+AudioParam::AudioParam(const std::string & name, const std::string & shortName, double defaultValue, double minValue, double maxValue, unsigned units)
+    : AudioSummingJunction()
+    , m_name(name)
+    , m_shortName(shortName)
+    , m_value(defaultValue)
+    , m_defaultValue(defaultValue)
+    , m_minValue(minValue)
+    , m_maxValue(maxValue)
+    , m_units(units)
+    , m_smoothedValue(defaultValue)
+    , m_smoothingConstant(DefaultSmoothingConstant)
+    , m_data(new Data())
 {
-
 }
 
 AudioParam::~AudioParam() {}
 
-float AudioParam::value(ContextRenderLock& r)
+float AudioParam::value(ContextRenderLock & r)
 {
     // Update value for timeline.
-    if (r.context()) {
+    if (r.context())
+    {
         bool hasValue;
         float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
-        
+
         if (hasValue)
             m_value = timelineValue;
     }
@@ -68,41 +69,43 @@ float AudioParam::smoothedValue()
     return static_cast<float>(m_smoothedValue);
 }
 
-bool AudioParam::smooth(ContextRenderLock& r)
+bool AudioParam::smooth(ContextRenderLock & r)
 {
     // If values have been explicitly scheduled on the timeline, then use the exact value.
     // Smoothing effectively is performed by the timeline.
     bool useTimelineValue = false;
     if (r.context())
         m_value = m_timeline.valueForContextTime(r, static_cast<float>(m_value), useTimelineValue);
-    
-    if (m_smoothedValue == m_value) {
+
+    if (m_smoothedValue == m_value)
+    {
         // Smoothed value has already approached and snapped to value.
         return true;
     }
-    
+
     if (useTimelineValue)
         m_smoothedValue = m_value;
-    else {
+    else
+    {
         // Dezipper - exponential approach.
         m_smoothedValue += (m_value - m_smoothedValue) * m_smoothingConstant;
 
         // If we get close enough then snap to actual value.
-        if (fabs(m_smoothedValue - m_value) < SnapThreshold) // FIXME: the threshold needs to be adjustable depending on range - but this is OK general purpose value.
+        if (fabs(m_smoothedValue - m_value) < SnapThreshold)  // @fixme: the threshold needs to be adjustable depending on range - but this is OK general purpose value.
             m_smoothedValue = m_value;
     }
 
     return false;
 }
 
-float AudioParam::finalValue(ContextRenderLock& r)
+float AudioParam::finalValue(ContextRenderLock & r)
 {
     float value;
     calculateFinalValues(r, &value, 1, false);
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* values, size_t numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * values, size_t numberOfValues)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -111,7 +114,7 @@ void AudioParam::calculateSampleAccurateValues(ContextRenderLock& r, float* valu
     calculateFinalValues(r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_t numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, size_t numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -119,11 +122,13 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_
 
     // The calculated result will be the "intrinsic" value summed with all audio-rate connections.
 
-    if (sampleAccurate) {
+    if (sampleAccurate)
+    {
         // Calculate sample-accurate (a-rate) intrinsic values.
         calculateTimelineValues(r, values, numberOfValues);
     }
-    else {
+    else
+    {
         // Calculate control-rate (k-rate) intrinsic value.
         bool hasValue;
         float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
@@ -133,22 +138,22 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_
 
         values[0] = static_cast<float>(m_value);
     }
-    
+
     // if there are rendering connections, be sure they are ready
     updateRenderingState(r);
-    
+
     size_t connectionCount = numberOfRenderingConnections(r);
     if (!connectionCount)
         return;
 
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
-    
+
     // LabSound: For some reason a bus was temporarily created here and the results discarded.
     // Bug still exists in WebKit top of tree.
     if (m_data->m_internalSummingBus && m_data->m_internalSummingBus->length() < numberOfValues)
         m_data->m_internalSummingBus.reset();
-    
+
     if (!m_data->m_internalSummingBus)
         m_data->m_internalSummingBus.reset(new AudioBus(1, numberOfValues));
 
@@ -158,18 +163,24 @@ void AudioParam::calculateFinalValues(ContextRenderLock& r, float* values, size_
     for (size_t i = 0; i < connectionCount; ++i)
     {
         auto output = renderingOutput(r, i);
-        
+
         ASSERT(output);
-        
+
         // Render audio from this output.
-        AudioBus* connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
+        AudioBus * connectionBus = output->pull(r, 0, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
+        /// @TODO it was surprising in practice that the inputs are summed, as opposed to simply overriding.
+        /// Summing might be useful, but pure override should be an option as well.
+        /// The case in point was to construct a vibrato around A440 by making an oscillator provide
+        /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
+        /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
+        /// have a bias of zero. It seems like sum or override should be a setting of some sort...
         m_data->m_internalSummingBus->sumFrom(*connectionBus);
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock & r, float * values, size_t numberOfValues)
 {
     // Calculate values for this render quantum.
     // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).
@@ -181,36 +192,38 @@ void AudioParam::calculateTimelineValues(ContextRenderLock& r, float* values, si
     // Pass in the current value as default value.
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
-    
-void AudioParam::connect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+
+void AudioParam::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!output)
         return;
-    
+
     if (param->isConnected(output))
         return;
-    
+
     param->junctionConnectOutput(output);
     output->addParam(g, param);
 }
 
-void AudioParam::disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
 {
     if (!param || !output)
         return;
-    
-    if (param->isConnected(output)) {
+
+    if (param->isConnected(output))
+    {
         param->junctionDisconnectOutput(output);
     }
     output->removeParam(g, param);
 }
 
-void AudioParam::disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioParam> param)
+void AudioParam::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam> param)
 {
-	for (auto i : param->m_connectedOutputs) {
-		auto j = i.lock();
-		if (j)
-			j->removeParam(g, param);
-	}
-	param->junctionDisconnectAllOutputs();
+    for (auto i : param->m_connectedOutputs)
+    {
+        auto j = i.lock();
+        if (j)
+            j->removeParam(g, param);
+    }
+    param->junctionDisconnectAllOutputs();
 }

@@ -10,8 +10,14 @@
 namespace lab
 {
 
-BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
-, m_type(std::make_shared<AudioSetting>("type"))
+static char const * const s_filter_types[FilterType::_FilterTypeCount + 1] = {
+    "None",
+    "Low Pass", "High Pass", "Band Pass", "Low Shelf", "High Shelf", "Peaking", "Notch", "All Pass",
+    nullptr};
+
+BiquadFilterNode::BiquadFilterNode()
+    : AudioBasicProcessorNode()
+    , m_type(std::make_shared<AudioSetting>("type", "TYPE", s_filter_types))
 {
     // Initially setup as lowpass filter.
     m_processor.reset(new BiquadProcessor(1, false));
@@ -21,17 +27,14 @@ BiquadFilterNode::BiquadFilterNode() : AudioBasicProcessorNode()
     m_params.push_back(biquadProcessor()->parameter3());
     m_params.push_back(biquadProcessor()->parameter4());
 
-
     m_type->setValueChanged(
-        [this]()
-        {
+        [this]() {
             uint32_t type = m_type->valueUint32();
-            if (type > static_cast<uint32_t>(FilterType::ALLPASS)) 
+            if (type > static_cast<uint32_t>(FilterType::ALLPASS))
                 throw std::out_of_range("Filter type exceeds index of known types");
 
             biquadProcessor()->setType(static_cast<FilterType>(type));
-        }
-    );
+        });
     m_settings.push_back(m_type);
 
     initialize();
@@ -42,19 +45,18 @@ void BiquadFilterNode::setType(FilterType type)
     m_type->setUint32(uint32_t(type));
 }
 
-
-void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
-                                            const std::vector<float>& frequencyHz,
-                                            std::vector<float>& magResponse,
-                                            std::vector<float>& phaseResponse)
+void BiquadFilterNode::getFrequencyResponse(ContextRenderLock & r,
+                                            const std::vector<float> & frequencyHz,
+                                            std::vector<float> & magResponse,
+                                            std::vector<float> & phaseResponse)
 {
     if (!frequencyHz.size() || !magResponse.size() || !phaseResponse.size())
         return;
 
     size_t n = std::min(frequencyHz.size(),
-                     std::min(magResponse.size(), phaseResponse.size()));
+                        std::min(magResponse.size(), phaseResponse.size()));
 
-    if (n) 
+    if (n)
     {
         biquadProcessor()->getFrequencyResponse(r, n, &frequencyHz[0], &magResponse[0], &phaseResponse[0]);
     }
@@ -62,7 +64,7 @@ void BiquadFilterNode::getFrequencyResponse(ContextRenderLock& r,
 
 BiquadProcessor * BiquadFilterNode::biquadProcessor()
 {
-    return static_cast<BiquadProcessor*>(processor());
+    return static_cast<BiquadProcessor *>(processor());
 }
 
 BiquadProcessor * BiquadFilterNode::biquadProcessor() const
@@ -94,4 +96,4 @@ std::shared_ptr<AudioParam> BiquadFilterNode::detune()
     return biquadProcessor()->parameter4();
 }
 
-} // namespace lab
+}  // namespace lab

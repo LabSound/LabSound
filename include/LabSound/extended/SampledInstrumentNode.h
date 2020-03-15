@@ -1,4 +1,4 @@
-// License: BSD 2 Clause
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #pragma once
@@ -14,10 +14,10 @@
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 
-#include <iostream> 
-#include <array>
-#include <string>
 #include <algorithm>
+#include <array>
+#include <iostream>
+#include <string>
 
 /*
 namespace lab 

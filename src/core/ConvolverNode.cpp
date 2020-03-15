@@ -1,144 +1,291 @@
-// License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
+
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/ConvolverNode.h"
-
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "internal/VectorMath.h"
+#include <cmath>
 
-#include "internal/Assertions.h"
-#include "internal/Reverb.h"
-
-using namespace std;
-
-// Note about empirical tuning:
-// The maximum FFT size affects reverb performance and accuracy.
-// If the reverb is single-threaded and processes entirely in the real-time audio thread,
-// it's important not to make this too high.  In this case 8192 is a good value.
-// But, the Reverb object is multi-threaded, so we want this as high as possible without losing too much accuracy.
-// Very large FFTs will have worse phase errors. Given these constraints 32768 is a good compromise.
-const size_t MaxFFTSize = 32768;
-
-namespace lab {
-
-ConvolverNode::ConvolverNode() : m_swapOnRender(false)
-, m_normalize(std::make_shared<AudioSetting>("normalize"))
+namespace lab
 {
-    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-    
-    // Node-specific default mixing rules.
-    m_channelCount = 2;
-    m_channelCountMode = ChannelCountMode::ClampedMax;
-    m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    m_settings.push_back(m_normalize);
-    
+using std::isinf;
+using std::isnan;
+
+// from _SoundPipe_FFT.cpp
+struct sp_conv;
+struct sp_data;
+struct sp_ftbl;
+typedef float SPFLOAT;
+int sp_create(sp_data ** spp);
+int sp_destroy(sp_data ** spp);
+int sp_conv_compute(sp_data * sp, sp_conv * p, SPFLOAT * in, SPFLOAT * out);
+int sp_conv_create(sp_conv ** p);
+int sp_conv_destroy(sp_conv ** p);
+int sp_conv_init(sp_data * sp, sp_conv * p, sp_ftbl * ft, SPFLOAT iPartLen);
+int sp_ftbl_destroy(sp_ftbl ** ft);
+int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
+
+//------------------------------------------------------------------------------
+// calculateNormalizationScale is adapted from webkit's Reverb.cpp, and carried the license:
+// Empirical gain calibration tested across many impulse responses to ensure
+// perceived volume is same as dry (unprocessed) signal
+const float GainCalibration = -58;
+const float GainCalibrationSampleRate = 44100;
+
+// A minimum power value to when normalizing a silent (or very quiet) impulse response
+const float MinPower = 0.000125f;
+
+// calculateNormalizationScale license: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
+static float calculateNormalizationScale(AudioBus * response)
+{
+    // Normalize by RMS power
+    size_t numberOfChannels = response->numberOfChannels();
+    size_t length = response->length();
+
+    float power = 0;
+
+    for (size_t i = 0; i < numberOfChannels; ++i)
+    {
+        float channelPower = 0;
+        VectorMath::vsvesq(response->channel(i)->data(), 1, &channelPower, length);
+        power += channelPower;
+    }
+
+    power = sqrt(power / (numberOfChannels * length));
+
+    // Protect against accidental overload
+    if (isinf(power) || isnan(power) || power < MinPower)
+        power = MinPower;
+
+    float scale = 1 / power;
+
+    scale *= powf(10, GainCalibration * 0.05f);  // calibrate to make perceived volume same as unprocessed
+
+    // Scale depends on sample-rate.
+    if (response->sampleRate())
+        scale *= GainCalibrationSampleRate / response->sampleRate();
+
+    // True-stereo compensation
+    if (response->numberOfChannels() == Channels::Quad)
+        scale *= 0.5f;
+
+    return scale;
+}
+//------------------------------------------------------------------------------
+
+ConvolverNode::ReverbKernel::ReverbKernel(ReverbKernel && rh) noexcept
+    : conv(rh.conv)
+    , ft(rh.ft)
+{
+    rh.conv = nullptr;
+    rh.ft = nullptr;
+}
+
+ConvolverNode::ReverbKernel::~ReverbKernel()
+{
+    if (ft)
+        lab::sp_ftbl_destroy(&ft);
+
+    if (conv)
+        lab::sp_conv_destroy(&conv);
+}
+
+ConvolverNode::ConvolverNode()
+    : AudioScheduledSourceNode()
+    , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
+    , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
+{
+    m_settings.push_back(_impulseResponseClip);
+    m_settings.push_back(_normalize);
+    _normalize->setBool(true);
+
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
     initialize();
+
+    lab::sp_create(&_sp);
+
+    _impulseResponseClip->setValueChanged([this]() {
+        this->_activateNewImpulse();
+    });
 }
 
 ConvolverNode::~ConvolverNode()
 {
+    _kernels.clear();
+    lab::sp_destroy(&_sp);
     uninitialize();
-}
-
-void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
-{
-    if (m_swapOnRender)
-    {
-        m_reverb = std::move(m_newReverb);
-        m_bus = m_newBus;
-        m_newBus.reset();
-        m_swapOnRender = false;
-    }
-    
-    AudioBus * outputBus = output(0)->bus(r);
-    
-    if (!isInitialized() || !m_reverb)
-    {
-        if (outputBus) outputBus->zero();
-        return;
-    }
-
-    // Process using the convolution engine.
-    // Note that we can handle the case where nothing is connected to the input, in which case we'll just feed silence into the convolver.
-    // FIXME: If we wanted to get fancy we could try to factor in the 'tail time' and stop processing once the tail dies down if
-    // we keep getting fed silence.
-    m_reverb->process(r, input(0)->bus(r), outputBus, framesToProcess);
-}
-
-void ConvolverNode::reset(ContextRenderLock&)
-{
-    m_newReverb.reset();
-    m_swapOnRender = true;
-}
-
-void ConvolverNode::initialize()
-{
-    if (isInitialized())
-        return;
-        
-    AudioNode::initialize();
-}
-
-void ConvolverNode::uninitialize()
-{
-    m_reverb.reset();
-
-    if (!isInitialized())
-        return;
-
-    AudioNode::uninitialize();
-}
-
-void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
-{
-    if (!bus) return;
-
-    size_t numberOfChannels = bus->numberOfChannels();
-    size_t bufferLength = bus->length();
-
-    // The current implementation supports up to four channel impulse responses, which are interpreted as true-stereo (see Reverb class).
-    bool isBufferGood = numberOfChannels > 0 && numberOfChannels <= 4 && bufferLength;
-    ASSERT(isBufferGood);
-    if (!isBufferGood) return;
-
-    // Create the reverb with the given impulse response.
-    const bool threaded = false;
-    m_newReverb = std::unique_ptr<Reverb>(new Reverb(bus.get(), AudioNode::ProcessingSizeInFrames, MaxFFTSize, 2, threaded, normalize()));
-    m_newBus = bus;
-    m_swapOnRender = true;
-}
-
-std::shared_ptr<AudioBus> ConvolverNode::getImpulse()
-{
-    if (m_swapOnRender) return m_newBus;
-    return m_bus;
-}
-
-double ConvolverNode::tailTime(ContextRenderLock & r) const
-{
-    return m_reverb ? m_reverb->impulseResponseLength() / static_cast<double>(r.context()->sampleRate()) : 0;
-}
-
-double ConvolverNode::latencyTime(ContextRenderLock & r) const
-{
-    return m_reverb ? m_reverb->latencyFrames() / static_cast<double>(r.context()->sampleRate()) : 0;
 }
 
 bool ConvolverNode::normalize() const
 {
-    return m_normalize->valueUint32() != 0;
+    return _normalize->valueBool();
 }
-void ConvolverNode::setNormalize(bool normalize)
+void ConvolverNode::setNormalize(bool new_n)
 {
-    m_normalize->setUint32(normalize ? 1 : 0);
+    bool n = normalize();
+    if (new_n == n)
+        return;
+
+    auto clip = _impulseResponseClip->valueBus();
+    if (clip)
+    {
+        size_t len = clip->length();
+        if (n && _scale != 1.f)
+        {
+            // undo previous normalization
+            float s = 1.f / _scale;
+            for (int i = 0; i < clip->numberOfChannels(); ++i)
+            {
+                float * data = clip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= s;
+            }
+        }
+        if (!n)
+        {
+            // wasn't previously normalized, so normalize
+            _scale = calculateNormalizationScale(clip.get());
+            for (int i = 0; i < clip->numberOfChannels(); ++i)
+            {
+                float * data = clip->channel(i)->mutableData();
+                for (int j = 0; j < len; ++j)
+                    data[j] *= _scale;
+            }
+        }
+    }
+
+    _normalize->setBool(new_n);
 }
 
+void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
+{
+    _kernels.clear();
+    if (!bus)
+        return;
 
-} // namespace lab
+    auto new_bus = AudioBus::createByCloning(bus.get());
+    _impulseResponseClip->setBus(new_bus.get());
+    _activateNewImpulse();
+}
+
+void ConvolverNode::_activateNewImpulse()
+{
+    auto clip = _impulseResponseClip->valueBus();
+    size_t len = clip->length();
+    _scale = 1;
+    if (normalize())
+    {
+        _scale = calculateNormalizationScale(clip.get());
+        for (int i = 0; i < clip->numberOfChannels(); ++i)
+        {
+            float * data = clip->channel(i)->mutableData();
+            for (int j = 0; j < len; ++j)
+                data[j] *= _scale;
+        }
+    }
+
+    int c = static_cast<int>(clip->numberOfChannels());
+    for (int i = 0; i < c; ++i)
+    {
+        // create one kernel per IR channel
+        ReverbKernel kernel;
+
+        // ft doesn't own the data; it does retain a pointer to it.
+        sp_ftbl_bind(_sp, &kernel.ft,
+                     clip->channel(0)->mutableData(), clip->channel(0)->length());
+
+        sp_conv_create(&kernel.conv);
+        sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
+
+        _kernels.emplace_back(std::move(kernel));
+    }
+
+    start(0);
+}
+
+std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const
+{
+    return _impulseResponseClip->valueBus();
+}
+
+void ConvolverNode::process(ContextRenderLock & r, size_t framesToProcess)
+{
+    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * inputBus = input(0)->bus(r);
+
+    if (!isInitialized() || !outputBus || !inputBus || !inputBus->numberOfChannels() || !_kernels.size())
+    {
+        outputBus->zero();
+        return;
+    }
+
+    // if the user never specified the number of output channels, make it match the input
+    if (!outputBus->numberOfChannels())
+    {
+        output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
+        outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
+    }
+
+    size_t quantumFrameOffset;
+    size_t nonSilentFramesToProcess;
+
+    updateSchedulingInfo(r, framesToProcess, outputBus, quantumFrameOffset, nonSilentFramesToProcess);
+
+    int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
+    int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
+    int numReverbChannels = static_cast<int>(_kernels.size());
+
+    if (!nonSilentFramesToProcess)
+    {
+        outputBus->zero();
+        return;
+    }
+
+    /// @todo should a situation such as 1:2:1 be invalid, or should it be powersum(1:1:1, 1:2:1)?
+    /// at the moment, this routine trivially does 1:1:1 only.
+
+    for (int i = 0; i < numOutputChannels; ++i)
+    {
+        int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
+        lab::sp_conv * conv = _kernels[kernel].conv;
+        float * destP = outputBus->channel(i)->mutableData();
+
+        // Start rendering at the correct offset.
+        destP += quantumFrameOffset;
+        {
+            size_t clipFrame = 0;
+            AudioBus * input_bus = input(0)->bus(r);
+            int in_channel = i < numInputChannels ? i : numInputChannels - 1;
+            float const * data = input_bus->channel(in_channel)->data();
+            size_t c = input_bus->channel(in_channel)->length();
+            for (int j = 0; j < framesToProcess; ++j)
+            {
+                lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
+                lab::SPFLOAT out = 0.f;
+                lab::sp_conv_compute(_sp, conv, &in, &out);
+                *destP++ = out;
+            }
+        }
+    }
+
+    _now += double(framesToProcess) / r.context()->sampleRate();
+    outputBus->clearSilentFlag();
+}
+
+void ConvolverNode::reset(ContextRenderLock &)
+{
+    _kernels.clear();
+}
+
+bool ConvolverNode::propagatesSilence(ContextRenderLock & r) const
+{
+    return !isPlayingOrScheduled() || hasFinished();
+}
+
+}  // lab::Sound

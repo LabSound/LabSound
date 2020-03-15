@@ -5,7 +5,8 @@
 #include "internal/Cone.h"
 #include "LabSound/core/Macros.h"
 
-namespace lab {
+namespace lab
+{
 
 ConeEffect::ConeEffect()
     : m_innerAngle(360.0)
@@ -17,7 +18,7 @@ ConeEffect::ConeEffect()
 double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientation, FloatPoint3D listenerPosition)
 {
     if (is_zero(sourceOrientation) || ((m_innerAngle == 360.0) && (m_outerAngle == 360.0)))
-        return 1.0; // no cone specified - unity gain
+        return 1.0;  // no cone specified - unity gain
 
     // Normalized source-listener vector
     FloatPoint3D sourceToListener = listenerPosition - sourcePosition;
@@ -42,7 +43,8 @@ double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientat
     else if (absAngle >= absOuterAngle)
         // Max attenuation
         gain = m_outerGain;
-    else {
+    else
+    {
         // Between inner and outer cones
         // inner -> outer, x goes from 0 -> 1
         double x = (absAngle - absInnerAngle) / (absOuterAngle - absInnerAngle);
@@ -52,4 +54,4 @@ double ConeEffect::gain(FloatPoint3D sourcePosition, FloatPoint3D sourceOrientat
     return gain;
 }
 
-} // namespace lab
+}  // namespace lab

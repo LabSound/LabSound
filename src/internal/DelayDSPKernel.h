@@ -10,21 +10,23 @@
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
 
-namespace lab {
+namespace lab
+{
 
 class DelayProcessor;
-    
-class DelayDSPKernel : public AudioDSPKernel {
-public:  
-    explicit DelayDSPKernel(DelayProcessor*, float sampleRate);
+
+class DelayDSPKernel : public AudioDSPKernel
+{
+public:
+    explicit DelayDSPKernel(DelayProcessor *, float sampleRate);
     DelayDSPKernel(double maxDelayTime, float sampleRate);
     virtual ~DelayDSPKernel() {}
-    
-    virtual void process(ContextRenderLock&, const float* source, float* destination, size_t framesToProcess) override;
+
+    virtual void process(ContextRenderLock &, const float * source, float * destination, size_t framesToProcess) override;
     virtual void reset() override;
-    
+
     double maxDelayTime() const { return m_maxDelayTime; }
-    
+
     void setDelayFrames(double numberOfFrames) { m_desiredDelayFrames = numberOfFrames; }
 
     virtual double tailTime(ContextRenderLock & r) const override;
@@ -41,10 +43,10 @@ private:
 
     AudioFloatArray m_delayTimes;
 
-    DelayProcessor * delayProcessor() { return static_cast<DelayProcessor*>(processor()); }
+    DelayProcessor * delayProcessor() { return static_cast<DelayProcessor *>(processor()); }
     size_t bufferLengthForDelay(double delayTime, double sampleRate) const;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DelayDSPKernel_h
+#endif  // DelayDSPKernel_h

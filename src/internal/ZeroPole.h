@@ -7,7 +7,8 @@
 
 #include <cstddef>
 
-namespace lab {
+namespace lab
+{
 
 // ZeroPole is a simple filter with one zero and one pole.
 class ZeroPole
@@ -16,23 +17,26 @@ class ZeroPole
     float m_pole = 0.f;
     float m_lastX = 0.f;
     float m_lastY = 0.f;
-    
+
 public:
+    ZeroPole() {}
 
-    ZeroPole() { }
-
-    void process(const float *source, float *destination, size_t framesToProcess);
+    void process(const float * source, float * destination, size_t framesToProcess);
 
     // Reset filter state.
-    void reset() { m_lastX = 0; m_lastY = 0; }
-    
+    void reset()
+    {
+        m_lastX = 0;
+        m_lastY = 0;
+    }
+
     void setZero(float zero) { m_zero = zero; }
     void setPole(float pole) { m_pole = pole; }
-    
+
     float zero() const { return m_zero; }
     float pole() const { return m_pole; }
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // ZeroPole_h
+#endif  // ZeroPole_h

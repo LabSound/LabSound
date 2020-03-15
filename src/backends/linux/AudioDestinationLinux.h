@@ -5,22 +5,22 @@
 #ifndef AudioDestinationLinux_h
 #define AudioDestinationLinux_h
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNode.h"
 
 #include "internal/AudioDestination.h"
 
 #include "rtaudio/RtAudio.h"
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
 
-namespace lab {
+namespace lab
+{
 
 class AudioDestinationLinux : public AudioDestination
 {
 
 public:
-
     AudioDestinationLinux(AudioIOCallback &, size_t numChannels, float sampleRate);
     virtual ~AudioDestinationLinux();
 
@@ -32,23 +32,18 @@ public:
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
 
 private:
-
     void configure();
 
     AudioIOCallback & m_callback;
-
     AudioBus m_renderBus = {2, AudioNode::ProcessingSizeInFrames, false};
-    AudioBus m_inputBus = {1, AudioNode::ProcessingSizeInFrames, false};
-
+    std::unique_ptr<AudioBus> m_inputBus;
     size_t m_numChannels;
     float m_sampleRate;
-
     RtAudio dac;
 };
 
-int outputCallback(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *userData );
+int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioDestinationLinux_h
-
+#endif  // AudioDestinationLinux_h

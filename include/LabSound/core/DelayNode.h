@@ -5,8 +5,8 @@
 #ifndef DelayNode_h
 #define DelayNode_h
 
-#include "LabSound/core/Constants.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
+#include "LabSound/core/Macros.h"
 
 namespace lab
 {
@@ -36,12 +36,13 @@ enum TempoSync
 class DelayNode : public AudioBasicProcessorNode
 {
     DelayProcessor * delayProcessor();
+
 public:
     // default maximum delay of 100ms
-    DelayNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, double maxDelayTime = 0.1);
-    std::shared_ptr<AudioParam> delayTime();
+    DelayNode(float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, double maxDelayTime = 2.0);
+    std::shared_ptr<AudioSetting> delayTime();
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // DelayNode_h
+#endif  // DelayNode_h

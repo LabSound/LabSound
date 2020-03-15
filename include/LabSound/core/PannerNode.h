@@ -1,5 +1,4 @@
-// License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
+// SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef PannerNode_h
@@ -8,10 +7,11 @@
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/Constants.h"
 #include "LabSound/core/FloatPoint3D.h"
+#include "LabSound/core/Macros.h"
 
-namespace lab {
+namespace lab
+{
 
 // PannerNode is an AudioNode with one input and one output.
 // It positions a sound in 3D space, with the exact effect dependent on the panning model.
@@ -53,9 +53,7 @@ class PannerNode : public AudioNode
     std::shared_ptr<AudioSetting> m_coneOuterAngle;
     std::shared_ptr<AudioSetting> m_panningModel;
 
-
 public:
-
     enum DistanceModel
     {
         LINEAR_DISTANCE = 0,
@@ -63,13 +61,13 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
 
-    PannerNode(const float sampleRate = LABSOUND_DEFAULT_SAMPLERATE, const std::string & searchPath = "");
+    PannerNode(const float sampleRate, const std::string & hrtf_root_dir_path = "");
     virtual ~PannerNode();
 
     // AudioNode
-    virtual void process(ContextRenderLock&, size_t framesToProcess) override;
-    virtual void pullInputs(ContextRenderLock& r, size_t framesToProcess) override;
-    virtual void reset(ContextRenderLock&) override;
+    virtual void process(ContextRenderLock &, size_t framesToProcess) override;
+    virtual void pullInputs(ContextRenderLock & r, size_t framesToProcess) override;
+    virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
 
@@ -89,14 +87,14 @@ public:
     // which the audio source is facing, in cartesian space. The complete
     // vector is defined by the position of the audio source, and the direction
     // in which it is facing.
-    void setOrientation(const FloatPoint3D& fwd);
+    void setOrientation(const FloatPoint3D & fwd);
     std::shared_ptr<AudioParam> orientationX() const { return m_orientationX; }
     std::shared_ptr<AudioParam> orientationY() const { return m_orientationY; }
     std::shared_ptr<AudioParam> orientationZ() const { return m_orientationZ; }
 
     // Velocity
     void setVelocity(float x, float y, float z) { setVelocity(FloatPoint3D(x, y, z)); }
-    void setVelocity(const FloatPoint3D &velocity);
+    void setVelocity(const FloatPoint3D & velocity);
     std::shared_ptr<AudioParam> velocityX() const { return m_velocityX; }
     std::shared_ptr<AudioParam> velocityY() const { return m_velocityY; }
     std::shared_ptr<AudioParam> velocityZ() const { return m_velocityZ; }
@@ -135,7 +133,6 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
-
     std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
 
     // Returns the combined distance and cone gain attenuation.
@@ -154,6 +151,6 @@ protected:
     float m_sampleRate;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // PannerNode_h
+#endif  // PannerNode_h

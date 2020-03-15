@@ -5,8 +5,8 @@
 #include "AudioDestinationLinux.h"
 #include "internal/VectorMath.h"
 
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioIOCallback.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/extended/Logging.h"
 
 #include <rtaudio/RtAudio.h>
@@ -46,9 +46,8 @@ unsigned long AudioDestination::maxChannelCount()
 }
 
 AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, size_t numChannels, float sampleRate)
-: m_callback(callback)
-, m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
-, m_inputBus(1, AudioNode::ProcessingSizeInFrames, false)
+    : m_callback(callback)
+    , m_renderBus(numChannels, AudioNode::ProcessingSizeInFrames, false)
 {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
@@ -58,6 +57,7 @@ AudioDestinationLinux::AudioDestinationLinux(AudioIOCallback & callback, size_t 
 
 AudioDestinationLinux::~AudioDestinationLinux()
 {
+    //dac.release(); // XXX
     if (dac.isStreamOpen())
         dac.closeStream();
 }
@@ -85,6 +85,10 @@ void AudioDestinationLinux::configure()
     inputParams.firstChannel = 0;
 
     auto inDeviceInfo = dac.getDeviceInfo(outputParams.deviceId);
+    if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
+    {
+        m_inputBus = std::make_unique<AudioBus>(1, AudioNode::ProcessingSizeInFrames, false);
+    }
 
     unsigned int bufferFrames = AudioNode::ProcessingSizeInFrames;
 
@@ -93,9 +97,10 @@ void AudioDestinationLinux::configure()
 
     try
     {
-        dac.openStream(outDeviceInfo.probed ? &outputParams : nullptr, 
-                       inDeviceInfo.probed ? &inputParams : nullptr, 
-            RTAUDIO_FLOAT32, 
+        dac.openStream(
+            outDeviceInfo.probed && outDeviceInfo.isDefaultOutput ? &outputParams : nullptr,
+            inDeviceInfo.probed && inDeviceInfo.isDefaultInput ? &inputParams : nullptr,
+            RTAUDIO_FLOAT32,
             (unsigned int) m_sampleRate, &bufferFrames, &outputCallback, this, &options);
     }
     catch (RtAudioError & e)
@@ -131,8 +136,8 @@ void AudioDestinationLinux::stop()
 // Pulls on our provider to get rendered audio stream.
 void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
-    float *myOutputBufferOfFloats = (float*) outputBuffer;
-    float *myInputBufferOfFloats = (float*) inputBuffer;
+    float * myOutputBufferOfFloats = (float *) outputBuffer;
+    float * myInputBufferOfFloats = (float *) inputBuffer;
 
     // Inform bus to use an externally allocated buffer from rtaudio
     if (m_renderBus.isFirstTime())
@@ -143,13 +148,13 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
         }
     }
 
-    if (m_inputBus.isFirstTime())
+    if (m_inputBus && m_inputBus->isFirstTime())
     {
-        m_inputBus.setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
+        m_inputBus->setChannelMemory(0, myInputBufferOfFloats, numberOfFrames);
     }
 
     // Source Bus :: Destination Bus
-    m_callback.render(&m_inputBus, &m_renderBus, numberOfFrames);
+    m_callback.render(m_inputBus.get(), &m_renderBus, numberOfFrames);
 
     // Clamp values at 0db (i.e., [-1.0, 1.0])
     for (unsigned i = 0; i < m_renderBus.numberOfChannels(); ++i)
@@ -161,17 +166,17 @@ void AudioDestinationLinux::render(int numberOfFrames, void * outputBuffer, void
 
 int outputCallback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
 {
-    float *fBufOut = (float*) outputBuffer;
+    float * fBufOut = (float *) outputBuffer;
 
     // Buffer is nBufferFrames * channels
     // NB: channel count should be set in a principled way
     memset(fBufOut, 0, sizeof(float) * nBufferFrames * 2);
 
-    AudioDestinationLinux * audioDestination = static_cast<AudioDestinationLinux*>(userData);
+    AudioDestinationLinux * audioDestination = static_cast<AudioDestinationLinux *>(userData);
 
     audioDestination->render(nBufferFrames, fBufOut, inputBuffer);
 
     return 0;
 }
 
-} // namespace lab
+}  // namespace lab

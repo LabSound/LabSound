@@ -1,22 +1,76 @@
 
+# LabSound
+#
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright (C) 2020, The LabSound Authors. All rights reserved.
+#
+# Will create a target named LabSound
+
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
-file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
+file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
 file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
-file(GLOB third_kissfft     "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 
-if (APPLE)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/darwin/*")
+# backend selection
+
+if (IOS)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+elseif (APPLE)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 elseif (WIN32)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/windows/*")
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 elseif (UNIX)
-    file(GLOB labsnd_backend "${LABSOUND_ROOT}/src/backends/linux/*")
-    set(third_rtaudio "${LABSOUND_ROOT}/third_party/rtaudio/src/RtAudio.cpp")
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
+elseif (ANDROID)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+else ()
+    message(FATAL, " Untested platform. Please try miniaudio and report results on the LabSound issues page")
 endif()
 
+if (LABSOUND_USE_MINIAUDIO AND LABSOUND_USE_RTAUDIO)
+    message(FATAL, " Specify only one backend")
+elseif(NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
+    message(FATAL, " Specify at least one backend")
+endif()
+
+if (LABSOUND_USE_MINIAUDIO)
+    message(INFO, "Using miniaudio backend")
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+    )
+elseif (LABSOUND_USE_RTAUDIO)
+    message(INFO, "Using RtAudio backend")
+    set(labsnd_backend
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
+        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
+    )
+endif()
+
+
+# FFT
+
+if (IOS)
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+elseif (APPLE)
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/darwin/FFTFrameDarwin.cpp")
+elseif (WIN32)
+    file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
+elseif (UNIX)
+    file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
+endif()
+
+# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameDarwin
 set(ooura_src
     "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
     "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
@@ -27,8 +81,7 @@ add_library(LabSound STATIC
     ${labsnd_extended_h} ${labsnd_extended}
     ${labsnd_int_h}      ${labsnd_int_src}
     ${labsnd_backend}
-    ${third_rtaudio}
-    ${third_kissfft}
+    ${labsnd_fft_src}
     ${ooura_src}
  )
 
@@ -76,6 +129,7 @@ set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
 elseif (APPLE)
+    target_compile_definitions(LabSound PRIVATE __MACOSX_CORE__=1)
 else()
     if (LABSOUND_JACK)
         target_compile_definitions(LabSound PRIVATE __UNIX_JACK__=1)
@@ -132,3 +186,5 @@ install(FILES
   "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake"
   DESTINATION "${CMAKE_INSTALL_PREFIX}"
 )
+
+add_library(Lab::Sound ALIAS LabSound)

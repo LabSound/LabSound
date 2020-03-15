@@ -9,32 +9,35 @@
 #include "LabSound/core/AudioParamTimeline.h"
 #include "LabSound/core/AudioSummingJunction.h"
 
-#include <sys/types.h>
 #include <string>
+#include <sys/types.h>
 
-namespace lab {
+namespace lab
+{
 
 class AudioNodeOutput;
 
-class AudioParam : public AudioSummingJunction {
+class AudioParam : public AudioSummingJunction
+{
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string& name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    AudioParam(const std::string & name, const std::string & short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
     virtual ~AudioParam();
-    
+
     // AudioSummingJunction
-    virtual void didUpdate(ContextRenderLock&) override { }
+    virtual void didUpdate(ContextRenderLock &) override {}
 
     // Intrinsic value.
-    float value(ContextRenderLock&);
+    float value(ContextRenderLock &);
     void setValue(float);
 
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
-    float finalValue(ContextRenderLock&);
+    float finalValue(ContextRenderLock &);
 
     std::string name() const { return m_name; }
+    std::string shortName() const { return m_shortName; }
 
     float minValue() const { return static_cast<float>(m_minValue); }
     float maxValue() const { return static_cast<float>(m_maxValue); }
@@ -49,12 +52,12 @@ public:
 
     // Smoothly exponentially approaches to (de-zippers) the desired value.
     // Returns true if smoothed value has already snapped exactly to value.
-    bool smooth(ContextRenderLock&);
+    bool smooth(ContextRenderLock &);
 
     void resetSmoothedValue() { m_smoothedValue = m_value; }
     void setSmoothingConstant(double k) { m_smoothingConstant = k; }
 
-    // Parameter automation.    
+    // Parameter automation.
     void setValueAtTime(float value, float time) { m_timeline.setValueAtTime(value, time); }
     void linearRampToValueAtTime(float value, float time) { m_timeline.linearRampToValueAtTime(value, time); }
     void exponentialRampToValueAtTime(float value, float time) { m_timeline.exponentialRampToValueAtTime(value, time); }
@@ -63,22 +66,23 @@ public:
     void cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); }
 
     bool hasSampleAccurateValues() { return m_timeline.hasValues() || numberOfConnections(); }
-    
+
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
-    void calculateSampleAccurateValues(ContextRenderLock&, float* values, size_t numberOfValues);
+    void calculateSampleAccurateValues(ContextRenderLock &, float * values, size_t numberOfValues);
 
     // Connect an audio-rate signal to control this parameter.
-    static void connect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
-    static void disconnect(ContextGraphLock& g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
-	static void disconnectAll(ContextGraphLock& g, std::shared_ptr<AudioParam>);
+    static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    static void disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam>);
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
-    void calculateFinalValues(ContextRenderLock& r, float* values, size_t numberOfValues, bool sampleAccurate);
-    void calculateTimelineValues(ContextRenderLock& r, float* values, size_t numberOfValues);
+    void calculateFinalValues(ContextRenderLock & r, float * values, size_t numberOfValues, bool sampleAccurate);
+    void calculateTimelineValues(ContextRenderLock & r, float * values, size_t numberOfValues);
 
     std::string m_name;
+    std::string m_shortName;
     double m_value;
     double m_defaultValue;
     double m_minValue;
@@ -88,13 +92,13 @@ private:
     // Smoothing (de-zippering)
     double m_smoothedValue;
     double m_smoothingConstant;
-    
+
     AudioParamTimeline m_timeline;
-    
+
     struct Data;
     std::unique_ptr<Data> m_data;
 };
 
-} // namespace lab
+}  // namespace lab
 
-#endif // AudioParam_h
+#endif  // AudioParam_h
