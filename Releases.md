@@ -10,20 +10,35 @@
 - RecorderNode defers mix to down to save
 - RecorderNode create bus from recording
 - SfxrNode exposes presets as settings
-- AnalyserNode can render output to any desired output buffer size by binning and interpolation
 - SampledAudioNode has scheduled voices
 - AudioNodes all take an AudioContext& during construction
 - Offline rendering works consistently with online rendering, including automatic pull nodes
 - Automatic pull nodes work reliably
-- Removed many custom backends in favor of RtAudio and miniaudio
-- Added Input and Output configuration structs to allow selection of devices
 - Updated use of data types to conform to LabSound conventions
-- DiodeNode is now derived from AudioNode
-- New implementations for ConvolverNode, OscillatorNode, and Filters
-- SuperSaw is now scheduled
-- ADSRNode timing fixed
 - New GranulationNode
 - fixed almost all of the compiler warnings
+- removed bang in favor of an _onStart callback that allows rescheduling in the processing call
+
+## merge-to-master
+------------------
+
+## v0.14.0 Release Candidate
+# XX Mar 2020
+
+- Removed many custom backends in favor of RtAudio and miniaudio
+- Consolidated demos into a single header
+- clang format applied to sources
+- cloning method added to AudioBus
+- Added Input and Output configuration structs to allow selection of devices
+- names added for params and settings for use in tools
+- Bus added as available Setting type
+- ADSRNode timing fixed
+- AnalyserNode can render output to any desired output buffer size by binning and interpolation
+- AudioDevice nodes added in major backend refactoring
+- ConvolverNode - new implementation
+- DiodeNode is now derived from AudioNode
+- OscillatorNode - new implementation
+- SuperSaw is now scheduled
 
 ### Releases
 ------------

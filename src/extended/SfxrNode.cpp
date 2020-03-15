@@ -657,6 +657,13 @@ SfxrNode::SfxrNode(AudioContext & ac)
     sfxr->ResetSample(true);
     sfxr->PlaySample();
 
+    _scheduler._onStart = [this](double when)
+    {
+        // when is ignored.
+        this->sfxr->ResetSample(true);
+        this->sfxr->PlaySample();
+    };
+
     initialize();
 
     _preset->setValueChanged([this]()
@@ -681,13 +688,6 @@ SfxrNode::SfxrNode(AudioContext & ac)
 SfxrNode::~SfxrNode()
 {
     uninitialize();
-}
-
-void SfxrNode::bang(const double length)
-{
-    start(0);
-    sfxr->ResetSample(true);
-    sfxr->PlaySample();
 }
 
 void SfxrNode::process(ContextRenderLock &r, int bufferSize)

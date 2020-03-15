@@ -12,7 +12,7 @@
 namespace lab
 {
 
-class SfxrNode : public AudioScheduledSourceNode, public BangInterface
+class SfxrNode : public AudioScheduledSourceNode
 {
 public:
     SfxrNode(AudioContext & ac);
@@ -21,8 +21,6 @@ public:
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
-
-    virtual bool hasBang() const override { return true; }
 
     std::shared_ptr<AudioSetting> preset() const { return _preset; }
 
@@ -79,8 +77,6 @@ public:
         SINE,
         NOISE
     };
-
-    virtual void bang(const double length = 0.0) override;
 
     // some presets
     void setDefaultBeep();

@@ -117,6 +117,11 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
 
 void AudioNodeScheduler::start(double when)
 {
+    // irrespective of start state, onStart will be called if possible
+    // to allow a node to use subsequent starts as a hint
+    if (_onStart)
+        _onStart(when);
+
     // if already scheduled or playing, nothing to do
     if (_playbackState == SchedulingState::SCHEDULED ||
         _playbackState == SchedulingState::PLAYING)

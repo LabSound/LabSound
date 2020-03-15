@@ -451,7 +451,8 @@ void SampledAudioVoice::finish(ContextRenderLock& r)
 //   SampledAudioNode   //
 //////////////////////////
 
-SampledAudioNode::SampledAudioNode(AudioContext & ac) : AudioNode(ac)
+SampledAudioNode::SampledAudioNode(AudioContext & ac) 
+    : AudioScheduledSourceNode(ac)
 {
     m_sourceBus = std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus);
     m_isLooping = std::make_shared<AudioSetting>("loop", "LOOP", AudioSetting::Type::Bool);
@@ -472,11 +473,17 @@ SampledAudioNode::SampledAudioNode(AudioContext & ac) : AudioNode(ac)
     m_settings.push_back(m_loopEnd);
 
     m_sourceBus->setValueChanged([this]() {
-        for (auto & voice : voices) voice->m_channelSetupRequested = true;
+        this->m_resetVoices = true;
     });
 
     // Default to mono. A call to setBus() will set the number of output channels to that of the bus.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+
+    _scheduler._onStart = [this](double when)
+    {
+        // this is safe, because start will be called from a thread where schedule is also safe to be called
+        this->schedule(when);
+    };
 
     initialize();
 }
@@ -494,6 +501,12 @@ void SampledAudioNode::process(ContextRenderLock & r, int framesToProcess)
         {
             v->setOnEnded(m_onEnded);
         }
+    }
+
+    if (m_resetVoices)
+    {
+        _createVoicesForNewBus(r);
+        m_resetVoices = false;
     }
 
     std::stack<SampledAudioVoice *> free_voices;
@@ -557,21 +570,25 @@ void SampledAudioNode::reset(ContextRenderLock & r)
    voices.clear();
 }
 
-bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> buffer)
+void SampledAudioNode::_createVoicesForNewBus(ContextRenderLock & r)
 {
-    ASSERT(r.context());
-
-    m_sourceBus->setBus(buffer.get());
-    output(0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
+    output(0)->setNumberOfChannels(r, m_sourceBus->valueBus()->numberOfChannels());
 
     // voice creation
+    voices.clear();
     for (size_t v = 0; v < MAX_NUM_VOICES; ++v)
     {
         std::unique_ptr<SampledAudioVoice> voice(new SampledAudioVoice(*r.context(), duration(), m_gain, m_playbackRate, m_detune, m_isLooping, m_loopStart, m_loopEnd, m_sourceBus));
         voice->setOutput(r, output(0));
         voices.push_back(std::move(voice));
     }
+}
 
+bool SampledAudioNode::setBus(ContextRenderLock & r, std::shared_ptr<AudioBus> buffer)
+{
+    ASSERT(r.context());
+    m_sourceBus->setBus(buffer.get());
+    _createVoicesForNewBus(r);
     return true;
 }
 
