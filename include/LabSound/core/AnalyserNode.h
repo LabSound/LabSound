@@ -39,17 +39,17 @@ public:
     void setFftSize(ContextRenderLock &, int fftSize);
     size_t fftSize() const;
 
-        virtual void process(ContextRenderLock &, size_t framesToProcess) override;
-        virtual void reset(ContextRenderLock &) override;
-
-    void setFftSize(ContextRenderLock &, size_t fftSize);
-    size_t fftSize() const;
-
     // a value large enough to hold all the data return from get*FrequencyData
     size_t frequencyBinCount() const;
 
     void setMinDecibels(double k);
     double minDecibels() const;
+
+    void setMaxDecibels(double k);
+    double maxDecibels() const;
+
+    void setSmoothingTimeConstant(double k);
+    double smoothingTimeConstant() const;
 
     // frequency bins, reported in db
     // @TODO, add a normalization option to perform the same normalization as getByteFrequency data.

@@ -16,9 +16,6 @@ namespace lab
 using std::isinf;
 using std::isnan;
 
-using std::isnan;
-using std::isinf;
-
 // from _SoundPipe_FFT.cpp
 struct sp_conv;
 struct sp_data;

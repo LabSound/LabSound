@@ -22,14 +22,28 @@ struct AnalyserNode::Detail
     }
     RealtimeAnalyser * m_analyser = nullptr;
 
-        _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
+    std::shared_ptr<AudioSetting> _fftSize;
+    std::shared_ptr<AudioSetting> _minDecibels;
+    std::shared_ptr<AudioSetting> _maxDecibels;
+    std::shared_ptr<AudioSetting> _smoothingTimeConstant;
+};
+
+void AnalyserNode::shared_construction(int fftSize)
+{
+    _detail = new Detail;
+
+    _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
 
     _detail->_fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
     _detail->_minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
     _detail->_maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
     _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
 
-    _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
+    _detail->_fftSize->setUint32(static_cast<uint32_t>(fftSize));
+    _detail->_fftSize->setValueChanged(
+        [this]() {
+            delete _detail->m_analyser;
+            _detail->m_analyser = new RealtimeAnalyser(_detail->_fftSize->valueUint32());
 
             // restore other values
             _detail->m_analyser->setMinDecibels(_detail->_minDecibels->valueFloat());
@@ -78,21 +92,6 @@ AnalyserNode::AnalyserNode(AudioContext & ac)
 AnalyserNode::~AnalyserNode()
 {
     uninitialize();
-}
-
-AnalyserNode::AnalyserNode()
-    : AudioBasicInspectorNode(1)
-{
-    shared_construction(1024u);
-}
-
-void AnalyserNode::setMaxDecibels(double k)
-{
-    _detail->_maxDecibels->setFloat(static_cast<float>(k));
-}
-double AnalyserNode::maxDecibels() const
-{
-    return _detail->m_analyser->maxDecibels();
 }
 
 void AnalyserNode::setMinDecibels(double k)
@@ -147,16 +146,6 @@ void AnalyserNode::getByteTimeDomainData(std::vector<uint8_t> & array)
 {
     _detail->m_analyser->getByteTimeDomainData(array);
 }
-
-void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resample)
-{
-    if (array.size() == frequencyBinCount())
-        resample = false;
-
-    size_t AnalyserNode::frequencyBinCount() const { return _detail->m_analyser->frequencyBinCount(); }
-    void AnalyserNode::getFloatFrequencyData(std::vector<float> & array) { _detail->m_analyser->getFloatFrequencyData(array); }
-    void AnalyserNode::getFloatTimeDomainData(std::vector<float> & array) { _detail->m_analyser->getFloatTimeDomainData(array); }
-    void AnalyserNode::getByteTimeDomainData(std::vector<uint8_t> & array) { _detail->m_analyser->getByteTimeDomainData(array); }
 
 void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resample)
 {

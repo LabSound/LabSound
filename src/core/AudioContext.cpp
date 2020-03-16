@@ -269,10 +269,6 @@ void AudioContext::update()
     ASSERT(graphTickDurationMs);
     ASSERT(graphTickDurationUs);
 
-    ASSERT(frameLengthInMilliseconds);
-    ASSERT(graphTickDurationMs);
-    ASSERT(graphTickDurationUs);
-
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even updateThreadShouldRun has been signaled.
     while (!m_internal->pendingNodeConnections.empty() || !m_internal->pendingParamConnections.empty() ||
@@ -556,19 +552,6 @@ float AudioContext::sampleRate() const
         return 0;
 
     return device_callback->getSamplingInfo().sampling_rate;
-}
-
-void AudioContext::startOfflineRendering()
-{
-    // This takes the function of `lazyInitialize()` but for offline contexts
-    if (m_isOfflineContext)
-    {
-        device_callback->start();
-    }
-    else
-    {
-        throw std::runtime_error("context is not setup for offline rendering");
-    }
 }
 
 void AudioContext::startOfflineRendering()

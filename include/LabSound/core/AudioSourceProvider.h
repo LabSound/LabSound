@@ -6,9 +6,7 @@
 #define AudioSourceProvider_h
 
 #include "LabSound/extended/AudioContextLock.h"
-#include <LabSound/core/AudioBus.h>
-#include "LabSound/extended/AudioContextLock.h"
-#include <LabSound/core/AudioBus.h>
+#include "LabSound/core/AudioBus.h"
 
 namespace lab
 {

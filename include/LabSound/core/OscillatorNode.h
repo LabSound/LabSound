@@ -42,49 +42,18 @@ public:
     std::shared_ptr<AudioParam> detune() { return m_detune; }
     std::shared_ptr<AudioParam> bias() { return m_bias; }
 
-protected:
-    void _setType(OscillatorType type);
-
-        float m_sampleRate;
-
-    double _lab_phase = 0;  // new sine oscillator
+    std::shared_ptr<AudioParam> m_amplitude; // default 1.0
+    std::shared_ptr<AudioParam> m_frequency; // hz
+    std::shared_ptr<AudioParam> m_bias;      // default 0.0
+    std::shared_ptr<AudioParam> m_detune;    // Detune value in Cents.
 
     void process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count);
 
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    // Returns true if there are sample-accurate timeline parameter changes.
-    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock &, size_t framesToProcess);
-
-    // Returns true if there are sample-accurate timeline parameter changes.
-    bool calculateSampleAccuratePhaseIncrements(ContextRenderLock &, size_t framesToProcess);
-
-    void process_oscillator(ContextRenderLock & r, int frames);
-
-    // One of the waveform types defined in the enum.
-    std::shared_ptr<AudioSetting> m_type;
-
-    bool m_firstRender;
-
-    bool m_firstRender;
-
-    // m_virtualReadIndex is a sample-frame index into the buffer
-    double m_virtualReadIndex;
-
-        // Cache the wave tables for different waveform types, except CUSTOM.
-        static std::shared_ptr<WaveTable> s_waveTableSine;
-        static std::shared_ptr<WaveTable> s_waveTableSquare;
-        static std::shared_ptr<WaveTable> s_waveTableSawtooth;
-        static std::shared_ptr<WaveTable> s_waveTableTriangle;
-    };
-
-}  // namespace lab
-
-#endif  // OscillatorNode_h
+    AudioFloatArray m_phaseIncrements;
+    AudioFloatArray m_biasValues;
+    AudioFloatArray m_detuneValues;
+    AudioFloatArray m_amplitudeValues;
+};
 
 }  // namespace lab
 

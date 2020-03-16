@@ -99,10 +99,6 @@ private:
     struct Internals;
     std::unique_ptr<Internals> m_internal;
 
-    // @TODO migrate most of the internal datastructures such as PendingConnection into Internals as there's no need to expose these at all.
-    struct Internals;
-    std::unique_ptr<Internals> m_internal;
-
     std::mutex m_graphLock;
     std::mutex m_renderLock;
     std::mutex m_updateMutex;

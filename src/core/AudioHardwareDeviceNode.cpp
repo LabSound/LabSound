@@ -2,13 +2,13 @@
 // Copyright (C) 2011, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
-#include "LabSound/core/AudioDevice.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -24,12 +24,15 @@ using namespace lab;
 //   AudioHardwareDeviceNode   //
 /////////////////////////////////
 
-AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context, 
-    const AudioStreamConfig outputConfig, 
-    const AudioStreamConfig inputConfig)
-    : m_context(context), outConfig(outputConfig), inConfig(inputConfig)
+AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
+                                                 const AudioStreamConfig outputConfig,
+                                                 const AudioStreamConfig inputConfig)
+    : AudioNode(context)
+    , m_context(&context)
+    , outConfig(outputConfig)
+    , inConfig(inputConfig)
 {
-    // Ensure that input and output samplerates match
+    // Ensure that input and output sample rates match
     if (inputConfig.device_index != -1)
     {
         ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
@@ -45,26 +48,26 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext * context,
 
     if (inputConfig.device_index != -1)
     {
-        m_audioHardwareInput = new AudioHardwareInput(inputConfig.desired_channels); 
+        m_audioHardwareInput = new AudioHardwareInput(inputConfig.desired_channels);
     }
 
-    // This is the "final node" in the chain. It will pull on all others from this input. 
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    // This is the "final node" in the chain. It will pull on all others from this input.
+    addInput(std::make_unique<AudioNodeInput>(this));
 
     // Node-specific default mixing rules.
     //m_channelCount = outputConfig.desired_channels;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
-    
-    ContextGraphLock glock(context, "AudioHardwareDeviceNode");
+
+    ContextGraphLock glock(&context, "AudioHardwareDeviceNode");
     AudioNode::setChannelCount(glock, outputConfig.desired_channels);
-    
+
     // Info is provided by the backend every frame, but some nodes need to be constructed
     // with a valid sample rate before the first frame so we make our best guess here
     last_info = {};
     last_info.sampling_rate = outputConfig.desired_samplerate;
 
-    // Unlike all other nodes that inherit from AudioNode, we do not need to call initialize here. 
+    // Unlike all other nodes that inherit from AudioNode, we do not need to call initialize here.
 }
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
@@ -87,7 +90,7 @@ void AudioHardwareDeviceNode::uninitialize()
 
 void AudioHardwareDeviceNode::start()
 {
-    initialize(); // presumably called by the context
+    initialize();  // presumably called by the context
 
     if (isInitialized())
     {
@@ -100,7 +103,7 @@ void AudioHardwareDeviceNode::stop()
     m_platformAudioDevice->stop();
 }
 
-const SamplingInfo AudioHardwareDeviceNode::getSamplingInfo() const 
+const SamplingInfo AudioHardwareDeviceNode::getSamplingInfo() const
 {
     return last_info;
 }
@@ -121,7 +124,7 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
     m_platformAudioDevice->start();
 };
 
-void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, size_t frames, const SamplingInfo & info)
+void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
     pull_graph(m_context, input(0).get(), src, dst, frames, info, m_audioHardwareInput);
     last_info = info;

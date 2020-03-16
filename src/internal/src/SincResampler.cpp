@@ -49,11 +49,8 @@ SincResampler::SincResampler(double scaleFactor, int kernelSize, int numberOfKer
     , m_kernelStorage(m_kernelSize * (m_numberOfKernelOffsets + 1))
     , m_inputBuffer(m_blockSize + m_kernelSize)
 {
-    SincResampler::SincResampler(double scaleFactor, size_t kernelSize, size_t numberOfKernelOffsets)
-        : m_scaleFactor(scaleFactor), m_kernelSize(kernelSize), m_numberOfKernelOffsets(numberOfKernelOffsets), m_kernelStorage(m_kernelSize * (m_numberOfKernelOffsets + 1)), m_inputBuffer(m_blockSize + m_kernelSize)
-    {
-        initializeKernel();
-    }
+    initializeKernel();
+}
 
 void SincResampler::initializeKernel()
 {
@@ -196,7 +193,6 @@ void SincResampler::process(AudioSourceProvider * sourceProvider, float * destin
         consumeSource(r0, m_blockSize + m_kernelSize / 2);
         m_isBufferPrimed = true;
     }
-}
 
     // Step (2)
 
@@ -207,39 +203,6 @@ void SincResampler::process(AudioSourceProvider * sourceProvider, float * destin
             // m_virtualSourceIndex lies in between two kernel offsets so figure out what they are.
             int sourceIndexI = static_cast<int>(m_virtualSourceIndex);
             double subsampleRemainder = m_virtualSourceIndex - sourceIndexI;
-
-            double virtualOffsetIndex = subsampleRemainder * m_numberOfKernelOffsets;
-            int offsetIndex = static_cast<int>(virtualOffsetIndex);
-
-            float * k1 = m_kernelStorage.data() + offsetIndex * m_kernelSize;
-            float * k2 = k1 + m_kernelSize;
-
-            // Initialize input pointer based on quantized m_virtualSourceIndex.
-            float * inputP = r1 + sourceIndexI;
-
-        size_t numberOfDestinationFrames = framesToProcess;
-
-    // Setup various region pointers in the buffer (see diagram above).
-    float * r0 = m_inputBuffer.data() + m_kernelSize / 2;
-    float * r1 = m_inputBuffer.data();
-    float * r2 = r0;
-    float * r3 = r0 + m_blockSize - m_kernelSize / 2;
-    float * r4 = r0 + m_blockSize;
-    float * r5 = r0 + m_kernelSize / 2;
-
-            // Generate a single output sample.
-            int n = static_cast<int>(m_kernelSize);
-
-            // clang-format off
-                #define CONVOLVE_ONE_SAMPLE \
-                    input = *inputP++;      \
-                    sum1 += input * *k1;    \
-                    sum2 += input * *k2;    \
-                    ++k1;                   \
-                    ++k2;
-
-                {
-                    float input;
 
             double virtualOffsetIndex = subsampleRemainder * m_numberOfKernelOffsets;
             int offsetIndex = static_cast<int>(virtualOffsetIndex);
@@ -474,9 +437,6 @@ void SincResampler::process(AudioSourceProvider * sourceProvider, float * destin
 
             // Linearly interpolate the two "convolutions".
             *destination++ = static_cast<float>((1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2);
-
-                // Linearly interpolate the two "convolutions".
-                *destination++ = static_cast<float>((1.0 - kernelInterpolationFactor) * sum1 + kernelInterpolationFactor * sum2);
 
             // Advance the virtual index.
             m_virtualSourceIndex += m_scaleFactor;

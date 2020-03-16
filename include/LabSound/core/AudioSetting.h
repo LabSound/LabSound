@@ -83,8 +83,10 @@ public:
     Type type() const { return _type; }
     char const * const * enums() const { return _enums; }
 
-        explicit AudioSetting(const std::string & n, const std::string & sn, char const * const * enums)
-            : _name(n), _shortName(sn), _type(Type::Enumeration), _enums(enums) {}
+    bool valueBool() const { return _valb; }
+    float valueFloat() const { return _valf; }
+    uint32_t valueUint32() const { return _vali; }
+    std::shared_ptr<AudioBus> valueBus() const { return _valBus; }
 
     void setBool(bool v, bool notify = true)
     {
@@ -125,8 +127,6 @@ public:
 
     void setValueChanged(std::function<void()> fn) { _valueChanged = fn; }
 };
-
-}  // namespace lab
 
 }  // namespace lab
 

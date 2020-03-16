@@ -71,8 +71,6 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
         {
             channels.push_back(bus->channel(i)->data());
         }
-        return;
-    }
 
         if (!m_data.size())
         {
