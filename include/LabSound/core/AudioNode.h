@@ -9,6 +9,7 @@
 #define AudioNode_h
 
 #include "LabSound/core/Mixing.h"
+#include "LabSound/core/Profiler.h"
 
 #include <algorithm>
 #include <atomic>
@@ -213,6 +214,9 @@ public:
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
 
     AudioNodeScheduler _scheduler;
+
+    ProfileSample graphTime;    // how much time the node spend pulling inputs
+    ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
 protected:
     virtual void clearPannerNode() {}

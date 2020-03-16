@@ -301,6 +301,8 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
+    ProfileScope selfScope(totalTime);
+
     if (!isInitialized())
         return;
 
@@ -330,7 +332,10 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // get inputs in preparation for processing
 
-    pullInputs(r, bufferSize);
+    {
+        ProfileScope scope(graphTime);
+        pullInputs(r, bufferSize);
+    }
 
     //  initialize the busses with start and final zeroes.
 
