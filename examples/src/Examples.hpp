@@ -676,7 +676,7 @@ struct ex_stereo_panning : public labsound_example
 
             const int seconds = 8;
 
-            std::thread controlThreadTest([&stereoPanner]() {
+            std::thread controlThreadTest([&stereoPanner, seconds]() {
                 float halfTime = seconds * 0.5f;
                 for (float i = 0; i < seconds; i += 0.01f)
                 {
