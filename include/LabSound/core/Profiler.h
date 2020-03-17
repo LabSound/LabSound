@@ -10,6 +10,7 @@ namespace lab
     {
         bool finalized = false;
         std::chrono::duration<float, std::micro> microseconds;
+        void zero() { microseconds = std::chrono::duration<float, std::micro>::zero(); finalized = true; }
     };
 
     struct ProfileScope

@@ -103,6 +103,9 @@ void NullDeviceNode::stop()
 
 void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
+    ProfileScope profile(graphTime);
+    totalTime.zero();
+
     pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
 }
 

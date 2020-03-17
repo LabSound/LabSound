@@ -302,6 +302,7 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
     ProfileScope selfScope(totalTime);
+    graphTime.zero();
 
     if (!isInitialized())
         return;
