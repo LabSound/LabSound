@@ -264,9 +264,6 @@ PeakCompNode::PeakCompNode(AudioContext & ac)
     m_params.push_back(internalNode->m_makeup);
     m_params.push_back(internalNode->m_knee);
 
-    addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));  // 2 stereo
-
     initialize();
 }
 
