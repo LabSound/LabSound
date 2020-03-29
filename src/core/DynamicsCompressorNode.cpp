@@ -50,11 +50,13 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     AudioBus * outputBus = output(0)->bus(r);
     ASSERT(outputBus);
 
-    float threshold = m_threshold->value(r);
-    float knee = m_knee->value(r);
-    float ratio = m_ratio->value(r);
-    float attack = m_attack->value(r);
-    float release = m_release->value(r);
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
+    float threshold = m_threshold->value();
+    float knee = m_knee->value();
+    float ratio = m_ratio->value();
+    float attack = m_attack->value();
+    float release = m_release->value();
 
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamThreshold, threshold);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamKnee, knee);

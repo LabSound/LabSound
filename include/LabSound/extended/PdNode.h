@@ -26,6 +26,8 @@ public:
     PureDataNode(AudioContext *, float sampleRate);
     virtual ~PureDataNode();
 
+    virtual const char* name() const override { return "PureData"; }
+
     pd::PdBase & pd() const;
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }

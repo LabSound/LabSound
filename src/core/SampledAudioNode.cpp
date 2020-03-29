@@ -431,13 +431,14 @@ void SampledAudioVoice::process(ContextRenderLock & r, int framesToProcess)
     }
 
     // Apply the gain (in-place) to the output bus.
-    float totalGain = m_gain->value(r);
+    /// @fixme these values should be per sample, not per quantum
+    float totalGain = m_gain->value();
     m_inPlaceBus->copyWithGainFrom(*m_inPlaceBus, &m_lastGain, totalGain);
 }
 
 void SampledAudioVoice::reset(ContextRenderLock & r)
 {
-    m_lastGain = m_gain->value(r);
+    m_lastGain = m_gain->value();
     m_virtualReadIndex = 0;
     m_pendingEndTime = UNKNOWN_TIME;
     m_playbackState = UNSCHEDULED_STATE;
@@ -625,10 +626,13 @@ double SampledAudioNode::totalPitchRate(ContextRenderLock & r)
     if (getBus())
         sampleRateFactor = getBus()->sampleRate() / r.context()->sampleRate();
 
-    double basePitchRate = playbackRate()->value(r);
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
+    double basePitchRate = playbackRate()->value();
 
+    /// @fixme these values should be per sample, not per quantum
     double totalRate = dopplerRate * sampleRateFactor * basePitchRate;
-    totalRate *= pow(2, detune()->value(r) / 1200);
+    totalRate *= pow(2, detune()->value() / 1200);
 
     // Sanity check the total rate.  It's very important that the resampler not get any bad rate values.
     totalRate = std::max(0.0, totalRate);

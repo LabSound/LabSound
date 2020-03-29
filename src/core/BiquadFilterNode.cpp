@@ -121,6 +121,7 @@ public:
 
             if (m_hasSampleAccurateValues)
             {
+                /// @fixme these values should be per sample, not per quantum
                 freq = m_frequency->finalValue(r);
                 q_val = m_q->finalValue(r);
                 gain = m_gain->finalValue(r);
@@ -128,6 +129,7 @@ public:
             }
             else if (useSmoothing)
             {
+                /// @fixme these values should be per sample, not per quantum
                 freq = m_frequency->smoothedValue();
                 q_val = m_q->smoothedValue();
                 gain = m_gain->smoothedValue();
@@ -135,10 +137,10 @@ public:
             }
             else
             {
-                freq = m_frequency->value(r);
-                q_val = m_q->value(r);
-                gain = m_gain->value(r);
-                detune = m_detune->value(r);
+                freq = m_frequency->value();
+                q_val = m_q->value();
+                gain = m_gain->value();
+                detune = m_detune->value();
             }
 
             // Convert from Hertz to normalized frequency 0 -> 1.

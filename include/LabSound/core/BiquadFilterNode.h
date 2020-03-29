@@ -22,6 +22,8 @@ public:
     BiquadFilterNode(AudioContext& ac);
     virtual ~BiquadFilterNode();
 
+    virtual const char* name() const override { return "BiquadFilter"; }
+
     FilterType type() const;
     void setType(FilterType type);
 

@@ -458,7 +458,9 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
     // calculate and write the wave
     float* destination = outputBus->channel(0)->mutableData() + offset;
 
-    polyblep->setFrequency(m_frequency->value(r));
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
+    polyblep->setFrequency(m_frequency->value());
     polyblep->setWaveform(static_cast<PolyBLEPType>(m_type->valueUint32()));
 
     for (int i = offset; i < offset + nonSilentFramesToProcess; ++i)

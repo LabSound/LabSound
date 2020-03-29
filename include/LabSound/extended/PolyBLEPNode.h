@@ -63,6 +63,8 @@ public:
     PolyBLEPNode(AudioContext & ac);
     virtual ~PolyBLEPNode();
 
+    virtual const char* name() const override { return "PolyBLEP"; }
+
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override { }
 

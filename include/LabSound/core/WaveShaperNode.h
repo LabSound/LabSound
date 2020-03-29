@@ -19,6 +19,8 @@ public:
     WaveShaperNode(AudioContext & ac);
     virtual ~WaveShaperNode() = default;
 
+    virtual const char* name() const override { return "WaveShaper"; }
+
     // setCurve will take ownership of curve
     void setCurve(std::vector<float> && curve);
     std::vector<float> & curve();

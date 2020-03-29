@@ -18,6 +18,8 @@ public:
     SfxrNode(AudioContext & ac);
     virtual ~SfxrNode();
 
+    virtual const char* name() const override { return "SFXR"; }
+
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

@@ -25,6 +25,8 @@ public:
     SpectralMonitorNode(AudioContext & ac);
     virtual ~SpectralMonitorNode();
 
+    virtual const char* name() const override { return "SpectralMonitor"; }
+
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 

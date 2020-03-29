@@ -21,6 +21,8 @@ public:
     SupersawNode(AudioContext & ac);
     virtual ~SupersawNode();
 
+    virtual const char* name() const override { return "SuperSaw"; }
+
     std::shared_ptr<AudioSetting> sawCount() const;
     std::shared_ptr<AudioParam> frequency() const;
     std::shared_ptr<AudioParam> detune() const;

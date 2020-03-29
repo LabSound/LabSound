@@ -30,6 +30,8 @@ public:
     ClipNode(AudioContext & ac);
     virtual ~ClipNode();
 
+    virtual const char* name() const override { return "Clip"; }
+
     void setMode(Mode m);
 
     // in CLIP mode, a is the min value, and b is the max value.

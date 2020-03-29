@@ -293,7 +293,7 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
     }
     else
     {
-        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(r), bufferSize);
+        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(), bufferSize);
     }
 }
 

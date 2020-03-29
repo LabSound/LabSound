@@ -43,18 +43,8 @@ AudioParam::AudioParam(const std::string & name, const std::string & shortName, 
 
 AudioParam::~AudioParam() {}
 
-float AudioParam::value(ContextRenderLock & r)
+float AudioParam::value() const
 {
-    // Update value for timeline.
-    if (r.context())
-    {
-        bool hasValue;
-        float timelineValue = m_timeline.valueForContextTime(r, static_cast<float>(m_value), hasValue);
-
-        if (hasValue)
-            m_value = timelineValue;
-    }
-
     return static_cast<float>(m_value);
 }
 

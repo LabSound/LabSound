@@ -41,9 +41,11 @@ public:
 
     void update(ContextRenderLock & r)
     {
-        if (cachedFrequency != frequency->value(r))
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        if (cachedFrequency != frequency->value())
         {
-            cachedFrequency = frequency->value(r);
+            cachedFrequency = frequency->value();
             for (auto i : saws)
             {
                 i->frequency()->setValue(cachedFrequency);
@@ -51,9 +53,11 @@ public:
             }
         }
 
-        if (cachedDetune != detune->value(r))
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        if (cachedDetune != detune->value())
         {
-            cachedDetune = detune->value(r);
+            cachedDetune = detune->value();
             float n = cachedDetune / ((float) saws.size() - 1.0f);
             for (size_t i = 0; i < saws.size(); ++i)
             {

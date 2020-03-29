@@ -30,7 +30,7 @@ public:
     virtual void didUpdate(ContextRenderLock &) override {}
 
     // Intrinsic value.
-    float value(ContextRenderLock &);
+    float value() const;
     void setValue(float);
 
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.

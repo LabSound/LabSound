@@ -18,6 +18,8 @@ public:
     ChannelMergerNode(AudioContext& ac, int numberOfInputs = 1);
     virtual ~ChannelMergerNode() = default;
 
+    virtual const char* name() const override { return "ChannelMerger"; }
+
     void addInputs(int n);
 
     // AudioNode

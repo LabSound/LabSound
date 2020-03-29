@@ -23,6 +23,8 @@ public:
     AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * provider_from_context);
     virtual ~AudioHardwareInputNode();
 
+    virtual const char* name() const override { return "AudioHardwareDevice"; }
+
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 

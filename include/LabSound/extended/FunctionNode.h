@@ -18,7 +18,8 @@ public:
     FunctionNode(AudioContext & ac, int channels = 1);
     virtual ~FunctionNode();
 
-    // @tofix - should this be protected with a mutex?
+    virtual const char* name() const override { return "Function"; }
+
     void setFunction(std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * buffer, int bufferSize)> fn)
     {
         _function = fn;

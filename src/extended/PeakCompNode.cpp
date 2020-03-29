@@ -64,7 +64,9 @@ public:
             return;
 
         // copy attributes to run time variables
-        float v = m_threshold->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        float v = m_threshold->value();
         if (v <= 0)
         {
             // dB to linear (could use the function from m_pd.h)
@@ -73,7 +75,9 @@ public:
         else
             threshold = 0;
 
-        v = m_ratio->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        v = m_ratio->value();
         if (v >= 1)
         {
             ratio = 1.f / v;
@@ -81,7 +85,9 @@ public:
         else
             ratio = 1;
 
-        v = m_attack->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        v = m_attack->value();
         if (v >= 0.001f)
         {
             attack = v * 0.001f;
@@ -89,7 +95,9 @@ public:
         else
             attack = 0.000001f;
 
-        v = m_release->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        v = m_release->value();
         if (v >= 0.001f)
         {
             release = v * 0.001f;
@@ -97,11 +105,15 @@ public:
         else
             release = 0.000001f;
 
-        v = m_makeup->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        v = m_makeup->value();
         // dB to linear (could use the function from m_pd.h)
         makeupGain = powf(10.f, (v * 0.05f));
 
-        v = m_knee->value(r);
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        v = m_knee->value();
         if (v >= 0 && v <= 1)
         {
             // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.

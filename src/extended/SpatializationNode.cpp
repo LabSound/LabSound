@@ -88,15 +88,17 @@ float SpatializationNode::distanceConeGain(ContextRenderLock & r)
 
     auto listener = r.context()->listener();
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D fwd = {
-        listener->forwardX()->value(r),
-        listener->forwardY()->value(r),
-        listener->forwardZ()->value(r)};
+        listener->forwardX()->value(),
+        listener->forwardY()->value(),
+        listener->forwardZ()->value()};
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D pos = {
-        positionX()->value(r),
-        positionY()->value(r),
-        positionZ()->value(r)};
+        positionX()->value(),
+        positionY()->value(),
+        positionZ()->value()};
 
     float occlusionAttenuation = occluders ? occluders->occlusion(pos, fwd) : 1.0f;
     return occlusionAttenuation * PannerNode::distanceConeGain(r);

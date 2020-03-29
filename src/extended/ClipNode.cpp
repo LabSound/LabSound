@@ -69,8 +69,10 @@ public:
 
         if (clipMode == ClipNode::TANH)
         {
-            float outputGain = aVal->value(r);
-            float inputGain = bVal->value(r);
+            /// @fixme these values should be per sample, not per quantum
+            /// -or- they should be settings if they don't vary per sample
+            float outputGain = aVal->value();
+            float inputGain = bVal->value();
 
             for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
             {
@@ -85,8 +87,10 @@ public:
         }
         else
         {
-            float minf = aVal->value(r);
-            float maxf = bVal->value(r);
+            /// @fixme these values should be per sample, not per quantum
+            /// -or- they should be settings if they don't vary per sample
+            float minf = aVal->value();
+            float maxf = bVal->value();
 
             for (int channelIndex = 0; channelIndex < dstChannels; ++channelIndex)
             {

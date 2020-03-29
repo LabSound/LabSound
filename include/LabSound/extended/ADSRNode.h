@@ -23,6 +23,8 @@ public:
     ADSRNode(AudioContext &);
     virtual ~ADSRNode();
 
+    virtual const char* name() const override { return "ADSR"; }
+
     // noteOn() will start applying an envelope to the incoming signal. The node will
     // progress through attack_time, ramping to attack_level. decay_time will settle the
     // the amplitude at sustain_level and continue indefinitely. Using the default |when|

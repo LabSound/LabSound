@@ -22,8 +22,9 @@ class PowerMonitorNode : public AudioBasicInspectorNode
 {
 public:
     PowerMonitorNode(AudioContext & ac);
-
     virtual ~PowerMonitorNode();
+
+    virtual const char* name() const override { return "PowerMonitor"; }
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

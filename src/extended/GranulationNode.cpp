@@ -112,18 +112,22 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     ASSERT(grainSourceBus);
 
     // Granulation Settings Sanity Check
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
     std::cout << "GranulationNode::WindowFunction    " << s_window_types[windowFunc->valueUint32()] << std::endl;
-    std::cout << "GranulationNode::numGrains         " << numGrains->value(r) << std::endl;
-    std::cout << "GranulationNode::grainDuration     " << grainDuration->value(r) << std::endl;
-    std::cout << "GranulationNode::grainPositionMin  " << grainPositionMin->value(r) << std::endl;
-    std::cout << "GranulationNode::grainPositionMax  " << grainPositionMax->value(r) << std::endl;
-    std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value(r) << std::endl;
+    std::cout << "GranulationNode::numGrains         " << numGrains->value() << std::endl;
+    std::cout << "GranulationNode::grainDuration     " << grainDuration->value() << std::endl;
+    std::cout << "GranulationNode::grainPositionMin  " << grainPositionMin->value() << std::endl;
+    std::cout << "GranulationNode::grainPositionMax  " << grainPositionMax->value() << std::endl;
+    std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value() << std::endl;
 
     grainSourceBus->setBus(buffer.get());
     output(0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
 
     // Compute useful values
-    const float grain_duration_seconds = grainDuration->value(r);
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
+    const float grain_duration_seconds = grainDuration->value();
     const uint64_t grain_duration_samples = static_cast<uint64_t>(grain_duration_seconds * r.context()->sampleRate());
 
     // Setup window/envelope
@@ -142,10 +146,13 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     // Setup grains
     UniformRandomGenerator rnd;
     auto sample_to_granulate = grainSourceBus->valueBus();
-    for (int i = 0; i < numGrains->value(r); ++i)
+    /// @fixme should be setting
+    for (int i = 0; i < numGrains->value(); ++i)
     {
-        const float random_pos_offset = rnd.random_float(grainPositionMin->value(r), grainPositionMax->value(r));
-        grain_pool.emplace_back(grain(sample_to_granulate, window_bus, r.context()->sampleRate(), random_pos_offset, grain_duration_seconds, grainPlaybackFreq->value(r)));
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        const float random_pos_offset = rnd.random_float(grainPositionMin->value(), grainPositionMax->value());
+        grain_pool.emplace_back(grain(sample_to_granulate, window_bus, r.context()->sampleRate(), random_pos_offset, grain_duration_seconds, grainPlaybackFreq->value()));
     }
 
     return true;

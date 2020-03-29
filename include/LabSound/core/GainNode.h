@@ -27,6 +27,8 @@ public:
     GainNode(AudioContext& ac);
     virtual ~GainNode();
 
+    virtual const char* name() const override { return "GainNode"; }
+
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

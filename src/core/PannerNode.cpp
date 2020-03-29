@@ -316,15 +316,17 @@ void PannerNode::getAzimuthElevation(ContextRenderLock & r, double * outAzimuth,
     auto listener = r.context()->listener();
 
     // Calculate the source-listener vector
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D listenerPosition = {
-        listener->positionX()->value(r),
-        listener->positionY()->value(r),
-        listener->positionZ()->value(r)};
+        listener->positionX()->value(),
+        listener->positionY()->value(),
+        listener->positionZ()->value()};
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D sourceListener = {
-        positionX()->value(r),
-        positionY()->value(r),
-        positionZ()->value(r)};
+        positionX()->value(),
+        positionY()->value(),
+        positionZ()->value()};
 
     sourceListener = normalize(sourceListener - listenerPosition);
 
@@ -337,15 +339,17 @@ void PannerNode::getAzimuthElevation(ContextRenderLock & r, double * outAzimuth,
     }
 
     // Align axes
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D listenerFront = normalize(FloatPoint3D{
-        listener->forwardX()->value(r),
-        listener->forwardY()->value(r),
-        listener->forwardZ()->value(r)});
+        listener->forwardX()->value(),
+        listener->forwardY()->value(),
+        listener->forwardZ()->value()});
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D listenerUp = {
-        listener->upX()->value(r),
-        listener->upY()->value(r),
-        listener->upZ()->value(r)};
+        listener->upX()->value(),
+        listener->upY()->value(),
+        listener->upZ()->value()};
 
     FloatPoint3D listenerRight = normalize(cross(listenerFront, listenerUp));
     FloatPoint3D up = cross(listenerRight, listenerFront);
@@ -390,20 +394,24 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
     auto listener = r.context()->listener();
 
     // FIXME: optimize for case when neither source nor listener has changed...
-    double dopplerFactor = listener->dopplerFactor()->value(r);
+    /// @fixme these values should be per sample, not per quantum
+    double dopplerFactor = listener->dopplerFactor()->value();
 
     if (dopplerFactor > 0.0)
     {
-        double speedOfSound = listener->speedOfSound()->value(r);
+        /// @fixme should be a setting
+        double speedOfSound = listener->speedOfSound()->value();
 
+        /// @fixme these values should be per sample, not per quantum
         const FloatPoint3D sourceVelocity = {
-            velocityX()->value(r),
-            velocityY()->value(r),
-            velocityZ()->value(r)};
+            velocityX()->value(),
+            velocityY()->value(),
+            velocityZ()->value()};
+        /// @fixme these values should be per sample, not per quantum
         const FloatPoint3D listenerVelocity = {
-            listener->velocityX()->value(r),
-            listener->velocityY()->value(r),
-            listener->velocityZ()->value(r)};
+            listener->velocityX()->value(),
+            listener->velocityY()->value(),
+            listener->velocityZ()->value()};
 
         // Don't bother if both source and listener have no velocity
         bool sourceHasVelocity = !is_zero(sourceVelocity);
@@ -412,15 +420,17 @@ float PannerNode::dopplerRate(ContextRenderLock & r)
         if (sourceHasVelocity || listenerHasVelocity)
         {
             // Calculate the source to listener vector
+            /// @fixme these values should be per sample, not per quantum
             FloatPoint3D listenerPosition = {
-                listener->positionX()->value(r),
-                listener->positionY()->value(r),
-                listener->positionZ()->value(r)};
+                listener->positionX()->value(),
+                listener->positionY()->value(),
+                listener->positionZ()->value()};
 
+            /// @fixme these values should be per sample, not per quantum
             FloatPoint3D sourceToListener = {
-                positionX()->value(r),
-                positionY()->value(r),
-                positionZ()->value(r)};
+                positionX()->value(),
+                positionY()->value(),
+                positionZ()->value()};
 
             sourceToListener = sourceToListener - listenerPosition;
 
@@ -454,15 +464,17 @@ float PannerNode::distanceConeGain(ContextRenderLock & r)
 {
     auto listener = r.context()->listener();
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D listenerPosition = {
-        listener->positionX()->value(r),
-        listener->positionY()->value(r),
-        listener->positionZ()->value(r)};
+        listener->positionX()->value(),
+        listener->positionY()->value(),
+        listener->positionZ()->value()};
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D position = {
-        positionX()->value(r),
-        positionY()->value(r),
-        positionZ()->value(r)};
+        positionX()->value(),
+        positionY()->value(),
+        positionZ()->value()};
 
     double listenerDistance = magnitude(position - listenerPosition);  // "distanceTo"
 
@@ -472,10 +484,11 @@ float PannerNode::distanceConeGain(ContextRenderLock & r)
 
     // FIXME: could optimize by caching coneGain
 
+    /// @fixme these values should be per sample, not per quantum
     FloatPoint3D orientation = {
-        orientationX()->value(r),
-        orientationY()->value(r),
-        orientationZ()->value(r)};
+        orientationX()->value(),
+        orientationY()->value(),
+        orientationZ()->value()};
 
     double coneGain = m_coneEffect->gain(position, orientation, listenerPosition);
 

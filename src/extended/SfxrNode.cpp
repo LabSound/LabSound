@@ -715,14 +715,14 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
     destP += quantumFrameOffset;
     int n = nonSilentFramesToProcess;
 
-#define UPDATE(typ, cur, val)                    \
-    {                                            \
-        typ v = static_cast<typ>(val->value(r)); \
-        if (sfxr->cur != v)                      \
-        {                                        \
-            needUpdate = true;                   \
-            sfxr->cur = v;                       \
-        }                                        \
+#define UPDATE(typ, cur, val)                   \
+    {                                           \
+        typ v = static_cast<typ>(val->value()); \
+        if (sfxr->cur != v)                     \
+        {                                       \
+            needUpdate = true;                  \
+            sfxr->cur = v;                      \
+        }                                       \
     }
 
     bool needUpdate = false;
@@ -735,6 +735,8 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
         }
     }
 
+    /// @fixme these values should be per sample, not per quantum
+    /// -or- they should be settings if they don't vary per sample
     UPDATE(float, p_base_freq, _startFrequency)
     UPDATE(float, p_freq_limit, _minFrequency)
     UPDATE(float, p_freq_ramp, _slide)
@@ -881,9 +883,11 @@ void SfxrNode::laser()
     else
     {
         ContextRenderLock r(nullptr, "laser");
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
         _startFrequency->setValue(0.5f + frnd(0.5f));
-        _minFrequency->setValue(_startFrequency->value(r) - 0.2f - frnd(0.6f));
-        if (_minFrequency->value(r) < 0.2f) _minFrequency->setValue(0.2f);
+        _minFrequency->setValue(_startFrequency->value() - 0.2f - frnd(0.6f));
+        if (_minFrequency->value() < 0.2f) _minFrequency->setValue(0.2f);
         _slide->setValue(-0.15f - frnd(0.2f));
     }
     if (rnd(1))
@@ -1034,44 +1038,42 @@ void SfxrNode::select()
 
 void SfxrNode::mutate()
 {
-    ContextRenderLock r(nullptr, "mutate");
-    if (rnd(1)) _startFrequency->setValue(_startFrequency->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _slide->setValue(_slide->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _squareDuty->setValue(_squareDuty->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _dutySweep->setValue(_dutySweep->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _attack->setValue(_attack->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _sustainTime->setValue(_sustainTime->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _decayTime->setValue(_decayTime->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value(r) + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _changeAmount->setValue(_changeAmount->value(r) + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _startFrequency->setValue(_startFrequency->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _slide->setValue(_slide->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _deltaSlide->setValue(_deltaSlide->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _squareDuty->setValue(_squareDuty->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _dutySweep->setValue(_dutySweep->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _vibratoDepth->setValue(_vibratoDepth->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _vibratoSpeed->setValue(_vibratoSpeed->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _attack->setValue(_attack->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _sustainTime->setValue(_sustainTime->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _decayTime->setValue(_decayTime->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _hpFilterCutoffSweep->setValue(_hpFilterCutoffSweep->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _phaserOffset->setValue(_phaserOffset->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _phaserSweep->setValue(_phaserSweep->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _repeatSpeed->setValue(_repeatSpeed->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _changeSpeed->setValue(_changeSpeed->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _changeAmount->setValue(_changeAmount->value() + frnd(0.1f) - 0.05f);
 }
 
 /// @TODO remove need for context lock see above
 void SfxrNode::randomize()
 {
-    ContextRenderLock r(nullptr, "randomize");
     if (rnd(1))
         _startFrequency->setValue(cube(frnd(2) - 1) + 0.5f);
     else
         _startFrequency->setValue(sqr(frnd(1)));
     _minFrequency->setValue(0);
     _slide->setValue(powf(frnd(2) - 1, 5));
-    if (_startFrequency->value(r) > 0.7 && _slide->value(r) > 0.2)
-        _slide->setValue(-_slide->value(r));
-    if (_startFrequency->value(r) < 0.2 && _slide->value(r) < -0.05)
-        _slide->setValue(-_slide->value(r));
+    if (_startFrequency->value() > 0.7 && _slide->value() > 0.2)
+        _slide->setValue(-_slide->value());
+    if (_startFrequency->value() < 0.2 && _slide->value() < -0.05)
+        _slide->setValue(-_slide->value());
     _deltaSlide->setValue(powf(frnd(2) - 1, 3));
     _squareDuty->setValue(frnd(2) - 1);
     _dutySweep->setValue(powf(frnd(2) - 1, 3));
@@ -1081,16 +1083,16 @@ void SfxrNode::randomize()
     _sustainTime->setValue(sqr(rndr(0, 1)));
     _decayTime->setValue(rndr(0, 1));
     _sustainPunch->setValue(powf(frnd(0.8f), 2));
-    if (_attack->value(r) + _sustainTime->value(r) + _decayTime->value(r) < 0.2f)
+    if (_attack->value() + _sustainTime->value() + _decayTime->value() < 0.2f)
     {
-        _sustainTime->setValue(_sustainTime->value(r) + 0.2f + frnd(0.3f));
-        _decayTime->setValue(_decayTime->value(r) + 0.2f + frnd(0.3f));
+        _sustainTime->setValue(_sustainTime->value() + 0.2f + frnd(0.3f));
+        _decayTime->setValue(_decayTime->value() + 0.2f + frnd(0.3f));
     }
     _lpFiterResonance->setValue(rndr(-1, 1));
     _lpFilterCutoff->setValue(1 - powf(frnd(1), 3));
     _lpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 3));
-    if (_lpFilterCutoff->value(r) < 0.1 && _lpFilterCutoffSweep->value(r) < -0.05f)
-        _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value(r));
+    if (_lpFilterCutoff->value() < 0.1 && _lpFilterCutoffSweep->value() < -0.05f)
+        _lpFilterCutoffSweep->setValue(-_lpFilterCutoffSweep->value());
     _hpFilterCutoff->setValue(powf(frnd(1), 5));
     _hpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 5));
     _phaserOffset->setValue(powf(frnd(2) - 1, 3));

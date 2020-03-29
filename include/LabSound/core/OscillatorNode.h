@@ -31,6 +31,8 @@ public:
     OscillatorNode(AudioContext& ac);
     virtual ~OscillatorNode();
 
+    virtual const char* name() const override { return "Oscillator"; }
+
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override { }
 

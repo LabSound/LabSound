@@ -40,6 +40,11 @@ class DelayNode : public AudioBasicProcessorNode
 public:
     // default maximum delay of 100ms
     DelayNode(AudioContext & ac, double maxDelayTime = 2.0);
+
+    virtual ~DelayNode() = default;
+
+    virtual const char* name() const override { return "Delay"; }
+
     std::shared_ptr<AudioSetting> delayTime();
 };
 

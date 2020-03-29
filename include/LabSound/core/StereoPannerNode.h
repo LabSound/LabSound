@@ -24,8 +24,9 @@ class StereoPannerNode : public AudioNode
 {
 public:
     StereoPannerNode(AudioContext& ac);
-
     virtual ~StereoPannerNode();
+
+    virtual const char* name() const override { return "StereoPanner"; }
 
     std::shared_ptr<AudioParam> pan() { return m_pan; }
 

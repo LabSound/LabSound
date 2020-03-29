@@ -26,6 +26,9 @@ class ConvolverNode final : public AudioScheduledSourceNode
 public:
     ConvolverNode(AudioContext& ac);
     virtual ~ConvolverNode();
+
+    virtual const char* name() const override { return "Convolver"; }
+
     bool normalize() const;
     void setNormalize(bool new_n);
 

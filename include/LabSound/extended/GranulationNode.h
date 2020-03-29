@@ -101,6 +101,8 @@ public:
     GranulationNode(AudioContext & ac);
     virtual ~GranulationNode();
 
+    virtual const char* name() const override { return "Granulation"; }
+
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 

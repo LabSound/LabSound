@@ -138,6 +138,8 @@ public:
 
     explicit AudioNode(AudioContext &);
 
+    virtual const char* name() const = 0;
+
     // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }

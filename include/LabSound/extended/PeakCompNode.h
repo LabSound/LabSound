@@ -26,13 +26,13 @@ class PeakCompNode : public lab::AudioBasicProcessorNode
 {
 
     class PeakCompNodeInternal;
-    PeakCompNodeInternal * internalNode;  // We do not own this!
+    PeakCompNodeInternal * internalNode = nullptr;  // We do not own this!
 
 public:
     PeakCompNode(AudioContext & ac);
     virtual ~PeakCompNode();
 
-    void set(float aT, float aL, float d, float s, float r);
+    virtual const char* name() const { return "PeakComp"; }
 
     // Threshold given in dB, default 0
     std::shared_ptr<AudioParam> threshold() const;

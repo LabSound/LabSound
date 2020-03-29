@@ -19,6 +19,8 @@ public:
     ChannelSplitterNode(AudioContext& ac, int numberOfOutputs = 1);
     virtual ~ChannelSplitterNode() = default;
 
+    virtual const char* name() const override { return "ChannelSplitter"; }
+
     void addOutputs(int numberOfOutputs);
 
     // AudioNode

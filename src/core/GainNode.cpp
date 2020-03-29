@@ -69,7 +69,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
         else
         {
             // Apply the gain with de-zippering into the output bus.
-            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value(r));
+            outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value());
         }
     }
 }
@@ -77,7 +77,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
 void GainNode::reset(ContextRenderLock & r)
 {
     // Snap directly to desired gain.
-    m_lastGain = gain()->value(r);
+    m_lastGain = gain()->value();
 }
 
 // FIXME: this can go away when we do mixing with gain directly in summing junction of AudioNodeInput
