@@ -209,9 +209,6 @@ namespace lab
     ADSRNode::ADSRNode(AudioContext& ac) 
         : AudioBasicProcessorNode(ac)
     {
-        addInput(std::unique_ptr<AudioNodeInput>(new lab::AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new lab::AudioNodeOutput(this, 2)));
-
         m_processor.reset(new ADSRNodeImpl());
         adsr_impl = static_cast<ADSRNodeImpl*>(m_processor.get());
 

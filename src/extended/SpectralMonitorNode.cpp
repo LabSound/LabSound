@@ -103,7 +103,6 @@ SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
     , internalNode(new SpectralMonitorNodeInternal())
 {
     m_settings.push_back(internalNode->windowSize);
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     initialize();
 }
 

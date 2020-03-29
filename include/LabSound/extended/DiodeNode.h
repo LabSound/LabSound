@@ -30,6 +30,10 @@ class DiodeNode : public WaveShaperNode
 
 public:
     DiodeNode(AudioContext &);
+    virtual ~DiodeNode() = default;
+
+    virtual const char* name() const override { return "Diode"; }
+
     void setDistortion(float distortion = 1.0);
 
     std::shared_ptr<AudioSetting> distortion() const { return _distortion; };
