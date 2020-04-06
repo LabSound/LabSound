@@ -107,6 +107,7 @@ void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const Sa
     totalTime.zero();
 
     pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
+    profile.finalize(); // ensure profile is not prematurely destructed
 }
 
 const SamplingInfo NullDeviceNode::getSamplingInfo() const

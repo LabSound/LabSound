@@ -126,11 +126,12 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
 
 void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
+    ProfileScope selfProfile(totalTime);
     ProfileScope profile(graphTime);
-    totalTime.zero();
-
     pull_graph(m_context, input(0).get(), src, dst, frames, info, m_audioHardwareInput);
     last_info = info;
+    profile.finalize(); // ensure profile is not prematurely destructed
+    selfProfile.finalize();
 }
 
 AudioSourceProvider * AudioHardwareDeviceNode::AudioHardwareInputProvider()

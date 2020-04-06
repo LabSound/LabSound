@@ -8,6 +8,7 @@ namespace lab
 
     struct ProfileSample
     {
+        ProfileSample() { zero(); }
         bool finalized = false;
         std::chrono::duration<float, std::micro> microseconds;
         void zero() { microseconds = std::chrono::duration<float, std::micro>::zero(); finalized = true; }
@@ -24,9 +25,17 @@ namespace lab
 
         ~ProfileScope()
         {
-            std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
-            s->microseconds = std::chrono::system_clock::now() - _start;
-            s->finalized = true;
+            finalize();
+        }
+
+        void finalize()
+        {
+            if (!s->finalized)
+            {
+                std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
+                s->microseconds = std::chrono::system_clock::now() - _start;
+                s->finalized = true;
+            }
         }
 
         ProfileSample* s = nullptr;

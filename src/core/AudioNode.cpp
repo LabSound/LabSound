@@ -301,9 +301,6 @@ void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
-    ProfileScope selfScope(totalTime);
-    graphTime.zero();
-
     if (!isInitialized())
         return;
 
@@ -317,6 +314,9 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     if (!_scheduler.update(r, bufferSize))
         return;
+
+    ProfileScope selfScope(totalTime);
+    graphTime.zero();
 
     if (_scheduler._playbackState < SchedulingState::FADE_IN ||
         _scheduler._playbackState == SchedulingState::FINISHED)
@@ -336,6 +336,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     {
         ProfileScope scope(graphTime);
         pullInputs(r, bufferSize);
+        scope.finalize();   // ensure the scope is not prematurely destructed
     }
 
     //  initialize the busses with start and final zeroes.
@@ -419,6 +420,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     }
 
     unsilenceOutputs(r);
+    selfScope.finalize(); // ensure profile is not prematurely destructed
 }
 
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
