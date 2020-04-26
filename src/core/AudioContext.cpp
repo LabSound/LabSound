@@ -349,7 +349,6 @@ void AudioContext::update()
                             AudioScheduledSourceNode * node = dynamic_cast<AudioScheduledSourceNode *>(connection.destination.get());
                             if (node->startWhen() > now + 0.1)
                             {
-                                m_internal->pendingNodeConnections.pop();  // pop from current queue
                                 skippedConnections.push_back(connection);  // save for later
                                 continue;
                             }

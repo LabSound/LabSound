@@ -16,9 +16,12 @@ class AudioBus;
 class AudioContext;
 class AudioSetting;
 
-// params: frequency, detune
+// params: frequency, detune, amplitude, and bias
 // settings: type
 //
+
+// @TODO add duty param for the square wave to complete the oscillator, default value is 0.5
+
 class OscillatorNode : public AudioScheduledSourceNode
 {
     double phase = 0.0;

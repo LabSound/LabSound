@@ -400,8 +400,8 @@ struct ex_frequency_modulation : public labsound_example
             modulatorGain->gain()->setValue(mod_gain);
 
             const float attack_length = fmrng.random_float(0.25f, 0.5f);
-            trigger->set(attack_length, 0.50f, 0.50f, 0.50f, 0.1f);
-            trigger->noteOn(0.0);
+            trigger->set(attack_length, 0.50f, 0.50f, 0.25f, 0.50f, 0.1f);
+            trigger->gate()->setValue(1.f);
 
             const uint32_t delay_time_ms = 500;
             now_in_ms += delay_time_ms;
@@ -1331,7 +1331,7 @@ struct ex_wavepot_dsp : public labsound_example
             double elapsedTime = 0.;
 
             envelope = std::make_shared<ADSRNode>(ac);
-            envelope->set(6.0f, 0.75f, 14.0f, 0.0f, songLenSeconds);
+            envelope->set(6.0f, 0.75f, 0.125, 14.0f, 0.0f, songLenSeconds);
 
             float lfo_a, lfo_b, lfo_c;
             float bassWaveform, percussiveWaveform, bassSample;
@@ -1389,7 +1389,7 @@ struct ex_wavepot_dsp : public labsound_example
             });
 
             grooveBox->start(0);
-            envelope->noteOn(0.0);
+            envelope->gate()->setValue(1.f);
 
             context->connect(envelope, grooveBox, 0, 0);
             context->connect(context->device(), envelope, 0, 0);
