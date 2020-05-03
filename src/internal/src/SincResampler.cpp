@@ -7,6 +7,8 @@
 #include "LabSound/core/Macros.h"
 #include "internal/Assertions.h"
 
+#include <algorithm>
+
 #ifdef __SSE2__
 #include <emmintrin.h>
 #endif

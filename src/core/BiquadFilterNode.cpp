@@ -10,6 +10,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Biquad.h"
+#include <algorithm>
 
 namespace lab
 {

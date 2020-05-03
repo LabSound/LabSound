@@ -110,6 +110,8 @@ AudioContext::~AudioContext()
     if (graphUpdateThread.joinable())
         graphUpdateThread.join();
 
+    m_listener.reset();
+
     uninitialize();
 
 #if USE_ACCELERATE_FFT

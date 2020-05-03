@@ -1,24 +1,17 @@
-// License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
-// Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-// @tofix - webkit change 1f083e8 and 2bd2dc2 adds support for different behaviors on mixing such as
-// clamping the max number of channels, and mixing 5.1 down to mono
+// SPDX-License-Identifier: BSD-2-Clause
+// Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
+#pragma once
 #ifndef AudioNode_h
 #define AudioNode_h
 
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/Profiler.h"
 
-#include <algorithm>
-#include <atomic>
 #include <functional>
-#include <iostream>
 #include <memory>
-#include <mutex>
-#include <set>
-#include <thread>
+#include <string>
 #include <vector>
 
 namespace lab
@@ -138,11 +131,10 @@ public:
 
     explicit AudioNode(AudioContext &);
 
+    //--------------------------------------------------
+    // required interface
+    //
     virtual const char* name() const = 0;
-
-    // LabSound: If the node included ScheduledNode in its hierarchy, this will return true.
-    // This is to save the cost of a dynamic_cast when scheduling nodes.
-    virtual bool isScheduledNode() const { return false; }
 
     // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
     // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
@@ -152,6 +144,21 @@ public:
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
     virtual void reset(ContextRenderLock &) = 0;
+
+    // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
+    virtual double tailTime(ContextRenderLock & r) const = 0;
+
+    // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
+    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
+    // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
+    virtual double latencyTime(ContextRenderLock & r) const = 0;
+
+    //--------------------------------------------------
+    // required interface
+    //
+    // If the node included ScheduledNode in its hierarchy, this will return true.
+    // This is to save the cost of a dynamic_cast when scheduling nodes.
+    virtual bool isScheduledNode() const { return false; }
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
@@ -175,14 +182,6 @@ public:
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
-
-    // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
-    virtual double tailTime(ContextRenderLock & r) const = 0;
-
-    // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
-    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
-    // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
-    virtual double latencyTime(ContextRenderLock & r) const = 0;
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.

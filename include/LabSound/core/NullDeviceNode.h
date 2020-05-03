@@ -10,6 +10,10 @@
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareDeviceNode.h"
 
+#include <atomic>
+#include <memory>
+#include <thread>
+
 namespace lab
 {
 class AudioBus;

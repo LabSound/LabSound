@@ -34,8 +34,11 @@ namespace lab
 
             m_gate = std::make_shared<AudioParam>("gate", "GATE", 0, 0, 1);
 
+            m_oneShot = std::make_shared<AudioSetting>("oneShot", "ONE!", AudioSetting::Type::Bool);
+            m_oneShot->setBool(true);
+
             m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATKT", AudioSetting::Type::Float);
-            m_attackTime->setFloat(0.125f); // 125ms
+            m_attackTime->setFloat(1.125f); // 125ms
 
             m_attackLevel = std::make_shared<AudioSetting>("attackLevel", "ATKL", AudioSetting::Type::Float);
             m_attackLevel->setFloat(1.0f); // 1.0f
@@ -89,6 +92,8 @@ namespace lab
                     _gateArray[i] = g > 0 ? 1.f : 0.f;
             }
 
+            bool oneshot = m_oneShot->valueBool();
+
             cached_sample_rate = r.context()->sampleRate();
             for (int i = 0; i < framesToProcess; ++i)
             {
@@ -110,7 +115,7 @@ namespace lab
                     float decayStepSize = (sustainLevel - attackLevel) / decaySteps;
                     _lerp.emplace_back(LerpTarget{ decaySteps, decayStepSize });
 
-                    if (!gate_is_connected)
+                    if (!gate_is_connected || oneshot)
                     {
                         // if the gate is not connected, automated the sustain and release.
                         float sustainSteps = m_sustainTime->valueFloat() * cached_sample_rate;
@@ -168,6 +173,7 @@ namespace lab
 
         std::shared_ptr<AudioParam> m_gate;
 
+        std::shared_ptr<AudioSetting> m_oneShot;
         std::shared_ptr<AudioSetting> m_attackTime;
         std::shared_ptr<AudioSetting> m_attackLevel;
         std::shared_ptr<AudioSetting> m_decayTime;
@@ -187,6 +193,7 @@ namespace lab
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
         m_params.push_back(adsr_impl->m_gate);
+        m_settings.push_back(adsr_impl->m_oneShot);
         m_settings.push_back(adsr_impl->m_attackTime);
         m_settings.push_back(adsr_impl->m_attackLevel);
         m_settings.push_back(adsr_impl->m_decayTime);

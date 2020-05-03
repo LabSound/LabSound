@@ -15,6 +15,7 @@
 
 #include "LabSound/core/Macros.h"
 
+#include <algorithm>
 #include <vector>
 
 using namespace lab;

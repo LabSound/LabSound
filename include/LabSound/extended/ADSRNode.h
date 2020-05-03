@@ -35,6 +35,7 @@ public:
 
     std::shared_ptr<AudioParam> gate() const; // gate signal
 
+    std::shared_ptr<AudioSetting> oneShot() const;  // If zero, gate controls attack and sustain, else sustainTime controls sustain
     std::shared_ptr<AudioSetting> attackTime() const;  // Duration in seconds
     std::shared_ptr<AudioSetting> attackLevel() const;  // Level
     std::shared_ptr<AudioSetting> decayTime() const;  // Duration in seconds

@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include "miniaudio.h"
+#include <atomic>
 
 namespace cinder
 {
