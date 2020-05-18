@@ -35,6 +35,18 @@ AudioNodeOutput::AudioNodeOutput(AudioNode * node, int numberOfChannels, int pro
     m_internalBus.reset(new AudioBus(numberOfChannels, processingSizeInFrames));
 }
 
+AudioNodeOutput::AudioNodeOutput(AudioNode * node, char const * const name, int numberOfChannels, int processingSizeInFrames)
+    : m_node(node)
+    , m_name(name)
+    , m_numberOfChannels(numberOfChannels)
+    , m_desiredNumberOfChannels(numberOfChannels)
+    , m_inPlaceBus(0)
+    , m_renderingFanOutCount(0)
+    , m_renderingParamFanOutCount(0)
+{
+    m_internalBus.reset(new AudioBus(numberOfChannels, processingSizeInFrames));
+}
+
 AudioNodeOutput::~AudioNodeOutput()
 {
 }

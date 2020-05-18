@@ -81,7 +81,21 @@ public:
     std::string name() const { return _name; }
     std::string shortName() const { return _shortName; }
     Type type() const { return _type; }
+
     char const * const * enums() const { return _enums; }
+    int enumFromName(char const* const e)
+    {
+        if (!_enums || !e)
+            return -1;
+
+        int enum_idx = 0;
+        for (char const* const* names_p = _enums; *names_p != nullptr; ++names_p, ++enum_idx)
+        {
+            if (!strcmp(e, *names_p))
+                return enum_idx;
+        }
+        return -1;
+    }
 
     bool valueBool() const { return _valb; }
     float valueFloat() const { return _valf; }

@@ -214,6 +214,12 @@ public:
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
 
+    // These locked versions can be called at run time.
+    void addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input);
+    void addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output);
+
+    std::shared_ptr<AudioNodeOutput> output(char const* const str);
+
     AudioNodeScheduler _scheduler;
 
     ProfileSample graphTime;    // how much time the node spend pulling inputs

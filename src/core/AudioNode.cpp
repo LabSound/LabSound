@@ -229,6 +229,16 @@ void AudioNode::reset(ContextRenderLock& r)
     _scheduler.reset();
 }
 
+void AudioNode::addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input)
+{
+    m_inputs.emplace_back(std::move(input));
+}
+
+void AudioNode::addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output)
+{
+    m_outputs.emplace_back(std::move(output));
+}
+
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
     m_inputs.emplace_back(std::move(input));
@@ -238,6 +248,17 @@ void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
     m_outputs.emplace_back(std::move(output));
 }
+
+std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
+{
+    for (auto & i : m_outputs)
+    {
+        if (i->name() == str)
+            return i;
+    }
+    return {};
+}
+
 
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeInput> AudioNode::input(int i)

@@ -24,6 +24,7 @@ class AudioNodeOutput
 public:
     // It's OK to pass 0 for numberOfChannels in which case setNumberOfChannels() must be called later on.
     AudioNodeOutput(AudioNode * audioNode, int numberOfChannels, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
+    AudioNodeOutput(AudioNode * audioNode, char const*const name, int numberOfChannels, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
@@ -53,6 +54,8 @@ public:
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock &);
+
+    const std::string& name() const { return m_name; }
 
     // Must be called within the context's graph lock.
     static void disconnectAll(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
@@ -89,6 +92,8 @@ private:
     // Announce to any nodes we're connected to that we changed our channel count for its input.
     void propagateChannelCount(ContextRenderLock &);
 
+    std::string m_name;
+
     // m_numberOfChannels will only be changed in the audio thread.
     // The main thread sets m_desiredNumberOfChannels which will later get picked up in the audio thread
     int m_numberOfChannels;
@@ -103,12 +108,12 @@ private:
 
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
 
-private:
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
     int m_renderingFanOutCount;
     int m_renderingParamFanOutCount;
 
+    // connected params
     std::set<std::shared_ptr<AudioParam>> m_params;
     typedef std::set<AudioParam *>::iterator ParamsIterator;
 };
