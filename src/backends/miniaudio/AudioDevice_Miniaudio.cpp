@@ -12,6 +12,7 @@
 
 #include "LabSound/extended/Logging.h"
 
+#define MA_DEBUG_OUTPUT
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
@@ -29,6 +30,26 @@ const int kRenderQuantum = 128;
 /// @TODO - the AudioDeviceInfo wants support sample rates, but miniaudio only tells min and max
 ///         miniaudio also has a concept of minChannels, which LabSound ignores
 
+
+namespace
+{
+    ma_context g_context;
+    
+    void init_context()
+    {
+        static bool g_must_init = true;
+        if (g_must_init)
+        {
+            if (ma_context_init(NULL, 0, NULL, &g_context) != MA_SUCCESS)
+            {
+                LOG_ERROR("Failed to initialize miniaudio context");
+                return;
+            }
+            g_must_init = false;
+        }
+    }
+}
+
 std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 {
     static std::vector<AudioDeviceInfo> s_devices;
@@ -39,20 +60,15 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     probed = true;
 
     ma_result result;
-    ma_context context;
     ma_device_info * pPlaybackDeviceInfos;
     ma_uint32 playbackDeviceCount;
     ma_device_info * pCaptureDeviceInfos;
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
 
-    if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS)
-    {
-        LOG_ERROR("Failed to initialize miniaudio context");
-        return {};
-    }
+    init_context();
 
-    result = ma_context_get_devices(&context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
+    result = ma_context_get_devices(&g_context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
     if (result != MA_SUCCESS)
     {
         LOG_ERROR("Failed to retrieve audio device information.\n");
@@ -65,7 +81,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&context, ma_device_type_playback,
+        if (ma_context_get_device_info(&g_context, ma_device_type_playback,
                                        &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
@@ -87,7 +103,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.index = (int32_t) s_devices.size();
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&context, ma_device_type_capture,
+        if (ma_context_get_device_info(&g_context, ma_device_type_capture,
                                        &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
@@ -103,7 +119,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         s_devices.push_back(lab_device_info);
     }
 
-    ma_context_uninit(&context);
+    ma_context_uninit(&g_context);
     return s_devices;
 }
 
@@ -153,7 +169,19 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
     , outputConfig(_outputConfig)
     , inputConfig(_inputConfig)
 {
-    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
+    auto device_list = AudioDevice::MakeAudioDeviceList();
+    for (auto & device : device_list)
+    {
+        printf("[%d] %s\n----------------------\n", device.index, device.identifier.c_str());
+	printf("   ins:%d outs:%d default_in:%s default:out:%s\n", device.num_input_channels, device.num_output_channels, device.is_default_input?"yes":"no", device.is_default_output?"yes":"no");
+	printf("    nominal samplerate: %f\n", device.nominal_samplerate);
+	for (int f : device.supported_samplerates)
+	    printf("        %f\n", f);
+    }
+
+
+    //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
+    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = ma_format_f32;
     deviceConfig.playback.channels = outputConfig.desired_channels;
     deviceConfig.sampleRate = static_cast<int>(outputConfig.desired_samplerate);
@@ -167,7 +195,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
-    if (ma_device_init(NULL, &deviceConfig, &_device) != MA_SUCCESS)
+    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;

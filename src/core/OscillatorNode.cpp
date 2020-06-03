@@ -19,7 +19,7 @@
 #include "internal/VectorMath.h"
 
 #include <algorithm>
-#include <emmintrin.h>
+//#include <emmintrin.h>
 
 using namespace lab;
 

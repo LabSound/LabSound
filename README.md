@@ -71,6 +71,12 @@ cmake -DLABSOUND_ASOUND=1 ..
 cmake --build . --target install --config Release
 ```
 
+On Raspberry Pi, as on Linux, a backend must be selected. The currently tested configuration is ALSA. Be sure to install the asound development libraries before building.
+
+```sh
+sudo apt install libasound2-dev
+```
+
 On iOS:
 
 ```sh
