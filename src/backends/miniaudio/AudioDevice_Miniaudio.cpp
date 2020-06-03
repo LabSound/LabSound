@@ -175,7 +175,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
         printf("[%d] %s\n----------------------\n", device.index, device.identifier.c_str());
 	printf("   ins:%d outs:%d default_in:%s default:out:%s\n", device.num_input_channels, device.num_output_channels, device.is_default_input?"yes":"no", device.is_default_output?"yes":"no");
 	printf("    nominal samplerate: %f\n", device.nominal_samplerate);
-	for (int f : device.supported_samplerates)
+	for (float f : device.supported_samplerates)
 	    printf("        %f\n", f);
     }
 
