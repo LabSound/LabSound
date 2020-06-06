@@ -12,7 +12,7 @@
 #define MA_NO_DECODING
 #define MA_NO_ENCODING
 #define MA_NO_GENERATION
-#define MA_DEBUG_OUTPUT
+//#define MA_DEBUG_OUTPUT
 #include "miniaudio.h"
 #include <atomic>
 #include <cstring>

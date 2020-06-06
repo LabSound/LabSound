@@ -39,7 +39,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     if (rt.getDeviceCount() <= 0) throw std::runtime_error("no rtaudio devices available!");
 
     const auto api_enum = rt.getCurrentApi();
-    LOG("using rtaudio api %s", rt_audio_apis[static_cast<int>(api_enum)].c_str());
+    LOG_INFO("using rtaudio api %s", rt_audio_apis[static_cast<int>(api_enum)].c_str());
 
     auto to_flt_vec = [](const std::vector<unsigned int> & vec) {
         std::vector<float> result;
@@ -75,18 +75,18 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     return devices;
 }
 
-uint32_t AudioDevice::GetDefaultOutputAudioDeviceIndex()
+AudioDeviceIndex AudioDevice::GetDefaultOutputAudioDeviceIndex() noexcept
 {
     RtAudio rt;
-    if (rt.getDeviceCount() <= 0) throw std::runtime_error("no rtaudio devices available!");
-    return rt.getDefaultOutputDevice();
+    if (rt.getDeviceCount() <= 0) return {0, false};
+    return {rt.getDefaultOutputDevice(), true};
 }
 
-uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
+AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
 {
     RtAudio rt;
-    if (rt.getDeviceCount() <= 0) throw std::runtime_error("no rtaudio devices available!");
-    return rt.getDefaultInputDevice();
+    if (rt.getDeviceCount() <= 0) return {0, false};
+    return {rt.getDefaultInputDevice(), true};
 }
 
 AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
@@ -121,14 +121,14 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
     RtAudio::StreamParameters outputParams;
     outputParams.deviceId = outputConfig.device_index;
     outputParams.nChannels = outputConfig.desired_channels;
-    LOG("using output device idx: %i", outputConfig.device_index);
-    if (outputConfig.device_index >= 0) LOG("using output device name: %s", rtaudio_ctx.getDeviceInfo(outputParams.deviceId).name.c_str());
+    LOG_INFO("using output device idx: %i", outputConfig.device_index);
+    if (outputConfig.device_index >= 0) LOG_INFO("using output device name: %s", rtaudio_ctx.getDeviceInfo(outputParams.deviceId).name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = inputConfig.device_index;
     inputParams.nChannels = inputConfig.desired_channels;
-    LOG("using input device idx: %i", inputConfig.device_index);
-    if (inputConfig.device_index >= 0) LOG("using input device name: %s", rtaudio_ctx.getDeviceInfo(inputParams.deviceId).name.c_str());
+    LOG_INFO("using input device idx: %i", inputConfig.device_index);
+    if (inputConfig.device_index >= 0) LOG_INFO("using input device name: %s", rtaudio_ctx.getDeviceInfo(inputParams.deviceId).name.c_str());
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
@@ -140,7 +140,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
             // ensure that the number of input channels buffered does not exceed the number available.
             inputParams.nChannels = (inDeviceInfo.inputChannels < inputConfig.desired_channels) ? inDeviceInfo.inputChannels : inputConfig.desired_channels;
             inputConfig.desired_channels = inputParams.nChannels;
-            LOG("[AudioDevice_RtAudio] adjusting number of input channels: %i ", inputParams.nChannels);
+            LOG_INFO("[AudioDevice_RtAudio] adjusting number of input channels: %i ", inputParams.nChannels);
         }
     }
 

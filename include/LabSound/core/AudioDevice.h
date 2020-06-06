@@ -96,12 +96,19 @@ public:
 // The audio hardware periodically calls the AudioDeviceRenderCallback `render()` method asking it to
 // render/output the next render quantum of audio. It optionally will pass in local/live audio
 // input when it calls `render()`.
+
+struct AudioDeviceIndex
+{
+    uint32_t index;
+    bool valid;
+};
+
 class AudioDevice
 {
 public:
     static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-    static uint32_t GetDefaultOutputAudioDeviceIndex();
-    static uint32_t GetDefaultInputAudioDeviceIndex();
+    static AudioDeviceIndex GetDefaultOutputAudioDeviceIndex() noexcept;
+    static AudioDeviceIndex GetDefaultInputAudioDeviceIndex() noexcept;
     static AudioDevice * MakePlatformSpecificDevice(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
 
     virtual ~AudioDevice() {}

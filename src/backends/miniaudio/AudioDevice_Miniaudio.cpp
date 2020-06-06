@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
+#define LABSOUND_ENABLE_LOGGING
+
 #include "AudioDevice_Miniaudio.h"
 
 #include "internal/Assertions.h"
@@ -12,7 +14,7 @@
 
 #include "LabSound/extended/Logging.h"
 
-#define MA_DEBUG_OUTPUT
+//#define MA_DEBUG_OUTPUT
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
@@ -34,30 +36,48 @@ const int kRenderQuantum = 128;
 namespace
 {
     ma_context g_context;
-    
+    static std::vector<AudioDeviceInfo> g_devices;
+
     void init_context()
     {
         static bool g_must_init = true;
         if (g_must_init)
         {
+            LOG_TRACE("[LabSound] init_context() must_init");
             if (ma_context_init(NULL, 0, NULL, &g_context) != MA_SUCCESS)
             {
-                LOG_ERROR("Failed to initialize miniaudio context");
+                LOG_ERROR("[LabSound] init_context(): Failed to initialize miniaudio context");
                 return;
             }
+            LOG_TRACE("[LabSound] init_context() succeeded");
             g_must_init = false;
         }
     }
 }
 
+void PrintAudioDeviceList()
+{
+    if (!g_devices.size())
+        LOG_INFO("No devices detected");
+    else
+        for (auto & device : g_devices)
+        {
+            LOG_INFO("[%d] %s\n----------------------\n", device.index, device.identifier.c_str());
+            LOG_INFO("   ins:%d outs:%d default_in:%s default:out:%s\n", device.num_input_channels, device.num_output_channels, device.is_default_input?"yes":"no", device.is_default_output?"yes":"no");
+            LOG_INFO("    nominal samplerate: %f\n", device.nominal_samplerate);
+            for (float f : device.supported_samplerates)
+                LOG_INFO("        %f\n", f);
+        }
+}
+
 std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 {
-    static std::vector<AudioDeviceInfo> s_devices;
     static bool probed = false;
     if (probed)
-        return s_devices;
+        return g_devices;
 
     probed = true;
+    init_context();
 
     ma_result result;
     ma_device_info * pPlaybackDeviceInfos;
@@ -65,8 +85,6 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     ma_device_info * pCaptureDeviceInfos;
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
-
-    init_context();
 
     result = ma_context_get_devices(&g_context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
     if (result != MA_SUCCESS)
@@ -78,7 +96,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     for (iDevice = 0; iDevice < playbackDeviceCount; ++iDevice)
     {
         AudioDeviceInfo lab_device_info;
-        lab_device_info.index = (int32_t) s_devices.size();
+        lab_device_info.index = (int32_t) g_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
 
         if (ma_context_get_device_info(&g_context, ma_device_type_playback,
@@ -94,13 +112,13 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.is_default_output = iDevice == 0;
         lab_device_info.is_default_input = false;
 
-        s_devices.push_back(lab_device_info);
+        g_devices.push_back(lab_device_info);
     }
 
     for (iDevice = 0; iDevice < captureDeviceCount; ++iDevice)
     {
         AudioDeviceInfo lab_device_info;
-        lab_device_info.index = (int32_t) s_devices.size();
+        lab_device_info.index = (int32_t) g_devices.size();
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
         if (ma_context_get_device_info(&g_context, ma_device_type_capture,
@@ -116,33 +134,30 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
-        s_devices.push_back(lab_device_info);
+        g_devices.push_back(lab_device_info);
     }
 
-    ma_context_uninit(&g_context);
-    return s_devices;
+    return g_devices;
 }
 
-uint32_t AudioDevice::GetDefaultOutputAudioDeviceIndex()
+AudioDeviceIndex AudioDevice::GetDefaultOutputAudioDeviceIndex() noexcept
 {
     auto devices = MakeAudioDeviceList();
     size_t c = devices.size();
     for (uint32_t i = 0; i < c; ++i)
         if (devices[i].is_default_output)
-            return i;
-
-    throw std::runtime_error("no miniaudio devices available!");
+            return {i, true};
+    return {0, false};
 }
 
-uint32_t AudioDevice::GetDefaultInputAudioDeviceIndex()
+AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
 {
     auto devices = MakeAudioDeviceList();
     size_t c = devices.size();
     for (uint32_t i = 0; i < c; ++i)
         if (devices[i].is_default_input)
-            return i;
-
-    throw std::runtime_error("no miniaudio devices available!");
+            return {i, true};
+    return {0, false};
 }
 
 namespace
@@ -170,15 +185,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
     , inputConfig(_inputConfig)
 {
     auto device_list = AudioDevice::MakeAudioDeviceList();
-    for (auto & device : device_list)
-    {
-        printf("[%d] %s\n----------------------\n", device.index, device.identifier.c_str());
-	printf("   ins:%d outs:%d default_in:%s default:out:%s\n", device.num_input_channels, device.num_output_channels, device.is_default_input?"yes":"no", device.is_default_output?"yes":"no");
-	printf("    nominal samplerate: %f\n", device.nominal_samplerate);
-	for (float f : device.supported_samplerates)
-	    printf("        %f\n", f);
-    }
-
+    PrintAudioDeviceList();
 
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
@@ -212,6 +219,7 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
 {
     stop();
     ma_device_uninit(&_device);
+    ma_context_uninit(&g_context);
     delete _renderBus;
     delete _inputBus;
     delete _ring;

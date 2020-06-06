@@ -235,8 +235,8 @@ void FFTFrame::print()
     FFTFrame & frame = *this;
     float * realP = frame.realData();
     float * imagP = frame.imagData();
-    LOG("**** \n");
-    LOG("DC = %f : nyquist = %f\n", realP[0], imagP[0]);
+    LOG_INFO("**** \n");
+    LOG_INFO("DC = %f : nyquist = %f\n", realP[0], imagP[0]);
 
     int n = m_FFTSize / 2;
 
@@ -245,9 +245,9 @@ void FFTFrame::print()
         double mag = sqrt(realP[i] * realP[i] + imagP[i] * imagP[i]);
         double phase = atan2(realP[i], imagP[i]);
 
-        LOG("[%d] (%f %f)\n", i, mag, phase);
+        LOG_INFO("[%d] (%f %f)\n", i, mag, phase);
     }
-    LOG("****\n");
+    LOG_INFO("****\n");
 }
 #endif  // NDEBUG
 

@@ -98,8 +98,7 @@ AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
 
 AudioContext::~AudioContext()
 {
-    // LOG can block.
-    // LOG("Begin AudioContext::~AudioContext()");
+    LOG_TRACE("Begin AudioContext::~AudioContext()");
 
     if (!isOfflineContext())
         graphKeepAlive = 0.25f;
@@ -122,7 +121,7 @@ AudioContext::~AudioContext()
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
 
-    LOG("Finish AudioContext::~AudioContext()");
+    LOG_INFO("Finish AudioContext::~AudioContext()");
 }
 
 void AudioContext::lazyInitialize()
@@ -160,7 +159,7 @@ void AudioContext::lazyInitialize()
 
 void AudioContext::uninitialize()
 {
-    LOG("AudioContext::uninitialize()");
+    LOG_TRACE("AudioContext::uninitialize()");
 
     if (!m_isInitialized)
         return;
@@ -261,7 +260,7 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
 
 void AudioContext::update()
 {
-    if (!m_isOfflineContext) { LOG("Begin UpdateGraphThread"); }
+    if (!m_isOfflineContext) { LOG_TRACE("Begin UpdateGraphThread"); }
 
     const float frameLengthInMilliseconds = (sampleRate() / (float) AudioNode::ProcessingSizeInFrames) / 1000.f;  // = ~0.345ms @ 44.1k/128
     const float graphTickDurationMs = frameLengthInMilliseconds * 16;  // = ~5.5ms
@@ -435,7 +434,7 @@ void AudioContext::update()
             lk.unlock();
     }
 
-    if (!m_isOfflineContext) { LOG("End UpdateGraphThread"); }
+    if (!m_isOfflineContext) { LOG_TRACE("End UpdateGraphThread"); }
 }
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
