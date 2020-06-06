@@ -30,7 +30,7 @@ public:
         bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
         if (reentrant)
         {
-            LOG("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
+            LOG_ERROR("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
         }
 #endif
 
@@ -65,7 +65,7 @@ public:
         bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
         if (reentrant)
         {
-            LOG("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
+            LOG_ERROR("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
         }
 #endif
 

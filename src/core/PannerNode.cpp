@@ -65,7 +65,7 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
                 return path.substr(0, path.size() - 1);
             return path;
         };
-        LOG("Initializing HRTF Database");
+        LOG_INFO("Initializing HRTF Database");
         m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(m_sampleRate, stripSlash(searchPath));
     }
 

@@ -80,7 +80,7 @@ void NullDeviceNode::start()
             m_renderThread.join();
         }
 
-        LOG("offline rendering completed");
+        LOG_TRACE("offline rendering completed");
 
         if (m_context->offlineRenderCompleteCallback)
         {
@@ -91,7 +91,7 @@ void NullDeviceNode::start()
     }
     else
     {
-        LOG("NullDeviceNode rendering already started");
+        LOG_WARN("NullDeviceNode rendering already started");
     }
 }
 
@@ -144,7 +144,7 @@ void NullDeviceNode::offlineRender()
     // Break up the desired length into smaller "render quantum" sized pieces.
     int framesToProcess = static_cast<int>((m_lengthSeconds * outConfig.desired_samplerate) / offlineRenderSizeQuantum);
 
-    LOG("offline rendering started");
+    LOG_TRACE("offline rendering started");
 
     while (framesToProcess > 0)
     {

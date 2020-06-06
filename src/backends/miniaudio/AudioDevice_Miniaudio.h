@@ -9,8 +9,13 @@
 #include "LabSound/core/AudioNode.h"
 
 #include <assert.h>
+#define MA_NO_DECODING
+#define MA_NO_ENCODING
+#define MA_NO_GENERATION
+//#define MA_DEBUG_OUTPUT
 #include "miniaudio.h"
 #include <atomic>
+#include <cstring>
 
 namespace cinder
 {
