@@ -130,6 +130,7 @@ if (WIN32)
 elseif (APPLE)
     target_compile_definitions(LabSound PRIVATE __MACOSX_CORE__=1)
 else()
+    set(LABSOUND_PLATFORM_LINK_LIBRARIES dl)
     if (LABSOUND_JACK)
         target_compile_definitions(LabSound PRIVATE __UNIX_JACK__=1)
         set(LIBNYQUIST_JACK ON)
@@ -144,7 +145,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(LabSound libnyquist libopus libwavpack dl)
+target_link_libraries(LabSound libnyquist libopus libwavpack ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 
 install(TARGETS LabSound
     LIBRARY DESTINATION lib
