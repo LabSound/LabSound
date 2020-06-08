@@ -239,12 +239,36 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     if (!param)
         throw std::invalid_argument("No parameter specified");
 
+    if (!driver)
+        throw std::invalid_argument("No driving node supplied");
+
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
     m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
     cv.notify_all();
 }
+
+// connect a named parameter on a node to receive the indexed output of a node
+void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver, int index)
+{
+    if (!parameterName)
+        throw std::invalid_argument("No parameter specified");
+
+    std::shared_ptr<AudioParam> param = destinationNode->param(parameterName);
+    if (!param)
+        throw std::invalid_argument("Parameter not found on node");
+
+    if (!driver)
+        throw std::invalid_argument("No driving node supplied");
+
+    if (index >= driver->numberOfOutputs())
+        throw std::out_of_range("Output index greater than available outputs on the driver");
+
+    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
+    cv.notify_all();
+}
+
 
 void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
 {

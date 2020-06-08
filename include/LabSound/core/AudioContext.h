@@ -82,7 +82,13 @@ public:
     // completely disconnect the node from the graph
     void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);
 
+    // connect a parameter to receive the indexed output of a node
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
+
+    // connect a named parameter on a node to receive the indexed output of a node
+    void connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver, int index);
+
+    // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
     void startOfflineRendering();

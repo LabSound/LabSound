@@ -126,7 +126,18 @@ public:
     void setEnumeration(int v, bool notify = true)
     {
         if (v == _vali) return;
+        if (v < 0) return;
         _vali = static_cast<int>(v);
+        if (notify && _valueChanged) _valueChanged();
+    }
+
+    void setEnumeration(char const*const v, bool notify = true)
+    {
+        if (v) setEnumeration(enumFromName(v), notify);
+    }
+
+    void setString(char const*const, bool notify = true)
+    {
         if (notify && _valueChanged) _valueChanged();
     }
 

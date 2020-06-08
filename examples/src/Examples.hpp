@@ -121,7 +121,6 @@ struct ex_osc_pop : public labsound_example
         std::shared_ptr<RecorderNode> recorder;
         std::shared_ptr<GainNode> gain;
         {
-            ContextRenderLock r(context.get(), "ex_osc_pop");
             oscillator = std::make_shared<OscillatorNode>(ac);
 
             gain = std::make_shared<GainNode>(ac);
@@ -300,8 +299,6 @@ struct ex_tremolo : public labsound_example
         std::shared_ptr<GainNode> modulatorGain;
         std::shared_ptr<OscillatorNode> osc;
         {
-            ContextRenderLock r(context.get(), "ex_tremolo");
-
             modulator = std::make_shared<OscillatorNode>(ac);
             modulator->setType(OscillatorType::SINE);
             modulator->frequency()->setValue(8.0f);
