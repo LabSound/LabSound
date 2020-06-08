@@ -6,6 +6,8 @@
 #include "internal/Assertions.h"
 #include "internal/HRTFElevation.h"
 
+#include <stdexcept>
+
 using namespace std;
 
 namespace lab

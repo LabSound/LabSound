@@ -32,7 +32,7 @@ namespace lab
         {
             if (!s->finalized)
             {
-                std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
+                //std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
                 s->microseconds = std::chrono::system_clock::now() - _start;
                 s->finalized = true;
             }
