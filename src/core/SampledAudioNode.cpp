@@ -485,8 +485,7 @@ SampledAudioNode::SampledAudioNode(AudioContext & ac)
     _scheduler._onStart = [this](double when)
     {
         // this is safe, because start will be called from a thread where schedule is also safe to be called
-        if (!this->m_inSchedule)
-            this->schedule(when);
+        this->schedule(when);
     };
 
     initialize();
@@ -603,12 +602,9 @@ void SampledAudioNode::schedule(double when, double grainOffset)
 
 void SampledAudioNode::schedule(double when, double grainOffset, double grainDuration)
 {
-    m_inSchedule = true;
-
     schedule_list.emplace_back(when, grainOffset, 0.0);
     schedule_list.sort(); // sort by time
     schedule_list.unique(); // remove duplicate schedules
-    m_inSchedule = false;
 
     if (!isPlayingOrScheduled())
     {
