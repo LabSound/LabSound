@@ -606,8 +606,8 @@ void SampledAudioNode::schedule(double when, double grainOffset, double grainDur
     m_inSchedule = true;
 
     schedule_list.emplace_back(when, grainOffset, 0.0);
-    schedule_list.unique(); // remove duplicate schedules
     schedule_list.sort(); // sort by time
+    schedule_list.unique(); // remove duplicate schedules
     m_inSchedule = false;
 
     if (!isPlayingOrScheduled())
