@@ -119,6 +119,8 @@ class SampledAudioVoice : public AudioNode
     double m_pendingEndTime{ UNKNOWN_TIME };
     double m_endTime{ UNKNOWN_TIME };  // in seconds
 
+    bool m_inSchedule{ false };
+
 // scheduling interface
 
 
@@ -204,6 +206,7 @@ class SampledAudioNode final : public AudioScheduledSourceNode
 
     void _createVoicesForNewBus(ContextRenderLock & r);
     bool m_resetVoices{ false };
+    bool m_inSchedule{ false };
 
 public:
 

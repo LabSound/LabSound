@@ -109,6 +109,7 @@ public:
     float _sampleRate = 1;
 
     std::function<void()> _onEnded;
+
     std::function<void(double when)> _onStart;
 };
 
