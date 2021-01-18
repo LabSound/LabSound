@@ -604,15 +604,17 @@ void SampledAudioNode::schedule(double when, double grainOffset)
 void SampledAudioNode::schedule(double when, double grainOffset, double grainDuration)
 {
     m_inSchedule = true;
-    if (!isPlayingOrScheduled())
-    {
-        start(static_cast<float>(when));
-    }
 
     schedule_list.emplace_back(when, grainOffset, 0.0);
     schedule_list.unique(); // remove duplicate schedules
     schedule_list.sort(); // sort by time
     m_inSchedule = false;
+
+    if (!isPlayingOrScheduled())
+    {
+        _scheduler._playbackState = SchedulingState::SCHEDULED;
+        _scheduler._startWhen = 0; // force processing to begin immediately
+    }
 }
 
 float SampledAudioNode::duration() const
