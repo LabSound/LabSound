@@ -570,7 +570,7 @@ void SampledAudioNode::reset(ContextRenderLock & r)
        v->reset(r);
    }
 
-   voices.clear();
+   _createVoicesForNewBus(r);
 }
 
 void SampledAudioNode::_createVoicesForNewBus(ContextRenderLock & r)
