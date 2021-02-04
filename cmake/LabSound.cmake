@@ -145,7 +145,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(LabSound libnyquist libopus libwavpack ${LABSOUND_PLATFORM_LINK_LIBRARIES})
+target_link_libraries(LabSound libnyquist libwavpack ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 
 install(TARGETS LabSound
     LIBRARY DESTINATION lib

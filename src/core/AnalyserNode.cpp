@@ -164,7 +164,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
             size_t steps = array.size();
             float u_step = 1.f / static_cast<float>(steps);
             float u = 0;
-            for (size_t step = 0; step < steps; ++steps, u += u_step)
+            for (size_t step = 0; step < steps; ++step, u += u_step)
             {
                 float t = u * src_size;
                 size_t u0 = static_cast<size_t>(t);

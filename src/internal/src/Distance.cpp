@@ -28,6 +28,7 @@ double DistanceEffect::gain(double distance)
 
     switch (m_model)
     {
+        default:
         case ModelLinear:
             return linearGain(distance);
         case ModelInverse:

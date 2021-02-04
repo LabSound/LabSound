@@ -8,6 +8,6 @@ set_property(TARGET Lab::Sound APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES @CM
 
 # libnyquist additional:
 set_target_properties(Lab::Sound PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE 
-    "@CMAKE_INSTALL_PREFIX@/lib/libnyquist.lib;@CMAKE_INSTALL_PREFIX@/lib/libopus.lib;@CMAKE_INSTALL_PREFIX@/lib/libwavpack.lib")
+    "@CMAKE_INSTALL_PREFIX@/lib/libnyquist.lib;@CMAKE_INSTALL_PREFIX@/lib/libwavpack.lib")
 set_target_properties(Lab::Sound PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG 
-    "@CMAKE_INSTALL_PREFIX@/lib/libnyquist_d.lib;@CMAKE_INSTALL_PREFIX@/lib/libopus_d.lib;@CMAKE_INSTALL_PREFIX@/lib/libwavpack_d.lib")
+    "@CMAKE_INSTALL_PREFIX@/lib/libnyquist_d.lib;@CMAKE_INSTALL_PREFIX@/lib/libwavpack_d.lib")
