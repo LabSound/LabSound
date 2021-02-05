@@ -20,7 +20,10 @@ add_subdirectory(third_party/libnyquist)
 
 include(cmake/common.cmake)
 include(cmake/LabSound.cmake)
-include(cmake/examples.cmake)
+
+if (NOT ANDROID)
+    include(cmake/examples.cmake)
+endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
