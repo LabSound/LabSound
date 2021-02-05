@@ -39,6 +39,24 @@ function(_set_compile_options proj)
         # TODO: These vars are for libniquist and should be set in the find libynquist script.
         target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
     elseif(APPLE)
+    elseif(ANDROID)
+        target_compile_options(${proj} PRIVATE -fPIC)
+        target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
+        if(LABSOUND_JACK)
+            target_link_libraries(${proj} jack)
+            target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
+        endif()
+        if(LABSOUND_PULSE)
+            target_link_libraries(${proj} pulse pulse-simple)
+            target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
+        endif()
+        if(LABSOUND_ASOUND)
+            target_link_libraries(${proj} asound)
+            target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
+        endif()
+        # TODO: These vars are for libnyquist and should be set in the find libynquist script.
+        # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
+        target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
     elseif(UNIX)
         target_link_libraries(${proj} pthread)
         target_compile_options(${proj} PRIVATE -fPIC)
@@ -55,7 +73,7 @@ function(_set_compile_options proj)
             target_link_libraries(${proj} asound)
             target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
         endif()
-        # TODO: These vars are for libniquist and should be set in the find libynquist script.
+        # TODO: These vars are for libnyquist and should be set in the find libynquist script.
         # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
         target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
     endif()
