@@ -17,11 +17,17 @@
 
 using namespace lab;
 
-// AudioBus is not exposed in the public API
+///  @TODO get rid of the Data struct and move the bus to the class
 struct AudioParam::Data
 {
     std::unique_ptr<AudioBus> m_internalSummingBus;
 };
+
+AudioBus const* const AudioParam::bus() const
+{
+    return m_data->m_internalSummingBus.get();
+}
+
 
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;

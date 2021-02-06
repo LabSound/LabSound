@@ -91,20 +91,20 @@ public:
         v = m_attack->value();
         if (v >= 0.001f)
         {
-            attack = v * 0.001f;
+            attack = v * 0.001;
         }
         else
-            attack = 0.000001f;
+            attack = 0.000001;
 
         /// @fixme these values should be per sample, not per quantum
         /// -or- they should be settings if they don't vary per sample
         v = m_release->value();
         if (v >= 0.001f)
         {
-            release = v * 0.001f;
+            release = v * 0.001;
         }
         else
-            release = 0.000001f;
+            release = 0.000001;
 
         /// @fixme these values should be per sample, not per quantum
         /// -or- they should be settings if they don't vary per sample
@@ -118,7 +118,7 @@ public:
         if (v >= 0 && v <= 1)
         {
             // knee value (0 to 1) is scaled from 0 (hard) to 0.02 (smooth). Could be scaled to a larger number.
-            knee = v * 0.02f;
+            knee = v * 0.02;
         }
 
         // calc coefficients from run time vars

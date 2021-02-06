@@ -22,6 +22,24 @@ using namespace std;
 namespace lab
 {
 
+
+const char* schedulingStateName(SchedulingState s)
+{
+    switch (s)
+    {
+    case SchedulingState::UNSCHEDULED: return "UNSCHEDULED";
+    case SchedulingState::SCHEDULED: return "SCHEDULED";
+    case SchedulingState::FADE_IN: return "FADE_IN";
+    case SchedulingState::PLAYING: return "PLAYING";
+    case SchedulingState::STOPPING: return "STOPPING";
+    case SchedulingState::RESETTING: return "RESETTING";
+    case SchedulingState::FINISHING: return "FINISHING";
+    case SchedulingState::FINISHED: return "FINISHED";
+    }
+    return "Unknown";
+}
+
+
 const int start_envelope = 64;
 const int end_envelope = 64;
 

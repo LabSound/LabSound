@@ -72,7 +72,7 @@ enum class SchedulingState : int
     FINISHING,       // Playing has finished
     FINISHED         // Node has finished
 };
-
+const char* schedulingStateName(SchedulingState);
 
 class AudioNodeScheduler
 {
@@ -157,7 +157,7 @@ public:
     //--------------------------------------------------
     // required interface
     //
-    // If the node included ScheduledNode in its hierarchy, this will return true.
+    // If the final node class has ScheduledNode in its class hierarchy, this will return true.
     // This is to save the cost of a dynamic_cast when scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
 

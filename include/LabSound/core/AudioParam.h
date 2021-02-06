@@ -73,6 +73,8 @@ public:
     // Must be called in the context's render thread.
     void calculateSampleAccurateValues(ContextRenderLock &, float * values, int numberOfValues);
 
+    AudioBus const* const bus() const;
+
     // Connect an audio-rate signal to control this parameter.
     static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
     static void disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
