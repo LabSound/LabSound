@@ -24,7 +24,7 @@ class Subgraph
 public:
     std::shared_ptr<GainNode> output;
     std::shared_ptr<GainNode> input;
-    virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) = 0;
+    virtual void BuildSubgraph(AudioContext & ac) = 0;
     virtual ~Subgraph() {}
 };
 
@@ -50,7 +50,7 @@ public:
     void SetLevel(float f);
     void SetDelayIndex(TempoSync value);
 
-    virtual void BuildSubgraph(std::unique_ptr<AudioContext> & ac) override;
+    virtual void BuildSubgraph(AudioContext & ac) override;
 };
 }
 

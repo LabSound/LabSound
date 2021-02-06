@@ -101,7 +101,8 @@ public:
     GranulationNode(AudioContext & ac);
     virtual ~GranulationNode();
 
-    virtual const char* name() const override { return "Granulation"; }
+    static const char* static_name() { return "Granulation"; }
+    virtual const char* name() const override { return static_name(); }
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

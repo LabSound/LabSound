@@ -43,7 +43,8 @@ public:
 
     virtual ~DelayNode() = default;
 
-    virtual const char* name() const override { return "Delay"; }
+    static const char* static_name() { return "Delay"; }
+    virtual const char* name() const override { return static_name(); }
 
     std::shared_ptr<AudioSetting> delayTime();
 };

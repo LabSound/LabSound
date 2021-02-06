@@ -25,7 +25,7 @@ namespace
 }
 
 AudioNodeOutput::AudioNodeOutput(AudioNode * node, int numberOfChannels, int processingSizeInFrames)
-    : m_node(node)
+    : m_sourceNode(node)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
     , m_inPlaceBus(0)
@@ -36,7 +36,7 @@ AudioNodeOutput::AudioNodeOutput(AudioNode * node, int numberOfChannels, int pro
 }
 
 AudioNodeOutput::AudioNodeOutput(AudioNode * node, char const * const name, int numberOfChannels, int processingSizeInFrames)
-    : m_node(node)
+    : m_sourceNode(node)
     , m_name(name)
     , m_numberOfChannels(numberOfChannels)
     , m_desiredNumberOfChannels(numberOfChannels)
@@ -88,7 +88,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock & r)
         // Announce to any nodes we're connected to that we changed our channel count for its input.
         for (auto in : m_inputs)
         {
-            auto connectionNode = in->node();
+            auto connectionNode = in->destinationNode();
             connectionNode->checkNumberOfChannelsForInput(r, in.get());
         }
     }
@@ -115,7 +115,7 @@ AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, i
     // Setup the actual destination bus for processing when our node's process() method gets called in processIfNecessary() below.
     m_inPlaceBus = useInPlaceBus ? inPlaceBus : 0;
 
-    auto n = node();
+    auto n = sourceNode();
     if (!n)
         return bus(r);
 

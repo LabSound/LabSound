@@ -33,7 +33,8 @@ public:
     AnalyserNode(AudioContext & ac, int fftSize);
     virtual ~AnalyserNode();
 
-    virtual const char* name() const override { return "Analyser"; }
+    static const char* static_name() { return "Analyser"; }
+    virtual const char* name() const override { return static_name(); }
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

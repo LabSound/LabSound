@@ -26,7 +26,8 @@ public:
     PureDataNode(AudioContext *, float sampleRate);
     virtual ~PureDataNode();
 
-    virtual const char* name() const override { return "PureData"; }
+    static const char* static_name() { return "PureData"; }
+    virtual const char* name() const override { return static_name(); }
 
     pd::PdBase & pd() const;
 

@@ -16,6 +16,8 @@
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioListener.h"
+#include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/BiquadFilterNode.h"
 #include "LabSound/core/ChannelMergerNode.h"

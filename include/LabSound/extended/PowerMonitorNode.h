@@ -24,7 +24,8 @@ public:
     PowerMonitorNode(AudioContext & ac);
     virtual ~PowerMonitorNode();
 
-    virtual const char* name() const override { return "PowerMonitor"; }
+    static const char* static_name() { return "PowerMonitor"; }
+    virtual const char* name() const override { return static_name(); }
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

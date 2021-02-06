@@ -18,7 +18,8 @@ public:
     FunctionNode(AudioContext & ac, int channels = 1);
     virtual ~FunctionNode();
 
-    virtual const char* name() const override { return "Function"; }
+    static const char* static_name() { return "Function"; }
+    virtual const char* name() const override { return static_name(); }
 
     void setFunction(std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * buffer, int bufferSize)> fn)
     {

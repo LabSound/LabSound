@@ -28,7 +28,7 @@ public:
     virtual ~AudioNodeOutput();
 
     // Can be called from any thread.
-    AudioNode * node() const { return m_node; }
+    AudioNode * sourceNode() const { return m_sourceNode; }
 
     // Causes our AudioNode to process if it hasn't already for this render quantum.
     // It returns the bus containing the processed audio for this output, returning inPlaceBus if in-place processing was possible.
@@ -63,7 +63,7 @@ public:
     static void disconnectAllParams(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
 
 private:
-    AudioNode * m_node;
+    AudioNode * m_sourceNode;
 
     friend class AudioNodeInput;
     friend class AudioParam;

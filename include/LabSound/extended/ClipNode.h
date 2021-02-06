@@ -30,7 +30,8 @@ public:
     ClipNode(AudioContext & ac);
     virtual ~ClipNode();
 
-    virtual const char* name() const override { return "Clip"; }
+    static const char* static_name() { return "Clip"; }
+    virtual const char* name() const override { return static_name(); }
 
     void setMode(Mode m);
 

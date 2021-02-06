@@ -27,7 +27,8 @@ public:
     DynamicsCompressorNode(AudioContext& ac);
     virtual ~DynamicsCompressorNode();
 
-    virtual const char* name() const override { return "DynamicsCompressor"; }
+    static const char* static_name() { return "DynamicsCompressor"; }
+    virtual const char* name() const override { return static_name(); }
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;

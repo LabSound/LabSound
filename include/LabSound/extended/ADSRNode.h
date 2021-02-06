@@ -21,7 +21,8 @@ public:
     ADSRNode(AudioContext &);
     virtual ~ADSRNode();
 
-    virtual const char* name() const override { return "ADSR"; }
+    static const char* static_name() { return "ADSR"; }
+    virtual const char* name() const override { return static_name(); }
 
     // This function will return true after the release period (only if a noteOff has been issued). 
     bool finished(ContextRenderLock &);

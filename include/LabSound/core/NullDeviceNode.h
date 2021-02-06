@@ -40,7 +40,8 @@ public:
     NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const double lengthSeconds);
     virtual ~NullDeviceNode();
 
-    virtual const char* name() const override { return "NulLDevice"; }
+    static const char* static_name() { return "NulLDevice"; }
+    virtual const char* name() const override { return static_name(); }
 
     // AudioNode Interface
     virtual void initialize() override;

@@ -32,7 +32,8 @@ public:
     DiodeNode(AudioContext &);
     virtual ~DiodeNode() = default;
 
-    virtual const char* name() const override { return "Diode"; }
+    static const char* static_name() { return "Diode"; }
+    virtual const char* name() const override { return static_name(); }
 
     void setDistortion(float distortion = 1.0);
 

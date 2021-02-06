@@ -234,6 +234,23 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
     cv.notify_all();
 }
 
+bool AudioContext::isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
+{
+    if (!destination || !source)
+        return false;
+
+    AudioNode* n = source.get();
+    for (int i = 0; i < destination->numberOfInputs(); ++i)
+    {
+        auto c = destination->input(i);
+        if (c->destinationNode() == n)
+            return true;
+    }
+
+    return false;
+}
+
+
 void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
 {
     if (!param)
@@ -424,12 +441,11 @@ void AudioContext::update()
                         }
                         else if (connection.destination)
                         {
-                            for (int out = 0; out < connection.destination->numberOfOutputs(); ++out)
+                            for (int in = 0; in < connection.destination->numberOfInputs(); ++in)
                             {
-                                auto output = connection.destination->output(out);
-                                if (!output) continue;
-
-                                AudioNodeOutput::disconnectAll(gLock, output);
+                                auto input= connection.destination->input(in);
+                                if (input)
+                                    AudioNodeInput::disconnectAll(gLock, input);
                             }
                         }
                         else if (connection.source)
@@ -437,9 +453,8 @@ void AudioContext::update()
                             for (int out = 0; out < connection.source->numberOfOutputs(); ++out)
                             {
                                 auto output = connection.source->output(out);
-                                if (!output) continue;
-
-                                AudioNodeOutput::disconnectAll(gLock, output);
+                                if (output)
+                                    AudioNodeOutput::disconnectAll(gLock, output);
                             }
                         }
                     }

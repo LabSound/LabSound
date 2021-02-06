@@ -78,6 +78,7 @@ public:
 
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
+    bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
 
     // completely disconnect the node from the graph
     void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);

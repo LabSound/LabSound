@@ -37,7 +37,8 @@ public:
     AudioHardwareDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
     virtual ~AudioHardwareDeviceNode();
 
-    virtual const char* name() const override { return "AudioHardwareDevice"; }
+    static const char* static_name() { return "AudioHardwareDevice"; }
+    virtual const char* name() const override { return static_name(); }
 
     // AudioNode interface
     virtual void process(ContextRenderLock &, int bufferSize) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called

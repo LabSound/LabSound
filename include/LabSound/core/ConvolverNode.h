@@ -27,7 +27,8 @@ public:
     ConvolverNode(AudioContext& ac);
     virtual ~ConvolverNode();
 
-    virtual const char* name() const override { return "Convolver"; }
+    static const char* static_name() { return "Convolver"; }
+    virtual const char* name() const override { return static_name(); }
 
     bool normalize() const;
     void setNormalize(bool new_n);

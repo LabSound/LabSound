@@ -22,7 +22,7 @@ class AudioBus;
 // The number of channels of the input's bus is the maximum of the number of channels of all its connections.
 class AudioNodeInput : public AudioSummingJunction
 {
-    AudioNode * m_node;
+    AudioNode * m_destinationNode;
     std::unique_ptr<AudioBus> m_internalSummingBus;
 
 public:
@@ -33,11 +33,12 @@ public:
     virtual void didUpdate(ContextRenderLock &) override;
 
     // Can be called from any thread.
-    AudioNode * node() const { return m_node; }
+    AudioNode * destinationNode() const { return m_destinationNode; }
 
     // Must be called with the context's graph lock. Static because a shared pointer to this is required
     static void connect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
     static void disconnect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnectAll(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput);
 
     // pull() processes all of the AudioNodes connected to this NodeInput.
     // In the case of multiple connections, the result is summed onto the internal summing bus.

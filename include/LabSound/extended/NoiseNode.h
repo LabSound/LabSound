@@ -29,7 +29,8 @@ public:
     NoiseNode(AudioContext & ac);
     virtual ~NoiseNode();
 
-    virtual const char* name() const override { return "Noise"; }
+    static const char* static_name() { return "Noise"; }
+    virtual const char* name() const override { return static_name(); }
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;

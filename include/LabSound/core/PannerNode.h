@@ -64,7 +64,8 @@ public:
     PannerNode(AudioContext & ac, const std::string & hrtf_root_dir_path = "");
     virtual ~PannerNode();
 
-    virtual const char* name() const override { return "Panner"; }
+    static const char* static_name() { return "Panner"; }
+    virtual const char* name() const override { return static_name(); }
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;

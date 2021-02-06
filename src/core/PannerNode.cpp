@@ -519,7 +519,7 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioN
             for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
             {
                 auto connectedOutput = input->renderingOutput(r, j);
-                AudioNode * connectedNode = connectedOutput->node();
+                AudioNode * connectedNode = connectedOutput->sourceNode();
                 notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
             }
         }

@@ -167,11 +167,16 @@ public:
     virtual void uninitialize();
     bool isInitialized() const { return m_isInitialized; }
 
+    // These locked versions can be called at run time.
+    void addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input);
+    void addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output);
+
     int numberOfInputs() const { return static_cast<int>(m_inputs.size()); }
     int numberOfOutputs() const { return static_cast<int>(m_outputs.size()); }
 
     std::shared_ptr<AudioNodeInput> input(int index);
     std::shared_ptr<AudioNodeOutput> output(int index);
+    std::shared_ptr<AudioNodeOutput> output(char const* const str);
 
     // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
@@ -214,12 +219,6 @@ public:
 
     std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
-
-    // These locked versions can be called at run time.
-    void addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input);
-    void addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output);
-
-    std::shared_ptr<AudioNodeOutput> output(char const* const str);
 
     AudioNodeScheduler _scheduler;
 

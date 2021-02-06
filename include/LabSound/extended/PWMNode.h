@@ -24,7 +24,8 @@ class PWMNode : public AudioBasicProcessorNode
 public:
     PWMNode(AudioContext & ac);
     virtual ~PWMNode();
-    virtual const char* name() const override { return "PWM"; }
+    static const char* static_name() { return "PWM"; }
+    virtual const char* name() const override { return static_name(); }
 };
 }
 

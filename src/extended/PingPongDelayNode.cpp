@@ -62,29 +62,29 @@ void PingPongDelayNode::SetDelayIndex(TempoSync value)
     rightDelay->SetDelayIndex(value);
 }
 
-void PingPongDelayNode::BuildSubgraph(std::unique_ptr<AudioContext> & ac)
+void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
 {
     // Input into splitter
-    ac->connect(splitter, input, 0, 0);
+    ac.connect(splitter, input, 0, 0);
 
-    ac->connect(splitterGain, splitter, 0, 0);
-    ac->connect(splitterGain, splitter, 1, 0);
+    ac.connect(splitterGain, splitter, 0, 0);
+    ac.connect(splitterGain, splitter, 1, 0);
 
-    ac->connect(wetGain, splitterGain, 0, 0);
+    ac.connect(wetGain, splitterGain, 0, 0);
     splitterGain->gain()->setValue(0.5f);
 
-    ac->connect(leftDelay, wetGain, 0, 0);
-    ac->connect(leftDelay, feedbackGain, 0, 0);
+    ac.connect(leftDelay, wetGain, 0, 0);
+    ac.connect(leftDelay, feedbackGain, 0, 0);
 
-    ac->connect(rightDelay, leftDelay, 0, 0);
-    ac->connect(feedbackGain, rightDelay, 0, 0);
+    ac.connect(rightDelay, leftDelay, 0, 0);
+    ac.connect(feedbackGain, rightDelay, 0, 0);
 
-    ac->connect(merger, leftDelay, 0, 0);
-    ac->connect(merger, rightDelay, 0, 1);
+    ac.connect(merger, leftDelay, 0, 0);
+    ac.connect(merger, rightDelay, 0, 1);
 
-    ac->connect(output, merger, 0, 0);
+    ac.connect(output, merger, 0, 0);
 
     // Activate with input->output
-    ac->connect(output, input, 0, 0);
+    ac.connect(output, input, 0, 0);
 }
 }

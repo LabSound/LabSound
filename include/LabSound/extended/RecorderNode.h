@@ -31,7 +31,8 @@ public:
     RecorderNode(AudioContext & r, const AudioStreamConfig outConfig);
     virtual ~RecorderNode();
 
-    virtual const char* name() const override { return "Recorder"; }
+    static const char* static_name() { return "Recorder"; }
+    virtual const char* name() const override { return static_name(); }
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;

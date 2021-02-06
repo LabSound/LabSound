@@ -32,6 +32,7 @@ public:
     PeakCompNode(AudioContext & ac);
     virtual ~PeakCompNode();
 
+    static const char* static_name() { return static_name(); }
     virtual const char* name() const { return "PeakComp"; }
 
     // Threshold given in dB, default 0

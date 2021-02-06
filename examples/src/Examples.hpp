@@ -855,7 +855,7 @@ struct ex_misc : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_misc");
 
-            pingping->BuildSubgraph(context);
+            pingping->BuildSubgraph(*context.get());
             pingping->SetFeedback(.75f);
             pingping->SetDelayIndex(lab::TempoSync::TS_16);
 

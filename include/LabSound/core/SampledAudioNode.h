@@ -135,7 +135,8 @@ public:
 
     virtual ~SampledAudioVoice() {if (isInitialized()) uninitialize(); };
 
-    virtual const char* name() const override { return "SampledAudioVoice"; }
+    static const char* static_name() { return "SampledAudioVoice"; }
+    virtual const char* name() const override { return static_name(); }
 
     void setOutput(ContextRenderLock & r, std::shared_ptr<AudioNodeOutput> parent_sampled_audio_node_output)
     {
@@ -215,7 +216,8 @@ public:
     SampledAudioNode(AudioContext &);
     virtual ~SampledAudioNode();
 
-    virtual const char* name() const override { return "SampledAudio"; }
+    static const char* static_name() { return "SampledAudio"; }
+    virtual const char* name() const override { return static_name(); }
 
     virtual void process(ContextRenderLock &, int framesToProcess) override;
     virtual void reset(ContextRenderLock &) override;

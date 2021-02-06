@@ -23,7 +23,7 @@ namespace lab
 
 AudioNodeInput::AudioNodeInput(AudioNode * node, int processingSizeInFrames)
     : AudioSummingJunction()
-    , m_node(node)
+    , m_destinationNode(node)
 {
     // Set to mono by default.
     m_internalSummingBus = std::unique_ptr<AudioBus>(new AudioBus(Channels::Mono, processingSizeInFrames));
@@ -35,7 +35,7 @@ AudioNodeInput::~AudioNodeInput()
 
 void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    if (!junction || !toOutput || !junction->node())
+    if (!junction || !toOutput || !junction->destinationNode())
         return;
 
     // return if input is already connected to this output.
@@ -48,7 +48,7 @@ void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInpu
 void AudioNodeInput::disconnect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!junction || !junction->node() || !toOutput)
+    if (!junction || !junction->destinationNode() || !toOutput)
         return;
 
     if (junction->isConnected(toOutput))
@@ -58,9 +58,27 @@ void AudioNodeInput::disconnect(ContextGraphLock & g, std::shared_ptr<AudioNodeI
     }
 }
 
+void AudioNodeInput::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> fromInput)
+{
+    ASSERT(g.context());
+    if (!fromInput || !fromInput->destinationNode())
+        return;
+
+    for (auto i : fromInput->m_connectedOutputs)
+    {
+        auto o = i.lock();
+        if (o)
+        {
+            fromInput->junctionDisconnectOutput(o);
+            o->removeInput(g, fromInput);
+        }
+    }
+}
+
+
 void AudioNodeInput::didUpdate(ContextRenderLock & r)
 {
-    m_node->checkNumberOfChannelsForInput(r, this);
+    m_destinationNode->checkNumberOfChannelsForInput(r, this);
 }
 
 void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
@@ -75,11 +93,11 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
 
 int AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
 {
-    ChannelCountMode mode = node()->channelCountMode();
+    ChannelCountMode mode = destinationNode()->channelCountMode();
 
     if (mode == ChannelCountMode::Explicit)
     {
-        return node()->channelCount();
+        return destinationNode()->channelCount();
     }
 
     // Find the number of channels of the connection with the largest number of channels.
@@ -99,7 +117,7 @@ int AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
 
     if (mode == ChannelCountMode::ClampedMax)
     {
-        maxChannels = min(maxChannels, node()->channelCount());
+        maxChannels = min(maxChannels, destinationNode()->channelCount());
     }
 
     return maxChannels;
