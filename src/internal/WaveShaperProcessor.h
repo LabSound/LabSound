@@ -19,7 +19,7 @@ namespace lab
 class WaveShaperProcessor : public AudioDSPKernelProcessor
 {
 public:
-    WaveShaperProcessor(int numberOfChannels);
+    WaveShaperProcessor();
     virtual ~WaveShaperProcessor();
     virtual AudioDSPKernel * createKernel();
     virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, int framesToProcess);

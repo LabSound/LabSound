@@ -9,9 +9,8 @@
 namespace lab
 {
 
-// setNumberOfChannels() may later be called if the object is not yet in an "initialized" state.
-AudioDSPKernelProcessor::AudioDSPKernelProcessor(int numberOfChannels)
-    : AudioProcessor(numberOfChannels)
+AudioDSPKernelProcessor::AudioDSPKernelProcessor()
+    : AudioProcessor()
     , m_hasJustReset(true)
 {
 }
@@ -20,12 +19,6 @@ void AudioDSPKernelProcessor::initialize()
 {
     if (isInitialized())
         return;
-
-    ASSERT(!m_kernels.size());
-
-    // Create processing kernels, one per channel.
-    for (int i = 0; i < numberOfChannels(); ++i)
-        m_kernels.push_back(std::unique_ptr<AudioDSPKernel>(createKernel()));
 
     m_initialized = true;
     m_hasJustReset = true;
@@ -37,7 +30,6 @@ void AudioDSPKernelProcessor::uninitialize()
         return;
 
     m_kernels.clear();
-
     m_initialized = false;
 }
 
@@ -51,6 +43,17 @@ void AudioDSPKernelProcessor::process(ContextRenderLock & r, const AudioBus * so
     {
         destination->zero();
         return;
+    }
+
+    size_t src_channels = source->numberOfChannels();
+    size_t dst_channels = destination->numberOfChannels();
+    size_t kernel_count = std::min(src_channels, dst_channels);
+
+    if (m_kernels.size() != dst_channels)
+    {
+        m_kernels.clear();
+        for (int i = 0; i < dst_channels; ++i)
+            m_kernels.push_back(std::unique_ptr<AudioDSPKernel>(createKernel()));
     }
 
     bool channelCountMatches = source->numberOfChannels() == destination->numberOfChannels() && source->numberOfChannels() == m_kernels.size();

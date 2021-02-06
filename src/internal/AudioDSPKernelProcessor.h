@@ -25,8 +25,7 @@ class AudioProcessor;
 class AudioDSPKernelProcessor : public AudioProcessor
 {
 public:
-    // numberOfChannels may be later changed if object is not yet in an "initialized" state
-    AudioDSPKernelProcessor(int numberOfChannels);
+    AudioDSPKernelProcessor();
     virtual ~AudioDSPKernelProcessor() {}
 
     // Subclasses create the appropriate type of processing kernel here.

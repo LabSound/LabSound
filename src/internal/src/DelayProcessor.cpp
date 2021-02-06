@@ -11,8 +11,8 @@ using namespace std;
 namespace lab
 {
 
-DelayProcessor::DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime)
-    : AudioDSPKernelProcessor(numberOfChannels)
+DelayProcessor::DelayProcessor(float sampleRate, double maxDelayTime)
+    : AudioDSPKernelProcessor()
     , m_maxDelayTime(maxDelayTime)
     , m_sampleRate(sampleRate)
 {

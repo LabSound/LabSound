@@ -48,7 +48,7 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * destinationBus = output(0)->bus(r);
 
-    if (!isInitialized() || !processor() || processor()->numberOfChannels() != numberOfChannels())
+    if (!isInitialized() || !processor())
         destinationBus->zero();
     else
     {
@@ -97,9 +97,6 @@ void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock & 
 
     if (mustPropagate)
     {
-        // Re-initialize the processor with the new channel count.
-        processor()->setNumberOfChannels(numberOfChannels);
-
         uninitialize();
         for (int i = 0; i < numberOfOutputs(); ++i)
         {

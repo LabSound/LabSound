@@ -24,7 +24,7 @@ class PWMNode::PWMNodeInternal : public lab::AudioProcessor
 
 public:
     PWMNodeInternal()
-        : AudioProcessor(2)
+        : AudioProcessor()
     {
     }
 
@@ -34,12 +34,12 @@ public:
 
     virtual void uninitialize() override {}
 
-    // Processes the source to destination bus.  The number of channels must match in source and destination.
+    // Processes the source to destination bus.
     virtual void process(ContextRenderLock &,
                          const lab::AudioBus * source, lab::AudioBus * destination,
                          int framesToProcess) override
     {
-        if (!numberOfChannels())
+        if (!source->numberOfChannels() || !destination->numberOfChannels())
             return;
 
         const float * carrierP = source->channelByType(Channel::Left)->data();
