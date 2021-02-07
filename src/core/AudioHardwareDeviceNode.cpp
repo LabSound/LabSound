@@ -56,7 +56,6 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
 
     // Node-specific default mixing rules.
     //m_channelCount = outputConfig.desired_channels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
     ContextGraphLock glock(&context, "AudioHardwareDeviceNode");

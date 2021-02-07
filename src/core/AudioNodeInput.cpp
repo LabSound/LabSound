@@ -93,34 +93,7 @@ void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
 
 int AudioNodeInput::numberOfChannels(ContextRenderLock & r) const
 {
-    ChannelCountMode mode = destinationNode()->channelCountMode();
-
-    if (mode == ChannelCountMode::Explicit)
-    {
-        return destinationNode()->channelCount();
-    }
-
-    // Find the number of channels of the connection with the largest number of channels.
-    int maxChannels = 1;  // one channel is the minimum allowed
-
-    int c = numberOfRenderingConnections(r);
-    for (int i = 0; i < c; ++i)
-    {
-        auto output = renderingOutput(r, i);
-        if (output)
-        {
-            int c = output->bus(r)->numberOfChannels();
-            if (c > maxChannels)
-                maxChannels = c;
-        }
-    }
-
-    if (mode == ChannelCountMode::ClampedMax)
-    {
-        maxChannels = min(maxChannels, destinationNode()->channelCount());
-    }
-
-    return maxChannels;
+    return destinationNode()->channelCount();
 }
 
 AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
@@ -128,8 +101,7 @@ AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
     // Handle single connection specially to allow for in-place processing.
     // note: The webkit sources check for max, but I can't see how that's correct
 
-    // @tofix - did I miss part of the merge?
-    if (numberOfRenderingConnections(r) == 1)  // && node()->channelCountMode() == ChannelCountMode::Max)
+    if (numberOfRenderingConnections(r) == 1)
     {
         std::shared_ptr<AudioNodeOutput> output = renderingOutput(r, 0);
         if (output)

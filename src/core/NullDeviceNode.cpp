@@ -29,7 +29,6 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig output
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
 
     m_channelCount = m_numChannels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
 
     // We need to partially fill the the info struct here so that the context's graph thread

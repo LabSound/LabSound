@@ -307,30 +307,11 @@ void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
 
     if (m_channelCount != channelCount)
     {
-        if (m_channelCount != channelCount)
-        {
-            m_channelCount = channelCount;
-            if (m_channelCountMode != ChannelCountMode::Max)
-            {
-                updateChannelsForInputs(g);
-            }
-        }
-    }
-}
-
-void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
-{
-    if (mode >= ChannelCountMode::End || !g.context())
-    {
-        throw std::invalid_argument("No context specified");
-    }
-
-    if (m_channelCountMode != mode)
-    {
-        m_channelCountMode = mode;
+        m_channelCount = channelCount;
         updateChannelsForInputs(g);
     }
 }
+
 
 void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
 {

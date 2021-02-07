@@ -42,14 +42,6 @@ namespace Channels
     };
 };
 
-enum class ChannelCountMode
-{
-    Max,
-    ClampedMax,
-    Explicit,
-    End
-};
-
 }  // end namespace lab
 
 #endif  // end labsound_mixing_h

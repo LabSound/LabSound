@@ -200,9 +200,6 @@ public:
     int channelCount();
     void setChannelCount(ContextGraphLock & g, int channelCount);
 
-    ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
-
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
 
@@ -253,7 +250,6 @@ protected:
 
     int m_channelCount{ 0 };
 
-    ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 
     // starts an immediate ramp to zero in preparation for disconnection

@@ -19,7 +19,6 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     m_sampleRate = r.sampleRate();
 
     m_channelCount = channelCount;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
     initialize();
 }
@@ -29,7 +28,6 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
 {
     m_sampleRate = outConfig.desired_samplerate;
     m_channelCount = outConfig.desired_channels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
     initialize();
 }
