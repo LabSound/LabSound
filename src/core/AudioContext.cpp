@@ -312,7 +312,7 @@ void AudioContext::update()
     ASSERT(graphTickDurationUs);
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
-    // finish) even updateThreadShouldRun has been signaled.
+    // finish) even if updateThreadShouldRun has been signaled.
     while (!m_internal->pendingNodeConnections.empty() || !m_internal->pendingParamConnections.empty() ||
            updateThreadShouldRun != 0 || graphKeepAlive > 0)
     {
@@ -328,7 +328,7 @@ void AudioContext::update()
         {
             lk = std::unique_lock<std::mutex>(m_updateMutex);
 
-            // A condition variable is used to notify this thread that a graph update is pendingin one of the queues.
+            // A condition variable is used to notify this thread that a graph update is pending in one of the queues.
 
             // graph needs to tick to complete
             if ((currentTime() + graphKeepAlive) > currentTime())
@@ -471,6 +471,9 @@ void AudioContext::update()
 
         if (lk.owns_lock())
             lk.unlock();
+
+        if (!updateThreadShouldRun)
+            break;
     }
 
     if (!m_isOfflineContext) { LOG_TRACE("End UpdateGraphThread"); }
