@@ -11,7 +11,7 @@ namespace lab
 WaveShaperNode::WaveShaperNode(AudioContext& ac)
     : AudioBasicProcessorNode(ac)
 {
-    m_processor.reset(new WaveShaperProcessor(1));
+    m_processor.reset(new WaveShaperProcessor());
     initialize();
 }
 

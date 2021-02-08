@@ -20,8 +20,7 @@ class AudioProcessor
 {
 
 public:
-    AudioProcessor(int numberOfChannels)
-        : m_numberOfChannels(numberOfChannels)
+    AudioProcessor()
     {
     }
     virtual ~AudioProcessor() {}
@@ -35,10 +34,6 @@ public:
 
     // Resets filter state
     virtual void reset() = 0;
-
-    void setNumberOfChannels(int n) { m_numberOfChannels = n; }
-    int numberOfChannels() const { return m_numberOfChannels; }
-
     bool isInitialized() const { return m_initialized; }
 
     virtual double tailTime(ContextRenderLock & r) const = 0;
@@ -46,7 +41,6 @@ public:
 
 protected:
     bool m_initialized = false;
-    int m_numberOfChannels;
 };
 
 }  // namespace lab

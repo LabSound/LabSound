@@ -11,8 +11,8 @@
 namespace lab
 {
 
-WaveShaperProcessor::WaveShaperProcessor(int numberOfChannels)
-    : AudioDSPKernelProcessor(numberOfChannels)
+WaveShaperProcessor::WaveShaperProcessor()
+    : AudioDSPKernelProcessor()
 {
 }
 

@@ -28,7 +28,7 @@ namespace lab
         struct LerpTarget { float t, dvdt; };
         std:: deque<LerpTarget> _lerp;
 
-        ADSRNodeImpl() : AudioProcessor(2)
+        ADSRNodeImpl() : AudioProcessor()
         {
             envelope.reserve(AudioNode::ProcessingSizeInFrames * 4);
 
@@ -66,8 +66,14 @@ namespace lab
         {
             using std::deque;
 
-            if (!numberOfChannels())
+            if (!destinationBus->numberOfChannels())
                 return;
+
+            if (!sourceBus->numberOfChannels())
+            {
+                destinationBus->zero();
+                return;
+            }
 
             // scan the gate signal
             if (framesToProcess != _gateArray.size()) 

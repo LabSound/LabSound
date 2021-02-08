@@ -31,7 +31,7 @@ class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
 public:
     ClipNodeInternal(ClipNode * owner)
-        : AudioProcessor(1)
+        : AudioProcessor()
         , _owner(owner)
     {
         auto fMax = std::numeric_limits<float>::max();
@@ -56,7 +56,6 @@ public:
         if (dstChannels < srcChannels)
         {
             _owner->output(0)->setNumberOfChannels(r, srcChannels);
-            setNumberOfChannels(srcChannels);
         }
 
         if (!srcChannels)

@@ -31,7 +31,7 @@ class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
 {
 
 public:
-    PeakCompNodeInternal() : AudioProcessor(2)
+    PeakCompNodeInternal() : AudioProcessor()
     {
         m_threshold = std::make_shared<AudioParam>("threshold", "THRS", 0, 0, -1e6f);
         m_ratio = std::make_shared<AudioParam>("ratio", "RATI", 1, 0, 10);
@@ -57,12 +57,15 @@ public:
     // Processes the source to destination bus.  The number of channels must match in source and destination.
     virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus * destinationBus, int framesToProcess) override
     {
+        int sourceNumChannels = sourceBus->numberOfChannels();
+        int destNumChannels = destinationBus->numberOfChannels();
+
+        if (!destNumChannels)
+            return;
+
         // Get sample rate
         internalSampleRate = r.context()->sampleRate();
         oneOverSampleRate = 1.0 / internalSampleRate;
-
-        if (!numberOfChannels())
-            return;
 
         // copy attributes to run time variables
         /// @fixme these values should be per sample, not per quantum
@@ -133,7 +136,6 @@ public:
 
         // Handle both the 1 -> N and N -> N case here.
         const float * source[16];
-        int sourceNumChannels = sourceBus->numberOfChannels();
         for (int i = 0; i < sourceNumChannels; ++i)
         {
             if (sourceBus->numberOfChannels() == sourceNumChannels)
@@ -143,7 +145,6 @@ public:
         }
 
         float * dest[16];
-        int destNumChannels = destinationBus->numberOfChannels();
         for (int i = 0; i < destNumChannels; ++i)
             dest[i] = destinationBus->channel(i)->mutableData();
 

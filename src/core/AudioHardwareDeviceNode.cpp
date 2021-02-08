@@ -86,6 +86,7 @@ void AudioHardwareDeviceNode::uninitialize()
     if (!isInitialized()) return;
     m_platformAudioDevice->stop();
     AudioNode::uninitialize();
+    m_platformAudioDevice.reset();
 }
 
 void AudioHardwareDeviceNode::start()

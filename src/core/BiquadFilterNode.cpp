@@ -26,7 +26,7 @@ class BiquadFilterNode::BiquadFilterNodeInternal : public AudioProcessor
 
 public:
 
-    BiquadFilterNodeInternal() : AudioProcessor(1)
+    BiquadFilterNodeInternal() : AudioProcessor()
     {
         the_filter.reset(new Biquad());
 
