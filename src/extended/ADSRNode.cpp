@@ -75,12 +75,12 @@ namespace lab
                 return;
             }
 
-            // scan the gate signal
             if (framesToProcess != _gateArray.size()) 
                 _gateArray.resize(framesToProcess);
             if (envelope.size() != framesToProcess)
                 envelope.resize(framesToProcess);
 
+            // scan the gate signal
             const bool gate_is_connected = m_gate->hasSampleAccurateValues();
             if (gate_is_connected)
             {
@@ -98,7 +98,7 @@ namespace lab
                     _gateArray[i] = g > 0 ? 1.f : 0.f;
             }
 
-            bool oneshot = m_oneShot->valueBool();
+            bool oneshot = m_oneShot->valueBool(); // false mains gate controls AS, otherwise, sustain param controls S
 
             cached_sample_rate = r.context()->sampleRate();
             for (int i = 0; i < framesToProcess; ++i)
@@ -123,7 +123,7 @@ namespace lab
 
                     if (!gate_is_connected || oneshot)
                     {
-                        // if the gate is not connected, automated the sustain and release.
+                        // if the gate is not connected, automate the sustain and release.
                         float sustainSteps = m_sustainTime->valueFloat() * cached_sample_rate;
                         _lerp.emplace_back(LerpTarget{ sustainSteps, 0.f });
                         float releaseSteps = m_releaseTime->valueFloat() * cached_sample_rate;
@@ -231,6 +231,7 @@ namespace lab
     }
 
     // clang-format off
+    std::shared_ptr<AudioSetting> ADSRNode::oneShot() const      { return adsr_impl->m_oneShot;      }
     std::shared_ptr<AudioSetting> ADSRNode::attackTime() const   { return adsr_impl->m_attackTime;   }
     std::shared_ptr<AudioSetting> ADSRNode::attackLevel() const  { return adsr_impl->m_attackLevel;  }
     std::shared_ptr<AudioSetting> ADSRNode::decayTime() const    { return adsr_impl->m_decayTime;    } 
