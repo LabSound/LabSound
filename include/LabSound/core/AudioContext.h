@@ -92,6 +92,10 @@ public:
     // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
+    // connecting and disconnecting busses and parameters occurs asynchronously. synchronizeConnections
+    // will block until there are no pending connections, or until the timeout occurs.
+    void synchronizeConnections(int timeOut_ms = 1000);
+
     void startOfflineRendering();
     std::function<void()> offlineRenderCompleteCallback;
 

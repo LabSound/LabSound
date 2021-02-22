@@ -252,16 +252,18 @@ namespace lab
     void ADSRNode::process(ContextRenderLock& r, int bufferSize)
     {
         AudioBus* destinationBus = output(0)->bus(r);
-        if (!isInitialized())
+        AudioBus* sourceBus = input(0)->bus(r);
+        if (!isInitialized() || !input(0)->isConnected())
         {
             destinationBus->zero();
             return;
         }
 
-        AudioBus* sourceBus = input(0)->bus(r);
-
-        if (!input(0)->isConnected())
-            sourceBus->zero();
+        int numberOfInputChannels = input(0)->numberOfChannels(r);
+        if (numberOfInputChannels != output(0)->numberOfChannels())
+        {
+            output(0)->setNumberOfChannels(r, numberOfInputChannels);
+        }
 
         // process entire buffer
         adsr_impl->process(r, sourceBus, destinationBus, bufferSize);

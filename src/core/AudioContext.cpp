@@ -78,6 +78,7 @@ struct AudioContext::Internals
         }
     };
 
+    /// @TODO these should be mpsc queues, such as the ReaderWriterQueue, then the mutex guarding them isn't required
     std::priority_queue<PendingConnection, std::deque<PendingConnection>, CompareScheduledTime> pendingNodeConnections;
     std::queue<std::tuple<std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, ConnectionType, int>> pendingParamConnections;
 };
@@ -201,14 +202,27 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
     updateAutomaticPullNodes();
 }
 
+void AudioContext::synchronizeConnections(int timeOut_ms)
+{
+    cv.notify_all();
+    while (!m_internal->pendingNodeConnections.empty() && timeOut_ms > 0)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        timeOut_ms -= 5;
+    }
+}
+
+
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
 {
     if (!destination) throw std::runtime_error("Cannot connect to null destination");
     if (!source) throw std::runtime_error("Cannot connect from null source");
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
-    m_internal->pendingNodeConnections.emplace(destination, source, ConnectionType::Connect, destIdx, srcIdx);
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        if (srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
+        if (destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
+        m_internal->pendingNodeConnections.emplace(destination, source, ConnectionType::Connect, destIdx, srcIdx);
+    }
     cv.notify_all();
 }
 
@@ -216,11 +230,12 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
 {
     if (!destination && !source)
         return;
-
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
-    if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
-    m_internal->pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        if (source && srcIdx > source->numberOfOutputs()) throw std::out_of_range("Output index greater than available outputs");
+        if (destination && destIdx > destination->numberOfInputs()) throw std::out_of_range("Input index greater than available inputs");
+        m_internal->pendingNodeConnections.emplace(destination, source, ConnectionType::Disconnect, destIdx, srcIdx);
+    }
     cv.notify_all();
 }
 
@@ -228,9 +243,10 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
 {
     if (!node)
         return;
-
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    m_internal->pendingNodeConnections.emplace(node, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, index, 0);
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        m_internal->pendingNodeConnections.emplace(node, std::shared_ptr<AudioNode>(), ConnectionType::Disconnect, index, 0);
+    }
     cv.notify_all();
 }
 
@@ -262,12 +278,16 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
+    }
     cv.notify_all();
 }
 
 // connect a named parameter on a node to receive the indexed output of a node
-void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver, int index)
+void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, 
+                                std::shared_ptr<AudioNode> driver, int index)
 {
     if (!parameterName)
         throw std::invalid_argument("No parameter specified");
@@ -282,7 +302,10 @@ void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Connect, index));
+    }
     cv.notify_all();
 }
 
@@ -295,7 +318,10 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Disconnect, index));
+    {
+        std::lock_guard<std::mutex> lock(m_updateMutex);
+        m_internal->pendingParamConnections.push(std::make_tuple(param, driver, ConnectionType::Disconnect, index));
+    }
     cv.notify_all();
 }
 
@@ -313,7 +339,8 @@ void AudioContext::update()
 
     // graphKeepAlive keeps the thread alive momentarily (letting tail tasks
     // finish) even if updateThreadShouldRun has been signaled.
-    while (!m_internal->pendingNodeConnections.empty() || !m_internal->pendingParamConnections.empty() ||
+    while (!m_internal->pendingNodeConnections.empty() || 
+           !m_internal->pendingParamConnections.empty() ||
            updateThreadShouldRun != 0 || graphKeepAlive > 0)
     {
         if (updateThreadShouldRun > 0)
@@ -327,7 +354,9 @@ void AudioContext::update()
         if (!m_isOfflineContext)
         {
             lk = std::unique_lock<std::mutex>(m_updateMutex);
+            cv.wait_until(lk, std::chrono::steady_clock::now() + std::chrono::microseconds(5000)); // awake every five milliseconds 
 
+#if 0
             // A condition variable is used to notify this thread that a graph update is pending in one of the queues.
 
             // graph needs to tick to complete
@@ -340,6 +369,7 @@ void AudioContext::update()
                 // otherwise wait for someone to connect or disconnect something
                 cv.wait(lk);
             }
+#endif
         }
 
         if (m_internal->autoDispatchEvents)
@@ -432,6 +462,9 @@ void AudioContext::update()
                         {
                             connection.duration -= delta;
                             skippedConnections.push_back(connection);
+
+                            // wait again, advance to actually disconnecting
+                            graphKeepAlive = updateThreadShouldRun ? connection.duration : graphKeepAlive;
                             continue;
                         }
 
