@@ -22,13 +22,11 @@ public:
     virtual const char* name() const override { return static_name(); }
 
     void addInputs(int n);
+    void setOutputChannelCount(int n) { m_desiredNumberOfOutputChannels = n; }
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override;
-
-    // Called in the audio thread (pre-rendering task) when the number of channels for an input may have changed.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *) override;
+    virtual void reset(ContextRenderLock&) override {}
 
 private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }

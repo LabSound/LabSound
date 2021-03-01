@@ -63,50 +63,11 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
     }
 }
 
-// Nice optimization in the very common case allowing for "in-place" processing
-void AudioBasicProcessorNode::pullInputs(ContextRenderLock & r, int bufferSize)
-{
-    // Render input stream - suggest to the input to render directly into output bus for in-place processing in process() if possible.
-    input(0)->pull(r, output(0)->bus(r), bufferSize);
-}
 
 void AudioBasicProcessorNode::reset(ContextRenderLock &)
 {
     if (processor())
         processor()->reset();
-}
-
-// As soon as we know the channel count of our input, we can lazily initialize.
-// Sometimes this may be called more than once with different channel counts, in which case we must safely
-// uninitialize and then re-initialize with the new channel count.
-void AudioBasicProcessorNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
-{
-    if (input != this->input(0).get())
-        return;
-
-    if (!processor())
-        return;
-
-    int numberOfChannels = input->numberOfChannels(r);
-
-    bool mustPropagate = false;
-    for (int i = 0; i < numberOfOutputs() && !mustPropagate; ++i)
-    {
-        mustPropagate = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
-    }
-
-    if (mustPropagate)
-    {
-        uninitialize();
-        for (int i = 0; i < numberOfOutputs(); ++i)
-        {
-            // This will propagate the channel count to any nodes connected further down the chain...
-            output(i)->setNumberOfChannels(r, numberOfChannels);
-        }
-        initialize();
-    }
-
-    AudioNode::checkNumberOfChannelsForInput(r, input);
 }
 
 int AudioBasicProcessorNode::numberOfChannels()

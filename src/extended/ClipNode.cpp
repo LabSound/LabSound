@@ -53,7 +53,7 @@ public:
     {
         int srcChannels = (int) sourceBus->numberOfChannels();
         int dstChannels = (int) destinationBus->numberOfChannels();
-        if (dstChannels < srcChannels)
+        if (dstChannels != srcChannels)
         {
             _owner->output(0)->setNumberOfChannels(r, srcChannels);
         }

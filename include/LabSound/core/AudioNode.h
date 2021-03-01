@@ -236,10 +236,7 @@ protected:
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock &, int bufferSize);
-
-    // Force all inputs to take any channel interpretation changes into account.
-    void updateChannelsForInputs(ContextGraphLock &);
+    void pullInputs(ContextRenderLock &, int bufferSize);
 
     friend class AudioContext;
 

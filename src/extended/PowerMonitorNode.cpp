@@ -94,10 +94,6 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
     }
     // to here
 
-    // For in-place processing, our override of pullInputs() will just pass the audio data
-    // through unchanged if the channel count matches from input to output
-    // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
-    //
     if (bus != outputBus)
         outputBus->copyFrom(*bus);
 }

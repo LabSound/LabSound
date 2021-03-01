@@ -75,12 +75,6 @@ void AudioNodeInput::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioNo
     }
 }
 
-
-void AudioNodeInput::didUpdate(ContextRenderLock & r)
-{
-    m_destinationNode->checkNumberOfChannelsForInput(r, this);
-}
-
 void AudioNodeInput::updateInternalBus(ContextRenderLock & r)
 {
     int numberOfInputChannels = numberOfChannels(r);
@@ -145,6 +139,7 @@ AudioBus * AudioNodeInput::bus(ContextRenderLock & r)
 AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize)
 {
     updateRenderingState(r);
+    m_destinationNode->checkNumberOfChannelsForInput(r, this);
 
     size_t num_connections = numberOfRenderingConnections(r);
 

@@ -198,18 +198,6 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
     m_velocityZ->setValue(velocity.z);
 }
 
-void PannerNode::pullInputs(ContextRenderLock & r, int bufferSize)
-{
-    // We override pullInputs(), so we can detect new AudioNodes which have connected to us when new connections are made.
-    // These AudioNodes need to be made aware of this PannerNode in order to handle doppler shift pitch changes.
-    auto ac = r.context();
-
-    if (!ac)
-        return;
-
-    AudioNode::pullInputs(r, bufferSize);
-}
-
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * destination = output(0)->bus(r);

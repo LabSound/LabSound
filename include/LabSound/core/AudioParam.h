@@ -26,9 +26,6 @@ public:
     AudioParam(const std::string & name, const std::string & short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
     virtual ~AudioParam();
 
-    // AudioSummingJunction
-    virtual void didUpdate(ContextRenderLock &) override {}
-
     // Intrinsic value.
     float value() const;
     void setValue(float);

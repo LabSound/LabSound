@@ -4,14 +4,15 @@
 #ifndef RECORDER_NODE_H
 #define RECORDER_NODE_H
 
-#include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioContext.h"
 #include <mutex>
 #include <vector>
 
 namespace lab
 {
-class RecorderNode : public AudioBasicInspectorNode
+
+class RecorderNode : public AudioNode
 {
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -24,6 +25,7 @@ class RecorderNode : public AudioBasicInspectorNode
     float m_sampleRate;
 
 public:
+
     // create a recorder
     RecorderNode(AudioContext & r, int channelCount = 2);
 
@@ -31,7 +33,7 @@ public:
     RecorderNode(AudioContext & r, const AudioStreamConfig outConfig);
     virtual ~RecorderNode();
 
-    static const char* static_name() { return "Recorder"; }
+    static  const char* static_name() { return "Recorder"; }
     virtual const char* name() const override { return static_name(); }
 
     // AudioNode
@@ -43,7 +45,9 @@ public:
 
     float recordedLengthInSeconds() const;
 
-    std::shared_ptr<AudioBus> createBusFromRecording(bool mixToMono);
+    // create a bus from the recording; it can be used by other nodes
+    // such as a SampledAudioNode.
+    std::unique_ptr<AudioBus> createBusFromRecording(bool mixToMono);
 
     // returns true for success
     bool writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono);

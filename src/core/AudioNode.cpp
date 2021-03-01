@@ -307,13 +307,11 @@ void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
 
     if (m_channelCount != channelCount)
     {
-        if (m_channelCount != channelCount)
+        m_channelCount = channelCount;
+        if (m_channelCountMode != ChannelCountMode::Max)
         {
-            m_channelCount = channelCount;
-            if (m_channelCountMode != ChannelCountMode::Max)
-            {
-                updateChannelsForInputs(g);
-            }
+            for (auto& input : m_inputs)
+                input->changedOutputs(g);
         }
     }
 }
@@ -328,14 +326,9 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
     if (m_channelCountMode != mode)
     {
         m_channelCountMode = mode;
-        updateChannelsForInputs(g);
+        for (auto& input : m_inputs)
+            input->changedOutputs(g);
     }
-}
-
-void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
-{
-    for (auto & input : m_inputs)
-        input->changedOutputs(g);
 }
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
@@ -465,6 +458,29 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     ASSERT(r.context());
+
+    if (!input || input != this->input(0).get())
+        return;
+
+    int numberOfChannels = input->numberOfChannels(r);
+
+    bool channelCountChanged = false;
+    for (int i = 0; i < numberOfOutputs() && !channelCountChanged; ++i)
+    {
+        channelCountChanged = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
+    }
+
+    if (channelCountChanged)
+    {
+        uninitialize();
+        for (int i = 0; i < numberOfOutputs(); ++i)
+        {
+            // This will propagate the channel count to any nodes connected further down the chain...
+            output(i)->setNumberOfChannels(r, numberOfChannels);
+        }
+        initialize();
+    }
+
     for (auto & in : m_inputs)
     {
         if (in.get() == input)
