@@ -3,6 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/DynamicsCompressorNode.h"
+#include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -47,9 +48,6 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
 
 void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    ASSERT(outputBus);
-
     /// @fixme these values should be per sample, not per quantum
     /// -or- they should be settings if they don't vary per sample
     float threshold = m_threshold->value();
@@ -63,6 +61,18 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRatio, ratio);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
+
+    int numberOfSourceChannels = input(0)->numberOfChannels(r);
+    int numberOfDestChannels = output(0)->numberOfChannels();
+    if (numberOfDestChannels != numberOfSourceChannels)
+    {
+        output(0)->setNumberOfChannels(r, numberOfSourceChannels);
+        output(0)->updateRenderingState(r);
+        numberOfDestChannels = output(0)->numberOfChannels();
+    }
+
+    AudioBus* outputBus = output(0)->bus(r);
+    ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
 
     m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
 

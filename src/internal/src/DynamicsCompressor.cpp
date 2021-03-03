@@ -105,41 +105,29 @@ void DynamicsCompressor::setEmphasisParameters(float gain, float anchorFreq, flo
 
 void DynamicsCompressor::process(ContextRenderLock & r, const AudioBus * sourceBus, AudioBus * destinationBus, int bufferSize, int offset, int count)
 {
-    // Though numberOfChannels is retrived from destinationBus, we still name it numberOfChannels instead of numberOfDestinationChannels.
-    // It's because we internally match sourceChannels's size to destinationBus by channel up/down mix. Thus we need numberOfChannels
-    // to do the loop work for both m_sourceChannels and m_destinationChannels.
+    int numberOfDestChannels = destinationBus->numberOfChannels();
+    int numberOfSourceChannels = sourceBus->numberOfChannels();
 
-    unsigned numberOfChannels = destinationBus->numberOfChannels();
-    unsigned numberOfSourceChannels = sourceBus->numberOfChannels();
-
-    ASSERT(numberOfChannels == m_numberOfChannels && numberOfSourceChannels);
-
-    if (numberOfChannels != m_numberOfChannels || !numberOfSourceChannels)
+    if (!numberOfSourceChannels)
     {
         destinationBus->zero();
         return;
     }
 
-    switch (numberOfChannels)
+    if (numberOfDestChannels != m_numberOfChannels)
     {
-        case 2:
-            m_sourceChannels[0] = sourceBus->channelByType(Channel::Left)->data();
-
-            if (numberOfSourceChannels > 1)
-                m_sourceChannels[1] = sourceBus->channelByType(Channel::Right)->data();
-            else
-                m_sourceChannels[1] = m_sourceChannels[0];  // (left) mono duplicate to right channel
-
-            break;
-        default:
-            // FIXME : support other number of channels.
-            ASSERT_NOT_REACHED();
-            destinationBus->zero();
-            return;
+        setNumberOfChannels(numberOfSourceChannels);
+        numberOfDestChannels = numberOfSourceChannels;
+        for (int i = 0; i < numberOfDestChannels; ++i)
+        {
+            m_sourceChannels[i] = sourceBus->channel(i)->data();
+            m_destinationChannels[i] = destinationBus->channel(i)->mutableData();
+        }
     }
 
-    for (unsigned i = 0; i < numberOfChannels; ++i)
+    for (int i = 0; i < numberOfDestChannels; ++i)
     {
+        m_sourceChannels[i] = sourceBus->channel(i)->data();
         m_destinationChannels[i] = destinationBus->channel(i)->mutableData();
     }
 
@@ -158,7 +146,7 @@ void DynamicsCompressor::process(ContextRenderLock & r, const AudioBus * sourceB
 
     // Apply pre-emphasis filter.
     // Note that the final three stages are computed in-place in the destination buffer.
-    for (unsigned i = 0; i < numberOfChannels; ++i)
+    for (int i = 0; i < numberOfDestChannels; ++i)
     {
         const float * sourceData = m_sourceChannels[i];
         float * destinationData = m_destinationChannels[i];
@@ -190,13 +178,11 @@ void DynamicsCompressor::process(ContextRenderLock & r, const AudioBus * sourceB
     float releaseZone3 = parameterValue(ParamReleaseZone3);
     float releaseZone4 = parameterValue(ParamReleaseZone4);
 
-    // Apply compression to the pre-filtered signal.
-    // The processing is performed in place.
-    // Dimitri... broken?
+    // Apply compression to the pre-filtered signal. The processing is performed in place.
     m_compressor.process(r,
                          m_sourceChannels.get(),
                          m_destinationChannels.get(),
-                         numberOfChannels,
+                         numberOfDestChannels,
                          bufferSize,
                          dbThreshold,
                          dbKnee,
@@ -215,7 +201,7 @@ void DynamicsCompressor::process(ContextRenderLock & r, const AudioBus * sourceB
     setParameterValue(ParamReduction, m_compressor.meteringGain());
 
     // Apply de-emphasis filter.
-    for (unsigned i = 0; i < numberOfChannels; ++i)
+    for (int i = 0; i < numberOfDestChannels; ++i)
     {
         float * destinationData = m_destinationChannels[i];
         ZeroPole * postFilters = m_postFilterPacks[i]->filters;

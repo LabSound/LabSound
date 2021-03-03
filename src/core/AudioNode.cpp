@@ -357,6 +357,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
         return;
     }
 
+
     // there may need to be silence at the beginning or end of the current quantum.
 
     int start_zero_count = _scheduler._renderOffset;
@@ -364,15 +365,17 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     int final_zero_count = bufferSize - final_zero_start;
 
     // get inputs in preparation for processing
-
     {
         ProfileScope scope(graphTime);
         pullInputs(r, bufferSize);
         scope.finalize();   // ensure the scope is not prematurely destructed
     }
 
-    //  initialize the busses with start and final zeroes.
+    // ensure all requested channel count updates have been resolved
+    for (auto& out : m_outputs)
+        out->updateRenderingState(r);
 
+    //  initialize the busses with start and final zeroes.
     if (start_zero_count)
     {
         for (auto & out : m_outputs)
