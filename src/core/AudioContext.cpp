@@ -303,7 +303,6 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
     if (destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Connect, destination, source, destIdx, srcIdx});
-    cv.notify_all();
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
@@ -316,7 +315,6 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
     if (destination && destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, destination, source, destIdx, srcIdx});
-    cv.notify_all();
 }
 
 void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
@@ -325,7 +323,6 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
         return;
 
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, node, std::shared_ptr<AudioNode>(), index, 0});
-    cv.notify_all();
 }
 
 bool AudioContext::isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
@@ -357,7 +354,6 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
-    cv.notify_all();
 }
 
 
@@ -378,7 +374,6 @@ void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
-    cv.notify_all();
 }
 
 
@@ -391,7 +386,6 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Disconnect, param, driver, index});
-    cv.notify_all();
 }
 
 void AudioContext::update()
