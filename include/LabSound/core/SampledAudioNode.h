@@ -22,7 +22,8 @@ class AudioContext;
 class AudioBus;
 class SampledAudioNode;
 
-// This should  be used for short sounds which require a high degree of scheduling flexibility (can playback in rhythmically perfect ways).
+// SampledAudioVoice is intended for short sounds which require a high degree of scheduling 
+// flexibility (can playback in rhythmically exact ways).
 
 ///////////////////////////
 //   SampledAudioVoice   //
@@ -42,11 +43,11 @@ class SampledAudioVoice : public AudioNode
 
     // Transient
     double m_virtualReadIndex{ 0 };
-    bool m_isGrain{ false };
     double m_grainOffset{ 0 };  // in seconds
     double m_grainDuration{ 0.025 };  // in 25 ms
     float m_lastGain{ 1.0f }; // m_lastGain provides continuity when we dynamically adjust the gain.
     float m_totalPitchRate{ 1.f };
+    bool m_isGrain{ false };
 
     // Scheduling
     bool m_startRequested{ false };
@@ -57,12 +58,11 @@ class SampledAudioVoice : public AudioNode
     // Setup
     float m_duration;
 
-    // Although we inhert from AudioScheduledSourceNode, we does not directly connect to any outputs
-    // since that is handled by the parent SampledAudioNode. 
+    // Although SampledAudioVoice is inherited from AudioScheduledSourceNode, it is not directly connected
+    // to any outputs since that is handled by the parent SampledAudioNode. 
     std::shared_ptr<AudioNodeOutput> m_output;
 
     // scheduling interface
-
     static constexpr double UNKNOWN_TIME = -1.0;
     std::function<void()> m_onEnded;
 
@@ -77,7 +77,6 @@ class SampledAudioVoice : public AudioNode
         PLAYING_STATE = 2,
         FINISHED_STATE = 3
     };
-
 
     PlaybackState playbackState() const { return m_playbackState; }
     bool isPlayingOrScheduled() const { return m_playbackState == PLAYING_STATE || m_playbackState == SCHEDULED_STATE; }
@@ -121,7 +120,7 @@ class SampledAudioVoice : public AudioNode
 
     bool m_inSchedule{ false };
 
-// scheduling interface
+    // end of scheduling interface
 
 
 public:
@@ -174,7 +173,8 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     std::shared_ptr<AudioSetting> m_sourceBus;
     std::unique_ptr<AudioBus> m_summingBus;
 
-    // If m_isLooping is false, then this node will be done playing and become inactive after it reaches the end of the sample data in the buffer.
+    // If m_isLooping is false, then this node will be done playing and become inactive after 
+    //        it reaches the end of the sample data in the buffer.
     // If true, it will wrap around to the start of the buffer each time it reaches the end.
     std::shared_ptr<AudioParam> m_gain;
     std::shared_ptr<AudioParam> m_playbackRate;
@@ -184,7 +184,8 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     std::shared_ptr<AudioSetting> m_loopEnd;
 
     // totalPitchRate() returns the instantaneous pitch rate (non-time preserving).
-    // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, and any doppler shift from an associated panner node.
+    // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, 
+    // and any doppler shift from an associated panner node.
     double totalPitchRate(ContextRenderLock &);
 
     // We optionally keep track of a panner node which has a doppler shift that is incorporated into
@@ -203,7 +204,6 @@ class SampledAudioNode final : public AudioScheduledSourceNode
 
     std::vector<std::unique_ptr<SampledAudioVoice>> voices;
     std::list<ScheduleRequest> schedule_list;
-    std::function<void()> m_onEnded;
 
     void _createVoicesForNewBus(ContextRenderLock & r);
     bool m_resetVoices{ false };
@@ -238,12 +238,72 @@ public:
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
 
-    void setOnEnded(std::function<void()> fn) { m_onEnded = fn; }
-
     // If a panner node is set, then we can incorporate doppler shift into the playback pitch rate.
     void setPannerNode(PannerNode *);
     virtual void clearPannerNode() override;
 };
+
+class SampledAudioNode2 final : public AudioNode
+{
+    virtual void reset(ContextRenderLock& r) override {}
+    virtual double tailTime(ContextRenderLock& r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
+    virtual bool propagatesSilence(ContextRenderLock& r) const override { return false; }
+
+    struct Scheduled;
+    struct Internals;
+    Internals* _internals;
+
+    std::shared_ptr<AudioSetting> m_sourceBus;
+    std::shared_ptr<AudioBus> m_pendingSourceBus;   // the most recently assigned bus
+    std::shared_ptr<AudioBus> m_retainedSourceBus;  // the bus used in computation, eventually agrees with m_pendingSourceBus.
+
+    /*
+    std::shared_ptr<AudioParam> m_gain;
+*/
+    std::shared_ptr<AudioParam> m_playbackRate;
+    std::shared_ptr<AudioParam> m_detune;
+    std::shared_ptr<AudioParam> m_dopplerRate;
+
+
+    // totalPitchRate() returns the instantaneous pitch rate (non-time preserving).
+    // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, 
+    // and any doppler shift from an associated panner node.
+    float totalPitchRate(ContextRenderLock&);
+    bool renderSample(ContextRenderLock& r, Scheduled&, size_t destinationSampleOffset, size_t frameSize);
+    void clearSchedules();
+
+    virtual void process(ContextRenderLock&, int framesToProcess) override;
+
+public:
+    SampledAudioNode2(AudioContext&);
+    virtual ~SampledAudioNode2();
+
+    static const char* static_name() { return "SampledAudio"; }
+    virtual const char* name() const override { return static_name(); }
+
+    // setting the bus is an asynchronous operation. getBus returns the most
+    // recent set request in order that the interface work in a predictable way.
+    // In the future, setBus and getBus could be deprecated in favor of another
+    // schedule method that takes a source bus as an argument.
+    void setBus(ContextRenderLock&, std::shared_ptr<AudioBus> sourceBus);
+    std::shared_ptr<AudioBus> getBus() const { return m_pendingSourceBus; }
+
+    // loopCount of -1 will loop forever
+    void schedule(double when);
+    void schedule(double when, int loopCount);
+    void schedule(double when, double grainOffset, int loopCount);
+    void schedule(double when, double grainOffset, double grainDuration, int loopCount);
+
+//    std::shared_ptr<AudioParam> gain() { return m_gain; }
+    std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
+    std::shared_ptr<AudioParam> detune() { return m_detune; }
+    std::shared_ptr<AudioParam> dopplerRate() { return m_dopplerRate; }
+};
+
+
+
+
 
 }  // namespace lab
 

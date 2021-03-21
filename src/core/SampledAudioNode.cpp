@@ -18,6 +18,8 @@
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
 
+#include "concurrentqueue/concurrentqueue.h"
+
 #include <algorithm>
 #include <stack>
 
@@ -79,6 +81,8 @@ void SampledAudioVoice::updateSchedulingInfo(ContextRenderLock& r, size_t quantu
     if (m_endTime != UNKNOWN_TIME && endFrame <= quantumStartFrame)
     {
         finish(r);
+        if (_scheduler._onEnded)
+            r.context()->enqueueEvent(_scheduler._onEnded);
     }
 
     // If unscheduled, or finished, or out of time, output silence
@@ -145,7 +149,7 @@ void SampledAudioVoice::updateSchedulingInfo(ContextRenderLock& r, size_t quantu
 
 void SampledAudioVoice::schedule(double when, double grainOffset)
 {
-    // Duration of 0 is special (calculate based on the entire buffer's duration)
+    // Duration of 0 is special (calculate based on the entire buffer's grain_end)
     schedule(when, grainOffset, 0);
 }
 
@@ -211,7 +215,7 @@ bool SampledAudioVoice::renderSample(ContextRenderLock & r, AudioBus * bus, size
     if (!isOffsetGood)
         return false;
 
-    // Offset the pointers to the correct offset frame.
+    // Offset the pointers to the correct grain_start frame.
     size_t writeIndex = destinationSampleOffset;
 
     size_t bufferLength = srcBus->length();
@@ -389,7 +393,7 @@ void SampledAudioVoice::process(ContextRenderLock & r, int framesToProcess)
         m_grainOffset = std::min((double)m_duration, grainOffset);
         m_grainOffset = grainOffset;
 
-        // Handle default/unspecified duration.
+        // Handle default/unspecified grain_end.
         double maxDuration = m_duration - grainOffset;
         double grainDuration = m_requestGrainDuration;
         if (!grainDuration)
@@ -498,14 +502,6 @@ SampledAudioNode::~SampledAudioNode()
 
 void SampledAudioNode::process(ContextRenderLock & r, int framesToProcess)
 {
-    if (m_onEnded)
-    {
-        for (auto & v : voices)
-        {
-            v->setOnEnded(m_onEnded);
-        }
-    }
-
     if (m_resetVoices)
     {
         _createVoicesForNewBus(r);
@@ -668,3 +664,356 @@ bool SampledAudioNode::propagatesSilence(ContextRenderLock & r) const
 {
    return false;
 }
+
+namespace lab {
+
+    /*
+    * outputs silence when no source bus is playing
+    * overall playing state govered by audioscheduledsourcenode
+    * onended is dispatched both when the node is stopped, and when the end of a buffer is reached
+    * start/stop(when)
+     */
+
+    struct SampledAudioNode2::Scheduled
+    {
+        double when;          // in context temporal frame
+        int32_t grain_start;  // in source bus temporal frame
+        int32_t grain_end;
+        int32_t cursor;
+        int loopCount;        // -1 means forever, 0 means play once, 1 means repeat once -2 is a sentinel value meaning clear the schedule
+        std::shared_ptr<AudioBus> sourceBus;
+    };
+
+    struct SampledAudioNode2::Internals
+    {
+        ~Internals() = default;
+        moodycamel::ConcurrentQueue<Scheduled> incoming;
+        std::vector<Scheduled> scheduled;
+    };
+
+    SampledAudioNode2::SampledAudioNode2(AudioContext& ac)
+        : AudioNode(ac), _internals(new Internals())
+    {
+        m_sourceBus = std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus);
+        m_settings.push_back(m_sourceBus);
+
+        m_playbackRate = std::make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, 1024);
+        m_params.push_back(m_playbackRate);
+
+        m_detune = std::make_shared<AudioParam>("detune", "DTUNE", 0.0, 0.0, 1200.f);
+        m_params.push_back(m_detune);
+
+        m_dopplerRate = std::make_shared<AudioParam>("dopplerRate", "DPLR", 1.0, 0.0, 1200.f);
+        m_params.push_back(m_dopplerRate);
+
+        // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
+        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    }
+
+    SampledAudioNode2::~SampledAudioNode2()
+    {
+        clearSchedules();
+        delete _internals;
+
+        if (isInitialized()) 
+            uninitialize();
+    }
+
+    void SampledAudioNode2::clearSchedules()
+    {
+        Scheduled s;
+        while (_internals->incoming.try_dequeue(s)) {}
+        _internals->incoming.enqueue({ 0., 0,0,0, -2 });
+    }
+
+    void SampledAudioNode2::setBus(ContextRenderLock& r, std::shared_ptr<AudioBus> sourceBus)
+    {
+        // loop count of -3 means set the bus.
+        _internals->incoming.enqueue({ 0, 0, 0, 0, -3, sourceBus });
+        initialize();
+
+        // set the pending pointer, so that a synchronous call to getBus will reflect
+        // the value last scheduled. This eliminates a confusing sitatuion where getBus
+        // will not be useful until the scheduling queue is serviced
+        m_pendingSourceBus = sourceBus;
+    }
+
+    void SampledAudioNode2::schedule(double when)
+    {
+        std::shared_ptr<AudioBus> bus = m_sourceBus->valueBus();
+        if (!bus)
+            return;
+
+        _internals->incoming.enqueue({ when, 0, bus->length(), 0, 0 });
+        initialize();
+    }
+
+    void SampledAudioNode2::schedule(double when, int loopCount)
+    {
+        std::shared_ptr<AudioBus> bus = m_sourceBus->valueBus();
+        if (!bus)
+            return;
+
+        _internals->incoming.enqueue({ when, 0, bus->length(), 0, loopCount });
+        initialize();
+    }
+
+    void SampledAudioNode2::schedule(double when, double grainOffset, int loopCount)
+    {
+        std::shared_ptr<AudioBus> bus = m_sourceBus->valueBus();
+        if (!bus)
+            return;
+
+        float r = bus->sampleRate();
+        int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
+        int32_t grainEnd = bus->length();
+        if (grainStart < grainEnd)
+        {
+            _internals->incoming.enqueue({
+                when, 
+                grainStart, grainEnd, grainStart,
+                loopCount });
+        }
+        initialize();
+    }
+
+    void SampledAudioNode2::schedule(double when, double grainOffset, double grainDuration, int loopCount)
+    {
+        std::shared_ptr<AudioBus> bus = m_sourceBus->valueBus();
+        if (!bus)
+            return;
+
+        float r = bus->sampleRate();
+        int32_t grainStart = static_cast<int32_t>(grainOffset * r);
+        int32_t grainEnd = grainStart + static_cast<int32_t>(grainDuration * r);
+        if (grainEnd > bus->length())
+            grainEnd = bus->length();
+
+        if (grainStart < grainEnd)
+        {
+            _internals->incoming.enqueue({ when,
+                grainStart, grainEnd, grainStart,
+                loopCount });
+        }
+        initialize();
+    }
+
+    bool SampledAudioNode2::renderSample(ContextRenderLock& r, Scheduled& schedule, size_t destinationSampleOffset, size_t frameSize)
+    {
+        std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
+        AudioBus* dstBus = output(0)->bus(r);
+        size_t dstChannelCount = dstBus->numberOfChannels();
+        size_t srcChannelCount = srcBus->numberOfChannels();
+        ASSERT(dstChannelCount == srcChannelCount);
+
+        float* buffer = dstBus->channel(0)->mutableData();
+        float rate = totalPitchRate(r);
+        if (fabsf(rate - 1.f) < 1e-3f)
+        {
+            // no pitch modification
+            int write_index = destinationSampleOffset;
+            while (write_index < AudioNode::ProcessingSizeInFrames)
+            {
+                int count = AudioNode::ProcessingSizeInFrames - write_index;
+                int remainder = schedule.grain_end - schedule.cursor;
+                bool ending = remainder < count;
+                count = std::min(count, remainder);
+
+                for (int i = 0; i < srcChannelCount; ++i)
+                {
+                    float* buffer = dstBus->channel(i)->mutableData();
+                    VectorMath::vadd(srcBus->channel(i)->data() + schedule.cursor, 1, 
+                                     buffer + write_index, 1, buffer + write_index, 1, count);
+                }
+
+                schedule.cursor += count;
+                write_index += count;
+
+                if (ending)
+                {
+                    schedule.cursor = schedule.grain_start; // reset to start
+
+                    if (schedule.loopCount > 0)
+                        schedule.loopCount--;
+                    else if (schedule.loopCount < 0)
+                    {
+                        // infinite looping
+                    }
+                    else
+                    {
+                        schedule.loopCount = -3;    // signal retirement of the schedule
+                        break;                      // and stop the write loop
+                    }
+                }
+            }
+        }
+        else
+        {
+            // pitch modification
+            int written = 0;
+            uint32_t count = AudioNode::ProcessingSizeInFrames;
+            uint32_t start = destinationSampleOffset;
+            float read_index = schedule.cursor;
+            float const* srcBuf = srcBus->channel(0)->data();
+
+            while (written < AudioNode::ProcessingSizeInFrames)
+            {
+                if (schedule.when > r.context()->currentTime())
+                {
+                    start = (r.context()->currentTime() - schedule.when) * r.context()->sampleRate();
+                    count -= start;
+                }
+                if (count < schedule.grain_end - schedule.cursor)
+                    count = schedule.grain_end - schedule.cursor;
+
+                for (int i = 0; i < count; ++i)
+                {
+                    buffer[i + start] = srcBuf[static_cast<int>(read_index) + i];
+                    read_index += rate;
+                }
+
+                int read_index_i = static_cast<int>(read_index);
+                if (count - start < AudioNode::ProcessingSizeInFrames || read_index_i == schedule.grain_end)
+                {
+                    // deal with loopoing
+                    if (schedule.loopCount > 0)
+                    {
+                        schedule.loopCount--;
+                    }
+                    else if (schedule.loopCount < 0)
+                    {
+                    }
+                    read_index = static_cast<float>(schedule.grain_start);
+                    // else done.
+                }
+                written += count;
+            }
+            schedule.cursor = static_cast<uint32_t>(read_index);
+            /// @TODO FIR filter the interpolated data to make the interpolation less brassy.
+        }
+
+        dstBus->clearSilentFlag();
+        return true;
+    }
+
+
+    void SampledAudioNode2::process(ContextRenderLock& r, int framesToProcess)
+    {
+        AudioBus* dstBus = output(0)->bus(r);
+        size_t dstChannelCount = dstBus->numberOfChannels();
+        std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
+
+        // move requested starts to the internal schedule if there's a source bus.
+        // if there's no source bus, the schedule requests are discarded.
+        {
+            Scheduled s;
+            while (_internals->incoming.try_dequeue(s))
+            {
+                if (s.loopCount == -3)
+                {
+                    m_retainedSourceBus = s.sourceBus;
+                    m_sourceBus->setBus(s.sourceBus.get());
+                    srcBus = s.sourceBus;
+                }
+                else if (s.loopCount == -2)
+                    _internals->scheduled.clear();
+                else if (srcBus)
+                {
+                    _internals->scheduled.push_back(s);
+                }
+            }
+        }
+
+        // zero out the buffer for summing, or for silence
+        for (int i = 0; i < dstChannelCount; ++i)
+            output(0)->bus(r)->zero();
+
+        // silence the outputs if there's nothing to play.
+        int schedule_count = static_cast<int>(_internals->scheduled.size());
+        if (!schedule_count || !srcBus)
+            return;
+
+        // if there's something to play, conform the output channel count.
+        size_t srcChannelCount = srcBus->numberOfChannels();
+        if (dstChannelCount != srcChannelCount)
+        {
+            output(0)->setNumberOfChannels(r, srcChannelCount);
+            dstChannelCount = srcChannelCount;
+        }
+
+        // compute the frame timing in samples and seconds
+        uint64_t quantumStartFrame = r.context()->currentSampleFrame();
+        uint64_t quantumEndFrame = quantumStartFrame + static_cast<double>(AudioNode::ProcessingSizeInFrames);
+        double quantumDuration = static_cast<double>(AudioNode::ProcessingSizeInFrames) / r.context()->sampleRate();
+        double quantumStartTime = r.context()->currentTime();
+        double quantumEndTime = quantumStartTime + quantumDuration;
+
+        // is anything playing in this quantum?
+        for (int i = 0; i < schedule_count; ++i)
+        {
+            Scheduled& s = _internals->scheduled.at(i);
+            if (s.when < quantumDuration)
+            {
+                // if starting in this quantum compute an offset for a precise interframe start
+                size_t offset = s.when <= quantumStartFrame ? 0 : s.when - quantumStartFrame;
+                renderSample(r, s, offset, AudioNode::ProcessingSizeInFrames);
+                output(0)->bus(r)->clearSilentFlag();
+            }
+            else
+            {
+                // keep counting the scheduled item down
+                s.when -= quantumDuration;
+            }
+        }
+
+        // retire any schedules whose loopcount is -2, which means that renderSample signalled a finish
+        for (int i = 0; i < schedule_count; ++i)
+        {
+            if (_internals->scheduled.at(i).loopCount < -1)
+            {
+                if (schedule_count - 1 > i)
+                    _internals->scheduled.at(i) = _internals->scheduled.at(schedule_count - 1);
+                _internals->scheduled.pop_back();
+                --schedule_count;
+            }
+        }
+    }
+
+    /// @TODO change the interface:
+    /// // if true is returned, rate_array[0] applies to the entire quantum
+    /// // if the computed total rate has any illegal values, true will be returned, and a default rate of 1.f
+    /// bool SampledAudioNode2::totalPitchRate(ContextRenderLock& r, float*& rate);
+    float SampledAudioNode2::totalPitchRate(ContextRenderLock& r)
+    {
+        std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
+
+        // if there's no bus, pitchrate is defaulted.
+        if (true || !srcBus)
+            return 1.f;
+
+        double sampleRateFactor = sampleRateFactor = srcBus->sampleRate() / r.context()->sampleRate();
+
+        /// @fixme these values should be per sample, not per quantum
+        /// -or- they should be settings if they don't vary per sample
+        double basePitchRate = playbackRate()->value();
+
+        /// @fixme these values should be per sample, not per quantum
+        double totalRate = m_dopplerRate->value() * sampleRateFactor * basePitchRate;
+        totalRate *= pow(2, detune()->value() / 1200);
+
+        // Sanity check the total rate.  It's very important that the resampler not get any bad rate values.
+        totalRate = std::max(0.0, totalRate);
+
+        // Revisit these lower bounds if ever this node can compute ultra low resampling rates.
+        if (totalRate < 1.e-2f)
+            totalRate = 1;  // a value of zero is considered an illegal value so the default is imposed
+        totalRate = std::min(100.0, totalRate);
+
+        bool isTotalRateValid = !std::isnan(totalRate) && !std::isinf(totalRate);
+        if (!isTotalRateValid)
+            totalRate = 1.0;
+
+        return (float) totalRate;
+    }
+
+} // namespace lab
