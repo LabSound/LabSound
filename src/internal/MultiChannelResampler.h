@@ -25,10 +25,6 @@ public:
     void process(ContextRenderLock &, AudioSourceProvider *, AudioBus * destination, int framesToProcess);
 
 private:
-    // FIXME: the mac port can have a more highly optimized implementation based on CoreAudio
-    // instead of SincResampler. For now the default implementation will be used on all ports.
-    // https://bugs.webkit.org/show_bug.cgi?id=75118
-
     // Each channel will be resampled using a high-quality SincResampler.
     std::vector<std::unique_ptr<SincResampler>> m_kernels;
 
