@@ -20,10 +20,13 @@ class Spatializer;
 
 // StereoPannerNode is an AudioNode with one input and one output. It is
 // specifically designed for equal-power stereo panning.
+// irrespective of the number of input channels, the output channel count is always two.
+
 class StereoPannerNode : public AudioNode
 {
 public:
-    StereoPannerNode(AudioContext& ac);
+    StereoPannerNode() = delete;
+    explicit StereoPannerNode(AudioContext& ac);
     virtual ~StereoPannerNode();
 
     static const char* static_name() { return "StereoPanner"; }
@@ -41,6 +44,8 @@ private:
 
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
+
+    virtual void conformChannelCounts() override {};
 
     std::shared_ptr<AudioParam> m_pan;
 

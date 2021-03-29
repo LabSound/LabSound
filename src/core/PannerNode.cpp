@@ -491,25 +491,17 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioN
     if (!node)
         return;
 
-    // First check if this node is an SampledAudioNode.
-    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode *>(node))
+    // Go through all inputs to this node.
+    for (int i = 0; i < node->numberOfInputs(); ++i)
     {
-        bufferSourceNode->setPannerNode(this);
-    }
-    else
-    {
-        // Go through all inputs to this node.
-        for (int i = 0; i < node->numberOfInputs(); ++i)
-        {
-            auto input = node->input(i);
+        auto input = node->input(i);
 
-            // For each input, go through all of its connections, looking for SampledAudioNodes.
-            for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
-            {
-                auto connectedOutput = input->renderingOutput(r, j);
-                AudioNode * connectedNode = connectedOutput->sourceNode();
-                notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
-            }
+        // For each input, go through all of its connections, looking for SampledAudioNodes.
+        for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
+        {
+            auto connectedOutput = input->renderingOutput(r, j);
+            AudioNode * connectedNode = connectedOutput->sourceNode();
+            notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
         }
     }
 }

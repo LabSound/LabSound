@@ -61,10 +61,18 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
+    // the recorder will conform the number of output channels to the number of input
+    // in order that it can function as a pass-through node.
+    const int inputBusNumChannels = inputBus->numberOfChannels();
+    int outputBusNumChannels = outputBus->numberOfChannels();
+    if (inputBusNumChannels != outputBusNumChannels)
+    {
+        output(0)->setNumberOfChannels(r, inputBusNumChannels);
+        outputBusNumChannels = inputBusNumChannels;
+    }
+
     if (m_recording)
     {
-        const int inputBusNumChannels = inputBus->numberOfChannels();
-        const int outputBusNumChannels = outputBus->numberOfChannels();
         const int numChannels = std::min(inputBusNumChannels, outputBusNumChannels);
 
         std::vector<const float*> channels;
@@ -83,8 +91,7 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
             }
         }
 
-        // mix down the output, or interleave the output
-        // use the tightest loop possible since this is part of the processing step
+        // copy the output. @TODO this should be a memcpy
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (int c = 0; c < numChannels; ++c)
         {
