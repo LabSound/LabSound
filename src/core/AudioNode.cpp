@@ -16,8 +16,8 @@
 
 using namespace std;
 
-#define ASN_PRINT(...)
-//#define ASN_PRINT(a, ...) printf(a, ...)
+//#define ASN_PRINT(...)
+#define ASN_PRINT(a) printf(a)
 
 namespace lab
 {
@@ -155,6 +155,8 @@ void AudioNodeScheduler::start(double when)
         _playbackState == SchedulingState::PLAYING)
         return;
 
+    _stopWhen = std::numeric_limits<uint64_t>::max();
+
     // treat non finite, or max values as a cancellation of stopping or resetting
     if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
     {
@@ -162,7 +164,6 @@ void AudioNodeScheduler::start(double when)
             _playbackState == SchedulingState::RESETTING)
         {
             _playbackState = SchedulingState::PLAYING;
-            _stopWhen = std::numeric_limits<uint64_t>::max();
         }
         return;
     }
@@ -202,8 +203,8 @@ void AudioNodeScheduler::stop(double when)
 
 void AudioNodeScheduler::reset()
 {
-    _startWhen = std::numeric_limits<uint64_t>::max();;
-    _stopWhen = std::numeric_limits<uint64_t>::max();;
+    _startWhen = std::numeric_limits<uint64_t>::max();
+    _stopWhen = std::numeric_limits<uint64_t>::max();
     if (_playbackState != SchedulingState::UNSCHEDULED)
         _playbackState = SchedulingState::RESETTING;
 }

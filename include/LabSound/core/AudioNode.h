@@ -77,7 +77,8 @@ const char* schedulingStateName(SchedulingState);
 class AudioNodeScheduler
 {
 public:
-    AudioNodeScheduler(float sampleRate);
+    explicit AudioNodeScheduler() = delete;
+    explicit AudioNodeScheduler(float sampleRate);
     ~AudioNodeScheduler() = default;
 
     // Scheduling.
@@ -100,8 +101,8 @@ public:
     uint64_t _epoch = 0;        // the epoch rendered currently in the busses
     uint64_t _epochLength = 0;  // number of frames in current epoch
 
-    uint64_t _startWhen = 0;    // requested start in epochal coordinate system
-    uint64_t _stopWhen = 0;     // requested end in epochal coordinate system
+    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();    // requested start in epochal coordinate system
+    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();     // requested end in epochal coordinate system
 
     int _renderOffset = 0; // where rendering starts in the current frame
     int _renderLength = 0; // number of rendered frames in the current frame 
@@ -228,8 +229,6 @@ public:
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
 protected:
-    virtual void clearPannerNode() {}
-
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput> input);
