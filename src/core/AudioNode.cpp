@@ -350,8 +350,9 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     ProfileScope selfScope(totalTime);
     graphTime.zero();
 
-    if (_scheduler._playbackState < SchedulingState::FADE_IN ||
-        _scheduler._playbackState == SchedulingState::FINISHED)
+    if (isScheduledNode() && 
+        (_scheduler._playbackState < SchedulingState::FADE_IN ||
+         _scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
         return;
@@ -363,6 +364,10 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     int start_zero_count = _scheduler._renderOffset;
     int final_zero_start = _scheduler._renderOffset + _scheduler._renderLength;
     int final_zero_count = bufferSize - final_zero_start;
+
+    // if the input counts need to match the output counts,
+    // do it here before pulling inputs
+    conformChannelCounts();
 
     // get inputs in preparation for processing
     {
@@ -458,19 +463,18 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     selfScope.finalize(); // ensure profile is not prematurely destructed
 }
 
-void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
+void AudioNode::conformChannelCounts()
 {
-    ASSERT(r.context());
+    return;
 
-    if (!input || input != this->input(0).get())
-        return;
-
-    int numberOfChannels = input->numberOfChannels(r);
+    // no generic count conforming. nodes are responsible if they are going to do it at all
+/*
+    int inputChannelCount = input->numberOfChannels(r);
 
     bool channelCountChanged = false;
     for (int i = 0; i < numberOfOutputs() && !channelCountChanged; ++i)
     {
-        channelCountChanged = isInitialized() && numberOfChannels != output(i)->numberOfChannels();
+        channelCountChanged = isInitialized() && inputChannelCount != output(i)->numberOfChannels();
     }
 
     if (channelCountChanged)
@@ -479,10 +483,19 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
         for (int i = 0; i < numberOfOutputs(); ++i)
         {
             // This will propagate the channel count to any nodes connected further down the chain...
-            output(i)->setNumberOfChannels(r, numberOfChannels);
+            output(i)->setNumberOfChannels(r, inputChannelCount);
         }
         initialize();
     }
+    */
+}
+
+void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
+{
+    ASSERT(r.context());
+
+    if (!input || input != this->input(0).get())
+        return;
 
     for (auto & in : m_inputs)
     {

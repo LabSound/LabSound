@@ -189,6 +189,8 @@ public:
     // Called from main thread.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
 
+    virtual void conformChannelCounts();
+
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
     virtual bool propagatesSilence(ContextRenderLock & r) const;

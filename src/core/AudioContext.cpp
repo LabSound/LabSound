@@ -96,7 +96,7 @@ struct AudioContext::Internals
             return;
 
         nqr::AudioData fileData;
-        fileData.samples.resize(debugBufferIndex);
+        fileData.samples.resize(debugBufferIndex + 32);
         fileData.channelCount = 1;
         float* dst = fileData.samples.data();
         memcpy(dst, debugBuffer.data(), sizeof(float) * debugBufferIndex);
