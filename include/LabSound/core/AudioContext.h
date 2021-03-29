@@ -105,6 +105,9 @@ public:
     void enqueueEvent(std::function<void()> &);
     void dispatchEvents();
 
+    void appendDebugBuffer(AudioBus* bus, int channel, int count);
+    void flushDebugBuffer(char const* const wavFilePath);
+
 private:
     // @TODO migrate most of the internal datastructures such as PendingConnection into Internals as there's no need to expose these at all.
     struct Internals;

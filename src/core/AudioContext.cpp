@@ -16,6 +16,7 @@
 #include "internal/Assertions.h"
 
 #include "concurrentqueue/concurrentqueue.h"
+#include "libnyquist/Encoders.h"
 
 #include <assert.h>
 #include <queue>
@@ -66,7 +67,56 @@ struct AudioContext::Internals
     moodycamel::ConcurrentQueue<std::function<void()>> enqueuedEvents;
     moodycamel::ConcurrentQueue<PendingNodeConnection> pendingNodeConnections;
     moodycamel::ConcurrentQueue<PendingParamConnection> pendingParamConnections;
+
+    std::vector<float> debugBuffer;
+    const int debugBufferCapacity = 1024 * 1024;
+    int debugBufferIndex = 0;
+
+    void appendDebugBuffer(AudioBus* bus, int channel, int count)
+    {
+        if (!bus || bus->numberOfChannels() < channel || !count)
+            return;
+
+        if (!debugBuffer.size())
+        {
+            debugBuffer.resize(debugBufferCapacity);
+            memset(debugBuffer.data(), 0, debugBufferCapacity);
+        }
+
+        if (debugBufferIndex + count > debugBufferCapacity)
+            debugBufferIndex = 0;
+
+        memcpy(debugBuffer.data() + debugBufferIndex, bus->channel(channel)->data(), sizeof(float) * count);
+        debugBufferIndex += count;
+    }
+
+    void flushDebugBuffer(char const* const wavFilePath)
+    {
+        if (!debugBufferIndex || !wavFilePath)
+            return;
+
+        nqr::AudioData fileData;
+        fileData.samples.resize(debugBufferIndex);
+        fileData.channelCount = 1;
+        float* dst = fileData.samples.data();
+        memcpy(dst, debugBuffer.data(), sizeof(float) * debugBufferIndex);
+        fileData.sampleRate = static_cast<int>(44100);
+        fileData.sourceFormat = nqr::PCM_FLT;
+        nqr::EncoderParams params = { 1, nqr::PCM_FLT, nqr::DITHER_NONE };
+        int err = nqr::encode_wav_to_disk(params, &fileData, wavFilePath);
+        debugBufferIndex = 0;
+    }
 };
+
+void AudioContext::appendDebugBuffer(AudioBus* bus, int channel, int count)
+{
+    m_internal->appendDebugBuffer(bus, channel, count);
+}
+
+void AudioContext::flushDebugBuffer(char const* const wavFilePath)
+{
+    m_internal->flushDebugBuffer(wavFilePath);
+}
 
 // Constructor for realtime rendering
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
