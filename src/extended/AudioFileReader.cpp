@@ -89,6 +89,22 @@ std::shared_ptr<AudioBus> MakeBusFromFile(const std::string & path, bool mixToMo
     return MakeBusFromFile(path.c_str(), mixToMono);
 }
 
+std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono, float targetSampleRate)
+{
+    auto bus = MakeBusFromFile(filePath, false);
+    if (bus)
+    {
+        return AudioBus::createBySampleRateConverting(bus.get(), mixToMono, targetSampleRate);
+    }
+    return bus;
+}
+
+std::shared_ptr<AudioBus> MakeBusFromFile(const std::string & path, bool mixToMono, float targetSampleRate)
+{
+    return MakeBusFromFile(path.c_str(), mixToMono, targetSampleRate);
+}
+
+
 std::shared_ptr<AudioBus> MakeBusFromMemory(const std::vector<uint8_t> & buffer, bool mixToMono)
 {
     std::lock_guard<std::mutex> lock(g_fileIOMutex);

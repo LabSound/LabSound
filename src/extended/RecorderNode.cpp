@@ -135,11 +135,6 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         fileData->channelCount = 1;
         float* dst = fileData->samples.data();
         memcpy(dst, clear_data[0].data(), sizeof(float) * numSamples);
-        for (size_t i = 0; i < numSamples; i++)
-        {
-            for (size_t j = 0; j < recordedChannelCount; ++j)
-                *dst++ = clear_data[j][i];
-        }
     }
     else if (recordedChannelCount > 1 && mixToMono)
     {
