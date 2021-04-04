@@ -25,6 +25,7 @@ public:
     virtual void process(ContextRenderLock &, const AudioBus * source, AudioBus * destination, int framesToProcess);
 
     // curve is moved into setCurve, and contents will be mutated safely
+    /// @TODO use some other mechanism to achieve lockfree operation
     void setCurve(std::vector<float> && curve);
 
     struct Curve

@@ -71,6 +71,12 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
         numberOfDestChannels = output(0)->numberOfChannels();
     }
 
+    int numberOfActiveBusChannels = input(0)->bus(r)->numberOfChannels();
+    if (numberOfActiveBusChannels != numberOfSourceChannels)
+    {
+        checkNumberOfChannelsForInput(r, input(0).get());
+    }
+
     AudioBus* outputBus = output(0)->bus(r);
     ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
 

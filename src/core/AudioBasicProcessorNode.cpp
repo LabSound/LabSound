@@ -56,7 +56,15 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 
         // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
         if (!input(0)->isConnected())
+        {
             sourceBus->zero();
+            return;
+        }
+
+        int srcChannelCount = input(0)->numberOfChannels(r);
+        int dstChannelCount = destinationBus->numberOfChannels();
+        if (srcChannelCount != dstChannelCount)
+            output(0)->setNumberOfChannels(r, srcChannelCount);
 
         // process entire buffer
         processor()->process(r, sourceBus, destinationBus, bufferSize);

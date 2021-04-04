@@ -22,7 +22,7 @@ namespace lab
 // We ASSERT the delay values used in process() with this value.
 const double MaxDelayTimeSeconds = 0.002;
 const int UninitializedAzimuth = -1;
-const uint32_t RenderingQuantum = 128;
+const uint32_t RenderingQuantum = AudioNode::ProcessingSizeInFrames;
 
 HRTFPanner::HRTFPanner(const float sampleRate)
     : Panner(sampleRate, PanningMode::HRTF)

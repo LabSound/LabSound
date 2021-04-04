@@ -17,15 +17,9 @@
 
 using namespace lab;
 
-///  @TODO get rid of the Data struct and move the bus to the class
-struct AudioParam::Data
-{
-    std::unique_ptr<AudioBus> m_internalSummingBus;
-};
-
 AudioBus const* const AudioParam::bus() const
 {
-    return m_data->m_internalSummingBus.get();
+    return m_internalSummingBus.get();
 }
 
 
@@ -43,7 +37,6 @@ AudioParam::AudioParam(const std::string & name, const std::string & shortName, 
     , m_units(units)
     , m_smoothedValue(defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
-    , m_data(new Data())
 {
 }
 
@@ -147,14 +140,14 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
 
     // LabSound: For some reason a bus was temporarily created here and the results discarded.
     // Bug still exists in WebKit top of tree.
-    if (m_data->m_internalSummingBus && m_data->m_internalSummingBus->length() < numberOfValues)
-        m_data->m_internalSummingBus.reset();
+    if (m_internalSummingBus && m_internalSummingBus->length() < numberOfValues)
+        m_internalSummingBus.reset();
 
-    if (!m_data->m_internalSummingBus)
-        m_data->m_internalSummingBus.reset(new AudioBus(1, numberOfValues));
+    if (!m_internalSummingBus)
+        m_internalSummingBus.reset(new AudioBus(1, numberOfValues));
 
     // point the summing bus at the values array
-    m_data->m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
+    m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
     for (int i = 0; i < connectionCount; ++i)
     {
@@ -172,7 +165,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
         /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
         /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
         /// have a bias of zero. It seems like sum or override should be a setting of some sort...
-        m_data->m_internalSummingBus->sumFrom(*connectionBus);
+        m_internalSummingBus->sumFrom(*connectionBus);
     }
 }
 

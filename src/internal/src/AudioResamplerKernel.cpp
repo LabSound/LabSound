@@ -13,7 +13,7 @@ using namespace std;
 namespace lab
 {
 
-const int AudioResamplerKernel::MaxFramesToProcess = 128;
+const int AudioResamplerKernel::MaxFramesToProcess = AudioNode::ProcessingSizeInFrames;
 
 AudioResamplerKernel::AudioResamplerKernel(AudioResampler * resampler)
     : m_resampler(resampler)

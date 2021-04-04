@@ -153,7 +153,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
 
     // Note! RtAudio has a hard limit on a power of two buffer size, non-power of two sizes will result in
     // heap corruption, for example, when dac.stopStream() is invoked.
-    uint32_t bufferFrames = 128;
+    uint32_t bufferFrames = AudioNode::ProcessingSizeInFrames;
 
     try
     {

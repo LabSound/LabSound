@@ -55,7 +55,6 @@ public:
     double smoothingTimeConstant() const;
 
     // frequency bins, reported in db
-    // @TODO, add a normalization option to perform the same normalization as getByteFrequency data.
     void getFloatFrequencyData(std::vector<float> & array);
 
     // frequency bins, reported as a linear mapping of minDecibels to maxDecibles onto 0-255.
