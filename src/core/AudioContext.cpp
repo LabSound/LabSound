@@ -288,38 +288,45 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                 }
                 break;
 
-                // @TODO disconnect should occur not in the next quantum, but when node->disconnectionReady() is true
                 case ConnectionOperationKind::FinishDisconnect:
                 {
                     if (node_connection.duration > 0)
                     {
-                        /// @TODO the frame size should be passed in to handlePreRenderTasks
-                        node_connection.duration -= 128.f / sampleRate();
+                        node_connection.duration -= AudioNode::ProcessingSizeInFrames / sampleRate();
                         requeued_connections.push_back(node_connection);
                         continue;
                     }
 
                     if (node_connection.source && node_connection.destination)
                     {
-                        AudioNodeInput::disconnect(gLock, node_connection.destination->input(node_connection.destIndex), node_connection.source->output(node_connection.srcIndex));
+                        if (!node_connection.destination->disconnectionReady() || !node_connection.source->disconnectionReady())
+                            requeued_connections.push_back(node_connection);
+                        else
+                            AudioNodeInput::disconnect(gLock, node_connection.destination->input(node_connection.destIndex), node_connection.source->output(node_connection.srcIndex));
                     }
                     else if (node_connection.destination)
                     {
-                        for (int in = 0; in < node_connection.destination->numberOfInputs(); ++in)
-                        {
-                            auto input= node_connection.destination->input(in);
-                            if (input)
-                                AudioNodeInput::disconnectAll(gLock, input);
-                        }
+                        if (!node_connection.destination->disconnectionReady())
+                            requeued_connections.push_back(node_connection);
+                        else
+                            for (int in = 0; in < node_connection.destination->numberOfInputs(); ++in)
+                            {
+                                auto input= node_connection.destination->input(in);
+                                if (input)
+                                    AudioNodeInput::disconnectAll(gLock, input);
+                            }
                     }
                     else if (node_connection.source)
                     {
-                        for (int out = 0; out < node_connection.source->numberOfOutputs(); ++out)
-                        {
-                            auto output = node_connection.source->output(out);
-                            if (output)
-                                AudioNodeOutput::disconnectAll(gLock, output);
-                        }
+                        if (!node_connection.destination->disconnectionReady())
+                            requeued_connections.push_back(node_connection);
+                        else
+                            for (int out = 0; out < node_connection.source->numberOfOutputs(); ++out)
+                            {
+                                auto output = node_connection.source->output(out);
+                                if (output)
+                                    AudioNodeOutput::disconnectAll(gLock, output);
+                            }
                     }
                 }
                 break;
