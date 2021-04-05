@@ -299,16 +299,16 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 
                     if (node_connection.source && node_connection.destination)
                     {
-                        if (!node_connection.destination->disconnectionReady() || !node_connection.source->disconnectionReady())
-                            requeued_connections.push_back(node_connection);
-                        else
+                        //if (!node_connection.destination->disconnectionReady() || !node_connection.source->disconnectionReady())
+                        //    requeued_connections.push_back(node_connection);
+                        //else
                             AudioNodeInput::disconnect(gLock, node_connection.destination->input(node_connection.destIndex), node_connection.source->output(node_connection.srcIndex));
                     }
                     else if (node_connection.destination)
                     {
-                        if (!node_connection.destination->disconnectionReady())
-                            requeued_connections.push_back(node_connection);
-                        else
+                        //if (!node_connection.destination->disconnectionReady())
+                        //    requeued_connections.push_back(node_connection);
+                        //else
                             for (int in = 0; in < node_connection.destination->numberOfInputs(); ++in)
                             {
                                 auto input= node_connection.destination->input(in);
@@ -318,9 +318,9 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                     }
                     else if (node_connection.source)
                     {
-                        if (!node_connection.destination->disconnectionReady())
-                            requeued_connections.push_back(node_connection);
-                        else
+                        //if (!node_connection.destination->disconnectionReady())
+                        //    requeued_connections.push_back(node_connection);
+                        //else
                             for (int out = 0; out < node_connection.source->numberOfOutputs(); ++out)
                             {
                                 auto output = node_connection.source->output(out);
