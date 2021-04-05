@@ -11,7 +11,7 @@ namespace lab
 {
 class WaveShaperProcessor;
 
-class WaveShaperNode : public AudioBasicProcessorNode
+class WaveShaperNode : public AudioNode
 {
     WaveShaperProcessor * waveShaperProcessor();
 
@@ -25,6 +25,21 @@ public:
     // setCurve will take ownership of curve
     void setCurve(std::vector<float> && curve);
     std::vector<float> & curve();
+
+    // AudioNode
+    virtual void process(ContextRenderLock &, int bufferSize) override;
+    virtual void reset(ContextRenderLock &) override;
+    virtual void initialize() override;
+    virtual void uninitialize() override;
+
+    // Returns the number of channels for both the input and the output.
+    int numberOfChannels();
+
+protected:
+    virtual double tailTime(ContextRenderLock & r) const override;
+    virtual double latencyTime(ContextRenderLock & r) const override;
+
+    std::unique_ptr<AudioProcessor> m_processor;
 };
 
 }  // namespace lab
