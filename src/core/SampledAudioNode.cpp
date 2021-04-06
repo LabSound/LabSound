@@ -371,15 +371,13 @@ namespace lab {
             Scheduled& s = _internals->scheduled.at(i);
             if (s.when < quantumDuration)   // has s.when counted down to within this quantum?
             {
-                size_t offset = (s.when > quantumStartTime) ? 0 : static_cast<size_t>(s.when * r.context()->sampleRate());
+                size_t offset = (s.when < quantumStartTime) ? 0 : static_cast<size_t>(s.when * r.context()->sampleRate());
                 renderSample(r, s, offset, AudioNode::ProcessingSizeInFrames);
                 output(0)->bus(r)->clearSilentFlag();
             }
-            else
-            {
-                // keep counting the scheduled item down
-                s.when -= quantumDuration;
-            }
+
+            // keep counting the scheduled item down
+            s.when -= quantumDuration;
         }
 
         // retire any schedules whose loopcount is -2, which means that renderSample signalled a finish
