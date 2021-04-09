@@ -263,6 +263,7 @@ namespace lab
         if (numberOfInputChannels != output(0)->numberOfChannels())
         {
             output(0)->setNumberOfChannels(r, numberOfInputChannels);
+            destinationBus = output(0)->bus(r);
         }
 
         // process entire buffer

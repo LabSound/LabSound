@@ -63,18 +63,18 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
     int numberOfSourceChannels = input(0)->numberOfChannels(r);
-    int numberOfDestChannels = output(0)->numberOfChannels();
-    if (numberOfDestChannels != numberOfSourceChannels)
-    {
-        output(0)->setNumberOfChannels(r, numberOfSourceChannels);
-        output(0)->updateRenderingState(r);
-        numberOfDestChannels = output(0)->numberOfChannels();
-    }
-
     int numberOfActiveBusChannels = input(0)->bus(r)->numberOfChannels();
     if (numberOfActiveBusChannels != numberOfSourceChannels)
     {
         checkNumberOfChannelsForInput(r, input(0).get());
+    }
+
+    int numberOfDestChannels = output(0)->numberOfChannels();
+    if (numberOfDestChannels != numberOfActiveBusChannels)
+    {
+        output(0)->setNumberOfChannels(r, numberOfActiveBusChannels);
+        output(0)->updateRenderingState(r);
+        numberOfDestChannels = output(0)->numberOfChannels();
     }
 
     AudioBus* outputBus = output(0)->bus(r);

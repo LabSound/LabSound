@@ -356,6 +356,7 @@ namespace lab {
         {
             output(0)->setNumberOfChannels(r, srcChannelCount);
             dstChannelCount = srcChannelCount;
+            dstBus = output(0)->bus(r);
         }
 
         // compute the frame timing in samples and seconds

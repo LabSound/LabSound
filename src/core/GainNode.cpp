@@ -64,6 +64,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     {
         output(0)->setNumberOfChannels(r, inputBusChannelCount);
         outputBusChannelCount = inputBusChannelCount;
+        outputBus = output(0)->bus(r);
     }
 
     if (gain()->hasSampleAccurateValues())

@@ -61,7 +61,7 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
             return;
         }
 
-        int srcChannelCount = input(0)->numberOfChannels(r);
+        int srcChannelCount = sourceBus->numberOfChannels();
         int dstChannelCount = destinationBus->numberOfChannels();
         if (srcChannelCount != dstChannelCount)
         {
