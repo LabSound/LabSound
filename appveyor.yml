@@ -4,8 +4,8 @@ image: Visual Studio 2019
 
 environment:
   matrix:
-    - CMAKE_PLATFORM: "Visual Studio 15 2017"
-    - CMAKE_PLATFORM: "Visual Studio 15 2017 Win64"
+#    - CMAKE_PLATFORM: "Visual Studio 15 2017"
+#    - CMAKE_PLATFORM: "Visual Studio 15 2017 Win64"
     - CMAKE_PLATFORM: "Visual Studio 16 2019"
     - CMAKE_PLATFORM: "Visual Studio 16 2019 Win64"
 
