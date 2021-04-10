@@ -7,6 +7,7 @@
 # Will create a target named LabSound
 
 set(LIBSAMPLERATE_INSTALL OFF)
+set(LIBSAMPLERATE_EXAMPLES OFF)
 add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
