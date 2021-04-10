@@ -11,8 +11,7 @@
 #include "LabSound/core/ChannelMergerNode.h"
 #include "LabSound/core/ChannelSplitterNode.h"
 #include "LabSound/core/GainNode.h"
-
-#include "LabSound/extended/BPMDelay.h"
+#include "LabSound/extended/BPMDelayNode.h"
 
 namespace lab
 {
