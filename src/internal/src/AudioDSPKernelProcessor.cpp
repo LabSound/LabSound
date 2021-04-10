@@ -5,6 +5,7 @@
 #include "internal/AudioDSPKernelProcessor.h"
 #include "internal/Assertions.h"
 #include "internal/AudioDSPKernel.h"
+#include <algorithm>
 
 namespace lab
 {
