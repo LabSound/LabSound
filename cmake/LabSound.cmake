@@ -41,14 +41,14 @@ elseif(NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
 endif()
 
 if (LABSOUND_USE_MINIAUDIO)
-    message(INFO, "Using miniaudio backend")
+    message(STATUS "Using miniaudio backend")
     set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
         "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
     )
 elseif (LABSOUND_USE_RTAUDIO)
-    message(INFO, "Using RtAudio backend")
+    message(STATUS "Using RtAudio backend")
     set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"

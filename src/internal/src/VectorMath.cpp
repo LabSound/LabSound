@@ -19,6 +19,7 @@
 #include <arm_neon.h>
 #endif
 
+#include <cstdint>
 #include <algorithm>
 #include <math.h>
 
