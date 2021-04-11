@@ -1,4 +1,4 @@
-name: CMake-macOS
+name: CMake-Ubuntu
 
 on: [push]
 
@@ -12,7 +12,7 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -21,6 +21,46 @@ jobs:
 
     # cache/install dependencies
     # see - https://raymii.org/s/articles/Github_Actions_cpp_boost_cmake_speedup.html
+
+    - name: Cache pulseaudio
+      uses: actions/cache@v1.0.3
+      id: cache-pulseaudio
+      with:
+        path: "~/pulseaudio"
+        key: pulseaudio
+    - name: Install pulseaudio
+      env:
+        CACHE_HIT: ${{steps.cache-pulseaudio.outputs.cache-hit}}
+      run: |
+        if [[ "$CACHE_HIT" == 'true' ]]; then
+          sudo cp --force --recursive ~/pulseaudio/* /
+        else
+          sudo apt-get update && sudo apt-get install -yq pulseaudio
+          mkdir -p ~/pulseaudio
+          for dep in pulseaudio; do
+              dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/pulseaudio/
+          done
+        fi
+
+    - name: Cache libpulse-dev
+      uses: actions/cache@v1.0.3
+      id: cache-libpulse-dev
+      with:
+        path: "~/libpulse-dev"
+        key: libpulse-dev
+    - name: Install libpulse-dev
+      env:
+        CACHE_HIT: ${{steps.cache-libpulse-dev.outputs.cache-hit}}
+      run: |
+        if [[ "$CACHE_HIT" == 'true' ]]; then
+          sudo cp --force --recursive ~/libpulse-dev/* /
+        else
+          sudo apt-get update && sudo apt-get install -yq libpulse-dev
+          mkdir -p ~/libpulse-dev
+          for dep in libpulse-dev; do
+              dpkg -L $dep | while IFS= read -r f; do if test -f $f; then echo $f; fi; done | xargs cp --parents --target-directory ~/libpulse-dev/
+          done
+        fi
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
