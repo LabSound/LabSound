@@ -1,8 +1,10 @@
 
 
 ![macOS](https://github.com/LabSound/LabSound/actions/workflows/cmake-macos.yml/badge.svg)
+![iOS](https://github.com/LabSound/LabSound/actions/workflows/cmake-ios.yml/badge.svg)
 ![Windows](https://github.com/LabSound/LabSound/actions/workflows/cmake-windows.yml/badge.svg)
-![Ubuntu](https://github.com/LabSound/LabSound/actions/workflows/cmake-ubuntu.yml/badge.svg)
+![Linux](https://github.com/LabSound/LabSound/actions/workflows/cmake-ubuntu.yml/badge.svg)
+![Android](https://github.com/LabSound/LabSound/actions/workflows/cmake-android.yml/badge.svg)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/LabSound/LabSound/master/assets/images/labsound_4x3.png"/>
