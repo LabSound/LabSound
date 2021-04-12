@@ -1,10 +1,23 @@
 
-### In progress
-----------------
 
-## dev
-# 14 Mar 2019
+## v1.0.1
+# 11 April 2021
 
+- New platforms: Linux, Raspberry Pi, iOS, Android, in addition to macOS and Windows.
+- various fixes to regressions in SampledAudioNode
+- add accessors to expose node parameters for integration into DAWs
+- various platform fixes for iOS and Android
+- Github Actions now managing the CI
+
+## v1.0
+# 15 Jan 2021
+
+This 1.0 release finalizes the API with functionality that allows full introspection of all nodes and attributes. To go with this 1.0, LabSoundGraphToy is also released at https://github.com/LabSound/LabSoundGraphToy to enable exploration of the library, its nodes, and its functionality.
+
+
+- Much thread safety introduced
+- ADSRNode now has a gate param that can be used to schedule note on and off
+- Profiling system added
 - Node scheduling reworked
 - Audio popping mitigated
 - RecorderNode defers mix to down to save
@@ -17,13 +30,11 @@
 - Updated use of data types to conform to LabSound conventions
 - New GranulationNode
 - fixed almost all of the compiler warnings
-- removed bang in favor of an _onStart callback that allows rescheduling in the processing call
+- removed bang in favor of an onStart callback that allows rescheduling in the processing call
 
-## merge-to-master
-------------------
 
 ## v0.14.0 Release Candidate
-# XX Mar 2020
+# 15 Mar 2020
 
 - Removed many custom backends in favor of RtAudio and miniaudio
 - Consolidated demos into a single header
@@ -58,7 +69,7 @@
 ## v0.11.0 Alpha
 # 4 Jan 2018
 
-- Numerous bug and maintenance fixes. 
+- Numerous bug and maintenance fixes.
 - A cmake build system.
 
 ## v0.10.0 Alpha
