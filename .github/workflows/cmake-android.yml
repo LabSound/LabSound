@@ -1,4 +1,4 @@
-name: CMake-Ubuntu
+name: CMake-Android
 
 on: [push]
 
@@ -19,11 +19,14 @@ jobs:
       with:
         submodules: 'recursive'
 
-    # install dependencies
-    - name: pulseaudio
-      run: sudo apt-get update && sudo apt-get install -yq pulseaudio
-    - name: libpulse-dev
-      run: sudo apt-get update && sudo apt-get install -yq libpulse-dev
+    - name: set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+
+    # cache/install dependencies
+    # see - https://raymii.org/s/articles/Github_Actions_cpp_boost_cmake_speedup.html
 
     - name: Create Build Environment
       # Some projects don't allow in-source building, so create a separate build directory
@@ -35,7 +38,8 @@ jobs:
       # access regardless of the host operating system
       shell: bash
       working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+    -DANDROID_ABI=$ABI -DANDROID_NATIVE_API_LEVEL=$MINSDKVERSION $OTHER_ARGS
 
     - name: Build
       working-directory: ${{github.workspace}}/build
