@@ -8,12 +8,6 @@
   <img src="https://raw.githubusercontent.com/LabSound/LabSound/master/assets/images/labsound_4x3.png"/>
 </p>
 
-macOS | Windows | Linux |
------ | ------- | -------
-[![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound) | [![Build status](https://ci.appveyor.com/api/projects/status/k6n5ib48t7q8wwlc?svg=true)](https://ci.appveyor.com/project/ddiakopoulos/labsound) | [![Build Status](https://travis-ci.org/LabSound/LabSound.svg)](https://travis-ci.org/LabSound/LabSound)
------------------
-
-
 LabSound is a C++ graph-based audio engine. LabSound originated as a fork of WebKit's WebAudio implementation, as used in Google's Chrome and Apple's Safari.
 
 LabSound implements many aspects of the WebAudio specification while extending its functionality with an improved API, new graph nodes, bugfixes, and performance improvements.
