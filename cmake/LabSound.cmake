@@ -42,11 +42,19 @@ endif()
 
 if (LABSOUND_USE_MINIAUDIO)
     message(STATUS "Using miniaudio backend")
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
-    )
+    if (IOS)
+        set(labsnd_backend
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+        )
+    else()
+        set(labsnd_backend
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+        )
+    endif()
 elseif (LABSOUND_USE_RTAUDIO)
     message(STATUS "Using RtAudio backend")
     set(labsnd_backend
