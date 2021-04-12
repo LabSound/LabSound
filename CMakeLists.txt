@@ -1,10 +1,21 @@
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.13)
 include_guard()
 
 project(LabSound)
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# default backend set up
+
+if (WIN32)
+elseif (APPLE)
+else()
+    if (NOT LABSOUND_JACK AND NOT LABSOUND_PULSE AND NOT LABSOUND_ASOUND)
+        message(STATUS "No Linux backend specified, defaulting to Pulse.")
+        set(LABSOUND_PULSE ON)
+    endif()
+endif()
 
 if (LABSOUND_ASOUND)
     set(LIBNYQUIST_ASOUND ON)
@@ -16,12 +27,14 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
+# turn off building libnyquist samples
+set(BUILD_EXAMPLE OFF)
 add_subdirectory(third_party/libnyquist)
 
 include(cmake/common.cmake)
 include(cmake/LabSound.cmake)
 
-if (NOT ANDROID)
+if (NOT ANDROID AND NOT IOS)
     include(cmake/examples.cmake)
 endif()
 

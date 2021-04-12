@@ -27,12 +27,12 @@ elseif (APPLE)
 elseif (WIN32)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
     option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
-elseif (UNIX)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 elseif (ANDROID)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
     option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+elseif (UNIX)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
 else ()
     message(FATAL, " Untested platform. Please try miniaudio and report results on the LabSound issues page")
 endif()
@@ -44,14 +44,22 @@ elseif(NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
 endif()
 
 if (LABSOUND_USE_MINIAUDIO)
-    message(INFO, "Using miniaudio backend")
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-        "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
-    )
+    message(STATUS "Using miniaudio backend")
+    if (IOS)
+        set(labsnd_backend
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+        )
+    else()
+        set(labsnd_backend
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+        )
+    endif()
 elseif (LABSOUND_USE_RTAUDIO)
-    message(INFO, "Using RtAudio backend")
+    message(STATUS "Using RtAudio backend")
     set(labsnd_backend
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
         "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
