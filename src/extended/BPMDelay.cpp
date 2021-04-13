@@ -7,7 +7,7 @@
 #include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/AudioContextLock.h"
-#include "LabSound/extended/BPMDelay.h"
+#include "LabSound/extended/BPMDelayNode.h"
 
 #include <iostream>
 #include <vector>
