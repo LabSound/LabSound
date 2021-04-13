@@ -35,23 +35,24 @@
 // LabSound Extended Public API
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioFileReader.h"
+#include "LabSound/extended/BPMDelayNode.h"
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/DiodeNode.h"
 #include "LabSound/extended/FunctionNode.h"
 #include "LabSound/extended/GranulationNode.h"
 #include "LabSound/extended/NoiseNode.h"
-#include "LabSound/extended/PWMNode.h"
+//#include "LabSound/extended/PdNode.h"
 #include "LabSound/extended/PeakCompNode.h"
 #include "LabSound/extended/PingPongDelayNode.h"
+#include "LabSound/extended/PolyBLEPNode.h"
 #include "LabSound/extended/PowerMonitorNode.h"
+#include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/RecorderNode.h"
+#include "LabSound/extended/SfxrNode.h"
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SupersawNode.h"
-#include "LabSound/extended/SfxrNode.h"
-#include "LabSound/extended/PdNode.h"
-#include "LabSound/extended/PolyBLEPNode.h"
 
 namespace lab
 {

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/LabSound.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/LabSound.h"
-
 #include "LabSound/extended/RecorderNode.h"
 #include "internal/Assertions.h"
 
@@ -14,23 +13,26 @@
 using namespace lab;
 
 RecorderNode::RecorderNode(AudioContext& r, int channelCount)
-    : AudioBasicInspectorNode(r, channelCount)
+    : AudioNode(r)
 {
     m_sampleRate = r.sampleRate();
-
     m_channelCount = channelCount;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
 RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
-    : AudioBasicInspectorNode(ac, outConfig.desired_channels)
+    : AudioNode(ac)
 {
     m_sampleRate = outConfig.desired_samplerate;
     m_channelCount = outConfig.desired_channels;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
@@ -39,6 +41,7 @@ RecorderNode::~RecorderNode()
     uninitialize();
 }
 
+
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
@@ -46,66 +49,70 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
     if (!isInitialized() || !input(0)->isConnected())
     {
         if (outputBus)
-        {
             outputBus->zero();
-        }
         return;
     }
 
-    AudioBus * bus = input(0)->bus(r);
-    bool isBusGood = bus && (bus->numberOfChannels() > 0) && (bus->channel(0)->length() >= bufferSize);
-
-    ASSERT(isBusGood);
-    if (!isBusGood)
+    AudioBus* inputBus = input(0)->bus(r);
+    if (!inputBus || !inputBus->numberOfChannels())
     {
-        outputBus->zero();
+        if (outputBus)
+            outputBus->zero();
         return;
+    }
+
+    // the recorder will conform the number of output channels to the number of input
+    // in order that it can function as a pass-through node.
+    const int inputBusNumChannels = inputBus->numberOfChannels();
+    int outputBusNumChannels = outputBus->numberOfChannels();
+    if (inputBusNumChannels != outputBusNumChannels)
+    {
+        output(0)->setNumberOfChannels(r, inputBusNumChannels);
+        outputBusNumChannels = inputBusNumChannels;
+        outputBus = output(0)->bus(r);
     }
 
     if (m_recording)
     {
-        std::vector<const float *> channels;
-        const int inputBusNumChannels = bus->numberOfChannels();
+        const int numChannels = std::min(inputBusNumChannels, outputBusNumChannels);
 
-        for (int i = 0; i < inputBusNumChannels; ++i)
+        std::vector<const float*> channels;
+        for (int i = 0; i < numChannels; ++i)
         {
-            channels.push_back(bus->channel(i)->data());
+            channels.push_back(inputBus->channel(i)->data());
         }
 
-        if (!m_data.size())
+        if (m_data.size() < numChannels)
         {
             // allocate the recording buffers lazily when the number of input channels is finally known
-            for (int i = 0; i < inputBusNumChannels; ++i)
+            for (int i = 0; i < numChannels; ++i)
+            {
                 m_data.emplace_back(std::vector<float>());
-            for (int i = 0; i < inputBusNumChannels; ++i)
                 m_data[i].reserve(1024 * 1024);
+            }
         }
 
-        // mix down the output, or interleave the output
-        // use the tightest loop possible since this is part of the processing step
+        // copy the output. @TODO this should be a memcpy
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
-        for (int c = 0; c < inputBusNumChannels; ++c)
+        for (int c = 0; c < numChannels; ++c)
         {
             for (int i = 0; i < bufferSize; ++i)
                 m_data[c].push_back(channels[c][i]);
         }
     }
 
-    // the behavior of copyFrom is that
-    // for in-place processing, our override of pullInputs() will just pass the audio data
-    // through unchanged if the channel count matches from input to output
-    // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
-    if (bus != outputBus)
-    {
-        outputBus->copyFrom(*bus);
-    }
+    // pass through 
+    if (outputBus)
+        outputBus->copyFrom(*inputBus);
 }
+
 
 float RecorderNode::recordedLengthInSeconds() const
 {
     size_t recordedChannelCount = m_data.size();
-    if (!recordedChannelCount) return 0;
+    if (!recordedChannelCount) 
+        return 0;
+
     size_t numSamples = m_data[0].size();
     return numSamples / m_sampleRate;
 }
@@ -136,11 +143,6 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         fileData->channelCount = 1;
         float* dst = fileData->samples.data();
         memcpy(dst, clear_data[0].data(), sizeof(float) * numSamples);
-        for (size_t i = 0; i < numSamples; i++)
-        {
-            for (size_t j = 0; j < recordedChannelCount; ++j)
-                *dst++ = clear_data[j][i];
-        }
     }
     else if (recordedChannelCount > 1 && mixToMono)
     {
@@ -177,7 +179,7 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
     return result;
 }
 
-std::shared_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
+std::unique_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
@@ -187,7 +189,7 @@ std::shared_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
     const int result_channel_count = mixToMono ? 1 : m_channelCount;
 
     // Create AudioBus where we'll put the PCM audio data
-    std::shared_ptr<lab::AudioBus> result_audioBus(new lab::AudioBus(result_channel_count, numSamples));
+    std::unique_ptr<lab::AudioBus> result_audioBus(new lab::AudioBus(result_channel_count, numSamples));
     result_audioBus->setSampleRate(m_sampleRate);
 
     // Mix channels to mono if requested, and there's more than one input channel.

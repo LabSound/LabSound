@@ -21,7 +21,7 @@ class DelayProcessor : public AudioDSPKernelProcessor
     float m_sampleRate;
 
 public:
-    DelayProcessor(float sampleRate, unsigned numberOfChannels, double maxDelayTime);
+    DelayProcessor(float sampleRate, double maxDelayTime);
 
     virtual ~DelayProcessor();
 

@@ -6,6 +6,10 @@
 #
 # Will create a target named LabSound
 
+set(LIBSAMPLERATE_INSTALL OFF)
+set(LIBSAMPLERATE_EXAMPLES OFF)
+add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
+
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
@@ -153,7 +157,10 @@ else()
     endif()
 endif()
 
-target_link_libraries(LabSound libnyquist libwavpack ${LABSOUND_PLATFORM_LINK_LIBRARIES})
+target_link_libraries(LabSound
+    libnyquist libwavpack
+    samplerate
+    ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 
 install(TARGETS LabSound
     LIBRARY DESTINATION lib

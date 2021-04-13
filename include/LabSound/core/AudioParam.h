@@ -26,9 +26,6 @@ public:
     AudioParam(const std::string & name, const std::string & short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
     virtual ~AudioParam();
 
-    // AudioSummingJunction
-    virtual void didUpdate(ContextRenderLock &) override {}
-
     // Intrinsic value.
     float value() const;
     void setValue(float);
@@ -99,8 +96,7 @@ private:
 
     AudioParamTimeline m_timeline;
 
-    struct Data;
-    std::unique_ptr<Data> m_data;
+    std::unique_ptr<AudioBus> m_internalSummingBus;
 };
 
 }  // namespace lab

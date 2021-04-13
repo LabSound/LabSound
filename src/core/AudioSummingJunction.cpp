@@ -129,7 +129,6 @@ void AudioSummingJunction::updateRenderingState(ContextRenderLock & r)
                 i->lock()->updateRenderingState(r);
             }
 
-        didUpdate(r);
         m_renderingStateNeedUpdating = false;
     }
 }

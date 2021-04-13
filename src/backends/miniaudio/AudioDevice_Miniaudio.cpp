@@ -27,9 +27,9 @@ namespace lab
 
 const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
-const int kRenderQuantum = 128;
+const int kRenderQuantum = AudioNode::ProcessingSizeInFrames;
 
-/// @TODO - the AudioDeviceInfo wants support sample rates, but miniaudio only tells min and max
+/// @TODO - the AudioDeviceInfo wants to support specific sample rates, but miniaudio only tells min and max
 ///         miniaudio also has a concept of minChannels, which LabSound ignores
 
 

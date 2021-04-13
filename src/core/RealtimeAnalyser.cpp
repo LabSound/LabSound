@@ -267,7 +267,7 @@ void RealtimeAnalyser::getByteTimeDomainData(std::vector<uint8_t> & destinationA
             float value = inputBuffer[(i + writeIndex - fftSize + InputBufferSize) % InputBufferSize];
 
             // Scale from nominal -1 -> +1 to unsigned byte.
-            double scaledValue = 128 * (value + 1);
+            double scaledValue = AudioNode::ProcessingSizeInFrames * (value + 1);
 
             // Clip to valid range.
             if (scaledValue < 0)

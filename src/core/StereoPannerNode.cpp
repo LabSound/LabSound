@@ -134,7 +134,7 @@ public:
         if (!isInputSafe)
             return;
 
-        bool isOutputSafe = outputBus && outputBus->numberOfChannels() == Channels::Stereo && framesToProcess <= outputBus->length();
+        bool isOutputSafe = outputBus && framesToProcess <= outputBus->length();
 
         ASSERT(isOutputSafe);
 
@@ -295,6 +295,8 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
     {
         m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(), bufferSize);
     }
+
+    outputBus->clearSilentFlag();
 }
 
 void StereoPannerNode::reset(ContextRenderLock &)
@@ -304,14 +306,17 @@ void StereoPannerNode::reset(ContextRenderLock &)
 
 void StereoPannerNode::initialize()
 {
-    if (isInitialized()) return;
+    if (isInitialized()) 
+        return;
+
     AudioNode::initialize();
 }
 
 void StereoPannerNode::uninitialize()
 {
-    if (!isInitialized()) return;
-    m_stereoPanner.reset();
+    if (!isInitialized()) 
+        return;
+
     AudioNode::uninitialize();
 }
 

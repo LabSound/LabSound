@@ -214,8 +214,6 @@ void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
     // Give the analyser all the audio which is passing through this AudioNode.
     _detail->m_analyser->writeInput(r, inputBus, bufferSize);
 
-    // For in-place processing, our override of pullInputs() will just pass the audio data through unchanged if the channel count matches from input to output
-    // (resulting in inputBus == outputBus). Otherwise, do an up-mix to stereo.
     if (inputBus != outputBus)
     {
         outputBus->copyFrom(*inputBus);

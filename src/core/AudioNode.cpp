@@ -16,8 +16,8 @@
 
 using namespace std;
 
-#define ASN_PRINT(...)
-//#define ASN_PRINT(a, ...) printf(a, ...)
+//#define ASN_PRINT(...)
+#define ASN_PRINT(a) printf(a)
 
 namespace lab
 {
@@ -155,6 +155,8 @@ void AudioNodeScheduler::start(double when)
         _playbackState == SchedulingState::PLAYING)
         return;
 
+    _stopWhen = std::numeric_limits<uint64_t>::max();
+
     // treat non finite, or max values as a cancellation of stopping or resetting
     if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
     {
@@ -162,7 +164,6 @@ void AudioNodeScheduler::start(double when)
             _playbackState == SchedulingState::RESETTING)
         {
             _playbackState = SchedulingState::PLAYING;
-            _stopWhen = std::numeric_limits<uint64_t>::max();
         }
         return;
     }
@@ -202,8 +203,8 @@ void AudioNodeScheduler::stop(double when)
 
 void AudioNodeScheduler::reset()
 {
-    _startWhen = std::numeric_limits<uint64_t>::max();;
-    _stopWhen = std::numeric_limits<uint64_t>::max();;
+    _startWhen = std::numeric_limits<uint64_t>::max();
+    _stopWhen = std::numeric_limits<uint64_t>::max();
     if (_playbackState != SchedulingState::UNSCHEDULED)
         _playbackState = SchedulingState::RESETTING;
 }
@@ -307,13 +308,11 @@ void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
 
     if (m_channelCount != channelCount)
     {
-        if (m_channelCount != channelCount)
+        m_channelCount = channelCount;
+        if (m_channelCountMode != ChannelCountMode::Max)
         {
-            m_channelCount = channelCount;
-            if (m_channelCountMode != ChannelCountMode::Max)
-            {
-                updateChannelsForInputs(g);
-            }
+            for (auto& input : m_inputs)
+                input->changedOutputs(g);
         }
     }
 }
@@ -328,14 +327,9 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
     if (m_channelCountMode != mode)
     {
         m_channelCountMode = mode;
-        updateChannelsForInputs(g);
+        for (auto& input : m_inputs)
+            input->changedOutputs(g);
     }
-}
-
-void AudioNode::updateChannelsForInputs(ContextGraphLock & g)
-{
-    for (auto & input : m_inputs)
-        input->changedOutputs(g);
 }
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
@@ -357,12 +351,14 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     ProfileScope selfScope(totalTime);
     graphTime.zero();
 
-    if (_scheduler._playbackState < SchedulingState::FADE_IN ||
-        _scheduler._playbackState == SchedulingState::FINISHED)
+    if (isScheduledNode() && 
+        (_scheduler._playbackState < SchedulingState::FADE_IN ||
+         _scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
         return;
     }
+
 
     // there may need to be silence at the beginning or end of the current quantum.
 
@@ -370,16 +366,22 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     int final_zero_start = _scheduler._renderOffset + _scheduler._renderLength;
     int final_zero_count = bufferSize - final_zero_start;
 
-    // get inputs in preparation for processing
+    // if the input counts need to match the output counts,
+    // do it here before pulling inputs
+    conformChannelCounts();
 
+    // get inputs in preparation for processing
     {
         ProfileScope scope(graphTime);
         pullInputs(r, bufferSize);
         scope.finalize();   // ensure the scope is not prematurely destructed
     }
 
-    //  initialize the busses with start and final zeroes.
+    // ensure all requested channel count updates have been resolved
+    for (auto& out : m_outputs)
+        out->updateRenderingState(r);
 
+    //  initialize the busses with start and final zeroes.
     if (start_zero_count)
     {
         for (auto & out : m_outputs)
@@ -462,9 +464,40 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     selfScope.finalize(); // ensure profile is not prematurely destructed
 }
 
+void AudioNode::conformChannelCounts()
+{
+    return;
+
+    // no generic count conforming. nodes are responsible if they are going to do it at all
+/*
+    int inputChannelCount = input->numberOfChannels(r);
+
+    bool channelCountChanged = false;
+    for (int i = 0; i < numberOfOutputs() && !channelCountChanged; ++i)
+    {
+        channelCountChanged = isInitialized() && inputChannelCount != output(i)->numberOfChannels();
+    }
+
+    if (channelCountChanged)
+    {
+        uninitialize();
+        for (int i = 0; i < numberOfOutputs(); ++i)
+        {
+            // This will propagate the channel count to any nodes connected further down the chain...
+            output(i)->setNumberOfChannels(r, inputChannelCount);
+        }
+        initialize();
+    }
+    */
+}
+
 void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
 {
     ASSERT(r.context());
+
+    if (!input || input != this->input(0).get())
+        return;
+
     for (auto & in : m_inputs)
     {
         if (in.get() == input)

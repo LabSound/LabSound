@@ -15,7 +15,7 @@
 
 using namespace lab;
 
-static const int offlineRenderSizeQuantum = 128;
+static const int offlineRenderSizeQuantum = AudioNode::ProcessingSizeInFrames;
 
 NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig outputConfig, double lengthSeconds)
     : AudioNode(ac)

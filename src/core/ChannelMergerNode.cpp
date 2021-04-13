@@ -16,7 +16,7 @@ namespace lab
 {
 
 ChannelMergerNode::ChannelMergerNode(AudioContext& ac, int numberOfInputs_)
-    : AudioNode(ac)
+    : AudioNode(ac), m_desiredNumberOfOutputChannels(1)
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -35,11 +35,9 @@ void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
     auto output = this->output(0);
     ASSERT_UNUSED(bufferSize, bufferSize == output->bus(r)->length());
 
-    // Output bus not updated yet, so just output silence. See Note * in checkNumberOfChannelsForInput
     if (m_desiredNumberOfOutputChannels != output->numberOfChannels())
     {
-        output->bus(r)->zero();
-        return;
+        output->setNumberOfChannels(r, m_desiredNumberOfOutputChannels);
     }
 
     // Merge all the channels from all the inputs into one output.
@@ -67,37 +65,5 @@ void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
     ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
-void ChannelMergerNode::reset(ContextRenderLock &)
-{
-}
-
-// Any time a connection or disconnection happens on any of our inputs, we potentially need to change the
-// number of channels of our output.
-void ChannelMergerNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
-{
-    // Count how many channels we have all together from all of the inputs.
-    int numberOfOutputChannels = 0;
-
-    for (int i = 0; i < numberOfInputs(); ++i)
-    {
-        auto input = this->input(i);
-
-        if (input->isConnected())
-        {
-            numberOfOutputChannels += input->bus(r)->numberOfChannels();
-        }
-    }
-
-    // Set the correct number of channels on the output
-    auto output = this->output(0);
-    output->setNumberOfChannels(r, numberOfOutputChannels);
-
-    // Note * There can in rare cases be a slight delay before the output bus is updated to the new number of
-    // channels because of tryLocks() in the context's updating system. So record the new number of
-    // output channels here.
-    m_desiredNumberOfOutputChannels = numberOfOutputChannels;
-
-    AudioNode::checkNumberOfChannelsForInput(r, input);
-}
 
 }  // namespace lab

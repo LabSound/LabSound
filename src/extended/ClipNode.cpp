@@ -31,7 +31,7 @@ class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
 public:
     ClipNodeInternal(ClipNode * owner)
-        : AudioProcessor(1)
+        : AudioProcessor()
         , _owner(owner)
     {
         auto fMax = std::numeric_limits<float>::max();
@@ -53,10 +53,12 @@ public:
     {
         int srcChannels = (int) sourceBus->numberOfChannels();
         int dstChannels = (int) destinationBus->numberOfChannels();
-        if (dstChannels < srcChannels)
+        if (dstChannels != srcChannels)
         {
             _owner->output(0)->setNumberOfChannels(r, srcChannels);
-            setNumberOfChannels(srcChannels);
+            destinationBus = _owner->output(0)->bus(r); 
+            /// @todo no need to pass in the destination bus since owner is retained.
+            /// @todo perhaps flatten out AudioProcessor as well, as it's not adding anything particularly
         }
 
         if (!srcChannels)

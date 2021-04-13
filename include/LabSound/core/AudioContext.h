@@ -92,6 +92,10 @@ public:
     // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
+    // connecting and disconnecting busses and parameters occurs asynchronously. synchronizeConnections
+    // will block until there are no pending connections, or until the timeout occurs.
+    void synchronizeConnections(int timeOut_ms = 1000);
+
     void startOfflineRendering();
     std::function<void()> offlineRenderCompleteCallback;
 
@@ -100,6 +104,9 @@ public:
     // to call dispatchEvents often enough to satisfy the user's needs.
     void enqueueEvent(std::function<void()> &);
     void dispatchEvents();
+
+    void appendDebugBuffer(AudioBus* bus, int channel, int count);
+    void flushDebugBuffer(char const* const wavFilePath);
 
 private:
     // @TODO migrate most of the internal datastructures such as PendingConnection into Internals as there's no need to expose these at all.

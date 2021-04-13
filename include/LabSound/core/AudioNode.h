@@ -77,7 +77,8 @@ const char* schedulingStateName(SchedulingState);
 class AudioNodeScheduler
 {
 public:
-    AudioNodeScheduler(float sampleRate);
+    explicit AudioNodeScheduler() = delete;
+    explicit AudioNodeScheduler(float sampleRate);
     ~AudioNodeScheduler() = default;
 
     // Scheduling.
@@ -100,8 +101,8 @@ public:
     uint64_t _epoch = 0;        // the epoch rendered currently in the busses
     uint64_t _epochLength = 0;  // number of frames in current epoch
 
-    uint64_t _startWhen = 0;    // requested start in epochal coordinate system
-    uint64_t _stopWhen = 0;     // requested end in epochal coordinate system
+    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();    // requested start in epochal coordinate system
+    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();     // requested end in epochal coordinate system
 
     int _renderOffset = 0; // where rendering starts in the current frame
     int _renderLength = 0; // number of rendered frames in the current frame 
@@ -189,6 +190,8 @@ public:
     // Called from main thread.
     virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
 
+    virtual void conformChannelCounts();
+
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
     virtual bool propagatesSilence(ContextRenderLock & r) const;
@@ -226,8 +229,6 @@ public:
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
 protected:
-    virtual void clearPannerNode() {}
-
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput> input);
@@ -236,10 +237,7 @@ protected:
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
     // Called from context's audio thread.
-    virtual void pullInputs(ContextRenderLock &, int bufferSize);
-
-    // Force all inputs to take any channel interpretation changes into account.
-    void updateChannelsForInputs(ContextGraphLock &);
+    void pullInputs(ContextRenderLock &, int bufferSize);
 
     friend class AudioContext;
 

@@ -29,9 +29,6 @@ public:
     explicit AudioNodeInput(AudioNode * audioNode, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
     virtual ~AudioNodeInput();
 
-    // AudioSummingJunction
-    virtual void didUpdate(ContextRenderLock &) override;
-
     // Can be called from any thread.
     AudioNode * destinationNode() const { return m_destinationNode; }
 

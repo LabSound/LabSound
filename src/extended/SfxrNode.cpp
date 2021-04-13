@@ -667,22 +667,22 @@ SfxrNode::SfxrNode(AudioContext & ac)
     initialize();
 
     _preset->setValueChanged([this]()
+    {
+        int value = this->_preset->valueUint32();
+        switch (value)
         {
-            int value = this->_preset->valueUint32();
-            switch (value)
-            {
-            case 0: this->setDefaultBeep(); break;
-            case 1: this->coin(); break;
-            case 2: this->laser(); break;
-            case 3: this->explosion(); break;
-            case 4: this->powerUp(); break;
-            case 5: this->hit(); break;
-            case 6: this->jump(); break;
-            case 7: this->select(); break;
-            case 8: this->mutate(); break;
-            case 9: this->randomize(); break;
-            }
-        });
+        case 0: this->setDefaultBeep(); break;
+        case 1: this->coin(); break;
+        case 2: this->laser(); break;
+        case 3: this->explosion(); break;
+        case 4: this->powerUp(); break;
+        case 5: this->hit(); break;
+        case 6: this->jump(); break;
+        case 7: this->select(); break;
+        case 8: this->mutate(); break;
+        case 9: this->randomize(); break;
+        }
+    });
 }
 
 SfxrNode::~SfxrNode()

@@ -198,18 +198,6 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
     m_velocityZ->setValue(velocity.z);
 }
 
-void PannerNode::pullInputs(ContextRenderLock & r, int bufferSize)
-{
-    // We override pullInputs(), so we can detect new AudioNodes which have connected to us when new connections are made.
-    // These AudioNodes need to be made aware of this PannerNode in order to handle doppler shift pitch changes.
-    auto ac = r.context();
-
-    if (!ac)
-        return;
-
-    AudioNode::pullInputs(r, bufferSize);
-}
-
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * destination = output(0)->bus(r);
@@ -503,25 +491,17 @@ void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioN
     if (!node)
         return;
 
-    // First check if this node is an SampledAudioNode.
-    if (auto bufferSourceNode = dynamic_cast<SampledAudioNode *>(node))
+    // Go through all inputs to this node.
+    for (int i = 0; i < node->numberOfInputs(); ++i)
     {
-        bufferSourceNode->setPannerNode(this);
-    }
-    else
-    {
-        // Go through all inputs to this node.
-        for (int i = 0; i < node->numberOfInputs(); ++i)
-        {
-            auto input = node->input(i);
+        auto input = node->input(i);
 
-            // For each input, go through all of its connections, looking for SampledAudioNodes.
-            for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
-            {
-                auto connectedOutput = input->renderingOutput(r, j);
-                AudioNode * connectedNode = connectedOutput->sourceNode();
-                notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
-            }
+        // For each input, go through all of its connections, looking for SampledAudioNodes.
+        for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
+        {
+            auto connectedOutput = input->renderingOutput(r, j);
+            AudioNode * connectedNode = connectedOutput->sourceNode();
+            notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
         }
     }
 }
