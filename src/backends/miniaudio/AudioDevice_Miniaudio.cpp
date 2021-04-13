@@ -268,7 +268,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
     int in_channels = inputConfig.desired_channels;
     int out_channels = outputConfig.desired_channels;
 
-    if (numberOfFrames * in_channels)
+    if (pIn && numberOfFrames * in_channels)
         _ring->write(pIn, numberOfFrames * in_channels);
 
     while (numberOfFrames > 0)
