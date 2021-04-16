@@ -174,6 +174,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SfxrNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioSetting.h"
@@ -664,7 +665,8 @@ SfxrNode::SfxrNode(AudioContext & ac)
         this->sfxr->PlaySample();
     };
 
-    initialize();
+    if (s_registered)
+        initialize();
 
     _preset->setValueChanged([this]()
     {
@@ -684,6 +686,9 @@ SfxrNode::SfxrNode(AudioContext & ac)
         }
     });
 }
+
+bool SfxrNode::s_registered = NodeRegistry::Register(SfxrNode::static_name());
+
 
 SfxrNode::~SfxrNode()
 {

@@ -53,6 +53,7 @@ private:
 
     float _db;
     std::shared_ptr<AudioSetting> _windowSize;
+    static bool s_registered;
 };
 }
 

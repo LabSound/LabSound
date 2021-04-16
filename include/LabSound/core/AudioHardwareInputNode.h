@@ -18,6 +18,7 @@ class AudioHardwareInputNode : public AudioNode
     virtual bool propagatesSilence(ContextRenderLock & r) const override { return false; }
     AudioSourceProvider * m_audioSourceProvider;
     int m_sourceNumberOfChannels{0};
+    static bool s_registered;
 
 public:
     AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * provider_from_context);

@@ -9,6 +9,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 #include "internal/DynamicsCompressor.h"
@@ -38,8 +39,12 @@ DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     m_params.push_back(m_attack);
     m_params.push_back(m_release);
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool DynamicsCompressorNode::s_registered = NodeRegistry::Register(DynamicsCompressorNode::static_name());
+
 
 DynamicsCompressorNode::~DynamicsCompressorNode()
 {

@@ -22,7 +22,6 @@ class AudioContext;
 //
 class GainNode : public AudioNode
 {
-
 public:
     GainNode(AudioContext& ac);
     virtual ~GainNode();
@@ -44,6 +43,8 @@ protected:
     std::shared_ptr<AudioParam> m_gain;
 
     AudioFloatArray m_sampleAccurateGainValues;
+
+    static bool s_registered;
 };
 
 }  // namespace lab

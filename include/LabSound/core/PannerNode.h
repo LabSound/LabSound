@@ -52,6 +52,7 @@ class PannerNode : public AudioNode
     std::shared_ptr<AudioSetting> m_coneInnerAngle;
     std::shared_ptr<AudioSetting> m_coneOuterAngle;
     std::shared_ptr<AudioSetting> m_panningModel;
+    static bool s_registered;
 
 public:
     enum DistanceModel

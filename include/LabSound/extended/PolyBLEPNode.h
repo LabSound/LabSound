@@ -58,6 +58,7 @@ class PolyBLEPNode : public AudioScheduledSourceNode
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
     std::shared_ptr<AudioSetting> m_type;
     std::unique_ptr<PolyBlepImpl> polyblep;
+    static bool s_registered;
 
 public:
     PolyBLEPNode(AudioContext & ac);

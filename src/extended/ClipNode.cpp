@@ -10,6 +10,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/ClipNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/VectorMath.h"
 
@@ -139,8 +140,12 @@ ClipNode::ClipNode(AudioContext & ac)
     m_params.push_back(internalNode->bVal);
     m_settings.push_back(internalNode->mode);
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool ClipNode::s_registered = NodeRegistry::Register(ClipNode::static_name());
+
 
 ClipNode::~ClipNode()
 {

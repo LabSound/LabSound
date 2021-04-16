@@ -23,6 +23,7 @@ class RecorderNode : public AudioNode
     mutable std::recursive_mutex m_mutex;
 
     float m_sampleRate;
+    static bool s_registered;
 
 public:
 

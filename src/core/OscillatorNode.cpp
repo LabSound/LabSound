@@ -13,6 +13,7 @@
 #include "LabSound/core/WaveTable.h"
 
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
@@ -72,8 +73,12 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool OscillatorNode::s_registered = NodeRegistry::Register(OscillatorNode::static_name());
+
 
 OscillatorNode::~OscillatorNode()
 {

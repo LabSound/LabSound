@@ -10,6 +10,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/Registry.h"
 
 #include <memory>
 
@@ -21,8 +22,13 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
     , m_audioSourceProvider(audioSourceProvider)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
-    initialize();
+
+    if (s_registered)
+        initialize();
 }
+
+bool AudioHardwareInputNode::s_registered = NodeRegistry::Register(AudioHardwareInputNode::static_name());
+
 
 AudioHardwareInputNode::~AudioHardwareInputNode()
 {

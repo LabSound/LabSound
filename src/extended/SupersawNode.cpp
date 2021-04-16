@@ -11,6 +11,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SupersawNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include <cfloat>
 
@@ -139,8 +140,12 @@ SupersawNode::SupersawNode(AudioContext & ac)
     m_settings.push_back(internalNode->sawCount);
 
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();
+
+    if (s_registered)
+        initialize();
 }
+
+bool SupersawNode::s_registered = NodeRegistry::Register(SupersawNode::static_name());
 
 SupersawNode::~SupersawNode()
 {

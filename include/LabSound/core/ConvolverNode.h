@@ -65,6 +65,7 @@ protected:
         sp_ftbl * ft = nullptr;
     };
     std::vector<ReverbKernel> _kernels;  // one per impulse response channel
+    static bool s_registered;
 };
 
 }  // namespace lab

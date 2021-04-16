@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Biquad.h"
 #include <algorithm>
@@ -215,8 +216,13 @@ BiquadFilterNode::BiquadFilterNode(AudioContext& ac) : AudioBasicProcessorNode(a
     m_params.push_back(biquad_impl->m_gain);
     m_params.push_back(biquad_impl->m_detune);
     m_settings.push_back(biquad_impl->m_type);
-    initialize();
+
+    if (s_registered)
+        initialize();
 }
+
+bool BiquadFilterNode::s_registered = NodeRegistry::Register(BiquadFilterNode::static_name());
+
 
 BiquadFilterNode::~BiquadFilterNode()
 {

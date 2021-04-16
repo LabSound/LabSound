@@ -10,6 +10,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/VectorMath.h"
 #include "internal/Assertions.h"
@@ -82,7 +83,12 @@ namespace lab {
 
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+
+        if (s_registered)
+            initialize();
     }
+
+    bool SampledAudioNode::s_registered = NodeRegistry::Register(SampledAudioNode::static_name());
 
     SampledAudioNode::~SampledAudioNode()
     {

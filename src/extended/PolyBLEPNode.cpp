@@ -3,6 +3,7 @@
 
 #include "LabSound/extended/PolyBLEPNode.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
@@ -402,8 +403,12 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     polyblep.reset(new PolyBlepImpl());  // @fixme - needs sample rate
     setType(PolyBLEPType::TRIANGLE);
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool PolyBLEPNode::s_registered = NodeRegistry::Register(PolyBLEPNode::static_name());
+
 
 PolyBLEPNode::~PolyBLEPNode()
 {

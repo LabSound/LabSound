@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
+#include "LabSound/extended/Registry.h"
 #include "internal/Assertions.h"
 #include <algorithm>
 
@@ -81,13 +82,19 @@ AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
     : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(fftSize);
+    if (s_registered)
+        initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac)
     : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(1024u);
+    if (s_registered)
+        initialize();
 }
+
+bool AnalyserNode::s_registered = NodeRegistry::Register(AnalyserNode::static_name());
 
 AnalyserNode::~AnalyserNode()
 {

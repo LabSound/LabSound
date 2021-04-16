@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/extended/Registry.h"
 #include "internal/Assertions.h"
 #include <algorithm>
 #include <memory>
@@ -18,8 +19,12 @@ WaveShaperNode::WaveShaperNode(AudioContext& ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool WaveShaperNode::s_registered = NodeRegistry::Register(WaveShaperNode::static_name());
+
 
 WaveShaperNode::~WaveShaperNode()
 {

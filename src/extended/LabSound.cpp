@@ -138,50 +138,6 @@ AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration()
     return outputConfig;
 }
 
-namespace
-{
-    char const * const NodeNames[] = {
-        "ADSR",
-        "Analyser",
-        // "AudioBasicProcessor",
-        // "AudioHardwareSource",
-        "BiquadFilter",
-        "ChannelMerger",
-        "ChannelSplitter",
-        "Clip",
-        "Convolver",
-        "Delay",
-        "Diode",
-        "DynamicsCompressor",
-        // "Function",
-        "Gain",
-        "Granulation",
-        "Noise",
-        "Oscillator",
-        "Panner",
-#ifdef PD
-        "PureData",
-#endif
-        "PeakCompressor",
-        "PingPongDelay",
-        "PolyBLEP",
-        "PowerMonitor",
-        "PWM",
-        "Recorder",
-        "SampledAudio",
-        "Sfxr",
-        "Spatialization",
-        "SpectralMonitor",
-        "StereoPanner",
-        "SuperSaw",
-        "WaveShaper", 
-        nullptr};
-}
-
-char const * const * const AudioNodeNames()
-{
-    return NodeNames;
-}
 
 }  // lab
 

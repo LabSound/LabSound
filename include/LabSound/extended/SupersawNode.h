@@ -16,6 +16,7 @@ class SupersawNode : public AudioScheduledSourceNode
 {
     class SupersawNodeInternal;
     std::unique_ptr<SupersawNodeInternal> internalNode;
+    static bool s_registered;
 
 public:
     SupersawNode(AudioContext & ac);

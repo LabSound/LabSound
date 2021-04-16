@@ -32,6 +32,7 @@ protected:
 
     const AudioStreamConfig outConfig;
     const AudioStreamConfig inConfig;
+    static bool s_registered;
 
 public:
     AudioHardwareDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);

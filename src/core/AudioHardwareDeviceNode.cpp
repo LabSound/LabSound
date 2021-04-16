@@ -11,6 +11,7 @@
 #include "LabSound/core/AudioSourceProvider.h"
 
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
@@ -67,18 +68,21 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     last_info = {};
     last_info.sampling_rate = outputConfig.desired_samplerate;
 
-    // Unlike all other nodes that inherit from AudioNode, we do not need to call initialize here.
+    if (s_registered)
+        initialize();
 }
+
+bool AudioHardwareDeviceNode::s_registered = NodeRegistry::Register(AudioHardwareDeviceNode::static_name());
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
 {
-    // uninitialize(); taken care of by the AudioContext
+    uninitialize();
 }
 
 void AudioHardwareDeviceNode::initialize()
 {
-    if (isInitialized()) return;
-    AudioNode::initialize();
+    if (!isInitialized())
+        AudioNode::initialize();
 }
 
 void AudioHardwareDeviceNode::uninitialize()
