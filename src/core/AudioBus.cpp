@@ -7,6 +7,7 @@
 #include "internal/DenormalDisabler.h"
 #include "internal/SincResampler.h"
 #include "internal/VectorMath.h"
+#include "libsamplerate/include/samplerate.h"
 
 #include <algorithm>
 #include <assert.h>
@@ -736,11 +737,22 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus 
     // Sample-rate convert each channel.
     for (int i = 0; i < numberOfDestinationChannels; ++i)
     {
-        const float * source = resamplerSourceBus->channel(i)->data();
-        float * destination = destinationBus->channel(i)->mutableData();
-
-        SincResampler resampler(sampleRateRatio);
-        resampler.process(source, destination, sourceLength);
+        SRC_DATA convert;
+        convert.data_in = resamplerSourceBus->channel(i)->data();
+        convert.data_out = destinationBus->channel(i)->mutableData();
+        convert.input_frames = sourceLength;
+        convert.output_frames = destinationLength;
+        convert.input_frames_used = 0;
+        convert.output_frames_gen = 0;
+        convert.end_of_input = 0;
+        convert.src_ratio = sampleRateRatio;
+        int result = src_simple(&convert, SRC_SINC_BEST_QUALITY, 1);
+        if (result != 0)
+        {
+            std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, static_cast<int>(sourceBus->length() / sampleRateRatio)));
+            silentBus->setSampleRate(newSampleRate);
+            return silentBus;
+        }
     }
 
     destinationBus->clearSilentFlag();
