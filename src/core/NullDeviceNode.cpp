@@ -46,7 +46,9 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig output
         initialize();
 }
 
-bool NullDeviceNode::s_registered = NodeRegistry::Register(NullDeviceNode::static_name());
+bool NullDeviceNode::s_registered = NodeRegistry::Register(NullDeviceNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return nullptr; },
+    [](AudioNode* n) { delete n; });
 
 
 NullDeviceNode::~NullDeviceNode()

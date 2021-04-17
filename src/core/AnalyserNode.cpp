@@ -94,7 +94,9 @@ AnalyserNode::AnalyserNode(AudioContext & ac)
         initialize();
 }
 
-bool AnalyserNode::s_registered = NodeRegistry::Register(AnalyserNode::static_name());
+bool AnalyserNode::s_registered = NodeRegistry::Register(AnalyserNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new AnalyserNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 AnalyserNode::~AnalyserNode()
 {

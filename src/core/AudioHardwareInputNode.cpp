@@ -27,7 +27,9 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
         initialize();
 }
 
-bool AudioHardwareInputNode::s_registered = NodeRegistry::Register(AudioHardwareInputNode::static_name());
+bool AudioHardwareInputNode::s_registered = NodeRegistry::Register(AudioHardwareInputNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return nullptr; },
+    [](AudioNode* n) { delete n; });
 
 
 AudioHardwareInputNode::~AudioHardwareInputNode()

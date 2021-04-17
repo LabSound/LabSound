@@ -38,7 +38,9 @@ GainNode::~GainNode()
     uninitialize();
 }
 
-bool GainNode::s_registered = NodeRegistry::Register("GainNode");
+bool GainNode::s_registered = NodeRegistry::Register("GainNode", 
+    [](AudioContext& ac)->AudioNode* { return new GainNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 void GainNode::process(ContextRenderLock &r, int bufferSize)

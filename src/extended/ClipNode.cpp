@@ -144,7 +144,9 @@ ClipNode::ClipNode(AudioContext & ac)
         initialize();
 }
 
-bool ClipNode::s_registered = NodeRegistry::Register(ClipNode::static_name());
+bool ClipNode::s_registered = NodeRegistry::Register(ClipNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ClipNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 ClipNode::~ClipNode()

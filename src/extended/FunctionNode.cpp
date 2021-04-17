@@ -24,7 +24,9 @@ FunctionNode::FunctionNode(AudioContext & ac, int channels)
        initialize();
 }
 
-bool FunctionNode::s_registered = NodeRegistry::Register(FunctionNode::static_name());
+bool FunctionNode::s_registered = NodeRegistry::Register(FunctionNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new FunctionNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 FunctionNode::~FunctionNode()

@@ -88,7 +88,9 @@ namespace lab {
             initialize();
     }
 
-    bool SampledAudioNode::s_registered = NodeRegistry::Register(SampledAudioNode::static_name());
+    bool SampledAudioNode::s_registered = NodeRegistry::Register(SampledAudioNode::static_name(),
+        [](AudioContext& ac)->AudioNode* { return new SampledAudioNode(ac); },
+        [](AudioNode* n) { delete n; });
 
     SampledAudioNode::~SampledAudioNode()
     {

@@ -39,7 +39,9 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
         initialize();
 }
 
-bool RecorderNode::s_registered = NodeRegistry::Register(RecorderNode::static_name());
+bool RecorderNode::s_registered = NodeRegistry::Register(RecorderNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new RecorderNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 RecorderNode::~RecorderNode()
 {

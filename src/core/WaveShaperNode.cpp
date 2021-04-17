@@ -23,7 +23,9 @@ WaveShaperNode::WaveShaperNode(AudioContext& ac)
         initialize();
 }
 
-bool WaveShaperNode::s_registered = NodeRegistry::Register(WaveShaperNode::static_name());
+bool WaveShaperNode::s_registered = NodeRegistry::Register(WaveShaperNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new WaveShaperNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 WaveShaperNode::~WaveShaperNode()

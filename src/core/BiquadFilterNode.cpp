@@ -221,7 +221,9 @@ BiquadFilterNode::BiquadFilterNode(AudioContext& ac) : AudioBasicProcessorNode(a
         initialize();
 }
 
-bool BiquadFilterNode::s_registered = NodeRegistry::Register(BiquadFilterNode::static_name());
+bool BiquadFilterNode::s_registered = NodeRegistry::Register(BiquadFilterNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new BiquadFilterNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 BiquadFilterNode::~BiquadFilterNode()

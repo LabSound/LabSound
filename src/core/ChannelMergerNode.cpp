@@ -26,7 +26,9 @@ ChannelMergerNode::ChannelMergerNode(AudioContext& ac, int numberOfInputs_)
         initialize();
 }
 
-bool ChannelMergerNode::s_registered = NodeRegistry::Register(ChannelMergerNode::static_name());
+bool ChannelMergerNode::s_registered = NodeRegistry::Register(ChannelMergerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ChannelMergerNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 void ChannelMergerNode::addInputs(int n)

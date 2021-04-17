@@ -83,7 +83,9 @@ PWMNode::PWMNode(AudioContext & ac)
         initialize();
 }
 
-bool PWMNode::s_registered = NodeRegistry::Register(PWMNode::static_name());
+bool PWMNode::s_registered = NodeRegistry::Register(PWMNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PWMNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 PWMNode::~PWMNode()

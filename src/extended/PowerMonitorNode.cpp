@@ -26,7 +26,9 @@ PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
         initialize();
 }
 
-bool PowerMonitorNode::s_registered = NodeRegistry::Register(PowerMonitorNode::static_name());
+bool PowerMonitorNode::s_registered = NodeRegistry::Register(PowerMonitorNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PowerMonitorNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 PowerMonitorNode::~PowerMonitorNode()
 {

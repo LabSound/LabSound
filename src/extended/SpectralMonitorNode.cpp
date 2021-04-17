@@ -108,7 +108,9 @@ SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
         initialize();
 }
 
-bool SpectralMonitorNode::s_registered = NodeRegistry::Register(SpectralMonitorNode::static_name());
+bool SpectralMonitorNode::s_registered = NodeRegistry::Register(SpectralMonitorNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new SpectralMonitorNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 SpectralMonitorNode::~SpectralMonitorNode()
 {

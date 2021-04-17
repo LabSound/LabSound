@@ -145,7 +145,9 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
         initialize();
 }
 
-bool PannerNode::s_registered = NodeRegistry::Register(PannerNode::static_name());
+bool PannerNode::s_registered = NodeRegistry::Register(PannerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PannerNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 PannerNode::~PannerNode()

@@ -257,7 +257,9 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
     initialize();
 }
 
-bool StereoPannerNode::s_registered = NodeRegistry::Register(StereoPannerNode::static_name());
+bool StereoPannerNode::s_registered = NodeRegistry::Register(StereoPannerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new StereoPannerNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 StereoPannerNode::~StereoPannerNode()

@@ -145,7 +145,10 @@ SupersawNode::SupersawNode(AudioContext & ac)
         initialize();
 }
 
-bool SupersawNode::s_registered = NodeRegistry::Register(SupersawNode::static_name());
+bool SupersawNode::s_registered = NodeRegistry::Register(SupersawNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new SupersawNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 SupersawNode::~SupersawNode()
 {

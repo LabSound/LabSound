@@ -77,7 +77,9 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
         initialize();
 }
 
-bool OscillatorNode::s_registered = NodeRegistry::Register(OscillatorNode::static_name());
+bool OscillatorNode::s_registered = NodeRegistry::Register(OscillatorNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new OscillatorNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 OscillatorNode::~OscillatorNode()

@@ -72,7 +72,9 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
         initialize();
 }
 
-bool AudioHardwareDeviceNode::s_registered = NodeRegistry::Register(AudioHardwareDeviceNode::static_name());
+bool AudioHardwareDeviceNode::s_registered = NodeRegistry::Register(AudioHardwareDeviceNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return nullptr; },
+    [](AudioNode* n) { delete n; });
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
 {

@@ -27,7 +27,9 @@ DelayNode::DelayNode(AudioContext& ac, double maxDelayTime)
         initialize();
 }
 
-bool DelayNode::s_registered = NodeRegistry::Register(DelayNode::static_name());
+bool DelayNode::s_registered = NodeRegistry::Register(DelayNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new DelayNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 std::shared_ptr<AudioSetting> DelayNode::delayTime()

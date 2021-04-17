@@ -212,7 +212,9 @@ namespace lab
             initialize();
     }
 
-    bool ADSRNode::s_registered = NodeRegistry::Register(ADSRNode::static_name());
+    bool ADSRNode::s_registered = NodeRegistry::Register(ADSRNode::static_name(),
+        [](AudioContext& ac)->AudioNode* { return new ADSRNode(ac); },
+        [](AudioNode* n) { delete n; });
 
 
     ADSRNode::~ADSRNode()

@@ -48,7 +48,9 @@ GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(a
 }
 
 #include "LabSound/extended/Registry.h"
-bool GranulationNode::s_registered = NodeRegistry::Register(GranulationNode::static_name());
+bool GranulationNode::s_registered = NodeRegistry::Register(GranulationNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new GranulationNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 GranulationNode::~GranulationNode()

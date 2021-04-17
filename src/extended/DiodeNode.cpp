@@ -41,7 +41,9 @@ DiodeNode::DiodeNode(AudioContext & ac)
         initialize();
 }
 
-bool DiodeNode::s_registered = NodeRegistry::Register(DiodeNode::static_name());
+bool DiodeNode::s_registered = NodeRegistry::Register(DiodeNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new DiodeNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 void DiodeNode::setDistortion(float distortion)
 {

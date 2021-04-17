@@ -28,7 +28,9 @@ NoiseNode::NoiseNode(AudioContext & ac)
         initialize();
 }
 
-bool NoiseNode::s_registered = NodeRegistry::Register(NoiseNode::static_name());
+bool NoiseNode::s_registered = NodeRegistry::Register(NoiseNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new NoiseNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 NoiseNode::~NoiseNode()
 {

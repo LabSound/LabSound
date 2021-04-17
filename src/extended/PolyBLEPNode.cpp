@@ -407,7 +407,9 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
         initialize();
 }
 
-bool PolyBLEPNode::s_registered = NodeRegistry::Register(PolyBLEPNode::static_name());
+bool PolyBLEPNode::s_registered = NodeRegistry::Register(PolyBLEPNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PolyBLEPNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 PolyBLEPNode::~PolyBLEPNode()

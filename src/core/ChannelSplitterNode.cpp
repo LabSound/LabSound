@@ -24,7 +24,9 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext& ac, int numberOfOutputs_)
         initialize();
 }
 
-bool ChannelSplitterNode::s_registered = NodeRegistry::Register(ChannelSplitterNode::static_name());
+bool ChannelSplitterNode::s_registered = NodeRegistry::Register(ChannelSplitterNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ChannelSplitterNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 void ChannelSplitterNode::addOutputs(int numberOfOutputs_)

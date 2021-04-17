@@ -687,7 +687,9 @@ SfxrNode::SfxrNode(AudioContext & ac)
     });
 }
 
-bool SfxrNode::s_registered = NodeRegistry::Register(SfxrNode::static_name());
+bool SfxrNode::s_registered = NodeRegistry::Register(SfxrNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new SfxrNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 
 SfxrNode::~SfxrNode()
