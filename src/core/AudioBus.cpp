@@ -744,8 +744,8 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus 
         convert.input_frames_used = 0;
         convert.output_frames_gen = 0;
         convert.end_of_input = 0;
-        convert.src_ratio = sampleRateRatio;
-        int result = src_simple(&convert, SRC_SINC_BEST_QUALITY, 1);
+        convert.src_ratio = 1. / sampleRateRatio;
+        int result = src_simple(&convert, SRC_SINC_FASTEST, 1);
         if (result != 0)
         {
             std::unique_ptr<AudioBus> silentBus(new AudioBus(numberOfSourceChannels, static_cast<int>(sourceBus->length() / sampleRateRatio)));

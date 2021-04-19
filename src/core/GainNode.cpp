@@ -28,7 +28,6 @@ GainNode::GainNode(AudioContext& ac)
     m_params.push_back(m_gain);
 
     // test s_registered to ensure the linker does not strip the static registration to Registry
-    printf("ORDER\n");
     if (s_registered)
         initialize();
 }
