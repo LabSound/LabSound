@@ -34,7 +34,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     , inConfig(inputConfig)
 {
     // Ensure that input and output sample rates match
-    if (inputConfig.device_index != -1)
+    if (inputConfig.device_index != -1 && outputConfig.device_index != -1)
     {
         ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
     }
