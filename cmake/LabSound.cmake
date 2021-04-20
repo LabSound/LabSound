@@ -6,7 +6,9 @@
 #
 # Will create a target named LabSound
 
-set(LIBSAMPLERATE_INSTALL OFF)
+option(LIBSAMPLERATE_EXAMPLES "" OFF)
+option(LIBSAMPLERATE_INSTALL "" OFF)
+option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
 add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")

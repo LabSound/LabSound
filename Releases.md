@@ -1,4 +1,23 @@
 
+This change simplifies the logic around channel management by automatically conforming signal processing pathways from the leaf nodes. Leaf node channel counts are propagated backwards towards the audio context such that intermediate nodes preserve channel counts, unless they have an explicit behavior of changing the channel count. For example, connecting a stereo source to a gain node will promote a mono gain node to stereo. A mono node connected to a stereo panner node will result in a stereo output.
+
+SampledAudioNode has been rewritten to do it's own compositing when scheduled such that many instances play in an overlapping manner. This allows efficiently playing dozens of copies of the same sound simultaneously. The new algorithm requires less intermediate storage and has a much lower CPU cost. Detuning has been improved to allow a greater working range, and higher quality when pitching higher. SampledAudioNode no longer has an embedded stereo panning node, thus simplifying panning and compositing logic. Scheduling is now sample accurate, rather than quantum-accurate, and loop points and loop counts have been added.
+
+The WaveShaperNode has been rewritten to minimize CPU overhead. OO related complexity has been deleted.
+
+Threading and thread safety has been improved. The update service thread is nearly empty at this point, as graph modifications are now managed by the main update. Communications with other threads now occurs through concurrent lockfree queues. Many mutexes are now gone, as well as rare termination races.
+
+- autoconfigure channel counts
+- rename BPMDelay.h to BPMDelayNode.h
+- rewrite WaveShaper for efficiency
+- rewrite SampledAudioNode for efficiency and sample accurate timing
+- rewrite resampler for SampledAudioNode for quality and speed
+- use concurrent queues to eliminate mutexes in audio callback
+- minimize use of maintenance thread
+- bulletproof asynchronous connects and disconnects of node wiring
+
+### In progress
+----------------
 
 ## v1.0.1
 # 11 April 2021

@@ -75,7 +75,7 @@ void DiodeNode::_precalc()
         wsCurve[i] = v;
     }
 
-    setCurve(std::move(wsCurve));
+    setCurve(wsCurve);
 }
 
 }  // lab
