@@ -12,6 +12,7 @@
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 #include "internal/Cone.h"
@@ -140,8 +141,14 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool PannerNode::s_registered = NodeRegistry::Register(PannerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PannerNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 PannerNode::~PannerNode()
 {

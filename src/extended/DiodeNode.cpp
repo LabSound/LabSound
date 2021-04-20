@@ -2,6 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/DiodeNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
@@ -36,8 +37,13 @@ DiodeNode::DiodeNode(AudioContext & ac)
         this->_precalc();
     });
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool DiodeNode::s_registered = NodeRegistry::Register(DiodeNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new DiodeNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 void DiodeNode::setDistortion(float distortion)
 {

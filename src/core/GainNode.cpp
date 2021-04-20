@@ -9,6 +9,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 
@@ -26,13 +27,20 @@ GainNode::GainNode(AudioContext& ac)
     m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 10000.0);
     m_params.push_back(m_gain);
 
-    initialize();
+    // test s_registered to ensure the linker does not strip the static registration to Registry
+    if (s_registered)
+        initialize();
 }
 
 GainNode::~GainNode()
 {
     uninitialize();
 }
+
+bool GainNode::s_registered = NodeRegistry::Register("GainNode", 
+    [](AudioContext& ac)->AudioNode* { return new GainNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 void GainNode::process(ContextRenderLock &r, int bufferSize)
 {

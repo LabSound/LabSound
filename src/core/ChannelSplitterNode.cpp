@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 
@@ -18,8 +19,15 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext& ac, int numberOfOutputs_)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutputs(numberOfOutputs_);
-    initialize();  // currently initialize only sets a flag; no memory is allocated in response to adding outputs
+
+    if (s_registered)
+        initialize();
 }
+
+bool ChannelSplitterNode::s_registered = NodeRegistry::Register(ChannelSplitterNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ChannelSplitterNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
 {

@@ -56,6 +56,7 @@ private:
     float pink4 = 0;
     float pink5 = 0;
     float pink6 = 0;
+    static bool s_registered;
 };
 }
 

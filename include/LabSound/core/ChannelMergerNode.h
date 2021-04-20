@@ -33,6 +33,7 @@ private:
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     int m_desiredNumberOfOutputChannels = 1;  // default
+    static bool s_registered;
 };
 
 }  // namespace lab

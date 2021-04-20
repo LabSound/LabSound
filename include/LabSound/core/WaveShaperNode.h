@@ -33,6 +33,7 @@ protected:
 
     std::vector<float> m_curve;
     std::vector<float>* m_newCurve = nullptr;
+    static bool s_registered;
 };
 
 }  // namespace lab

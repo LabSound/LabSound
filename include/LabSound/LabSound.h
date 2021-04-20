@@ -48,6 +48,7 @@
 #include "LabSound/extended/PowerMonitorNode.h"
 #include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
+#include "LabSound/extended/Registry.h"
 #include "LabSound/extended/RecorderNode.h"
 #include "LabSound/extended/SfxrNode.h"
 #include "LabSound/extended/SpatializationNode.h"
@@ -67,8 +68,6 @@ namespace lab
 
     AudioStreamConfig GetDefaultInputAudioDeviceConfiguration();
     AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration();
-
-    char const * const * const AudioNodeNames();
 }
 
 #endif

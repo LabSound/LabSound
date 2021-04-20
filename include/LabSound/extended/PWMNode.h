@@ -20,6 +20,7 @@ class PWMNode : public AudioBasicProcessorNode
 {
     class PWMNodeInternal;
     PWMNodeInternal * internalNode;
+    static bool s_registered;
 
 public:
     PWMNode(AudioContext & ac);

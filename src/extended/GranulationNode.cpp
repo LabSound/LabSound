@@ -2,6 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/GranulationNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -41,8 +42,16 @@ GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(a
     grainPlaybackFreq = std::make_shared<AudioParam>("PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f);
 
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();
+
+    if (s_registered)
+        initialize();
 }
+
+#include "LabSound/extended/Registry.h"
+bool GranulationNode::s_registered = NodeRegistry::Register(GranulationNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new GranulationNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 GranulationNode::~GranulationNode()
 {

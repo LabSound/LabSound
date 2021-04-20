@@ -20,6 +20,7 @@ class SpectralMonitorNode : public AudioBasicInspectorNode
 {
     class SpectralMonitorNodeInternal;
     SpectralMonitorNodeInternal * internalNode = nullptr;
+    static bool s_registered;
 
 public:
     SpectralMonitorNode(AudioContext & ac);

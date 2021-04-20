@@ -2,6 +2,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/NoiseNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -22,8 +23,14 @@ NoiseNode::NoiseNode(AudioContext & ac)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     m_settings.push_back(_type);
-    initialize();
+
+    if (s_registered)
+        initialize();
 }
+
+bool NoiseNode::s_registered = NodeRegistry::Register(NoiseNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new NoiseNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 NoiseNode::~NoiseNode()
 {

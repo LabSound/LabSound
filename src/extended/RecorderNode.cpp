@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/RecorderNode.h"
 #include "internal/Assertions.h"
+#include "LabSound/extended/Registry.h"
 
 #include "libnyquist/Encoders.h"
 
@@ -21,7 +22,8 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();
+    if (s_registered)
+        initialize();
 }
 
 RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
@@ -33,8 +35,13 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool RecorderNode::s_registered = NodeRegistry::Register(RecorderNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new RecorderNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 RecorderNode::~RecorderNode()
 {

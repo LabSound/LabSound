@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/PWMNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include <iostream>
 
@@ -78,8 +79,14 @@ PWMNode::PWMNode(AudioContext & ac)
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     m_processor.reset(new PWMNodeInternal());
     internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool PWMNode::s_registered = NodeRegistry::Register(PWMNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PWMNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 PWMNode::~PWMNode()
 {

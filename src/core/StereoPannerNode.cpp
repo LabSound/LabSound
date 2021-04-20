@@ -13,6 +13,7 @@
 #include "LabSound/extended/Util.h"
 
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
@@ -255,6 +256,11 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
 
     initialize();
 }
+
+bool StereoPannerNode::s_registered = NodeRegistry::Register(StereoPannerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new StereoPannerNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 StereoPannerNode::~StereoPannerNode()
 {

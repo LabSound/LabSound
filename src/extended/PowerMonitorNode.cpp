@@ -2,6 +2,7 @@
 // Copyright (c) 2013 Nick Porcino, All rights reserved.
 
 #include "LabSound/extended/PowerMonitorNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
@@ -21,8 +22,13 @@ PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
 {
     _windowSize->setUint32(128);
     m_settings.push_back(_windowSize);
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool PowerMonitorNode::s_registered = NodeRegistry::Register(PowerMonitorNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new PowerMonitorNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 PowerMonitorNode::~PowerMonitorNode()
 {

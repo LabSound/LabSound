@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 
@@ -20,8 +21,15 @@ ChannelMergerNode::ChannelMergerNode(AudioContext& ac, int numberOfInputs_)
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    initialize();  // initialize only sets a flag, no need to allocate memory according to input count
+
+    if (s_registered)
+        initialize();
 }
+
+bool ChannelMergerNode::s_registered = NodeRegistry::Register(ChannelMergerNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ChannelMergerNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 void ChannelMergerNode::addInputs(int n)
 {

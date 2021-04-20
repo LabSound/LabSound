@@ -127,6 +127,7 @@ private:
 
     class Sfxr;
     Sfxr * sfxr;
+    static bool s_registered;
 };
 }
 

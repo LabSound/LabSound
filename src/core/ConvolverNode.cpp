@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 #include "internal/VectorMath.h"
 #include <cmath>
 
@@ -106,14 +107,20 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
-    initialize();
 
     lab::sp_create(&_sp);
 
     _impulseResponseClip->setValueChanged([this]() {
         this->_activateNewImpulse();
     });
+
+    if (s_registered)
+        initialize();
 }
+
+bool ConvolverNode::s_registered = NodeRegistry::Register(ConvolverNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new ConvolverNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 ConvolverNode::~ConvolverNode()
 {

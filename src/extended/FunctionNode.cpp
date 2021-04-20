@@ -7,6 +7,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/FunctionNode.h"
+#include "LabSound/extended/Registry.h"
 
 using namespace std;
 using namespace lab;
@@ -18,8 +19,15 @@ FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
-    initialize();
+
+    if (s_registered)
+       initialize();
 }
+
+bool FunctionNode::s_registered = NodeRegistry::Register(FunctionNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new FunctionNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 FunctionNode::~FunctionNode()
 {

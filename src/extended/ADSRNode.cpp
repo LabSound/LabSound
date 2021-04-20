@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/VectorMath.h"
 
@@ -206,8 +207,15 @@ namespace lab
         m_settings.push_back(adsr_impl->m_sustainLevel);
         m_settings.push_back(adsr_impl->m_sustainTime);
         m_settings.push_back(adsr_impl->m_releaseTime);
-        initialize();
+
+        if (s_registered)
+            initialize();
     }
+
+    bool ADSRNode::s_registered = NodeRegistry::Register(ADSRNode::static_name(),
+        [](AudioContext& ac)->AudioNode* { return new ADSRNode(ac); },
+        [](AudioNode* n) { delete n; });
+
 
     ADSRNode::~ADSRNode()
     {

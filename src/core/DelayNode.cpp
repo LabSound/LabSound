@@ -5,6 +5,7 @@
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioProcessor.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/AudioDSPKernel.h"
 #include "internal/DelayProcessor.h"
@@ -22,8 +23,14 @@ DelayNode::DelayNode(AudioContext& ac, double maxDelayTime)
 
     m_settings.push_back(delayProcessor()->delayTime());
 
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool DelayNode::s_registered = NodeRegistry::Register(DelayNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new DelayNode(ac); },
+    [](AudioNode* n) { delete n; });
+
 
 std::shared_ptr<AudioSetting> DelayNode::delayTime()
 {

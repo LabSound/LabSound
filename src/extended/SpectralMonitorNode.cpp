@@ -9,6 +9,7 @@
 #include "LabSound/core/WindowFunctions.h"
 
 #include "LabSound/extended/SpectralMonitorNode.h"
+#include "LabSound/extended/Registry.h"
 
 #include <cmath>
 #include <ooura/fftsg.h>
@@ -103,8 +104,13 @@ SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
     , internalNode(new SpectralMonitorNodeInternal())
 {
     m_settings.push_back(internalNode->windowSize);
-    initialize();
+    if (s_registered)
+        initialize();
 }
+
+bool SpectralMonitorNode::s_registered = NodeRegistry::Register(SpectralMonitorNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return new SpectralMonitorNode(ac); },
+    [](AudioNode* n) { delete n; });
 
 SpectralMonitorNode::~SpectralMonitorNode()
 {

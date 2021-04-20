@@ -36,6 +36,7 @@ enum TempoSync
 class DelayNode : public AudioBasicProcessorNode
 {
     DelayProcessor * delayProcessor();
+    static bool s_registered;
 
 public:
     // default maximum delay of 100ms

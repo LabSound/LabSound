@@ -11,6 +11,7 @@
 #include "AudioNodeInput.h"
 #include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
+#include "LabSound/extended/Registry.h"
 
 #include "PdBase.hpp"
 #include "z_libpd.h"
@@ -147,6 +148,9 @@ PdNode::PdNode(lab::AudioContext * context, float sampleRate)
 
     initialize();
 }
+
+bool PdNode::s_registered = NodeRegistry::Register(PdNode::static_name());
+
 
 PdNode::~PdNode()
 {

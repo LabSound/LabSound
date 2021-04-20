@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 
@@ -40,7 +41,15 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig output
 
     ContextGraphLock glock(&ac, "NullDeviceNode");
     AudioNode::setChannelCount(glock, m_numChannels);
+
+    if (s_registered)
+        initialize();
 }
+
+bool NullDeviceNode::s_registered = NodeRegistry::Register(NullDeviceNode::static_name(),
+    [](AudioContext& ac)->AudioNode* { return nullptr; },
+    [](AudioNode* n) { delete n; });
+
 
 NullDeviceNode::~NullDeviceNode()
 {
