@@ -264,7 +264,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                     AudioNodeInput::connect(gLock,
                                             node_connection.destination->input(node_connection.destIndex),
                                             node_connection.source->output(node_connection.srcIndex));
-                    
+
                     if (!node_connection.source->isScheduledNode())
                         node_connection.source->_scheduler.start(0);
                 }
@@ -337,7 +337,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
         for (auto & sc : requeued_connections)
             m_internal->pendingNodeConnections.enqueue(sc);
     }
-    
+
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes();
 }
@@ -364,9 +364,9 @@ void AudioContext::synchronizeConnections(int timeOut_ms)
 
 void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
 {
-    if (!destination) 
+    if (!destination)
         throw std::runtime_error("Cannot connect to null destination");
-    if (!source) 
+    if (!source)
         throw std::runtime_error("Cannot connect from null source");
     if (srcIdx > source->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs");
@@ -423,7 +423,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
 
 
 // connect a named parameter on a node to receive the indexed output of a node
-void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, 
+void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName,
                                 std::shared_ptr<AudioNode> driver, int index)
 {
     if (!parameterName)
@@ -481,7 +481,7 @@ void AudioContext::update()
         if (!m_isOfflineContext)
         {
             lk = std::unique_lock<std::mutex>(m_updateMutex);
-            cv.wait_until(lk, std::chrono::steady_clock::now() + std::chrono::microseconds(5000)); // awake every five milliseconds 
+            cv.wait_until(lk, std::chrono::steady_clock::now() + std::chrono::microseconds(5000)); // awake every five milliseconds
         }
 
         if (m_internal->autoDispatchEvents)
@@ -611,10 +611,27 @@ uint64_t AudioContext::currentSampleFrame() const
     return device_callback->getSamplingInfo().current_sample_frame;
 }
 
+double AudioContext::predictedCurrentTime() const
+{
+    auto info = device_callback->getSamplingInfo();
+    uint64_t t = info.current_sample_frame;
+    double val = t / info.sampling_rate;
+    auto t2 = std::chrono::high_resolution_clock::now();
+    int index = t & 1;
+
+    if (!info.epoch[index].time_since_epoch().count())
+        return val;
+
+    std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - info.epoch[index];
+    return val + elapsed.count();
+}
+
 float AudioContext::sampleRate() const
 {
-    // during construction of DeviceNodes, the device_callback will not yet be ready.
-    // sampleRate is called during AudioNode construction to initialize the scheduler, but DeviceNodes are not scheduled.
+    // sampleRate is called during AudioNode construction to initialize the
+    // scheduler, but DeviceNodes are not scheduled.
+    // during construction of DeviceNodes, the device_callback will not yet be
+    // ready, so bail out.
     if (!device_callback)
         return 0;
 

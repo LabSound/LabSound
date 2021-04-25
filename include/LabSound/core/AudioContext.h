@@ -48,7 +48,8 @@ public:
 
     bool isInitialized() const;
 
-    // External users shouldn't use this; it should be called by LabSound::MakeRealtimeAudioContext(lab::Channels::Stereo)
+    // External users shouldn't use this; it should be called by
+    // LabSound::MakeRealtimeAudioContext(lab::Channels::Stereo)
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
@@ -57,22 +58,42 @@ public:
 
     bool isOfflineContext() const;
 
-    // Query AudioDeviceRenderCallback properties
+    // The current time, measured at the start of the render quantum currently
+    // being processed. Most useful in a Node's process routine.
     double currentTime() const;
+
+    // The current epoch (total count of previously processed render quanta)
+    // Useful in recurrent graphs to discover if a node has already done its
+    // processing for the present quanta.
     uint64_t currentSampleFrame() const;
+
+    // The current time, accurate versus the audio clock. Whereas currentTime
+    // advances discretely, once per render quanta, predictedCurrentTime
+    // is the sum of currentTime, and the amount of realworld time that has
+    // elapsed since the start of the current render quanta. This is useful on
+    // the main thread of an application in order to precisely synchronize
+    // expected audio events and other systems.
+    double predictedCurrentTime() const;
+
     float sampleRate() const;
 
     std::shared_ptr<AudioListener> listener();
 
-    void handlePreRenderTasks(ContextRenderLock &);  // Called at the start of each render quantum.
-    void handlePostRenderTasks(ContextRenderLock &);  // Called at the end of each render quantum.
+    // Called at the start of each render quantum.
+    void handlePreRenderTasks(ContextRenderLock &);
 
-    // AudioContext can pull node(s) at the end of each render quantum even when they are not connected to any downstream nodes.
-    // These two methods are called by the nodes who want to add/remove themselves into/from the automatic pull lists.
+    // Called at the end of each render quantum.
+    void handlePostRenderTasks(ContextRenderLock &);
+
+    // AudioContext can pull node(s) at the end of each render quantum even
+    // when they are not connected to any downstream nodes. These two methods
+    // are called by the nodes who want to add/remove themselves into/from the
+    // automatic pull lists.
     void addAutomaticPullNode(std::shared_ptr<AudioNode>);
     void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
 
-    // Called right before handlePostRenderTasks() to handle nodes which need to be pulled even when they are not connected to anything.
+    // Called right before handlePostRenderTasks() to handle nodes which need to
+    // be pulled even when they are not connected to anything.
     // Only an AudioHardwareDeviceNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
@@ -86,14 +107,15 @@ public:
     // connect a parameter to receive the indexed output of a node
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
-    // connect a named parameter on a node to receive the indexed output of a node
+    // connect destinationNode's named parameter input to driver's indexed output
     void connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver, int index);
 
     // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
-    // connecting and disconnecting busses and parameters occurs asynchronously. synchronizeConnections
-    // will block until there are no pending connections, or until the timeout occurs.
+    // connecting and disconnecting busses and parameters occurs asynchronously.
+    // synchronizeConnections will block until there are no pending connections,
+    // or until the timeout occurs.
     void synchronizeConnections(int timeOut_ms = 1000);
 
     void startOfflineRendering();
@@ -109,7 +131,8 @@ public:
     void flushDebugBuffer(char const* const wavFilePath);
 
 private:
-    // @TODO migrate most of the internal datastructures such as PendingConnection into Internals as there's no need to expose these at all.
+    // @TODO migrate most of the internal datastructures such as
+    // PendingConnection into Internals as there's no need to expose these at all.
     struct Internals;
     std::unique_ptr<Internals> m_internal;
 
@@ -128,7 +151,7 @@ private:
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
-    bool m_automaticPullNodesNeedUpdating = false;  // keeps track if m_automaticPullNodes is modified.
+    bool m_automaticPullNodesNeedUpdating = false;  // indicates m_automaticPullNodes was modified.
 
     friend class NullDeviceNode; // needs to be able to call update()
     void update();
