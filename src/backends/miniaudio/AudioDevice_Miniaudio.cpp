@@ -319,7 +319,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             const int32_t index = 1 - (samplingInfo.current_sample_frame & 1);
             const uint64_t t = samplingInfo.current_sample_frame & ~1;
             samplingInfo.sampling_rate = authoritativeDeviceSampleRateAtRuntime;
-            samplingInfo.current_sample_frame = t + numberOfFrames + index;
+            samplingInfo.current_sample_frame = t + kRenderQuantum + index;
             samplingInfo.current_time = samplingInfo.current_sample_frame / static_cast<double>(samplingInfo.sampling_rate);
             samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
