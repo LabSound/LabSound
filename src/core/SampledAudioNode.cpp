@@ -405,6 +405,9 @@ namespace lab {
                     _internals->scheduled.at(i) = _internals->scheduled.at(schedule_count - 1);
                 _internals->scheduled.pop_back();
                 --schedule_count;
+
+                if (_scheduler._onEnded)
+                    r.context()->enqueueEvent(_scheduler._onEnded);
             }
         }
     }
