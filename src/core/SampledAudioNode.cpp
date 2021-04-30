@@ -64,6 +64,7 @@ namespace lab {
         ~Internals() = default;
         moodycamel::ConcurrentQueue<Scheduled> incoming;
         std::vector<Scheduled> scheduled;
+        int32_t greatest_cursor = -1;
     };
 
     SampledAudioNode::SampledAudioNode(AudioContext& ac)
@@ -322,6 +323,8 @@ namespace lab {
 
     void SampledAudioNode::process(ContextRenderLock& r, int framesToProcess)
     {
+        _internals->greatest_cursor = -1;
+
         AudioBus* dstBus = output(0)->bus(r);
         size_t dstChannelCount = dstBus->numberOfChannels();
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
@@ -380,8 +383,10 @@ namespace lab {
             Scheduled& s = _internals->scheduled.at(i);
             if (s.when < quantumDuration)   // has s.when counted down to within this quantum?
             {
-                size_t offset = (s.when < quantumStartTime) ? 0 : static_cast<size_t>(s.when * r.context()->sampleRate());
-                renderSample(r, s, offset, AudioNode::ProcessingSizeInFrames);
+                int32_t offset = (s.when < quantumStartTime) ? 0 : static_cast<int32_t>(s.when * r.context()->sampleRate());
+                if (offset > _internals->greatest_cursor)
+                    _internals->greatest_cursor = offset;
+                renderSample(r, s, (size_t) offset, AudioNode::ProcessingSizeInFrames);
                 output(0)->bus(r)->clearSilentFlag();
             }
 
@@ -411,6 +416,12 @@ namespace lab {
             }
         }
     }
+
+    int32_t SampledAudioNode::getCursor() const
+    {
+        return _internals->greatest_cursor;
+    }
+
 
     /// @TODO change the interface:
     /// // if true is returned, rate_array[0] applies to the entire quantum

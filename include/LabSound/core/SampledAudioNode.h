@@ -82,6 +82,11 @@ public:
     std::shared_ptr<AudioParam> playbackRate() { return m_playbackRate; }
     std::shared_ptr<AudioParam> detune() { return m_detune; }
     std::shared_ptr<AudioParam> dopplerRate() { return m_dopplerRate; }
+
+    // returns the greatest sample index played back by any of the scheduled
+    // instances in the most recent render quantum. A value less than zero
+    // indicates nothing's playing.
+    int32_t getCursor() const;
 };
 
 
