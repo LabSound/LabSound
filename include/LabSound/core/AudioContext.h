@@ -39,6 +39,45 @@ class AudioContext
     friend class ContextRenderLock;
 
 public:
+
+    // AudioNodes should not retain the AudioContext. The majority of
+    // methods that take AudioContext as a parameter do so via reference.
+    // If methods from the context, such as currentTime() are
+    // required in methods that do not take AudioContext as a parameter, 
+    // they should instead retain a weak pointer to the 
+    // AudioNodeInterface from the AudioContext they were instantiated from. 
+    // Locking the AudioNodeInterface
+    // pointer is a way to check if the AudioContext is still instantiated.
+    // AudioContextInterface contains data that is safe for any thread, or
+    // audio processing callback to read, even if the audio context is in
+    // the process of stopping or destruction.
+    class AudioContextInterface
+    {
+        friend class AudioContext;
+
+
+        int _id = 0;
+        AudioContext * _ac = nullptr;
+        double _currentTime = 0;
+
+    public:
+        AudioContextInterface(AudioContext * ac, int id)
+            : _id(id)
+            , _ac(ac)
+        {
+        }
+
+        ~AudioContextInterface() { }
+
+        // the contextId of two AudioNodeInterfaces can be compared
+        // to discover if they refer to the same context.
+        int contextId() const { return _id; }
+        double currentTime() const { return _currentTime; }
+    };
+
+    std::weak_ptr<AudioContextInterface> audioContextInterface() { return m_audioContextInterface; }
+
+
     // Debugging/Sanity Checking
     std::string m_graphLocker;
     std::string m_renderLocker;
@@ -135,6 +174,8 @@ private:
     // PendingConnection into Internals as there's no need to expose these at all.
     struct Internals;
     std::unique_ptr<Internals> m_internal;
+
+    std::shared_ptr<AudioContextInterface> m_audioContextInterface;
 
     std::mutex m_graphLock;
     std::mutex m_renderLock;

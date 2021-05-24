@@ -118,12 +118,14 @@ void AudioContext::flushDebugBuffer(char const* const wavFilePath)
     m_internal->flushDebugBuffer(wavFilePath);
 }
 
-// Constructor for realtime rendering
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
     : m_isOfflineContext(isOffline)
 {
+    static std::atomic<int> id = 1;
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
+    m_audioContextInterface = std::make_shared<AudioContextInterface>(this, id);
+    ++id;
 
     if (isOffline)
     {
@@ -135,6 +137,8 @@ AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
 AudioContext::~AudioContext()
 {
     LOG_TRACE("Begin AudioContext::~AudioContext()");
+
+    m_audioContextInterface.reset();
 
     if (!isOfflineContext())
         graphKeepAlive = 0.25f;
@@ -224,6 +228,8 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
     ASSERT(r.context());
 
     // At the beginning of every render quantum, update the graph.
+
+    m_audioContextInterface->_currentTime = currentTime();
 
     // check for pending connections
     if (m_internal->pendingParamConnections.size_approx() > 0 ||
@@ -345,8 +351,6 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
-
-    /// @TODO is a repeat of handlePreRenderTasks actually correct here?
     AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes();
 }

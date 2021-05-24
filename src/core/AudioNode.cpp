@@ -155,6 +155,7 @@ void AudioNodeScheduler::start(double when)
         _playbackState == SchedulingState::PLAYING)
         return;
 
+    // start cancels stop
     _stopWhen = std::numeric_limits<uint64_t>::max();
 
     // treat non finite, or max values as a cancellation of stopping or resetting

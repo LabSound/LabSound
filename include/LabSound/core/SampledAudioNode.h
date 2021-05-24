@@ -71,10 +71,19 @@ public:
     // loopCount of -1 will loop forever
     // all the schedule routines will call start(0) if necessary, so that a
     // schedule is sufficient for this node to start producing a signal.
-    void schedule(double when);
-    void schedule(double when, int loopCount);
-    void schedule(double when, double grainOffset, int loopCount);
-    void schedule(double when, double grainOffset, double grainDuration, int loopCount);
+    //
+    // 
+    void schedule(float relative_when);
+    void schedule(float relative_when, int loopCount);
+    void schedule(float relative_when, float grainOffset, int loopCount);
+    void schedule(float relative_when, float grainOffset, float grainDuration, int loopCount);
+
+    // note: start is not virtual. start on the ScheduledAudioNode is relative,
+    // but start here is in absolute time.
+    void start(float abs_when);
+    void start(float abs_when, int loopCount);
+    void start(float abs_when, float grainOffset, int loopCount);
+    void start(float abs_when, float grainOffset, float grainDuration, int loopCount);
 
     // this will clear anything playing or pending, without stopping the node itself.
     void clearSchedules();

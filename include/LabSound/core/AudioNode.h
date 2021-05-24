@@ -51,15 +51,6 @@ enum OscillatorType
     CUSTOM          = 6,
     _OscillatorTypeCount
 };
-// clang-format on
-
-class AudioContext;
-class AudioNodeInput;
-class AudioNodeOutput;
-class AudioParam;
-class AudioSetting;
-class ContextGraphLock;
-class ContextRenderLock;
 
 enum class SchedulingState : int
 {
@@ -73,6 +64,15 @@ enum class SchedulingState : int
     FINISHED         // Node has finished
 };
 const char* schedulingStateName(SchedulingState);
+// clang-format on
+
+class AudioContext;
+class AudioNodeInput;
+class AudioNodeOutput;
+class AudioParam;
+class AudioSetting;
+class ContextGraphLock;
+class ContextRenderLock;
 
 class AudioNodeScheduler
 {

@@ -19,7 +19,13 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
                      const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
-    if (!ctx) return;
+    if (!ctx) 
+        return;
+
+    // bail if shutting down.
+    auto ac = ctx->audioContextInterface().lock();
+    if (!ac)
+        return;
 
     ASSERT(required_inlet);
 
