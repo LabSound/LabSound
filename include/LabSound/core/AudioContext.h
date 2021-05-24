@@ -160,6 +160,12 @@ public:
     void startOfflineRendering();
     std::function<void()> offlineRenderCompleteCallback;
 
+    // suspend the progression of time in the audio context, any queued samples will play
+    void suspend();
+
+    // if the context was suspended, resume the progression of time and processing in the audio context
+    void resume();
+    
     // event dispatching will be called automatically, depending on constructor
     // argument. If not automatically dispatching, it is the user's responsibility
     // to call dispatchEvents often enough to satisfy the user's needs.

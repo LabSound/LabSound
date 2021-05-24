@@ -107,7 +107,11 @@ void NullDeviceNode::start()
 void NullDeviceNode::stop()
 {
     shouldExit = true;
-    info = {};
+}
+
+bool NullDeviceNode::isRunning() const
+{
+    return m_startedRendering;
 }
 
 void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)

@@ -155,6 +155,8 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
     // heap corruption, for example, when dac.stopStream() is invoked.
     uint32_t bufferFrames = AudioNode::ProcessingSizeInFrames;
 
+    samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
+
     try
     {
         rtaudio_ctx.openStream(&outputParams, (inputParams.nChannels > 0) ? &inputParams : nullptr, RTAUDIO_FLOAT32,
@@ -177,7 +179,6 @@ AudioDevice_RtAudio::~AudioDevice_RtAudio()
 void AudioDevice_RtAudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
-    samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
     try
     {
         rtaudio_ctx.startStream();
@@ -198,8 +199,21 @@ void AudioDevice_RtAudio::stop()
     {
         LOG_ERROR(e.getMessage().c_str());
     }
-    samplingInfo = {};
 }
+
+bool AudioDevice_RtAudio::isRunning()
+{
+    try
+    {
+        return rtaudio_ctx.isStreamRunning();
+    }
+    catch (const RtAudioError & e)
+    {
+        LOG_ERROR(e.getMessage().c_str());
+        return false;
+    }
+}
+
 
 // Pulls on our provider to get rendered audio stream.
 void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)

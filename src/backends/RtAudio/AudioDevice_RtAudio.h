@@ -38,6 +38,7 @@ public:
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override final;
     virtual void stop() override final;
+    virtual bool isRunning() override final;
 };
 
 int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);

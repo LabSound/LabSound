@@ -110,6 +110,11 @@ void AudioHardwareDeviceNode::stop()
     m_platformAudioDevice->stop();
 }
 
+bool AudioHardwareDeviceNode::isRunning() const
+{
+    return m_platformAudioDevice->isRunning();
+}
+
 const SamplingInfo AudioHardwareDeviceNode::getSamplingInfo() const
 {
     return last_info;

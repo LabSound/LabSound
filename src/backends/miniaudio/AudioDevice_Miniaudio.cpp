@@ -210,6 +210,8 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
+    samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
+
     _ring = new cinder::RingBufferT<float>();
     _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
     _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
@@ -230,7 +232,6 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
 void AudioDevice_Miniaudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
-    samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
     if (ma_device_start(&_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to start audio device");
@@ -243,8 +244,13 @@ void AudioDevice_Miniaudio::stop()
     {
         LOG_ERROR("Unable to stop audio device");
     }
-    samplingInfo = {};
 }
+
+bool AudioDevice_MiniAudio::isRunning()
+{
+    return ma_device_is_started(&_device);
+}
+
 
 // Pulls on our provider to get rendered audio stream.
 void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, void * inputBuffer)

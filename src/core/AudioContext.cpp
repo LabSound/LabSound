@@ -358,6 +358,11 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::synchronizeConnections(int timeOut_ms)
 {
     cv.notify_all();
+
+    // don't synch if the context is suspended as that will simply max out the timeout
+    if (!device_callback->isRunning())
+        return;
+
     while (m_internal->pendingNodeConnections.size_approx() > 0 && timeOut_ms > 0)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -650,5 +655,17 @@ void AudioContext::startOfflineRendering()
     m_isInitialized = true;
     device_callback->start();
 }
+
+void AudioContext::suspend()
+{
+    device_callback->stop();
+}
+
+// if the context was suspended, resume the progression of time and processing in the audio context
+void AudioContext::resume()
+{
+    device_callback->start();
+}
+
 
 }  // End namespace lab

@@ -58,6 +58,7 @@ public:
     virtual void render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info) override final;
     virtual void start() override final;
     virtual void stop() override final;
+    virtual bool isRunning() const override final;
     virtual const SamplingInfo getSamplingInfo() const override final;
     virtual const AudioStreamConfig getOutputConfig() const override final;
     virtual const AudioStreamConfig getInputConfig() const override final;
