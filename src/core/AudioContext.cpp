@@ -121,7 +121,7 @@ void AudioContext::flushDebugBuffer(char const* const wavFilePath)
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
     : m_isOfflineContext(isOffline)
 {
-    static std::atomic<int> id = 1;
+    static std::atomic<int> id {1};
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
     m_audioContextInterface = std::make_shared<AudioContextInterface>(this, id);
