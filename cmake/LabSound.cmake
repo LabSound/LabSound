@@ -51,7 +51,7 @@ if (LABSOUND_USE_MINIAUDIO)
         set(labsnd_backend
             "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
             "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+            "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
         )
     else()
         set(labsnd_backend
