@@ -381,7 +381,7 @@ namespace lab {
                         std::array<float, AudioNode::ProcessingSizeInFrames> buff;
                         src_data->data_out = buff.data();
                         src_data->output_frames = AudioNode::ProcessingSizeInFrames;
-                        src_data->src_ratio = rate;
+                        src_data->src_ratio = 1. / rate;
                         src_data->end_of_input = ending ? 1 : 0;
                         src_process(schedule.resampler[i]->sampler, src_data);
                         VectorMath::vadd(buff.data(), 1, buffer + write_index, 1, buffer + write_index, 1, count);
