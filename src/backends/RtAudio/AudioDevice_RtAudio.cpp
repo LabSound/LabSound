@@ -201,7 +201,7 @@ void AudioDevice_RtAudio::stop()
     }
 }
 
-bool AudioDevice_RtAudio::isRunning()
+bool AudioDevice_RtAudio::isRunning() const
 {
     try
     {

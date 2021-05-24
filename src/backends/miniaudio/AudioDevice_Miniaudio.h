@@ -225,6 +225,7 @@ public:
     void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override final;
     virtual void stop() override final;
+    virtual bool isRunning() const override final;
 };
 
 }  // namespace lab

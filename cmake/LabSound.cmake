@@ -57,7 +57,7 @@ if (LABSOUND_USE_MINIAUDIO)
         set(labsnd_backend
             "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
             "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-            "${LABSOUND_ROOT}/src/backends/miniaudio/miniaudio.h"
+            "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
         )
     endif()
 elseif (LABSOUND_USE_RTAUDIO)
@@ -123,6 +123,12 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
+
+if (LABSOUND_USE_MINIAUDIO)
+    target_include_directories(LabSound PRIVATE
+        ${LABSOUND_ROOT}/third_party/miniaudio)
+endif()
+
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows

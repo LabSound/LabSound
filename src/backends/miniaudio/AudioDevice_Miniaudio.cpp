@@ -246,7 +246,7 @@ void AudioDevice_Miniaudio::stop()
     }
 }
 
-bool AudioDevice_MiniAudio::isRunning()
+bool AudioDevice_Miniaudio::isRunning() const
 {
     return ma_device_is_started(&_device);
 }
