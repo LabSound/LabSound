@@ -482,10 +482,10 @@ namespace lab {
             if (s.when < quantumDuration)   // has s.when counted down to within this quantum?
             {
                 int32_t offset = (s.when < quantumStartTime) ? 0 : static_cast<int32_t>(s.when * r.context()->sampleRate());
-                if (offset > _internals->greatest_cursor)
-                    _internals->greatest_cursor = offset;
                 renderSample(r, s, (size_t) offset, AudioNode::ProcessingSizeInFrames);
                 output(0)->bus(r)->clearSilentFlag();
+                if (s.cursor > _internals->greatest_cursor)
+                    _internals->greatest_cursor = s.cursor;
             }
 
             // keep counting the scheduled item down
