@@ -47,6 +47,8 @@ public:
     virtual void initialize() override;
     virtual void uninitialize() override;
 
+    virtual void backendReinitialize();
+
     // AudioDeviceRenderCallback interface
     virtual void render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info) override;
     virtual void start() override;

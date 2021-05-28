@@ -105,6 +105,11 @@ void AudioHardwareDeviceNode::start()
     }
 }
 
+void AudioHardwareDeviceNode::backendReinitialize()
+{
+    m_platformAudioDevice->backendReinitialize();
+}
+
 void AudioHardwareDeviceNode::stop()
 {
     m_platformAudioDevice->stop();
