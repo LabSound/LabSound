@@ -227,6 +227,34 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
         free(_scratch);
 }
 
+void AudioDevice_Miniaudio::backendReinitialize()
+{
+    auto device_list = AudioDevice::MakeAudioDeviceList();
+    PrintAudioDeviceList();
+
+    //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
+    ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
+    deviceConfig.playback.format = ma_format_f32;
+    deviceConfig.playback.channels = outputConfig.desired_channels;
+    deviceConfig.sampleRate = static_cast<int>(outputConfig.desired_samplerate);
+    deviceConfig.capture.format = ma_format_f32;
+    deviceConfig.capture.channels = inputConfig.desired_channels;
+    deviceConfig.dataCallback = outputCallback;
+    deviceConfig.performanceProfile = ma_performance_profile_low_latency;
+    deviceConfig.pUserData = this;
+
+#ifdef __WINDOWS_WASAPI__
+    deviceConfig.wasapi.noAutoConvertSRC = true;
+#endif
+
+    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
+    {
+        LOG_ERROR("Unable to open audio playback device");
+        return;
+    }
+}
+
+
 void AudioDevice_Miniaudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong

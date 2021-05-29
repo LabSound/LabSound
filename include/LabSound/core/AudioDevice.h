@@ -114,9 +114,9 @@ public:
 
     virtual ~AudioDevice() {}
     virtual void start() = 0;
-    virtual void backendReinitialize() {}
     virtual void stop() = 0;
     virtual bool isRunning() const = 0;
+    virtual void backendReinitialize() {}
 };
 
 }  // lab
