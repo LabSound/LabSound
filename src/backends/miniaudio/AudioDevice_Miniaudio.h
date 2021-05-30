@@ -226,6 +226,7 @@ public:
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;
+    virtual void backendReinitialize() override final;
 };
 
 }  // namespace lab
