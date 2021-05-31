@@ -37,10 +37,10 @@ namespace
 {
     ma_context g_context;
     static std::vector<AudioDeviceInfo> g_devices;
+    static bool g_must_init = true;
 
     void init_context()
     {
-        static bool g_must_init = true;
         if (g_must_init)
         {
             LOG_TRACE("[LabSound] init_context() must_init");
@@ -72,12 +72,12 @@ void PrintAudioDeviceList()
 
 std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
 {
+    init_context();
     static bool probed = false;
     if (probed)
         return g_devices;
 
     probed = true;
-    init_context();
 
     ma_result result;
     ma_device_info * pPlaybackDeviceInfos;
@@ -220,6 +220,7 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
     stop();
     ma_device_uninit(&_device);
     ma_context_uninit(&g_context);
+    g_must_init = true;
     delete _renderBus;
     delete _inputBus;
     delete _ring;
