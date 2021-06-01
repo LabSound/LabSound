@@ -107,6 +107,8 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 // exactly on start, or late, stop straight away, render a whole frame of fade out
                 _renderLength = epoch_length - _renderOffset;
                 _playbackState = SchedulingState::STOPPING;
+                if(_onEnded)
+                    r.context()->enqueueEvent(_onEnded);
                 ASN_PRINT("stopping\n");
             }
             else if (_stopWhen < _epoch + epoch_length)
@@ -115,6 +117,8 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _renderOffset = 0;
                 _renderLength = static_cast<int>(_stopWhen - _epoch);
                 _playbackState = SchedulingState::STOPPING;
+                if(_onEnded)
+                    r.context()->enqueueEvent(_onEnded);
                 ASN_PRINT("stopping\n");
             }
             
