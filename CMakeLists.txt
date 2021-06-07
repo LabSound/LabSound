@@ -10,6 +10,7 @@ set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
 if (WIN32)
 elseif (APPLE)
+elseif (ANDROID)
 else()
     if (NOT LABSOUND_JACK AND NOT LABSOUND_PULSE AND NOT LABSOUND_ASOUND)
         message(STATUS "No Linux backend specified, defaulting to Pulse.")
