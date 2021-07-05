@@ -225,7 +225,9 @@ bool AudioContext::isInitialized() const
 
 void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 {
-    ASSERT(r.context());
+    // these may be null during application exit.
+    if (!r.context() || !m_audioContextInterface)
+        return;
 
     // At the beginning of every render quantum, update the graph.
 
