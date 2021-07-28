@@ -77,6 +77,7 @@ static float calculateNormalizationScale(AudioBus * response)
 
     return scale;
 }
+
 //------------------------------------------------------------------------------
 
 ConvolverNode::ReverbKernel::ReverbKernel(ReverbKernel && rh) noexcept
@@ -96,10 +97,15 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
         lab::sp_conv_destroy(&conv);
 }
 
+//------------------------------------------------------------------------------
+
+lab::AudioSettingDescriptor s_normalizeSetting = {"normalize",       "NRML", SettingType::Bool};
+lab::AudioSettingDescriptor s_impulseSetting =   {"impulseResponse", "IMPL", SettingType::Bus};
+
 ConvolverNode::ConvolverNode(AudioContext& ac)
     : AudioScheduledSourceNode(ac)
-    , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
-    , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
+    , _normalize(std::make_shared<AudioSetting>(&s_normalizeSetting))
+    , _impulseResponseClip(std::make_shared<AudioSetting>(&s_impulseSetting))
 {
     _swap_ready = false;
 

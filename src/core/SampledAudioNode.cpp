@@ -18,8 +18,6 @@
 #include "concurrentqueue/concurrentqueue.h"
 #include "libsamplerate/include/samplerate.h"
 
-using namespace lab;
-
 namespace lab {
 
     /*
@@ -74,22 +72,28 @@ namespace lab {
         bool bus_setting_updated = false;
     };
 
+    static AudioParamDescriptor   s_playbackRateParam {"playbackRate", "RATE",  1.0, 0.0, 1024.};
+    static AudioParamDescriptor   s_detuneParam       {"detune",       "DTUNE", 0.0, 0.0, 1200.};
+    static AudioParamDescriptor   s_dopplerRateParam  {"dopplerRate",  "DPLR",  1.0, 0.0, 1200.};
+    static AudioSettingDescriptor s_sourceBusSetting  {"sourceBus",    "SBUS", SettingType::Bus};
+
+
     SampledAudioNode::SampledAudioNode(AudioContext& ac)
         : AudioScheduledSourceNode(ac), _internals(new Internals(ac))
     {
-        m_sourceBus = std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus);
+        m_sourceBus = std::make_shared<AudioSetting>(&s_sourceBusSetting);
         m_settings.push_back(m_sourceBus);
         m_sourceBus->setValueChanged([this]() {
             this->_internals->bus_setting_updated = true;
         });
         
-        m_playbackRate = std::make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, 1024);
+        m_playbackRate = std::make_shared<AudioParam>(&s_playbackRateParam);
         m_params.push_back(m_playbackRate);
 
-        m_detune = std::make_shared<AudioParam>("detune", "DTUNE", 0.0, 0.0, 1200.f);
+        m_detune = std::make_shared<AudioParam>(&s_detuneParam);
         m_params.push_back(m_detune);
 
-        m_dopplerRate = std::make_shared<AudioParam>("dopplerRate", "DPLR", 1.0, 0.0, 1200.f);
+        m_dopplerRate = std::make_shared<AudioParam>(&s_dopplerRateParam);
         m_params.push_back(m_dopplerRate);
 
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.

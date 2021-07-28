@@ -26,16 +26,11 @@ AudioBus const* const AudioParam::bus() const
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-AudioParam::AudioParam(const std::string & name, const std::string & shortName, double defaultValue, double minValue, double maxValue, unsigned units)
+AudioParam::AudioParam(AudioParamDescriptor const * const desc)
     : AudioSummingJunction()
-    , m_name(name)
-    , m_shortName(shortName)
-    , m_value(defaultValue)
-    , m_defaultValue(defaultValue)
-    , m_minValue(minValue)
-    , m_maxValue(maxValue)
-    , m_units(units)
-    , m_smoothedValue(defaultValue)
+    , _desc(desc)
+    , m_value(desc->defaultValue)
+    , m_smoothedValue(desc->defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
 {
 }

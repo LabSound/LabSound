@@ -24,6 +24,10 @@ namespace lab
 // Private Supersaw Node Implementation //
 //////////////////////////////////////////
 
+static AudioParamDescriptor s_detuneParam       {"detune",    "DTUN",   1.0, 0,    120};
+static AudioParamDescriptor s_frequencyParam    {"frequency", "FREQ", 440.0, 0, 100000};
+static AudioSettingDescriptor s_sawCountSetting {"sawCount",  "SAWC", SettingType::Integer};
+
 class SupersawNode::SupersawNodeInternal
 {
 public:
@@ -32,10 +36,10 @@ public:
         , cachedFrequency(FLT_MAX)
     {
         gainNode = std::make_shared<GainNode>(ac);
-        sawCount = std::make_shared<AudioSetting>("sawCount", "SAWC", AudioSetting::Type::Integer);
+        sawCount = std::make_shared<AudioSetting>(&s_sawCountSetting);
         sawCount->setUint32(1);
-        detune = std::make_shared<AudioParam>("detune", "DTUN", 1.0, 0, 120);
-        frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440.0, 1.0f, sampleRate * 0.5f);
+        detune = std::make_shared<AudioParam>(&s_detuneParam);
+        frequency = std::make_shared<AudioParam>(&s_frequencyParam);
     }
 
     ~SupersawNodeInternal() = default;

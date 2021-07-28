@@ -22,6 +22,15 @@ namespace lab
     // ADSRNode::ADSRNodeImpl Implementation //
     ///////////////////////////////////////////
 
+    static AudioParamDescriptor s_gateParam             {"gate",         "GATE", 0, 0, 1};
+    static AudioSettingDescriptor s_oneShotSetting      {"oneShot",      "ONE!", SettingType::Bool};
+    static AudioSettingDescriptor s_attackTimeSetting   {"attackTime",   "ATKT", SettingType::Float};
+    static AudioSettingDescriptor s_attackLevelSetting  {"attackLevel",  "ATKL", SettingType::Float};
+    static AudioSettingDescriptor s_decayTimeSetting    {"decayTime",    "DCYT", SettingType::Float};
+    static AudioSettingDescriptor s_sustainTimeSetting  {"sustainTime",  "SUST", SettingType::Float};
+    static AudioSettingDescriptor s_sustainLevelSetting {"sustainLevel", "SUSL", SettingType::Float};
+    static AudioSettingDescriptor s_ReleaseTimeSetting  {"ReleaseTime",  "RELT", SettingType::Float};
+
     class ADSRNode::ADSRNodeImpl : public lab::AudioProcessor
     {
     public:
@@ -33,27 +42,27 @@ namespace lab
         {
             envelope.reserve(AudioNode::ProcessingSizeInFrames * 4);
 
-            m_gate = std::make_shared<AudioParam>("gate", "GATE", 0, 0, 1);
+            m_gate = std::make_shared<AudioParam>(&s_gateParam);
 
-            m_oneShot = std::make_shared<AudioSetting>("oneShot", "ONE!", AudioSetting::Type::Bool);
+            m_oneShot = std::make_shared<AudioSetting>(&s_oneShotSetting);
             m_oneShot->setBool(true);
 
-            m_attackTime = std::make_shared<AudioSetting>("attackTime", "ATKT", AudioSetting::Type::Float);
+            m_attackTime = std::make_shared<AudioSetting>(&s_attackTimeSetting);
             m_attackTime->setFloat(1.125f); // 125ms
 
-            m_attackLevel = std::make_shared<AudioSetting>("attackLevel", "ATKL", AudioSetting::Type::Float);
+            m_attackLevel = std::make_shared<AudioSetting>(&s_attackLevelSetting);
             m_attackLevel->setFloat(1.0f); // 1.0f
 
-            m_decayTime = std::make_shared<AudioSetting>("decayTime", "DCYT", AudioSetting::Type::Float);
+            m_decayTime = std::make_shared<AudioSetting>(&s_decayTimeSetting);
             m_decayTime->setFloat(0.125f); // 125ms
 
-            m_sustainTime = std::make_shared<AudioSetting>("sustainTime", "SUST", AudioSetting::Type::Float);
+            m_sustainTime = std::make_shared<AudioSetting>(&s_sustainTimeSetting);
             m_sustainTime->setFloat(0.125f); // 125ms
 
-            m_sustainLevel = std::make_shared<AudioSetting>("sustainLevel", "SUSL", AudioSetting::Type::Float);
+            m_sustainLevel = std::make_shared<AudioSetting>(&s_sustainLevelSetting);
             m_sustainLevel->setFloat(0.5f); // 0.5f
 
-            m_releaseTime = std::make_shared<AudioSetting>("ReleaseTime", "RELT", AudioSetting::Type::Float);
+            m_releaseTime = std::make_shared<AudioSetting>(&s_ReleaseTimeSetting);
             m_releaseTime->setFloat(0.125f); // 125ms
         }
 

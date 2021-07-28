@@ -16,6 +16,8 @@
 namespace lab
 {
 
+static AudioParamDescriptor s_gainParam {"gain", "GAIN", 1.0, 0.0, 10000.0};
+
 GainNode::GainNode(AudioContext& ac)
     : AudioNode(ac)
     , m_lastGain(1.f)
@@ -24,7 +26,7 @@ GainNode::GainNode(AudioContext& ac)
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 10000.0);
+    m_gain = std::make_shared<AudioParam>(&s_gainParam);
     m_params.push_back(m_gain);
 
     initialize();

@@ -19,18 +19,25 @@ using namespace std;
 namespace lab
 {
 
+static AudioParamDescriptor s_thresholdParam {"threshold", "THRS", -24, -100, 0};
+static AudioParamDescriptor s_kneeParam      {"knee",      "KNEE",  30, 0, 40};
+static AudioParamDescriptor s_ratioParam     {"ratio",     "RATE",  12, 1, 20};
+static AudioParamDescriptor s_reductionParam {"reduction", "REDC",   0, -20, 0};
+static AudioParamDescriptor s_attackParam    {"attack",    "ATCK",   0.003, 0, 1};
+static AudioParamDescriptor s_releaseParam   {"release",   "RELS",   0.250, 0, 1};
+
 DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     : AudioNode(ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_threshold = make_shared<AudioParam>("threshold", "THRS", -24, -100, 0);
-    m_knee = make_shared<AudioParam>("knee", "KNEE", 30, 0, 40);
-    m_ratio = make_shared<AudioParam>("ratio", "RATE", 12, 1, 20);
-    m_reduction = make_shared<AudioParam>("reduction", "REDC", 0, -20, 0);
-    m_attack = make_shared<AudioParam>("attack", "ATCK", 0.003, 0, 1);
-    m_release = make_shared<AudioParam>("release", "RELS", 0.250, 0, 1);
+    m_threshold = make_shared<AudioParam>(&s_thresholdParam);
+    m_knee = make_shared<AudioParam>(&s_kneeParam);
+    m_ratio = make_shared<AudioParam>(&s_ratioParam);
+    m_reduction = make_shared<AudioParam>(&s_reductionParam);
+    m_attack = make_shared<AudioParam>(&s_attackParam);
+    m_release = make_shared<AudioParam>(&s_releaseParam);
 
     m_params.push_back(m_threshold);
     m_params.push_back(m_knee);

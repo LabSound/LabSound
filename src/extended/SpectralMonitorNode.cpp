@@ -52,11 +52,13 @@ public:
     float * oouraW;
 };
 
+static AudioSettingDescriptor s_windowSizeSetting {"windowSize", "WNDW", SettingType::Integer};
+
 class SpectralMonitorNode::SpectralMonitorNodeInternal
 {
 public:
     SpectralMonitorNodeInternal()
-        : windowSize(std::make_shared<AudioSetting>("windowSize", "WNDW", AudioSetting::Type::Integer))
+        : windowSize(std::make_shared<AudioSetting>(&s_windowSizeSetting))
         , fft(nullptr)
     {
         setWindowSize(512);

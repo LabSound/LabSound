@@ -115,6 +115,15 @@ public:
 };
 
 
+struct AudioNodeDescriptor
+{
+    AudioParamDescriptor * params;
+    AudioSettingDescriptor * settings;
+
+    AudioParamDescriptor const * const param(char const * const);
+    AudioSettingDescriptor const * const setting(char const * const);
+};
+
 // An AudioNode is the basic building block for handling audio within an AudioContext.
 // It may be an audio source, an intermediate processing module, or an audio destination.
 // Each AudioNode can have inputs and/or outputs.
@@ -229,6 +238,8 @@ public:
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
 protected:
+    void instantiate(AudioNodeDescriptor const*const);
+
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput> input);
@@ -246,8 +257,8 @@ protected:
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
-    std::vector<std::shared_ptr<AudioParam>> m_params;
-    std::vector<std::shared_ptr<AudioSetting>> m_settings;
+    std::vector<std::shared_ptr<AudioParam>> _params;
+    std::vector<std::shared_ptr<AudioSetting>> _settings;
 
     int m_channelCount{ 0 };
 

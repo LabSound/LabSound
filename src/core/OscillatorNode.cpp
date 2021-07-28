@@ -49,16 +49,22 @@ inline float burk_fast_sine(const double phase)
 
 static char const * const s_types[] = {"None", "Sine", "FastSine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
 
+static AudioParamDescriptor s_frequencyParam {"frequency", "FREQ", 440.0,        0.0, 100000.0};
+static AudioParamDescriptor s_detuneParam    {"detune",    "DTUN",   0.0,    -4800.0,   4800.0};
+static AudioParamDescriptor s_amplitudeParam {"amplitude", "AMPL",   1.0,        0.0, 100000.0};
+static AudioParamDescriptor s_biasParam      {"bias",      "BIAS",   0.0, -1000000.0, 100000.0};
+static AudioSettingDescriptor s_typeSetting  {"type",      "TYPE", SettingType::Enum, s_types};
+
 OscillatorNode::OscillatorNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac)
     , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
     , m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
-    m_type = std::make_shared<AudioSetting>("type", "TYPE", s_types);
-    m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
-    m_detune = std::make_shared<AudioParam>("detune", "DTUN", 0, -4800, 4800);
-    m_amplitude = std::make_shared<AudioParam>("amplitude", "AMPL", 1, 0, 100000);
-    m_bias = std::make_shared<AudioParam>("bias", "BIAS", 0, -1000000, 100000);
+    m_type = std::make_shared<AudioSetting>(&s_typeSetting);
+    m_frequency = std::make_shared<AudioParam>(&s_frequencyParam);
+    m_detune = std::make_shared<AudioParam>(&s_detuneParam);
+    m_amplitude = std::make_shared<AudioParam>(&s_amplitudeParam);
+    m_bias = std::make_shared<AudioParam>(&s_biasParam);
 
     m_params.push_back(m_frequency);
     m_params.push_back(m_amplitude);

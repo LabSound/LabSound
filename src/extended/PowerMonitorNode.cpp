@@ -15,10 +15,12 @@ namespace lab
 
 using namespace lab;
 
+AudioSettingDescriptor s_windowSizeSetting {"windowSize", "WNDW", SettingType::Integer};
+
 PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
     : AudioBasicInspectorNode(ac, 2)
     , _db(0)
-    , _windowSize(std::make_shared<AudioSetting>("windowSize", "WNDW", AudioSetting::Type::Integer))
+    , _windowSize(std::make_shared<AudioSetting>(&s_windowSizeSetting))
 {
     _windowSize->setUint32(128);
     m_settings.push_back(_windowSize);

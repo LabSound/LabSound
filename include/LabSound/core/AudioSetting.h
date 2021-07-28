@@ -15,81 +15,70 @@
 
 namespace lab
 {
-// value defaults to zero, assumed set as integer.
-// floatAssigned() is provided so that a user interface or RPC binding can configure
-// automatically for float or unsigned integer values.
+// An AudioSetting holds settings for a node that don't vary with
+// time, and that cannot be driven by an audio bus.
+// The WebAudio interface typically exposes settings via functional
+// entry points only. Exposing settings via a consistent interface
+// allows consistent access through tools and bindings without
+// needing to write specialized code for each setting.
 //
-// a value changed callback is provided so that if tools set values, they can
-// be responded to.
+// value defaults to Integer and zero.
+//
+// Applications can set the value changed callback.
+//
+
+enum class SettingType
+{
+    None,
+    Bool,
+    Integer,
+    Float,
+    Enum,
+    Bus
+};
+
+struct AudioSettingDescriptor
+{
+    char const * const name;
+    char const * const shortName;
+    SettingType type = SettingType::None;
+    char const * const * enums = nullptr;
+};
+
 class AudioSetting
 {
 public:
-    enum class Type
-    {
-        None,
-        Bool,
-        Integer,
-        Float,
-        Enumeration,
-        Bus
-    };
 
 private:
-    std::string _name;
-    std::string _shortName;
+    AudioSettingDescriptor const*const _desc;
 
-    Type _type;
     float _valf = 0;
     uint32_t _vali = 0;
     bool _valb = false;
     std::shared_ptr<AudioBus> _valBus;
 
     std::function<void()> _valueChanged;
-    char const * const * _enums = nullptr;
 
 public:
-    explicit AudioSetting(const std::string & n, const std::string & sn, Type t)
-        : _name(n)
-        , _shortName(sn)
-        , _type(t)
+    explicit AudioSetting(AudioSettingDescriptor const * const d)
+        : _desc(d)
     {
     }
 
-    explicit AudioSetting(char const * const n, char const * const sn, Type t)
-        : _name(n)
-        , _shortName(sn)
-        , _type(t)
-    {
-    }
+    ~AudioSetting() = default;
 
-    explicit AudioSetting(const std::string & n, const std::string & sn, char const * const * enums)
-        : _name(n)
-        , _shortName(sn)
-        , _type(Type::Enumeration)
-        , _enums(enums)
-    {
-    }
+    std::string name() const { return _desc->name; }
+    std::string shortName() const { return _desc->shortName; }
+    SettingType type() const { return _desc->type; }
+    char const * const * enums() const { return _desc->enums; }
 
-    explicit AudioSetting(char const * const n, char const * const sn, char const * const * enums)
-        : _name(n)
-        , _shortName(sn)
-        , _type(Type::Enumeration)
-        , _enums(enums)
-    {
-    }
-
-    std::string name() const { return _name; }
-    std::string shortName() const { return _shortName; }
-    Type type() const { return _type; }
-
-    char const * const * enums() const { return _enums; }
     int enumFromName(char const* const e)
     {
-        if (!_enums || !e)
+        if (!_desc->enums || !e)
             return -1;
 
         int enum_idx = 0;
-        for (char const* const* names_p = _enums; *names_p != nullptr; ++names_p, ++enum_idx)
+        for (char const* const* names_p = _desc->enums; *names_p != nullptr; ++names_p, ++enum_idx)
         {
             if (!strcmp(e, *names_p))
                 return enum_idx;

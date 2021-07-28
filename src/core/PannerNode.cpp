@@ -34,29 +34,52 @@ static void fixNANs(T & x)
         x = T(0);
 }
 
+
 static char const * const s_distance_models[lab::DistanceEffect::ModelType::_Count + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
 static char const * const s_panning_models[lab::PanningMode::_PanningModeCount + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
 
+static AudioParamDescriptor s_orientationXParam {"orientationX", "OR X", 0.f,    -1.f,    1.f};
+static AudioParamDescriptor s_orientationYParam {"orientationY", "OR Y", 0.f,    -1.f,    1.f};
+static AudioParamDescriptor s_orientationZParam {"orientationZ", "OR Z", 0.f,    -1.f,    1.f};
+static AudioParamDescriptor s_velocityXParam    {"velocityX",    "VELX", 0.f, -1000.f, 1000.f};
+static AudioParamDescriptor s_velocityYParam    {"velocityY",    "VELY", 0.f, -1000.f, 1000.f};
+static AudioParamDescriptor s_velocityZParam    {"velocityZ",    "VELZ", 0.f, -1000.f, 1000.f};
+static AudioParamDescriptor s_positionXParam    {"positionX",    "POSX", 0.f,    -1.e6f,  1.e6f};
+static AudioParamDescriptor s_positionYParam    {"positionY",    "POSY", 0.f,    -1.e6f,  1.e6f};
+static AudioParamDescriptor s_positionZParam    {"positionZ",    "POSZ", 0.f,    -1.e6f,  1.e6f};
+static AudioParamDescriptor s_distanceGainParam {"distanceGain", "DGAN", 1.0,     0.0,    1.0};
+static AudioParamDescriptor s_coneGainParam     {"coneGain",     "CGAN", 1.0,     0.0,    1.0};
+static AudioSettingDescriptor s_distanceModelSetting  {"distanceModel",  "DSTM", SettingType::Enum, s_distance_models};
+static AudioSettingDescriptor s_refDistanceSetting    {"refDistance",    "REFD", SettingType::Float};
+static AudioSettingDescriptor s_maxDistanceSetting    {"maxDistance",    "MAXD", SettingType::Float};
+static AudioSettingDescriptor s_rolloffFactorSetting  {"rolloffFactor",  "ROLL", SettingType::Float};
+static AudioSettingDescriptor s_coneInnerAngleSetting {"coneInnerAngle", "CONI", SettingType::Float};
+static AudioSettingDescriptor s_coneOuterAngleSetting {"coneOuterAngle", "CONO", SettingType::Float};
+static AudioSettingDescriptor s_panningModeSetting    {"panningMode",    "PANM", SettingType::Enum, s_panning_models};
+
+
 PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     : AudioNode(ac)
-    , m_orientationX(std::make_shared<AudioParam>("orientationX", "OR X", 0.f, -1.f, 1.f))
-    , m_orientationY(std::make_shared<AudioParam>("orientationY", "OR Y", 0.f, -1.f, 1.f))
-    , m_orientationZ(std::make_shared<AudioParam>("orientationZ", "OR Z", 0.f, -1.f, 1.f))
-    , m_velocityX(std::make_shared<AudioParam>("velocityX", "VELX", 0.f, -1000.f, 1000.f))
-    , m_velocityY(std::make_shared<AudioParam>("velocityY", "VELY", 0.f, -1000.f, 1000.f))
-    , m_velocityZ(std::make_shared<AudioParam>("velocityZ", "VELZ", 0.f, -1000.f, 1000.f))
-    , m_positionX(std::make_shared<AudioParam>("positionX", "POSX", 0.f, -1.e6f, 1.e6f))
-    , m_positionY(std::make_shared<AudioParam>("positionY", "POSY", 0.f, -1.e6f, 1.e6f))
-    , m_positionZ(std::make_shared<AudioParam>("positionZ", "POSZ", 0.f, -1.e6f, 1.e6f))
-    , m_distanceModel(std::make_shared<AudioSetting>("distanceModel", "DSTM", s_distance_models))
-    , m_refDistance(std::make_shared<AudioSetting>("refDistance", "REFD", AudioSetting::Type::Float))
-    , m_maxDistance(std::make_shared<AudioSetting>("maxDistance", "MAXD", AudioSetting::Type::Float))
-    , m_rolloffFactor(std::make_shared<AudioSetting>("rolloffFactor", "ROLL", AudioSetting::Type::Float))
-    , m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle", "CONI", AudioSetting::Type::Float))
-    , m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle", "CONO", AudioSetting::Type::Float))
-    , m_panningModel(std::make_shared<AudioSetting>("panningMode", "PANM", s_panning_models))
+    , m_orientationX(std::make_shared<AudioParam>(&s_orientationXParam))
+    , m_orientationY(std::make_shared<AudioParam>(&s_orientationYParam))
+    , m_orientationZ(std::make_shared<AudioParam>(&s_orientationZParam))
+    , m_velocityX(std::make_shared<AudioParam>(&s_velocityXParam))
+    , m_velocityY(std::make_shared<AudioParam>(&s_velocityYParam))
+    , m_velocityZ(std::make_shared<AudioParam>(&s_velocityZParam))
+    , m_positionX(std::make_shared<AudioParam>(&s_positionXParam))
+    , m_positionY(std::make_shared<AudioParam>(&s_positionYParam))
+    , m_positionZ(std::make_shared<AudioParam>(&s_positionZParam))
+    , m_distanceGain(std::make_shared<AudioParam>(&s_distanceGainParam))
+    , m_coneGain(std::make_shared<AudioParam>(&s_coneGainParam))
+    , m_distanceModel(std::make_shared<AudioSetting>(&s_distanceModelSetting))
+    , m_refDistance(std::make_shared<AudioSetting>(&s_refDistanceSetting))
+    , m_maxDistance(std::make_shared<AudioSetting>(&s_maxDistanceSetting))
+    , m_rolloffFactor(std::make_shared<AudioSetting>(&s_rolloffFactorSetting))
+    , m_coneInnerAngle(std::make_shared<AudioSetting>(&s_coneInnerAngleSetting))
+    , m_coneOuterAngle(std::make_shared<AudioSetting>(&s_coneOuterAngleSetting))
+    , m_panningModel(std::make_shared<AudioSetting>(&s_panningModeSetting))
     , m_sampleRate(ac.sampleRate())
 {
     if (searchPath.length())
@@ -75,9 +98,6 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
 
     addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
-    m_distanceGain = std::make_shared<AudioParam>("distanceGain", "DGAN", 1.0, 0.0, 1.0);
-    m_coneGain = std::make_shared<AudioParam>("coneGain", "CNGN", 1.0, 0.0, 1.0);
 
     m_params.push_back(m_distanceGain);
     m_params.push_back(m_coneGain);

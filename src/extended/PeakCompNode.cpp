@@ -27,18 +27,24 @@ namespace lab
 // Prviate PeakCompNode Implementation //
 /////////////////////////////////////////
 
+static AudioParamDescriptor s_thresholdParam {"threshold", "THRS", 0.0,   0, -1e6};
+static AudioParamDescriptor s_ratioParam     {"ratio",     "RATI", 1.0,   0,   10};
+static AudioParamDescriptor s_attackParam    {"attack",    "ATCK", 0.001, 0, 1000};
+static AudioParamDescriptor s_releaseParam   {"release",   "RELS", 0.001, 0, 1000};
+static AudioParamDescriptor s_makeupParam    {"makeup",    "MAKE", 0.0,   0,   60};
+static AudioParamDescriptor s_kneeParam      {"knee",      "KNEE", 0.0,   0,    1};
+
 class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
 {
-
 public:
     PeakCompNodeInternal() : AudioProcessor()
     {
-        m_threshold = std::make_shared<AudioParam>("threshold", "THRS", 0, 0, -1e6f);
-        m_ratio = std::make_shared<AudioParam>("ratio", "RATI", 1, 0, 10);
-        m_attack = std::make_shared<AudioParam>("attack", "ATCK", 0.001f, 0, 1000);
-        m_release = std::make_shared<AudioParam>("release", "RELS", 0.001f, 0, 1000);
-        m_makeup = std::make_shared<AudioParam>("makeup", "MAKE", 0, 0, 60);
-        m_knee = std::make_shared<AudioParam>("knee", "KNEE", 0, 0, 1);
+        m_threshold = std::make_shared<AudioParam>(&s_thresholdParam);
+        m_ratio = std::make_shared<AudioParam>(&s_ratioParam);
+        m_attack = std::make_shared<AudioParam>(&s_attackParam);
+        m_release = std::make_shared<AudioParam>(&s_releaseParam);
+        m_makeup = std::make_shared<AudioParam>(&s_makeupParam);
+        m_knee = std::make_shared<AudioParam>(&s_kneeParam);
 
         for (int i = 0; i < 2; i++)
         {

@@ -596,6 +596,31 @@ namespace lab
 char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
 char const * const s_presets[11] = { "Default", "Coin", "Laser", "Explosion", "Power Up", "Hit", "Jump", "Select", "Mutate", "Random", nullptr };
 
+static AudioParamDescriptor s_attackParam              {"attack",              "ATCK", 0.0,  0, 1};
+static AudioParamDescriptor s_sustainParam             {"sustain",             "SUS ", 0.3,  0, 1};
+static AudioParamDescriptor s_sustainPunchParam        {"sustainPunch",        "SUSP", 0.0,  0, 1};
+static AudioParamDescriptor s_startFrequencyParam      {"startFrequency",      "SFRQ", 0.3,  0, 1};
+static AudioParamDescriptor s_minFrequencyParam        {"minFrequency",        "MFRQ", 0.0,  0, 1};
+static AudioParamDescriptor s_decayParam               {"decay",               "DECY", 0.4,  0, 1};
+static AudioParamDescriptor s_slideParam               {"slide",               "SLID", 0.0, -1, 1};
+static AudioParamDescriptor s_deltaSlideParam          {"deltaSlide",          "DSLD", 0.0,  0, 1};
+static AudioParamDescriptor s_vibratoDepthParam        {"vibratoDepth",        "VIBD", 0.0,  0, 1};
+static AudioParamDescriptor s_vibratoSpeedParam        {"vibratoSpeed",        "VIBS", 0.0,  0, 1};
+static AudioParamDescriptor s_changeAmountParam        {"changeAmount",        "CHGA", 0.0, -1, 1};
+static AudioParamDescriptor s_changeSpeedParam         {"changeSpeed",         "CHGS", 0.0,  0, 1};
+static AudioParamDescriptor s_squareDutyParam          {"squareDuty",          "DUTY", 0.0,  0, 1};
+static AudioParamDescriptor s_dutySweepParam           {"dutySweep",           "DSWP", 0.0, -1, 1};
+static AudioParamDescriptor s_repeatSpeedParam         {"repeatSpeed",         "REPS", 0.0,  0, 1};
+static AudioParamDescriptor s_phaserOffsetParam        {"phaserOffset",        "PHSO", 0.0, -1, 1};
+static AudioParamDescriptor s_phaserSweepParam         {"phaserSweep",         "PHSS", 0.0, -1, 1};
+static AudioParamDescriptor s_lpFiterCutoffParam       {"lpFiterCutoff",       "LPFC", 1.0,  0, 1};
+static AudioParamDescriptor s_lpFilterCutoffSweepParam {"lpFilterCutoffSweep", "LPFS", 0.0, -1, 1};
+static AudioParamDescriptor s_lpFiterResonanceParam    {"lpFiterResonance",    "LPFR", 0.0,  0, 1};
+static AudioParamDescriptor s_hpFiterCutoffParam       {"hpFiterCutoff",       "HPFC", 0.0,  0, 1};
+static AudioParamDescriptor s_hpFilterCutoffSweepParam {"hpFilterCutoffSweep", "HPFS", 0.0, -1, 1};
+
+static AudioSettingDescriptor s_presetSetting   {"preset",   "SET ", SettingType::Enum, s_presets};
+static AudioSettingDescriptor s_waveTypeSetting {"waveType", "WAVE", SettingType::Enum, s_waveTypes};
 
 SfxrNode::SfxrNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac)
@@ -604,30 +629,30 @@ SfxrNode::SfxrNode(AudioContext & ac)
     // Output is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    _preset = make_shared<AudioSetting>("preset", "SET ", s_presets);
-    _waveType = make_shared<AudioSetting>("waveType", "WAVE", s_waveTypes);
-    _attack = make_shared<AudioParam>("attack", "ATCK", 0, 0, 1);
-    _sustainTime = make_shared<AudioParam>("sustain", "SUS ", 0.3, 0, 1);
-    _sustainPunch = make_shared<AudioParam>("sustainPunch", "SUSP", 0, 0, 1);
-    _startFrequency = make_shared<AudioParam>("startFrequency", "SFRQ", 0.3, 0, 1);
-    _minFrequency = make_shared<AudioParam>("minFrequency", "MFRQ", 0, 0, 1);
-    _decayTime = make_shared<AudioParam>("decay", "DECY", 0.4f, 0, 1);
-    _slide = make_shared<AudioParam>("slide", "SLID", 0, -1, 1);
-    _deltaSlide = make_shared<AudioParam>("deltaSlide", "DSLD", 0, 0, 1);
-    _vibratoDepth = make_shared<AudioParam>("vibratoDepth", "VIBD", 0, 0, 1);
-    _vibratoSpeed = make_shared<AudioParam>("vibratoSpeed", "VIBS", 0, 0, 1);
-    _changeAmount = make_shared<AudioParam>("changeAmount", "CHGA", 0, -1, 1);
-    _changeSpeed = make_shared<AudioParam>("changeSpeed", "CHGS", 0, 0, 1);
-    _squareDuty = make_shared<AudioParam>("squareDuty", "DUTY", 0, 0, 1);
-    _dutySweep = make_shared<AudioParam>("dutySweep", "DSWP", 0, -1, 1);
-    _repeatSpeed = make_shared<AudioParam>("repeatSpeed", "REPS", 0, 0, 1);
-    _phaserOffset = make_shared<AudioParam>("phaserOffset", "PHSO", 0, -1, 1);
-    _phaserSweep = make_shared<AudioParam>("phaserSweep", "PHSS", 0, -1, 1);
-    _lpFilterCutoff = make_shared<AudioParam>("lpFiterCutoff", "LPFC", 1.0f, 0, 1);
-    _lpFilterCutoffSweep = make_shared<AudioParam>("lpFilterCutoffSweep", "LPFS", 0, -1, 1);
-    _lpFiterResonance = make_shared<AudioParam>("lpFiterResonance", "LPFR", 0, 0, 1);
-    _hpFilterCutoff = make_shared<AudioParam>("hpFiterCutoff", "HPFC", 0, 0, 1);
-    _hpFilterCutoffSweep = make_shared<AudioParam>("hpFilterCutoffSweep", "HPFS", 0, -1, 1);
+    _preset = make_shared<AudioSetting>(&s_presetSetting);
+    _waveType = make_shared<AudioSetting>(&s_waveTypeSetting);
+    _attack = make_shared<AudioParam>(&s_attackParam);
+    _sustainTime = make_shared<AudioParam>(&s_sustainParam);
+    _sustainPunch = make_shared<AudioParam>(&s_sustainPunchParam);
+    _startFrequency = make_shared<AudioParam>(&s_startFrequencyParam);
+    _minFrequency = make_shared<AudioParam>(&s_minFrequencyParam);
+    _decayTime = make_shared<AudioParam>(&s_decayParam);
+    _slide = make_shared<AudioParam>(&s_slideParam);
+    _deltaSlide = make_shared<AudioParam>(&s_deltaSlideParam);
+    _vibratoDepth = make_shared<AudioParam>(&s_vibratoDepthParam);
+    _vibratoSpeed = make_shared<AudioParam>(&s_vibratoSpeedParam);
+    _changeAmount = make_shared<AudioParam>(&s_changeAmountParam);
+    _changeSpeed = make_shared<AudioParam>(&s_changeSpeedParam);
+    _squareDuty = make_shared<AudioParam>(&s_squareDutyParam);
+    _dutySweep = make_shared<AudioParam>(&s_dutySweepParam);
+    _repeatSpeed = make_shared<AudioParam>(&s_repeatSpeedParam);
+    _phaserOffset = make_shared<AudioParam>(&s_phaserOffsetParam);
+    _phaserSweep = make_shared<AudioParam>(&s_phaserSweepParam);
+    _lpFilterCutoff = make_shared<AudioParam>(&s_lpFiterCutoffParam);
+    _lpFilterCutoffSweep = make_shared<AudioParam>(&s_lpFilterCutoffSweepParam);
+    _lpFiterResonance = make_shared<AudioParam>(&s_lpFiterResonanceParam);
+    _hpFilterCutoff = make_shared<AudioParam>(&s_hpFiterCutoffParam);
+    _hpFilterCutoffSweep = make_shared<AudioParam>(&s_hpFilterCutoffSweepParam);
 
     m_settings.push_back(_preset);
     m_settings.push_back(_waveType);

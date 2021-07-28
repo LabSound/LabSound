@@ -29,16 +29,21 @@ struct AnalyserNode::Detail
     std::shared_ptr<AudioSetting> _smoothingTimeConstant;
 };
 
+static AudioSettingDescriptor s_fftSizeSetting =     {"fftSize",               "FFTS", SettingType::Integer};
+static AudioSettingDescriptor s_minDecibelsSetting = {"minDecibels",           "MNDB", SettingType::Float};
+static AudioSettingDescriptor s_maxDecibelsSetting = {"maxDecibels",           "MXDB", SettingType::Float};
+static AudioSettingDescriptor s_smoothingSetting =   {"smoothingTimeConstant", "STIM", SettingType::Float};
+
 void AnalyserNode::shared_construction(int fftSize)
 {
     _detail = new Detail;
 
     _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
 
-    _detail->_fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
-    _detail->_minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
-    _detail->_maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
-    _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
+    _detail->_fftSize = std::make_shared<AudioSetting>(&s_fftSizeSetting);
+    _detail->_minDecibels = std::make_shared<AudioSetting>(&s_minDecibelsSetting);
+    _detail->_maxDecibels = std::make_shared<AudioSetting>(&s_maxDecibelsSetting);
+    _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>(&s_smoothingSetting);
 
     _detail->_fftSize->setUint32(static_cast<uint32_t>(fftSize));
     _detail->_fftSize->setValueChanged(

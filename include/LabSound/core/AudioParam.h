@@ -17,13 +17,21 @@ namespace lab
 
 class AudioNodeOutput;
 
+struct AudioParamDescriptor
+{
+    char const * const name;
+    char const * const shortName;
+    double minValue, maxValue, defaultValue;
+};
+
+
 class AudioParam : public AudioSummingJunction
 {
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(const std::string & name, const std::string & short_name, double defaultValue, double minValue, double maxValue, unsigned units = 0);
+    AudioParam(AudioParamDescriptor const*const);
     virtual ~AudioParam();
 
     // Intrinsic value.
@@ -33,13 +41,12 @@ public:
     // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
     float finalValue(ContextRenderLock &);
 
-    std::string name() const { return m_name; }
-    std::string shortName() const { return m_shortName; }
+    std::string name() const { return _desc->name; }
+    std::string shortName() const { return _desc->shortName; }
 
-    float minValue() const { return static_cast<float>(m_minValue); }
-    float maxValue() const { return static_cast<float>(m_maxValue); }
-    float defaultValue() const { return static_cast<float>(m_defaultValue); }
-    unsigned units() const { return m_units; }
+    double minValue() const { return _desc->minValue; }
+    double maxValue() const { return _desc->maxValue; }
+    double defaultValue() const { return _desc->defaultValue; }
 
     // Value smoothing:
 
@@ -82,21 +89,16 @@ private:
     void calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate);
     void calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues);
 
-    std::string m_name;
-    std::string m_shortName;
-    double m_value;
-    double m_defaultValue;
-    double m_minValue;
-    double m_maxValue;
-    unsigned m_units;
-
     // Smoothing (de-zippering)
     double m_smoothedValue;
     double m_smoothingConstant;
+    double m_value;
 
     AudioParamTimeline m_timeline;
 
     std::unique_ptr<AudioBus> m_internalSummingBus;
+
+    AudioParamDescriptor const*const _desc;
 };
 
 }  // namespace lab

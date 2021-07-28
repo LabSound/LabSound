@@ -28,6 +28,11 @@ namespace lab
 
 static char const * const s_ClipModes[ClipNode::Mode::_Count + 1] = {"Clip", "Tanh", nullptr};
 
+const float fMax = std::numeric_limits<float>::max();
+static AudioParamDescriptor s_aParam        {"a",    "A   ", -1.0, -fMax, fMax};
+static AudioParamDescriptor s_bParam        {"b",    "B   ",  1.0, -fMax, fMax};
+static AudioSettingDescriptor s_modeSetting {"mode", "MODE", SettingType::Enum, s_ClipModes};
+
 class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
 public:
@@ -35,10 +40,9 @@ public:
         : AudioProcessor()
         , _owner(owner)
     {
-        auto fMax = std::numeric_limits<float>::max();
-        aVal = std::make_shared<AudioParam>("a", "A   ", -1.0, -fMax, fMax);
-        bVal = std::make_shared<AudioParam>("b", "B   ", 1.0, -fMax, fMax);
-        mode = std::make_shared<AudioSetting>("mode", "MODE", s_ClipModes);
+        aVal = std::make_shared<AudioParam>(&s_aParam);
+        bVal = std::make_shared<AudioParam>(&s_bParam);
+        mode = std::make_shared<AudioSetting>(&s_modeSetting);
         mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
     }
 

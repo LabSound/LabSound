@@ -241,6 +241,8 @@ private:
 
 using namespace std;
 
+static AudioParamDescriptor s_panParam {"pan", "PAN", 0.5, 0.0, 1.0};
+
 StereoPannerNode::StereoPannerNode(AudioContext& ac)
     : AudioNode(ac)
 {
@@ -251,7 +253,7 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
 
     m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 
-    m_pan = std::make_shared<AudioParam>("pan", "PAN", 0.5, 0.0, 1.0);
+    m_pan = std::make_shared<AudioParam>(&s_panParam);
     m_params.push_back(m_pan);
 
     initialize();

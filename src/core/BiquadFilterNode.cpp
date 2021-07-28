@@ -21,6 +21,12 @@ static char const * const s_filter_types[FilterType::_FilterTypeCount + 1] = {
     "Low Pass", "High Pass", "Band Pass", "Low Shelf", "High Shelf", "Peaking", "Notch", "All Pass",
     nullptr};
 
+static AudioParamDescriptor s_frequencyParam {"frequency", "FREQ", 350.0,    10.0,   22500.0};
+static AudioParamDescriptor s_qParam         {"Q",         "Q   ",   1.0,     0.0001, 1000.0};
+static AudioParamDescriptor s_gainParam      {"gain",      "GAIN",   0.0,   -40.0,      40.0};
+static AudioParamDescriptor s_detuneParam    {"detune",    "DTUN",   0.0, -4800.0,    4800.0};
+static AudioSettingDescriptor s_typesParam   {"type",      "TYPE", SettingType::Enum, s_filter_types};
+
 class BiquadFilterNode::BiquadFilterNodeInternal : public AudioProcessor
 {
     friend class BiquadFilterNode;
@@ -31,14 +37,13 @@ public:
     {
         the_filter.reset(new Biquad());
 
-        m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 350.0, 10.0, 22500);
-        m_q = std::make_shared<AudioParam>("Q", "Q   ", 1, 0.0001, 1000.0);
-        m_gain = std::make_shared<AudioParam>("gain", "GAIN", 0.0, -40, 40);
-        m_detune = std::make_shared<AudioParam>("detune", "DTUN", 0.0, -4800, 4800);
+        m_frequency = std::make_shared<AudioParam>(&s_frequencyParam);
+        m_q = std::make_shared<AudioParam>(&s_qParam);
+        m_gain = std::make_shared<AudioParam>(&s_gainParam);
+        m_detune = std::make_shared<AudioParam>(&s_detuneParam);
 
-        m_type = std::make_shared<AudioSetting>("type", "TYPE", s_filter_types);
+        m_type = std::make_shared<AudioSetting>(&s_typesParam);
         m_type->setEnumeration(static_cast<uint32_t>(FilterType::LOWPASS));
-
         m_type->setValueChanged([this]() {
             uint32_t type = m_type->valueUint32();
             if (type > static_cast<uint32_t>(FilterType::ALLPASS)) throw std::out_of_range("Filter type exceeds index of known types");

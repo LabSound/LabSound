@@ -384,12 +384,16 @@ static char const * const s_polyblep_types[] = {
     "Full Wave Rectified Sine", "Triangular Pulse", "Trapezoid Fixed", "Trapezoid Variable",
     nullptr};
 
+static AudioParamDescriptor   s_frequencyParam {"frequency",  "FREQ", 440, 0, 100000};
+static AudioParamDescriptor   s_amplitudeParam {"amplitude",  "AMPL",   1, 0, 100000};
+static AudioSettingDescriptor s_typeSetting    {"type", "TYPE", SettingType::Enum, s_polyblep_types};
+
 PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac)
 {
-    m_type = std::make_shared<AudioSetting>("type", "TYPE", s_polyblep_types);
-    m_frequency = std::make_shared<AudioParam>("frequency", "FREQ", 440, 0, 100000);
-    m_amplitude = std::make_shared<AudioParam>("amplitude", "AMPL", 1, 0, 100000);
+    m_type = std::make_shared<AudioSetting>(&s_typeSetting);
+    m_frequency = std::make_shared<AudioParam>(&s_frequencyParam);
+    m_amplitude = std::make_shared<AudioParam>(&s_amplitudeParam);
 
     m_params.push_back(m_frequency);
     m_params.push_back(m_amplitude);

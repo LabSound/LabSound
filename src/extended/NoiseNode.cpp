@@ -17,9 +17,11 @@ namespace lab
 static char const * const s_noiseTypes[NoiseNode::NoiseType::_Count + 1] = {
     "White", "Pink", "Brown", nullptr};
 
+static AudioSettingDescriptor s_typeSetting {"type", "TYPE", SettingType::Enum, s_noiseTypes};
+
 NoiseNode::NoiseNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac)
-    , _type(std::make_shared<AudioSetting>("type", "TYPE", s_noiseTypes))
+    , _type(std::make_shared<AudioSetting>(&s_typeSetting))
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     m_settings.push_back(_type);
