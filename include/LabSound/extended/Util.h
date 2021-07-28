@@ -12,6 +12,10 @@
 #define NO_COPY(C) C(const C &) = delete; C & operator = (const C &) = delete
 #define NO_MOVE(C) NO_COPY(C); C(C &&) = delete; C & operator = (const C &&) = delete
 
+#if defined(_MSC_VER) && !defined(NOMINMAX)
+#   define NOMINMAX
+#endif
+
 namespace lab
 {
 
