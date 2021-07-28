@@ -35,7 +35,6 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
 
     AudioStreamConfig outConfig;
     SamplingInfo info;
-    static bool s_registered;
 
 public:
     NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const double lengthSeconds);

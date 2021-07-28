@@ -23,14 +23,8 @@ NoiseNode::NoiseNode(AudioContext & ac)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     m_settings.push_back(_type);
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool NoiseNode::s_registered = NodeRegistry::Register(NoiseNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new NoiseNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 NoiseNode::~NoiseNode()
 {

@@ -18,7 +18,6 @@ class ClipNode : public AudioBasicProcessorNode
 {
     class ClipNodeInternal;
     ClipNodeInternal * internalNode;
-    static bool s_registered;
 
 public:
     enum Mode

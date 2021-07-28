@@ -4,16 +4,19 @@
 #include <cstdio>
 #include <memory>
 #include <map>
+#include <mutex>
+
+
+void LabSoundRegistryInit(lab::NodeRegistry&);
 
 namespace lab {
 
+std::once_flag instance_flag;
 NodeRegistry& NodeRegistry::Instance()
 {
-    static std::unique_ptr<NodeRegistry> s_registry;
-    if (!s_registry)
-        s_registry = std::make_unique<NodeRegistry>();
-
-    return *s_registry.get();
+    static NodeRegistry s_registry;
+    std::call_once(instance_flag, []() { LabSoundRegistryInit(s_registry); });
+    return s_registry;
 }
 
 struct NodeDescriptor
@@ -42,7 +45,7 @@ NodeRegistry::~NodeRegistry()
 bool NodeRegistry::Register(char const* const name, CreateNodeFn c, DeleteNodeFn d)
 {
     printf("Registering %s\n", name);
-    Instance()._detail->descriptors[name] = { name, c, d };
+    _detail->descriptors[name] = { name, c, d };
     return true;
 }
 

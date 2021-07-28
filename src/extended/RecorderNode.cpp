@@ -22,8 +22,7 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    if (s_registered)
-        initialize();
+    initialize();
 }
 
 RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
@@ -35,13 +34,8 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool RecorderNode::s_registered = NodeRegistry::Register(RecorderNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new RecorderNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 RecorderNode::~RecorderNode()
 {

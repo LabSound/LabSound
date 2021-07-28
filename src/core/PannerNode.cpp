@@ -141,14 +141,8 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool PannerNode::s_registered = NodeRegistry::Register(PannerNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new PannerNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 PannerNode::~PannerNode()
 {

@@ -27,20 +27,13 @@ GainNode::GainNode(AudioContext& ac)
     m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 10000.0);
     m_params.push_back(m_gain);
 
-    // test s_registered to ensure the linker does not strip the static registration to Registry
-    if (s_registered)
-        initialize();
+    initialize();
 }
 
 GainNode::~GainNode()
 {
     uninitialize();
 }
-
-bool GainNode::s_registered = NodeRegistry::Register("GainNode", 
-    [](AudioContext& ac)->AudioNode* { return new GainNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 void GainNode::process(ContextRenderLock &r, int bufferSize)
 {

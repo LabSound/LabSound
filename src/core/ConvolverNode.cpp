@@ -114,13 +114,8 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
         this->_activateNewImpulse();
     });
 
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool ConvolverNode::s_registered = NodeRegistry::Register(ConvolverNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new ConvolverNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 ConvolverNode::~ConvolverNode()
 {

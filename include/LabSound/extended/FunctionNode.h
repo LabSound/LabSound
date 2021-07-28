@@ -39,7 +39,6 @@ private:
     std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * values, int bufferSize)> _function;
 
     double _now = 0.0;
-    static bool s_registered;
 };
 
 }  // end namespace lab

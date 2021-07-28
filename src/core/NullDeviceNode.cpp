@@ -41,15 +41,8 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig output
 
     ContextGraphLock glock(&ac, "NullDeviceNode");
     AudioNode::setChannelCount(glock, m_numChannels);
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool NullDeviceNode::s_registered = NodeRegistry::Register(NullDeviceNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return nullptr; },
-    [](AudioNode* n) { delete n; });
-
 
 NullDeviceNode::~NullDeviceNode()
 {

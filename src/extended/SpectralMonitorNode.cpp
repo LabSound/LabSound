@@ -104,13 +104,8 @@ SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
     , internalNode(new SpectralMonitorNodeInternal())
 {
     m_settings.push_back(internalNode->windowSize);
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool SpectralMonitorNode::s_registered = NodeRegistry::Register(SpectralMonitorNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new SpectralMonitorNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 SpectralMonitorNode::~SpectralMonitorNode()
 {

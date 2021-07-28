@@ -82,21 +82,15 @@ AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
     : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(fftSize);
-    if (s_registered)
-        initialize();
+    initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac)
     : AudioBasicInspectorNode(ac, 1)
 {
     shared_construction(1024u);
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool AnalyserNode::s_registered = NodeRegistry::Register(AnalyserNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new AnalyserNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 AnalyserNode::~AnalyserNode()
 {

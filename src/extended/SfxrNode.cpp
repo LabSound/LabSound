@@ -665,8 +665,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
         this->sfxr->PlaySample();
     };
 
-    if (s_registered)
-        initialize();
+    initialize();
 
     _preset->setValueChanged([this]()
     {
@@ -686,11 +685,6 @@ SfxrNode::SfxrNode(AudioContext & ac)
         }
     });
 }
-
-bool SfxrNode::s_registered = NodeRegistry::Register(SfxrNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new SfxrNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 SfxrNode::~SfxrNode()
 {

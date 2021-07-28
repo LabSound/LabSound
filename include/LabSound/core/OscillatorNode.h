@@ -29,7 +29,6 @@ class OscillatorNode : public AudioScheduledSourceNode
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
     virtual bool propagatesSilence(ContextRenderLock & r) const override;
     std::shared_ptr<AudioSetting> m_type;
-    static bool s_registered;
 
 public:
     OscillatorNode(AudioContext& ac);

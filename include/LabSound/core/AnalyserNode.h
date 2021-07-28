@@ -27,7 +27,6 @@ class AnalyserNode : public AudioBasicInspectorNode
 
     struct Detail;
     Detail * _detail = nullptr;
-    static bool s_registered;
 
 public:
     AnalyserNode(AudioContext & ac);

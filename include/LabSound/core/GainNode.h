@@ -43,8 +43,6 @@ protected:
     std::shared_ptr<AudioParam> m_gain;
 
     AudioFloatArray m_sampleAccurateGainValues;
-
-    static bool s_registered;
 };
 
 }  // namespace lab

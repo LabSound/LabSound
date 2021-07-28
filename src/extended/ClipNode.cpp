@@ -140,14 +140,8 @@ ClipNode::ClipNode(AudioContext & ac)
     m_params.push_back(internalNode->bVal);
     m_settings.push_back(internalNode->mode);
 
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool ClipNode::s_registered = NodeRegistry::Register(ClipNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new ClipNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 ClipNode::~ClipNode()
 {

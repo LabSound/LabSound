@@ -149,9 +149,6 @@ PdNode::PdNode(lab::AudioContext * context, float sampleRate)
     initialize();
 }
 
-bool PdNode::s_registered = NodeRegistry::Register(PdNode::static_name());
-
-
 PdNode::~PdNode()
 {
     data->numChannels = 0;  // ensure there if there is a latent callback pending, pd is not invoked

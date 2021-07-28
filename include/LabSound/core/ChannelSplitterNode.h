@@ -31,7 +31,6 @@ public:
 private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-    static bool s_registered;
 };
 
 }  // namespace lab

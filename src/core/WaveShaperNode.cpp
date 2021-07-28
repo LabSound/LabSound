@@ -19,14 +19,8 @@ WaveShaperNode::WaveShaperNode(AudioContext& ac)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool WaveShaperNode::s_registered = NodeRegistry::Register(WaveShaperNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new WaveShaperNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 WaveShaperNode::~WaveShaperNode()
 {

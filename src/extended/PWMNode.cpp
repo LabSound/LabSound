@@ -79,14 +79,8 @@ PWMNode::PWMNode(AudioContext & ac)
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     m_processor.reset(new PWMNodeInternal());
     internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool PWMNode::s_registered = NodeRegistry::Register(PWMNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new PWMNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 PWMNode::~PWMNode()
 {

@@ -22,14 +22,8 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
     , m_audioSourceProvider(audioSourceProvider)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool AudioHardwareInputNode::s_registered = NodeRegistry::Register(AudioHardwareInputNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return nullptr; },
-    [](AudioNode* n) { delete n; });
 
 
 AudioHardwareInputNode::~AudioHardwareInputNode()

@@ -140,15 +140,8 @@ SupersawNode::SupersawNode(AudioContext & ac)
     m_settings.push_back(internalNode->sawCount);
 
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool SupersawNode::s_registered = NodeRegistry::Register(SupersawNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new SupersawNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 SupersawNode::~SupersawNode()
 {

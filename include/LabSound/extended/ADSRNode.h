@@ -16,7 +16,6 @@ class ADSRNode : public AudioNode
 {
     class ADSRNodeImpl;
     ADSRNodeImpl * adsr_impl;
-    static bool s_registered;
 
 public:
     ADSRNode(AudioContext &);

@@ -19,15 +19,8 @@ FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
-
-    if (s_registered)
-       initialize();
+    initialize();
 }
-
-bool FunctionNode::s_registered = NodeRegistry::Register(FunctionNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new FunctionNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 FunctionNode::~FunctionNode()
 {

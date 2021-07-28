@@ -39,14 +39,8 @@ DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     m_params.push_back(m_attack);
     m_params.push_back(m_release);
 
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool DynamicsCompressorNode::s_registered = NodeRegistry::Register(DynamicsCompressorNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new DynamicsCompressorNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 DynamicsCompressorNode::~DynamicsCompressorNode()
 {

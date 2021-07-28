@@ -70,5 +70,6 @@ namespace lab
     AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration();
 }
 
+
 #endif
 

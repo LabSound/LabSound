@@ -7,6 +7,7 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/Registry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -283,3 +284,135 @@ void LabSoundAssertLog(const char * file_, int line, const char * function_, con
     const char * assertion = assertion_ ? assertion_ : "Assertion failed";
     printf("Assertion: %s:%s:%d - %s\n", function, file, line, assertion);
 }
+
+std::once_flag register_all_flag;
+void LabSoundRegistryInit(lab::NodeRegistry& reg)
+{
+    using namespace lab;
+    
+    std::call_once(register_all_flag, [&reg]() {
+        
+        // core
+        
+        reg.Register(AnalyserNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new AnalyserNode(ac); },
+            [](AudioNode* n) { delete n; });
+
+        reg.Register(AudioHardwareDeviceNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return nullptr; },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(AudioHardwareInputNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return nullptr; },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(BiquadFilterNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new BiquadFilterNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(ChannelMergerNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new ChannelMergerNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(ChannelSplitterNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new ChannelSplitterNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(ConvolverNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new ConvolverNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(DelayNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new DelayNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(DynamicsCompressorNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new DynamicsCompressorNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register("GainNode",
+            [](AudioContext& ac)->AudioNode* { return new GainNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(NullDeviceNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return nullptr; },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(OscillatorNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new OscillatorNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(PannerNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new PannerNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(SampledAudioNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new SampledAudioNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(StereoPannerNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new StereoPannerNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(WaveShaperNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new WaveShaperNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        // extended
+        
+        reg.Register(ADSRNode::static_name(),
+           [](AudioContext& ac)->AudioNode* { return new ADSRNode(ac); },
+           [](AudioNode* n) { delete n; });
+        
+        reg.Register(ClipNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new ClipNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(DiodeNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new DiodeNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(FunctionNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new FunctionNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(GranulationNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new GranulationNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(NoiseNode::static_name(),
+           [](AudioContext& ac)->AudioNode* { return new NoiseNode(ac); },
+           [](AudioNode* n) { delete n; });
+        
+        reg.Register(PWMNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new PWMNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        //reg.Register(PdNode::static_name());
+        
+        reg.Register(PolyBLEPNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new PolyBLEPNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(PowerMonitorNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new PowerMonitorNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(RecorderNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new RecorderNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(SfxrNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new SfxrNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(SpectralMonitorNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new SpectralMonitorNode(ac); },
+            [](AudioNode* n) { delete n; });
+        
+        reg.Register(SupersawNode::static_name(),
+            [](AudioContext& ac)->AudioNode* { return new SupersawNode(ac); },
+            [](AudioNode* n) { delete n; });
+    });
+}
+

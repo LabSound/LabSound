@@ -57,7 +57,6 @@ private:
     std::shared_ptr<AudioParam> m_reduction;
     std::shared_ptr<AudioParam> m_attack;
     std::shared_ptr<AudioParam> m_release;
-    static bool s_registered;
 };
 
 }  // namespace lab

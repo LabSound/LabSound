@@ -91,13 +91,8 @@ namespace lab {
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-        if (s_registered)
-            initialize();
+        initialize();
     }
-
-    bool SampledAudioNode::s_registered = NodeRegistry::Register(SampledAudioNode::static_name(),
-        [](AudioContext& ac)->AudioNode* { return new SampledAudioNode(ac); },
-        [](AudioNode* n) { delete n; });
 
     SampledAudioNode::~SampledAudioNode()
     {

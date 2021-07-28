@@ -27,7 +27,6 @@ class DiodeNode : public WaveShaperNode
     std::shared_ptr<AudioSetting> _distortion;
     std::shared_ptr<AudioSetting> _vb;  // curve shape control
     std::shared_ptr<AudioSetting> _vl;  // curve shape control
-    static bool s_registered;
 
 public:
     DiodeNode(AudioContext &);

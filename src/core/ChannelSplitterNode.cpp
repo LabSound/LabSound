@@ -19,15 +19,8 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext& ac, int numberOfOutputs_)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutputs(numberOfOutputs_);
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool ChannelSplitterNode::s_registered = NodeRegistry::Register(ChannelSplitterNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new ChannelSplitterNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
 {

@@ -208,14 +208,8 @@ namespace lab
         m_settings.push_back(adsr_impl->m_sustainTime);
         m_settings.push_back(adsr_impl->m_releaseTime);
 
-        if (s_registered)
-            initialize();
+        initialize();
     }
-
-    bool ADSRNode::s_registered = NodeRegistry::Register(ADSRNode::static_name(),
-        [](AudioContext& ac)->AudioNode* { return new ADSRNode(ac); },
-        [](AudioNode* n) { delete n; });
-
 
     ADSRNode::~ADSRNode()
     {

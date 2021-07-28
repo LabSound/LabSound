@@ -96,7 +96,6 @@ class GranulationNode : public AudioScheduledSourceNode
 
     std::vector<grain> grain_pool;
     std::shared_ptr<lab::AudioBus> window_bus;
-    static bool s_registered;
 
 public:
     GranulationNode(AudioContext & ac);

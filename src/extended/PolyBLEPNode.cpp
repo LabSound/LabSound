@@ -402,15 +402,8 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
 
     polyblep.reset(new PolyBlepImpl());  // @fixme - needs sample rate
     setType(PolyBLEPType::TRIANGLE);
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool PolyBLEPNode::s_registered = NodeRegistry::Register(PolyBLEPNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new PolyBLEPNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 PolyBLEPNode::~PolyBLEPNode()
 {

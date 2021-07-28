@@ -51,7 +51,6 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     bool renderSample(ContextRenderLock& r, Scheduled&, size_t destinationSampleOffset, size_t frameSize);
 
     virtual void process(ContextRenderLock&, int framesToProcess) override;
-    static bool s_registered;
 
 public:
     SampledAudioNode() = delete;

@@ -22,13 +22,8 @@ PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
 {
     _windowSize->setUint32(128);
     m_settings.push_back(_windowSize);
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool PowerMonitorNode::s_registered = NodeRegistry::Register(PowerMonitorNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new PowerMonitorNode(ac); },
-    [](AudioNode* n) { delete n; });
 
 PowerMonitorNode::~PowerMonitorNode()
 {

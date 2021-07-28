@@ -32,7 +32,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(BUILD_EXAMPLE OFF)
 add_subdirectory(third_party/libnyquist)
 
-include(cmake/common.cmake)
 include(cmake/LabSound.cmake)
 
 if (NOT ANDROID AND NOT IOS)

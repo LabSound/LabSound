@@ -17,7 +17,6 @@ class BiquadFilterNode : public AudioBasicProcessorNode
 {
     class BiquadFilterNodeInternal;
     BiquadFilterNodeInternal * biquad_impl;
-    static bool s_registered;
 
 public:
     BiquadFilterNode(AudioContext& ac);

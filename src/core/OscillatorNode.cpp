@@ -72,15 +72,8 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
 
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool OscillatorNode::s_registered = NodeRegistry::Register(OscillatorNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new OscillatorNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 OscillatorNode::~OscillatorNode()
 {

@@ -51,7 +51,6 @@ private:
 
     std::unique_ptr<Spatializer> m_stereoPanner;
     std::unique_ptr<AudioFloatArray> m_sampleAccuratePanValues;
-    static bool s_registered;
 };
 
 }  // namespace lab

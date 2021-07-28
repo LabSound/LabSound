@@ -68,13 +68,8 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     last_info = {};
     last_info.sampling_rate = outputConfig.desired_samplerate;
 
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool AudioHardwareDeviceNode::s_registered = NodeRegistry::Register(AudioHardwareDeviceNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return nullptr; },
-    [](AudioNode* n) { delete n; });
 
 AudioHardwareDeviceNode::~AudioHardwareDeviceNode()
 {

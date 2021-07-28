@@ -216,15 +216,8 @@ BiquadFilterNode::BiquadFilterNode(AudioContext& ac) : AudioBasicProcessorNode(a
     m_params.push_back(biquad_impl->m_gain);
     m_params.push_back(biquad_impl->m_detune);
     m_settings.push_back(biquad_impl->m_type);
-
-    if (s_registered)
-        initialize();
+    initialize();
 }
-
-bool BiquadFilterNode::s_registered = NodeRegistry::Register(BiquadFilterNode::static_name(),
-    [](AudioContext& ac)->AudioNode* { return new BiquadFilterNode(ac); },
-    [](AudioNode* n) { delete n; });
-
 
 BiquadFilterNode::~BiquadFilterNode()
 {

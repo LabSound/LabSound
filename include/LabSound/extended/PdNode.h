@@ -37,7 +37,6 @@ public:
 private:
     class PureDataNodeInternal;
     PureDataNodeInternal * data;
-    static bool s_registered;
 };
 
 }  // end namespace lab
