@@ -20,6 +20,7 @@ public:
 
     static const char* static_name() { return "Function"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     void setFunction(std::function<void(ContextRenderLock & r, FunctionNode * me, int channel, float * buffer, int bufferSize)> fn)
     {

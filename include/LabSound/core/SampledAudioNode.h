@@ -59,6 +59,7 @@ public:
 
     static const char* static_name() { return "SampledAudio"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // setting the bus is an asynchronous operation. getBus returns the most
     // recent set request in order that the interface work in a predictable way.

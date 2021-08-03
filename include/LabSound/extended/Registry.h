@@ -18,11 +18,10 @@ class NodeRegistry
 
 public:
     static NodeRegistry& Instance();
-    bool Register(char const*const name, CreateNodeFn, DeleteNodeFn);
+    bool Register(char const*const name, AudioNodeDescriptor*, CreateNodeFn, DeleteNodeFn);
     std::vector<std::string> Names() const;
     lab::AudioNode* Create(const std::string& n, lab::AudioContext& ac);
+    AudioNodeDescriptor const * const Descriptor(const std::string & n) const;
 };
 
 } // lab
-
-void LabSoundRegistryInit();

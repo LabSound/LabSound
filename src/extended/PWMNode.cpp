@@ -73,8 +73,15 @@ public:
 // Public PWMNode //
 ////////////////////
 
+
+AudioNodeDescriptor * PWMNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
 PWMNode::PWMNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac)
+    : lab::AudioBasicProcessorNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     m_processor.reset(new PWMNodeInternal());

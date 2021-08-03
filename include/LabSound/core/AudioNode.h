@@ -70,7 +70,9 @@ class AudioContext;
 class AudioNodeInput;
 class AudioNodeOutput;
 class AudioParam;
+struct AudioParamDescriptor;
 class AudioSetting;
+struct AudioSettingDescriptor;
 class ContextGraphLock;
 class ContextRenderLock;
 
@@ -120,8 +122,8 @@ struct AudioNodeDescriptor
     AudioParamDescriptor * params;
     AudioSettingDescriptor * settings;
 
-    AudioParamDescriptor const * const param(char const * const);
-    AudioSettingDescriptor const * const setting(char const * const);
+    AudioParamDescriptor const * const param(char const * const) const;
+    AudioSettingDescriptor const * const setting(char const * const) const;
 };
 
 // An AudioNode is the basic building block for handling audio within an AudioContext.
@@ -140,7 +142,7 @@ public:
     AudioNode() = delete;
     virtual ~AudioNode();
 
-    explicit AudioNode(AudioContext &);
+    explicit AudioNode(AudioContext &, AudioNodeDescriptor const &);
 
     //--------------------------------------------------
     // required interface
@@ -229,8 +231,8 @@ public:
     std::shared_ptr<AudioParam> param(char const * const str);
     std::shared_ptr<AudioSetting> setting(char const * const str);
 
-    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
-    std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
+    std::vector<std::shared_ptr<AudioParam>> params() const { return _params; }
+    std::vector<std::shared_ptr<AudioSetting>> settings() const { return _settings; }
 
     AudioNodeScheduler _scheduler;
 
@@ -238,8 +240,6 @@ public:
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
 protected:
-    void instantiate(AudioNodeDescriptor const*const);
-
     // Inputs and outputs must be created before the AudioNode is initialized.
     // It is only legal to call this during a constructor.
     void addInput(std::unique_ptr<AudioNodeInput> input);

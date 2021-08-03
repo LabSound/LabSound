@@ -21,11 +21,21 @@ static char const * const s_filter_types[FilterType::_FilterTypeCount + 1] = {
     "Low Pass", "High Pass", "Band Pass", "Low Shelf", "High Shelf", "Peaking", "Notch", "All Pass",
     nullptr};
 
-static AudioParamDescriptor s_frequencyParam {"frequency", "FREQ", 350.0,    10.0,   22500.0};
-static AudioParamDescriptor s_qParam         {"Q",         "Q   ",   1.0,     0.0001, 1000.0};
-static AudioParamDescriptor s_gainParam      {"gain",      "GAIN",   0.0,   -40.0,      40.0};
-static AudioParamDescriptor s_detuneParam    {"detune",    "DTUN",   0.0, -4800.0,    4800.0};
-static AudioSettingDescriptor s_typesParam   {"type",      "TYPE", SettingType::Enum, s_filter_types};
+static AudioParamDescriptor s_bqParams[] = {
+    {"frequency", "FREQ", 350.0, 10.0, 22500.0},
+    {"Q", "Q   ", 1.0, 0.0001, 1000.0},
+    {"gain", "GAIN", 0.0, -40.0, 40.0},
+    {"detune", "DTUN", 0.0, -4800.0, 4800.0},
+    nullptr};
+
+static AudioSettingDescriptor s_bqSettings[] = {
+    {"type", "TYPE", SettingType::Enum, s_filter_types},
+    nullptr};
+
+AudioNodeDescriptor* BiquadFilterNode::desc() {
+    static AudioNodeDescriptor d {s_bqParams, s_bqSettings};
+    return &d;
+}
 
 class BiquadFilterNode::BiquadFilterNodeInternal : public AudioProcessor
 {
@@ -33,16 +43,16 @@ class BiquadFilterNode::BiquadFilterNodeInternal : public AudioProcessor
 
 public:
 
-    BiquadFilterNodeInternal() : AudioProcessor()
+    BiquadFilterNodeInternal(BiquadFilterNode* self)
+        : AudioProcessor()
     {
         the_filter.reset(new Biquad());
 
-        m_frequency = std::make_shared<AudioParam>(&s_frequencyParam);
-        m_q = std::make_shared<AudioParam>(&s_qParam);
-        m_gain = std::make_shared<AudioParam>(&s_gainParam);
-        m_detune = std::make_shared<AudioParam>(&s_detuneParam);
-
-        m_type = std::make_shared<AudioSetting>(&s_typesParam);
+        m_frequency = self->param("frequency");
+        m_q = self->param("Q");
+        m_gain = self->param("gain");
+        m_detune = self->param("detune");
+        m_type = self->setting("type");
         m_type->setEnumeration(static_cast<uint32_t>(FilterType::LOWPASS));
         m_type->setValueChanged([this]() {
             uint32_t type = m_type->valueUint32();
@@ -211,16 +221,11 @@ public:
     std::unique_ptr<Biquad> the_filter;
 };
  
-BiquadFilterNode::BiquadFilterNode(AudioContext& ac) : AudioBasicProcessorNode(ac)
+BiquadFilterNode::BiquadFilterNode(AudioContext & ac)
+    : AudioBasicProcessorNode(ac, *desc())
 {
-    biquad_impl = new BiquadFilterNodeInternal();
+    biquad_impl = new BiquadFilterNodeInternal(this);
     m_processor.reset(biquad_impl);
-
-    m_params.push_back(biquad_impl->m_frequency);
-    m_params.push_back(biquad_impl->m_q);
-    m_params.push_back(biquad_impl->m_gain);
-    m_params.push_back(biquad_impl->m_detune);
-    m_settings.push_back(biquad_impl->m_type);
     initialize();
 }
 

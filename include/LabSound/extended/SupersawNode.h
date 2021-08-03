@@ -23,6 +23,7 @@ public:
 
     static const char* static_name() { return "SuperSaw"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     std::shared_ptr<AudioSetting> sawCount() const;
     std::shared_ptr<AudioParam> frequency() const;

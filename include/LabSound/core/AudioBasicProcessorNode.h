@@ -21,7 +21,7 @@ class AudioNodeInput;
 class AudioBasicProcessorNode : public AudioNode
 {
 public:
-    AudioBasicProcessorNode(AudioContext &);
+    AudioBasicProcessorNode(AudioContext &, AudioNodeDescriptor const&);
     virtual ~AudioBasicProcessorNode() = default;
 
     // AudioNode

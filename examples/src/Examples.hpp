@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
+
 #include "ExamplesCommon.h"
 #include "LabSound/extended/Util.h"
 
@@ -28,7 +29,7 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig> GetDefaultAudioDeviceConf
     if (defaultOutputInfo.index != -1)
     {
         outputConfig.device_index = defaultOutputInfo.index;
-        outputConfig.desired_channels = std::min(uint32_t(2), defaultOutputInfo.num_output_channels);
+        outputConfig.desired_channels = Min(uint32_t(2), defaultOutputInfo.num_output_channels);
         outputConfig.desired_samplerate = defaultOutputInfo.nominal_samplerate;
     }
 
@@ -37,7 +38,7 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig> GetDefaultAudioDeviceConf
         if (defaultInputInfo.index != -1)
         {
             inputConfig.device_index = defaultInputInfo.index;
-            inputConfig.desired_channels = std::min(uint32_t(1), defaultInputInfo.num_input_channels);
+            inputConfig.desired_channels = Min(uint32_t(1), defaultInputInfo.num_input_channels);
             inputConfig.desired_samplerate = defaultInputInfo.nominal_samplerate;
         }
         else
@@ -1219,14 +1220,14 @@ struct ex_wavepot_dsp : public labsound_example
     // perc family of functions implement a simple attack/decay, creating a short & percussive envelope for the signal
     float perc(float wave, float decay, float o, float t)
     {
-        float env = std::max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
+        float env = Max(0.f, 0.889f - (o * decay) / ((o * decay) + 1.f));
         auto ret = wave * env;
         return ret;
     }
 
     float perc_b(float wave, float decay, float o, float t)
     {
-        float env = std::min(0.f, 0.950f - (o * decay) / ((o * decay) + 1.f));
+        float env = Min(0.f, 0.950f - (o * decay) / ((o * decay) + 1.f));
         auto ret = wave * env;
         return ret;
     }

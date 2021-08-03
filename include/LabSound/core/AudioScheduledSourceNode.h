@@ -20,7 +20,7 @@ class AudioScheduledSourceNode : public AudioNode
 public:
     AudioScheduledSourceNode() = delete;
 
-    explicit AudioScheduledSourceNode(AudioContext & ac) : AudioNode(ac) { }
+    explicit AudioScheduledSourceNode(AudioContext & ac, AudioNodeDescriptor const & desc) : AudioNode(ac, desc) { }
     virtual ~AudioScheduledSourceNode() = default;
 
     virtual bool isScheduledNode() const override { return true; }

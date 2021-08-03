@@ -14,22 +14,26 @@ namespace lab
 // Based on the DiodeNode found at the BBC Radiophonic Workshop
 // http://webaudio.prototyping.bbc.co.uk/ring-modulator/
 
-AudioSettingDescriptor s_distortionSetting {"distortion", "DSTR", SettingType::Float};
-AudioSettingDescriptor s_vbSetting         {"vb",         "VB  ", SettingType::Float};
-AudioSettingDescriptor s_vlSetting         {"vl",         "VL  ", SettingType::Float};
+AudioSettingDescriptor s_dSettings[] = {
+    {"distortion", "DSTR", SettingType::Float},
+    {"vb",         "VB  ", SettingType::Float},
+    {"vl",         "VL  ", SettingType::Float}, nullptr };
+
+AudioNodeDescriptor * DiodeNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, s_dSettings};
+    return &d;
+}
 
 DiodeNode::DiodeNode(AudioContext & ac)
-    : WaveShaperNode(ac)
-    , _distortion(std::make_shared<AudioSetting>(&s_distortionSetting))
-    , _vb(std::make_shared<AudioSetting>(&s_vbSetting))
-    , _vl(std::make_shared<AudioSetting>(&s_vlSetting))
+    : WaveShaperNode(ac, *desc())
 {
+    _distortion = setting("distortion");
+    _vb = setting("vb");
+    _vl = setting("vl");
     _vb->setFloat(0.2f);
     _vl->setFloat(0.4f);
     setDistortion(1.f);
-    m_settings.push_back(_distortion);
-    m_settings.push_back(_vb);
-    m_settings.push_back(_vl);
 
     _distortion->setValueChanged([this]() {
         this->_precalc();

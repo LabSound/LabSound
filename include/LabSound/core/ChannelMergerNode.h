@@ -20,6 +20,7 @@ public:
 
     static const char* static_name(){ return "ChannelMerger"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     void addInputs(int n);
     void setOutputChannelCount(int n) { m_desiredNumberOfOutputChannels = n; }

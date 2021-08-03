@@ -14,79 +14,48 @@
 
 namespace lab {
 
-WaveShaperNode::WaveShaperNode(AudioContext& ac)
-: AudioNode(ac)
+AudioNodeDescriptor * WaveShaperNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
+WaveShaperNode::WaveShaperNode(AudioContext & ac)
+    : AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
+    _curveId = 0;
+    _newCurveId = 0;
 }
+
+WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & desc)
+    : AudioNode(ac, desc)
+{
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    initialize();
+    _curveId = 0;
+    _newCurveId = 0;
+}
+
 
 WaveShaperNode::~WaveShaperNode()
 {
-    if (m_newCurve)
-    {
-        // @TODO mutex
-        delete m_newCurve;
-    }
 }
 
 void WaveShaperNode::setCurve(std::vector<float> & curve)
 {
-    std::vector<float>* new_curve = new std::vector<float>();
-    *new_curve = curve;
-    if (m_newCurve)
-    {
-        // @TODO mutex
-        std::vector<float>* x = nullptr;
-        std::swap(x, m_newCurve);
-        delete x;
-    }
-    m_newCurve = new_curve;
-}
-
-void WaveShaperNode::processBuffer(ContextRenderLock&, const float* source, float* destination, int framesToProcess)
-{
-    float const* curveData = m_curve.data();
-    int curveLength = static_cast<int>(m_curve.size());
-
-    ASSERT(curveData);
-
-    if (!curveData || !curveLength)
-    {
-        memcpy(destination, source, sizeof(float) * framesToProcess);
-        return;
-    }
-
-    // Apply waveshaping curve.
-    for (int i = 0; i < framesToProcess; ++i)
-    {
-        const float input = source[i];
-
-        // Calculate an index based on input -1 -> +1 with 0 being at the center of the curve data.
-        int index = static_cast<size_t>((curveLength * (input + 1)) / 2);
-
-        // Clip index to the input range of the curve.
-        // This takes care of input outside of nominal range -1 -> +1
-        index = std::max(index, 0);
-        index = std::min(index, curveLength - 1);
-        destination[i] = curveData[index];
-    }
+    std::lock_guard<std::mutex> guard(_curveMutex);
+    _newCurve = curve;
+    _newCurveId++;
 }
 
 void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
 {
-    if (m_newCurve)
-    {
-        // @TODO mutex
-        std::vector<float>* x = nullptr;
-        std::swap(x, m_newCurve);
-        m_curve = *x;
-        delete x;
-    }
-
     AudioBus* destinationBus = output(0)->bus(r);
-    if (!isInitialized() || !m_curve.size())
+    if (!isInitialized() || !_curve.size())
     {
         destinationBus->zero();
         return;
@@ -107,9 +76,43 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
         destinationBus = output(0)->bus(r);
     }
 
+    if (_newCurveId > _curveId) {
+        // the lock only occurs on setting a new curve, so any glitching should be acceptable
+        // because setting a new curve should be very rare
+        std::lock_guard<std::mutex> guard(_curveMutex);
+        std::swap(_curve, _newCurve);
+        _curveId = _newCurveId;
+    }
+
     for (int i = 0; i < srcChannelCount; ++i)
     {
-        processBuffer(r, sourceBus->channel(i)->data(), destinationBus->channel(i)->mutableData(), bufferSize);
+        const float * source = sourceBus->channel(i)->data();
+        float * destination = destinationBus->channel(i)->mutableData();
+        int framesToProcess = bufferSize;
+
+        float const * curveData = _curve.data();
+        int curveLength = static_cast<int>(_curve.size());
+
+        if (!curveData || !curveLength)
+        {
+            memcpy(destination, source, sizeof(float) * framesToProcess);
+            return;
+        }
+
+        // Apply waveshaping curve.
+        for (int i = 0; i < framesToProcess; ++i)
+        {
+            const float input = source[i];
+
+            // Calculate an index based on input -1 -> +1 with 0 being at the center of the curve data.
+            int index = static_cast<size_t>((curveLength * (input + 1)) / 2);
+
+            // Clip index to the input range of the curve.
+            // This takes care of input outside of nominal range -1 -> +1
+            index = std::max(index, 0);
+            index = std::min(index, curveLength - 1);
+            destination[i] = curveData[index];
+        }
     }
 }
 

@@ -13,15 +13,21 @@
 namespace lab
 {
 
+static AudioSettingDescriptor s_delayTimeSettings[] = {{"delayTime", "DELY", SettingType::Float}, nullptr};
+
+AudioNodeDescriptor * DelayNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, s_delayTimeSettings};
+    return &d;
+}
+
 DelayNode::DelayNode(AudioContext& ac, double maxDelayTime)
-    : AudioBasicProcessorNode(ac)
+    : AudioBasicProcessorNode(ac, *desc())
 {
     if (maxDelayTime < 0)
         maxDelayTime = 0;  // delay node can't predict the future
 
-    m_processor = std::make_unique<DelayProcessor>(ac.sampleRate(), maxDelayTime);
-
-    m_settings.push_back(delayProcessor()->delayTime());
+    m_processor = std::make_unique<DelayProcessor>(ac.sampleRate(), maxDelayTime, setting("deltaTime"));
 
     initialize();
 }

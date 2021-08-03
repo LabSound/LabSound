@@ -596,88 +596,72 @@ namespace lab
 char const * const s_waveTypes[5] = {"Square", "Sawtooth", "Sine", "Noise", nullptr};
 char const * const s_presets[11] = { "Default", "Coin", "Laser", "Explosion", "Power Up", "Hit", "Jump", "Select", "Mutate", "Random", nullptr };
 
-static AudioParamDescriptor s_attackParam              {"attack",              "ATCK", 0.0,  0, 1};
-static AudioParamDescriptor s_sustainParam             {"sustain",             "SUS ", 0.3,  0, 1};
-static AudioParamDescriptor s_sustainPunchParam        {"sustainPunch",        "SUSP", 0.0,  0, 1};
-static AudioParamDescriptor s_startFrequencyParam      {"startFrequency",      "SFRQ", 0.3,  0, 1};
-static AudioParamDescriptor s_minFrequencyParam        {"minFrequency",        "MFRQ", 0.0,  0, 1};
-static AudioParamDescriptor s_decayParam               {"decay",               "DECY", 0.4,  0, 1};
-static AudioParamDescriptor s_slideParam               {"slide",               "SLID", 0.0, -1, 1};
-static AudioParamDescriptor s_deltaSlideParam          {"deltaSlide",          "DSLD", 0.0,  0, 1};
-static AudioParamDescriptor s_vibratoDepthParam        {"vibratoDepth",        "VIBD", 0.0,  0, 1};
-static AudioParamDescriptor s_vibratoSpeedParam        {"vibratoSpeed",        "VIBS", 0.0,  0, 1};
-static AudioParamDescriptor s_changeAmountParam        {"changeAmount",        "CHGA", 0.0, -1, 1};
-static AudioParamDescriptor s_changeSpeedParam         {"changeSpeed",         "CHGS", 0.0,  0, 1};
-static AudioParamDescriptor s_squareDutyParam          {"squareDuty",          "DUTY", 0.0,  0, 1};
-static AudioParamDescriptor s_dutySweepParam           {"dutySweep",           "DSWP", 0.0, -1, 1};
-static AudioParamDescriptor s_repeatSpeedParam         {"repeatSpeed",         "REPS", 0.0,  0, 1};
-static AudioParamDescriptor s_phaserOffsetParam        {"phaserOffset",        "PHSO", 0.0, -1, 1};
-static AudioParamDescriptor s_phaserSweepParam         {"phaserSweep",         "PHSS", 0.0, -1, 1};
-static AudioParamDescriptor s_lpFiterCutoffParam       {"lpFiterCutoff",       "LPFC", 1.0,  0, 1};
-static AudioParamDescriptor s_lpFilterCutoffSweepParam {"lpFilterCutoffSweep", "LPFS", 0.0, -1, 1};
-static AudioParamDescriptor s_lpFiterResonanceParam    {"lpFiterResonance",    "LPFR", 0.0,  0, 1};
-static AudioParamDescriptor s_hpFiterCutoffParam       {"hpFiterCutoff",       "HPFC", 0.0,  0, 1};
-static AudioParamDescriptor s_hpFilterCutoffSweepParam {"hpFilterCutoffSweep", "HPFS", 0.0, -1, 1};
+static AudioParamDescriptor s_sfxParams[] = {
+    {"attack",              "ATCK", 0.0,  0, 1},
+    {"sustain",             "SUS ", 0.3,  0, 1},
+    {"sustainPunch",        "SUSP", 0.0,  0, 1},
+    {"startFrequency",      "SFRQ", 0.3,  0, 1},
+    {"minFrequency",        "MFRQ", 0.0,  0, 1},
+    {"decay",               "DECY", 0.4,  0, 1},
+    {"slide",               "SLID", 0.0, -1, 1},
+    {"deltaSlide",          "DSLD", 0.0,  0, 1},
+    {"vibratoDepth",        "VIBD", 0.0,  0, 1},
+    {"vibratoSpeed",        "VIBS", 0.0,  0, 1},
+    {"changeAmount",        "CHGA", 0.0, -1, 1},
+    {"changeSpeed",         "CHGS", 0.0,  0, 1},
+    {"squareDuty",          "DUTY", 0.0,  0, 1},
+    {"dutySweep",           "DSWP", 0.0, -1, 1},
+    {"repeatSpeed",         "REPS", 0.0,  0, 1},
+    {"phaserOffset",        "PHSO", 0.0, -1, 1},
+    {"phaserSweep",         "PHSS", 0.0, -1, 1},
+    {"lpFiterCutoff",       "LPFC", 1.0,  0, 1},
+    {"lpFilterCutoffSweep", "LPFS", 0.0, -1, 1},
+    {"lpFiterResonance",    "LPFR", 0.0,  0, 1},
+    {"hpFiterCutoff",       "HPFC", 0.0,  0, 1},
+    {"hpFilterCutoffSweep", "HPFS", 0.0, -1, 1},
+    nullptr };
 
-static AudioSettingDescriptor s_presetSetting   {"preset",   "SET ", SettingType::Enum, s_presets};
-static AudioSettingDescriptor s_waveTypeSetting {"waveType", "WAVE", SettingType::Enum, s_waveTypes};
+static AudioSettingDescriptor s_sfxSettings[] = {
+    {"preset",   "SET ", SettingType::Enum, s_presets},
+    {"waveType", "WAVE", SettingType::Enum, s_waveTypes}, nullptr};
+
+AudioNodeDescriptor * SfxrNode::desc()
+{
+    static AudioNodeDescriptor d {s_sfxParams, s_sfxSettings};
+    return &d;
+}
 
 SfxrNode::SfxrNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac)
+    : AudioScheduledSourceNode(ac, *desc())
     , sfxr(new SfxrNode::Sfxr())
 {
     // Output is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    _preset = make_shared<AudioSetting>(&s_presetSetting);
-    _waveType = make_shared<AudioSetting>(&s_waveTypeSetting);
-    _attack = make_shared<AudioParam>(&s_attackParam);
-    _sustainTime = make_shared<AudioParam>(&s_sustainParam);
-    _sustainPunch = make_shared<AudioParam>(&s_sustainPunchParam);
-    _startFrequency = make_shared<AudioParam>(&s_startFrequencyParam);
-    _minFrequency = make_shared<AudioParam>(&s_minFrequencyParam);
-    _decayTime = make_shared<AudioParam>(&s_decayParam);
-    _slide = make_shared<AudioParam>(&s_slideParam);
-    _deltaSlide = make_shared<AudioParam>(&s_deltaSlideParam);
-    _vibratoDepth = make_shared<AudioParam>(&s_vibratoDepthParam);
-    _vibratoSpeed = make_shared<AudioParam>(&s_vibratoSpeedParam);
-    _changeAmount = make_shared<AudioParam>(&s_changeAmountParam);
-    _changeSpeed = make_shared<AudioParam>(&s_changeSpeedParam);
-    _squareDuty = make_shared<AudioParam>(&s_squareDutyParam);
-    _dutySweep = make_shared<AudioParam>(&s_dutySweepParam);
-    _repeatSpeed = make_shared<AudioParam>(&s_repeatSpeedParam);
-    _phaserOffset = make_shared<AudioParam>(&s_phaserOffsetParam);
-    _phaserSweep = make_shared<AudioParam>(&s_phaserSweepParam);
-    _lpFilterCutoff = make_shared<AudioParam>(&s_lpFiterCutoffParam);
-    _lpFilterCutoffSweep = make_shared<AudioParam>(&s_lpFilterCutoffSweepParam);
-    _lpFiterResonance = make_shared<AudioParam>(&s_lpFiterResonanceParam);
-    _hpFilterCutoff = make_shared<AudioParam>(&s_hpFiterCutoffParam);
-    _hpFilterCutoffSweep = make_shared<AudioParam>(&s_hpFilterCutoffSweepParam);
-
-    m_settings.push_back(_preset);
-    m_settings.push_back(_waveType);
-    m_params.push_back(_attack);
-    m_params.push_back(_sustainTime);
-    m_params.push_back(_sustainPunch);
-    m_params.push_back(_startFrequency);
-    m_params.push_back(_minFrequency);
-    m_params.push_back(_decayTime);
-    m_params.push_back(_slide);
-    m_params.push_back(_deltaSlide);
-    m_params.push_back(_vibratoDepth);
-    m_params.push_back(_vibratoSpeed);
-    m_params.push_back(_changeAmount);
-    m_params.push_back(_changeSpeed);
-    m_params.push_back(_squareDuty);
-    m_params.push_back(_dutySweep);
-    m_params.push_back(_repeatSpeed);
-    m_params.push_back(_phaserOffset);
-    m_params.push_back(_phaserSweep);
-    m_params.push_back(_lpFilterCutoff);
-    m_params.push_back(_lpFilterCutoffSweep);
-    m_params.push_back(_lpFiterResonance);
-    m_params.push_back(_hpFilterCutoff);
-    m_params.push_back(_hpFilterCutoffSweep);
+    _preset = setting("preset");
+    _waveType = setting("waveType");
+    _attack = param("attack");
+    _sustainTime = param("sustain");
+    _sustainPunch = param("sustainPunch");
+    _startFrequency = param("startFrequency");
+    _minFrequency = param("minFrequency");
+    _decayTime = param("decay");
+    _slide = param("slide");
+    _deltaSlide = param("deltaSlide");
+    _vibratoDepth = param("vibratoDepth");
+    _vibratoSpeed = param("vibratoSpeed");
+    _changeAmount = param("changeAmount");
+    _changeSpeed = param("changeSpeed");
+    _squareDuty = param("squareDuty");
+    _dutySweep = param("dutySweep");
+    _repeatSpeed = param("repeatSpeed");
+    _phaserOffset = param("phaserOffset");
+    _phaserSweep = param("phaserSweep");
+    _lpFilterCutoff = param("lpFilterCutoff");
+    _lpFilterCutoffSweep = param("lpFilterCutoffSweep");
+    _lpFiterResonance = param("lpFilterResonance");
+    _hpFilterCutoff = param("hpFilterCutoff");
+    _hpFilterCutoffSweep = param("hpFilterCutoffSweep");
 
     sfxr->ResetParams();
     sfxr->ResetSample(true);

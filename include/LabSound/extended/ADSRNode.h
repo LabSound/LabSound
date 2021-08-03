@@ -23,6 +23,7 @@ public:
 
     static const char* static_name() { return "ADSR"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // This function will return true after the release period (only if a noteOff has been issued). 
     bool finished(ContextRenderLock &);

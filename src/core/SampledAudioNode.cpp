@@ -72,30 +72,32 @@ namespace lab {
         bool bus_setting_updated = false;
     };
 
-    static AudioParamDescriptor   s_playbackRateParam {"playbackRate", "RATE",  1.0, 0.0, 1024.};
-    static AudioParamDescriptor   s_detuneParam       {"detune",       "DTUNE", 0.0, 0.0, 1200.};
-    static AudioParamDescriptor   s_dopplerRateParam  {"dopplerRate",  "DPLR",  1.0, 0.0, 1200.};
-    static AudioSettingDescriptor s_sourceBusSetting  {"sourceBus",    "SBUS", SettingType::Bus};
-
+    static AudioParamDescriptor s_saParams[] = {
+        {"playbackRate", "RATE",  1.0, 0.0, 1024.},
+        {"detune",       "DTUNE", 0.0, 0.0, 1200.},
+        {"dopplerRate",  "DPLR",  1.0, 0.0, 1200.}, nullptr};
+    static AudioSettingDescriptor s_saSettings[] = {
+        {"sourceBus", "SBUS", SettingType::Bus}, nullptr};
+    
+    AudioNodeDescriptor * SampledAudioNode::desc()
+    {
+        static AudioNodeDescriptor d {s_saParams, s_saSettings};
+        return &d;
+    }
 
     SampledAudioNode::SampledAudioNode(AudioContext& ac)
-        : AudioScheduledSourceNode(ac), _internals(new Internals(ac))
+        : AudioScheduledSourceNode(ac, *desc())
+        , _internals(new Internals(ac))
     {
-        m_sourceBus = std::make_shared<AudioSetting>(&s_sourceBusSetting);
-        m_settings.push_back(m_sourceBus);
+        m_sourceBus = setting("sourceBus");
+        m_playbackRate = param("playbackRate");
+        m_detune = param("detune");
+        m_dopplerRate = param("dopplerRate");
+
         m_sourceBus->setValueChanged([this]() {
             this->_internals->bus_setting_updated = true;
         });
-        
-        m_playbackRate = std::make_shared<AudioParam>(&s_playbackRateParam);
-        m_params.push_back(m_playbackRate);
-
-        m_detune = std::make_shared<AudioParam>(&s_detuneParam);
-        m_params.push_back(m_detune);
-
-        m_dopplerRate = std::make_shared<AudioParam>(&s_dopplerRateParam);
-        m_params.push_back(m_dopplerRate);
-
+ 
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 

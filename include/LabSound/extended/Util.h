@@ -33,10 +33,10 @@ class UniformRandomGenerator
 public:
     UniformRandomGenerator() : rd(), gen(rd()) {}
     float random_float() { return dist_full(gen); }  // [0.f, 1.f]
-    float random_float(float max) { std::uniform_real_distribution<float> dist_user(0.f, max); return dist_user(gen); }
-    float random_float(float min, float max) { std::uniform_real_distribution<float> dist_user(min, max);  return dist_user(gen); }
-    uint32_t random_uint(uint32_t max) { std::uniform_int_distribution<uint32_t> dist_int(0, max); return dist_int(gen); }
-    int32_t random_int(int32_t min, int32_t max) { std::uniform_int_distribution<int32_t> dist_int(min, max); return dist_int(gen); }
+    float random_float(float b) { std::uniform_real_distribution<float> dist_user(0.f, b); return dist_user(gen); }
+    float random_float(float a, float b) { std::uniform_real_distribution<float> dist_user(a, b);  return dist_user(gen); }
+    uint32_t random_uint(uint32_t b) { std::uniform_int_distribution<uint32_t> dist_int(0, b); return dist_int(gen); }
+    int32_t random_int(int32_t a, int32_t b) { std::uniform_int_distribution<int32_t> dist_int(a, b); return dist_int(gen); }
 };
 // clang-format on
 
@@ -54,11 +54,24 @@ inline T RoundNextPow2(T v)
 }
 
 template <typename S, typename T>
-inline T clampTo(S value, T min, T max)
+inline T clampTo(S value, T a, T b)
 {
-    if (value >= static_cast<S>(max)) return max;
-    if (value <= static_cast<S>(min)) return min;
+    if (value >= static_cast<S>(b)) return b;
+    if (value <= static_cast<S>(a)) return a;
     return static_cast<T>(value);
+}
+
+// easier to redeclare than to force consuming projects to deal with NOMINMAX on Windows
+template <typename T>
+inline T Min(T a, T b)
+{
+    return (a < b ? a : b);
+}
+
+template <typename T>
+inline T Max(T a, T b)
+{
+    return (a > b ? a : b);
 }
 
 // Hard-coded to the IRCAM HRTF Database
@@ -92,8 +105,8 @@ struct HRTFDatabaseInfo
     // Returns the index for the correct HRTFElevation given the elevation angle.
     int indexFromElevationAngle(double elevationAngle)
     {
-        elevationAngle = std::max((double) minElevation, elevationAngle);
-        elevationAngle = std::min((double) maxElevation, elevationAngle);
+        elevationAngle = Max((double) minElevation, elevationAngle);
+        elevationAngle = Min((double) maxElevation, elevationAngle);
         return (int) (interpolationFactor * (elevationAngle - minElevation) / rawElevationAngleSpacing);
     }
 };

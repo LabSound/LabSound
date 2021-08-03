@@ -30,6 +30,7 @@ public:
 
     static const char* static_name() { return "Convolver"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     bool normalize() const;
     void setNormalize(bool new_n);

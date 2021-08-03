@@ -13,10 +13,17 @@
 
 using namespace lab;
 
-RecorderNode::RecorderNode(AudioContext& r, int channelCount)
-    : AudioNode(r)
+
+AudioNodeDescriptor * RecorderNode::desc()
 {
-    m_sampleRate = r.sampleRate();
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
+RecorderNode::RecorderNode(AudioContext& ac, int channelCount)
+    : AudioNode(ac, *desc())
+{
+    m_sampleRate = ac.sampleRate();
     m_channelCount = channelCount;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
@@ -26,7 +33,7 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
 }
 
 RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfig)
-    : AudioNode(ac)
+    : AudioNode(ac, *desc())
 {
     m_sampleRate = outConfig.desired_samplerate;
     m_channelCount = outConfig.desired_channels;

@@ -19,77 +19,27 @@ using namespace lab;
 
 
 static AudioParamDescriptor s_GranulationParams[] = {
-    {"NumGrains", "NGRN", 8.f, 1.f, 256.f},
-    {"GrainDuration", "GDUR", 0.1f, 0.01f, 0.5f},
-    {"PositionMin", "GMIN", 0.0f, 0.0f, 1.0f},
-    {"PositionMax", "GMAX", 1.0f, 0.0f, 1.0f},
+    {"NumGrains",         "NGRN", 8.f,  1.f,  256.f},
+    {"GrainDuration",     "GDUR", 0.1f, 0.01f,  0.5f},
+    {"PositionMin",       "GMIN", 0.0f, 0.0f,   1.0f},
+    {"PositionMax",       "GMAX", 1.0f, 0.0f,   1.0f},
     {"PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f},
     {nullptr}};
 
 static AudioSettingDescriptor s_GranulationSettings[] = {
-    {"GrainSource", "GSRC", SettingType::Bus},
+    {"GrainSource",    "GSRC", SettingType::Bus},
     {"WindowFunction", "WINF", SettingType::Enum, s_window_types},
     {nullptr}};
-
-static AudioNodeDescriptor s_GranulationDesc = {
-    s_GranulationParams, s_GranulationSettings };
-
-AudioParamDescriptor const * const AudioNodeDescriptor::param(char const * const p)
+    
+AudioNodeDescriptor * GranulationNode::desc()
 {
-    if (!params)
-        return nullptr;
-
-    AudioParamDescriptor const * i = params;
-    while (i->name)
-    {
-        if (!strcmp(p, i->name))
-            return i;
-    }
-
-    return nullptr;
+    static AudioNodeDescriptor d {s_GranulationParams, s_GranulationSettings};
+    return &d;
 }
 
-AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * consts)
+GranulationNode::GranulationNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac, *desc())
 {
-    if (!settings)
-        return nullptr;
-
-    AudioSettingDescriptor const * i = settings;
-    while (i->name)
-    {
-        if (!strcmp(p, i->name))
-            return i;
-    }
-
-    return nullptr;
-}
-
-void AudioNode::instantiate(AudioNodeDescriptor const * const desc)
-{
-    if (!desc)
-        return;
-
-    if (desc->params) {
-        AudioParamDescriptor const * i = desc->params;
-        while (i->name) {
-            _params.push_back(std::make_shared<AudioParam>(i));
-            ++i;
-        }
-    }
-    if (desc->settings) {
-        AudioSettingDescriptor const * i = desc->settings;
-        while (i->name)
-        {
-            _settings.push_back(std::make_shared<AudioSetting>(i));
-            ++i;
-        }
-    }
-}
-
-GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(ac)
-{
-    instantiate(&s_GranulationDesc);
-
     // Sample that will be granulated
     grainSourceBus = setting("GrainSource");
 
@@ -98,7 +48,7 @@ GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(a
     windowFunc->setEnumeration(static_cast<int>(WindowFunction::bartlett), true);
 
     // Total number of grains that will be allocated
-    numGrains = setting("NumGrains");
+    numGrains = param("NumGrains");
 
     // Duration of each grain in seconds (currently fixed but ideally will be configurable per-grain)
     grainDuration = param("GrainDuration");

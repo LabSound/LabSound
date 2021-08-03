@@ -22,14 +22,21 @@ namespace lab
     // ADSRNode::ADSRNodeImpl Implementation //
     ///////////////////////////////////////////
 
-    static AudioParamDescriptor s_gateParam             {"gate",         "GATE", 0, 0, 1};
-    static AudioSettingDescriptor s_oneShotSetting      {"oneShot",      "ONE!", SettingType::Bool};
-    static AudioSettingDescriptor s_attackTimeSetting   {"attackTime",   "ATKT", SettingType::Float};
-    static AudioSettingDescriptor s_attackLevelSetting  {"attackLevel",  "ATKL", SettingType::Float};
-    static AudioSettingDescriptor s_decayTimeSetting    {"decayTime",    "DCYT", SettingType::Float};
-    static AudioSettingDescriptor s_sustainTimeSetting  {"sustainTime",  "SUST", SettingType::Float};
-    static AudioSettingDescriptor s_sustainLevelSetting {"sustainLevel", "SUSL", SettingType::Float};
-    static AudioSettingDescriptor s_ReleaseTimeSetting  {"ReleaseTime",  "RELT", SettingType::Float};
+    static AudioParamDescriptor s_adsrParams[] = {{"gate", "GATE", 0, 0, 1}, nullptr};
+    static AudioSettingDescriptor s_adsrSettings[] = {
+        {"oneShot",      "ONE!", SettingType::Bool},
+        {"attackTime",   "ATKT", SettingType::Float},
+        {"attackLevel",  "ATKL", SettingType::Float},
+        {"decayTime",    "DCYT", SettingType::Float},
+        {"sustainTime",  "SUST", SettingType::Float},
+        {"sustainLevel", "SUSL", SettingType::Float},
+        {"releaseTime",  "RELT", SettingType::Float}, nullptr};
+
+    AudioNodeDescriptor * ADSRNode::desc()
+    {
+        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings};
+        return &d;
+    }
 
     class ADSRNode::ADSRNodeImpl : public lab::AudioProcessor
     {
@@ -41,29 +48,6 @@ namespace lab
         ADSRNodeImpl() : AudioProcessor()
         {
             envelope.reserve(AudioNode::ProcessingSizeInFrames * 4);
-
-            m_gate = std::make_shared<AudioParam>(&s_gateParam);
-
-            m_oneShot = std::make_shared<AudioSetting>(&s_oneShotSetting);
-            m_oneShot->setBool(true);
-
-            m_attackTime = std::make_shared<AudioSetting>(&s_attackTimeSetting);
-            m_attackTime->setFloat(1.125f); // 125ms
-
-            m_attackLevel = std::make_shared<AudioSetting>(&s_attackLevelSetting);
-            m_attackLevel->setFloat(1.0f); // 1.0f
-
-            m_decayTime = std::make_shared<AudioSetting>(&s_decayTimeSetting);
-            m_decayTime->setFloat(0.125f); // 125ms
-
-            m_sustainTime = std::make_shared<AudioSetting>(&s_sustainTimeSetting);
-            m_sustainTime->setFloat(0.125f); // 125ms
-
-            m_sustainLevel = std::make_shared<AudioSetting>(&s_sustainLevelSetting);
-            m_sustainLevel->setFloat(0.5f); // 0.5f
-
-            m_releaseTime = std::make_shared<AudioSetting>(&s_ReleaseTimeSetting);
-            m_releaseTime->setFloat(0.125f); // 125ms
         }
 
         virtual ~ADSRNodeImpl() {}
@@ -203,19 +187,34 @@ namespace lab
     /////////////////////
 
     ADSRNode::ADSRNode(AudioContext& ac) 
-        : AudioNode(ac), adsr_impl(new ADSRNodeImpl)
+        : AudioNode(ac, *desc())
+        , adsr_impl(new ADSRNodeImpl)
     {
+        adsr_impl->m_gate = param("gate");
+
+        adsr_impl->m_oneShot = setting("oneShot");
+        adsr_impl->m_oneShot->setBool(true);
+
+        adsr_impl->m_attackTime = setting("attackTime");
+        adsr_impl->m_attackTime->setFloat(1.125f);  // 125ms
+
+        adsr_impl->m_attackLevel = setting("attackLevel");
+        adsr_impl->m_attackLevel->setFloat(1.0f);  // 1.0f
+
+        adsr_impl->m_decayTime = setting("decayTime");
+        adsr_impl->m_decayTime->setFloat(0.125f);  // 125ms
+
+        adsr_impl->m_sustainTime = setting("sustainTime");
+        adsr_impl->m_sustainTime->setFloat(0.125f);  // 125ms
+
+        adsr_impl->m_sustainLevel = setting("sustainLevel");
+        adsr_impl->m_sustainLevel->setFloat(0.5f);  // 0.5f
+
+        adsr_impl->m_releaseTime = setting("releaseTime");
+        adsr_impl->m_releaseTime->setFloat(0.125f);  // 125ms
+
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
         addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
-        m_params.push_back(adsr_impl->m_gate);
-        m_settings.push_back(adsr_impl->m_oneShot);
-        m_settings.push_back(adsr_impl->m_attackTime);
-        m_settings.push_back(adsr_impl->m_attackLevel);
-        m_settings.push_back(adsr_impl->m_decayTime);
-        m_settings.push_back(adsr_impl->m_sustainLevel);
-        m_settings.push_back(adsr_impl->m_sustainTime);
-        m_settings.push_back(adsr_impl->m_releaseTime);
 
         initialize();
     }

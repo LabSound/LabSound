@@ -29,9 +29,17 @@ namespace lab
 static char const * const s_ClipModes[ClipNode::Mode::_Count + 1] = {"Clip", "Tanh", nullptr};
 
 const float fMax = std::numeric_limits<float>::max();
-static AudioParamDescriptor s_aParam        {"a",    "A   ", -1.0, -fMax, fMax};
-static AudioParamDescriptor s_bParam        {"b",    "B   ",  1.0, -fMax, fMax};
-static AudioSettingDescriptor s_modeSetting {"mode", "MODE", SettingType::Enum, s_ClipModes};
+static AudioParamDescriptor s_cnParams[] = {
+    {"a",    "A   ", -1.0, -fMax, fMax},
+    {"b",    "B   ",  1.0, -fMax, fMax}, nullptr};
+
+static AudioSettingDescriptor s_cnSettings[] = {{"mode", "MODE", SettingType::Enum, s_ClipModes}, nullptr};
+
+AudioNodeDescriptor * ClipNode::desc()
+{
+    static AudioNodeDescriptor d {s_cnParams, s_cnSettings};
+    return &d;
+}
 
 class ClipNode::ClipNodeInternal : public lab::AudioProcessor
 {
@@ -40,10 +48,6 @@ public:
         : AudioProcessor()
         , _owner(owner)
     {
-        aVal = std::make_shared<AudioParam>(&s_aParam);
-        bVal = std::make_shared<AudioParam>(&s_bParam);
-        mode = std::make_shared<AudioSetting>(&s_modeSetting);
-        mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
     }
 
     virtual ~ClipNodeInternal() {}
@@ -135,15 +139,15 @@ public:
 /////////////////////
 
 ClipNode::ClipNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac)
+    : lab::AudioBasicProcessorNode(ac, *desc())
 {
     internalNode = new ClipNodeInternal(this);
+    internalNode->aVal = param("a");
+    internalNode->bVal = param("b");
+    internalNode->mode = setting("mode");
+    internalNode->mode->setUint32(static_cast<uint32_t>(ClipNode::CLIP));
+
     m_processor.reset(internalNode);
-
-    m_params.push_back(internalNode->aVal);
-    m_params.push_back(internalNode->bVal);
-    m_settings.push_back(internalNode->mode);
-
     initialize();
 }
 

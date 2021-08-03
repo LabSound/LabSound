@@ -65,6 +65,7 @@ public:
 
     static const char* static_name() { return "PolyBLEP"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override { }

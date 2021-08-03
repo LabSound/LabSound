@@ -321,7 +321,7 @@ class lab::PolyBlepImpl
 
 public:
 
-    PolyBlepImpl(double _sampleRate = LABSOUND_DEFAULT_SAMPLERATE) : sampleRate(_sampleRate)
+    PolyBlepImpl(double sampleRate_) : sampleRate(sampleRate_)
     {
         setWaveform(PolyBLEPType::TRIANGLE);
         setFrequency(440.0);
@@ -384,27 +384,32 @@ static char const * const s_polyblep_types[] = {
     "Full Wave Rectified Sine", "Triangular Pulse", "Trapezoid Fixed", "Trapezoid Variable",
     nullptr};
 
-static AudioParamDescriptor   s_frequencyParam {"frequency",  "FREQ", 440, 0, 100000};
-static AudioParamDescriptor   s_amplitudeParam {"amplitude",  "AMPL",   1, 0, 100000};
-static AudioSettingDescriptor s_typeSetting    {"type", "TYPE", SettingType::Enum, s_polyblep_types};
+static AudioParamDescriptor s_pbParams[] = {
+    {"frequency",  "FREQ", 440, 0, 100000},
+    {"amplitude",  "AMPL",   1, 0, 100000}, nullptr };
+static AudioSettingDescriptor s_pbSettings[] = {{"type", "TYPE", SettingType::Enum, s_polyblep_types}, nullptr};
+
+AudioNodeDescriptor * PolyBLEPNode::desc()
+{
+    static AudioNodeDescriptor d {s_pbParams, s_pbSettings};
+    return &d;
+}
 
 PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac)
+    : AudioScheduledSourceNode(ac, *desc())
 {
-    m_type = std::make_shared<AudioSetting>(&s_typeSetting);
-    m_frequency = std::make_shared<AudioParam>(&s_frequencyParam);
-    m_amplitude = std::make_shared<AudioParam>(&s_amplitudeParam);
+    m_type = setting("type");
+    m_frequency = param("frequency");
+    m_amplitude = param("amplitude");
 
-    m_params.push_back(m_frequency);
-    m_params.push_back(m_amplitude);
-
-    m_type->setValueChanged([this]() { setType(PolyBLEPType(m_type->valueUint32())); });
-    m_settings.push_back(m_type);
+    m_type->setValueChanged([this]() { 
+        setType(PolyBLEPType(m_type->valueUint32())); 
+    });
 
     // An oscillator is always mono.
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    polyblep.reset(new PolyBlepImpl());  // @fixme - needs sample rate
+    polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);
     initialize();
 }

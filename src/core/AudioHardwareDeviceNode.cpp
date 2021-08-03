@@ -25,10 +25,16 @@ using namespace lab;
 //   AudioHardwareDeviceNode   //
 /////////////////////////////////
 
+AudioNodeDescriptor * AudioHardwareDeviceNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
 AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
                                                  const AudioStreamConfig & outputConfig,
                                                  const AudioStreamConfig & inputConfig)
-    : AudioNode(context)
+    : AudioNode(context, *desc())
     , m_context(&context)
     , outConfig(outputConfig)
     , inConfig(inputConfig)

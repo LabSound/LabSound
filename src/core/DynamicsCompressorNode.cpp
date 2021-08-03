@@ -19,32 +19,33 @@ using namespace std;
 namespace lab
 {
 
-static AudioParamDescriptor s_thresholdParam {"threshold", "THRS", -24, -100, 0};
-static AudioParamDescriptor s_kneeParam      {"knee",      "KNEE",  30, 0, 40};
-static AudioParamDescriptor s_ratioParam     {"ratio",     "RATE",  12, 1, 20};
-static AudioParamDescriptor s_reductionParam {"reduction", "REDC",   0, -20, 0};
-static AudioParamDescriptor s_attackParam    {"attack",    "ATCK",   0.003, 0, 1};
-static AudioParamDescriptor s_releaseParam   {"release",   "RELS",   0.250, 0, 1};
+static AudioParamDescriptor s_dcParams[] = {
+    {"threshold", "THRS", -24,  -100,  0},
+    {"knee",      "KNEE",  30,     0, 40},
+    {"ratio",     "RATE",  12,     1,  20},
+    {"reduction", "REDC",   0,   -20,  0},
+    {"attack",    "ATCK",   0.003, 0,  1},
+    {"release",   "RELS",   0.250, 0,  1},
+    nullptr};
+
+AudioNodeDescriptor * DynamicsCompressorNode::desc()
+{
+    static AudioNodeDescriptor d {s_dcParams, nullptr};
+    return &d;
+}
 
 DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
-    : AudioNode(ac)
+    : AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
-    m_threshold = make_shared<AudioParam>(&s_thresholdParam);
-    m_knee = make_shared<AudioParam>(&s_kneeParam);
-    m_ratio = make_shared<AudioParam>(&s_ratioParam);
-    m_reduction = make_shared<AudioParam>(&s_reductionParam);
-    m_attack = make_shared<AudioParam>(&s_attackParam);
-    m_release = make_shared<AudioParam>(&s_releaseParam);
-
-    m_params.push_back(m_threshold);
-    m_params.push_back(m_knee);
-    m_params.push_back(m_ratio);
-    m_params.push_back(m_reduction);
-    m_params.push_back(m_attack);
-    m_params.push_back(m_release);
+    m_threshold = param("threshold");
+    m_knee = param("knee");
+    m_ratio = param("ratio");
+    m_reduction = param("reduction");
+    m_attack = param("attack");
+    m_release = param("release");
 
     initialize();
 }

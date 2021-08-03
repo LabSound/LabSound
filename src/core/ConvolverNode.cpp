@@ -99,19 +99,22 @@ ConvolverNode::ReverbKernel::~ReverbKernel()
 
 //------------------------------------------------------------------------------
 
-lab::AudioSettingDescriptor s_normalizeSetting = {"normalize",       "NRML", SettingType::Bool};
-lab::AudioSettingDescriptor s_impulseSetting =   {"impulseResponse", "IMPL", SettingType::Bus};
+lab::AudioSettingDescriptor s_cSettings[] = {{"normalize", "NRML", SettingType::Bool},
+                                             {"impulseResponse", "IMPL", SettingType::Bus}, nullptr};
+AudioNodeDescriptor * ConvolverNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, s_cSettings};
+    return &d;
+}
 
 ConvolverNode::ConvolverNode(AudioContext& ac)
-    : AudioScheduledSourceNode(ac)
-    , _normalize(std::make_shared<AudioSetting>(&s_normalizeSetting))
-    , _impulseResponseClip(std::make_shared<AudioSetting>(&s_impulseSetting))
+    : AudioScheduledSourceNode(ac, *desc())
 {
     _swap_ready = false;
 
-    m_settings.push_back(_impulseResponseClip);
-    m_settings.push_back(_normalize);
+    _normalize = setting("normalize");
     _normalize->setBool(true);
+    _impulseResponseClip = setting("impulseResponse");
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));

@@ -11,6 +11,7 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
+#include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
 
@@ -50,6 +51,7 @@ AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
     , _sampleRate(sampleRate)
 {
 }
+
 
 bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
 {
@@ -224,12 +226,60 @@ void AudioNodeScheduler::finish(ContextRenderLock & r)
 }
 
 
+AudioParamDescriptor const * const AudioNodeDescriptor::param(char const * const p) const
+{
+    if (!params)
+        return nullptr;
 
-AudioNode::AudioNode(AudioContext & ac)
+    AudioParamDescriptor const * i = params;
+    while (i->name)
+    {
+        if (!strcmp(p, i->name))
+            return i;
+    }
+
+    return nullptr;
+}
+
+AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * const s) const
+{
+    if (!settings)
+        return nullptr;
+
+    AudioSettingDescriptor const * i = settings;
+    while (i->name)
+    {
+        if (!strcmp(s, i->name))
+            return i;
+    }
+
+    return nullptr;
+}
+
+
+
+AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : _scheduler(ac.sampleRate())
-{ }
-
-
+{ 
+    if (desc.params)
+    {
+        AudioParamDescriptor const * i = desc.params;
+        while (i->name)
+        {
+            _params.push_back(std::make_shared<AudioParam>(i));
+            ++i;
+        }
+    }
+    if (desc.settings)
+    {
+        AudioSettingDescriptor const * i = desc.settings;
+        while (i->name)
+        {
+            _settings.push_back(std::make_shared<AudioSetting>(i));
+            ++i;
+        }
+    }
+}
 
 AudioNode::~AudioNode()
 {
@@ -558,7 +608,7 @@ void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 
 std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 {
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -568,7 +618,7 @@ std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 
 std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 {
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -579,7 +629,7 @@ std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 std::vector<std::string> AudioNode::paramNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         ret.push_back(p->name());
     }
@@ -588,7 +638,7 @@ std::vector<std::string> AudioNode::paramNames() const
 std::vector<std::string> AudioNode::paramShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         ret.push_back(p->shortName());
     }
@@ -598,7 +648,7 @@ std::vector<std::string> AudioNode::paramShortNames() const
 std::vector<std::string> AudioNode::settingNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         ret.push_back(p->name());
     }
@@ -607,7 +657,7 @@ std::vector<std::string> AudioNode::settingNames() const
 std::vector<std::string> AudioNode::settingShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         ret.push_back(p->shortName());
     }

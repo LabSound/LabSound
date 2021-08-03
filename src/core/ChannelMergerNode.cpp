@@ -16,8 +16,15 @@ using namespace std;
 namespace lab
 {
 
-ChannelMergerNode::ChannelMergerNode(AudioContext& ac, int numberOfInputs_)
-    : AudioNode(ac), m_desiredNumberOfOutputChannels(1)
+AudioNodeDescriptor * ChannelMergerNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
+ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
+    : AudioNode(ac, *desc())
+    , m_desiredNumberOfOutputChannels(1)
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

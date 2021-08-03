@@ -15,15 +15,20 @@ namespace lab
 
 using namespace lab;
 
-AudioSettingDescriptor s_windowSizeSetting {"windowSize", "WNDW", SettingType::Integer};
+static AudioSettingDescriptor s_pmSettings[] = {{"windowSize", "WNSZ", SettingType::Integer}, nullptr};
+
+AudioNodeDescriptor * PowerMonitorNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, s_pmSettings};
+    return &d;
+}
 
 PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
-    : AudioBasicInspectorNode(ac, 2)
+    : AudioBasicInspectorNode(ac, *desc(), 2)
     , _db(0)
-    , _windowSize(std::make_shared<AudioSetting>(&s_windowSizeSetting))
 {
+    _windowSize = setting("windowSize");
     _windowSize->setUint32(128);
-    m_settings.push_back(_windowSize);
     initialize();
 }
 

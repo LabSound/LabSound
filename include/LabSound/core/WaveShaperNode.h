@@ -6,6 +6,7 @@
 #define WaveShaperNode_h
 
 #include "LabSound/core/AudioNode.h"
+#include <mutex>
 #include <vector>
 
 namespace lab {
@@ -14,10 +15,12 @@ class WaveShaperNode : public AudioNode
 {
 public:
     WaveShaperNode(AudioContext & ac);
+    WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const&); // for subclasses
     virtual ~WaveShaperNode();
 
     static const char* static_name() { return "WaveShaper"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // copies the curve
     void setCurve(std::vector<float> & curve);
@@ -27,12 +30,14 @@ public:
     virtual void reset(ContextRenderLock&) override {}
 
 protected:
-    void processBuffer(ContextRenderLock&, const float* source, float* destination, int framesToProcess);
     virtual double tailTime(ContextRenderLock& r) const override { return 0.; }
     virtual double latencyTime(ContextRenderLock& r) const override { return 0.; }
 
-    std::vector<float> m_curve;
-    std::vector<float>* m_newCurve = nullptr;
+    std::mutex _curveMutex;
+    int _curveId;
+    int _newCurveId;
+    std::vector<float> _curve;
+    std::vector<float> _newCurve;
 };
 
 }  // namespace lab

@@ -31,6 +31,7 @@ public:
 
     static const char* static_name() { return "StereoPanner"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     std::shared_ptr<AudioParam> pan() { return m_pan; }
 
