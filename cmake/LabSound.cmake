@@ -7,7 +7,7 @@
 # Will create a target named LabSound
 
 option(LIBSAMPLERATE_EXAMPLES "" OFF)
-option(LIBSAMPLERATE_INSTALL "" OFF)
+option(LIBSAMPLERATE_INSTALL "" ON)
 option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
 add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
 
