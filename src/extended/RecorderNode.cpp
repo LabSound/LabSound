@@ -46,17 +46,17 @@ RecorderNode::~RecorderNode()
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * inputBus = input(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected())
+    bool has_input = inputBus != nullptr && input(0)->isConnected() && inputBus->numberOfChannels() > 0;
+    if ((!isInitialized() || !has_input) && outputBus)
     {
-        if (outputBus)
-            outputBus->zero();
-        return;
+        outputBus->zero();
     }
 
-    AudioBus* inputBus = input(0)->bus(r);
-    if (!inputBus || !inputBus->numberOfChannels())
+    if (!has_input)
     {
+        // nothing to record.
         if (outputBus)
             outputBus->zero();
         return;
@@ -65,12 +65,17 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
     // the recorder will conform the number of output channels to the number of input
     // in order that it can function as a pass-through node.
     const int inputBusNumChannels = inputBus->numberOfChannels();
-    int outputBusNumChannels = outputBus->numberOfChannels();
-    if (inputBusNumChannels != outputBusNumChannels)
+    int outputBusNumChannels = inputBusNumChannels;
+    if (outputBus)
     {
-        output(0)->setNumberOfChannels(r, inputBusNumChannels);
-        outputBusNumChannels = inputBusNumChannels;
-        outputBus = output(0)->bus(r);
+        outputBusNumChannels = outputBus->numberOfChannels();
+
+        if (inputBusNumChannels != outputBusNumChannels)
+        {
+            output(0)->setNumberOfChannels(r, inputBusNumChannels);
+            outputBusNumChannels = inputBusNumChannels;
+            outputBus = output(0)->bus(r);
+        }
     }
 
     if (m_recording)
