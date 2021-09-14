@@ -26,8 +26,8 @@ using namespace lab;
 /////////////////////////////////
 
 AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
-                                                 const AudioStreamConfig outputConfig,
-                                                 const AudioStreamConfig inputConfig)
+                                                 const AudioStreamConfig & outputConfig,
+                                                 const AudioStreamConfig & inputConfig)
     : AudioNode(context)
     , m_context(&context)
     , outConfig(outputConfig)
@@ -115,17 +115,17 @@ bool AudioHardwareDeviceNode::isRunning() const
     return m_platformAudioDevice->isRunning();
 }
 
-const SamplingInfo AudioHardwareDeviceNode::getSamplingInfo() const
+const SamplingInfo & AudioHardwareDeviceNode::getSamplingInfo() const
 {
     return last_info;
 }
 
-const AudioStreamConfig AudioHardwareDeviceNode::getOutputConfig() const
+const AudioStreamConfig & AudioHardwareDeviceNode::getOutputConfig() const
 {
     return outConfig;
 }
 
-const AudioStreamConfig AudioHardwareDeviceNode::getInputConfig() const
+const AudioStreamConfig & AudioHardwareDeviceNode::getInputConfig() const
 {
     return inConfig;
 }

@@ -89,8 +89,10 @@ AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
     return {rt.getDefaultInputDevice(), true};
 }
 
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
-                                                      const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+AudioDevice * AudioDevice::MakePlatformSpecificDevice(
+    AudioDeviceRenderCallback & callback,
+    const AudioStreamConfig & outputConfig, 
+    const AudioStreamConfig & inputConfig)
 {
     return new AudioDevice_RtAudio(callback, outputConfig, inputConfig);
 }
@@ -104,8 +106,9 @@ const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-AudioDevice_RtAudio::AudioDevice_RtAudio(AudioDeviceRenderCallback & callback,
-                                         const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig)
+AudioDevice_RtAudio::AudioDevice_RtAudio(
+    AudioDeviceRenderCallback & callback,
+    const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
     : _callback(callback)
     , outputConfig(_outputConfig)
     , inputConfig(_inputConfig)

@@ -34,7 +34,8 @@ protected:
     const AudioStreamConfig inConfig;
 
 public:
-    AudioHardwareDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    AudioHardwareDeviceNode(AudioContext & context, 
+        const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
     virtual ~AudioHardwareDeviceNode();
 
     static const char* static_name() { return "AudioHardwareDevice"; }
@@ -53,9 +54,9 @@ public:
     virtual void start() override;
     virtual void stop() override;
     virtual bool isRunning() const override;
-    virtual const SamplingInfo getSamplingInfo() const override;
-    virtual const AudioStreamConfig getOutputConfig() const override;
-    virtual const AudioStreamConfig getInputConfig() const override;
+    virtual const SamplingInfo & getSamplingInfo() const override;
+    virtual const AudioStreamConfig & getOutputConfig() const override;
+    virtual const AudioStreamConfig & getInputConfig() const override;
 
     AudioSourceProvider * AudioHardwareInputProvider();
 };

@@ -25,7 +25,7 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     initialize();
 }
 
-RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig outConfig)
+RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfig)
     : AudioNode(ac)
 {
     m_sampleRate = outConfig.desired_samplerate;

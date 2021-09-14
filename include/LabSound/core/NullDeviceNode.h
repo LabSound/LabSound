@@ -26,7 +26,6 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
 
     std::atomic<bool> shouldExit{false};
 
-    void offlineRender();
     bool m_startedRendering{false};
     uint32_t m_numChannels;
     double m_lengthSeconds;
@@ -37,7 +36,8 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
     SamplingInfo info;
 
 public:
-    NullDeviceNode(AudioContext & context, const AudioStreamConfig outputConfig, const double lengthSeconds);
+    NullDeviceNode(AudioContext & context, 
+        const AudioStreamConfig & outputConfig, const double lengthSeconds);
     virtual ~NullDeviceNode();
 
     static const char* static_name() { return "NulLDevice"; }
@@ -58,9 +58,12 @@ public:
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;
-    virtual const SamplingInfo getSamplingInfo() const override final;
-    virtual const AudioStreamConfig getOutputConfig() const override final;
-    virtual const AudioStreamConfig getInputConfig() const override final;
+    virtual const SamplingInfo & getSamplingInfo() const override final;
+    virtual const AudioStreamConfig & getOutputConfig() const override final;
+    virtual const AudioStreamConfig & getInputConfig() const override final;
+
+    void offlineRender();
+    void offlineRenderFrames(size_t framesToProcess);
 };
 
 }  // namespace lab

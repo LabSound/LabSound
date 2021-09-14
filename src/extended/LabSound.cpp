@@ -47,7 +47,8 @@ const AudioDeviceIndex GetDefaultInputAudioDeviceIndex()
     return AudioDevice::GetDefaultInputAudioDeviceIndex();
 }
 
-std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(
+    const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig)
 {
     LOG_TRACE("MakeRealtimeAudioContext()");
 
@@ -57,9 +58,10 @@ std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(const AudioStreamCon
     return ctx;
 }
 
-std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConfig offlineConfig, double recordTimeMilliseconds)
+std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(
+    const AudioStreamConfig & offlineConfig, double recordTimeMilliseconds)
 {
-    LOG_TRACE("MakeOfflineAudioContext()");
+    LOG_TRACE("MakeOfflineAudioContext(duration)");
 
     const double secondsToRun = recordTimeMilliseconds * 0.001;
 
@@ -68,6 +70,32 @@ std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(const AudioStreamConf
     ctx->lazyInitialize();
     return ctx;
 }
+
+OfflineContext MakeOfflineAudioContext(const AudioStreamConfig & offlineConfig)
+{
+    LOG_TRACE("MakeOfflineAudioContext()");
+    OfflineContext ret;
+    ret.context = std::make_unique<lab::AudioContext>(true);
+
+    auto dev = std::make_shared<lab::NullDeviceNode>(
+        *ret.context.get(),
+        offlineConfig, 
+        std::numeric_limits<double>::max());
+    ret.context->setDeviceNode(dev);
+    ret.context->lazyInitialize();
+    ret.device = dev.get();
+    return ret;
+}
+
+void OfflineContext::process(size_t samples)
+{
+    if (!device || !samples)
+        return;
+
+    lab::NullDeviceNode * dev = reinterpret_cast<lab::NullDeviceNode *>(device);
+    dev->offlineRenderFrames(samples);
+}
+
 
 std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
 {

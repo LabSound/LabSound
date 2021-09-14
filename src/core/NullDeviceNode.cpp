@@ -18,7 +18,8 @@ using namespace lab;
 
 static const int offlineRenderSizeQuantum = AudioNode::ProcessingSizeInFrames;
 
-NullDeviceNode::NullDeviceNode(AudioContext & ac, const AudioStreamConfig outputConfig, double lengthSeconds)
+NullDeviceNode::NullDeviceNode(AudioContext & ac, 
+    const AudioStreamConfig & outputConfig, double lengthSeconds)
     : AudioNode(ac)
     , m_numChannels(outputConfig.desired_channels)
     , m_lengthSeconds(lengthSeconds)
@@ -116,19 +117,20 @@ void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const Sa
     profile.finalize(); // ensure profile is not prematurely destructed
 }
 
-const SamplingInfo NullDeviceNode::getSamplingInfo() const
+const SamplingInfo & NullDeviceNode::getSamplingInfo() const
 {
     return info;
 }
 
-const AudioStreamConfig NullDeviceNode::getOutputConfig() const
+const AudioStreamConfig & NullDeviceNode::getOutputConfig() const
 {
     return outConfig;
 }
 
-const AudioStreamConfig NullDeviceNode::getInputConfig() const
+const AudioStreamConfig & NullDeviceNode::getInputConfig() const
 {
-    return {};
+    static AudioStreamConfig conf;
+    return conf;
 }
 
 void NullDeviceNode::offlineRender()
@@ -152,11 +154,8 @@ void NullDeviceNode::offlineRender()
 
     LOG_TRACE("offline rendering started");
 
-    while (framesToProcess > 0)
+    while (framesToProcess > 0 && !shouldExit)
     {
-        if (shouldExit == true) 
-            break;
-
         m_context->update();
         render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
 
@@ -165,8 +164,46 @@ void NullDeviceNode::offlineRender()
         const uint64_t t = info.current_sample_frame & ~1;
         info.current_sample_frame = t + offlineRenderSizeQuantum + index;
         info.current_time = info.current_sample_frame / static_cast<double>(info.sampling_rate);
-        info.epoch[index] = std::chrono::high_resolution_clock::now();
+        info.epoch[index] += std::chrono::nanoseconds {static_cast<uint64_t>(
+            1.e9 * (double) framesToProcess / (double) offlineRenderSizeQuantum)};
 
         framesToProcess--;
+    }
+}
+
+void NullDeviceNode::offlineRenderFrames(size_t framesToProcess)
+{
+    ASSERT(framesToProcess % offlineRenderSizeQuantum == 0);
+
+    ASSERT(m_renderBus.get());
+    if (!m_renderBus.get())
+        return;
+
+    bool isRenderBusAllocated = m_renderBus->length() >= offlineRenderSizeQuantum;
+    ASSERT(isRenderBusAllocated);
+    if (!isRenderBusAllocated)
+        return;
+
+    bool isAudioContextInitialized = m_context->isInitialized();
+    ASSERT(isAudioContextInitialized);
+    if (!isAudioContextInitialized)
+        return;
+
+    //LOG_TRACE("offline render processing");
+
+    while (framesToProcess > 0 && !shouldExit)
+    {
+        m_context->update();
+        render(0, m_renderBus.get(), offlineRenderSizeQuantum, info);
+
+        // Update sampling info
+        const int index = 1 - (info.current_sample_frame & 1);
+        const uint64_t t = info.current_sample_frame & ~1;
+        info.current_sample_frame = t + offlineRenderSizeQuantum + index;
+        info.current_time = info.current_sample_frame / static_cast<double>(info.sampling_rate);
+        info.epoch[index] += std::chrono::nanoseconds {static_cast<uint64_t>(
+            1.e9 * (double)framesToProcess / (double)offlineRenderSizeQuantum) };
+
+        framesToProcess -= offlineRenderSizeQuantum;
     }
 }

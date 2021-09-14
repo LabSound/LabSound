@@ -27,7 +27,7 @@ class AudioDevice_RtAudio : public AudioDevice
     SamplingInfo samplingInfo;
 
 public:
-    AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
     virtual ~AudioDevice_RtAudio();
 
     AudioStreamConfig outputConfig;

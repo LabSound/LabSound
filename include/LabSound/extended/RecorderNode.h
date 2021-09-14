@@ -30,7 +30,7 @@ public:
     RecorderNode(AudioContext & r, int channelCount = 2);
 
     // create a recorder with a specific configuration
-    RecorderNode(AudioContext & r, const AudioStreamConfig outConfig);
+    RecorderNode(AudioContext & r, const AudioStreamConfig & outConfig);
     virtual ~RecorderNode();
 
     static  const char* static_name() { return "Recorder"; }

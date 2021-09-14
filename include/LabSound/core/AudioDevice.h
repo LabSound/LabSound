@@ -85,9 +85,9 @@ public:
     virtual void stop() = 0;
     virtual bool isRunning() const = 0;
 
-    virtual const SamplingInfo getSamplingInfo() const = 0;
-    virtual const AudioStreamConfig getOutputConfig() const = 0;
-    virtual const AudioStreamConfig getInputConfig() const = 0;
+    virtual const SamplingInfo & getSamplingInfo() const = 0;
+    virtual const AudioStreamConfig & getOutputConfig() const = 0;
+    virtual const AudioStreamConfig & getInputConfig() const = 0;
 };
 
 /////////////////////
@@ -110,7 +110,8 @@ public:
     static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
     static AudioDeviceIndex GetDefaultOutputAudioDeviceIndex() noexcept;
     static AudioDeviceIndex GetDefaultInputAudioDeviceIndex() noexcept;
-    static AudioDevice * MakePlatformSpecificDevice(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    static AudioDevice * MakePlatformSpecificDevice(AudioDeviceRenderCallback &, 
+        const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
 
     virtual ~AudioDevice() {}
     virtual void start() = 0;

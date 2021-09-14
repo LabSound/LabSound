@@ -155,64 +155,20 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
     if (array.size() == frequencyBinCount())
         resample = false;
 
-    if (resample)
-    {
-        size_t src_size = frequencyBinCount();
-        std::vector<uint8_t> buff(src_size);
-        _detail->m_analyser->getByteFrequencyData(buff);
-
-        if (array.size() > buff.size())
-        {
-            // upsample via linear interpolation
-            size_t steps = array.size();
-            float u_step = 1.f / static_cast<float>(steps);
-            float u = 0;
-            for (size_t step = 0; step < steps; ++step, u += u_step)
-            {
-                float t = u * src_size;
-                size_t u0 = static_cast<size_t>(t);
-                t = t - static_cast<float>(u0);
-                array[step] = static_cast<uint8_t>(buff[u0] * t + buff[u0 + 1] * (1.f - t));
-            }
-        }
-        else
-        {
-            // down sample by taking the max of accumulated bins, stepped across using Bresenham.
-            // @cbb a convolution like lanczos would be better if the bins are to be treated as splines
-            float d_src = static_cast<float>(src_size);
-            float d_dst = static_cast<float>(array.size());
-            float d_err = d_dst / d_src;
-            memset(&array[0], 0, array.size());
-            size_t u = 0;
-            float error = 0;
-            for (size_t step = 0; step < src_size - 1 && u < array.size(); ++step)
-            {
-                array[u] = std::max(array[u], buff[step]);
-                error += d_err;
-                if (error > 0.5f)
-                {
-                    ++u;
-                    error -= 1.f;
-                }
-                ASSERT(u < src_size);
-            }
-        }
-    }
-    else
-        _detail->m_analyser->getByteFrequencyData(array);
+    _detail->m_analyser->getByteFrequencyData(array, resample);
 }
 
 void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * inputBus = input(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected())
+    if (!isInitialized() || !input(0)->isConnected() || !inputBus)
     {
-        outputBus->zero();
+        if (outputBus)
+           outputBus->zero();
         return;
     }
-
-    AudioBus * inputBus = input(0)->bus(r);
 
     // Give the analyser all the audio which is passing through this AudioNode.
     _detail->m_analyser->writeInput(r, inputBus, bufferSize);
