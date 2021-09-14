@@ -41,8 +41,12 @@ public:
     double smoothingTimeConstant() const { return m_smoothingTimeConstant; }
 
     void getFloatFrequencyData(std::vector<float> &);
-    void getByteFrequencyData(std::vector<uint8_t> &);
-    void getFloatTimeDomainData(std::vector<float> &);  // LabSound
+    void getFloatTimeDomainData(std::vector<float> &);
+
+    // if the destination array size differs from the fft size, the
+    // data will be interpolated if resample is true. Otherwise, the
+    // destination array will be resized t fit.
+    void getByteFrequencyData(std::vector<uint8_t> &, bool resample);
     void getByteTimeDomainData(std::vector<uint8_t> &);
 
     void writeInput(ContextRenderLock & r, AudioBus *, int bufferSize);

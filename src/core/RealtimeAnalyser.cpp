@@ -84,7 +84,7 @@ void RealtimeAnalyser::writeInput(ContextRenderLock & r, AudioBus * bus, int fra
     if (!isDestinationGood)
         return;
 
-    // Perform real-time analysis
+    // copy data for analysis
     const float * source = bus->channel(0)->data();
     float * dest = m_inputBuffer.data() + m_writeIndex;
 
@@ -184,39 +184,91 @@ void RealtimeAnalyser::getFloatFrequencyData(std::vector<float> & destinationArr
     }
 }
 
-void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t> & destinationArray)
+void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t> & destinationArray, bool resample)
 {
-    if (!destinationArray.size())
+    if (!destinationArray.size() || !magnitudeBuffer().size())
         return;
 
     doFFTAnalysis();
 
+    uint8_t * dest = &destinationArray[0];
+    if (destinationArray.size() == frequencyBinCount())
+        resample = false;
+    else
+    {
+        dest = (uint8_t *) malloc(frequencyBinCount());
+    }
+
     // Convert from linear magnitude to unsigned-byte decibels.
     size_t sourceLength = magnitudeBuffer().size();
     size_t len = min(sourceLength, destinationArray.size());
-    if (len > 0)
+    const double rangeScaleFactor = m_maxDecibels == m_minDecibels ? 1 : 1 / (m_maxDecibels - m_minDecibels);
+    const double minDecibels = m_minDecibels;
+
+    const float * source = magnitudeBuffer().data();
+    for (size_t i = 0; i < len; ++i)
     {
-        const double rangeScaleFactor = m_maxDecibels == m_minDecibels ? 1 : 1 / (m_maxDecibels - m_minDecibels);
-        const double minDecibels = m_minDecibels;
+        float linearValue = source[i];
+        double dbMag = !linearValue ? minDecibels : AudioUtilities::linearToDecibels(linearValue);
 
-        const float * source = magnitudeBuffer().data();
-        for (size_t i = 0; i < len; ++i)
+        // The range m_minDecibels to m_maxDecibels will be scaled to byte values from 0 to UCHAR_MAX.
+        double scaledValue = UCHAR_MAX * (dbMag - minDecibels) * rangeScaleFactor;
+
+        // Clip to valid range.
+        if (scaledValue < 0)
+            scaledValue = 0;
+        if (scaledValue > UCHAR_MAX)
+            scaledValue = UCHAR_MAX;
+
+        dest[i] = static_cast<unsigned char>(scaledValue);
+    }
+    if (!resample)
+        return;
+
+    uint8_t * normalized_data = dest;
+    dest = &destinationArray[0];
+
+    size_t src_size = frequencyBinCount();
+    size_t dst_size = destinationArray.size();
+
+    if (dst_size > src_size)
+    {
+        // upsample via linear interpolation
+        size_t steps = dst_size;
+        float u_step = 1.f / static_cast<float>(steps);
+        float u = 0;
+        for (size_t step = 0; step < steps; ++step, u += u_step)
         {
-            float linearValue = source[i];
-            double dbMag = !linearValue ? minDecibels : AudioUtilities::linearToDecibels(linearValue);
-
-            // The range m_minDecibels to m_maxDecibels will be scaled to byte values from 0 to UCHAR_MAX.
-            double scaledValue = UCHAR_MAX * (dbMag - minDecibels) * rangeScaleFactor;
-
-            // Clip to valid range.
-            if (scaledValue < 0)
-                scaledValue = 0;
-            if (scaledValue > UCHAR_MAX)
-                scaledValue = UCHAR_MAX;
-
-            destinationArray[i] = static_cast<unsigned char>(scaledValue);
+            float t = u * src_size;
+            size_t u0 = static_cast<size_t>(t);
+            t = t - static_cast<float>(u0);
+            dest[step] = static_cast<uint8_t>(normalized_data[u0] * t + normalized_data[u0 + 1] * (1.f - t));
         }
     }
+    else
+    {
+        // down sample by taking the max of accumulated bins, stepped across using Bresenham.
+        // @cbb a convolution like lanczos would be better if the bins are to be treated as splines
+        float d_src = static_cast<float>(src_size);
+        float d_dst = static_cast<float>(dst_size);
+        float d_err = d_dst / d_src;
+        memset(&dest[0], 0, dst_size);
+        size_t u = 0;
+        float error = 0;
+        for (size_t step = 0; step < src_size - 1 && u < dst_size; ++step)
+        {
+            dest[u] = std::max(dest[u], normalized_data[step]);
+            error += d_err;
+            if (error > 0.5f)
+            {
+                ++u;
+                error -= 1.f;
+            }
+            ASSERT(u < src_size);
+        }
+    }
+
+    free(dest);
 }
 
 // LabSound begin
