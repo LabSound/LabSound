@@ -173,13 +173,13 @@ namespace
 }
 
 AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
-                                                      const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig)
+                                                      const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig)
 {
     return new AudioDevice_Miniaudio(callback, outputConfig, inputConfig);
 }
 
 AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callback,
-                                             const AudioStreamConfig _outputConfig, const AudioStreamConfig _inputConfig)
+                                             const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
     : _callback(callback)
     , outputConfig(_outputConfig)
     , inputConfig(_inputConfig)

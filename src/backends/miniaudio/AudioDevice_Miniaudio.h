@@ -214,7 +214,7 @@ public:
     void operator delete(void * p) { _mm_free(p); }
 #endif
 
-    AudioDevice_Miniaudio(AudioDeviceRenderCallback &, const AudioStreamConfig outputConfig, const AudioStreamConfig inputConfig);
+    AudioDevice_Miniaudio(AudioDeviceRenderCallback &, const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
     virtual ~AudioDevice_Miniaudio();
 
     AudioStreamConfig outputConfig;
