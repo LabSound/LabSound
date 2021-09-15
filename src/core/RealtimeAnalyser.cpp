@@ -191,17 +191,20 @@ void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t> & destinationAr
 
     doFFTAnalysis();
 
+    size_t len = destinationArray.size();
     uint8_t * dest = &destinationArray[0];
     if (destinationArray.size() == frequencyBinCount())
         resample = false;
     else
     {
-        dest = (uint8_t *) malloc(frequencyBinCount());
+        if (resample) {
+            len = frequencyBinCount();
+            dest = (uint8_t *) malloc(len);
+        }
     }
 
     // Convert from linear magnitude to unsigned-byte decibels.
     size_t sourceLength = magnitudeBuffer().size();
-    size_t len = min(sourceLength, destinationArray.size());
     const double rangeScaleFactor = m_maxDecibels == m_minDecibels ? 1 : 1 / (m_maxDecibels - m_minDecibels);
     const double minDecibels = m_minDecibels;
 
