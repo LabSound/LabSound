@@ -71,6 +71,7 @@ namespace lab {
         std::vector<Scheduled> scheduled;
         int32_t greatest_cursor = -1;
         std::weak_ptr<AudioContext::AudioContextInterface> ac;
+        bool bus_setting_updated = false;
     };
 
     SampledAudioNode::SampledAudioNode(AudioContext& ac)
@@ -78,7 +79,10 @@ namespace lab {
     {
         m_sourceBus = std::make_shared<AudioSetting>("sourceBus", "SBUS", AudioSetting::Type::Bus);
         m_settings.push_back(m_sourceBus);
-
+        m_sourceBus->setValueChanged([this]() {
+            this->_internals->bus_setting_updated = true;
+        });
+        
         m_playbackRate = std::make_shared<AudioParam>("playbackRate", "RATE", 1.0, 0.0, 1024);
         m_params.push_back(m_playbackRate);
 
@@ -218,71 +222,69 @@ namespace lab {
 
     void SampledAudioNode::schedule(float when)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
         if (!isPlayingOrScheduled())
             _scheduler.start(0.);
 
-        _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
+        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (bus)
+            _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
+        
         initialize();
     }
 
     void SampledAudioNode::schedule(float when, int loopCount)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
         if (!isPlayingOrScheduled())
             _scheduler.start(0.);
 
-        _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
+        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (bus)
+            _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
+        
         initialize();
     }
 
     void SampledAudioNode::schedule(float when, float grainOffset, int loopCount)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
         if (!isPlayingOrScheduled())
             _scheduler.start(0.);
 
-        float r = bus->sampleRate();
-        int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
-        int32_t grainEnd = bus->length();
-        if (grainStart < grainEnd)
-        {
-            _internals->incoming.enqueue({when,
-                                          grainStart, grainEnd, grainStart,
-                                          loopCount});
+        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (bus) {
+            float r = bus->sampleRate();
+            int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
+            int32_t grainEnd = bus->length();
+            if (grainStart < grainEnd)
+            {
+                _internals->incoming.enqueue({when,
+                                              grainStart, grainEnd, grainStart,
+                                              loopCount});
+            }
         }
+
         initialize();
     }
 
     void SampledAudioNode::schedule(float when, float grainOffset, float grainDuration, int loopCount)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
         if (!isPlayingOrScheduled())
             _scheduler.start(0.);
 
-        float r = bus->sampleRate();
-        int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
-        int32_t grainEnd = grainStart + static_cast<uint32_t>(grainDuration * r);
-        if (grainEnd > bus->length())
-            grainEnd = bus->length() - grainStart;
-        if (grainStart < grainEnd)
-        {
-            _internals->incoming.enqueue({when,
-                                          grainStart, grainEnd, grainStart,
-                                          loopCount});
+        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus) {
+            float r = bus->sampleRate();
+            int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
+            int32_t grainEnd = grainStart + static_cast<uint32_t>(grainDuration * r);
+            if (grainEnd > bus->length())
+                grainEnd = bus->length() - grainStart;
+            if (grainStart < grainEnd)
+            {
+                _internals->incoming.enqueue({when,
+                                              grainStart, grainEnd, grainStart,
+                                              loopCount});
+            }
         }
+        
         initialize();
     }
 
@@ -416,6 +418,10 @@ namespace lab {
 
     void SampledAudioNode::process(ContextRenderLock& r, int framesToProcess)
     {
+        if (_internals->bus_setting_updated) {
+            _internals->bus_setting_updated = false;
+            setBus(r, m_sourceBus->valueBus());
+        }
         _internals->greatest_cursor = -1;
 
         AudioBus* dstBus = output(0)->bus(r);
@@ -433,6 +439,7 @@ namespace lab {
                     m_retainedSourceBus = s.sourceBus;
                     m_sourceBus->setBus(s.sourceBus.get());
                     srcBus = s.sourceBus;
+                    this->_internals->bus_setting_updated = false; // setting bus causes this -3 state to occur so clear it immediately
                 }
                 else if (s.loopCount == -2)
                 {

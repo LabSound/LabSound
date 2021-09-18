@@ -193,13 +193,15 @@ void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t> & destinationAr
 
     size_t len = destinationArray.size();
     uint8_t * dest = &destinationArray[0];
+    std::vector<uint8_t> result;
     if (destinationArray.size() == frequencyBinCount())
         resample = false;
     else
     {
         if (resample) {
             len = frequencyBinCount();
-            dest = (uint8_t *) malloc(len);
+            result.resize(len);
+            dest = &result[0];
         }
     }
 
@@ -270,8 +272,6 @@ void RealtimeAnalyser::getByteFrequencyData(std::vector<uint8_t> & destinationAr
             ASSERT(u < src_size);
         }
     }
-
-    free(dest);
 }
 
 // LabSound begin
