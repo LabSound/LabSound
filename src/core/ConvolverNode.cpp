@@ -101,6 +101,8 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
     , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
 {
+    _swap_ready = 0;
+
     m_settings.push_back(_impulseResponseClip);
     m_settings.push_back(_normalize);
     _normalize->setBool(true);
@@ -167,13 +169,11 @@ void ConvolverNode::setNormalize(bool new_n)
 
 void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
-    _kernels.clear();
     if (!bus)
         return;
 
     auto new_bus = AudioBus::createByCloning(bus.get());
-    _impulseResponseClip->setBus(new_bus.get());
-    _activateNewImpulse();
+    _impulseResponseClip->setBus(new_bus.get());    // setBus will invoke _activatNewImpulse()
 }
 
 void ConvolverNode::_activateNewImpulse()
@@ -192,20 +192,24 @@ void ConvolverNode::_activateNewImpulse()
         }
     }
 
-    int c = static_cast<int>(clip->numberOfChannels());
-    for (int i = 0; i < c; ++i)
     {
-        // create one kernel per IR channel
-        ReverbKernel kernel;
+        std::unique_lock<std::mutex> kernel_guard(_kernel_mutex);
+        int c = static_cast<int>(clip->numberOfChannels());
+        for (int i = 0; i < c; ++i)
+        {
+            // create one kernel per IR channel
+            ReverbKernel kernel;
 
-        // ft doesn't own the data; it does retain a pointer to it.
-        sp_ftbl_bind(_sp, &kernel.ft,
-                     clip->channel(0)->mutableData(), clip->channel(0)->length());
+            // ft doesn't own the data; it does retain a pointer to it.
+            sp_ftbl_bind(_sp, &kernel.ft,
+                         clip->channel(0)->mutableData(), clip->channel(0)->length());
 
-        sp_conv_create(&kernel.conv);
-        sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
+            sp_conv_create(&kernel.conv);
+            sp_conv_init(_sp, kernel.conv, kernel.ft, 8192);
 
-        _kernels.emplace_back(std::move(kernel));
+            _pending_kernels.emplace_back(std::move(kernel));
+        }
+        _swap_ready = 1;
     }
 
     start(0);
@@ -218,6 +222,14 @@ std::shared_ptr<AudioBus> ConvolverNode::getImpulse() const
 
 void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
 {
+    if (_swap_ready) {
+        // this could cause an audio hiccough when swapping, but it's necessary to avoid a race
+        std::unique_lock<std::mutex> kernel_guard(_kernel_mutex);
+        _swap_ready = 0;
+        std::swap(_kernels, _pending_kernels);
+        _pending_kernels.clear();
+    }
+
     AudioBus * outputBus = output(0)->bus(r);
     AudioBus * inputBus = input(0)->bus(r);
 
