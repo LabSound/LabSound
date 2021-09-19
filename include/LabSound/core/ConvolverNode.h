@@ -8,6 +8,7 @@
 #include "LabSound/core/AudioSetting.h"
 
 #include <memory>
+#include <mutex>
 
 namespace lab
 {
