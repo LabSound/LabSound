@@ -236,6 +236,8 @@ AudioParamDescriptor const * const AudioNodeDescriptor::param(char const * const
     {
         if (!strcmp(p, i->name))
             return i;
+
+        ++i;
     }
 
     return nullptr;
@@ -251,6 +253,8 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
     {
         if (!strcmp(s, i->name))
             return i;
+
+        ++i;
     }
 
     return nullptr;

@@ -21,7 +21,7 @@ struct AudioParamDescriptor
 {
     char const * const name;
     char const * const shortName;
-    double minValue, maxValue, defaultValue;
+    double defaultValue, minValue, maxValue;
 };
 
 

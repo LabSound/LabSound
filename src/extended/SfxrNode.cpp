@@ -614,10 +614,10 @@ static AudioParamDescriptor s_sfxParams[] = {
     {"repeatSpeed",         "REPS", 0.0,  0, 1},
     {"phaserOffset",        "PHSO", 0.0, -1, 1},
     {"phaserSweep",         "PHSS", 0.0, -1, 1},
-    {"lpFiterCutoff",       "LPFC", 1.0,  0, 1},
+    {"lpFilterCutoff",      "LPFC", 1.0,  0, 1},
     {"lpFilterCutoffSweep", "LPFS", 0.0, -1, 1},
-    {"lpFiterResonance",    "LPFR", 0.0,  0, 1},
-    {"hpFiterCutoff",       "HPFC", 0.0,  0, 1},
+    {"lpFilterResonance",   "LPFR", 0.0,  0, 1},
+    {"hpFilterCutoff",      "HPFC", 0.0,  0, 1},
     {"hpFilterCutoffSweep", "HPFS", 0.0, -1, 1},
     nullptr };
 
@@ -659,7 +659,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     _phaserSweep = param("phaserSweep");
     _lpFilterCutoff = param("lpFilterCutoff");
     _lpFilterCutoffSweep = param("lpFilterCutoffSweep");
-    _lpFiterResonance = param("lpFilterResonance");
+    _lpFilterResonance = param("lpFilterResonance");
     _hpFilterCutoff = param("hpFilterCutoff");
     _hpFilterCutoffSweep = param("hpFilterCutoffSweep");
 
@@ -762,7 +762,7 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
     UPDATE(float, p_env_decay, _decayTime)
     UPDATE(float, p_env_punch, _sustainPunch)
 
-    UPDATE(float, p_lpf_resonance, _lpFiterResonance)
+    UPDATE(float, p_lpf_resonance, _lpFilterResonance)
     sfxr->filter_on = sfxr->p_lpf_resonance > 0;
     UPDATE(float, p_lpf_freq, _lpFilterCutoff)
     UPDATE(float, p_lpf_ramp, _lpFilterCutoffSweep)
@@ -852,7 +852,7 @@ void SfxrNode::setDefaultBeep()
     // Low-pass filter
     _lpFilterCutoff->setValue(1);
     _lpFilterCutoffSweep->setValue(0);
-    _lpFiterResonance->setValue(0);
+    _lpFilterResonance->setValue(0);
     _hpFilterCutoff->setValue(0);
     _hpFilterCutoffSweep->setValue(0);
 
@@ -1059,7 +1059,7 @@ void SfxrNode::mutate()
     if (rnd(1)) _sustainTime->setValue(_sustainTime->value() + frnd(0.1f) - 0.05f);
     if (rnd(1)) _decayTime->setValue(_decayTime->value() + frnd(0.1f) - 0.05f);
     if (rnd(1)) _sustainPunch->setValue(_sustainPunch->value() + frnd(0.1f) - 0.05f);
-    if (rnd(1)) _lpFiterResonance->setValue(_lpFiterResonance->value() + frnd(0.1f) - 0.05f);
+    if (rnd(1)) _lpFilterResonance->setValue(_lpFilterResonance->value() + frnd(0.1f) - 0.05f);
     if (rnd(1)) _lpFilterCutoff->setValue(_lpFilterCutoff->value() + frnd(0.1f) - 0.05f);
     if (rnd(1)) _lpFilterCutoffSweep->setValue(_lpFilterCutoffSweep->value() + frnd(0.1f) - 0.05f);
     if (rnd(1)) _hpFilterCutoff->setValue(_hpFilterCutoff->value() + frnd(0.1f) - 0.05f);
@@ -1098,7 +1098,7 @@ void SfxrNode::randomize()
         _sustainTime->setValue(_sustainTime->value() + 0.2f + frnd(0.3f));
         _decayTime->setValue(_decayTime->value() + 0.2f + frnd(0.3f));
     }
-    _lpFiterResonance->setValue(rndr(-1, 1));
+    _lpFilterResonance->setValue(rndr(-1, 1));
     _lpFilterCutoff->setValue(1 - powf(frnd(1), 3));
     _lpFilterCutoffSweep->setValue(powf(frnd(2) - 1, 3));
     if (_lpFilterCutoff->value() < 0.1 && _lpFilterCutoffSweep->value() < -0.05f)
