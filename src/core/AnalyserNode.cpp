@@ -88,14 +88,14 @@ void AnalyserNode::shared_construction(int fftSize)
 
 AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
     : AudioBasicInspectorNode(ac, *desc(), 1)
-    {
+{
     shared_construction(fftSize);
     initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac)
     : AudioBasicInspectorNode(ac, *desc(), 1)
-    {
+{
     shared_construction(1024u);
     initialize();
 }
