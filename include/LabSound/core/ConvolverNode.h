@@ -7,6 +7,7 @@
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 
