@@ -101,7 +101,7 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     , _normalize(std::make_shared<AudioSetting>("normalize", "NRML", AudioSetting::Type::Bool))
     , _impulseResponseClip(std::make_shared<AudioSetting>("impulseResponse", "IMPL", AudioSetting::Type::Bus))
 {
-    _swap_ready = 0;
+    _swap_ready = false;
 
     m_settings.push_back(_impulseResponseClip);
     m_settings.push_back(_normalize);
@@ -209,7 +209,7 @@ void ConvolverNode::_activateNewImpulse()
 
             _pending_kernels.emplace_back(std::move(kernel));
         }
-        _swap_ready = 1;
+        _swap_ready = true;
     }
 
     start(0);
@@ -225,7 +225,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     if (_swap_ready) {
         // this could cause an audio hiccough when swapping, but it's necessary to avoid a race
         std::unique_lock<std::mutex> kernel_guard(_kernel_mutex);
-        _swap_ready = 0;
+        _swap_ready = false;
         std::swap(_kernels, _pending_kernels);
         _pending_kernels.clear();
     }

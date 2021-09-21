@@ -7,7 +7,6 @@
 #include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
 
-#include <atomic>
 #include <memory>
 #include <mutex>
 
@@ -68,7 +67,7 @@ protected:
     };
     std::vector<ReverbKernel> _kernels;  // one per impulse response channel
     std::vector<ReverbKernel> _pending_kernels; // new kernels when an impulse has been computed
-    std::atomic<int> _swap_ready;
+    bool _swap_ready;
     std::mutex _kernel_mutex;
 };
 
