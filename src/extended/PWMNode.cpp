@@ -4,7 +4,6 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/AudioProcessor.h"
 
 #include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/Registry.h"
@@ -16,63 +15,6 @@ using namespace lab;
 namespace lab
 {
 
-////////////////////////////////////
-// Private PWMNode Implementation //
-////////////////////////////////////
-
-class PWMNode::PWMNodeInternal : public lab::AudioProcessor
-{
-
-public:
-    PWMNodeInternal()
-        : AudioProcessor()
-    {
-    }
-
-    virtual ~PWMNodeInternal() {}
-
-    virtual void initialize() override {}
-
-    virtual void uninitialize() override {}
-
-    // Processes the source to destination bus.
-    virtual void process(ContextRenderLock &,
-                         const lab::AudioBus * source, lab::AudioBus * destination,
-                         int framesToProcess) override
-    {
-        if (!source->numberOfChannels() || !destination->numberOfChannels())
-            return;
-            
-        const float * carrierP = source->channelByType(Channel::Left)->data();
-        const float * modP = source->channelByType(Channel::Right)->data();
-
-        if (!modP && carrierP)
-        {
-            destination->copyFrom(*source);
-        }
-        else if (modP && carrierP)
-        {
-            float * destP = destination->channel(0)->mutableData();
-            int n = framesToProcess;
-            while (n--)
-            {
-                float carrier = *carrierP++;
-                float mod = *modP++;
-                *destP++ = (carrier > mod) ? 1.0f : -1.0f;
-            }
-        }
-    }
-
-    virtual void reset() override {}
-
-    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
-    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-};
-
-////////////////////
-// Public PWMNode //
-////////////////////
-
 
 AudioNodeDescriptor * PWMNode::desc()
 {
@@ -81,11 +23,11 @@ AudioNodeDescriptor * PWMNode::desc()
 }
 
 PWMNode::PWMNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+    : lab::AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    m_processor.reset(new PWMNodeInternal());
-    internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
@@ -93,4 +35,36 @@ PWMNode::~PWMNode()
 {
     uninitialize();
 }
+
+void PWMNode::process(ContextRenderLock & r, int bufferSize)
+{
+    AudioBus * outputBus = output(0)->bus(r);
+    if (!outputBus || !isInitialized() || !input(0)->isConnected())
+    {
+        if (outputBus)
+            outputBus->zero();
+        return;
+    }
+
+    AudioBus * carrierBus = input(0)->bus(r);
+    if (!input(1) || !input(1)->isConnected())
+    {
+        outputBus->copyFrom(*carrierBus);
+        return;
+    }
+
+    AudioBus * modBus = input(0)->bus(r);
+    const float * modP = modBus->channel(0)->data();
+    const float * carrierP = carrierBus->channel(0)->data();
+
+    float * destP = outputBus->channel(0)->mutableData();
+    int n = bufferSize;
+    while (n--)
+    {
+        float carrier = *carrierP++;
+        float mod = *modP++;
+        *destP++ = (carrier > mod) ? 1.0f : -1.0f;
+    }
 }
+
+} // lab

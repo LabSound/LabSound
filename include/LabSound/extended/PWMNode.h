@@ -16,18 +16,24 @@ namespace lab
 // Expects two inputs.
 // input 0 is the carrier, and input 1 is the modulator.
 // If there is no modulator, then the node is a pass-through.
-class PWMNode : public AudioBasicProcessorNode
-{
-    class PWMNodeInternal;
-    PWMNodeInternal * internalNode;
 
+class PWMNode : public AudioNode
+{
 public:
     PWMNode(AudioContext & ac);
     virtual ~PWMNode();
     static const char* static_name() { return "PWM"; }
     virtual const char* name() const override { return static_name(); }
     static AudioNodeDescriptor * desc();
+    // AudioNode
+    virtual void process(ContextRenderLock &, int bufferSize) override;
+    virtual void reset(ContextRenderLock &) override { }
+
+protected:
+    virtual double tailTime(ContextRenderLock & r) const override { return 0; }
+    virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 };
-}
+
+} // lab
 
 #endif
