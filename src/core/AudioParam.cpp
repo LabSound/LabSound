@@ -89,7 +89,8 @@ float AudioParam::finalValue(ContextRenderLock & r)
     return value;
 }
 
-void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * values, int numberOfValues)
+void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, 
+    float * values, int numberOfValues)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -98,7 +99,8 @@ void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r, float * va
     calculateFinalValues(r, values, numberOfValues, true);
 }
 
-void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate)
+void AudioParam::calculateFinalValues(ContextRenderLock & r, 
+    float * values, int numberOfValues, bool sampleAccurate)
 {
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
@@ -164,17 +166,20 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock & r, 
+    float * values, int numberOfValues)
 {
     // Calculate values for this render quantum.
-    // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).
+    // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames 
+    // (the render quantum size).
     double sampleRate = r.context()->sampleRate();
     double startTime = r.context()->currentTime();
     double endTime = startTime + numberOfValues / sampleRate;
 
     // Note we're running control rate at the sample-rate.
     // Pass in the current value as default value.
-    m_value = m_timeline.valuesForTimeRange(startTime, endTime, static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
+    m_value = m_timeline.valuesForTimeRange(startTime, endTime, 
+        static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
 void AudioParam::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)

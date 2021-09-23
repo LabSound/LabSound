@@ -27,7 +27,8 @@ DelayNode::DelayNode(AudioContext& ac, double maxDelayTime)
     if (maxDelayTime < 0)
         maxDelayTime = 0;  // delay node can't predict the future
 
-    m_processor = std::make_unique<DelayProcessor>(ac.sampleRate(), maxDelayTime, setting("deltaTime"));
+    m_processor = std::make_unique<DelayProcessor>(ac.sampleRate(), 
+        maxDelayTime, setting("delayTime"));
 
     initialize();
 }

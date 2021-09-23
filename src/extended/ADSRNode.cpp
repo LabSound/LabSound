@@ -41,7 +41,7 @@ namespace lab
     class ADSRNode::ADSRNodeImpl : public lab::AudioProcessor
     {
     public:
-        float cached_sample_rate;
+        float cached_sample_rate = 48000.f;   // typical default
         struct LerpTarget { float t, dvdt; };
         std:: deque<LerpTarget> _lerp;
 
@@ -75,8 +75,8 @@ namespace lab
                 envelope.resize(framesToProcess);
 
             // scan the gate signal
-            const bool gate_is_connected = m_gate->hasSampleAccurateValues();
-            if (gate_is_connected)
+            const bool gate_has_queued_events = m_gate->hasSampleAccurateValues();
+            if (gate_has_queued_events)
             {
                 m_gate->calculateSampleAccurateValues(r, _gateArray.data(), framesToProcess);
 
@@ -92,6 +92,8 @@ namespace lab
                     _gateArray[i] = g > 0 ? 1.f : 0.f;
             }
 
+            // oneshot == false means gate controls Attack/Sustain
+            // oneshot == true means sustain param controlls sustain
             bool oneshot = m_oneShot->valueBool(); // false mains gate controls AS, otherwise, sustain param controls S
 
             cached_sample_rate = r.context()->sampleRate();
@@ -115,7 +117,7 @@ namespace lab
                     float decayStepSize = (sustainLevel - attackLevel) / decaySteps;
                     _lerp.emplace_back(LerpTarget{ decaySteps, decayStepSize });
 
-                    if (!gate_is_connected || oneshot)
+                    if (!gate_has_queued_events || oneshot)
                     {
                         // if the gate is not connected, automate the sustain and release.
                         float sustainSteps = m_sustainTime->valueFloat() * cached_sample_rate;
@@ -230,7 +232,9 @@ namespace lab
         return adsr_impl->m_gate;
     }
 
-    void ADSRNode::set(float attack_time, float attack_level, float decay_time, float sustain_time, float sustain_level, float release_time)
+    void ADSRNode::set(float attack_time, float attack_level, 
+        float decay_time, float sustain_time, float sustain_level, 
+        float release_time)
     {
         adsr_impl->m_attackTime->setFloat(attack_time);
         adsr_impl->m_attackLevel->setFloat(attack_level);
@@ -248,7 +252,7 @@ namespace lab
     std::shared_ptr<AudioSetting> ADSRNode::sustainTime() const  { return adsr_impl->m_sustainTime;  }
     std::shared_ptr<AudioSetting> ADSRNode::sustainLevel() const { return adsr_impl->m_sustainLevel; }
     std::shared_ptr<AudioSetting> ADSRNode::releaseTime() const  { return adsr_impl->m_releaseTime;  }
-    //clang-format on
+    // clang-format on
 
     bool ADSRNode::finished(ContextRenderLock& r)
     {

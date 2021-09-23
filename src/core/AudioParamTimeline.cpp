@@ -133,7 +133,9 @@ void AudioParamTimeline::cancelScheduledValues(float startTime)
     }
 }
 
-float AudioParamTimeline::valueForContextTime(ContextRenderLock & r, float defaultValue, bool & hasValue)
+float AudioParamTimeline::valueForContextTime(
+    ContextRenderLock & r,
+    float defaultValue, bool & hasValue)
 {
     auto context = r.context();
     if (!context)
