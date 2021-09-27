@@ -285,8 +285,22 @@ protected:
 
     struct Input
     {
-        std::shared_ptr<AudioNode> node;
-        int out;
+        explicit Input(Input&& rh) noexcept
+        : sources(std::move(rh.sources))
+        , summingBus(rh.summingBus) {
+            rh.summingBus = nullptr;
+        }
+        explicit Input() noexcept;
+        ~Input();
+
+        struct Source
+        {
+            std::shared_ptr<AudioNode> node;
+            int out;
+        };
+        // inputs are summing junctions
+        std::vector<Source> sources;
+        AudioBus * summingBus = nullptr;
     };
     std::vector<Input> _inputs;
 

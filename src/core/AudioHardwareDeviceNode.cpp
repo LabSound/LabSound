@@ -152,11 +152,19 @@ void AudioHardwareDeviceNode::process(ContextRenderLock & r, int bufferSize)
     dstBus->zero();
 
     for (auto& i : _inputs) {
-        if (!i.node)
+        if (!i.sources.size())
             continue;
 
-        AudioBus * srcBus = i.node->outputBus(r, i.out);
-        dstBus->sumFrom(*srcBus);
+        if (i.sources.size() == 1)
+        {
+            AudioBus * srcBus = i.sources[0].node->outputBus(r, i.sources[0].out);
+            dstBus->sumFrom(*srcBus);
+        }
+        else
+        {
+            ASSERT(i.summingBus);
+            dstBus->sumFrom(*i.summingBus);
+        }
     }
 }
 
