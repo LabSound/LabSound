@@ -43,7 +43,7 @@ public:
     static AudioNodeDescriptor * desc();
 
     // AudioNode interface
-    virtual void process(ContextRenderLock &, int bufferSize) override {}  // AudioHardwareDeviceNode is pulled by hardware so this is never called
+    virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;

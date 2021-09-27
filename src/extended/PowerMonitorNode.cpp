@@ -5,8 +5,6 @@
 #include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 
@@ -52,30 +50,30 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.
 
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    if (!isInitialized() || !input(0)->isConnected())
+    if (!dstBus || !srcBus)
     {
-        if (outputBus)
-            outputBus->zero();
+        if (dstBus)
+            dstBus->zero();
         return;
     }
 
-    AudioBus * bus = input(0)->bus(r);
-    bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
+    bool isBusGood = srcBus && srcBus->numberOfChannels() > 0 && srcBus->channel(0)->length() >= bufferSize;
     if (!isBusGood)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
     // specific to this node
     {
         std::vector<const float *> channels;
-        int numberOfChannels = bus->numberOfChannels();
+        int numberOfChannels = srcBus->numberOfChannels();
         for (int i = 0; i < numberOfChannels; ++i)
         {
-            channels.push_back(bus->channel(i)->data());
+            channels.push_back(srcBus->channel(i)->data());
         }
 
         int start = static_cast<int>(bufferSize) - static_cast<int>(_windowSize->valueUint32());
@@ -102,8 +100,8 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
     }
     // to here
 
-    if (bus != outputBus)
-        outputBus->copyFrom(*bus);
+    if (srcBus != dstBus)
+        dstBus->copyFrom(*srcBus);
 }
 
 void PowerMonitorNode::reset(ContextRenderLock &)

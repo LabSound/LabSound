@@ -2,8 +2,6 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/PWMNode.h"
 #include "LabSound/extended/Registry.h"
@@ -25,9 +23,9 @@ AudioNodeDescriptor * PWMNode::desc()
 PWMNode::PWMNode(AudioContext & ac)
     : lab::AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("carrier");
+    addInput("modulator");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -38,26 +36,25 @@ PWMNode::~PWMNode()
 
 void PWMNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    if (!outputBus || !isInitialized() || !input(0)->isConnected())
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * carrierBus = inputBus(r, 0);
+    AudioBus * modBus = inputBus(r, 1);
+
+    if (!dstBus || !carrierBus)
     {
-        if (outputBus)
-            outputBus->zero();
+        if (dstBus)
+            dstBus->zero();
+        return;
+    }
+    if (!modBus) {
+        dstBus->copyFrom(*carrierBus);
         return;
     }
 
-    AudioBus * carrierBus = input(0)->bus(r);
-    if (!input(1) || !input(1)->isConnected())
-    {
-        outputBus->copyFrom(*carrierBus);
-        return;
-    }
-
-    AudioBus * modBus = input(0)->bus(r);
     const float * modP = modBus->channel(0)->data();
     const float * carrierP = carrierBus->channel(0)->data();
 
-    float * destP = outputBus->channel(0)->mutableData();
+    float * destP = dstBus->channel(0)->mutableData();
     int n = bufferSize;
     while (n--)
     {

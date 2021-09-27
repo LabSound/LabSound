@@ -4,8 +4,6 @@
 
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 
 #include "internal/Assertions.h"
@@ -16,8 +14,8 @@ namespace lab
 AudioBasicProcessorNode::AudioBasicProcessorNode(AudioContext & ac, AudioNodeDescriptor const& desc)
     : AudioNode(ac, desc)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     // The subclass must create m_processor.
 }
@@ -46,32 +44,24 @@ void AudioBasicProcessorNode::uninitialize()
 
 void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destinationBus = output(0)->bus(r);
-
-    if (!isInitialized() || !processor())
-        destinationBus->zero();
-    else
+    AudioBus * destinationBus = outputBus(r, 0);
+    AudioBus * sourceBus = inputBus(r, 0);
+    if (!isInitialized() || !processor() || !sourceBus)
     {
-        AudioBus * sourceBus = input(0)->bus(r);
-
-        // FIXME: if we take "tail time" into account, then we can avoid calling processor()->process() once the tail dies down.
-        if (!input(0)->isConnected())
-        {
-            sourceBus->zero();
-            return;
-        }
-
-        int srcChannelCount = sourceBus->numberOfChannels();
-        int dstChannelCount = destinationBus->numberOfChannels();
-        if (srcChannelCount != dstChannelCount)
-        {
-            output(0)->setNumberOfChannels(r, srcChannelCount);
-            destinationBus = output(0)->bus(r);
-        }
-
-        // process entire buffer
-        processor()->process(r, sourceBus, destinationBus, bufferSize);
+        if (destinationBus)
+            destinationBus->zero();
+        return;
     }
+
+    int srcChannelCount = sourceBus->numberOfChannels();
+    int dstChannelCount = destinationBus->numberOfChannels();
+    if (srcChannelCount != dstChannelCount)
+    {
+        destinationBus->setNumberOfChannels(r, srcChannelCount);
+    }
+
+    // process entire buffer
+    processor()->process(r, sourceBus, destinationBus, bufferSize);
 }
 
 
@@ -81,10 +71,6 @@ void AudioBasicProcessorNode::reset(ContextRenderLock &)
         processor()->reset();
 }
 
-int AudioBasicProcessorNode::numberOfChannels()
-{
-    return output(0)->numberOfChannels();
-}
 
 double AudioBasicProcessorNode::tailTime(ContextRenderLock & r) const
 {

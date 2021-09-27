@@ -5,7 +5,6 @@
 #include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/WindowFunctions.h"
 
@@ -62,7 +61,7 @@ GranulationNode::GranulationNode(AudioContext & ac)
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
     grainPlaybackFreq = param("PlaybackFrequency");
 
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     initialize();
 }
@@ -145,7 +144,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value() << std::endl;
 
     grainSourceBus->setBus(buffer.get());
-    output(0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
+    outputBus(r, 0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
 
     // Compute useful values
     /// @fixme these values should be per sample, not per quantum
@@ -183,11 +182,11 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
 
 void GranulationNode::process(ContextRenderLock& r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
-    if (!isInitialized() || !outputBus->numberOfChannels()) 
+    if (!isInitialized() || !dstBus->numberOfChannels()) 
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -196,16 +195,16 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize)
 
     if (!bufferFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    if (!RenderGranulation(r, outputBus, quantumFrameOffset, bufferFramesToProcess))
+    if (!RenderGranulation(r, dstBus, quantumFrameOffset, bufferFramesToProcess))
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
     
 bool GranulationNode::propagatesSilence(ContextRenderLock & r) const

@@ -2,8 +2,6 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
@@ -64,10 +62,8 @@ public:
         int dstChannels = (int) destinationBus->numberOfChannels();
         if (dstChannels != srcChannels)
         {
-            _owner->output(0)->setNumberOfChannels(r, srcChannels);
-            destinationBus = _owner->output(0)->bus(r); 
-            /// @todo no need to pass in the destination bus since owner is retained.
-            /// @todo perhaps flatten out AudioProcessor as well, as it's not adding anything particularly
+            destinationBus->setNumberOfChannels(r, srcChannels);
+            /// @todo get rid of vestigial audioprocessor
         }
 
         if (!srcChannels)

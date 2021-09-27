@@ -38,12 +38,24 @@ AudioBus::AudioBus(int numberOfChannels, int length, bool allocate)
     }
 }
 
+void AudioBus::setNumberOfChannels(ContextRenderLock& r, int n)
+{
+    while (m_channels.size() > n)
+        m_channels.pop_back();
+    while (m_channels.size() < n) {
+        m_channels.emplace_back(std::unique_ptr<AudioChannel>(new AudioChannel(m_length)));
+    }
+}
+
+
 void AudioBus::setChannelMemory(int channelIndex, float * storage, int length)
 {
+    // currently not allowing setting a buffer smaller than the declared length
+    ASSERT(length >= m_length);
     if (channelIndex < m_channels.size())
     {
         channel(channelIndex)->set(storage, length);
-        m_length = length;  // @fixme - verify that this length matches all the other channel lengths
+        m_length = length;
     }
 }
 

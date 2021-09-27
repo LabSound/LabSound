@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+
 namespace lab
 {
 
@@ -42,13 +43,14 @@ enum FilterType
 
 enum OscillatorType
 {
-    OSCILLATOR_NONE = 0,
-    SINE            = 1,
-    FAST_SINE       = 2,
-    SQUARE          = 3,
-    SAWTOOTH        = 4,
-    TRIANGLE        = 5,
-    CUSTOM          = 6,
+    OSCILLATOR_NONE  = 0,
+    SINE             = 1,
+    FAST_SINE        = 2,
+    SQUARE           = 3,
+    SAWTOOTH         = 4,
+    FALLING_SAWTOOTH = 5,
+    TRIANGLE         = 6,
+    CUSTOM           = 7,
     _OscillatorTypeCount
 };
 
@@ -66,15 +68,16 @@ enum class SchedulingState : int
 const char* schedulingStateName(SchedulingState);
 // clang-format on
 
+class AudioBus;
 class AudioContext;
-class AudioNodeInput;
-class AudioNodeOutput;
 class AudioParam;
 struct AudioParamDescriptor;
 class AudioSetting;
 struct AudioSettingDescriptor;
 class ContextGraphLock;
 class ContextRenderLock;
+class ConcurrentQueue;
+
 
 class AudioNodeScheduler
 {
@@ -95,6 +98,8 @@ public:
     bool update(ContextRenderLock&, int epoch_length);
 
     SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
+
+    bool isCurrentEpoch(ContextRenderLock & r) const;
 
     // epoch is a long count at sample rate; 136 years at 48kHz
     // For use in an interstellar sound installation or radio frequency signal processing, 
@@ -149,8 +154,8 @@ public:
     //
     virtual const char* name() const = 0;
 
-    // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
-    // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
+    // The input busses (if any) will already have their input data available when process() is called.
+    // Subclasses will take this input data and render into this node's output buses.
     // Called from context's audio thread.
     virtual void process(ContextRenderLock &, int bufferSize) = 0;
 
@@ -179,29 +184,30 @@ public:
     virtual void uninitialize();
     bool isInitialized() const { return m_isInitialized; }
 
-    // These locked versions can be called at run time.
-    void addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input);
-    void addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output);
+    void addInput(const std::string & name);
+    void addOutput(const std::string & name, int channels, int bufferSize);
+    void connect(ContextRenderLock&, int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
+    void connect(int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
+    void disconnect(int inputIndex);
+    void disconnect(std::shared_ptr<AudioNode>);
+    void disconnect(ContextRenderLock&, std::shared_ptr<AudioNode>);
+    void disconnectAll();
+    bool isConnected(std::shared_ptr<AudioNode>);
 
-    int numberOfInputs() const { return static_cast<int>(m_inputs.size()); }
-    int numberOfOutputs() const { return static_cast<int>(m_outputs.size()); }
+    int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
+    int numberOfOutputs() const { return static_cast<int>(_outputs.size()); }
 
-    std::shared_ptr<AudioNodeInput> input(int index);
-    std::shared_ptr<AudioNodeOutput> output(int index);
-    std::shared_ptr<AudioNodeOutput> output(char const* const str);
+    ///  @TODO make these all const
+    AudioBus * inputBus(ContextRenderLock & r, int i);
+    AudioBus * outputBus(ContextRenderLock & r, int i);
+    AudioBus * outputBus(ContextRenderLock& r, char const* const str);
+    std::string outputBusName(ContextRenderLock& r, int i);
 
     // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
     // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
     // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
     // Called from context's audio thread.
     void processIfNecessary(ContextRenderLock & r, int bufferSize);
-
-    // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
-    // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
-    // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
-
-    virtual void conformChannelCounts();
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
@@ -239,23 +245,74 @@ public:
     ProfileSample graphTime;    // how much time the node spend pulling inputs
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
-protected:
-    // Inputs and outputs must be created before the AudioNode is initialized.
-    // It is only legal to call this during a constructor.
-    void addInput(std::unique_ptr<AudioNodeInput> input);
-    void addOutput(std::unique_ptr<AudioNodeOutput> output);
-
-    // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
-    // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
-    // Called from context's audio thread.
+    // Called by processIfNecessary() to recurse the audiograph.
+    // recursion stops if a node's quantum is equal to the context's render quantum
     void pullInputs(ContextRenderLock &, int bufferSize);
+
+protected:
+
 
     friend class AudioContext;
 
     bool m_isInitialized {false};
 
-    std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
-    std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
+    struct Work
+    {
+        enum Op
+        {
+            OpConnectInput,
+            OpDisconnectIndex, 
+            OpDisconnectInput,
+            OpAddInput,
+            OpAddOutput
+        };
+
+        Op op;
+
+        // if it's an input
+        std::shared_ptr<AudioNode> node;
+        int node_outputIndex = 0;
+        int inputIndex = 0;
+
+        // if it's an output
+        std::string name;
+        int channelCount = 0, size = 0;
+    };
+
+    ConcurrentQueue * _enqueudWork;
+
+    void serviceQueue(ContextRenderLock & r);
+
+    struct Input
+    {
+        std::shared_ptr<AudioNode> node;
+        int out;
+    };
+    std::vector<Input> _inputs;
+
+    struct Output
+    {
+        explicit Output(const std::string name, AudioBus * bus) noexcept
+            : name(name)
+            , bus(bus)
+        {
+        }
+
+        Output(Output && rh) noexcept
+            : name(rh.name)
+            , bus(rh.bus)
+        {
+            // destructor will delete the pointer, so
+            // the move operator allows storing Outputs in a container
+            // without accidental deletion
+            rh.bus = nullptr;
+        }
+
+        ~Output();
+        std::string name;
+        AudioBus * bus = nullptr;
+    };
+    std::vector<Output> _outputs;
 
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;

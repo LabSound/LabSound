@@ -6,8 +6,6 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/WaveTable.h"
@@ -47,7 +45,9 @@ inline float burk_fast_sine(const double phase)
         );
 }
 
-static char const * const s_types[] = {"None", "Sine", "FastSine", "Square", "Sawtooth", "Triangle", "Custom", nullptr};
+static char const * const s_types[] = {
+    "None", "Sine", "FastSine", "Square", "Sawtooth", "Falling Sawtooth",
+    "Triangle", "Custom", nullptr};
 
 static AudioParamDescriptor s_opDesc[] = {
     {"frequency", "FREQ", 440.0,        0.0, 100000.0},
@@ -81,7 +81,7 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
     setType(OscillatorType::SINE);
 
     // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -102,10 +102,10 @@ void OscillatorNode::setType(OscillatorType type)
 
 void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
+    AudioBus * dstBus = outputBus(r, 0);
+    if (!r.context() || !isInitialized() || !dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -116,7 +116,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -213,7 +213,9 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
     }
 
     // calculate and write the wave
-    float* destP = outputBus->channel(0)->mutableData();
+    float* destP = dstBus->channel(0)->mutableData();
+
+    const float pi = static_cast<float>(LAB_PI);
 
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     switch (type)
@@ -222,8 +224,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
             destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
+            
             phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI)) phase -= 2. * static_cast<float>(LAB_PI);
+            if (phase > 2. * pi) 
+                phase -= 2. * pi;
         }
         break;
 
@@ -232,7 +236,8 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         {
             destP[i] = burk_fast_sine(phase);
             phase += phaseIncrements[i];
-            if (phase > static_cast<float>(LAB_PI)) phase -= static_cast<float>(LAB_TAU);
+            if (phase > pi) 
+                phase -= static_cast<float>(LAB_TAU);
         }
         break;
 
@@ -240,10 +245,11 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
             float amp = amplitudes[i];
-            destP[i] = static_cast<float>(bias[i] + (phase < static_cast<float>(LAB_PI) ? amp : -amp));
+            destP[i] = static_cast<float>(bias[i] + (phase < pi ? amp : -amp));
+
             phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
+            if (phase > 2. * pi)
+                phase -= 2. * pi;
         }
         break;
 
@@ -251,10 +257,23 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
             float amp = amplitudes[i];
-            destP[i] = static_cast<float>(bias[i] + amp - (amp / static_cast<float>(LAB_PI)* phase));
+            destP[i] = static_cast<float>(bias[i] + amp - (amp / pi * phase));
+
             phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
+            if (phase > 2. * pi)
+                phase -= 2. * pi;
+        }
+        break;
+
+    case OscillatorType::FALLING_SAWTOOTH:
+        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+        {
+            float amp = amplitudes[i];
+            destP[i] = static_cast<float>(bias[i] - (amp / pi * phase));
+
+            phase += phaseIncrements[i];
+            if (phase > 2. * pi)
+                phase -= 2. * pi;
         }
         break;
 
@@ -262,21 +281,22 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
             float amp = amplitudes[i];
-            if (phase < static_cast<float>(LAB_PI))
-                destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / static_cast<float>(LAB_PI))* phase);
+            if (phase < pi)
+                destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp * phase / pi));
             else
-                destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / static_cast<float>(LAB_PI))* phase);
+                destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp * phase / pi));
 
             phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
+            if (phase > 2. * pi)
+                phase -= 2. * pi;
         }
         break;
-            
+
+
     default: break; // other types do nothing
     }
 
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void OscillatorNode::process(ContextRenderLock & r, int bufferSize)

@@ -8,8 +8,6 @@
 #include "LabSound.h"
 
 #include "AudioBus.h"
-#include "AudioNodeInput.h"
-#include "AudioNodeOutput.h"
 #include "AudioProcessor.h"
 #include "LabSound/extended/Registry.h"
 
@@ -141,8 +139,8 @@ PdNode::PdNode(lab::AudioContext * context, float sampleRate)
 
     setNodeType((AudioNode::NodeType) lab::NodeTypePd);
 
-    addInput(adoptPtr(new lab::AudioNodeInput(this)));
-    addOutput(adoptPtr(new lab::AudioNodeOutput(this, 2)));  // 2 stereo
+    addInput("in");
+    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
 
     data->initPure(2, 2, sampleRate, 128);
 

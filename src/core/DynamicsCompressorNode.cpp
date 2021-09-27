@@ -5,8 +5,6 @@
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
@@ -37,8 +35,8 @@ AudioNodeDescriptor * DynamicsCompressorNode::desc()
 DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     : AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     m_threshold = param("threshold");
     m_knee = param("knee");
@@ -71,25 +69,20 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
-    int numberOfSourceChannels = input(0)->numberOfChannels(r);
-    int numberOfActiveBusChannels = input(0)->bus(r)->numberOfChannels();
-    if (numberOfActiveBusChannels != numberOfSourceChannels)
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
+
+    int numberOfSourceChannels = srcBus->numberOfChannels();
+
+    int numberOfDestChannels = dstBus->numberOfChannels();
+    if (numberOfDestChannels != srcBus->numberOfChannels())
     {
-        checkNumberOfChannelsForInput(r, input(0).get());
+        dstBus->setNumberOfChannels(r, srcBus->numberOfChannels());
     }
 
-    int numberOfDestChannels = output(0)->numberOfChannels();
-    if (numberOfDestChannels != numberOfActiveBusChannels)
-    {
-        output(0)->setNumberOfChannels(r, numberOfActiveBusChannels);
-        output(0)->updateRenderingState(r);
-        numberOfDestChannels = output(0)->numberOfChannels();
-    }
+    ASSERT(dstBus && dstBus->numberOfChannels() == numberOfDestChannels);
 
-    AudioBus* outputBus = output(0)->bus(r);
-    ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
-
-    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+    m_dynamicsCompressor->process(r, srcBus, dstBus, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);

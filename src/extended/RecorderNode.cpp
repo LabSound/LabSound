@@ -3,8 +3,6 @@
 
 #include "LabSound/LabSound.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/RecorderNode.h"
 #include "internal/Assertions.h"
 #include "LabSound/extended/Registry.h"
@@ -27,8 +25,8 @@ RecorderNode::RecorderNode(AudioContext& ac, int channelCount)
     m_channelCount = channelCount;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -39,8 +37,8 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfi
     m_channelCount = outConfig.desired_channels;
     m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -52,36 +50,35 @@ RecorderNode::~RecorderNode()
 
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    AudioBus * inputBus = input(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    bool has_input = inputBus != nullptr && input(0)->isConnected() && inputBus->numberOfChannels() > 0;
-    if ((!isInitialized() || !has_input) && outputBus)
+    bool has_input = srcBus != nullptr && srcBus->numberOfChannels() > 0;
+    if ((!isInitialized() || !has_input) && dstBus)
     {
-        outputBus->zero();
+        dstBus->zero();
     }
 
     if (!has_input)
     {
         // nothing to record.
-        if (outputBus)
-            outputBus->zero();
+        if (dstBus)
+            dstBus->zero();
         return;
     }
 
     // the recorder will conform the number of output channels to the number of input
     // in order that it can function as a pass-through node.
-    const int inputBusNumChannels = inputBus->numberOfChannels();
+    const int inputBusNumChannels = srcBus->numberOfChannels();
     int outputBusNumChannels = inputBusNumChannels;
-    if (outputBus)
+    if (dstBus)
     {
-        outputBusNumChannels = outputBus->numberOfChannels();
+        outputBusNumChannels = dstBus->numberOfChannels();
 
         if (inputBusNumChannels != outputBusNumChannels)
         {
-            output(0)->setNumberOfChannels(r, inputBusNumChannels);
+            dstBus->setNumberOfChannels(r, inputBusNumChannels);
             outputBusNumChannels = inputBusNumChannels;
-            outputBus = output(0)->bus(r);
         }
     }
 
@@ -92,7 +89,7 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
         std::vector<const float*> channels;
         for (int i = 0; i < numChannels; ++i)
         {
-            channels.push_back(inputBus->channel(i)->data());
+            channels.push_back(srcBus->channel(i)->data());
         }
 
         if (m_data.size() < numChannels)
@@ -115,8 +112,8 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     // pass through 
-    if (outputBus)
-        outputBus->copyFrom(*inputBus);
+    if (dstBus)
+        dstBus->copyFrom(*srcBus);
 }
 
 

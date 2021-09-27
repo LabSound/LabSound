@@ -14,7 +14,6 @@ namespace lab
 {
 
 class AudioBus;
-class AudioNodeInput;
 
 // AudioBasicProcessorNode is an AudioNode with one input and one output where
 //  the input and output have the same number of channels.
@@ -29,9 +28,6 @@ public:
     virtual void reset(ContextRenderLock &) override;
     virtual void initialize() override;
     virtual void uninitialize() override;
-
-    // Returns the number of channels for both the input and the output.
-    int numberOfChannels();
 
 protected:
     virtual double tailTime(ContextRenderLock & r) const override;

@@ -3,8 +3,6 @@
 
 #include "LabSound/core/WaveShaperNode.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/Registry.h"
 #include "internal/Assertions.h"
 #include <algorithm>
@@ -23,8 +21,8 @@ AudioNodeDescriptor * WaveShaperNode::desc()
 WaveShaperNode::WaveShaperNode(AudioContext & ac)
     : AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
     _curveId = 0;
     _newCurveId = 0;
@@ -33,8 +31,8 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac)
 WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : AudioNode(ac, desc)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
     _curveId = 0;
     _newCurveId = 0;
@@ -54,17 +52,12 @@ void WaveShaperNode::setCurve(std::vector<float> & curve)
 
 void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus* destinationBus = output(0)->bus(r);
-    if (!isInitialized() || !_curve.size())
+    AudioBus* destinationBus = outputBus(r, 0);
+    AudioBus * sourceBus = inputBus(r, 0);
+    if (!destinationBus || !sourceBus || !_curve.size())
     {
-        destinationBus->zero();
-        return;
-    }
-
-    AudioBus* sourceBus = input(0)->bus(r);
-    if (!input(0)->isConnected())
-    {
-        destinationBus->zero();
+        if (destinationBus)
+            destinationBus->zero();
         return;
     }
 
@@ -72,8 +65,7 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
     int dstChannelCount = destinationBus->numberOfChannels();
     if (srcChannelCount != dstChannelCount)
     {
-        output(0)->setNumberOfChannels(r, srcChannelCount);
-        destinationBus = output(0)->bus(r);
+        destinationBus->setNumberOfChannels(r, srcChannelCount);
     }
 
     if (_newCurveId > _curveId) {

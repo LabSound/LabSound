@@ -5,8 +5,6 @@
 #include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/SampledAudioNode.h"
@@ -255,8 +253,8 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
 {
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addInput("in");
+    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
 
     m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 
@@ -271,19 +269,20 @@ StereoPannerNode::~StereoPannerNode()
 
 void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    if (!isInitialized() || !input(0)->isConnected() || !m_stereoPanner.get())
+    if (!dstBus || !srcBus || !m_stereoPanner.get())
     {
-        outputBus->zero();
+        if (dstBus)
+            dstBus->zero();
         return;
     }
 
-    AudioBus * inputBus = input(0)->bus(r);
 
-    if (!inputBus)
+    if (!srcBus)
     {
-        inputBus->zero();
+        srcBus->zero();
         return;
     }
 
@@ -296,15 +295,15 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
         {
             float * panValues = m_sampleAccuratePanValues->data();
             m_pan->calculateSampleAccurateValues(r, panValues, bufferSize);
-            m_stereoPanner->panWithSampleAccurateValues(inputBus, outputBus, panValues, bufferSize);
+            m_stereoPanner->panWithSampleAccurateValues(srcBus, dstBus, panValues, bufferSize);
         }
     }
     else
     {
-        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(), bufferSize);
+        m_stereoPanner->panToTargetValue(srcBus, dstBus, m_pan->value(), bufferSize);
     }
 
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void StereoPannerNode::reset(ContextRenderLock &)

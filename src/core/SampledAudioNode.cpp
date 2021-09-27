@@ -7,7 +7,7 @@
 #include "LabSound/core/SampledAudioNode.h"
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
@@ -99,7 +99,7 @@ namespace lab {
         });
  
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+        addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
 
         initialize();
     }
@@ -297,7 +297,7 @@ namespace lab {
     bool SampledAudioNode::renderSample(ContextRenderLock& r, Scheduled& schedule, size_t destinationSampleOffset, size_t frameSize)
     {
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
-        AudioBus* dstBus = output(0)->bus(r);
+        AudioBus* dstBus = outputBus(r, 0);
         size_t dstChannelCount = dstBus->numberOfChannels();
         size_t srcChannelCount = srcBus->numberOfChannels();
         ASSERT(dstChannelCount == srcChannelCount);
@@ -430,7 +430,7 @@ namespace lab {
         }
         _internals->greatest_cursor = -1;
 
-        AudioBus* dstBus = output(0)->bus(r);
+        AudioBus* dstBus = outputBus(r, 0);
         size_t dstChannelCount = dstBus->numberOfChannels();
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
 
@@ -459,8 +459,7 @@ namespace lab {
         }
 
         // zero out the buffer for summing, or for silence
-        for (int i = 0; i < dstChannelCount; ++i)
-            output(0)->bus(r)->zero();
+        dstBus->zero();
 
         // silence the outputs if there's nothing to play.
         int schedule_count = static_cast<int>(_internals->scheduled.size());
@@ -471,9 +470,8 @@ namespace lab {
         int srcChannelCount = srcBus->numberOfChannels();
         if (dstChannelCount != srcChannelCount)
         {
-            output(0)->setNumberOfChannels(r, srcChannelCount);
+            dstBus->setNumberOfChannels(r, srcChannelCount);
             dstChannelCount = srcChannelCount;
-            dstBus = output(0)->bus(r);
         }
 
         // compute the frame timing in samples and seconds
@@ -491,7 +489,7 @@ namespace lab {
             {
                 int32_t offset = (s.when < quantumStartTime) ? 0 : static_cast<int32_t>(s.when * r.context()->sampleRate());
                 renderSample(r, s, (size_t) offset, AudioNode::ProcessingSizeInFrames);
-                output(0)->bus(r)->clearSilentFlag();
+                dstBus->clearSilentFlag();
                 if (s.cursor > _internals->greatest_cursor)
                     _internals->greatest_cursor = s.cursor;
             }

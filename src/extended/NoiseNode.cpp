@@ -5,7 +5,6 @@
 #include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 
 using namespace std;
@@ -29,7 +28,7 @@ NoiseNode::NoiseNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
     _type = setting("type");
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -53,11 +52,11 @@ NoiseNode::NoiseType NoiseNode::type() const
 
 void NoiseNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
-    if (!isInitialized() || !outputBus->numberOfChannels())
+    if (!isInitialized() || !dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -66,11 +65,11 @@ void NoiseNode::process(ContextRenderLock &r, int bufferSize)
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    float * destP = outputBus->channel(0)->mutableData();
+    float * destP = dstBus->channel(0)->mutableData();
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;
@@ -119,7 +118,7 @@ void NoiseNode::process(ContextRenderLock &r, int bufferSize)
         default:
             throw std::invalid_argument("Invalid type specified");
     }
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void NoiseNode::reset(ContextRenderLock &)

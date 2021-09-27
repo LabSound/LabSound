@@ -28,8 +28,6 @@ class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
 class AudioHardwareInputNode;
-class AudioNodeInput;
-class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
 

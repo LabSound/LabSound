@@ -7,6 +7,7 @@
 
 #include "LabSound/core/AudioChannel.h"
 #include "LabSound/core/Mixing.h"
+#include "LabSound/extended/AudioContextLock.h"
 #include <iostream>
 #include <vector>
 
@@ -40,6 +41,8 @@ public:
 
     // Channels
     int numberOfChannels() const { return static_cast<int>(m_channels.size()); }
+
+    void setNumberOfChannels(ContextRenderLock& r, int);
 
     // Use this when looping over channels
     AudioChannel * channel(int channel) { return m_channels[channel].get(); }

@@ -170,13 +170,13 @@
 
 */
 
-#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SfxrNode.h"
 #include "LabSound/extended/Registry.h"
 
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 
 #include <math.h>
@@ -636,7 +636,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     , sfxr(new SfxrNode::Sfxr())
 {
     // Output is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     _preset = setting("preset");
     _waveType = setting("waveType");
@@ -702,11 +702,11 @@ SfxrNode::~SfxrNode()
 
 void SfxrNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
-    if (!isInitialized() || !outputBus->numberOfChannels())
+    if (!isInitialized() || !dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -715,11 +715,11 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    float * destP = outputBus->channel(0)->mutableData();
+    float * destP = dstBus->channel(0)->mutableData();
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;
@@ -795,7 +795,7 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
         destP[n] = f;
     }
 
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void SfxrNode::reset(ContextRenderLock &)

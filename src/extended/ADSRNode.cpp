@@ -2,11 +2,10 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/extended/ADSRNode.h"
-#include "LabSound/extended/AudioContextLock.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioParam.h"
+#include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
 
 #include "internal/VectorMath.h"
@@ -215,8 +214,8 @@ namespace lab
         adsr_impl->m_releaseTime = setting("releaseTime");
         adsr_impl->m_releaseTime->setFloat(0.125f);  // 125ms
 
-        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+        addInput("in");
+        addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
         initialize();
     }
@@ -265,19 +264,19 @@ namespace lab
 
     void ADSRNode::process(ContextRenderLock& r, int bufferSize)
     {
-        AudioBus* destinationBus = output(0)->bus(r);
-        AudioBus* sourceBus = input(0)->bus(r);
-        if (!isInitialized() || !input(0)->isConnected())
+        AudioBus* destinationBus = outputBus(r, 0);
+        AudioBus* sourceBus = inputBus(r, 0);
+        if (!destinationBus || !sourceBus)
         {
-            destinationBus->zero();
+            if (destinationBus)
+                destinationBus->zero();
             return;
         }
 
-        int numberOfInputChannels = input(0)->numberOfChannels(r);
-        if (numberOfInputChannels != output(0)->numberOfChannels())
+        int numberOfInputChannels = sourceBus->numberOfChannels();
+        if (numberOfInputChannels != destinationBus->numberOfChannels())
         {
-            output(0)->setNumberOfChannels(r, numberOfInputChannels);
-            destinationBus = output(0)->bus(r);
+            destinationBus->setNumberOfChannels(r, numberOfInputChannels);
         }
 
         // process entire buffer

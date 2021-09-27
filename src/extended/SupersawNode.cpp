@@ -3,8 +3,6 @@
 // Copyright (C) 2015, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/GainNode.h"
 #include "LabSound/core/OscillatorNode.h"
@@ -146,7 +144,7 @@ SupersawNode::SupersawNode(AudioContext & ac)
     internalNode->detune = param("detune");
     internalNode->frequency = param("frequency");
 
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -159,21 +157,22 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
 {
     internalNode->update(r, true);
 
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
-    if (!isInitialized() || !outputBus->numberOfChannels())
+    if (!isInitialized() || !dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
     AudioBus * dst = nullptr;
-    internalNode->gainNode->input(0)->bus(r)->zero();
-    /*AudioBus * renderedBus =*/ internalNode->gainNode->input(0)->pull(r, dst, bufferSize);
+
+    internalNode->gainNode->inputBus(r, 0)->zero();
+    internalNode->gainNode->pullInputs(r, bufferSize);
     internalNode->gainNode->process(r, bufferSize);
-    AudioBus * inputBus = internalNode->gainNode->output(0)->bus(r);
-    outputBus->copyFrom(*inputBus);
-    outputBus->clearSilentFlag();
+    AudioBus * inputBus = internalNode->gainNode->outputBus(r, 0);
+    dstBus->copyFrom(*inputBus);
+    dstBus->clearSilentFlag();
 }
 
 void SupersawNode::update(ContextRenderLock & r)

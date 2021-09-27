@@ -4,8 +4,6 @@
 
 #include "LabSound/core/AnalyserNode.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/RealtimeAnalyser.h"
 #include "LabSound/extended/Registry.h"
@@ -168,22 +166,22 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
 
 void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    AudioBus * inputBus = input(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    if (!isInitialized() || !input(0)->isConnected() || !inputBus)
+    if (!srcBus)
     {
-        if (outputBus)
-           outputBus->zero();
+        if (dstBus)
+           dstBus->zero();
         return;
     }
 
     // Give the analyser all the audio which is passing through this AudioNode.
-    _detail->m_analyser->writeInput(r, inputBus, bufferSize);
+    _detail->m_analyser->writeInput(r, srcBus, bufferSize);
 
-    if (inputBus != outputBus)
+    if (srcBus != dstBus)
     {
-        outputBus->copyFrom(*inputBus);
+        dstBus->copyFrom(*srcBus);
     }
 }
 

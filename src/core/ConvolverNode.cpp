@@ -4,8 +4,6 @@
 
 #include "LabSound/core/ConvolverNode.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
 #include "internal/VectorMath.h"
@@ -116,8 +114,8 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     _normalize->setBool(true);
     _impulseResponseClip = setting("impulseResponse");
 
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     lab::sp_create(&_sp);
 
@@ -239,32 +237,31 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         _pending_kernels.clear();
     }
 
-    AudioBus * outputBus = output(0)->bus(r);
-    AudioBus * inputBus = input(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    if (!isInitialized() || !outputBus || !inputBus || !inputBus->numberOfChannels() || !_kernels.size())
+    if (!isInitialized() || !dstBus || !srcBus || !srcBus->numberOfChannels() || !_kernels.size())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
     // if the user never specified the number of output channels, make it match the input
-    if (!outputBus->numberOfChannels())
+    if (!dstBus->numberOfChannels())
     {
-        output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
-        outputBus = output(0)->bus(r);  // set number of channels invalidates the pointer
+        dstBus->setNumberOfChannels(r, srcBus->numberOfChannels());
     }
 
     int quantumFrameOffset = _scheduler._renderOffset;
     int nonSilentFramesToProcess = _scheduler._renderLength;
 
-    int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
-    int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
+    int numInputChannels = static_cast<int>(srcBus->numberOfChannels());
+    int numOutputChannels = static_cast<int>(dstBus->numberOfChannels());
     int numReverbChannels = static_cast<int>(_kernels.size());
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -275,15 +272,14 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     {
         int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
         lab::sp_conv * conv = _kernels[kernel].conv;
-        float* destP = outputBus->channel(i)->mutableData() + _scheduler._renderOffset;
+        float* destP = dstBus->channel(i)->mutableData() + _scheduler._renderOffset;
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
         {
-            AudioBus * input_bus = input(0)->bus(r);
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
-            float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;
-            size_t c = input_bus->channel(in_channel)->length();
+            float const* data = srcBus->channel(in_channel)->data() + quantumFrameOffset;
+            size_t c = srcBus->channel(in_channel)->length();
             for (int j = 0; j < _scheduler._renderLength; ++j)
             {
                 lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
@@ -295,7 +291,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     _now += double(_scheduler._renderLength) / r.context()->sampleRate();
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void ConvolverNode::reset(ContextRenderLock &)

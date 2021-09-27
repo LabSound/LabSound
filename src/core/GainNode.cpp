@@ -5,8 +5,6 @@
 #include "LabSound/core/GainNode.h"
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
@@ -28,8 +26,8 @@ GainNode::GainNode(AudioContext& ac)
     , m_lastGain(1.f)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addInput("in");
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     m_gain = param("gain");
 
@@ -47,29 +45,28 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     // happen in the summing junction input of the AudioNode we're connected to.
     // Then we can avoid all of the following:
 
-    AudioBus * outputBus = output(0)->bus(r);
-    ASSERT(outputBus);
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
 
-    if (!isInitialized() || !input(0)->isConnected())
+    if (!srcBus || !dstBus)
     {
-        outputBus->zero();
+        if (dstBus)
+            dstBus->zero();
         return;
     }
 
-    AudioBus* inputBus = input(0)->bus(r);
-    const int inputBusChannelCount = inputBus->numberOfChannels();
+    const int inputBusChannelCount = srcBus->numberOfChannels();
     if (!inputBusChannelCount)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    int outputBusChannelCount = outputBus->numberOfChannels();
+    int outputBusChannelCount = dstBus->numberOfChannels();
     if (inputBusChannelCount != outputBusChannelCount)
     {
-        output(0)->setNumberOfChannels(r, inputBusChannelCount);
+        dstBus->setNumberOfChannels(r, inputBusChannelCount);
         outputBusChannelCount = inputBusChannelCount;
-        outputBus = output(0)->bus(r);
     }
 
     if (gain()->hasSampleAccurateValues())
@@ -86,16 +83,16 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
             int bzero_start = _scheduler._renderOffset + _scheduler._renderLength;
             if (bzero_start < bufferSize)
                 memset(gainValues_base + bzero_start, 0, sizeof(float) * bufferSize - bzero_start);
-            outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, m_sampleAccurateGainValues.data(), bufferSize);
+            dstBus->copyWithSampleAccurateGainValuesFrom(*srcBus, m_sampleAccurateGainValues.data(), bufferSize);
         }
     }
     else
     {
         // Apply the gain with de-zippering into the output bus.
-        outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value());
+        dstBus->copyWithGainFrom(*srcBus, &m_lastGain, gain()->value());
     }
 
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void GainNode::reset(ContextRenderLock & r)

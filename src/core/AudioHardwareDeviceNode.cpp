@@ -6,8 +6,6 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
 #include "LabSound/extended/AudioContextLock.h"
@@ -59,7 +57,10 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     }
 
     // This is the "final node" in the chain. It will pull on all others from this input.
-    addInput(std::make_unique<AudioNodeInput>(this));
+    addInput("in");
+
+    // add an output where the processed buffer will be copied from
+    addOutput("out", outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
 
     // Node-specific default mixing rules.
     //m_channelCount = outputConfig.desired_channels;
@@ -140,13 +141,31 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
 {
     m_platformAudioDevice->stop();
     m_platformAudioDevice->start();
-};
+}
+
+void AudioHardwareDeviceNode::process(ContextRenderLock & r, int bufferSize)
+{
+    AudioBus * dstBus = outputBus(r, 0);
+    if (!dstBus)
+        return;
+
+    dstBus->zero();
+
+    for (auto& i : _inputs) {
+        if (!i.node)
+            continue;
+
+        AudioBus * srcBus = i.node->outputBus(r, i.out);
+        dstBus->sumFrom(*srcBus);
+    }
+}
+
 
 void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
     ProfileScope selfProfile(totalTime);
     ProfileScope profile(graphTime);
-    pull_graph(m_context, input(0).get(), src, dst, frames, info, m_audioHardwareInput);
+    pull_graph(m_context, this, src, dst, frames, info, m_audioHardwareInput);
     last_info = info;
     profile.finalize(); // ensure profile is not prematurely destructed
     selfProfile.finalize();

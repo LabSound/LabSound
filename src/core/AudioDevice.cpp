@@ -4,7 +4,6 @@
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -15,8 +14,9 @@
 
 using namespace lab;
 
-void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, int frames,
-                     const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
+void lab::pull_graph(AudioContext * ctx, AudioNode * required_inlet, 
+    AudioBus * src, AudioBus * dst, int frames,
+    const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
     if (!ctx) 
@@ -58,7 +58,8 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
     }
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
-    AudioBus * renderedBus = required_inlet->pull(renderLock, dst, frames);
+    required_inlet->pullInputs(renderLock, frames);
+    AudioBus * renderedBus = required_inlet->outputBus(renderLock, 0);
 
     if (!renderedBus)
     {

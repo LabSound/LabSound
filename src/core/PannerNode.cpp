@@ -6,8 +6,6 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/SampledAudioNode.h"
@@ -107,8 +105,8 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
 
-    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    addInput("in");
+    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
 
     m_distanceModel->setValueChanged(
         [this]() {
@@ -223,19 +221,13 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
 
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destination = output(0)->bus(r);
+    AudioBus * destination = outputBus(r, 0);
+    AudioBus * source = inputBus(r, 0);
 
-    if (!isInitialized() || !input(0)->isConnected() || !m_panner.get())
+    if (!destination || !source || !m_panner.get())
     {
-        destination->zero();
-        return;
-    }
-
-    AudioBus * source = input(0)->bus(r);
-
-    if (!source)
-    {
-        destination->zero();
+        if (destination)
+            destination->zero();
         return;
     }
 
@@ -506,27 +498,6 @@ float PannerNode::distanceConeGain(ContextRenderLock & r)
     m_coneGain->setValue(static_cast<float>(coneGain));
 
     return float(distanceGain * coneGain);
-}
-
-void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode * node)
-{
-    ASSERT(node);
-    if (!node)
-        return;
-
-    // Go through all inputs to this node.
-    for (int i = 0; i < node->numberOfInputs(); ++i)
-    {
-        auto input = node->input(i);
-
-        // For each input, go through all of its connections, looking for SampledAudioNodes.
-        for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
-        {
-            auto connectedOutput = input->renderingOutput(r, j);
-            AudioNode * connectedNode = connectedOutput->sourceNode();
-            notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
-        }
-    }
 }
 
 float PannerNode::refDistance()

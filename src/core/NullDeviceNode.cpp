@@ -5,7 +5,6 @@
 #include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
 #include "LabSound/extended/Registry.h"
@@ -32,7 +31,7 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac,
     , m_context(&ac)
     , outConfig(outputConfig)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addInput("in");
 
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
 
@@ -119,7 +118,7 @@ void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const Sa
     ProfileScope profile(graphTime);
     totalTime.zero();
 
-    pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
+    pull_graph(m_context, this, src, dst, frames, info, nullptr);
     profile.finalize(); // ensure profile is not prematurely destructed
 }
 

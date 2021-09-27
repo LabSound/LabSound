@@ -5,8 +5,6 @@
 #include "LabSound/core/ChannelMergerNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/Registry.h"
 
 #include "internal/Assertions.h"
@@ -27,7 +25,7 @@ ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
     , m_desiredNumberOfOutputChannels(1)
 {
     addInputs(numberOfInputs_);
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -35,42 +33,40 @@ void ChannelMergerNode::addInputs(int n)
 {
     // Create the requested number of inputs.
     for (int i = 0; i < n; ++i)
-        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+        addInput("in");
 }
 
 void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    auto output = this->output(0);
-    ASSERT_UNUSED(bufferSize, bufferSize == output->bus(r)->length());
+    AudioBus * dstBus = outputBus(r, 0);
+    ASSERT_UNUSED(bufferSize, bufferSize == dstBus->length());
 
-    if (m_desiredNumberOfOutputChannels != output->numberOfChannels())
+    if (m_desiredNumberOfOutputChannels != dstBus->numberOfChannels())
     {
-        output->setNumberOfChannels(r, m_desiredNumberOfOutputChannels);
+        dstBus->setNumberOfChannels(r, m_desiredNumberOfOutputChannels);
     }
 
     // Merge all the channels from all the inputs into one output.
     uint32_t outputChannelIndex = 0;
     for (int i = 0; i < numberOfInputs(); ++i)
     {
-        auto input = this->input(i);
+        auto input = inputBus(r, i);
 
-        if (input->isConnected())
+        if (input)
         {
-            size_t numberOfInputChannels = input->bus(r)->numberOfChannels();
+            size_t numberOfInputChannels = input->numberOfChannels();
 
             // Merge channels from this particular input.
             for (int j = 0; j < numberOfInputChannels; ++j)
             {
-                AudioChannel * inputChannel = input->bus(r)->channel(j);
-                AudioChannel * outputChannel = output->bus(r)->channel(outputChannelIndex);
+                AudioChannel * inputChannel = input->channel(j);
+                AudioChannel * outputChannel = dstBus->channel(outputChannelIndex);
 
                 outputChannel->copyFrom(inputChannel);
                 ++outputChannelIndex;
             }
         }
     }
-
-    ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
 

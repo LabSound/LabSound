@@ -5,13 +5,14 @@
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/Macros.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
+
+#include "concurrentqueue/concurrentqueue.h"
 
 #include <algorithm>
 
@@ -27,15 +28,18 @@ const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
 AudioParam::AudioParam(AudioParamDescriptor const * const desc)
-    : AudioSummingJunction()
-    , _desc(desc)
+    : _desc(desc)
     , m_value(desc->defaultValue)
     , m_smoothedValue(desc->defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
 {
+    work = (ConcurrentQueue *) new moodycamel::ConcurrentQueue<Work>();
 }
 
-AudioParam::~AudioParam() {}
+AudioParam::~AudioParam() 
+{
+    delete (moodycamel::ConcurrentQueue<Work> *) work;
+}
 
 float AudioParam::value() const
 {
@@ -102,6 +106,35 @@ void AudioParam::calculateSampleAccurateValues(ContextRenderLock & r,
 void AudioParam::calculateFinalValues(ContextRenderLock & r, 
     float * values, int numberOfValues, bool sampleAccurate)
 {
+    moodycamel::ConcurrentQueue<Work> * workQueue = (moodycamel::ConcurrentQueue<Work> *) work;
+
+    if (workQueue->size_approx() > 0)
+    {
+        Work w;
+        while (workQueue->try_dequeue(w))
+        {
+            switch (w.op)
+            {
+                case 0:
+                    _junction.clear();
+                    break;
+
+                case 1:
+                    _junction.push_back(Input {w.node, w.output});
+                    break;
+
+                case 2:
+                    for (std::vector<Input>::iterator i = _junction.begin(); i != _junction.end(); ++i) {
+                        if (i->node.get() == w.node.get()) {
+                            i = _junction.erase(i);
+                            if (i == _junction.end())
+                                break;
+                        }
+                    }
+            }
+        }
+    }
+
     bool isSafe = r.context() && values && numberOfValues;
     if (!isSafe)
         return;
@@ -125,13 +158,6 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
         values[0] = static_cast<float>(m_value);
     }
 
-    // if there are rendering connections, be sure they are ready
-    updateRenderingState(r);
-
-    int connectionCount = numberOfRenderingConnections(r);
-    if (!connectionCount)
-        return;
-
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
 
@@ -146,14 +172,14 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
     // point the summing bus at the values array
     m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
-    for (int i = 0; i < connectionCount; ++i)
+    for (auto & i : _junction)
     {
-        auto output = renderingOutput(r, i);
-
-        ASSERT(output);
+        auto output = i.node->outputBus(r, i.output);
+        if (!output)
+            continue;
 
         // Render audio from this output.
-        AudioBus * connectionBus = output->pull(r, nullptr, AudioNode::ProcessingSizeInFrames);
+        i.node->pullInputs(r, AudioNode::ProcessingSizeInFrames);
 
         // Sum, with unity-gain.
         /// @TODO it was surprising in practice that the inputs are summed, as opposed to simply overriding.
@@ -162,7 +188,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
         /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
         /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
         /// have a bias of zero. It seems like sum or override should be a setting of some sort...
-        m_internalSummingBus->sumFrom(*connectionBus);
+        m_internalSummingBus->sumFrom(*i.node->outputBus(r, 0));
     }
 }
 
@@ -182,37 +208,27 @@ void AudioParam::calculateTimelineValues(ContextRenderLock & r,
         static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
-void AudioParam::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::connect(std::shared_ptr<AudioNode> n, int output)
 {
-    if (!output)
+    if (!n)
         return;
 
-    if (param->isConnected(output))
-        return;
-
-    param->junctionConnectOutput(output);
-    output->addParam(g, param);
+    moodycamel::ConcurrentQueue<Work> * workQueue = (moodycamel::ConcurrentQueue<Work> *) work;
+    workQueue->enqueue(Work {n, output, 1});
 }
 
-void AudioParam::disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+// -1 for output means any found connections
+void AudioParam::disconnect(std::shared_ptr<AudioNode> n, int output)
 {
-    if (!param || !output)
+    if (!n)
         return;
 
-    if (param->isConnected(output))
-    {
-        param->junctionDisconnectOutput(output);
-    }
-    output->removeParam(g, param);
+    moodycamel::ConcurrentQueue<Work> * workQueue = (moodycamel::ConcurrentQueue<Work> *) work;
+    workQueue->enqueue(Work {n, output, -1});
 }
 
-void AudioParam::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam> param)
+void AudioParam::disconnectAll()
 {
-    for (auto i : param->m_connectedOutputs)
-    {
-        auto j = i.lock();
-        if (j)
-            j->removeParam(g, param);
-    }
-    param->junctionDisconnectAllOutputs();
+    moodycamel::ConcurrentQueue<Work> * workQueue = (moodycamel::ConcurrentQueue<Work> *) work;
+    workQueue->enqueue(Work {{}, 0, 0});
 }

@@ -891,7 +891,7 @@ struct ex_dalek_filter : public labsound_example
         auto audioClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         if (!audioClip)
             return;
-        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>();
+        std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
 #endif
 
         std::shared_ptr<AudioHardwareInputNode> input;

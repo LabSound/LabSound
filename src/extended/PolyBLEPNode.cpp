@@ -7,8 +7,6 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/WaveTable.h"
@@ -407,7 +405,7 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     });
 
     // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
 
     polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);
@@ -431,10 +429,10 @@ void PolyBLEPNode::setType(PolyBLEPType type)
 
 void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
+    AudioBus * dstBus = outputBus(r, 0);
+    if (!r.context() || !isInitialized() || !dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -445,7 +443,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -465,7 +463,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
     }
 
     // calculate and write the wave
-    float* destination = outputBus->channel(0)->mutableData() + offset;
+    float* destination = dstBus->channel(0)->mutableData() + offset;
 
     /// @fixme these values should be per sample, not per quantum
     /// -or- they should be settings if they don't vary per sample
@@ -477,7 +475,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
         destination[i] = (amplitudes[i] * static_cast<float>(polyblep->getPhaseAndIncrement()));
     }
 
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize)

@@ -46,8 +46,6 @@ private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    virtual void conformChannelCounts() override {};
-
     std::shared_ptr<AudioParam> m_pan;
 
     std::unique_ptr<Spatializer> m_stereoPanner;

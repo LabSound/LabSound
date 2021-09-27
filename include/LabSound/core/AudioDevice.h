@@ -17,9 +17,9 @@ namespace lab
 {
 class AudioBus;
 class AudioContext;
-class AudioNodeInput;
 class AudioHardwareInput;
 class AudioDevice;
+class AudioNode;
 
 /////////////////////////////////////////////
 //   Audio Device Configuration Settings   //
@@ -62,7 +62,7 @@ struct SamplingInfo
 //
 // `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance,
 // the `AudioHardwareDeviceNode` or the `NullDeviceNode`.
-void pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, int frames,
+void pull_graph(AudioContext * ctx, AudioNode * root, AudioBus * src, AudioBus * dst, int frames,
                 const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
 ///////////////////////////////////

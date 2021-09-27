@@ -2,8 +2,6 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/FunctionNode.h"
@@ -24,7 +22,7 @@ AudioNodeDescriptor * FunctionNode::desc()
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
+    addOutput("out", channels, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -35,11 +33,11 @@ FunctionNode::~FunctionNode()
 
 void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
-    if (!isInitialized() || !outputBus->numberOfChannels() || !_function)
+    if (!isInitialized() || !dstBus->numberOfChannels() || !_function)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -48,13 +46,13 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 
     if (!nonSilentFramesToProcess)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    for (int i = 0; i < outputBus->numberOfChannels(); ++i)
+    for (int i = 0; i < dstBus->numberOfChannels(); ++i)
     {
-        float * destP = outputBus->channel(i)->mutableData();
+        float * destP = dstBus->channel(i)->mutableData();
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
@@ -62,7 +60,7 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     _now += double(bufferSize) / r.context()->sampleRate();
-    outputBus->clearSilentFlag();
+    dstBus->clearSilentFlag();
 }
 
 void FunctionNode::reset(ContextRenderLock & r)

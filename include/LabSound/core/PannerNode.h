@@ -141,11 +141,6 @@ protected:
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock & r);
 
-    // Notifies any SampledAudioNodes connected to us either directly or indirectly about our existence.
-    // This is in order to handle the pitch change necessary for the doppler shift.
-    // @tofix - broken?
-    void notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode *);
-
     std::unique_ptr<Panner> m_panner;
     std::unique_ptr<DistanceEffect> m_distanceEffect;
     std::unique_ptr<ConeEffect> m_coneEffect;

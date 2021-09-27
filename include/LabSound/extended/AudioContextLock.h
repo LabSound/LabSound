@@ -62,7 +62,7 @@ public:
     ContextRenderLock(AudioContext * context, const std::string & lockSuitor)
     {
 #if defined(DEBUG_LOCKS)
-        bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
+        bool reentrant = (context != nullptr) && (context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~');
         if (reentrant)
         {
             LOG_ERROR("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());

@@ -5,7 +5,6 @@
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
 #include "LabSound/extended/AudioContextLock.h"
@@ -27,7 +26,7 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
     : AudioNode(ac, *desc())
     , m_audioSourceProvider(audioSourceProvider)
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
+    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -39,7 +38,7 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
 
 void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * dstBus = outputBus(r, 0);
 
     // This used to be the function of a manual call to setFormat()
     if (m_sourceNumberOfChannels == 0)
@@ -50,20 +49,20 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
         {
             auto inputConfig = DeviceAsRenderCallback->getInputConfig();
             m_sourceNumberOfChannels = inputConfig.desired_channels;
-            output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
-            outputBus = output(0)->bus(r);  // outputBus pointer was invalidated
+            auto bus = outputBus(r, 0);
+            bus->setNumberOfChannels(r, m_sourceNumberOfChannels);
         }
     }
 
     if (!m_audioSourceProvider)
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
-    if (m_sourceNumberOfChannels != outputBus->numberOfChannels())
+    if (m_sourceNumberOfChannels != dstBus->numberOfChannels())
     {
-        outputBus->zero();
+        dstBus->zero();
         return;
     }
 
@@ -73,12 +72,12 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
     if (r.context())
     {
         // provide entire buffer
-        m_audioSourceProvider->provideInput(outputBus, bufferSize);
+        m_audioSourceProvider->provideInput(dstBus, bufferSize);
     }
     else
     {
         // We failed to acquire the lock.
-        outputBus->zero();
+        dstBus->zero();
     }
 }
 
