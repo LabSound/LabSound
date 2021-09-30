@@ -26,12 +26,7 @@ struct AudioParamDescriptor
 
 class AudioParam
 {
-    struct Input
-    {
-        std::shared_ptr<AudioNode> node;
-        int output = 0;
-    };
-    std::vector<Input> _junction;
+    AudioNodeSummingInput _input;
 
     struct Work
     {
@@ -39,14 +34,15 @@ class AudioParam
         int output = 0;
         int op = 0;
     };
-
-    ConcurrentQueue* work;
+    ConcurrentQueue* _work;
 
 public:
     static const double DefaultSmoothingConstant;
     static const double SnapThreshold;
 
-    AudioParam(AudioParamDescriptor const*const);
+    const AudioNodeSummingInput & inputs() const { return _input; }
+
+    AudioParam(AudioParamDescriptor const * const) noexcept;
     virtual ~AudioParam();
 
     // Intrinsic value.
@@ -86,7 +82,7 @@ public:
     AudioParam & setValueCurveAtTime(std::vector<float> curve, float time, float duration) { m_timeline.setValueCurveAtTime(curve, time, duration); return *this; }
     AudioParam & cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); return *this; }
 
-    bool hasSampleAccurateValues() { return m_timeline.hasValues() || _junction.size() > 0; }
+    bool hasSampleAccurateValues();
 
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
@@ -100,6 +96,8 @@ public:
     void disconnect(std::shared_ptr<AudioNode>, int output=-1);
     void disconnectAll();
 
+    void serviceQueue(ContextRenderLock &);
+
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
     void calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate);
@@ -112,7 +110,6 @@ private:
 
     AudioParamTimeline m_timeline;
 
-    std::unique_ptr<AudioBus> m_internalSummingBus;
 
     AudioParamDescriptor const*const _desc;
 };

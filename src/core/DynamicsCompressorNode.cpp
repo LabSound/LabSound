@@ -55,6 +55,16 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
 
 void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
 {
+    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * srcBus = inputBus(r, 0);
+
+    if (!dstBus || !srcBus)
+    {
+        if (dstBus)
+            dstBus->zero();
+        return;
+    }
+
     /// @fixme these values should be per sample, not per quantum
     /// -or- they should be settings if they don't vary per sample
     float threshold = m_threshold->value();
@@ -69,9 +79,6 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
-    AudioBus * dstBus = outputBus(r, 0);
-    AudioBus * srcBus = inputBus(r, 0);
-
     int numberOfSourceChannels = srcBus->numberOfChannels();
 
     int numberOfDestChannels = dstBus->numberOfChannels();
@@ -80,12 +87,14 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
         dstBus->setNumberOfChannels(r, srcBus->numberOfChannels());
     }
 
-    ASSERT(dstBus && dstBus->numberOfChannels() == numberOfDestChannels);
+    ASSERT(dstBus && dstBus->numberOfChannels() == numberOfSourceChannels);
 
     m_dynamicsCompressor->process(r, srcBus, dstBus, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);
+
+    dstBus->clearSilentFlag();
 }
 
 void DynamicsCompressorNode::reset(ContextRenderLock &)

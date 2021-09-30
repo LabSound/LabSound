@@ -31,6 +31,8 @@ int sp_ftbl_bind(sp_data * sp, sp_ftbl ** ft, SPFLOAT * tbl, size_t size);
 
 //------------------------------------------------------------------------------
 // calculateNormalizationScale is adapted from webkit's Reverb.cpp, and carried the license:
+// calculateNormalizationScale license: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
+//
 // Empirical gain calibration tested across many impulse responses to ensure
 // perceived volume is same as dry (unprocessed) signal
 const float GainCalibration = -58;
@@ -39,7 +41,6 @@ const float GainCalibrationSampleRate = 44100;
 // A minimum power value to when normalizing a silent (or very quiet) impulse response
 const float MinPower = 0.000125f;
 
-// calculateNormalizationScale license: BSD 3 Clause, Copyright (C) 2010, Google Inc. All rights reserved.
 static float calculateNormalizationScale(AudioBus * response)
 {
     // Normalize by RMS power
@@ -177,7 +178,10 @@ void ConvolverNode::setNormalize(bool new_n)
 void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 {
     if (!bus)
-        return;
+        return; /// @TODO setting null should turn the convolver into a pass through?
+
+    /// @TODO setImpulse should return a promise of some sort, TBD, and when _activateNewImpulse
+    /// has run, the promise should be fulfilled.
 
     auto new_bus = AudioBus::createByCloning(bus.get());
     _impulseResponseClip->setBus(new_bus.get());    // setBus will invoke _activatNewImpulse()
@@ -185,6 +189,8 @@ void ConvolverNode::setImpulse(std::shared_ptr<AudioBus> bus)
 
 void ConvolverNode::_activateNewImpulse()
 {
+    /// @TODO Create the kernels on the main work thread, activate should simply copy
+    /// the data from the work thread.
     auto clip = _impulseResponseClip->valueBus();
     size_t len = clip->length();
     _scale = 1;

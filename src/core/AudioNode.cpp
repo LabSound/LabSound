@@ -14,33 +14,74 @@
 #include "internal/Assertions.h"
 #include "concurrentqueue/concurrentqueue.h"
 
+#include <functional>
+#include <string>
+
 using namespace std;
 
 //#define ASN_PRINT(...)
 #define ASN_PRINT(a) printf(a)
 
 
-/*
-
-
-AudioNode
-    [Params]
-    [Settings]
-    [Inputs]
-    [(name, AudioBus)]
-
-Inputs
-    [Outputs]
-
-
-*/
-
-
-
 
 
 namespace lab
 {
+
+// static
+void AudioNode::_printGraph(const AudioNode * root, std::function<void(const char *)> prnln, int indent)
+{
+    const int maxIndent = 40;
+    static char * spacesBuff = nullptr;
+    if (!spacesBuff) {
+        spacesBuff = (char *) malloc(maxIndent + 1);
+        memset(spacesBuff, ' ', maxIndent);
+        spacesBuff[maxIndent] = '\0';
+    }
+    int spaceTerminator = indent < maxIndent ? indent : maxIndent;
+    spacesBuff[spaceTerminator] = '\0';
+    std::string spaces = spacesBuff;
+    spacesBuff[spaceTerminator] = ' ';
+
+    std::string str = spaces;
+    str += std::string(root->name());
+    prnln(str.c_str());
+
+    const auto params = root->params();
+    auto names = root->paramNames();
+    for (int i = 0; i < params.size(); ++i)
+    {
+        auto & inputs = params[i]->inputs();
+        if (inputs.sources.size() > 0) {
+            str = spaces + "   [Param] " + names[i];
+            prnln(str.c_str());
+            for (const auto & n : inputs.sources)
+                _printGraph(n.node.get(), prnln, indent + 3);
+        }
+    }
+
+    if (root->_inputs.size() > 0)
+    {
+        prnln(str.c_str());
+        for (auto & i : root->_inputs)
+        {
+            str = spaces + "   [Input] ";
+            prnln(str.c_str());
+            for (auto & n : i.sources)
+                _printGraph(n.node.get(), prnln, indent + 3);
+        }
+    }
+}
+
+
+// static
+void AudioNode::printGraph(const AudioNode * root, std::function<void(const char *)> prnln)
+{
+    if (!root || !prnln)
+        return;
+
+    _printGraph(root, prnln, 0);
+}
 
 const char * schedulingStateName(SchedulingState s)
 {
@@ -66,21 +107,46 @@ const char * schedulingStateName(SchedulingState s)
     return "Unknown";
 }
 
-AudioNode::Input::Input() noexcept
+AudioNodeSummingInput::AudioNodeSummingInput() noexcept
 {
     summingBus = nullptr;
 }
-AudioNode::Input::~Input()
+
+AudioNodeSummingInput::~AudioNodeSummingInput()
 {
     if (summingBus)
         delete summingBus;
 }
 
-AudioNode::Output::~Output()
+void AudioNodeSummingInput::clear() noexcept
+{
+    if (summingBus)
+    {
+        delete summingBus;
+        summingBus = nullptr;
+    }
+    sources.clear();
+}
+
+void AudioNodeSummingInput::updateSummingBus(int channels, int size)
+{
+    if (summingBus && ((summingBus->length() < size) || (summingBus->numberOfChannels() != channels)))
+    {
+        delete summingBus;
+        summingBus = nullptr;
+    }
+    if (!summingBus)
+    {
+        summingBus = new AudioBus(channels, size);
+    }
+}
+
+AudioNodeNamedOutput::~AudioNodeNamedOutput()
 {
     if (bus)
         delete bus;
 }
+
 
 const int start_envelope = 64;
 const int end_envelope = 64;
@@ -371,8 +437,8 @@ void AudioNode::connect(int input_index, std::shared_ptr<AudioNode> n, int node_
 void AudioNode::connect(ContextRenderLock & r, int input_index, std::shared_ptr<AudioNode> n, int node_outputIndex)
 {
     while (_inputs.size() <= input_index)
-        _inputs.emplace_back(Input {});
-    _inputs[input_index].sources.push_back(Input::Source {n, node_outputIndex});
+        _inputs.emplace_back(AudioNodeSummingInput {});
+    _inputs[input_index].sources.push_back(AudioNodeSummingInput::Source {n, node_outputIndex});
     if (_inputs[input_index].sources.size() > 1 && !_inputs[input_index].summingBus)
     {
         _inputs[input_index].summingBus = new AudioBus(n->outputBus(r, 0)->numberOfChannels(), AudioNode::ProcessingSizeInFrames);
@@ -400,7 +466,7 @@ void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
     else
     {
         for (auto & i : _inputs)
-            for (std::vector<AudioNode::Input::Source>::iterator j = i.sources.begin(); j != i.sources.end(); ++j)
+            for (std::vector<AudioNodeSummingInput::Source>::iterator j = i.sources.begin(); j != i.sources.end(); ++j)
             {
                 if (j->node.get() == node.get())
                 {
@@ -438,10 +504,10 @@ void AudioNode::serviceQueue(ContextRenderLock & r)
             switch (work.op)
             {
                 case Work::OpAddInput:
-                    _inputs.emplace_back(Input {});
+                    _inputs.emplace_back(AudioNodeSummingInput {});
                     break;
                 case Work::OpAddOutput:
-                    _outputs.emplace_back(Output {work.name, new AudioBus(work.channelCount, work.size)});
+                    _outputs.emplace_back(AudioNodeNamedOutput {work.name, new AudioBus(work.channelCount, work.size)});
                     break;
                 case Work::OpConnectInput:
                     connect(r, work.inputIndex, work.node, work.node_outputIndex);
@@ -533,6 +599,67 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
     m_channelCountMode = mode;
 }
 
+
+
+void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
+{
+    ASSERT(r.context());
+    // exit early if already processed
+    if (_scheduler.isCurrentEpoch(r))
+        return;
+
+    for (auto & p : _params)
+    {
+        p->serviceQueue(r);
+        for (auto & i : p->inputs().sources)
+        {
+            auto output = i.node->outputBus(r, i.out);
+            if (!output)
+                continue;
+
+            // Render audio feeding the parameter
+            i.node->pullInputs(r, bufferSize);
+        }
+    }
+
+    // Process all of the AudioNodes connected to our inputs.
+    for (auto & in : _inputs)
+    {
+        for (auto & s : in.sources)
+        {
+            // only visit nodes that are not yet at the current epoch
+            if (s.node && !s.node->_scheduler.isCurrentEpoch(r))
+                s.node->pullInputs(r, bufferSize);
+        }
+
+        // compute the sum of all inputs if there's more than one
+        if (in.sources.size() > 1)
+        {
+            ASSERT(in.summingBus);
+
+            int requiredChannels = 1;
+            for (auto & s : in.sources)
+            {
+                auto bus = s.node->outputBus(r, s.out);
+                if (bus && bus->numberOfChannels() > requiredChannels)
+                    requiredChannels = bus->numberOfChannels();
+            }
+            if (requiredChannels != in.summingBus->numberOfChannels())
+            {
+                in.summingBus->setNumberOfChannels(r, requiredChannels);
+            }
+
+            in.summingBus->zero();
+            for (auto & s : in.sources)
+            {
+                in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
+            }
+        }
+    }
+
+    processIfNecessary(r, bufferSize);
+}
+
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
     if (!isInitialized())
@@ -559,7 +686,6 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
         silenceOutputs(r);
         return;
     }
-
 
     // there may need to be silence at the beginning or end of the current quantum.
 
@@ -663,38 +789,6 @@ bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
     return _scheduler._playbackState < SchedulingState::FADE_IN ||
         _scheduler._playbackState == SchedulingState::FINISHED;
-}
-
-void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
-{
-    ASSERT(r.context());
-    // exit early if already processed
-    if (_scheduler.isCurrentEpoch(r))
-        return;
-
-    // Process all of the AudioNodes connected to our inputs.
-    for (auto & in : _inputs)
-    {
-        for (auto & s : in.sources)
-        {
-            // only visit nodes that are not yet at the current epoch
-            if (s.node && !s.node->_scheduler.isCurrentEpoch(r))
-                s.node->pullInputs(r, bufferSize);
-        }
-
-        // compute the sum of all inputs if there's more than one
-        if (in.sources.size() > 1)
-        {
-            ASSERT(in.summingBus);
-            in.summingBus->zero();
-            for (auto & s : in.sources)
-            {
-                in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
-            }
-        }
-    }
-
-    processIfNecessary(r, bufferSize);
 }
 
 bool AudioNode::inputsAreSilent(ContextRenderLock & r)

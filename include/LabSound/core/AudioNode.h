@@ -68,15 +68,63 @@ enum class SchedulingState : int
 const char* schedulingStateName(SchedulingState);
 // clang-format on
 
-class AudioBus;
-class AudioContext;
-class AudioParam;
+class  AudioBus;
+class  AudioContext;
+class  AudioNode;
+class  AudioParam;
 struct AudioParamDescriptor;
-class AudioSetting;
+class  AudioSetting;
 struct AudioSettingDescriptor;
-class ContextGraphLock;
-class ContextRenderLock;
-class ConcurrentQueue;
+class  ContextGraphLock;
+class  ContextRenderLock;
+class  ConcurrentQueue;
+
+struct AudioNodeSummingInput
+{
+    explicit AudioNodeSummingInput(AudioNodeSummingInput && rh) noexcept
+        : sources(std::move(rh.sources))
+        , summingBus(rh.summingBus)
+    {
+        rh.summingBus = nullptr;
+    }
+    explicit AudioNodeSummingInput() noexcept;
+    ~AudioNodeSummingInput();
+
+    struct Source
+    {
+        std::shared_ptr<AudioNode> node;
+        int out;
+    };
+    // inputs are summing junctions
+    std::vector<Source> sources;
+    AudioBus * summingBus = nullptr;
+
+    void clear() noexcept;
+    void updateSummingBus(int channels, int size);
+};
+
+struct AudioNodeNamedOutput
+{
+    explicit AudioNodeNamedOutput(const std::string name, AudioBus * bus) noexcept
+        : name(name)
+        , bus(bus)
+    {
+    }
+
+    AudioNodeNamedOutput(AudioNodeNamedOutput && rh) noexcept
+        : name(rh.name)
+        , bus(rh.bus)
+    {
+        // destructor will delete the pointer, so
+        // the move operator allows storing Outputs in a container
+        // without accidental deletion
+        rh.bus = nullptr;
+    }
+
+    ~AudioNodeNamedOutput();
+    std::string name;
+    AudioBus * bus = nullptr;
+};
 
 
 class AudioNodeScheduler
@@ -138,7 +186,9 @@ struct AudioNodeDescriptor
 // Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
 class AudioNode
 {
-public:
+    static void _printGraph(const AudioNode * root, std::function<void(const char *)> prnln, int indent);
+
+public :
     enum : int
     {
         ProcessingSizeInFrames = 128
@@ -148,6 +198,8 @@ public:
     virtual ~AudioNode();
 
     explicit AudioNode(AudioContext &, AudioNodeDescriptor const &);
+
+    static void printGraph(const AudioNode* root, std::function<void(const char *)> prnln);
 
     //--------------------------------------------------
     // required interface
@@ -251,7 +303,6 @@ public:
 
 protected:
 
-
     friend class AudioContext;
 
     bool m_isInitialized {false};
@@ -283,50 +334,8 @@ protected:
 
     void serviceQueue(ContextRenderLock & r);
 
-    struct Input
-    {
-        explicit Input(Input&& rh) noexcept
-        : sources(std::move(rh.sources))
-        , summingBus(rh.summingBus) {
-            rh.summingBus = nullptr;
-        }
-        explicit Input() noexcept;
-        ~Input();
-
-        struct Source
-        {
-            std::shared_ptr<AudioNode> node;
-            int out;
-        };
-        // inputs are summing junctions
-        std::vector<Source> sources;
-        AudioBus * summingBus = nullptr;
-    };
-    std::vector<Input> _inputs;
-
-    struct Output
-    {
-        explicit Output(const std::string name, AudioBus * bus) noexcept
-            : name(name)
-            , bus(bus)
-        {
-        }
-
-        Output(Output && rh) noexcept
-            : name(rh.name)
-            , bus(rh.bus)
-        {
-            // destructor will delete the pointer, so
-            // the move operator allows storing Outputs in a container
-            // without accidental deletion
-            rh.bus = nullptr;
-        }
-
-        ~Output();
-        std::string name;
-        AudioBus * bus = nullptr;
-    };
-    std::vector<Output> _outputs;
+    std::vector<AudioNodeSummingInput> _inputs;
+    std::vector<AudioNodeNamedOutput> _outputs;
 
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;
