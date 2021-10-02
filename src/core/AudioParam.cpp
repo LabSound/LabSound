@@ -32,6 +32,7 @@ AudioParam::AudioParam(AudioParamDescriptor const * const desc) noexcept
     , m_value(desc->defaultValue)
     , m_smoothedValue(desc->defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
+    , _input("driver")
 {
     _work = (ConcurrentQueue *) new moodycamel::ConcurrentQueue<Work>();
 }

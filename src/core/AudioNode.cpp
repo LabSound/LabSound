@@ -107,7 +107,8 @@ const char * schedulingStateName(SchedulingState s)
     return "Unknown";
 }
 
-AudioNodeSummingInput::AudioNodeSummingInput() noexcept
+AudioNodeSummingInput::AudioNodeSummingInput(const std::string name) noexcept
+: name(name)
 {
     summingBus = nullptr;
 }
@@ -421,23 +422,29 @@ void AudioNode::reset(ContextRenderLock & r)
 
 void AudioNode::addInput(const std::string & name)
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpAddInput, {}, 0, 0, name});
+    ((moodycamel::ConcurrentQueue<Work> *) 
+        _enqueudWork)->enqueue(Work {Work::OpAddInput, {}, 0, 0, name});
 }
 
 void AudioNode::addOutput(const std::string & name, int channelCount, int size)
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpAddOutput, {}, 0, 0, name, channelCount, size});
+    ((moodycamel::ConcurrentQueue<Work> *) 
+        _enqueudWork)->enqueue(Work {Work::OpAddOutput, {}, 0, 0, name, channelCount, size});
 }
 
 void AudioNode::connect(int input_index, std::shared_ptr<AudioNode> n, int node_outputIndex)
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpConnectInput, n, node_outputIndex, input_index});
+    ((moodycamel::ConcurrentQueue<Work> *) 
+        _enqueudWork)->enqueue(Work {Work::OpConnectInput, n, node_outputIndex, input_index});
 }
 
 void AudioNode::connect(ContextRenderLock & r, int input_index, std::shared_ptr<AudioNode> n, int node_outputIndex)
 {
     while (_inputs.size() <= input_index)
-        _inputs.emplace_back(AudioNodeSummingInput {});
+    {
+        std::string name = "in" + std::to_string(_inputs.size() + 1);
+        _inputs.emplace_back(AudioNodeSummingInput(name));
+    }
     _inputs[input_index].sources.push_back(AudioNodeSummingInput::Source {n, node_outputIndex});
     if (_inputs[input_index].sources.size() > 1 && !_inputs[input_index].summingBus)
     {
@@ -447,12 +454,14 @@ void AudioNode::connect(ContextRenderLock & r, int input_index, std::shared_ptr<
 
 void AudioNode::disconnect(int inputIndex)
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpDisconnectIndex, {}, 0, inputIndex});
+    ((moodycamel::ConcurrentQueue<Work> *) 
+        _enqueudWork)->enqueue(Work {Work::OpDisconnectIndex, {}, 0, inputIndex});
 }
 
 void AudioNode::disconnect(std::shared_ptr<AudioNode> n)
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpDisconnectInput, n, 0});
+    ((moodycamel::ConcurrentQueue<Work> *) 
+        _enqueudWork)->enqueue(Work {Work::OpDisconnectInput, n, 0});
 }
 
 void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
@@ -504,8 +513,15 @@ void AudioNode::serviceQueue(ContextRenderLock & r)
             switch (work.op)
             {
                 case Work::OpAddInput:
-                    _inputs.emplace_back(AudioNodeSummingInput {});
+                {
+                    std::string name = work.name;
+                    if (name.length() == 0)
+                    {
+                        name = "in" + std::to_string(_inputs.size() + 1);
+                    }
+                    _inputs.emplace_back(AudioNodeSummingInput(name));
                     break;
+                }
                 case Work::OpAddOutput:
                     _outputs.emplace_back(AudioNodeNamedOutput {work.name, new AudioBus(work.channelCount, work.size)});
                     break;
@@ -542,6 +558,15 @@ std::string AudioNode::outputBusName(ContextRenderLock & r, int i)
         return "";
 
     return _outputs[i].name;
+}
+
+std::string AudioNode::inputBusName(ContextRenderLock & r, int i)
+{
+    serviceQueue(r);
+    if (i >= _inputs.size())
+        return "";
+
+    return _inputs[i].name;
 }
 
 

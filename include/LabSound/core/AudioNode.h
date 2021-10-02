@@ -76,9 +76,10 @@ struct AudioNodeSummingInput
         : sources(std::move(rh.sources))
         , summingBus(rh.summingBus)
     {
+        std::swap(name, rh.name);
         rh.summingBus = nullptr;
     }
-    explicit AudioNodeSummingInput() noexcept;
+    explicit AudioNodeSummingInput(const std::string name) noexcept;
     ~AudioNodeSummingInput();
 
     struct Source
@@ -89,6 +90,7 @@ struct AudioNodeSummingInput
     // inputs are summing junctions
     std::vector<Source> sources;
     AudioBus * summingBus = nullptr;
+    std::string name;
 
     void clear() noexcept;
     void updateSummingBus(int channels, int size);
@@ -103,12 +105,12 @@ struct AudioNodeNamedOutput
     }
 
     AudioNodeNamedOutput(AudioNodeNamedOutput && rh) noexcept
-        : name(rh.name)
-        , bus(rh.bus)
+        : bus(rh.bus)
     {
         // destructor will delete the pointer, so
         // the move operator allows storing Outputs in a container
         // without accidental deletion
+        std::swap(name, rh.name);
         rh.bus = nullptr;
     }
 
@@ -244,7 +246,8 @@ public :
     AudioBus * inputBus(ContextRenderLock & r, int i);
     AudioBus * outputBus(ContextRenderLock & r, int i);
     AudioBus * outputBus(ContextRenderLock& r, char const* const str);
-    std::string outputBusName(ContextRenderLock& r, int i);
+    std::string inputBusName(ContextRenderLock & r, int i);
+    std::string outputBusName(ContextRenderLock & r, int i);
 
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
