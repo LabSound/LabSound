@@ -23,7 +23,7 @@ namespace lab
 {
 
 EqualPowerPanner::EqualPowerPanner(const float sampleRate)
-    : Panner(sampleRate, PanningMode::EQUALPOWER)
+    : Panner(sampleRate, PanningModel::EQUALPOWER)
 {
 }
 

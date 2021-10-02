@@ -26,6 +26,16 @@ class DistanceEffect;
 class HRTFDatabaseLoader;
 class Panner;
 
+// clang-format off
+enum PanningModel
+{
+    PANNING_NONE = 0,
+    EQUALPOWER   = 1,
+    HRTF         = 2,
+    _PanningModeCount
+};
+
+
 // params: orientation[XYZ], velocity[XYZ], position[XYZ]
 // settings: distanceModel, refDistance, maxDistance, rolloffFactor,
 //           coneKInnerAngle, coneOuterAngle, panningMode
@@ -75,8 +85,8 @@ public:
     virtual void uninitialize() override;
 
     // Panning model
-    PanningMode panningModel() const;
-    void setPanningModel(PanningMode m);
+    PanningModel panningModel() const;
+    void setPanningModel(PanningModel m);
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }

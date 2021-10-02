@@ -35,7 +35,7 @@ static void fixNANs(T & x)
 
 static char const * const s_distance_models[lab::DistanceEffect::ModelType::_Count + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
-static char const * const s_panning_models[lab::PanningMode::_PanningModeCount + 1] = {
+static char const * const s_panning_models[lab::PanningModel::_PanningModeCount + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
 
 static AudioParamDescriptor s_pDesc[] = {
@@ -155,7 +155,7 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     m_panningModel->setUint32(static_cast<uint32_t>(EQUALPOWER));
     m_panningModel->setValueChanged(
         [this]() {
-            setPanningModel(static_cast<PanningMode>(m_panningModel->valueUint32()));
+            setPanningModel(static_cast<PanningModel>(m_panningModel->valueUint32()));
         });
 
     // Node-specific default mixing rules.
@@ -173,12 +173,12 @@ void PannerNode::initialize()
 {
     if (isInitialized()) return;
 
-    switch (static_cast<PanningMode>(m_panningModel->valueUint32()))
+    switch (static_cast<PanningModel>(m_panningModel->valueUint32()))
     {
-        case PanningMode::EQUALPOWER:
+        case PanningModel::EQUALPOWER:
             m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
             break;
-        case PanningMode::HRTF:
+        case PanningModel::HRTF:
             m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
             break;
         default:
@@ -232,7 +232,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     // HRTFDatabase should be loaded before proceeding for offline audio context
-    if (static_cast<PanningMode>(m_panningModel->valueUint32()) == PanningMode::HRTF && !m_hrtfDatabaseLoader->isLoaded())
+    if (static_cast<PanningModel>(m_panningModel->valueUint32()) == PanningModel::HRTF && !m_hrtfDatabaseLoader->isLoaded())
     {
         if (r.context()->isOfflineContext())
         {
@@ -270,29 +270,29 @@ void PannerNode::reset(ContextRenderLock &)
         m_panner->reset();
 }
 
-PanningMode PannerNode::panningModel() const
+PanningModel PannerNode::panningModel() const
 {
-    return static_cast<PanningMode>(m_panningModel->valueUint32());
+    return static_cast<PanningModel>(m_panningModel->valueUint32());
 }
 
-void PannerNode::setPanningModel(PanningMode model)
+void PannerNode::setPanningModel(PanningModel model)
 {
-    if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
+    if (model != PanningModel::EQUALPOWER && model != PanningModel::HRTF)
         throw std::invalid_argument("Unknown panning model specified");
 
     ASSERT(m_sampleRate);
 
-    PanningMode curr = static_cast<PanningMode>(m_panningModel->valueUint32());
+    PanningModel curr = static_cast<PanningModel>(m_panningModel->valueUint32());
     if (!m_panner.get() || model != curr)
     {
         m_panningModel->setUint32(static_cast<uint32_t>(model));
 
         switch (model)
         {
-            case PanningMode::EQUALPOWER:
+            case PanningModel::EQUALPOWER:
                 m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
                 break;
-            case PanningMode::HRTF:
+            case PanningModel::HRTF:
                 m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
                 break;
             default:

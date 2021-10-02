@@ -19,14 +19,6 @@ namespace lab
 {
 
 // clang-format off
-enum PanningMode
-{
-    PANNING_NONE = 0,
-    EQUALPOWER   = 1,
-    HRTF         = 2,
-    _PanningModeCount
-};
-
 enum FilterType
 {
     FILTER_NONE = 0,
