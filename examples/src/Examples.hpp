@@ -135,9 +135,8 @@ struct ex_osc_pop : public labsound_example
             oscillator->setType(OscillatorType::SINE);
 
             recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
-            context->addAutomaticPullNode(recorder);
             recorder->startRecording();
-            context->connect(recorder, gain, 0, 0);
+            context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
         }
 
         // retain nodes until demo end
@@ -154,7 +153,7 @@ struct ex_osc_pop : public labsound_example
         }
 
         recorder->stopRecording();
-        context->removeAutomaticPullNode(recorder);
+        context->disconnect(recorder);
         recorder->writeRecordingToWav("ex_osc_pop.wav", false);
 
         // wait at least one context update to allow the disconnections to occur, and for any final
@@ -234,7 +233,7 @@ struct ex_offline_rendering : public labsound_example
 
         auto recorder = std::make_shared<RecorderNode>(ac, offlineConfig);
 
-        context->addAutomaticPullNode(recorder);
+        context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
 
         recorder->startRecording();
 
@@ -264,7 +263,7 @@ struct ex_offline_rendering : public labsound_example
 
             printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
 
-            context->removeAutomaticPullNode(recorder);
+            context->disconnect(recorder);
             recorder->writeRecordingToWav("ex_offline_rendering.wav", false);
             complete = true;
         };
@@ -534,7 +533,7 @@ struct ex_microphone_reverb : public labsound_example
                 input = lab::MakeAudioHardwareInputNode(r);
 
                 recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
-                context->addAutomaticPullNode(recorder);
+                context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
                 recorder->startRecording();
 
                 convolve = std::make_shared<ConvolverNode>(ac);
@@ -552,7 +551,7 @@ struct ex_microphone_reverb : public labsound_example
             Wait(std::chrono::seconds(10));
 
             recorder->stopRecording();
-            context->removeAutomaticPullNode(recorder);
+            context->disconnect(recorder);
             recorder->writeRecordingToWav("ex_microphone_reverb.wav", true);
 
             context.reset();
@@ -1421,7 +1420,7 @@ struct ex_granulation_node : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_granulation_node");
             recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
-            context->addAutomaticPullNode(recorder);
+            context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
             recorder->startRecording();
 
             granulation_node->setGrainSource(r, grain_source);
@@ -1440,7 +1439,7 @@ struct ex_granulation_node : public labsound_example
         Wait(std::chrono::seconds(10));
 
         recorder->stopRecording();
-        context->removeAutomaticPullNode(recorder);
+        context->disconnect(recorder);
         recorder->writeRecordingToWav("ex_granulation_node.wav", false);
     }
 };

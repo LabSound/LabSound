@@ -156,8 +156,6 @@ AudioContext::~AudioContext()
 #endif
 
     ASSERT(!m_isInitialized);
-    ASSERT(!m_automaticPullNodes.size());
-    ASSERT(!m_renderingAutomaticPullNodes.size());
 
     LOG_INFO("Finish AudioContext::~AudioContext()");
 }
@@ -202,16 +200,11 @@ void AudioContext::uninitialize()
     if (!m_isInitialized)
         return;
 
-    // for the case where an OfflineAudioDestinationNode needs to update the graph:
-    updateAutomaticPullNodes();
-
     // This stops the audio thread and all audio rendering.
     device_callback->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
-
-    updateAutomaticPullNodes();  // added for the case where an NullDeviceNode needs to update the graph
 
     m_isInitialized = false;
 }
@@ -317,14 +310,12 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
         for (auto & sc : requeued_connections)
             m_internal->pendingNodeConnections.enqueue(sc);
     }
-
-    updateAutomaticPullNodes();
 }
 
 void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
-    updateAutomaticPullNodes();
+    // there no post render tasks in the current architecture
 }
 
 void AudioContext::synchronizeConnections(int timeOut_ms)
@@ -476,69 +467,6 @@ void AudioContext::update()
 
     if (!m_isOfflineContext) { 
         LOG_TRACE("End UpdateGraphThread"); 
-    }
-}
-
-/// @TODO automatic pull nodes can be removed as a separate concept by making
-/// a "silent" input to the device node, that is pulled and managed identically
-/// to the "required_inlet" but simply doesn't do anything with the associated
-/// summing bus. the summing step itself can be skipped if that's practical without
-/// spaghetti code.
-
-void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
-{
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    if (m_automaticPullNodes.find(node) == m_automaticPullNodes.end())
-    {
-        m_automaticPullNodes.insert(node);
-        m_automaticPullNodesNeedUpdating = true;
-        if (!node->isScheduledNode())
-        {
-            node->_scheduler.start(0);
-        }
-    }
-}
-
-void AudioContext::removeAutomaticPullNode(std::shared_ptr<AudioNode> node)
-{
-    std::lock_guard<std::mutex> lock(m_updateMutex);
-    auto it = m_automaticPullNodes.find(node);
-    if (it != m_automaticPullNodes.end())
-    {
-        m_automaticPullNodes.erase(it);
-        m_automaticPullNodesNeedUpdating = true;
-    }
-}
-
-void AudioContext::updateAutomaticPullNodes()
-{
-    /// @TODO this seems like work for the update thread.
-    /// m_automaticPullNodesNeedUpdating can go away in favor of
-    /// add and remove doing a cv.notify.
-    /// m_automaticPullNodes should be an add/remove vector
-    /// m_renderingAutomaticPullNodes should be the actual live vector
-    if (m_automaticPullNodesNeedUpdating)
-    {
-        std::lock_guard<std::mutex> lock(m_updateMutex);
-
-        // Copy from m_automaticPullNodes to m_renderingAutomaticPullNodes.
-        m_renderingAutomaticPullNodes.resize(m_automaticPullNodes.size());
-
-        unsigned j = 0;
-        for (auto i = m_automaticPullNodes.begin(); i != m_automaticPullNodes.end(); ++i, ++j)
-        {
-            m_renderingAutomaticPullNodes[j] = *i;
-        }
-
-        m_automaticPullNodesNeedUpdating = false;
-    }
-}
-
-void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, int framesToProcess)
-{
-    for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
-    {
-        m_renderingAutomaticPullNodes[i]->pullInputs(r, framesToProcess);
     }
 }
 

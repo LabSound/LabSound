@@ -38,15 +38,19 @@ public:
 
     // AudioNodes should not retain the AudioContext. The majority of
     // methods that take AudioContext as a parameter do so via reference.
+    // 
     // If methods from the context, such as currentTime() are
     // required in methods that do not take AudioContext as a parameter, 
     // they should instead retain a weak pointer to the 
     // AudioNodeInterface from the AudioContext they were instantiated from. 
-    // Locking the AudioNodeInterface
-    // pointer is a way to check if the AudioContext is still instantiated.
+    // 
+    // Locking the AudioNodeInterface pointer is a way to check if the 
+    // AudioContext is still instantiated.
+    // 
     // AudioContextInterface contains data that is safe for any thread, or
     // audio processing callback to read, even if the audio context is in
     // the process of stopping or destruction.
+
     class AudioContextInterface
     {
         friend class AudioContext;
@@ -120,18 +124,6 @@ public:
     // Called at the end of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &);
 
-    // AudioContext can pull node(s) at the end of each render quantum even
-    // when they are not connected to any downstream nodes. These two methods
-    // are called by the nodes who want to add/remove themselves into/from the
-    // automatic pull lists.
-    void addAutomaticPullNode(std::shared_ptr<AudioNode>);
-    void removeAutomaticPullNode(std::shared_ptr<AudioNode>);
-
-    // Called right before handlePostRenderTasks() to handle nodes which need to
-    // be pulled even when they are not connected to anything.
-    // Only an AudioHardwareDeviceNode should call this.
-    void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
-
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
     bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
@@ -194,20 +186,15 @@ private:
     bool m_isInitialized = false;
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
-    bool m_automaticPullNodesNeedUpdating = false;  // indicates m_automaticPullNodes was modified.
 
     friend class NullDeviceNode; // needs to be able to call update()
     void update();
-    void updateAutomaticPullNodes();
     void uninitialize();
 
     AudioDeviceRenderCallback * device_callback{nullptr};
     std::shared_ptr<AudioNode> m_device;
 
     std::shared_ptr<AudioListener> m_listener;
-
-    std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;  // queue for added pull nodes
-    std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;  // vector of known pull nodes
 };
 
 }  // End namespace lab

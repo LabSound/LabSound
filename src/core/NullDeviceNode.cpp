@@ -32,6 +32,9 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac,
 {
     addInput("in");
 
+    // add a null input for nodes that are processed but silent
+    addInput("null");
+
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(outputConfig.desired_channels, offlineRenderSizeQuantum));
 
     m_channelInterpretation = ChannelInterpretation::Discrete;

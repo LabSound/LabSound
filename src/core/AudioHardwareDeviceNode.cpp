@@ -59,6 +59,9 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     // This is the "final node" in the chain. It will pull on all others from this input.
     addInput("in");
 
+    // add a null input for nodes that are processed but silent
+    addInput("null");
+
     // add an output where the processed buffer will be copied from
     addOutput("out", outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
 
@@ -140,27 +143,18 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
 
 void AudioHardwareDeviceNode::process(ContextRenderLock & r, int bufferSize)
 {
+    AudioBus * srcBus = inputBus(r, 0);
     AudioBus * dstBus = outputBus(r, 0);
-    if (!dstBus)
-        return;
+    if (!dstBus || (srcBus == dstBus))
+        return; // do nothing if there's no output or output is connected to the input
 
-    // this is the really specific case of summing all inputs to a single output
-    dstBus->zero();
-
-    for (auto& i : _inputs) {
-        if (!i.sources.size())
-            continue;
-
-        if (i.sources.size() == 1)
-        {
-            AudioBus * srcBus = i.sources[0].node->outputBus(r, i.sources[0].out);
-            dstBus->sumFrom(*srcBus);
-        }
-        else
-        {
-            ASSERT(i.summingBus);
-            dstBus->sumFrom(*i.summingBus);
-        }
+    if (srcBus)
+    {
+        dstBus->copyFrom(*srcBus);
+    }
+    else
+    {
+        dstBus->zero();
     }
 }
 

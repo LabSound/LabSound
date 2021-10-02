@@ -71,10 +71,6 @@ void lab::pull_graph(AudioContext * ctx, AudioNode * required_inlet,
         dst->copyFrom(*renderedBus);
     }
 
-    // Process nodes which need extra help because they are not connected to anything,
-    // but still have work to do
-    ctx->processAutomaticPullNodes(renderLock, frames);
-
     // Let the context take care of any business at the end of each render quantum.
     ctx->handlePostRenderTasks(renderLock);
 }
