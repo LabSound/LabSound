@@ -573,95 +573,12 @@ AudioBus * AudioNode::inputBus(ContextRenderLock & r, int i)
     return _inputs[i].summingBus;
 }
 
-int AudioNode::channelCount()
-{
-    ASSERT(m_channelCount != 0);
-    return m_channelCount;
-}
-
-void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
-{
-    if (!g.context())
-    {
-        throw std::invalid_argument("No context specified");
-    }
-
-    m_channelCount = channelCount;
-}
-
-void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
-{
-    if (mode >= ChannelCountMode::End || !g.context())
-    {
-        throw std::invalid_argument("No context specified");
-    }
-
-    m_channelCountMode = mode;
-}
-
-
-
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
 {
-    ASSERT(r.context());
     // exit early if already processed
     if (_scheduler.isCurrentEpoch(r))
         return;
-
-    for (auto & p : _params)
-    {
-        p->serviceQueue(r);
-        for (auto & i : p->inputs().sources)
-        {
-            auto output = i.node->outputBus(r, i.out);
-            if (!output)
-                continue;
-
-            // Render audio feeding the parameter
-            i.node->pullInputs(r, bufferSize);
-        }
-    }
-
-    // Process all of the AudioNodes connected to our inputs.
-    for (auto & in : _inputs)
-    {
-        for (auto & s : in.sources)
-        {
-            // only visit nodes that are not yet at the current epoch
-            if (s.node && !s.node->_scheduler.isCurrentEpoch(r))
-                s.node->pullInputs(r, bufferSize);
-        }
-
-        // compute the sum of all inputs if there's more than one
-        if (in.sources.size() > 1)
-        {
-            ASSERT(in.summingBus);
-
-            int requiredChannels = 1;
-            for (auto & s : in.sources)
-            {
-                auto bus = s.node->outputBus(r, s.out);
-                if (bus && bus->numberOfChannels() > requiredChannels)
-                    requiredChannels = bus->numberOfChannels();
-            }
-            if (requiredChannels != in.summingBus->numberOfChannels())
-            {
-                in.summingBus->setNumberOfChannels(r, requiredChannels);
-            }
-
-            in.summingBus->zero();
-            for (auto & s : in.sources)
-            {
-                in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
-            }
-        }
-    }
-
-    processIfNecessary(r, bufferSize);
-}
-
-void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
-{
+    
     if (!isInitialized())
         return;
 
@@ -669,36 +586,84 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     if (!ac)
         return;
 
-    // outputs cache results in their busses.
-    // if the scheduler's recorded epoch is the same as the context's, the node
-    // shall bail out as it has been processed once already this epoch.
-
+    // the scheduler says the node isn't to run, bail out
     if (!_scheduler.update(r, bufferSize))
         return;
 
-    ProfileScope selfScope(totalTime);
-    graphTime.zero();
-
-    if (isScheduledNode() && 
-        (_scheduler._playbackState < SchedulingState::FADE_IN ||
-         _scheduler._playbackState == SchedulingState::FINISHED))
+    if (isScheduledNode() && (_scheduler._playbackState < SchedulingState::FADE_IN || _scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
         return;
     }
+
+    ProfileScope selfScope(totalTime);
+    {
+        // process all the node's inputs
+
+        graphTime.zero();
+        ProfileScope scope(graphTime);
+
+        for (auto & p : _params)
+        {
+            p->serviceQueue(r);
+            for (auto & i : p->inputs().sources)
+            {
+                auto output = i.node->outputBus(r, i.out);
+                if (!output)
+                    continue;
+
+                // Render audio feeding the parameter
+                i.node->pullInputs(r, bufferSize);
+            }
+        }
+
+        // Process all of the AudioNodes connected to our inputs.
+        for (auto & in : _inputs)
+        {
+            for (auto & s : in.sources)
+            {
+                // only visit nodes that are not yet at the current epoch
+                if (s.node && !s.node->_scheduler.isCurrentEpoch(r))
+                    s.node->pullInputs(r, bufferSize);
+            }
+
+            // compute the sum of all inputs if there's more than one
+            if (in.sources.size() > 1)
+            {
+                ASSERT(in.summingBus);
+
+                int requiredChannels = 1;
+                for (auto & s : in.sources)
+                {
+                    auto bus = s.node->outputBus(r, s.out);
+                    if (bus && bus->numberOfChannels() > requiredChannels)
+                        requiredChannels = bus->numberOfChannels();
+                }
+                if (requiredChannels != in.summingBus->numberOfChannels())
+                {
+                    in.summingBus->setNumberOfChannels(r, requiredChannels);
+                }
+
+                in.summingBus->zero();
+                for (auto & s : in.sources)
+                {
+                    in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
+                }
+            }
+        }
+        scope.finalize();  // ensure the scope is not prematurely destructed
+    }
+
+
+    // do the signal processing for this node
+
+    process(r, bufferSize);
 
     // there may need to be silence at the beginning or end of the current quantum.
 
     int start_zero_count = _scheduler._renderOffset;
     int final_zero_start = _scheduler._renderOffset + _scheduler._renderLength;
     int final_zero_count = bufferSize - final_zero_start;
-
-    // get inputs in preparation for processing
-    {
-        ProfileScope scope(graphTime);
-        pullInputs(r, bufferSize);
-        scope.finalize();   // ensure the scope is not prematurely destructed
-    }
 
     //  initialize the busses with start and final zeroes.
     if (start_zero_count)
@@ -714,10 +679,6 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
             for (int i = 0; i < out.bus->numberOfChannels(); ++i)
                 memset(out.bus->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
     }
-
-    // do the signal processing
-
-    process(r, bufferSize);
 
     // clean pops resulting from starting or stopping
 

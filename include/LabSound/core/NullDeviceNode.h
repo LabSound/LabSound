@@ -27,7 +27,6 @@ class NullDeviceNode final : public AudioNode, public AudioDeviceRenderCallback
     std::atomic<bool> shouldExit{false};
 
     bool m_startedRendering{false};
-    uint32_t m_numChannels;
     double m_lengthSeconds;
 
     AudioContext * m_context;

@@ -28,12 +28,10 @@ class AudioListener;
 class AudioNode;
 class AudioScheduledSourceNode;
 class AudioHardwareInputNode;
-class ContextGraphLock;
 class ContextRenderLock;
 
 class AudioContext
 {
-    friend class ContextGraphLock;
     friend class ContextRenderLock;
 
 public:

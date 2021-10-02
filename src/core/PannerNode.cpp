@@ -72,6 +72,11 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     : AudioNode(ac, *desc())
     , m_sampleRate(ac.sampleRate())
 {
+
+    /// @TODO in the future a panner could be multi-channel beyond stereo
+    addInput("in");
+    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
+
     m_orientationX = param("orientationX");
     m_orientationY = param("orientationY");
     m_orientationZ = param("orientationZ");
@@ -104,9 +109,6 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
 
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
-
-    addInput("in");
-    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
 
     m_distanceModel->setValueChanged(
         [this]() {
@@ -157,8 +159,6 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
         });
 
     // Node-specific default mixing rules.
-    m_channelCount = 2;
-    m_channelCountMode = ChannelCountMode::ClampedMax;
     m_channelInterpretation = ChannelInterpretation::Speakers;
 
     initialize();

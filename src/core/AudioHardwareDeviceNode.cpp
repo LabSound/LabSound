@@ -63,12 +63,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     addOutput("out", outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
 
     // Node-specific default mixing rules.
-    //m_channelCount = outputConfig.desired_channels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Speakers;
-
-    ContextGraphLock glock(&context, "AudioHardwareDeviceNode");
-    AudioNode::setChannelCount(glock, outputConfig.desired_channels);
 
     // Info is provided by the backend every frame, but some nodes need to be constructed
     // with a valid sample rate before the first frame so we make our best guess here
@@ -149,6 +144,7 @@ void AudioHardwareDeviceNode::process(ContextRenderLock & r, int bufferSize)
     if (!dstBus)
         return;
 
+    // this is the really specific case of summing all inputs to a single output
     dstBus->zero();
 
     for (auto& i : _inputs) {

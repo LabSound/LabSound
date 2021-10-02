@@ -235,9 +235,6 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
     if (m_internal->pendingParamConnections.size_approx() > 0 ||
         m_internal->pendingNodeConnections.size_approx() > 0)
     {
-        // take a graph lock until the queues are cleared
-        ContextGraphLock gLock(this, "AudioContext::handlePreRenderTasks()");
-
         // resolve parameter connections
         PendingParamConnection param_connection;
         while (m_internal->pendingParamConnections.try_dequeue(param_connection))
@@ -477,8 +474,16 @@ void AudioContext::update()
             break;
     }
 
-    if (!m_isOfflineContext) { LOG_TRACE("End UpdateGraphThread"); }
+    if (!m_isOfflineContext) { 
+        LOG_TRACE("End UpdateGraphThread"); 
+    }
 }
+
+/// @TODO automatic pull nodes can be removed as a separate concept by making
+/// a "silent" input to the device node, that is pulled and managed identically
+/// to the "required_inlet" but simply doesn't do anything with the associated
+/// summing bus. the summing step itself can be skipped if that's practical without
+/// spaghetti code.
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
 {
@@ -533,7 +538,7 @@ void AudioContext::processAutomaticPullNodes(ContextRenderLock & r, int framesTo
 {
     for (unsigned i = 0; i < m_renderingAutomaticPullNodes.size(); ++i)
     {
-        m_renderingAutomaticPullNodes[i]->processIfNecessary(r, framesToProcess);
+        m_renderingAutomaticPullNodes[i]->pullInputs(r, framesToProcess);
     }
 }
 

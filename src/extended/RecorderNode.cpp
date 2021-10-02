@@ -18,12 +18,10 @@ AudioNodeDescriptor * RecorderNode::desc()
     return &d;
 }
 
-RecorderNode::RecorderNode(AudioContext& ac, int channelCount)
+RecorderNode::RecorderNode(AudioContext& ac)
     : AudioNode(ac, *desc())
 {
     m_sampleRate = ac.sampleRate();
-    m_channelCount = channelCount;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput("in");
     addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
@@ -34,8 +32,6 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfi
     : AudioNode(ac, *desc())
 {
     m_sampleRate = outConfig.desired_samplerate;
-    m_channelCount = outConfig.desired_channels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput("in");
     addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
@@ -163,9 +159,9 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         for (size_t i = 0; i < numSamples; i++)
         {
             dst[i] = 0;
-            for (size_t j = 0; j < m_channelCount; ++j)
+            for (size_t j = 0; j < recordedChannelCount; ++j)
                 dst[i] += clear_data[j][i];
-            dst[i] *= 1.f / static_cast<float>(m_channelCount);
+            dst[i] *= 1.f / static_cast<float>(recordedChannelCount);
         }
     }
     else
@@ -196,23 +192,24 @@ std::unique_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
     int numSamples = static_cast<int>(m_data[0].size());
     if (!numSamples) return {};
 
-    const int result_channel_count = mixToMono ? 1 : m_channelCount;
+    size_t recordedChannelCount = m_data.size();
+    const int result_channel_count = mixToMono ? 1 : (int) recordedChannelCount;
 
     // Create AudioBus where we'll put the PCM audio data
     std::unique_ptr<lab::AudioBus> result_audioBus(new lab::AudioBus(result_channel_count, numSamples));
     result_audioBus->setSampleRate(m_sampleRate);
 
     // Mix channels to mono if requested, and there's more than one input channel.
-    if (m_channelCount > 1 && mixToMono)
+    if (recordedChannelCount > 1 && mixToMono)
     {
         float* destinationMono = result_audioBus->channel(0)->mutableData();
 
         for (int i = 0; i < numSamples; i++)
         {
             destinationMono[i] = 0;
-            for (size_t j = 0; j < m_channelCount; ++j)
+            for (size_t j = 0; j < result_channel_count; ++j)
                 destinationMono[i] += m_data[j][i];
-            destinationMono[i] *= 1.f / static_cast<float>(m_channelCount);
+            destinationMono[i] *= 1.f / static_cast<float>(result_channel_count);
         }
     }
     else

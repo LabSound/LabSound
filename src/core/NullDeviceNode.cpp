@@ -26,17 +26,14 @@ AudioNodeDescriptor * NullDeviceNode::desc()
 NullDeviceNode::NullDeviceNode(AudioContext & ac, 
     const AudioStreamConfig & outputConfig, double lengthSeconds)
     : AudioNode(ac, *desc())
-    , m_numChannels(outputConfig.desired_channels)
     , m_lengthSeconds(lengthSeconds)
     , m_context(&ac)
     , outConfig(outputConfig)
 {
     addInput("in");
 
-    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
+    m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(outputConfig.desired_channels, offlineRenderSizeQuantum));
 
-    m_channelCount = m_numChannels;
-    m_channelCountMode = ChannelCountMode::Explicit;
     m_channelInterpretation = ChannelInterpretation::Discrete;
 
     // We need to partially fill the the info struct here so that the context's graph thread
@@ -45,8 +42,6 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac,
     info.sampling_rate = outConfig.desired_samplerate;
     info.epoch[0] = info.epoch[1] = std::chrono::high_resolution_clock::now();
 
-    ContextGraphLock glock(&ac, "NullDeviceNode");
-    AudioNode::setChannelCount(glock, m_numChannels);
     initialize();
 }
 

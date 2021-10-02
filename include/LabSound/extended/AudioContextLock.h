@@ -19,41 +19,6 @@
 namespace lab
 {
 
-class ContextGraphLock
-{
-    AudioContext * m_context = nullptr;
-
-public:
-    ContextGraphLock(AudioContext * context, const std::string & lockSuitor)
-    {
-#if defined(DEBUG_LOCKS)
-        bool reentrant = context->m_graphLocker.size() > 1 && context->m_graphLocker.back() != '~';
-        if (reentrant)
-        {
-            LOG_ERROR("%s cannot acquire an AudioContext ContextGraphLock. Currently held by: %s.", lockSuitor.c_str(), context->m_graphLocker.c_str());
-        }
-#endif
-
-        if (context)
-        {
-            context->m_graphLock.lock();
-            m_context = context;
-            m_context->m_graphLocker = lockSuitor;
-        }
-    }
-
-    ~ContextGraphLock()
-    {
-        if (m_context)
-        {
-            m_context->m_graphLocker += '~';
-            m_context->m_graphLock.unlock();
-        }
-    }
-
-    AudioContext * context() { return m_context; }
-};
-
 class ContextRenderLock
 {
     AudioContext * m_context = nullptr;

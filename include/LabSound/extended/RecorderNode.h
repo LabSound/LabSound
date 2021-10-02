@@ -27,7 +27,9 @@ class RecorderNode : public AudioNode
 public:
 
     // create a recorder
-    RecorderNode(AudioContext & r, int channelCount = 2);
+    // the recorder records as many channels as there are channels on the
+    // input bus.
+    RecorderNode(AudioContext & r);
 
     // create a recorder with a specific configuration
     RecorderNode(AudioContext & r, const AudioStreamConfig & outConfig);

@@ -75,7 +75,6 @@ class  AudioParam;
 struct AudioParamDescriptor;
 class  AudioSetting;
 struct AudioSettingDescriptor;
-class  ContextGraphLock;
 class  ContextRenderLock;
 class  ConcurrentQueue;
 
@@ -255,12 +254,6 @@ public :
     AudioBus * outputBus(ContextRenderLock& r, char const* const str);
     std::string outputBusName(ContextRenderLock& r, int i);
 
-    // processIfNecessary() is called by our output(s) when the rendering graph needs this AudioNode to process.
-    // This method ensures that the AudioNode will only process once per rendering time quantum even if it's called repeatedly.
-    // This handles the case of "fanout" where an output is connected to multiple AudioNode inputs.
-    // Called from context's audio thread.
-    void processIfNecessary(ContextRenderLock & r, int bufferSize);
-
     // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
     // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
     virtual bool propagatesSilence(ContextRenderLock & r) const;
@@ -268,12 +261,6 @@ public :
     bool inputsAreSilent(ContextRenderLock &);
     void silenceOutputs(ContextRenderLock &);
     void unsilenceOutputs(ContextRenderLock &);
-
-    int channelCount();
-    void setChannelCount(ContextGraphLock & g, int channelCount);
-
-    ChannelCountMode channelCountMode() const { return m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
 
     ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
     void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
@@ -297,8 +284,11 @@ public :
     ProfileSample graphTime;    // how much time the node spend pulling inputs
     ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
-    // Called by processIfNecessary() to recurse the audiograph.
-    // recursion stops if a node's quantum is equal to the context's render quantum
+    // Recurse the audiograph, filling in the the node's output audio bus with
+    // bufferSize samples.
+    // recursion stops if a node's quantum is equal to the context's render quantum,
+    // which happens if a node's output is connected to more than one input.
+    // Called from a device's audio callback, offline processors, and so on.
     void pullInputs(ContextRenderLock &, int bufferSize);
 
 protected:
@@ -340,9 +330,6 @@ protected:
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;
 
-    int m_channelCount{ 0 };
-
-    ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
 
     // starts an immediate ramp to zero in preparation for disconnection
