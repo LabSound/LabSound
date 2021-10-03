@@ -52,7 +52,16 @@ void WaveShaperNode::setCurve(std::vector<float> & curve)
 
 void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus* destinationBus = outputBus(r, 0);
+    if (_newCurveId > _curveId)
+    {
+        // the lock only occurs on setting a new curve, so any glitching should be acceptable
+        // because setting a new curve should be very rare
+        std::lock_guard<std::mutex> guard(_curveMutex);
+        std::swap(_curve, _newCurve);
+        _curveId = _newCurveId;
+    }
+
+    AudioBus * destinationBus = outputBus(r, 0);
     AudioBus * sourceBus = inputBus(r, 0);
     if (!destinationBus || !sourceBus || !_curve.size())
     {
@@ -66,14 +75,6 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
     if (srcChannelCount != dstChannelCount)
     {
         destinationBus->setNumberOfChannels(r, srcChannelCount);
-    }
-
-    if (_newCurveId > _curveId) {
-        // the lock only occurs on setting a new curve, so any glitching should be acceptable
-        // because setting a new curve should be very rare
-        std::lock_guard<std::mutex> guard(_curveMutex);
-        std::swap(_curve, _newCurve);
-        _curveId = _newCurveId;
     }
 
     for (int i = 0; i < srcChannelCount; ++i)
