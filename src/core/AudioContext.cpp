@@ -24,9 +24,13 @@ namespace lab
 {
 enum class ConnectionOperationKind : int
 {
-    Disconnect = 0,
-    Connect,
-    FinishDisconnect
+    DisconnectNode = 0,
+    DisconnectInput,
+    DisconnectParam,
+    ConnectNode,
+    ConnectParam,
+    FinishDisconnectNode,
+    FinishDisconnectInput,
 };
 
 struct PendingNodeConnection
@@ -34,7 +38,7 @@ struct PendingNodeConnection
     ConnectionOperationKind type;
     std::shared_ptr<AudioNode> destination;
     std::shared_ptr<AudioNode> source;
-    int destIndex = 0;
+    int dstIndex = 0;
     int srcIndex = 0;
     float duration = 0.1f;
 
@@ -47,7 +51,7 @@ struct PendingParamConnection
     ConnectionOperationKind type;
     std::shared_ptr<AudioParam> destination;
     std::shared_ptr<AudioNode> source;
-    int destIndex = 0;
+    int dstIndex = 0;
 
     PendingParamConnection() = default;
     ~PendingParamConnection() = default;
@@ -232,16 +236,16 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
         PendingParamConnection param_connection;
         while (m_internal->pendingParamConnections.try_dequeue(param_connection))
         {
-            if (param_connection.type == ConnectionOperationKind::Connect)
+            if (param_connection.type == ConnectionOperationKind::ConnectParam)
             {
-                param_connection.destination->connect(param_connection.source, param_connection.destIndex);
+                param_connection.destination->connect(param_connection.source, param_connection.dstIndex);
 
                 // if unscheduled, the source should start to play as soon as possible
                 if (!param_connection.source->isScheduledNode())
                     param_connection.source->_scheduler.start(0);
             }
             else
-                param_connection.destination->disconnect(param_connection.source, param_connection.destIndex);
+                param_connection.destination->disconnect(param_connection.source, param_connection.dstIndex);
         }
 
         // resolve node connections
@@ -251,9 +255,9 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
         {
             switch (node_connection.type)
             {
-                case ConnectionOperationKind::Connect:
+                case ConnectionOperationKind::ConnectNode:
                 {
-                    node_connection.destination->connect(r, node_connection.destIndex, 
+                    node_connection.destination->connect(r, node_connection.dstIndex, 
                         node_connection.source, node_connection.srcIndex);
 
                     if (!node_connection.source->isScheduledNode())
@@ -261,25 +265,44 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                 }
                 break;
 
-                case ConnectionOperationKind::Disconnect:
+                case ConnectionOperationKind::DisconnectInput:
                 {
-                    node_connection.type = ConnectionOperationKind::FinishDisconnect;
-                    requeued_connections.push_back(node_connection);  // save for later
-                    if (node_connection.source)
-                    {
-                        // if source and destination are specified, then don't ramp out the destination
-                        // source will be completely disconnected
-                        node_connection.source->scheduleDisconnect();
-                    }
-                    else if (node_connection.destination)
+                    if (node_connection.destination)
                     {
                         // destination will be completely disconnected
                         node_connection.destination->scheduleDisconnect();
+                        node_connection.type = ConnectionOperationKind::FinishDisconnectInput;
+                        requeued_connections.push_back(node_connection);  // enqueue Finish
                     }
                 }
                 break;
 
-                case ConnectionOperationKind::FinishDisconnect:
+                case ConnectionOperationKind::DisconnectNode:
+                {
+                    if (node_connection.destination)
+                    {
+                        if (node_connection.source)
+                        {
+                            // destination will be completely disconnected
+                            node_connection.destination->scheduleDisconnect();
+
+                            node_connection.type = ConnectionOperationKind::FinishDisconnectNode;
+                            requeued_connections.push_back(node_connection);  // save for later
+                        }
+                        else
+                        {
+                            node_connection.type = ConnectionOperationKind::FinishDisconnectInput;
+                            requeued_connections.push_back(node_connection);  // save for later
+                        }
+                    }
+                    else if (node_connection.source)
+                    {
+                        /// A source can't be disconnected from nothing, do nothing
+                    }
+                }
+                break;
+
+                case ConnectionOperationKind::FinishDisconnectInput:
                 {
                     if (node_connection.duration > 0)
                     {
@@ -288,19 +311,30 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                         continue;
                     }
 
-                    if (node_connection.source && node_connection.destination)
+                    if (node_connection.dstIndex == -1)
+                        node_connection.destination->disconnectAll();
+                    else
+                        node_connection.destination->disconnect(node_connection.dstIndex);
+                }
+                break;
+
+                case ConnectionOperationKind::FinishDisconnectNode:
+                {
+                    if (node_connection.duration > 0)
                     {
-                        node_connection.destination->disconnect(r, node_connection.source);
+                        node_connection.duration -= AudioNode::ProcessingSizeInFrames / sampleRate();
+                        requeued_connections.push_back(node_connection);
+                        continue;
                     }
-                    else if (node_connection.destination)
-                    {
-                        node_connection.destination->disconnect(r, {});
-                    }
-                    else if (node_connection.source)
-                    {
-                        // sources are unaware of where they are connected
-                        // so this operation is impossible at the moment.
-                    }
+
+                    // The logic says we can't get here with a null destination,
+                    // and a null source would have been redirected to FinishDisconnectInput
+                    ASSERT(node_connection.destination && node_connection.source);
+
+                    /// @TODO nodes need a fine grained disconnect that use the inlet index
+                    /// and outlet index as a predicate. AT the moment the disconnection
+                    /// will disregard those
+                    node_connection.destination->disconnect(r, node_connection.source);
                 }
                 break;
             }
@@ -344,25 +378,35 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
         throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
-    m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Connect, destination, source, destIdx, srcIdx});
+    m_internal->pendingNodeConnections.enqueue(
+        {ConnectionOperationKind::ConnectNode, destination, source, destIdx, srcIdx});
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
+
+
+// disconnect source from destination, at index. -1 means disconnect the
+// source node from all inputs it is connected to.
+void AudioContext::disconnectNode(std::shared_ptr<AudioNode> destination,
+                                  std::shared_ptr<AudioNode> source,
+                                  int inletIdx, int outletIdx)
 {
     if (!destination && !source)
         return;
-    if (source && srcIdx > source->numberOfOutputs())
+    if (source && outletIdx > source->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs");
-    if (destination && destIdx > destination->numberOfInputs())
+    if (destination && inletIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
-    m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, destination, source, destIdx, srcIdx});
+    m_internal->pendingNodeConnections.enqueue(
+        {ConnectionOperationKind::DisconnectNode, destination, source, outletIdx, inletIdx});
 }
 
-void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
+// disconnect all the node's inputs at the specified inlet. -1 means disconnect all input inlets.
+void AudioContext::disconnectInput(std::shared_ptr<AudioNode> node, int inlet)
 {
     if (!node)
         return;
-    m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, node, std::shared_ptr<AudioNode>(), index, 0});
+    m_internal->pendingNodeConnections.enqueue(
+        {ConnectionOperationKind::DisconnectInput, node, std::shared_ptr<AudioNode>(), inlet, 0});
 }
 
 bool AudioContext::isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source)
@@ -382,7 +426,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
         throw std::invalid_argument("No driving node supplied");
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, index});
 }
 
 
@@ -403,7 +447,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, index});
 }
 
 
@@ -415,7 +459,7 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Disconnect, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::DisconnectParam, param, driver, index});
 }
 
 void AudioContext::update()

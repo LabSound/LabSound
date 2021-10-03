@@ -153,7 +153,7 @@ struct ex_osc_pop : public labsound_example
         }
 
         recorder->stopRecording();
-        context->disconnect(recorder);
+        context->disconnectInput(recorder);
         recorder->writeRecordingToWav("ex_osc_pop.wav", false);
 
         // wait at least one context update to allow the disconnections to occur, and for any final
@@ -164,7 +164,7 @@ struct ex_osc_pop : public labsound_example
         // @TODO the example app should have a set<shared_ptr<AudioNode>> so that the shared_ptrs
         // are not released until the example is finished.
 
-        context->disconnect(context->device());
+        context->disconnectInput(context->device());
         Wait(std::chrono::milliseconds(100));
     }
 };
@@ -263,7 +263,7 @@ struct ex_offline_rendering : public labsound_example
 
             printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
 
-            context->disconnect(recorder);
+            context->disconnectInput(recorder);
             recorder->writeRecordingToWav("ex_offline_rendering.wav", false);
             complete = true;
         };
@@ -460,17 +460,16 @@ struct ex_runtime_graph_update : public labsound_example
 
             for (int i = 0; i < 4; ++i)
             {
-                context->disconnect(nullptr, oscillator1, 0, 0);
+                context->disconnectNode(gain, oscillator1, 0, 0);
                 context->connect(gain, oscillator2, 0, 0);
                 Wait(std::chrono::milliseconds(200));
 
-                context->disconnect(nullptr, oscillator2, 0, 0);
+                context->disconnectNode(gain, oscillator2, 0, 0);
                 context->connect(gain, oscillator1, 0, 0);
                 Wait(std::chrono::milliseconds(200));
             }
 
-            context->disconnect(nullptr, oscillator1, 0, 0);
-            context->disconnect(nullptr, oscillator2, 0, 0);
+            context->disconnectInput(gain);
         }
 
         std::cout << "OscillatorNode 1 use_count: " << oscillator1.use_count() << std::endl;
@@ -551,7 +550,7 @@ struct ex_microphone_reverb : public labsound_example
             Wait(std::chrono::seconds(10));
 
             recorder->stopRecording();
-            context->disconnect(recorder);
+            context->disconnectInput(recorder);
             recorder->writeRecordingToWav("ex_microphone_reverb.wav", true);
 
             context.reset();
@@ -1439,7 +1438,7 @@ struct ex_granulation_node : public labsound_example
         Wait(std::chrono::seconds(10));
 
         recorder->stopRecording();
-        context->disconnect(recorder);
+        context->disconnectInput(recorder);
         recorder->writeRecordingToWav("ex_granulation_node.wav", false);
     }
 };

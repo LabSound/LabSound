@@ -468,8 +468,7 @@ void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
     if (!node)
     {
         for (auto & i : _inputs)
-            for (auto & j : i.sources)
-                j.node.reset();
+            i.sources.clear();
     }
     else
     {
@@ -488,7 +487,7 @@ void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
 
 void AudioNode::disconnectAll()
 {
-    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpDisconnectInput, {}, 0});
+    ((moodycamel::ConcurrentQueue<Work> *) _enqueudWork)->enqueue(Work {Work::OpDisconnectInput, {}, -1});
 }
 
 bool AudioNode::isConnected(std::shared_ptr<AudioNode> n)
@@ -528,7 +527,12 @@ void AudioNode::serviceQueue(ContextRenderLock & r)
                     connect(r, work.inputIndex, work.node, work.node_outputIndex);
                     break;
                 case Work::OpDisconnectIndex:
-                    if (_inputs.size() > work.inputIndex)
+                    if (work.inputIndex == -1)
+                    {
+                        for (auto & i : _inputs)
+                            i.sources.clear();
+                    }
+                    else if (_inputs.size() > work.inputIndex)
                         _inputs[work.inputIndex].sources.clear();
                     break;
                 case Work::OpDisconnectInput:
@@ -681,7 +685,9 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
                 {
                     if (!s.node)
                         continue;
-                    in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
+                    auto bus = s.node->outputBus(r, s.out);
+                    if (bus)
+                        in.summingBus->sumFrom(*bus);
                 }
             }
         }

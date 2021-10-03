@@ -27,6 +27,17 @@ inputBus(0) on a device node is now named "in". All inputs connected to "in"
 will be summed. InputBus(1) is now named "null". Null will be pulled, but not
 summed to the output.
 
+## AudioContext disconnect API is more explicit
+
+Previously the disconnect method used a heuristic based on input parameters
+to determine the appropriate disconnection behavior. disconnect has been
+replaced with disconnectInput, which disconnects one input or all inputs to
+a node, according to the inlet index parameter, and disconnectNode, which
+must receive the two nodes to be disconnected. The disconnection may be
+predicated on a specific outlet and inlet, however this predication
+functionality is currently not implemented; any connection from the source
+node to the destination node will be severed.
+
 ## AudioNodeDescriptors data drive parameter and setting creation
 
 Every node is now created from its own AudioNodeDescription. Previously, every

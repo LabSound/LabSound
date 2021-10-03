@@ -84,13 +84,8 @@ public:
         {
             sampleRate = r.context()->sampleRate();
 
-            // This implementation is similar to the technique illustrated here
-            // https://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
-            //
-            for (auto i : sawStorage)
-            {
-                context->disconnect(i, nullptr);
-            }
+            // disconnect all the saws.
+            context->disconnectInput(gainNode);
 
             sawStorage.clear();
             saws.clear();

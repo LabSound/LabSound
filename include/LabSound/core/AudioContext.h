@@ -124,12 +124,21 @@ public:
     // Called at the end of each render quantum.
     void handlePostRenderTasks(ContextRenderLock &);
 
-    void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
-    void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
-    bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
+    void connect(std::shared_ptr<AudioNode> destination, 
+                 std::shared_ptr<AudioNode> source, 
+                 int inletIdx = 0, int outletIdx = 0);
 
-    // completely disconnect the node from the graph
-    void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);
+    // disconnect all the node's inputs at the specified inlet. -1 means disconnect all input inlets.
+    void disconnectInput(std::shared_ptr<AudioNode> node, int inlet = -1);
+
+    // disconnect source from destination, at index. -1 means disconnect the 
+    // source node from all inputs it is connected to.
+    void disconnectNode(std::shared_ptr<AudioNode> destination, 
+                        std::shared_ptr<AudioNode> source, 
+                        int inletIdx = -1, int outletIdx = -1);
+
+    // returns true if source can be found on any inlet on destination
+    bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
 
     // connect a parameter to receive the indexed output of a node
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
