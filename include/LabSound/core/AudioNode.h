@@ -239,6 +239,9 @@ public :
     void disconnectAll();
     bool isConnected(std::shared_ptr<AudioNode>);
 
+    const std::vector<AudioNodeSummingInput> & inputs() const { return _inputs; }
+
+
     int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
     int numberOfOutputs() const { return static_cast<int>(_outputs.size()); }
 
