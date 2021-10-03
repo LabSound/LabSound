@@ -589,7 +589,12 @@ AudioBus * AudioNode::inputBus(ContextRenderLock & r, int i)
         return nullptr;
 
     if (sources.size() == 1)
+    {
+        if (!sources[0].node)
+            return nullptr;
+
         return sources[0].node->outputBus(r, sources[0].out);
+    }
 
     // the summing bus should have been created when multiple inputs were added
     // the summing bus should have been evaluated when pullInputs was called
@@ -659,6 +664,9 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
                 int requiredChannels = 1;
                 for (auto & s : in.sources)
                 {
+                    if (!s.node)
+                        continue;
+
                     auto bus = s.node->outputBus(r, s.out);
                     if (bus && bus->numberOfChannels() > requiredChannels)
                         requiredChannels = bus->numberOfChannels();
@@ -671,6 +679,8 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
                 in.summingBus->zero();
                 for (auto & s : in.sources)
                 {
+                    if (!s.node)
+                        continue;
                     in.summingBus->sumFrom(*s.node->outputBus(r, s.out));
                 }
             }
