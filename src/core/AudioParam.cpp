@@ -124,21 +124,24 @@ void AudioParam::serviceQueue(ContextRenderLock & r)
                     break;
 
                 case 1:
-                    _input.sources.push_back(AudioNodeSummingInput::Source {w.node, w.output});
+                    _input.sources.emplace_back(AudioNodeSummingInput::Source {w.node, w.output});
                     break;
 
                 case -1:
-                    for (std::vector<AudioNodeSummingInput::Source>::iterator i = _input.sources.begin(); i != _input.sources.end(); ++i)
+                {
+                    int src_count = (int) _input.sources.size();
+                    for (int i = 0; i < src_count; ++i)
                     {
-                        if (i->node.get() == w.node.get())
+                        if (_input.sources[i]->node.get() == w.node.get())
                         {
-                            i = _input.sources.erase(i);
-                            if (i == _input.sources.end())
-                                break;
+                            delete _input.sources[i];
+                            _input.sources.swap_pop(i);
+                            --src_count;
                         }
                     }
                     if (_input.sources.size() == 0)
                         _input.sources.clear();
+                }
             }
         }
     }
@@ -177,9 +180,9 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
     _input.updateSummingBus(1, numberOfValues);
     _input.summingBus->setChannelMemory(0, values, numberOfValues);
 
-    for (auto & i : _input.sources)
+    for (auto i : _input.sources)
     {
-        auto output = i.node->outputBus(r, i.out);
+        auto output = i->node->outputBus(r, i->out);
         if (!output)
             continue;
 
@@ -192,7 +195,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
         /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
         /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
         /// have a bias of zero. It seems like sum or override should be a setting of some sort...
-        _input.summingBus->sumFrom(*i.node->outputBus(r, 0));
+        _input.summingBus->sumFrom(*i->node->outputBus(r, 0));
     }
 }
 

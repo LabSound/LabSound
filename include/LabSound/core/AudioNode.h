@@ -14,9 +14,125 @@
 #include <string>
 #include <vector>
 
-
 namespace lab
 {
+
+    
+// tiny stand-in for std::vector that keeps only an array of pointers
+// and uses an exponential growth policy, as this is most suitable for
+// inputs and outputs, because 1, 2, 4, and 8, are all likely explicitly
+// requested numbers of inputs and outputs. 
+//
+template<typename T>
+struct Vector {
+
+    Vector() = default;
+
+    Vector(Vector&& rh) noexcept {
+        data = rh.data;
+        cap = rh.cap;
+        sz = rh.sz;
+        rh.data = nullptr;
+        rh.cap = 0;
+        rh.sz = 0;
+    }
+    ~Vector() {
+        clear();
+    }
+    T** data = nullptr;
+    size_t cap = 0;
+    size_t sz = 0;
+
+    void clear() {
+        for (int i = 0; i < sz; ++i) {
+            delete data[i];
+            data[i] = nullptr;
+        }
+        sz = 0;
+    }
+
+    void emplace_back(T && rh) {
+        if (!cap) {
+            data = (T**) malloc(sizeof(T*));
+            sz = 1;
+            cap = 1;
+            *data = new T(std::move(rh));
+            validate_non_null();
+        }
+        else {
+            if (sz < cap) {
+                data[sz] = new T(std::move(rh));
+                ++sz;
+                validate_non_null();
+            }
+            else {
+                size_t new_cap = cap * 2;
+                T** new_data = (T**) malloc(sizeof(T*) * new_cap);
+                memset(new_data, 0, sizeof(T*) * cap);
+                memcpy(new_data, data, sizeof(T *) * sz); // copy pointers
+                free(data);
+                data = new_data;
+                cap = new_cap;
+                data[sz] = new T(std::move(rh));
+                ++sz;
+                validate_non_null();
+            }
+        }
+    }
+
+    void pop_back() {
+        validate_non_null();
+        if (sz > 0)
+        {
+            --sz;
+            delete data[sz];
+            data[sz] = nullptr;
+            validate_non_null();
+        }
+    }
+
+    T ** begin() const
+    {
+        validate_non_null();
+        return data;
+    }
+    T ** end() const
+    {
+        validate_non_null();
+        return data + sz;
+    }
+    size_t size() const { return sz; }
+    T* operator[](size_t i) const {
+        validate_non_null();
+        if (i >= sz)
+            return nullptr;
+        return data[i];
+    }
+    T*& operator[](size_t i) {
+        validate_non_null();
+        return data[i];
+    }
+
+    int swap_pop(int i) {
+        if (i < sz)
+        {
+            data[i] = nullptr;
+            if (sz > 0)
+                std::swap(data[i], data[sz-1]);
+            --sz;
+        }
+        validate_non_null();
+        return (int) sz;
+    }
+
+    void validate_non_null() const {
+        for (int i = 0; i < sz; ++i) {
+            if (data[i] == nullptr)
+                printf("panic\n");
+        }
+    }
+};
+
 
 // clang-format off
 enum FilterType
@@ -72,6 +188,8 @@ class  ConcurrentQueue;
 
 struct AudioNodeSummingInput
 {
+    explicit AudioNodeSummingInput() noexcept = default;
+    explicit AudioNodeSummingInput(const std::string name) noexcept;
     explicit AudioNodeSummingInput(AudioNodeSummingInput && rh) noexcept
         : sources(std::move(rh.sources))
         , summingBus(rh.summingBus)
@@ -79,7 +197,6 @@ struct AudioNodeSummingInput
         std::swap(name, rh.name);
         rh.summingBus = nullptr;
     }
-    explicit AudioNodeSummingInput(const std::string name) noexcept;
     ~AudioNodeSummingInput();
 
     struct Source
@@ -88,7 +205,7 @@ struct AudioNodeSummingInput
         int out;
     };
     // inputs are summing junctions
-    std::vector<Source> sources;
+    Vector<Source> sources;
     AudioBus * summingBus = nullptr;
     std::string name;
 
@@ -104,7 +221,7 @@ struct AudioNodeNamedOutput
     {
     }
 
-    AudioNodeNamedOutput(AudioNodeNamedOutput && rh) noexcept
+    explicit AudioNodeNamedOutput(AudioNodeNamedOutput && rh) noexcept
         : bus(rh.bus)
     {
         // destructor will delete the pointer, so
@@ -115,6 +232,7 @@ struct AudioNodeNamedOutput
     }
 
     ~AudioNodeNamedOutput();
+    
     std::string name;
     AudioBus * bus = nullptr;
 };
@@ -127,10 +245,12 @@ public:
     explicit AudioNodeScheduler(float sampleRate);
     ~AudioNodeScheduler() = default;
 
-    // Scheduling.
+    // Scheduling
     void start(double when);
     void stop(double when);
-    void finish(ContextRenderLock&);  // Called when there is no more sound to play or the noteOff/stop() time has been reached.
+
+    // called when the sound is finished, or noteOff/stop time has been reached
+    void finish(ContextRenderLock&);
     void reset();
 
     SchedulingState playbackState() const { return _playbackState; }
@@ -143,14 +263,13 @@ public:
     bool isCurrentEpoch(ContextRenderLock & r) const;
 
     // epoch is a long count at sample rate; 136 years at 48kHz
-    // For use in an interstellar sound installation or radio frequency signal processing, 
-    // please consider upgrading these to uint64_t or write some rollover logic.
 
     uint64_t _epoch = 0;        // the epoch rendered currently in the busses
     uint64_t _epochLength = 0;  // number of frames in current epoch
 
-    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();    // requested start in epochal coordinate system
-    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();     // requested end in epochal coordinate system
+    // start and stop epoch (absolute, not relative)
+    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();
+    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();
 
     int _renderOffset = 0; // where rendering starts in the current frame
     int _renderLength = 0; // number of rendered frames in the current frame 
@@ -172,14 +291,19 @@ struct AudioNodeDescriptor
     AudioSettingDescriptor const * const setting(char const * const) const;
 };
 
-// An AudioNode is the basic building block for handling audio within an AudioContext.
-// It may be an audio source, an intermediate processing module, or an audio destination.
+// xAudioNode is the basic building block for a signal processing graph.
+// It may be an audio source, an intermediate processing module, or an audio 
+// destination.
+//
 // Each AudioNode can have inputs and/or outputs.
-// An AudioHardwareDeviceNode has one input and no outputs and represents the final destination to the audio hardware.
-// Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
+// An AudioHardwareDeviceNode has one input and no outputs and represents the 
+// final destination to the audio hardware.
+// Most processing nodes such as filters will have one input and one output, 
+//
 class AudioNode
 {
-    static void _printGraph(const AudioNode * root, std::function<void(const char *)> prnln, int indent);
+    static void _printGraph(const AudioNode * root, 
+                        std::function<void(const char *)> prnln, int indent);
 
 public :
     enum : int
@@ -192,15 +316,17 @@ public :
 
     explicit AudioNode(AudioContext &, AudioNodeDescriptor const &);
 
-    static void printGraph(const AudioNode* root, std::function<void(const char *)> prnln);
+    static void printGraph(const AudioNode* root, 
+                        std::function<void(const char *)> prnln);
 
     //--------------------------------------------------
     // required interface
     //
     virtual const char* name() const = 0;
 
-    // The input busses (if any) will already have their input data available when process() is called.
-    // Subclasses will take this input data and render into this node's output buses.
+    // The input busses (if any) will already have their input data available
+    // when process() is called. Subclasses will take this input data and 
+    // render into this node's output buses.
     // Called from context's audio thread.
     virtual void process(ContextRenderLock &, int bufferSize) = 0;
 
@@ -208,30 +334,59 @@ public :
     // Called from context's audio thread.
     virtual void reset(ContextRenderLock &) = 0;
 
-    // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
+    // tailTime() is the length of time (not counting latency time) where 
+    // non-zero output may occur after continuous silent input.
     virtual double tailTime(ContextRenderLock & r) const = 0;
 
-    // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
-    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
-    // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
+    // latencyTime() is the length of time it takes for non-zero output to 
+    // appear after non-zero input is provided. This only applies to processing
+    // delay which is an artifact of the processing algorithm chosen and is 
+    // *not* part of the intrinsic desired effect. For example, a "delay" 
+    // effect is expected to delay the signal, and thus would not be considered
+    // latency.
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
     //--------------------------------------------------
-    // required interface
+    // overridable interface
     //
-    // If the final node class has ScheduledNode in its class hierarchy, this will return true.
-    // This is to save the cost of a dynamic_cast when scheduling nodes.
+    // If the final node class has ScheduledNode in its class hierarchy, this 
+    // will return true. This is to save the cost of a dynamic_cast when
+    // scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
+
+    // propagatesSilence() should return true if the node will generate silent
+    // output when given silent input. By default, AudioNode
+    // will take tailTime() and latencyTime() into account when determining
+    // whether the node will propagate silence.
+    virtual bool propagatesSilence(ContextRenderLock & r) const;
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
     virtual void initialize();
     virtual void uninitialize();
+
+    //--------------------------------------------------
+    // standard interface
+
+    // inputs and outputs
     bool isInitialized() const { return m_isInitialized; }
 
     void addInput(const std::string & name);
     void addOutput(const std::string & name, int channels, int bufferSize);
-    void connect(ContextRenderLock&, int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
+
+    const Vector<AudioNodeSummingInput>& inputs() const { return _inputs; }
+    const Vector<AudioNodeNamedOutput>& outputs() const { return _outputs; }
+    const AudioNodeSummingInput* input(int index) const;
+    const AudioNodeNamedOutput* output(int index) const;
+    int input_index(const char* name) const;
+    int output_index(const char* name) const;
+
+    int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
+    int numberOfOutputs() const { return static_cast<int>(_outputs.size()); }
+
+    // connections 
+    void connect(ContextRenderLock&, 
+            int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
     void connect(int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
     void disconnect(int inputIndex);
     void disconnect(std::shared_ptr<AudioNode>);
@@ -239,48 +394,42 @@ public :
     void disconnectAll();
     bool isConnected(std::shared_ptr<AudioNode>);
 
-    const std::vector<AudioNodeSummingInput> & inputs() const { return _inputs; }
-
-
-    int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
-    int numberOfOutputs() const { return static_cast<int>(_outputs.size()); }
-
-    ///  @TODO make these all const
+    // audio busses
+   ///  @TODO make these all const
     AudioBus * inputBus(ContextRenderLock & r, int i);
     AudioBus * outputBus(ContextRenderLock & r, int i);
     AudioBus * outputBus(ContextRenderLock& r, char const* const str);
     std::string inputBusName(ContextRenderLock & r, int i);
     std::string outputBusName(ContextRenderLock & r, int i);
 
-    // propagatesSilence() should return true if the node will generate silent output when given silent input. By default, AudioNode
-    // will take tailTime() and latencyTime() into account when determining whether the node will propagate silence.
-    virtual bool propagatesSilence(ContextRenderLock & r) const;
-
-    bool inputsAreSilent(ContextRenderLock &);
-    void silenceOutputs(ContextRenderLock &);
-    void unsilenceOutputs(ContextRenderLock &);
-
-    ChannelInterpretation channelInterpretation() const { return m_channelInterpretation; }
-    void setChannelInterpretation(ChannelInterpretation interpretation) { m_channelInterpretation = interpretation; }
-
-    // returns a vector of parameter names
+    // parameters
     std::vector<std::string> paramNames() const;
     std::vector<std::string> paramShortNames() const;
+    std::shared_ptr<AudioParam> param(char const * const str);
+    std::shared_ptr<AudioParam> param(int index);
+    int param_index(char const * const str);
+    std::vector<std::shared_ptr<AudioParam>> params() const { return _params; }
 
-    // returns a vector of setting names
+    //  settings
     std::vector<std::string> settingNames() const;
     std::vector<std::string> settingShortNames() const;
-
-    std::shared_ptr<AudioParam> param(char const * const str);
     std::shared_ptr<AudioSetting> setting(char const * const str);
-
-    std::vector<std::shared_ptr<AudioParam>> params() const { return _params; }
+    std::shared_ptr<AudioSetting> setting(int index);
+    int setting_index(char const * const str);
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return _settings; }
 
+    // miscelleaneous management
     AudioNodeScheduler _scheduler;
 
-    ProfileSample graphTime;    // how much time the node spend pulling inputs
-    ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
+    // channel interpretation
+    ChannelInterpretation channelInterpretation() const { 
+        return m_channelInterpretation; }
+    void setChannelInterpretation(ChannelInterpretation interpretation) {
+        m_channelInterpretation = interpretation; }
+
+    ProfileSample graphTime;    // how much time the node spent pulling inputs
+    ProfileSample totalTime;    // total time spent by the node. 
+                                // total - graph is the self time.
 
     // Recurse the audiograph, filling in the the node's output audio bus with
     // bufferSize samples.
@@ -322,13 +471,18 @@ protected:
 
     void serviceQueue(ContextRenderLock & r);
 
-    std::vector<AudioNodeSummingInput> _inputs;
-    std::vector<AudioNodeNamedOutput> _outputs;
+    Vector<AudioNodeSummingInput> _inputs;
+    Vector<AudioNodeNamedOutput> _outputs;
 
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;
 
     ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
+    // 
+    bool inputsAreSilent(ContextRenderLock &);
+    void silenceOutputs(ContextRenderLock &);
+    void unsilenceOutputs(ContextRenderLock &);
+
 
     // starts an immediate ramp to zero in preparation for disconnection
     void scheduleDisconnect() { _scheduler.stop(0); }

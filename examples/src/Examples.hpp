@@ -301,11 +301,12 @@ struct ex_tremolo : public labsound_example
         {
             modulator = std::make_shared<OscillatorNode>(ac);
             modulator->setType(OscillatorType::SINE);
-            modulator->frequency()->setValue(8.0f);
+            modulator->frequency()->setValue(4.0f);
+            modulator->amplitude()->setValue(40.f);
             modulator->start(0);
 
             modulatorGain = std::make_shared<GainNode>(ac);
-            modulatorGain->gain()->setValue(10);
+            modulatorGain->gain()->setValue(1.f);
 
             osc = std::make_shared<OscillatorNode>(ac);
             osc->setType(OscillatorType::TRIANGLE);
