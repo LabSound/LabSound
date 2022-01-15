@@ -132,15 +132,12 @@ void AudioParam::serviceQueue(ContextRenderLock & r)
                     int src_count = (int) _input.sources.size();
                     for (int i = 0; i < src_count; ++i)
                     {
-                        if (_input.sources[i]->node.get() == w.node.get())
+                        if (_input.sources[i] && _input.sources[i]->node.get() == w.node.get())
                         {
                             delete _input.sources[i];
-                            _input.sources.swap_pop(i);
-                            --src_count;
+                            _input.sources[i] = nullptr;
                         }
                     }
-                    if (_input.sources.size() == 0)
-                        _input.sources.clear();
                 }
             }
         }
@@ -182,6 +179,9 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
 
     for (auto i : _input.sources)
     {
+        if (!i)
+            continue;
+
         auto output = i->node->outputBus(r, i->out);
         if (!output)
             continue;

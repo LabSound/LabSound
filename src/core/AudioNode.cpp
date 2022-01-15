@@ -64,6 +64,9 @@ void AudioNode::_printGraph(const AudioNode * root, std::function<void(const cha
         prnln(str.c_str());
         for (auto & i : root->_inputs)
         {
+            if (!i)
+                continue;
+
             str = spaces + "   [Input] ";
             prnln(str.c_str());
             for (auto & n : i->sources)
@@ -433,15 +436,11 @@ void AudioNode::addOutput(const std::string & name, int channelCount, int size)
 
 const AudioNodeSummingInput* AudioNode::input(int index) const
 {
-    if (index >= _inputs.size())
-        return nullptr;
     return _inputs[index];
 }
 
 const AudioNodeNamedOutput* AudioNode::output(int index) const
 {
-    if (index >= _outputs.size())
-        return nullptr;
     return _outputs[index];
 }
 
@@ -450,7 +449,7 @@ int AudioNode::input_index(const char* name) const
     std::string cmp(name);
     int count = (int) _inputs.size();
     for (int i = 0; i < count; ++i) {
-        if (_inputs[i]->name == cmp)
+        if (_inputs[i] && _inputs[i]->name == cmp)
             return i;
     }
     return -1;
@@ -461,7 +460,7 @@ int AudioNode::output_index(const char* name) const
     std::string cmp(name);
     int count = (int) _outputs.size();
     for (int i = 0; i < count; ++i) {
-        if (_outputs[i]->name == cmp)
+        if (_outputs[i] && _outputs[i]->name == cmp)
             return i;
     }
     return -1;
@@ -476,10 +475,10 @@ void AudioNode::connect(int input_index, std::shared_ptr<AudioNode> n, int node_
 void AudioNode::connect(ContextRenderLock & r, 
     int input_index, std::shared_ptr<AudioNode> n, int node_outputIndex)
 {
-    while (_inputs.size() <= input_index)
-    {
-        std::string name = "in" + std::to_string(_inputs.size() + 1);
-        _inputs.emplace_back(AudioNodeSummingInput(name));
+    if (!_inputs[input_index]) {
+        // _inputs will autoallocate a slot, so fill it in
+        std::string name = "in" + node_outputIndex;
+        _inputs[input_index] = new AudioNodeSummingInput(name);
     }
 
     _inputs[input_index]->sources.emplace_back(
@@ -510,19 +509,23 @@ void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
     if (!node)
     {
         for (auto i : _inputs)
-            i->sources.clear();
+            if (i)
+                i->sources.clear();
     }
     else
     {
         for (auto input : _inputs)
         {
+            if (!input)
+                continue;
+
             int src_count = (int) input->sources.size();
             for (int j = 0; j < src_count; ++j)
             {
-                if (input->sources[j]->node.get() == node.get())
+                if (input->sources[j] && input->sources[j]->node.get() == node.get())
                 {
                     delete input->sources[j];
-                    src_count = input->sources.swap_pop(j);
+                    input->sources[j] = nullptr;
                 }
             }
         }
@@ -537,9 +540,10 @@ void AudioNode::disconnectAll()
 bool AudioNode::isConnected(std::shared_ptr<AudioNode> n)
 {
     for (auto & i : _inputs)
-        for (auto & j : i->sources)
-            if (j->node.get() == n.get())
-                return true;
+        if (i)
+            for (auto & j : i->sources)
+                if (j->node.get() == n.get())
+                    return true;
     return false;
 }
 
@@ -577,9 +581,10 @@ void AudioNode::serviceQueue(ContextRenderLock & r)
                     if (work.inputIndex == -1)
                     {
                         for (auto & i : _inputs)
-                            i->sources.clear();
+                            if (i)
+                                i->sources.clear();
                     }
-                    else if (_inputs.size() > work.inputIndex)
+                    else if (_inputs[work.inputIndex])
                         _inputs[work.inputIndex]->sources.clear();
                     break;
                 case Work::OpDisconnectInput:
@@ -595,7 +600,7 @@ AudioBus* AudioNode::outputBus(ContextRenderLock & r, char const * const str)
     serviceQueue(r);
     for (auto & i : _outputs)
     {
-        if (i->name == str)
+        if (i && i->name == str)
             return i->bus;
     }
     return nullptr;
@@ -604,7 +609,7 @@ AudioBus* AudioNode::outputBus(ContextRenderLock & r, char const * const str)
 std::string AudioNode::outputBusName(ContextRenderLock & r, int i)
 {
     serviceQueue(r);
-    if (i >= _outputs.size())
+    if (!_outputs[i])
         return "";
 
     return _outputs[i]->name;
@@ -613,7 +618,7 @@ std::string AudioNode::outputBusName(ContextRenderLock & r, int i)
 std::string AudioNode::inputBusName(ContextRenderLock & r, int i)
 {
     serviceQueue(r);
-    if (i >= _inputs.size())
+    if (!_inputs[i])
         return "";
 
     return _inputs[i]->name;
@@ -623,16 +628,15 @@ std::string AudioNode::inputBusName(ContextRenderLock & r, int i)
 AudioBus* AudioNode::outputBus(ContextRenderLock & r, int i)
 {
     serviceQueue(r);
-    if (i >= _outputs.size())
+    if (!_outputs[i])
         return nullptr;
-
     return _outputs[i]->bus;
 }
 
 AudioBus * AudioNode::inputBus(ContextRenderLock & r, int i)
 {
     serviceQueue(r);
-    if (i >= _inputs.size())
+    if (!_inputs[i])
         return nullptr;
 
     auto & sources = _inputs[i]->sources;
@@ -700,6 +704,9 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
         // Process all of the AudioNodes connected to our inputs.
         for (auto & in : _inputs)
         {
+            if (!in)
+                continue;
+
             for (auto & s : in->sources)
             {
                 // only visit nodes that are not yet at the current epoch
@@ -756,15 +763,19 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
     if (start_zero_count)
     {
         for (auto & out : _outputs)
-            for (int i = 0; i < out->bus->numberOfChannels(); ++i)
-                memset(out->bus->channel(i)->mutableData(), 0, sizeof(float) * start_zero_count);
+            if (out)
+                for (int i = 0; i < out->bus->numberOfChannels(); ++i)
+                    memset(out->bus->channel(i)->mutableData(), 0, 
+                           sizeof(float) * start_zero_count);
     }
 
     if (final_zero_count)
     {
         for (auto & out : _outputs)
-            for (int i = 0; i < out->bus->numberOfChannels(); ++i)
-                memset(out->bus->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
+            if (out)
+                for (int i = 0; i < out->bus->numberOfChannels(); ++i)
+                    memset(out->bus->channel(i)->mutableData() + final_zero_start, 0, 
+                           sizeof(float) * final_zero_count);
     }
 
     // clean pops resulting from starting or stopping
@@ -784,12 +795,13 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
         // damp out the first samples
         if (damp_end > 0)
             for (auto & out : _outputs)
-                for (int i = 0; i < out->bus->numberOfChannels(); ++i)
-                {
-                    float* data = out->bus->channel(i)->mutableData();
-                    for (int j = damp_start; j < damp_end; ++j)
-                        data[j] *= OOS(j - damp_start);
-                }
+                if (out)
+                    for (int i = 0; i < out->bus->numberOfChannels(); ++i)
+                    {
+                        float* data = out->bus->channel(i)->mutableData();
+                        for (int j = damp_start; j < damp_end; ++j)
+                            data[j] *= OOS(j - damp_start);
+                    }
     }
 
     if (final_zero_count > 0 || _scheduler._playbackState == SchedulingState::STOPPING)
@@ -818,12 +830,13 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
         {
             //printf("out: %d %d\n", damp_start, damp_end);
             for (auto& out : _outputs)
-                for (int i = 0; i < out->bus->numberOfChannels(); ++i)
-                {
-                    float* data = out->bus->channel(i)->mutableData();
-                    for (int j = damp_start; j < damp_end; ++j)
-                        data[j] *= OOS(damp_end - j);
-                }
+                if (out)
+                    for (int i = 0; i < out->bus->numberOfChannels(); ++i)
+                    {
+                        float* data = out->bus->channel(i)->mutableData();
+                        for (int j = damp_start; j < damp_end; ++j)
+                            data[j] *= OOS(damp_end - j);
+                    }
         }
     }
 
@@ -844,6 +857,9 @@ bool AudioNode::inputsAreSilent(ContextRenderLock & r)
     int i = 0;
     for (auto & in : _inputs)
     {
+        if (!in)
+            continue;
+
         for (auto & s : in->sources)
         {
             AudioBus * inBus = s->node ? s->node->inputBus(r, i) : nullptr;
@@ -858,7 +874,8 @@ void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
     for (auto & out : _outputs)
     {
-        out->bus->zero();
+        if (out)
+            out->bus->zero();
     }
 }
 
@@ -866,7 +883,8 @@ void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 {
     for (auto & out : _outputs)
     {
-        out->bus->clearSilentFlag();
+        if (out)
+            out->bus->clearSilentFlag();
     }
 }
 

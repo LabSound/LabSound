@@ -45,7 +45,8 @@ struct Vector {
 
     void clear() {
         for (int i = 0; i < sz; ++i) {
-            delete data[i];
+            if (data[i]) 
+                delete data[i];
             data[i] = nullptr;
         }
         sz = 0;
@@ -57,79 +58,63 @@ struct Vector {
             sz = 1;
             cap = 1;
             *data = new T(std::move(rh));
-            validate_non_null();
         }
         else {
             if (sz < cap) {
                 data[sz] = new T(std::move(rh));
                 ++sz;
-                validate_non_null();
             }
             else {
-                size_t new_cap = cap * 2;
-                T** new_data = (T**) malloc(sizeof(T*) * new_cap);
-                memset(new_data, 0, sizeof(T*) * cap);
-                memcpy(new_data, data, sizeof(T *) * sz); // copy pointers
-                free(data);
-                data = new_data;
-                cap = new_cap;
+                resize(sz + 1);
                 data[sz] = new T(std::move(rh));
                 ++sz;
-                validate_non_null();
             }
         }
     }
 
     void pop_back() {
-        validate_non_null();
         if (sz > 0)
         {
             --sz;
-            delete data[sz];
+            if (data[sz])
+                delete data[sz];
             data[sz] = nullptr;
-            validate_non_null();
         }
     }
 
     T ** begin() const
     {
-        validate_non_null();
         return data;
     }
     T ** end() const
     {
-        validate_non_null();
         return data + sz;
     }
+
+    void resize(size_t i) {
+        if (i >= cap) {
+            size_t new_cap = i + 1;
+            T ** new_data = (T **) malloc(sizeof(T *) * new_cap);
+            memset(new_data, 0, sizeof(T *) * cap);
+            memcpy(new_data, data, sizeof(T *) * sz);  // copy pointers
+            free(data);
+            data = new_data;
+            cap = new_cap;
+        }
+    }
+
     size_t size() const { return sz; }
+
     T* operator[](size_t i) const {
-        validate_non_null();
         if (i >= sz)
             return nullptr;
+
         return data[i];
     }
+
     T*& operator[](size_t i) {
-        validate_non_null();
+        resize(i);
         return data[i];
-    }
-
-    int swap_pop(int i) {
-        if (i < sz)
-        {
-            data[i] = nullptr;
-            if (sz > 0)
-                std::swap(data[i], data[sz-1]);
-            --sz;
-        }
-        validate_non_null();
-        return (int) sz;
-    }
-
-    void validate_non_null() const {
-        for (int i = 0; i < sz; ++i) {
-            if (data[i] == nullptr)
-                printf("panic\n");
-        }
     }
 };
 
