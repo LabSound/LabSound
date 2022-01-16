@@ -525,7 +525,8 @@ void AudioNode::disconnect(ContextRenderLock &, std::shared_ptr<AudioNode> node)
                 if (input->sources[j] && input->sources[j]->node.get() == node.get())
                 {
                     delete input->sources[j];
-                    input->sources[j] = nullptr;
+                    input->sources.swap_pop(j);
+                    --src_count;
                 }
             }
         }
@@ -670,7 +671,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
     if (!ac)
         return;
 
-    // the scheduler says the node isn't to run, bail out
+    // the scheduler says the node isn't running, bail out
     if (!_scheduler.update(r, bufferSize))
         return;
 
@@ -710,7 +711,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
             for (auto & s : in->sources)
             {
                 // only visit nodes that are not yet at the current epoch
-                if (s->node && !s->node->_scheduler.isCurrentEpoch(r))
+                if (s && s->node && !s->node->_scheduler.isCurrentEpoch(r))
                     s->node->pullInputs(r, bufferSize);
             }
 
@@ -722,7 +723,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
                 int requiredChannels = 1;
                 for (auto & s : in->sources)
                 {
-                    if (!s->node)
+                    if (!s || !s->node)
                         continue;
 
                     auto bus = s->node->outputBus(r, s->out);
@@ -737,7 +738,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
                 in->summingBus->zero();
                 for (auto & s : in->sources)
                 {
-                    if (!s->node)
+                    if (!s || !s->node)
                         continue;
                     auto bus = s->node->outputBus(r, s->out);
                     if (bus)

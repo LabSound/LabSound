@@ -72,6 +72,17 @@ struct Vector {
         }
     }
 
+    void swap_pop(int j) {
+        if (!sz)
+            return;
+
+        if (j < sz - 1) {
+            data[j] = data[sz - 1];
+            data[sz - 1] = 0;
+        }
+        --sz;
+    }
+
     void pop_back() {
         if (sz > 0)
         {
