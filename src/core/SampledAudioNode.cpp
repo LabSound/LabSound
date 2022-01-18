@@ -135,6 +135,12 @@ namespace lab {
     void SampledAudioNode::start(float when)
     {
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
+
         if (!bus)
             return;
 
@@ -154,6 +160,10 @@ namespace lab {
     void SampledAudioNode::start(float when, int loopCount)
     {
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
         if (!bus)
             return;
 
@@ -173,6 +183,10 @@ namespace lab {
     void SampledAudioNode::start(float when, float grainOffset, int loopCount)
     {
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
         if (!bus)
             return;
 
@@ -200,6 +214,10 @@ namespace lab {
     void SampledAudioNode::start(float when, float grainOffset, float grainDuration, int loopCount)
     {
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
         if (!bus)
             return;
 
@@ -232,6 +250,10 @@ namespace lab {
             _scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
         if (bus)
             _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
         
@@ -244,6 +266,10 @@ namespace lab {
             _scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
         if (bus)
             _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
         
@@ -256,7 +282,12 @@ namespace lab {
             _scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (bus) {
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
+        if (bus)
+        {
             float r = bus->sampleRate();
             int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
             int32_t grainEnd = bus->length();
@@ -277,7 +308,12 @@ namespace lab {
             _scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus) {
+        if (!bus && _internals->bus_setting_updated)
+        {
+            bus = m_sourceBus->valueBus();
+        }
+        if (!bus)
+        {
             float r = bus->sampleRate();
             int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
             int32_t grainEnd = grainStart + static_cast<uint32_t>(grainDuration * r);

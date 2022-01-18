@@ -35,12 +35,12 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     struct Internals;
     Internals* _internals;
 
-    std::shared_ptr<AudioSetting> m_sourceBus;
     std::shared_ptr<AudioBus> m_pendingSourceBus;   // the most recently assigned bus
     std::shared_ptr<AudioBus> m_retainedSourceBus;  // the bus used in computation, eventually agrees with m_pendingSourceBus.
     std::shared_ptr<AudioParam> m_playbackRate;
     std::shared_ptr<AudioParam> m_detune;
     std::shared_ptr<AudioParam> m_dopplerRate;
+    std::shared_ptr<AudioSetting> m_sourceBus;
 
     std::vector<std::shared_ptr<SRC_Resampler>> _resamplers;
 

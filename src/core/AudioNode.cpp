@@ -693,6 +693,8 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
             p->serviceQueue(r);
             for (auto & i : p->inputs().sources)
             {
+                if (!i || !i->node)
+                    continue;
                 auto output = i->node->outputBus(r, i->out);
                 if (!output)
                     continue;
