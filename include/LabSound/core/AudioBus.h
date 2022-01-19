@@ -14,6 +14,7 @@
 namespace lab
 {
 
+
 using lab::Channel;
 using lab::ChannelInterpretation;
 
@@ -25,19 +26,10 @@ class AudioBus
     AudioBus(const AudioBus &);  // noncopyable
 
 public:
-    // Can define non-standard layouts here:
-    enum
-    {
-        LayoutCanonical = 0
-    };
-
-    // allocate indicates whether or not to initially have the AudioChannels created with managed storage.
-    // Normal usage is to pass true here, in which case the AudioChannels will memory-manage their own storage.
-    // If allocate is false then setChannelMemory() has to be called later on for each channel before the AudioBus is useable...
-    AudioBus(int numberOfChannels, int length, bool allocate = true);
+    AudioBus(int numberOfChannels, int length);
 
     // Tells the given channel to use an externally allocated buffer.
-    void setChannelMemory(int channelIndex, float * storage, int length);
+    void copyChannelMemory(int channelIndex, float * storage, int length);
 
     // Channels
     int numberOfChannels() const { return static_cast<int>(m_channels.size()); }
@@ -58,10 +50,6 @@ public:
 
     // Number of sample-frames
     int length() const { return m_length; }
-
-    // resizeSmaller() can only be called with a new length <= the current length.
-    // The data stored in the bus will remain undisturbed.
-    void resizeSmaller(int newLength);
 
     // Sample-rate : 0.0 if unknown or "don't care"
     float sampleRate() const { return m_sampleRate; }
@@ -142,7 +130,6 @@ protected:
     bool m_isFirstTime = true;
     float m_sampleRate = 0.0f;
     float m_busGain = 1.0f;
-    int m_layout = LayoutCanonical;
     int m_length = 0;
 };
 

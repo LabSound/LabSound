@@ -12,11 +12,6 @@
 
 namespace lab
 {
-void AudioChannel::resizeSmaller(int newLength)
-{
-    ASSERT(newLength <= m_length);
-    if (newLength <= m_length) m_length = newLength;
-}
 
 void AudioChannel::scale(float scale)
 {

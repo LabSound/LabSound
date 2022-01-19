@@ -175,7 +175,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
 
     _input.updateSummingBus(1, numberOfValues);
-    _input.summingBus->setChannelMemory(0, values, numberOfValues);
+    _input.summingBus->copyChannelMemory(0, values, numberOfValues);
 
     for (auto i : _input.sources)
     {

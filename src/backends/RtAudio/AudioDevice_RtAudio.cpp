@@ -228,7 +228,7 @@ void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void *
     {
         if (!_renderBus || _renderBus->length() < numberOfFrames)
         {
-            _renderBus.reset(new AudioBus(outputConfig.desired_channels, numberOfFrames, true));
+            _renderBus.reset(new AudioBus(outputConfig.desired_channels, numberOfFrames));
             _renderBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
         }
     }
@@ -237,7 +237,7 @@ void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void *
     {
         if (!_inputBus || _inputBus->length() < numberOfFrames)
         {
-            _inputBus.reset(new AudioBus(inputConfig.desired_channels, numberOfFrames, true));
+            _inputBus.reset(new AudioBus(inputConfig.desired_channels, numberOfFrames));
             _inputBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
         }
     }

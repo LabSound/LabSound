@@ -19,7 +19,7 @@ using namespace VectorMath;
 
 const unsigned MaxBusChannels = 32;
 
-AudioBus::AudioBus(int numberOfChannels, int length, bool allocate)
+AudioBus::AudioBus(int numberOfChannels, int length)
     : m_length(length)
 {
     ASSERT(numberOfChannels <= MaxBusChannels);
@@ -29,11 +29,7 @@ AudioBus::AudioBus(int numberOfChannels, int length, bool allocate)
     for (int i = 0; i < numberOfChannels; ++i)
     {
         AudioChannel * newChannel;
-        if (allocate)
-            newChannel = new AudioChannel(length);
-        else
-            newChannel = new AudioChannel(nullptr, length);
-
+        newChannel = new AudioChannel(length);
         m_channels.emplace_back(std::unique_ptr<AudioChannel>(newChannel));
     }
 }
@@ -48,29 +44,14 @@ void AudioBus::setNumberOfChannels(ContextRenderLock& r, int n)
 }
 
 
-void AudioBus::setChannelMemory(int channelIndex, float * storage, int length)
+void AudioBus::copyChannelMemory(int channelIndex, float * storage, int length)
 {
-    // currently not allowing setting a buffer smaller than the declared length
-    ASSERT(length >= m_length);
-    if (channelIndex < m_channels.size())
-    {
-        channel(channelIndex)->set(storage, length);
-        m_length = length;
-    }
-}
+    if (channelIndex >= m_channels.size())
+        return;
 
-void AudioBus::resizeSmaller(int newLength)
-{
-    ASSERT(newLength <= m_length);
-    if (newLength <= m_length)
-    {
-        m_length = newLength;
-    }
-
-    for (int i = 0; i < m_channels.size(); ++i)
-    {
-        m_channels[i]->resizeSmaller(newLength);
-    }
+    float* data = channel(channelIndex)->mutableData();
+    memcpy(data, storage, length);
+    m_length = length;
 }
 
 void AudioBus::zero()
@@ -83,9 +64,6 @@ void AudioBus::zero()
 
 AudioChannel * AudioBus::channelByType(Channel channelType)
 {
-    // For now we only support canonical channel layouts...
-    if (m_layout != LayoutCanonical) return 0;
-
     switch (numberOfChannels())
     {
         case Channels::Mono:

@@ -1,5 +1,4 @@
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef AudioChannel_h
@@ -7,59 +6,76 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include <memory>
-
 namespace lab
 {
+
+class Bus2Manager
+{
+    uint8_t * arena;
+    int next;
+    int avail;
+    int last;
+    const int pagesz = 128;
+
+public:
+    Bus2Manager(size_t sz)
+    {
+        size_t pages = (sz + (pagesz - 1)) / pagesz;
+        arena = (uint8_t *) malloc(pages * pagesz);
+        next = 0;
+        avail = (int) pages;
+        last = (int) pages;
+    }
+
+    ~Bus2Manager()
+    {
+        free(arena);
+    }
+
+    int alloc(size_t sz)
+    {
+        int pages = (int) (sz + (pagesz - 1)) / pagesz;
+        if (pages > avail)
+            return -1;
+
+        int r = next;
+        next += pages;
+        return r;
+    }
+
+    uint8_t * data(int page)
+    {
+        if (page >= last)
+            return nullptr;
+
+        return &arena[page * pagesz];
+    }
+};
+
+
 
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
 class AudioChannel
 {
-    AudioChannel(const AudioChannel &);  // noncopyable
+    AudioChannel(const AudioChannel &) = delete;  // noncopyable
 
 public:
-    // Memory can be externally referenced, or can be internally allocated with an AudioFloatArray.
-
-    // Reference an external buffer.
-    AudioChannel(float * storage, int length)
-        : m_length(length)
-        , m_rawPointer(storage)
-        , m_silent(false)
-    {
-    }
-
-    // Manage storage for us.
     explicit AudioChannel(int length)
         : m_length(length)
         , m_silent(true)
     {
-        m_memBuffer.reset(new AudioFloatArray(length));
+        m_memBuffer = new AudioFloatArray(length);
     }
 
-    // An empty audio channel -- must call set() before it's useful...
-    AudioChannel()
-        : m_length(0)
-        , m_silent(true)
-    {
-    }
+    explicit AudioChannel() = delete;
 
-    // Redefine the memory for this channel.
-    // storage represents external memory not managed by this object.
-    void set(float * storage, int length)
-    {
-        m_memBuffer.reset();  // clean up managed storage
-        m_rawPointer = storage;
-        m_length = length;
-        m_silent = false;
+    ~AudioChannel() {
+        delete m_memBuffer;
     }
 
     // How many sample-frames do we contain?
     int length() const { return m_length; }
-
-    // resizeSmaller() can only be called with a new length <= the current length.
-    // The data stored in the bus will remain undisturbed.
-    void resizeSmaller(int newLength);
 
     // Direct access to PCM sample data. Non-const accessor clears silent flag.
     float * mutableData()
@@ -70,8 +86,6 @@ public:
 
     const float * data() const
     {
-        if (m_rawPointer)
-            return m_rawPointer;
         if (m_memBuffer)
             return m_memBuffer->data();
         return nullptr;
@@ -86,8 +100,6 @@ public:
 
         if (m_memBuffer)
             m_memBuffer->zero();
-        else if (m_rawPointer)
-            memset(m_rawPointer, 0, sizeof(float) * m_length);
     }
 
     // Clears the silent flag.
@@ -112,8 +124,7 @@ public:
 
 private:
     int m_length = 0;
-    float * m_rawPointer = nullptr;
-    std::unique_ptr<AudioFloatArray> m_memBuffer;
+    AudioFloatArray* m_memBuffer;
     bool m_silent = true;
 };
 

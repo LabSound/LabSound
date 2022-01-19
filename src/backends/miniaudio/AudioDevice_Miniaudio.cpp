@@ -287,13 +287,13 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
     int numberOfFrames = numberOfFrames_;
     if (!_renderBus)
     {
-        _renderBus = new AudioBus(outputConfig.desired_channels, kRenderQuantum, true);
+        _renderBus = new AudioBus(outputConfig.desired_channels, kRenderQuantum);
         _renderBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
     if (!_inputBus && inputConfig.desired_channels)
     {
-        _inputBus = new AudioBus(inputConfig.desired_channels, kRenderQuantum, true);
+        _inputBus = new AudioBus(inputConfig.desired_channels, kRenderQuantum);
         _inputBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
