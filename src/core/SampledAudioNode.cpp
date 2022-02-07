@@ -99,7 +99,7 @@ namespace lab {
         });
  
         // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
-        addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
+        addOutput(2, AudioNode::ProcessingSizeInFrames);
 
         initialize();
     }
@@ -333,7 +333,7 @@ namespace lab {
     bool SampledAudioNode::renderSample(ContextRenderLock& r, Scheduled& schedule, size_t destinationSampleOffset, size_t frameSize)
     {
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
-        AudioBus* dstBus = outputBus(r, 0);
+        AudioBus* dstBus = outputBus(r);
         size_t dstChannelCount = dstBus->numberOfChannels();
         size_t srcChannelCount = srcBus->numberOfChannels();
         ASSERT(dstChannelCount == srcChannelCount);
@@ -466,7 +466,7 @@ namespace lab {
         }
         _internals->greatest_cursor = -1;
 
-        AudioBus* dstBus = outputBus(r, 0);
+        AudioBus* dstBus = outputBus(r);
         size_t dstChannelCount = dstBus->numberOfChannels();
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
 

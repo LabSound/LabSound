@@ -36,7 +36,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     : AudioNode(ac, *desc())
 {
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     m_threshold = param("threshold");
     m_knee = param("knee");
@@ -55,7 +55,7 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
 
 void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     if (!dstBus || !srcBus)

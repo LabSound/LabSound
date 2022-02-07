@@ -12,6 +12,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 
 #include "internal/Assertions.h"
+#include "internal/DenormalDisabler.h"
 
 #include "concurrentqueue/concurrentqueue.h"
 #include "libnyquist/Encoders.h"
@@ -24,7 +25,8 @@ namespace lab
 {
 enum class ConnectionOperationKind : int
 {
-    DisconnectNode = 0,
+    None = 0,
+    DisconnectNode,
     DisconnectInput,
     DisconnectParam,
     ConnectNode,
@@ -35,7 +37,7 @@ enum class ConnectionOperationKind : int
 
 struct PendingNodeConnection
 {
-    ConnectionOperationKind type;
+    ConnectionOperationKind type = ConnectionOperationKind::None;
     std::shared_ptr<AudioNode> destination;
     std::shared_ptr<AudioNode> source;
     int dstIndex = 0;
@@ -48,7 +50,7 @@ struct PendingNodeConnection
 
 struct PendingParamConnection
 {
-    ConnectionOperationKind type;
+    ConnectionOperationKind type = ConnectionOperationKind::None;
     std::shared_ptr<AudioParam> destination;
     std::shared_ptr<AudioNode> source;
     int dstIndex = 0;
@@ -258,7 +260,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                 case ConnectionOperationKind::ConnectNode:
                 {
                     node_connection.destination->connect(r, node_connection.dstIndex, 
-                        node_connection.source, node_connection.srcIndex);
+                        node_connection.source);
 
                     if (!node_connection.source->isScheduledNode())
                         node_connection.source->_scheduler.start(0);
@@ -368,18 +370,16 @@ void AudioContext::synchronizeConnections(int timeOut_ms)
 }
 
 
-void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx, int srcIdx)
+void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx)
 {
     if (!destination)
         throw std::runtime_error("Cannot connect to null destination");
     if (!source)
         throw std::runtime_error("Cannot connect from null source");
-    if (srcIdx > source->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue(
-        {ConnectionOperationKind::ConnectNode, destination, source, destIdx, srcIdx});
+        {ConnectionOperationKind::ConnectNode, destination, source, destIdx, 0});
 }
 
 
@@ -388,16 +388,14 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
 // source node from all inputs it is connected to.
 void AudioContext::disconnectNode(std::shared_ptr<AudioNode> destination,
                                   std::shared_ptr<AudioNode> source,
-                                  int inletIdx, int outletIdx)
+                                  int inletIdx)
 {
     if (!destination && !source)
         return;
-    if (source && outletIdx > source->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs");
     if (destination && inletIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue(
-        {ConnectionOperationKind::DisconnectNode, destination, source, outletIdx, inletIdx});
+        {ConnectionOperationKind::DisconnectNode, destination, source, 0, inletIdx});
 }
 
 // disconnect all the node's inputs at the specified inlet. -1 means disconnect all input inlets.
@@ -418,21 +416,19 @@ bool AudioContext::isConnected(std::shared_ptr<AudioNode> destination, std::shar
 }
 
 
-void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
+void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver)
 {
     if (!param)
         throw std::invalid_argument("No parameter specified");
     if (!driver)
         throw std::invalid_argument("No driving node supplied");
-    if (index >= driver->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs on the driver");
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, 0});
 }
 
 
 // connect a named parameter on a node to receive the indexed output of a node
 void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName,
-                                std::shared_ptr<AudioNode> driver, int index)
+                                std::shared_ptr<AudioNode> driver)
 {
     if (!parameterName)
         throw std::invalid_argument("No parameter specified");
@@ -444,22 +440,16 @@ void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char
     if (!driver)
         throw std::invalid_argument("No driving node supplied");
 
-    if (index >= driver->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs on the driver");
-
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::ConnectParam, param, driver, 0});
 }
 
 
-void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
+void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver)
 {
     if (!param)
         throw std::invalid_argument("No parameter specified");
 
-    if (index >= driver->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs on the driver");
-
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::DisconnectParam, param, driver, index});
+    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::DisconnectParam, param, driver, 0});
 }
 
 void AudioContext::update()
@@ -609,6 +599,356 @@ void AudioContext::suspend()
 void AudioContext::resume()
 {
     device_callback->start();
+}
+
+void AudioContext::debugTraverse(
+    AudioNode * required_inlet,
+    AudioBus * src, AudioBus * dst,
+    int frames,
+    const SamplingInfo & info,
+    AudioHardwareInput * optional_hardware_input)
+{
+    synchronizeConnections();
+    auto renderBus = std::unique_ptr<AudioBus>(new AudioBus(2, frames));
+
+    auto ctx = this;
+
+    // bail if shutting down.
+    auto ac = audioContextInterface().lock();
+    if (!ac)
+        return;
+
+    ASSERT(required_inlet);
+
+    ContextRenderLock renderLock(this, "lab::pull_graph");
+    if (!renderLock.context()) 
+        return;  // return if couldn't acquire lock
+
+    if (!ctx->isInitialized())
+    {
+        dst->zero();
+        return;
+    }
+
+    // Denormals can slow down audio processing.
+    // Use an RAII object to protect all AudioNodes processed within this scope.
+
+    /// @TODO under what circumstance do they arise?
+    /// If they come from input data such as loaded WAV files, they should be corrected
+    /// at source. If they can result from signal processing; again, where? The
+    /// signal processing should not produce denormalized values.
+
+    DenormalDisabler denormalDisabler;
+
+    // Let the context take care of any business at the start of each render quantum.
+    ctx->handlePreRenderTasks(renderLock);
+
+/* pass two, implement hardware input
+
+    // Prepare the local audio input provider for this render quantum.
+    if (optional_hardware_input && src)
+    {
+        optional_hardware_input->set(src);
+    }
+*/
+
+// process the graph by pulling the inputs, which will recurse the entire processing graph.
+
+    enum WorkType
+    {
+        processNode,
+        silenceOutputs,
+        unsilenceOutputs,
+        setOutputChannels,
+        sumInputs,
+        setZeroes,
+        manageEnvelope,
+    };
+
+    struct Work
+    {
+        AudioNode * node = nullptr;
+        WorkType type;
+    };
+
+    std::vector<Work> work;
+
+    std::vector<AudioNode *> node_stack;
+    node_stack.push_back(required_inlet);
+
+    static int color = 1;
+    required_inlet->color = color;
+    ++color;
+
+    static std::map<int, std::vector<AudioBus *>> summing_busses;
+    std::vector<AudioBus *> in_use;
+
+
+    AudioNode * current_node = nullptr;
+    while (node_stack.size() > 0)
+    {
+        current_node = node_stack.back();
+
+        if (current_node->color >= color
+            || !current_node->isInitialized()
+            || !current_node->_scheduler.update(renderLock, frames)) 
+        {
+            // if the node is not active, or the has already done, pop it and continue
+            node_stack.pop_back();
+            continue;
+        }
+
+        // currentEpoch true means the node has already been scheduled this epoch
+        if (current_node->isScheduledNode()
+            && (current_node->_scheduler._playbackState < SchedulingState::FADE_IN
+                || current_node->_scheduler._playbackState == SchedulingState::FINISHED))
+        {
+            // current node is silent, no recursion necessary, continue
+            work.push_back({current_node, silenceOutputs});
+            node_stack.pop_back();
+            continue;
+        }
+
+        auto sz = node_stack.size();
+        for (auto & p : current_node->_params)
+        {
+            p->serviceQueue(renderLock);
+            for (auto & i : p->inputs().sources)
+            {
+                if (!i || !(*i))
+                    continue;
+                auto output = (*i)->outputBus(renderLock);
+                if (!output)
+                    continue;
+
+                if ((*i)->color >= color)
+                    continue;
+
+                auto sb = summing_busses.find(1);
+                if (sb == summing_busses.end())
+                {
+                    summing_busses[1] = {};
+                    sb = summing_busses.find(1);
+                }
+                if (sb->second.size())
+                {
+                    in_use.push_back(sb->second.back());
+                    sb->second.pop_back();
+                }
+                else
+                {
+                    in_use.push_back(new AudioBus(1, frames));
+                }
+                p->_input.summingBus = in_use.back();
+
+                node_stack.push_back(i->get());
+            }
+        }
+
+        // if there were parameters with inputs, queue up their work next
+        if (node_stack.size() > sz)
+            continue;
+
+        // Process all of the AudioNodes connected to our inputs.
+        sz = node_stack.size();
+        for (auto & in : current_node->_inputs)
+        {
+            if (!in)
+                continue;
+
+            for (auto & s : in->sources)
+            {
+                // only visit nodes that are not yet at the current epoch
+                if (s && (*s)->color < color)
+                {
+                    node_stack.push_back(s->get());
+                }
+            }
+        }
+
+        // if there were inputs on the node current node, queue up their work next
+        if (node_stack.size() > sz)
+            continue;
+
+        // should this just be "do the stuff"?
+        //work.push_back({current_node, setOutputChannels});
+        //work.push_back({current_node, sumInputs});
+        work.push_back({current_node, processNode});
+        //work.push_back({current_node, setZeroes});
+        //work.push_back({current_node, manageEnvelope});
+        //work.push_back({current_node, unsilenceOutputs});
+
+        // work is done on the current node, retire it
+        current_node->color = color;
+        node_stack.pop_back();
+    }
+
+
+    for (auto& w : work) {
+        // actually do the things in graph order
+        if (w.type == processNode) {
+            // Process all of the AudioNodes connected to our inputs.
+            for (auto & in : w.node->_inputs)
+            {
+                if (!in)
+                    continue;
+
+                // compute the sum of all inputs if there's more than one
+                if (in->sources.size() > 1)
+                {
+                    ASSERT(in->summingBus);
+
+                    int requiredChannels = 1;
+                    for (auto & s : in->sources)
+                    {
+                        if (!s)
+                            continue;
+
+                        auto bus = (*s)->outputBus(renderLock);
+                        if (bus && bus->numberOfChannels() > requiredChannels)
+                            requiredChannels = bus->numberOfChannels();
+                    }
+
+                    auto sb = summing_busses.find(requiredChannels);
+                    if (sb == summing_busses.end()) {
+                        summing_busses[requiredChannels] = {};
+                        sb = summing_busses.find(requiredChannels);
+                    }
+                    if (sb->second.size())
+                    {
+                        in_use.push_back(sb->second.back());
+                        sb->second.pop_back();
+                    }
+                    else
+                    {
+                        in_use.push_back(new AudioBus(requiredChannels, frames));
+                    }
+
+                    in->summingBus = in_use.back();
+                    in->summingBus->zero();
+                    for (auto & s : in->sources)
+                    {
+                        if (!s)
+                            continue;
+                        auto bus = (*s)->outputBus(renderLock);
+                        if (bus)
+                            in->summingBus->sumFrom(*bus);
+                    }
+                }
+            }
+
+            // signal processing for the node
+            w.node->process(renderLock, frames);
+            // there may need to be silence at the beginning or end of the current quantum.
+
+            int start_zero_count = w.node->_scheduler._renderOffset;
+            int final_zero_start = w.node->_scheduler._renderOffset + w.node->_scheduler._renderLength;
+            int final_zero_count = frames - final_zero_start;
+
+            //  initialize the busses with start and final zeroes.
+            if (start_zero_count)
+            {
+                for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    memset(w.node->_output.bus->channel(i)->mutableData(), 0,
+                           sizeof(float) * start_zero_count);
+            }
+
+            if (final_zero_count)
+            {
+                for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    memset(w.node->_output.bus->channel(i)->mutableData() + final_zero_start, 0,
+                           sizeof(float) * final_zero_count);
+            }
+
+            // clean pops resulting from starting or stopping
+            const int start_envelope = 64;
+            const int end_envelope = 64;
+
+            #define OOS(x) (float(x) / float(steps))
+            if (start_zero_count > 0 || w.node->_scheduler._playbackState == SchedulingState::FADE_IN)
+            {
+
+                int steps = start_envelope;
+                int damp_start = start_zero_count;
+                int damp_end = start_zero_count + steps;
+                if (damp_end > frames)
+                {
+                    damp_end = frames;
+                    steps = frames - start_zero_count;
+                }
+
+                // damp out the first samples
+                if (damp_end > 0)
+                    for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    {
+                        float * data = w.node->_output.bus->channel(i)->mutableData();
+                        for (int j = damp_start; j < damp_end; ++j)
+                            data[j] *= OOS(j - damp_start);
+                    }
+            }
+
+            if (final_zero_count > 0 || w.node->_scheduler._playbackState == SchedulingState::STOPPING)
+            {
+                int steps = end_envelope;
+                int damp_end, damp_start;
+                if (!final_zero_count)
+                {
+                    damp_end = frames - final_zero_count;
+                    damp_start = damp_end - steps;
+                }
+                else
+                {
+                    damp_end = frames - final_zero_count;
+                    damp_start = damp_end - steps;
+                }
+
+                if (damp_start < 0)
+                {
+                    damp_start = 0;
+                    steps = damp_end;
+                }
+
+                // damp out the last samples
+                if (steps > 0)
+                {
+                    //printf("out: %d %d\n", damp_start, damp_end);
+                    for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    {
+                        float * data = w.node->_output.bus->channel(i)->mutableData();
+                        for (int j = damp_start; j < damp_end; ++j)
+                            data[j] *= OOS(damp_end - j);
+                    }
+                }
+            }
+
+            w.node->unsilenceOutputs(renderLock);
+        }
+        else if (w.type == silenceOutputs)
+        {
+            w.node->silenceOutputs(renderLock);
+        }
+    }
+
+    // put the allocated busses back in the pool
+    while (in_use.size()) {
+        summing_busses[in_use.back()->numberOfChannels()].push_back(in_use.back());
+        in_use.pop_back();
+    }
+
+    AudioBus * renderedBus = required_inlet->outputBus(renderLock);
+
+    if (!renderedBus)
+    {
+        dst->zero();
+    }
+    else if (renderedBus != dst)
+    {
+        // in-place processing was not possible - so copy
+        dst->copyFrom(*renderedBus);
+    }
+
+    // Let the context take care of any business at the end of each render quantum.
+    ctx->handlePostRenderTasks(renderLock);
 }
 
 

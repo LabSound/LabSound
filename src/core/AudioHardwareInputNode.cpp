@@ -26,7 +26,7 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
     : AudioNode(ac, *desc())
     , m_audioSourceProvider(audioSourceProvider)
 {
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -38,7 +38,7 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
 
 void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     // This used to be the function of a manual call to setFormat()
     if (m_sourceNumberOfChannels == 0)
@@ -49,7 +49,7 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
         {
             auto inputConfig = DeviceAsRenderCallback->getInputConfig();
             m_sourceNumberOfChannels = inputConfig.desired_channels;
-            auto bus = outputBus(r, 0);
+            auto bus = outputBus(r);
             bus->setNumberOfChannels(r, m_sourceNumberOfChannels);
         }
     }

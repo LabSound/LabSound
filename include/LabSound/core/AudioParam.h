@@ -26,6 +26,7 @@ struct AudioParamDescriptor
 
 class AudioParam
 {
+    friend class AudioContext;
     AudioNodeSummingInput _input;
 
     struct Work

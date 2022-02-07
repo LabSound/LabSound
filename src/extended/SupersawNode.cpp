@@ -99,7 +99,7 @@ public:
             for (auto i : sawStorage)
             {
                 i->setType(OscillatorType::SAWTOOTH);
-                context->connect(gainNode, i, 0, 0);
+                context->connect(gainNode, i, 0);
                 i->start(0);
             }
 
@@ -139,7 +139,7 @@ SupersawNode::SupersawNode(AudioContext & ac)
     internalNode->detune = param("detune");
     internalNode->frequency = param("frequency");
 
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -152,7 +152,7 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
 {
     internalNode->update(r, true);
 
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     if (!isInitialized() || !dstBus->numberOfChannels())
     {
@@ -165,7 +165,7 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     internalNode->gainNode->inputBus(r, 0)->zero();
     internalNode->gainNode->pullInputs(r, bufferSize);
     internalNode->gainNode->process(r, bufferSize);
-    AudioBus * inputBus = internalNode->gainNode->outputBus(r, 0);
+    AudioBus * inputBus = internalNode->gainNode->outputBus(r);
     dstBus->copyFrom(*inputBus);
     dstBus->clearSilentFlag();
 }

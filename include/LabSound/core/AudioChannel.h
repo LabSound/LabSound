@@ -9,50 +9,6 @@
 namespace lab
 {
 
-class Bus2Manager
-{
-    uint8_t * arena;
-    int next;
-    int avail;
-    int last;
-    const int pagesz = 128;
-
-public:
-    Bus2Manager(size_t sz)
-    {
-        size_t pages = (sz + (pagesz - 1)) / pagesz;
-        arena = (uint8_t *) malloc(pages * pagesz);
-        next = 0;
-        avail = (int) pages;
-        last = (int) pages;
-    }
-
-    ~Bus2Manager()
-    {
-        free(arena);
-    }
-
-    int alloc(size_t sz)
-    {
-        int pages = (int) (sz + (pagesz - 1)) / pagesz;
-        if (pages > avail)
-            return -1;
-
-        int r = next;
-        next += pages;
-        return r;
-    }
-
-    uint8_t * data(int page)
-    {
-        if (page >= last)
-            return nullptr;
-
-        return &arena[page * pagesz];
-    }
-};
-
-
 
 // An AudioChannel represents a buffer of non-interleaved floating-point audio samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0

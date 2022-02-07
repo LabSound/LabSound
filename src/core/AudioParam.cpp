@@ -124,15 +124,18 @@ void AudioParam::serviceQueue(ContextRenderLock & r)
                     break;
 
                 case 1:
-                    _input.sources.emplace_back(AudioNodeSummingInput::Source {w.node, w.output});
+                {
+                    auto n = new std::shared_ptr<AudioNode>();
+                    *n = w.node;
+                    _input.sources.emplace_back(n);
                     break;
-
+                }
                 case -1:
                 {
                     int src_count = (int) _input.sources.size();
                     for (int i = 0; i < src_count; ++i)
                     {
-                        if (_input.sources[i] && _input.sources[i]->node.get() == w.node.get())
+                        if (_input.sources[i] && (_input.sources[i]->get() == w.node.get()))
                         {
                             delete _input.sources[i];
                             _input.sources[i] = nullptr;
@@ -174,7 +177,6 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
 
-    _input.updateSummingBus(1, numberOfValues);
     _input.summingBus->copyChannelMemory(0, values, numberOfValues);
 
     for (auto i : _input.sources)
@@ -182,7 +184,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
         if (!i)
             continue;
 
-        auto output = i->node->outputBus(r, i->out);
+        auto output = (*i)->outputBus(r);
         if (!output)
             continue;
 
@@ -195,7 +197,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r,
         /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
         /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
         /// have a bias of zero. It seems like sum or override should be a setting of some sort...
-        _input.summingBus->sumFrom(*i->node->outputBus(r, 0));
+        _input.summingBus->sumFrom(*(*i)->outputBus(r));
     }
 }
 

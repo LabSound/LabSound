@@ -140,7 +140,7 @@ PdNode::PdNode(lab::AudioContext * context, float sampleRate)
     setNodeType((AudioNode::NodeType) lab::NodeTypePd);
 
     addInput("in");
-    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
+    addOutput(2, AudioNode::ProcessingSizeInFrames);
 
     data->initPure(2, 2, sampleRate, 128);
 

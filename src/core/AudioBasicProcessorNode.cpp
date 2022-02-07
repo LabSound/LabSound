@@ -15,7 +15,7 @@ AudioBasicProcessorNode::AudioBasicProcessorNode(AudioContext & ac, AudioNodeDes
     : AudioNode(ac, desc)
 {
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     // The subclass must create m_processor.
 }
@@ -44,7 +44,7 @@ void AudioBasicProcessorNode::uninitialize()
 
 void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destinationBus = outputBus(r, 0);
+    AudioBus * destinationBus = outputBus(r);
     AudioBus * sourceBus = inputBus(r, 0);
     if (!isInitialized() || !processor() || !sourceBus)
     {

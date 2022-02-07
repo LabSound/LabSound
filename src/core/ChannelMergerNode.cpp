@@ -25,7 +25,7 @@ ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
     , m_desiredNumberOfOutputChannels(1)
 {
     addInputs(numberOfInputs_);
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -38,7 +38,7 @@ void ChannelMergerNode::addInputs(int n)
 
 void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     ASSERT_UNUSED(bufferSize, bufferSize == dstBus->length());
 
     if (m_desiredNumberOfOutputChannels != dstBus->numberOfChannels())

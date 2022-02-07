@@ -254,7 +254,7 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
     addInput("in");
-    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
+    addOutput(2, AudioNode::ProcessingSizeInFrames);
 
     m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 
@@ -269,7 +269,7 @@ StereoPannerNode::~StereoPannerNode()
 
 void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     if (!dstBus || !srcBus || !m_stereoPanner.get())

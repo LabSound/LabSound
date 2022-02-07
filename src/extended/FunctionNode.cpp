@@ -22,7 +22,7 @@ AudioNodeDescriptor * FunctionNode::desc()
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    addOutput("out", channels, AudioNode::ProcessingSizeInFrames);
+    addOutput(channels, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -33,7 +33,7 @@ FunctionNode::~FunctionNode()
 
 void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     if (!isInitialized() || !dstBus->numberOfChannels() || !_function)
     {

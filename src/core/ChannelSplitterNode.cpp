@@ -28,6 +28,8 @@ ChannelSplitterNode::ChannelSplitterNode(AudioContext & ac, int numberOfOutputs_
 
 void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
 {
+    //// @TODO addOutput shall actuall be the channel index to copy
+#if 0
     // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
     for (int i = 0; i < numberOfOutputs_; ++i)
     {
@@ -35,6 +37,7 @@ void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
         buff += std::to_string(i);
         addOutput(buff, 1, AudioNode::ProcessingSizeInFrames);
     }
+#endif
 }
 
 void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
@@ -44,9 +47,11 @@ void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
 
     size_t numberOfSourceChannels = source->numberOfChannels();
 
-    for (int i = 0; i < numberOfOutputs(); ++i)
+    //@todo copy the correct channel to the output
+#if 0
+    for (int i = 0; i < 1; ++i);// numberOfOutputs(); ++i)
     {
-        AudioBus * destination = outputBus(r, i);
+        AudioBus * destination = outputBus(r);
         if (!destination)
             continue;
         ASSERT(destination);
@@ -62,6 +67,7 @@ void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
             destination->zero();
         }
     }
+#endif
 }
 
 void ChannelSplitterNode::reset(ContextRenderLock &)

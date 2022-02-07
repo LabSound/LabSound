@@ -27,7 +27,7 @@ GainNode::GainNode(AudioContext& ac)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     m_gain = param("gain");
 
@@ -45,7 +45,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     // happen in the summing junction input of the AudioNode we're connected to.
     // Then we can avoid all of the following:
 
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     if (!srcBus || !dstBus)

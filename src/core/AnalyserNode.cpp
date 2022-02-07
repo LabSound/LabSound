@@ -166,7 +166,7 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
 
 void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     if (!srcBus)

@@ -28,7 +28,7 @@ NoiseNode::NoiseNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
     _type = setting("type");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -52,7 +52,7 @@ NoiseNode::NoiseType NoiseNode::type() const
 
 void NoiseNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     if (!isInitialized() || !dstBus->numberOfChannels())
     {

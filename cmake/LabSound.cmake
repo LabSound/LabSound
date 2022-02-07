@@ -214,7 +214,7 @@ else()
 endif()
 
 target_link_libraries(LabSound
-    libnyquist libwavpack
+    libnyquist #libwavpack
     samplerate
     ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 

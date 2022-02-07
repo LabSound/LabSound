@@ -92,6 +92,11 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
 
+    void debugTraverse(AudioNode * required_inlet,
+                       AudioBus * src, AudioBus * dst, int frames,
+                       const SamplingInfo & info,
+                       AudioHardwareInput * optional_hardware_input);
+
     void setDeviceNode(std::shared_ptr<AudioNode> device);
     std::shared_ptr<AudioNode> device();
 
@@ -126,7 +131,7 @@ public:
 
     void connect(std::shared_ptr<AudioNode> destination, 
                  std::shared_ptr<AudioNode> source, 
-                 int inletIdx = 0, int outletIdx = 0);
+                 int inletIdx = 0);
 
     // disconnect all the node's inputs at the specified inlet. -1 means disconnect all input inlets.
     void disconnectInput(std::shared_ptr<AudioNode> node, int inlet = -1);
@@ -135,19 +140,19 @@ public:
     // source node from all inputs it is connected to.
     void disconnectNode(std::shared_ptr<AudioNode> destination, 
                         std::shared_ptr<AudioNode> source, 
-                        int inletIdx = -1, int outletIdx = -1);
+                        int inletIdx = -1);
 
     // returns true if source can be found on any inlet on destination
     bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
 
-    // connect a parameter to receive the indexed output of a node
-    void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
+    // connect a parameter to receive the output of a node
+    void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver);
 
     // connect destinationNode's named parameter input to driver's indexed output
-    void connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver, int index);
+    void connectParam(std::shared_ptr<AudioNode> destinationNode, char const*const parameterName, std::shared_ptr<AudioNode> driver);
 
-    // disconnect a parameter from the indexed output of a node
-    void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
+    // disconnect a parameter from the output of a node
+    void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver);
 
     // connecting and disconnecting busses and parameters occurs asynchronously.
     // synchronizeConnections will block until there are no pending connections,

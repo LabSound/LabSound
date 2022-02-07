@@ -405,7 +405,7 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     });
 
     // An oscillator is always mono.
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);
@@ -429,7 +429,7 @@ void PolyBLEPNode::setType(PolyBLEPType type)
 
 void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     if (!r.context() || !isInitialized() || !dstBus->numberOfChannels())
     {
         dstBus->zero();

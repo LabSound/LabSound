@@ -61,7 +61,7 @@ GranulationNode::GranulationNode(AudioContext & ac)
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
     grainPlaybackFreq = param("PlaybackFrequency");
 
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     initialize();
 }
@@ -144,7 +144,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value() << std::endl;
 
     grainSourceBus->setBus(buffer.get());
-    outputBus(r, 0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
+    outputBus(r)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
 
     // Compute useful values
     /// @fixme these values should be per sample, not per quantum
@@ -182,7 +182,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
 
 void GranulationNode::process(ContextRenderLock& r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     if (!isInitialized() || !dstBus->numberOfChannels()) 
     {

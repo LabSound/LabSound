@@ -116,7 +116,7 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     _impulseResponseClip = setting("impulseResponse");
 
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     lab::sp_create(&_sp);
 
@@ -243,7 +243,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         _pending_kernels.clear();
     }
 
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     if (!isInitialized() || !dstBus || !srcBus || !srcBus->numberOfChannels() || !_kernels.size())

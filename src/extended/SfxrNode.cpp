@@ -636,7 +636,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     , sfxr(new SfxrNode::Sfxr())
 {
     // Output is always mono.
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     _preset = setting("preset");
     _waveType = setting("waveType");
@@ -702,7 +702,7 @@ SfxrNode::~SfxrNode()
 
 void SfxrNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
 
     if (!isInitialized() || !dstBus->numberOfChannels())
     {

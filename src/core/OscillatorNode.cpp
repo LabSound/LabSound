@@ -81,7 +81,7 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
     setType(OscillatorType::SINE);
 
     // An oscillator is always mono.
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -102,7 +102,7 @@ void OscillatorNode::setType(OscillatorType type)
 
 void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     if (!r.context() || !isInitialized() || !dstBus->numberOfChannels())
     {
         dstBus->zero();

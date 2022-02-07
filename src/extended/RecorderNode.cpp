@@ -24,7 +24,7 @@ RecorderNode::RecorderNode(AudioContext& ac)
     m_sampleRate = ac.sampleRate();
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -34,7 +34,7 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfi
     m_sampleRate = outConfig.desired_samplerate;
     m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -46,7 +46,7 @@ RecorderNode::~RecorderNode()
 
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * srcBus = inputBus(r, 0);
 
     bool has_input = srcBus != nullptr && srcBus->numberOfChannels() > 0;

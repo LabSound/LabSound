@@ -22,7 +22,7 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac)
     : AudioNode(ac, *desc())
 {
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
     _curveId = 0;
     _newCurveId = 0;
@@ -32,7 +32,7 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & de
     : AudioNode(ac, desc)
 {
     addInput("in");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
     _curveId = 0;
     _newCurveId = 0;
@@ -61,7 +61,7 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
         _curveId = _newCurveId;
     }
 
-    AudioBus * destinationBus = outputBus(r, 0);
+    AudioBus * destinationBus = outputBus(r);
     AudioBus * sourceBus = inputBus(r, 0);
     if (!destinationBus || !sourceBus || !_curve.size())
     {

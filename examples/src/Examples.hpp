@@ -81,12 +81,12 @@ struct ex_simple : public labsound_example
             ContextRenderLock r(context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
         }
-        context->connect(context->device(), musicClipNode, 0, 0);
+        context->connect(context->device(), musicClipNode, 0);
         musicClipNode->schedule(0.0);
 
         // osc -> gain -> destination
-        context->connect(gain, oscillator, 0, 0);
-        context->connect(context->device(), gain, 0, 0);
+        context->connect(gain, oscillator, 0);
+        context->connect(context->device(), gain, 0);
 
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(OscillatorType::SINE);
@@ -128,15 +128,15 @@ struct ex_osc_pop : public labsound_example
             gain->gain()->setValue(1);
 
             // osc -> destination
-            context->connect(gain, oscillator, 0, 0);
-            context->connect(context->device(), gain, 0, 0);
+            context->connect(gain, oscillator, 0);
+            context->connect(context->device(), gain, 0);
 
             oscillator->frequency()->setValue(1000.f);
             oscillator->setType(OscillatorType::SINE);
 
             recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
             recorder->startRecording();
-            context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
+            context->connect(context->device(), recorder, 1);  // input 1 is the null input
         }
 
         // retain nodes until demo end
@@ -193,7 +193,7 @@ struct ex_playback_events : public labsound_example
             ContextRenderLock r(context.get(), "ex_playback_events");
             sampledAudio->setBus(r, musicClip);
         }
-        context->connect(context->device(), sampledAudio, 0, 0);
+        context->connect(context->device(), sampledAudio, 0);
 
         sampledAudio->setOnEnded([]() {
             std::cout << "sampledAudio finished..." << std::endl;
@@ -233,7 +233,7 @@ struct ex_offline_rendering : public labsound_example
 
         auto recorder = std::make_shared<RecorderNode>(ac, offlineConfig);
 
-        context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
+        context->connect(context->device(), recorder, 1);  // input 1 is the null input
 
         recorder->startRecording();
 
@@ -245,14 +245,14 @@ struct ex_offline_rendering : public labsound_example
 
             // osc -> gain -> recorder
             oscillator = std::make_shared<OscillatorNode>(ac);
-            context->connect(gain, oscillator, 0, 0);
-            context->connect(recorder, gain, 0, 0);
+            context->connect(gain, oscillator, 0);
+            context->connect(recorder, gain, 0);
             oscillator->frequency()->setValue(880.f);
             oscillator->setType(OscillatorType::SINE);
             oscillator->start(0.0f);
 
             musicClipNode = std::make_shared<SampledAudioNode>(ac);
-            context->connect(recorder, musicClipNode, 0, 0);
+            context->connect(recorder, musicClipNode, 0);
             musicClipNode->setBus(r, musicClip);
             musicClipNode->schedule(0.0);
         }
@@ -316,10 +316,12 @@ struct ex_tremolo : public labsound_example
             // Set up processing chain
             // modulator > modulatorGain ---> osc frequency
             //                                osc > context
-            context->connect(modulatorGain, modulator, 0, 0);
-            context->connectParam(osc->detune(), modulatorGain, 0);
-            context->connect(context->device(), osc, 0, 0);
+            context->connect(modulatorGain, modulator, 0);
+            context->connectParam(osc->detune(), modulatorGain);
+            context->connect(context->device(), osc, 0);
         }
+
+        //context->debugTraverse();
 
         Wait(std::chrono::seconds(5));
     }
@@ -375,14 +377,14 @@ struct ex_frequency_modulation : public labsound_example
             chainDelay->delayTime()->setFloat(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
 
             // Set up FM processing chain:
-            context->connect(modulatorGain, modulator, 0, 0);  // Modulator to Gain
-            context->connectParam(osc->frequency(), modulatorGain, 0);  // Gain to frequency parameter
-            context->connect(trigger, osc, 0, 0);  // Osc to ADSR
-            context->connect(signalGain, trigger, 0, 0);  // ADSR to signalGain
-            context->connect(feedbackTap, signalGain, 0, 0);  // Signal to Feedback
-            context->connect(chainDelay, feedbackTap, 0, 0);  // Feedback to Delay
-            context->connect(signalGain, chainDelay, 0, 0);  // Delay to signalGain
-            context->connect(context->device(), signalGain, 0, 0);  // signalGain to DAC
+            context->connect(modulatorGain, modulator, 0);  // Modulator to Gain
+            context->connectParam(osc->frequency(), modulatorGain);  // Gain to frequency parameter
+            context->connect(trigger, osc, 0);  // Osc to ADSR
+            context->connect(signalGain, trigger, 0);  // ADSR to signalGain
+            context->connect(feedbackTap, signalGain, 0);  // Signal to Feedback
+            context->connect(chainDelay, feedbackTap, 0);  // Feedback to Delay
+            context->connect(signalGain, chainDelay, 0);  // Delay to signalGain
+            context->connect(context->device(), signalGain, 0);  // signalGain to DAC
         }
 
         double now_in_ms = 0;
@@ -442,9 +444,9 @@ struct ex_runtime_graph_update : public labsound_example
                 gain->gain()->setValue(0.50);
 
                 // osc -> gain -> destination
-                context->connect(gain, oscillator1, 0, 0);
-                context->connect(gain, oscillator2, 0, 0);
-                context->connect(context->device(), gain, 0, 0);
+                context->connect(gain, oscillator1, 0);
+                context->connect(gain, oscillator2, 0);
+                context->connect(context->device(), gain, 0);
 
                 oscillator1->setType(OscillatorType::SINE);
                 oscillator1->frequency()->setValue(220.f);
@@ -461,12 +463,12 @@ struct ex_runtime_graph_update : public labsound_example
 
             for (int i = 0; i < 4; ++i)
             {
-                context->disconnectNode(gain, oscillator1, 0, 0);
-                context->connect(gain, oscillator2, 0, 0);
+                context->disconnectNode(gain, oscillator1, 0);
+                context->connect(gain, oscillator2, 0);
                 Wait(std::chrono::milliseconds(200));
 
-                context->disconnectNode(gain, oscillator2, 0, 0);
-                context->connect(gain, oscillator1, 0, 0);
+                context->disconnectNode(gain, oscillator2, 0);
+                context->connect(gain, oscillator1, 0);
                 Wait(std::chrono::milliseconds(200));
             }
 
@@ -497,7 +499,7 @@ struct ex_microphone_loopback : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_microphone_loopback");
             input = lab::MakeAudioHardwareInputNode(r);
-            context->connect(context->device(), input, 0, 0);
+            context->connect(context->device(), input, 0);
         }
 
         Wait(std::chrono::seconds(10));
@@ -533,7 +535,7 @@ struct ex_microphone_reverb : public labsound_example
                 input = lab::MakeAudioHardwareInputNode(r);
 
                 recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
-                context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
+                context->connect(context->device(), recorder, 1);  // input 1 is the null input
                 recorder->startRecording();
 
                 convolve = std::make_shared<ConvolverNode>(ac);
@@ -542,10 +544,10 @@ struct ex_microphone_reverb : public labsound_example
                 wetGain = std::make_shared<GainNode>(ac);
                 wetGain->gain()->setValue(0.6f);
 
-                context->connect(convolve, input, 0, 0);
-                context->connect(wetGain, convolve, 0, 0);
-                context->connect(context->device(), wetGain, 0, 0);
-                context->connect(recorder, wetGain, 0, 0);
+                context->connect(convolve, input, 0);
+                context->connect(wetGain, convolve, 0);
+                context->connect(context->device(), wetGain, 0);
+                context->connect(recorder, wetGain, 0);
             }
 
             Wait(std::chrono::seconds(10));
@@ -592,18 +594,18 @@ struct ex_peak_compressor : public labsound_example
             filter->frequency()->setValue(1800.f);
 
             peakComp = std::make_shared<PeakCompNode>(ac);
-            context->connect(peakComp, filter, 0, 0);
-            context->connect(context->device(), peakComp, 0, 0);
+            context->connect(peakComp, filter, 0);
+            context->connect(context->device(), peakComp, 0);
 
             kick_node->setBus(r, kick);
-            context->connect(filter, kick_node, 0, 0);
+            context->connect(filter, kick_node, 0);
 
             hihat_node->setBus(r, hihat);
-            context->connect(filter, hihat_node, 0, 0);
+            context->connect(filter, hihat_node, 0);
             //hihat_node->gain()->setValue(0.2f);
 
             snare_node->setBus(r, snare);
-            context->connect(filter, snare_node, 0, 0);
+            context->connect(filter, snare_node, 0);
 
             _nodes.push_back(kick_node);
             _nodes.push_back(hihat_node);
@@ -658,10 +660,10 @@ struct ex_stereo_panning : public labsound_example
             ContextRenderLock r(context.get(), "ex_stereo_panning");
 
             audioClipNode->setBus(r, audioClip);
-            context->connect(stereoPanner, audioClipNode, 0, 0);
+            context->connect(stereoPanner, audioClipNode, 0);
             audioClipNode->schedule(0.0, -1); // -1 to loop forever
 
-            context->connect(context->device(), stereoPanner, 0, 0);
+            context->connect(context->device(), stereoPanner, 0);
         }
 
         if (audioClipNode)
@@ -715,10 +717,10 @@ struct ex_hrtf_spatialization : public labsound_example
             ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
 
             panner->setPanningModel(PanningModel::HRTF);
-            context->connect(context->device(), panner, 0, 0);
+            context->connect(context->device(), panner, 0);
 
             audioClipNode->setBus(r, audioClip);
-            context->connect(panner, audioClipNode, 0, 0);
+            context->connect(panner, audioClipNode, 0);
             audioClipNode->schedule(0.0, -1); // -1 to loop forever
         }
 
@@ -794,20 +796,20 @@ struct ex_convolution_reverb : public labsound_example
             dryGain = std::make_shared<GainNode>(ac);
             dryGain->gain()->setValue(0.1f);
 
-            context->connect(wetGain, convolve, 0, 0);
-            context->connect(outputGain, wetGain, 0, 0);
-            context->connect(outputGain, dryGain, 0, 0);
-            context->connect(convolve, dryGain, 0, 0);
+            context->connect(wetGain, convolve, 0);
+            context->connect(outputGain, wetGain, 0);
+            context->connect(outputGain, dryGain, 0);
+            context->connect(convolve, dryGain, 0);
 
             outputGain->gain()->setValue(0.5f);
 
             voiceNode = std::make_shared<SampledAudioNode>(ac);
             voiceNode->setBus(r, voiceClip);
-            context->connect(dryGain, voiceNode, 0, 0);
+            context->connect(dryGain, voiceNode, 0);
 
             voiceNode->schedule(0.0);
 
-            context->connect(context->device(), outputGain, 0, 0);
+            context->connect(context->device(), outputGain, 0);
         }
 
         _nodes.push_back(convolve);
@@ -855,11 +857,11 @@ struct ex_misc : public labsound_example
             pingping->SetFeedback(.75f);
             pingping->SetDelayIndex(lab::TempoSync::TS_16);
 
-            context->connect(context->device(), pingping->output, 0, 0);
+            context->connect(context->device(), pingping->output, 0);
 
             audioClipNode->setBus(r, audioClip);
 
-            context->connect(pingping->input, audioClipNode, 0, 0);
+            context->connect(pingping->input, audioClipNode, 0);
 
             audioClipNode->schedule(0.25);
         }
@@ -952,37 +954,37 @@ struct ex_dalek_filter : public labsound_example
 
 #ifdef USE_LIVE
             input = lab::MakeAudioHardwareInputNode(r);
-            context->connect(vcInverter1, input, 0, 0);
-            context->connect(vcDiode4, input, 0, 0);
+            context->connect(vcInverter1, input, 0);
+            context->connect(vcDiode4, input, 0);
 #else
             audioClipNode->setBus(r, audioClip);
-            //context->connect(vcInverter1, audioClipNode, 0, 0); // dimitri
-            context->connect(vcDiode4, audioClipNode, 0, 0);
+            //context->connect(vcInverter1, audioClipNode, 0); // dimitri
+            context->connect(vcDiode4, audioClipNode, 0);
             audioClipNode->start(0.f);
 #endif
 
-            context->connect(vcDiode3, vcInverter1, 0, 0);
+            context->connect(vcDiode3, vcInverter1, 0);
 
             // Then the Vin side
-            context->connect(vInGain, vIn, 0, 0);
-            context->connect(vInInverter1, vInGain, 0, 0);
-            context->connect(vcInverter1, vInGain, 0, 0);
-            context->connect(vcDiode4, vInGain, 0, 0);
+            context->connect(vInGain, vIn, 0);
+            context->connect(vInInverter1, vInGain, 0);
+            context->connect(vcInverter1, vInGain, 0);
+            context->connect(vcDiode4, vInGain, 0);
 
-            context->connect(vInInverter2, vInInverter1, 0, 0);
-            context->connect(vInDiode2, vInInverter1, 0, 0);
-            context->connect(vInDiode1, vInInverter2, 0, 0);
+            context->connect(vInInverter2, vInInverter1, 0);
+            context->connect(vInDiode2, vInInverter1, 0);
+            context->connect(vInDiode1, vInInverter2, 0);
 
             // Finally connect the four diodes to the destination via the output-stage compressor and master gain node
-            context->connect(vInInverter3, vInDiode1, 0, 0);
-            context->connect(vInInverter3, vInDiode2, 0, 0);
+            context->connect(vInInverter3, vInDiode1, 0);
+            context->connect(vInInverter3, vInDiode2, 0);
 
-            context->connect(compressor, vInInverter3, 0, 0);
-            context->connect(compressor, vcDiode3, 0, 0);
-            context->connect(compressor, vcDiode4, 0, 0);
+            context->connect(compressor, vInInverter3, 0);
+            context->connect(compressor, vcDiode3, 0);
+            context->connect(compressor, vcDiode4, 0);
 
-            context->connect(outGain, compressor, 0, 0);
-            context->connect(context->device(), outGain, 0, 0);
+            context->connect(outGain, compressor, 0);
+            context->connect(context->device(), outGain, 0);
         }
 
         _nodes.push_back(input);
@@ -1103,17 +1105,17 @@ struct ex_redalert_synthesis : public labsound_example
             resonanceSum->gain()->setValue(0.5f);
 
             // sweep drives oscillator frequency
-            context->connectParam(osc->frequency(), sweep, 0);
+            context->connectParam(osc->frequency(), sweep);
 
             // oscillator drives resonator frequency
-            context->connectParam(resonator->frequency(), osc, 0);
+            context->connectParam(resonator->frequency(), osc);
 
             // osc --> oscGain -------------+
             // resonator -> resonatorGain --+--> resonanceSum
-            context->connect(oscGain, osc, 0, 0);
-            context->connect(resonanceSum, oscGain, 0, 0);
-            context->connect(resonatorGain, resonator, 0, 0);
-            context->connect(resonanceSum, resonatorGain, 0, 0);
+            context->connect(oscGain, osc, 0);
+            context->connect(resonanceSum, oscGain, 0);
+            context->connect(resonatorGain, resonator, 0);
+            context->connect(resonanceSum, resonatorGain, 0);
 
             delaySum = std::make_shared<GainNode>(ac);
             delaySum->gain()->setValue(0.2f);
@@ -1127,8 +1129,8 @@ struct ex_redalert_synthesis : public labsound_example
             {
                 delay[i] = std::make_shared<DelayNode>(ac, 0.04f);
                 delay[i]->delayTime()->setFloat(delays[i]);
-                context->connect(delay[i], resonanceSum, 0, 0);
-                context->connect(delaySum, delay[i], 0, 0);
+                context->connect(delay[i], resonanceSum, 0);
+                context->connect(delaySum, delay[i], 0);
             }
 
             filterSum = std::make_shared<GainNode>(ac);
@@ -1140,7 +1142,7 @@ struct ex_redalert_synthesis : public labsound_example
             //            +--> filter3 --+
             //            +--------------+----> filterSum
             //
-            context->connect(filterSum, delaySum, 0, 0);
+            context->connect(filterSum, delaySum, 0);
 
             float centerFrequencies[4] = {740.f, 1400.f, 1500.f, 1600.f};
             for (int i = 0; i < 4; ++i)
@@ -1148,13 +1150,13 @@ struct ex_redalert_synthesis : public labsound_example
                 filter[i] = std::make_shared<BiquadFilterNode>(ac);
                 filter[i]->frequency()->setValue(centerFrequencies[i]);
                 filter[i]->q()->setValue(12.f);
-                context->connect(filter[i], delaySum, 0, 0);
-                context->connect(filterSum, filter[i], 0, 0);
+                context->connect(filter[i], delaySum, 0);
+                context->connect(filterSum, filter[i], 0);
             }
 
             // filterSum --> destination
-            context->connectParam(filterSum->gain(), outputGainFunction, 0);
-            context->connect(context->device(), filterSum, 0, 0);
+            context->connectParam(filterSum->gain(), outputGainFunction);
+            context->connect(context->device(), filterSum, 0);
         }
 
         _nodes.push_back(sweep);
@@ -1384,8 +1386,8 @@ struct ex_wavepot_dsp : public labsound_example
             grooveBox->start(0);
             envelope->gate()->setValue(1.f);
 
-            context->connect(envelope, grooveBox, 0, 0);
-            context->connect(context->device(), envelope, 0, 0);
+            context->connect(envelope, grooveBox, 0);
+            context->connect(context->device(), envelope, 0);
         }
 
         _nodes.push_back(grooveBox);
@@ -1420,15 +1422,15 @@ struct ex_granulation_node : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_granulation_node");
             recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
-            context->connect(context->device(), recorder, 1, 0);  // input 1 is the null input
+            context->connect(context->device(), recorder, 1);  // input 1 is the null input
             recorder->startRecording();
 
             granulation_node->setGrainSource(r, grain_source);
         }
 
-        context->connect(gain, granulation_node, 0, 0);
-        context->connect(context->device(), gain, 0, 0);
-        context->connect(recorder, gain, 0, 0);
+        context->connect(gain, granulation_node, 0);
+        context->connect(context->device(), gain, 0);
+        context->connect(recorder, gain, 0);
 
         granulation_node->start(0.0f);
 
@@ -1461,8 +1463,8 @@ struct ex_poly_blep : public labsound_example
         std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
 
         gain->gain()->setValue(1.0f);
-        context->connect(gain, polyBlep, 0, 0);
-        context->connect(context->device(), gain, 0, 0);
+        context->connect(gain, polyBlep, 0);
+        context->connect(context->device(), gain, 0);
 
         polyBlep->frequency()->setValue(220.f);
         polyBlep->setType(PolyBLEPType::TRIANGLE);

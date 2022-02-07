@@ -14,14 +14,24 @@
 
 using namespace lab;
 
-void lab::pull_graph(AudioContext * ctx, AudioNode * required_inlet, 
-    AudioBus * src, AudioBus * dst, int frames,
-    const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
+void lab::pull_graph(AudioContext * ctx, 
+    AudioNode * required_inlet, 
+    AudioBus * src, AudioBus * dst, 
+    int frames,
+    const SamplingInfo & info, 
+    AudioHardwareInput * optional_hardware_input)
 {
     // The audio system might still be invoking callbacks during shutdown, so bail out if so.
     if (!ctx) 
         return;
 
+    if (true)
+    {
+        ctx->debugTraverse(required_inlet, src, dst, frames, info,
+                           optional_hardware_input);
+
+        return;
+    }
     // bail if shutting down.
     auto ac = ctx->audioContextInterface().lock();
     if (!ac)
@@ -30,7 +40,8 @@ void lab::pull_graph(AudioContext * ctx, AudioNode * required_inlet,
     ASSERT(required_inlet);
 
     ContextRenderLock renderLock(ctx, "lab::pull_graph");
-    if (!renderLock.context()) return;  // return if couldn't acquire lock
+    if (!renderLock.context()) 
+        return;  // return if couldn't acquire lock
 
     if (!ctx->isInitialized())
     {
@@ -59,7 +70,7 @@ void lab::pull_graph(AudioContext * ctx, AudioNode * required_inlet,
 
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
     required_inlet->pullInputs(renderLock, frames);
-    AudioBus * renderedBus = required_inlet->outputBus(renderLock, 0);
+    AudioBus * renderedBus = required_inlet->outputBus(renderLock);
 
     if (!renderedBus)
     {

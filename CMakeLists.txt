@@ -6,6 +6,8 @@ project(LabSound)
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
+set(CMAKE_INSTALL_MESSAGE LAZY)
+
 # default backend set up
 
 if (WIN32)

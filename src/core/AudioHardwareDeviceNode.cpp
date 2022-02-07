@@ -63,7 +63,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     addInput("null");
 
     // add an output where the processed buffer will be copied from
-    addOutput("out", outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
+    addOutput(outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
 
     // Node-specific default mixing rules.
     m_channelInterpretation = ChannelInterpretation::Speakers;
@@ -144,7 +144,7 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
 void AudioHardwareDeviceNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * srcBus = inputBus(r, 0);
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     if (!dstBus || (srcBus == dstBus))
         return; // do nothing if there's no output or output is connected to the input
 

@@ -75,7 +75,7 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
 
     /// @TODO in the future a panner could be multi-channel beyond stereo
     addInput("in");
-    addOutput("out", 2, AudioNode::ProcessingSizeInFrames);
+    addOutput(2, AudioNode::ProcessingSizeInFrames);
 
     m_orientationX = param("orientationX");
     m_orientationY = param("orientationY");
@@ -221,7 +221,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
 
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destination = outputBus(r, 0);
+    AudioBus * destination = outputBus(r);
     AudioBus * source = inputBus(r, 0);
 
     if (!destination || !source || !m_panner.get())

@@ -72,6 +72,31 @@ struct Vector {
         }
     }
 
+    void emplace_back(T * rh)
+    {
+        if (!cap)
+        {
+            data = (T **) malloc(sizeof(T *));
+            sz = 1;
+            cap = 1;
+            *data = rh;
+        }
+        else
+        {
+            if (sz < cap)
+            {
+                data[sz] = rh;
+                ++sz;
+            }
+            else
+            {
+                resize(sz + 1);
+                data[sz] = rh;
+                ++sz;
+            }
+        }
+    }
+
     void swap_pop(int j) {
         if (!sz)
             return;
@@ -195,22 +220,22 @@ struct AudioNodeSummingInput
     }
     ~AudioNodeSummingInput();
 
-    struct Source
-    {
-        std::shared_ptr<AudioNode> node;
-        int out;
-    };
     // inputs are summing junctions
-    Vector<Source> sources;
+    Vector<std::shared_ptr<AudioNode>> sources;
     AudioBus * summingBus = nullptr;
     std::string name;
 
     void clear() noexcept;
-    void updateSummingBus(int channels, int size);
 };
 
 struct AudioNodeNamedOutput
 {
+    AudioNodeNamedOutput() noexcept
+        : name("")
+        , bus(nullptr)
+    {
+    }
+
     explicit AudioNodeNamedOutput(const std::string name, AudioBus * bus) noexcept
         : name(name)
         , bus(bus)
@@ -307,6 +332,8 @@ public :
         ProcessingSizeInFrames = 128
     };
 
+    int color = 0;
+
     AudioNode() = delete;
     virtual ~AudioNode();
 
@@ -368,22 +395,19 @@ public :
     bool isInitialized() const { return m_isInitialized; }
 
     void addInput(const std::string & name);
-    void addOutput(const std::string & name, int channels, int bufferSize);
+    void addOutput(int channels, int bufferSize);
 
     const Vector<AudioNodeSummingInput>& inputs() const { return _inputs; }
-    const Vector<AudioNodeNamedOutput>& outputs() const { return _outputs; }
     const AudioNodeSummingInput* input(int index) const;
-    const AudioNodeNamedOutput* output(int index) const;
+    const AudioNodeNamedOutput* output() const;
     int input_index(const char* name) const;
-    int output_index(const char* name) const;
 
     int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
-    int numberOfOutputs() const { return static_cast<int>(_outputs.size()); }
 
     // connections 
     void connect(ContextRenderLock&, 
-            int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
-    void connect(int inputIndex, std::shared_ptr<AudioNode> n, int node_outputIndex);
+            int inputIndex, std::shared_ptr<AudioNode> n);
+    void connect(int inputIndex, std::shared_ptr<AudioNode> n);
     void disconnect(int inputIndex);
     void disconnect(std::shared_ptr<AudioNode>);
     void disconnect(ContextRenderLock&, std::shared_ptr<AudioNode>);
@@ -391,12 +415,10 @@ public :
     bool isConnected(std::shared_ptr<AudioNode>);
 
     // audio busses
-   ///  @TODO make these all const
+    ///  @TODO make these all const
     AudioBus * inputBus(ContextRenderLock & r, int i);
-    AudioBus * outputBus(ContextRenderLock & r, int i);
-    AudioBus * outputBus(ContextRenderLock& r, char const* const str);
+    AudioBus * outputBus(ContextRenderLock& r);
     std::string inputBusName(ContextRenderLock & r, int i);
-    std::string outputBusName(ContextRenderLock & r, int i);
 
     // parameters
     std::vector<std::string> paramNames() const;
@@ -468,7 +490,7 @@ protected:
     void serviceQueue(ContextRenderLock & r);
 
     Vector<AudioNodeSummingInput> _inputs;
-    Vector<AudioNodeNamedOutput> _outputs;
+    AudioNodeNamedOutput _output;
 
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;
@@ -478,7 +500,6 @@ protected:
     bool inputsAreSilent(ContextRenderLock &);
     void silenceOutputs(ContextRenderLock &);
     void unsilenceOutputs(ContextRenderLock &);
-
 
     // starts an immediate ramp to zero in preparation for disconnection
     void scheduleDisconnect() { _scheduler.stop(0); }

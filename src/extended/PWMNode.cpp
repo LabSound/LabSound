@@ -25,7 +25,7 @@ PWMNode::PWMNode(AudioContext & ac)
 {
     addInput("carrier");
     addInput("modulator");
-    addOutput("out", 1, AudioNode::ProcessingSizeInFrames);
+    addOutput(1, AudioNode::ProcessingSizeInFrames);
     initialize();
 }
 
@@ -36,7 +36,7 @@ PWMNode::~PWMNode()
 
 void PWMNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * dstBus = outputBus(r, 0);
+    AudioBus * dstBus = outputBus(r);
     AudioBus * carrierBus = inputBus(r, 0);
     AudioBus * modBus = inputBus(r, 1);
 

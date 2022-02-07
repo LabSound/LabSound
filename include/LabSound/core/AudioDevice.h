@@ -64,6 +64,8 @@ struct SamplingInfo
 // the `AudioHardwareDeviceNode` or the `NullDeviceNode`.
 void pull_graph(AudioContext * ctx, AudioNode * root, AudioBus * src, AudioBus * dst, int frames,
                 const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
+void pull_graph_debug(AudioContext * ctx, AudioNode * root, AudioBus * src, AudioBus * dst, int frames,
+                const SamplingInfo & info, AudioHardwareInput * optional_hardware_input = nullptr);
 
 ///////////////////////////////////
 //   AudioDeviceRenderCallback   //
