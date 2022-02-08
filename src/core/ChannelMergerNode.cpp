@@ -25,7 +25,7 @@ ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
     , m_desiredNumberOfOutputChannels(1)
 {
     addInputs(numberOfInputs_);
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = m_desiredNumberOfOutputChannels;
     initialize();
 }
 

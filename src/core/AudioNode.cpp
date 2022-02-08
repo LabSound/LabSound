@@ -130,13 +130,6 @@ void AudioNodeSummingInput::clear() noexcept
 }
 
 
-AudioNodeNamedOutput::~AudioNodeNamedOutput()
-{
-    if (bus)
-        delete bus;
-}
-
-
 const int start_envelope = 64;
 const int end_envelope = 64;
 
@@ -360,7 +353,8 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
 
 AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : _scheduler(ac.sampleRate())
-    , _enqueudWork((ConcurrentQueue*) new moodycamel::ConcurrentQueue<Work>())
+    , _enqueudWork((ConcurrentQueue *) new moodycamel::ConcurrentQueue<Work>())
+    , _output(nullptr)
 {
     if (desc.params)
     {
@@ -415,20 +409,9 @@ void AudioNode::addInput(const std::string & name)
         _enqueudWork)->enqueue(Work {Work::OpAddInput, {}, 0, 0, name});
 }
 
-void AudioNode::addOutput(int channelCount, int size)
-{
-    ((moodycamel::ConcurrentQueue<Work> *) 
-        _enqueudWork)->enqueue(Work {Work::OpAddOutput, {}, 0, 0, "", channelCount, size});
-}
-
 const AudioNodeSummingInput* AudioNode::input(int index) const
 {
     return _inputs[index];
-}
-
-const AudioNodeNamedOutput* AudioNode::output() const
-{
-    return &_output;
 }
 
 int AudioNode::input_index(const char* name) const
@@ -539,13 +522,6 @@ void AudioNode::serviceQueue(ContextRenderLock & r)
                     _inputs.emplace_back(AudioNodeSummingInput(name));
                     break;
                 }
-                case Work::OpAddOutput:
-                {
-                    if (_output.bus)
-                        delete _output.bus;
-                    _output.bus = new AudioBus(work.channelCount, work.size);
-                    break;
-                }
                 case Work::OpConnectInput:
                     connect(r, work.inputIndex, work.node);
                     break;
@@ -579,8 +555,7 @@ std::string AudioNode::inputBusName(ContextRenderLock & r, int i)
 
 AudioBus* AudioNode::outputBus(ContextRenderLock & r)
 {
-    serviceQueue(r);
-    return _output.bus;
+    return _output;
 }
 
 AudioBus * AudioNode::inputBus(ContextRenderLock & r, int i)
@@ -819,12 +794,12 @@ bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 
 void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
-    _output.bus->zero();
+    _output->zero();
 }
 
 void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 {
-    _output.bus->clearSilentFlag();
+    _output->clearSilentFlag();
 }
 
 std::shared_ptr<AudioParam> AudioNode::param(char const * const str)

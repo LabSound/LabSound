@@ -228,37 +228,6 @@ struct AudioNodeSummingInput
     void clear() noexcept;
 };
 
-struct AudioNodeNamedOutput
-{
-    AudioNodeNamedOutput() noexcept
-        : name("")
-        , bus(nullptr)
-    {
-    }
-
-    explicit AudioNodeNamedOutput(const std::string name, AudioBus * bus) noexcept
-        : name(name)
-        , bus(bus)
-    {
-    }
-
-    explicit AudioNodeNamedOutput(AudioNodeNamedOutput && rh) noexcept
-        : bus(rh.bus)
-    {
-        // destructor will delete the pointer, so
-        // the move operator allows storing Outputs in a container
-        // without accidental deletion
-        std::swap(name, rh.name);
-        rh.bus = nullptr;
-    }
-
-    ~AudioNodeNamedOutput();
-    
-    std::string name;
-    AudioBus * bus = nullptr;
-};
-
-
 class AudioNodeScheduler
 {
 public:
@@ -395,11 +364,10 @@ public :
     bool isInitialized() const { return m_isInitialized; }
 
     void addInput(const std::string & name);
-    void addOutput(int channels, int bufferSize);
 
     const Vector<AudioNodeSummingInput>& inputs() const { return _inputs; }
     const AudioNodeSummingInput* input(int index) const;
-    const AudioNodeNamedOutput* output() const;
+    const AudioBus* output() const;
     int input_index(const char* name) const;
 
     int numberOfInputs() const { return static_cast<int>(_inputs.size()); }
@@ -470,7 +438,6 @@ protected:
             OpDisconnectIndex, 
             OpDisconnectInput,
             OpAddInput,
-            OpAddOutput
         };
 
         Op op;
@@ -489,8 +456,10 @@ protected:
 
     void serviceQueue(ContextRenderLock & r);
 
+    int _channelCount = 1;
+
     Vector<AudioNodeSummingInput> _inputs;
-    AudioNodeNamedOutput _output;
+    AudioBus* _output;
 
     std::vector<std::shared_ptr<AudioParam>> _params;
     std::vector<std::shared_ptr<AudioSetting>> _settings;

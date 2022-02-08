@@ -22,7 +22,7 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac)
     : AudioNode(ac, *desc())
 {
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
     _curveId = 0;
     _newCurveId = 0;
@@ -32,7 +32,7 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & de
     : AudioNode(ac, desc)
 {
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
     _curveId = 0;
     _newCurveId = 0;

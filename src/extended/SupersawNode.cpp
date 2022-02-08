@@ -139,7 +139,7 @@ SupersawNode::SupersawNode(AudioContext & ac)
     internalNode->detune = param("detune");
     internalNode->frequency = param("frequency");
 
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
 }
 

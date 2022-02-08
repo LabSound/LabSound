@@ -13,7 +13,7 @@ AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, AudioNodeDes
     : AudioNode(ac, desc)
 {
     addInput("in");
-    addOutput(outputChannelCount, AudioNode::ProcessingSizeInFrames);
+    _channelCount = outputChannelCount;
     initialize();
 }
 

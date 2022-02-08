@@ -81,7 +81,7 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
     setType(OscillatorType::SINE);
 
     // An oscillator is always mono.
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
 }
 

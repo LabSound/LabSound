@@ -28,7 +28,7 @@ NoiseNode::NoiseNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
     _type = setting("type");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
 }
 

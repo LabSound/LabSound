@@ -81,7 +81,7 @@ namespace lab {
     
     AudioNodeDescriptor * SampledAudioNode::desc()
     {
-        static AudioNodeDescriptor d {s_saParams, s_saSettings};
+        static AudioNodeDescriptor d = {s_saParams, s_saSettings};
         return &d;
     }
 
@@ -98,8 +98,9 @@ namespace lab {
             this->_internals->bus_setting_updated = true;
         });
  
-        // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
-        addOutput(2, AudioNode::ProcessingSizeInFrames);
+        // Default to a single stereo output, per AudioBufferSoundNode. 
+        // A call to setBus() will set the number of output channels to that of the bus.
+        _channelCount = 2;
 
         initialize();
     }

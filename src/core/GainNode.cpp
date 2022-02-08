@@ -27,7 +27,7 @@ GainNode::GainNode(AudioContext& ac)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     m_gain = param("gain");
 

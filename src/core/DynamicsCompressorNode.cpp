@@ -36,7 +36,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     : AudioNode(ac, *desc())
 {
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     m_threshold = param("threshold");
     m_knee = param("knee");

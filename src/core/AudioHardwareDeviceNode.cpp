@@ -63,7 +63,7 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
     addInput("null");
 
     // add an output where the processed buffer will be copied from
-    addOutput(outputConfig.desired_channels, AudioNode::ProcessingSizeInFrames);
+    _channelCount = outputConfig.desired_channels;
 
     // Node-specific default mixing rules.
     m_channelInterpretation = ChannelInterpretation::Speakers;

@@ -22,7 +22,7 @@ AudioNodeDescriptor * FunctionNode::desc()
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    addOutput(channels, AudioNode::ProcessingSizeInFrames);
+    _channelCount = channels;
     initialize();
 }
 

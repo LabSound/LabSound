@@ -61,7 +61,7 @@ GranulationNode::GranulationNode(AudioContext & ac)
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
     grainPlaybackFreq = param("PlaybackFrequency");
 
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     initialize();
 }

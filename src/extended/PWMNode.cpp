@@ -25,7 +25,7 @@ PWMNode::PWMNode(AudioContext & ac)
 {
     addInput("carrier");
     addInput("modulator");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
     initialize();
 }
 

@@ -215,7 +215,7 @@ namespace lab
         adsr_impl->m_releaseTime->setFloat(0.125f);  // 125ms
 
         addInput("in");
-        addOutput(1, AudioNode::ProcessingSizeInFrames);
+        _channelCount = 1;
 
         initialize();
     }

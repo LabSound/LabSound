@@ -254,7 +254,7 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
     addInput("in");
-    addOutput(2, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 2;
 
     m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 

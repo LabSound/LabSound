@@ -682,6 +682,7 @@ void AudioContext::debugTraverse(
 
     static std::map<int, std::vector<AudioBus *>> summing_busses;
     std::vector<AudioBus *> in_use;
+    std::vector<std::pair<AudioNode *, char*>> by_whom;
 
 
     AudioNode * current_node = nullptr;
@@ -715,13 +716,7 @@ void AudioContext::debugTraverse(
             p->serviceQueue(renderLock);
             for (auto & i : p->inputs().sources)
             {
-                if (!i || !(*i))
-                    continue;
-                auto output = (*i)->outputBus(renderLock);
-                if (!output)
-                    continue;
-
-                if ((*i)->color >= color)
+                if (!i || !(*i) || (*i)->color >= color)
                     continue;
 
                 auto sb = summing_busses.find(1);
@@ -741,6 +736,7 @@ void AudioContext::debugTraverse(
                 }
                 p->_input.summingBus = in_use.back();
 
+                by_whom.push_back({current_node, "param input"});
                 node_stack.push_back(i->get());
             }
         }
@@ -769,6 +765,26 @@ void AudioContext::debugTraverse(
         // if there were inputs on the node current node, queue up their work next
         if (node_stack.size() > sz)
             continue;
+
+        {
+            auto sb = summing_busses.find(1);
+            if (sb == summing_busses.end())
+            {
+                summing_busses[1] = {};
+                sb = summing_busses.find(1);
+            }
+            if (sb->second.size())
+            {
+                in_use.push_back(sb->second.back());
+                sb->second.pop_back();
+            }
+            else
+            {
+                in_use.push_back(new AudioBus(1, frames));
+            }
+            by_whom.push_back({current_node, "node output"});
+            current_node->_output = in_use.back();
+        }
 
         // should this just be "do the stuff"?
         //work.push_back({current_node, setOutputChannels});
@@ -817,11 +833,13 @@ void AudioContext::debugTraverse(
                     if (sb->second.size())
                     {
                         in_use.push_back(sb->second.back());
+                        by_whom.push_back({current_node, "input summing bus"});
                         sb->second.pop_back();
                     }
                     else
                     {
                         in_use.push_back(new AudioBus(requiredChannels, frames));
+                        by_whom.push_back({current_node, "input summing bus"});
                     }
 
                     in->summingBus = in_use.back();
@@ -848,15 +866,15 @@ void AudioContext::debugTraverse(
             //  initialize the busses with start and final zeroes.
             if (start_zero_count)
             {
-                for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
-                    memset(w.node->_output.bus->channel(i)->mutableData(), 0,
+                for (int i = 0; i < w.node->_output->numberOfChannels(); ++i)
+                    memset(w.node->_output->channel(i)->mutableData(), 0,
                            sizeof(float) * start_zero_count);
             }
 
             if (final_zero_count)
             {
-                for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
-                    memset(w.node->_output.bus->channel(i)->mutableData() + final_zero_start, 0,
+                for (int i = 0; i < w.node->_output->numberOfChannels(); ++i)
+                    memset(w.node->_output->channel(i)->mutableData() + final_zero_start, 0,
                            sizeof(float) * final_zero_count);
             }
 
@@ -879,9 +897,9 @@ void AudioContext::debugTraverse(
 
                 // damp out the first samples
                 if (damp_end > 0)
-                    for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    for (int i = 0; i < w.node->_output->numberOfChannels(); ++i)
                     {
-                        float * data = w.node->_output.bus->channel(i)->mutableData();
+                        float * data = w.node->_output->channel(i)->mutableData();
                         for (int j = damp_start; j < damp_end; ++j)
                             data[j] *= OOS(j - damp_start);
                     }
@@ -912,9 +930,9 @@ void AudioContext::debugTraverse(
                 if (steps > 0)
                 {
                     //printf("out: %d %d\n", damp_start, damp_end);
-                    for (int i = 0; i < w.node->_output.bus->numberOfChannels(); ++i)
+                    for (int i = 0; i < w.node->_output->numberOfChannels(); ++i)
                     {
-                        float * data = w.node->_output.bus->channel(i)->mutableData();
+                        float * data = w.node->_output->channel(i)->mutableData();
                         for (int j = damp_start; j < damp_end; ++j)
                             data[j] *= OOS(damp_end - j);
                     }

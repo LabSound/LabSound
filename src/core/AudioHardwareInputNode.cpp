@@ -26,7 +26,7 @@ AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourcePro
     : AudioNode(ac, *desc())
     , m_audioSourceProvider(audioSourceProvider)
 {
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = m_sourceNumberOfChannels;
     initialize();
 }
 

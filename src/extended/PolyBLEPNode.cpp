@@ -405,7 +405,7 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     });
 
     // An oscillator is always mono.
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);

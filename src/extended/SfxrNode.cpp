@@ -636,7 +636,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     , sfxr(new SfxrNode::Sfxr())
 {
     // Output is always mono.
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     _preset = setting("preset");
     _waveType = setting("waveType");

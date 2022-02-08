@@ -15,7 +15,6 @@ AudioBasicProcessorNode::AudioBasicProcessorNode(AudioContext & ac, AudioNodeDes
     : AudioNode(ac, desc)
 {
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
 
     // The subclass must create m_processor.
 }

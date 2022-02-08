@@ -116,7 +116,7 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     _impulseResponseClip = setting("impulseResponse");
 
     addInput("in");
-    addOutput(1, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 1;
 
     lab::sp_create(&_sp);
 

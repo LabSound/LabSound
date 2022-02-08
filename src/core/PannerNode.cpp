@@ -75,7 +75,7 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
 
     /// @TODO in the future a panner could be multi-channel beyond stereo
     addInput("in");
-    addOutput(2, AudioNode::ProcessingSizeInFrames);
+    _channelCount = 2;
 
     m_orientationX = param("orientationX");
     m_orientationY = param("orientationY");
