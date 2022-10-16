@@ -128,11 +128,19 @@ struct labsound_example
         std::string path_prefix;
         auto cmds = SplitCommandLine(argc, argv);
 
-        if (cmds.size() > 1) path_prefix = cmds[1] + "/";  // cmds[0] is the path to the exe
+        if (cmds.size() > 1) 
+            path_prefix = cmds[1] + "/";  // cmds[0] is the path to the exe
 
-        const std::string path = path_prefix + name;
+        std::string path = path_prefix + name;
         std::shared_ptr<AudioBus> bus = MakeBusFromFile(path, false);
-        if (!bus) throw std::runtime_error("couldn't open " + path);
+
+        if (!bus) {
+            path = std::string(SAMPLE_SRC_DIR) + "/" + std::string(name);
+            bus = MakeBusFromFile(path, false);
+        }
+
+        if (!bus) 
+            throw std::runtime_error("couldn't open " + path);
 
         return bus;
     }

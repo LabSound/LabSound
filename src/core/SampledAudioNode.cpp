@@ -392,6 +392,19 @@ namespace lab {
 
                     if (ending)
                     {
+                        if (write_index < AudioNode::ProcessingSizeInFrames) {
+                            // if the buffer didn't fully fill the buffer, at the end, zero out the remainder
+                            /// @TODO should lerp the end value to zero over a 10ms tail period.
+                            /// Going to assume the source data doesn't end with a non-zero value for now.
+                            for (int i = 0; i < srcChannelCount; ++i)
+                            {
+                                SRC_DATA * src_data = &schedule.resampler[i]->data;
+                                float* buffer = dstBus->channel(i)->mutableData();
+                                for (int j = write_index; j < AudioNode::ProcessingSizeInFrames; ++j)
+                                    buffer[j] = 0.f;
+                            }
+                        }
+
                         schedule.cursor = schedule.grain_start; // reset to start
 
                         if (schedule.loopCount > 0)

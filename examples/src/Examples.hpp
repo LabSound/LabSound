@@ -53,7 +53,7 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig> GetDefaultAudioDeviceConf
 //    ex_simple    //
 /////////////////////
 
-// ex_simple desmontrate the use of an audio clip loaded from disk and a basic sine oscillator. 
+// ex_simple demonstrates the use of an audio clip loaded from disk and a basic sine oscillator. 
 struct ex_simple : public labsound_example
 {
     virtual void play(int argc, char** argv) override final
@@ -99,6 +99,49 @@ struct ex_simple : public labsound_example
     }
 };
 
+
+
+/////////////////////
+//   ex_play_file  //
+/////////////////////
+
+struct ex_play_file : public labsound_example
+{
+    virtual void play(int argc, char ** argv) override final
+    {
+        std::unique_ptr<lab::AudioContext> context;
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext & ac = *context.get();
+
+        auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
+        if (!musicClip)
+            return;
+
+        std::shared_ptr<SampledAudioNode> musicClipNode;
+        std::shared_ptr<GainNode> gain;
+
+        gain = std::make_shared<GainNode>(ac);
+        gain->gain()->setValue(0.5f);
+
+        musicClipNode = std::make_shared<SampledAudioNode>(ac);
+        {
+            ContextRenderLock r(context.get(), "ex_simple");
+            musicClipNode->setBus(r, musicClip);
+        }
+        context->connect(context->device(), musicClipNode, 0, 0);
+        musicClipNode->schedule(0.0);
+
+        // osc -> gain -> destination
+        context->connect(gain, musicClipNode, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
+
+        _nodes.push_back(musicClipNode);
+        _nodes.push_back(gain);
+
+        Wait(std::chrono::seconds(6));
+    }
+};
 
 
 

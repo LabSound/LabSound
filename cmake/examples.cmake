@@ -19,6 +19,20 @@ if(WIN32)
     # TODO: These vars are for libniquist and should be set in the find libynquist script.
     target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
 elseif(APPLE)
+#    if(CMAKE_OSX_SYSROOT MATCHES ".*iphoneos.*")
+#        set(DARWIN_LIBS
+#            "-framework AudioToolbox"
+#            "-framework Accelerate"
+#            "-framework CoreAudio")
+#    else()
+        set(DARWIN_LIBS
+            "-framework AudioToolbox"
+            "-framework AudioUnit"
+            "-framework Accelerate"
+            "-framework CoreAudio"
+            "-framework Cocoa")
+#    endif()
+    target_link_libraries(${proj} ${DARWIN_LIBS})
 elseif(ANDROID)
     target_compile_options(${proj} PRIVATE -fPIC)
     target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
@@ -60,25 +74,14 @@ elseif(UNIX)
 endif()
 
 if (APPLE)
-#    if(CMAKE_OSX_SYSROOT MATCHES ".*iphoneos.*")
-#        set(DARWIN_LIBS
-#            "-framework AudioToolbox"
-#            "-framework Accelerate"
-#            "-framework CoreAudio")
-#    else()
-        set(DARWIN_LIBS
-            "-framework AudioToolbox"
-            "-framework AudioUnit"
-            "-framework Accelerate"
-            "-framework CoreAudio"
-            "-framework Cocoa")
-#    endif()
 endif()
 
-target_link_libraries(LabSoundExample LabSound ${DARWIN_LIBS})
+target_link_libraries(LabSoundExample LabSound)
 
 set_target_properties(LabSoundExample PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY bin)
+
+target_compile_definitions(${proj} PRIVATE SAMPLE_SRC_DIR="${LABSOUND_ROOT}/assets")
 
 set_property(TARGET LabSoundExample PROPERTY FOLDER "examples")
 
