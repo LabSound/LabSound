@@ -1,11 +1,42 @@
 
-This change simplifies the logic around channel management by automatically conforming signal processing pathways from the leaf nodes. Leaf node channel counts are propagated backwards towards the audio context such that intermediate nodes preserve channel counts, unless they have an explicit behavior of changing the channel count. For example, connecting a stereo source to a gain node will promote a mono gain node to stereo. A mono node connected to a stereo panner node will result in a stereo output.
+## v1.1
+# 23 October 2022
 
-SampledAudioNode has been rewritten to do it's own compositing when scheduled such that many instances play in an overlapping manner. This allows efficiently playing dozens of copies of the same sound simultaneously. The new algorithm requires less intermediate storage and has a much lower CPU cost. Detuning has been improved to allow a greater working range, and higher quality when pitching higher. SampledAudioNode no longer has an embedded stereo panning node, thus simplifying panning and compositing logic. Scheduling is now sample accurate, rather than quantum-accurate, and loop points and loop counts have been added.
+### Simplified channel management
 
-The WaveShaperNode has been rewritten to minimize CPU overhead. OO related complexity has been deleted.
+Simplified channel management by automatically conforming signal processing 
+pathways from the leaf nodes. Leaf node channel counts are propagated backwards 
+towards the audio context such that intermediate nodes preserve channel counts, 
+unless they have an explicit behavior of changing the channel count. 
+For example, connecting a stereo source to a gain node will promote a mono gain 
+node to stereo. A mono node connected to a stereo panner node will result in a 
+stereo output.
 
-Threading and thread safety has been improved. The update service thread is nearly empty at this point, as graph modifications are now managed by the main update. Communications with other threads now occurs through concurrent lockfree queues. Many mutexes are now gone, as well as rare termination races.
+### SampledAudioNode rewritten
+
+SampledAudioNode has been rewritten to do it's own compositing when scheduled 
+such that many instances play in an overlapping manner. This allows efficiently 
+playing dozens of copies of the same sound simultaneously. The new algorithm 
+requires less intermediate storage and has a much lower CPU cost. Detuning has 
+been improved to allow a greater working range, and higher quality when 
+pitching higher. SampledAudioNode no longer has an embedded stereo panning 
+node, thus simplifying panning and compositing logic. Scheduling is now sample 
+accurate, rather than quantum-accurate, and loop points and loop counts have 
+been added.
+
+### WaveShaperNode rewritten
+
+The WaveShaperNode has been rewritten to minimize CPU overhead. Unnecessary
+object orient complexity has been deleted.
+
+### Improved threading
+
+Threading and thread safety has been improved. The update service thread is 
+nearly empty at this point, as graph modifications are now managed by the 
+main update. Communications with other threads now occurs through concurrent 
+lockfree queues. Many mutexes are now gone, as well as rare termination races.
+
+### Miscellaneous
 
 - autoconfigure channel counts
 - rename BPMDelay.h to BPMDelayNode.h
@@ -15,9 +46,12 @@ Threading and thread safety has been improved. The update service thread is near
 - use concurrent queues to eliminate mutexes in audio callback
 - minimize use of maintenance thread
 - bulletproof asynchronous connects and disconnects of node wiring
+- improved offline context interface
+- recorder node can run as a pull node indepdently of device context
+- improved miniaudio backend
+- numerous Android fixes (by xioxin)
 
-### In progress
-----------------
+
 
 ## v1.0.1
 # 11 April 2021
