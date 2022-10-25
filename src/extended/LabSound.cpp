@@ -83,7 +83,7 @@ OfflineContext MakeOfflineAudioContext(const AudioStreamConfig & offlineConfig)
         std::numeric_limits<double>::max());
     ret.context->setDeviceNode(dev);
     ret.context->lazyInitialize();
-    ret.device = dev.get();
+    ret.device = dev;
     return ret;
 }
 
@@ -92,8 +92,7 @@ void OfflineContext::process(size_t samples)
     if (!device || !samples)
         return;
 
-    lab::NullDeviceNode * dev = reinterpret_cast<lab::NullDeviceNode *>(device);
-    dev->offlineRenderFrames(samples);
+    device->offlineRenderFrames(samples);
 }
 
 
