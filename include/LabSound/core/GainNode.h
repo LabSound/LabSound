@@ -26,8 +26,9 @@ public:
     GainNode(AudioContext& ac);
     virtual ~GainNode();
 
-    static const char* static_name() { return "GainNode"; }
+    static const char* static_name() { return "Gain"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;

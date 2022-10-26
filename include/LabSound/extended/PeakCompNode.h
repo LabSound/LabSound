@@ -32,8 +32,9 @@ public:
     PeakCompNode(AudioContext & ac);
     virtual ~PeakCompNode();
 
-    static const char* static_name() { return static_name(); }
-    virtual const char* name() const { return "PeakComp"; }
+    static const char* static_name() { return "PeakComp"; }
+    virtual const char* name() const { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // Threshold given in dB, default 0
     std::shared_ptr<AudioParam> threshold() const;

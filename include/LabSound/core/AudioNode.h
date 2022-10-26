@@ -6,6 +6,9 @@
 #ifndef AudioNode_h
 #define AudioNode_h
 
+#include "LabSound/core/AudioNodeDescriptor.h"
+#include "LabSound/core/AudioParamDescriptor.h"
+#include "LabSound/core/AudioSettingDescriptor.h"
 #include "LabSound/core/Mixing.h"
 #include "LabSound/core/Profiler.h"
 
@@ -18,7 +21,7 @@ namespace lab
 {
 
 // clang-format off
-enum PanningMode
+enum PanningModel
 {
     PANNING_NONE = 0,
     EQUALPOWER   = 1,
@@ -81,10 +84,12 @@ public:
     explicit AudioNodeScheduler(float sampleRate);
     ~AudioNodeScheduler() = default;
 
-    // Scheduling.
+    // Scheduling
     void start(double when);
     void stop(double when);
-    void finish(ContextRenderLock&);  // Called when there is no more sound to play or the noteOff/stop() time has been reached.
+
+    // called when the sound is finished, or noteOff/stop time has been reached
+    void finish(ContextRenderLock&);
     void reset();
 
     SchedulingState playbackState() const { return _playbackState; }
@@ -95,14 +100,13 @@ public:
     SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
 
     // epoch is a long count at sample rate; 136 years at 48kHz
-    // For use in an interstellar sound installation or radio frequency signal processing, 
-    // please consider upgrading these to uint64_t or write some rollover logic.
 
     uint64_t _epoch = 0;        // the epoch rendered currently in the busses
     uint64_t _epochLength = 0;  // number of frames in current epoch
 
-    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();    // requested start in epochal coordinate system
-    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();     // requested end in epochal coordinate system
+    // start and stop epoch (absolute, not relative)
+    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();
+    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();
 
     int _renderOffset = 0; // where rendering starts in the current frame
     int _renderLength = 0; // number of rendered frames in the current frame 
@@ -114,12 +118,16 @@ public:
     std::function<void(double when)> _onStart;
 };
 
-
-// An AudioNode is the basic building block for handling audio within an AudioContext.
-// It may be an audio source, an intermediate processing module, or an audio destination.
+    
+// xAudioNode is the basic building block for a signal processing graph.
+// It may be an audio source, an intermediate processing module, or an audio
+// destination.
 // Each AudioNode can have inputs and/or outputs.
-// An AudioHardwareDeviceNode has one input and no outputs and represents the final destination to the audio hardware.
-// Most processing nodes such as filters will have one input and one output, although multiple inputs and outputs are possible.
+//
+// An AudioHardwareDeviceNode has one input and no outputs and represents the
+// final destination to the audio hardware.
+// Most processing nodes such as filters will have one input and one output, 
+//
 class AudioNode
 {
 public:
@@ -131,15 +139,18 @@ public:
     AudioNode() = delete;
     virtual ~AudioNode();
 
-    explicit AudioNode(AudioContext &);
+    explicit AudioNode(AudioContext &, AudioNodeDescriptor const &);
+
+
 
     //--------------------------------------------------
     // required interface
     //
     virtual const char* name() const = 0;
 
-    // The AudioNodeInput(s) (if any) will already have their input data available when process() is called.
-    // Subclasses will take this input data and put the results in the AudioBus(s) of its AudioNodeOutput(s) (if any).
+    // The input busses (if any) will already have their input data available
+    // when process() is called. Subclasses will take this input data and 
+    // render into this node's output buses.
     // Called from context's audio thread.
     virtual void process(ContextRenderLock &, int bufferSize) = 0;
 
@@ -147,25 +158,35 @@ public:
     // Called from context's audio thread.
     virtual void reset(ContextRenderLock &) = 0;
 
-    // tailTime() is the length of time (not counting latency time) where non-zero output may occur after continuous silent input.
+    // tailTime() is the length of time (not counting latency time) where 
+    // non-zero output may occur after continuous silent input.
     virtual double tailTime(ContextRenderLock & r) const = 0;
 
-    // latencyTime() is the length of time it takes for non-zero output to appear after non-zero input is provided. This only applies to
-    // processing delay which is an artifact of the processing algorithm chosen and is *not* part of the intrinsic desired effect. For
-    // example, a "delay" effect is expected to delay the signal, and thus would not be considered latency.
+    // latencyTime() is the length of time it takes for non-zero output to 
+    // appear after non-zero input is provided. This only applies to processing
+    // delay which is an artifact of the processing algorithm chosen and is 
+    // *not* part of the intrinsic desired effect. For example, a "delay" 
+    // effect is expected to delay the signal, and thus would not be considered
+    // latency.
     virtual double latencyTime(ContextRenderLock & r) const = 0;
 
     //--------------------------------------------------
-    // required interface
+    // overridable interface
     //
-    // If the final node class has ScheduledNode in its class hierarchy, this will return true.
-    // This is to save the cost of a dynamic_cast when scheduling nodes.
+    // If the final node class has ScheduledNode in its class hierarchy, this 
+    // will return true. This is to save the cost of a dynamic_cast when
+    // scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
 
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
     virtual void initialize();
     virtual void uninitialize();
+
+    //--------------------------------------------------
+    // standard interface
+
+    // inputs and outputs
     bool isInitialized() const { return m_isInitialized; }
 
     // These locked versions can be called at run time.
@@ -212,6 +233,8 @@ public:
     // returns a vector of parameter names
     std::vector<std::string> paramNames() const;
     std::vector<std::string> paramShortNames() const;
+    std::shared_ptr<AudioParam> param(int index);
+    int param_index(char const * const str);
 
     // returns a vector of setting names
     std::vector<std::string> settingNames() const;
@@ -219,9 +242,11 @@ public:
 
     std::shared_ptr<AudioParam> param(char const * const str);
     std::shared_ptr<AudioSetting> setting(char const * const str);
+    std::shared_ptr<AudioSetting> setting(int index);
+    int setting_index(char const * const str);
 
-    std::vector<std::shared_ptr<AudioParam>> params() const { return m_params; }
-    std::vector<std::shared_ptr<AudioSetting>> settings() const { return m_settings; }
+    std::vector<std::shared_ptr<AudioParam>> params() const { return _params; }
+    std::vector<std::shared_ptr<AudioSetting>> settings() const { return _settings; }
 
     AudioNodeScheduler _scheduler;
 
@@ -239,6 +264,8 @@ protected:
     // Called from context's audio thread.
     void pullInputs(ContextRenderLock &, int bufferSize);
 
+protected:
+
     friend class AudioContext;
 
     bool m_isInitialized {false};
@@ -246,8 +273,8 @@ protected:
     std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
     std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
 
-    std::vector<std::shared_ptr<AudioParam>> m_params;
-    std::vector<std::shared_ptr<AudioSetting>> m_settings;
+    std::vector<std::shared_ptr<AudioParam>> _params;
+    std::vector<std::shared_ptr<AudioSetting>> _settings;
 
     int m_channelCount{ 0 };
 

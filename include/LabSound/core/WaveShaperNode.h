@@ -14,10 +14,12 @@ class WaveShaperNode : public AudioNode
 {
 public:
     WaveShaperNode(AudioContext & ac);
+    WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const&); // for subclasses
     virtual ~WaveShaperNode();
 
     static const char* static_name() { return "WaveShaper"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // copies the curve
     void setCurve(std::vector<float> & curve);

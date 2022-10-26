@@ -13,11 +13,12 @@
 #if defined(LABSOUND_PLATFORM_WINDOWS)
 #define HAVE_DENORMAL
 #endif
-#include <float.h>
-
 #if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 #define HAVE_DENORMAL
 #endif
+
+#include <float.h>
+#include <math.h>
 
 namespace lab
 {

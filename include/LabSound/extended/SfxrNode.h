@@ -20,6 +20,7 @@ public:
 
     static const char* static_name() { return "SFXR"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
@@ -55,7 +56,7 @@ public:
 
     std::shared_ptr<AudioParam> lpFilterCutoff() const { return _lpFilterCutoff; }
     std::shared_ptr<AudioParam> lpFilterCutoffSweep() const { return _lpFilterCutoffSweep; }
-    std::shared_ptr<AudioParam> lpFiterResonance() const { return _lpFiterResonance; }
+    std::shared_ptr<AudioParam> lpFilterResonance() const { return _lpFilterResonance; }
     std::shared_ptr<AudioParam> hpFilterCutoff() const { return _hpFilterCutoff; }
     std::shared_ptr<AudioParam> hpFilterCutoffSweep() const { return _hpFilterCutoffSweep; }
 
@@ -121,7 +122,7 @@ private:
     std::shared_ptr<AudioParam> _phaserSweep;
     std::shared_ptr<AudioParam> _lpFilterCutoff;
     std::shared_ptr<AudioParam> _lpFilterCutoffSweep;
-    std::shared_ptr<AudioParam> _lpFiterResonance;
+    std::shared_ptr<AudioParam> _lpFilterResonance;
     std::shared_ptr<AudioParam> _hpFilterCutoff;
     std::shared_ptr<AudioParam> _hpFilterCutoffSweep;
 

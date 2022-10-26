@@ -35,12 +35,12 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     struct Internals;
     Internals* _internals;
 
-    std::shared_ptr<AudioSetting> m_sourceBus;
     std::shared_ptr<AudioBus> m_pendingSourceBus;   // the most recently assigned bus
     std::shared_ptr<AudioBus> m_retainedSourceBus;  // the bus used in computation, eventually agrees with m_pendingSourceBus.
     std::shared_ptr<AudioParam> m_playbackRate;
     std::shared_ptr<AudioParam> m_detune;
     std::shared_ptr<AudioParam> m_dopplerRate;
+    std::shared_ptr<AudioSetting> m_sourceBus;
 
     std::vector<std::shared_ptr<SRC_Resampler>> _resamplers;
 
@@ -59,6 +59,7 @@ public:
 
     static const char* static_name() { return "SampledAudio"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // setting the bus is an asynchronous operation. getBus returns the most
     // recent set request in order that the interface work in a predictable way.

@@ -25,7 +25,7 @@ const int UninitializedAzimuth = -1;
 const uint32_t RenderingQuantum = AudioNode::ProcessingSizeInFrames;
 
 HRTFPanner::HRTFPanner(const float sampleRate)
-    : Panner(sampleRate, PanningMode::HRTF)
+    : Panner(sampleRate, PanningModel::HRTF)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)
     , m_elevation1(0)

@@ -15,7 +15,6 @@
 
 namespace lab
 {
-class ContextGraphLock;
 class AudioContext;
 
 class Subgraph

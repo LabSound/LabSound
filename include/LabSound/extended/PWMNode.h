@@ -26,7 +26,9 @@ public:
     virtual ~PWMNode();
     static const char* static_name() { return "PWM"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 };
-}
+
+} // lab
 
 #endif

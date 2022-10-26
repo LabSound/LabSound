@@ -11,8 +11,8 @@
 namespace lab
 {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, int outputChannelCount)
-    : AudioNode(ac)
+AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, AudioNodeDescriptor const & desc, int outputChannelCount)
+    : AudioNode(ac, desc)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, outputChannelCount)));

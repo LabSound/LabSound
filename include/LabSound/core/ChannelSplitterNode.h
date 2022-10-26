@@ -21,6 +21,7 @@ public:
 
     static const char* static_name() { return "ChannelSplitter"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     void addOutputs(int numberOfOutputs);
 

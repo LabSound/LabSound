@@ -19,6 +19,9 @@ using namespace std;
 //#define ASN_PRINT(...)
 #define ASN_PRINT(a) printf(a)
 
+
+
+
 namespace lab
 {
 
@@ -43,7 +46,7 @@ const char* schedulingStateName(SchedulingState s)
 const int start_envelope = 64;
 const int end_envelope = 64;
 
-AudioNodeScheduler::AudioNodeScheduler(float sampleRate) 
+AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
     : _epoch(0)
     , _startWhen(std::numeric_limits<uint64_t>::max())
     , _stopWhen(std::numeric_limits<uint64_t>::max())
@@ -65,7 +68,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
     {
         case SchedulingState::UNSCHEDULED:
             break;
-            
+
         case SchedulingState::SCHEDULED:
             // start has been called, start looking for the start time
             if (_startWhen <= _epoch)
@@ -84,24 +87,24 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _playbackState = SchedulingState::FADE_IN;
                 ASN_PRINT("fade in\n");
             }
-            
+
             /// @TODO the case of a start and stop within one epoch needs to be special
             /// cased, to fit this current architecture, there'd be a FADE_IN_OUT scheduling
             /// state so that the envelope can be correctly applied.
             // FADE_IN_OUT would transition to UNSCHEDULED.
             break;
-            
+
         case SchedulingState::FADE_IN:
             // start time has been achieved, there'll be one quantum with fade in applied.
             _renderOffset = 0;
             _playbackState = SchedulingState::PLAYING;
             ASN_PRINT("playing\n");
             // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
-            
+
         case SchedulingState::PLAYING:
             /// @TODO include the end envelope in the stop check so that a scheduled stop that
             /// spans this quantum and the next ends in the current quantum
-            
+
             if (_stopWhen <= _epoch)
             {
                 // exactly on start, or late, stop straight away, render a whole frame of fade out
@@ -117,22 +120,22 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _playbackState = SchedulingState::STOPPING;
                 ASN_PRINT("stopping\n");
             }
-            
+
             // do not fall through to STOPPING because one quantum must render the fade out effect
             break;
-            
+
         case SchedulingState::STOPPING:
             if (_epoch + epoch_length >= _stopWhen)
             {
                 // scheduled stop has occured, so make sure stop doesn't immediately trigger again
                 _stopWhen = std::numeric_limits<uint64_t>::max();
                 _playbackState = SchedulingState::UNSCHEDULED;
-                if(_onEnded)
+                if (_onEnded)
                     r.context()->enqueueEvent(_onEnded);
                 ASN_PRINT("unscheduled\n");
             }
             break;
-            
+
         case SchedulingState::RESETTING:
             break;
         case SchedulingState::FINISHING:
@@ -153,18 +156,16 @@ void AudioNodeScheduler::start(double when)
         _onStart(when);
 
     // if already scheduled or playing, nothing to do
-    if (_playbackState == SchedulingState::SCHEDULED ||
-        _playbackState == SchedulingState::PLAYING)
+    if (_playbackState == SchedulingState::SCHEDULED || _playbackState == SchedulingState::PLAYING)
         return;
 
     // start cancels stop
     _stopWhen = std::numeric_limits<uint64_t>::max();
 
     // treat non finite, or max values as a cancellation of stopping or resetting
-    if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
+    if (!isfinite(when) || when == std::numeric_limits<double>::max())
     {
-        if (_playbackState == SchedulingState::STOPPING ||
-            _playbackState == SchedulingState::RESETTING)
+        if (_playbackState == SchedulingState::STOPPING || _playbackState == SchedulingState::RESETTING)
         {
             _playbackState = SchedulingState::PLAYING;
         }
@@ -182,10 +183,10 @@ void AudioNodeScheduler::stop(double when)
         return;
 
     // treat non-finite, and FLT_MAX as stop cancellation, if already playing
-    if (!std::isfinite(when) || when == std::numeric_limits<double>::max())
+    if (!isfinite(when) || when == std::numeric_limits<double>::max())
     {
         // stop at a non-finite time means don't stop.
-        _stopWhen = std::numeric_limits<uint64_t>::max(); // cancel stop
+        _stopWhen = std::numeric_limits<uint64_t>::max();  // cancel stop
         if (_playbackState == SchedulingState::STOPPING)
         {
             // if in the process of stopping, set it back to scheduling to start immediately
@@ -216,20 +217,68 @@ void AudioNodeScheduler::finish(ContextRenderLock & r)
 {
     if (_playbackState < SchedulingState::PLAYING)
         _playbackState = SchedulingState::FINISHING;
-    else if (_playbackState >= SchedulingState::PLAYING &&
-             _playbackState < SchedulingState::FINISHED)
+    else if (_playbackState >= SchedulingState::PLAYING && _playbackState < SchedulingState::FINISHED)
         _playbackState = SchedulingState::FINISHING;
 
     r.context()->enqueueEvent(_onEnded);
 }
 
+AudioParamDescriptor const * const AudioNodeDescriptor::param(char const * const p) const
+{
+    if (!params)
+        return nullptr;
 
+    AudioParamDescriptor const * i = params;
+    while (i->name)
+    {
+        if (!strcmp(p, i->name))
+            return i;
 
-AudioNode::AudioNode(AudioContext & ac)
+        ++i;
+    }
+
+    return nullptr;
+}
+
+AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * const s) const
+{
+    if (!settings)
+        return nullptr;
+
+    AudioSettingDescriptor const * i = settings;
+    while (i->name)
+    {
+        if (!strcmp(s, i->name))
+            return i;
+
+        ++i;
+    }
+
+    return nullptr;
+}
+
+AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : _scheduler(ac.sampleRate())
-{ }
-
-
+{
+    if (desc.params)
+    {
+        AudioParamDescriptor const * i = desc.params;
+        while (i->name)
+        {
+            _params.push_back(std::make_shared<AudioParam>(i));
+            ++i;
+        }
+    }
+    if (desc.settings)
+    {
+        AudioSettingDescriptor const * i = desc.settings;
+        while (i->name)
+        {
+            _settings.push_back(std::make_shared<AudioSetting>(i));
+            ++i;
+        }
+    }
+}
 
 AudioNode::~AudioNode()
 {
@@ -246,7 +295,7 @@ void AudioNode::uninitialize()
     m_isInitialized = false;
 }
 
-void AudioNode::reset(ContextRenderLock& r)
+void AudioNode::reset(ContextRenderLock & r)
 {
     _scheduler.reset();
 }
@@ -558,7 +607,7 @@ void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 
 std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 {
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -566,20 +615,58 @@ std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
     return {};
 }
 
+int AudioNode::param_index(char const * const str)
+{
+    int count = (int) _params.size();
+    for (int i = 0; i < count; ++i)
+    {
+        if (!strcmp(str, _params[i]->name().c_str()))
+            return i;
+    }
+    return -1;
+}
+
+std::shared_ptr<AudioParam> AudioNode::param(int index)
+{
+    if (index >= _params.size())
+        return {};
+
+    return _params[index];
+}
+
 std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 {
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
     }
     return {};
+}
+
+int AudioNode::setting_index(char const * const str)
+{
+    int count = (int) _settings.size();
+    for (int i = 0; i < count; ++i)
+    {
+        if (!strcmp(str, _settings[i]->name().c_str()))
+            return i;
+    }
+    return -1;
+}
+
+std::shared_ptr<AudioSetting> AudioNode::setting(int index)
+{
+    if (index >= _settings.size())
+        return {};
+
+    return _settings[index];
 }
 
 std::vector<std::string> AudioNode::paramNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         ret.push_back(p->name());
     }
@@ -588,7 +675,7 @@ std::vector<std::string> AudioNode::paramNames() const
 std::vector<std::string> AudioNode::paramShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_params)
+    for (auto & p : _params)
     {
         ret.push_back(p->shortName());
     }
@@ -598,7 +685,7 @@ std::vector<std::string> AudioNode::paramShortNames() const
 std::vector<std::string> AudioNode::settingNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         ret.push_back(p->name());
     }
@@ -607,7 +694,7 @@ std::vector<std::string> AudioNode::settingNames() const
 std::vector<std::string> AudioNode::settingShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : m_settings)
+    for (auto & p : _settings)
     {
         ret.push_back(p->shortName());
     }

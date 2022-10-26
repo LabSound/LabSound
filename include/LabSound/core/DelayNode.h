@@ -45,6 +45,7 @@ public:
 
     static const char* static_name() { return "Delay"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     std::shared_ptr<AudioSetting> delayTime();
 };

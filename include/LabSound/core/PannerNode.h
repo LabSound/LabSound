@@ -66,6 +66,7 @@ public:
 
     static const char* static_name() { return "Panner"; }
     virtual const char* name() const override { return static_name(); }
+    static AudioNodeDescriptor * desc();
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
@@ -74,8 +75,8 @@ public:
     virtual void uninitialize() override;
 
     // Panning model
-    PanningMode panningModel() const;
-    void setPanningModel(PanningMode m);
+    PanningModel panningModel() const;
+    void setPanningModel(PanningModel m);
 
     // Position
     void setPosition(float x, float y, float z) { setPosition(FloatPoint3D(x, y, z)); }

@@ -16,16 +16,22 @@
 namespace lab
 {
 
+static AudioParamDescriptor s_gainParams[] = {{"gain", "GAIN", 1.0, 0.0, 10000.0}, nullptr};
+AudioNodeDescriptor * GainNode::desc()
+{
+    static AudioNodeDescriptor d {s_gainParams, nullptr};
+    return &d;
+}
+
 GainNode::GainNode(AudioContext& ac)
-    : AudioNode(ac)
+    : AudioNode(ac, *desc())
     , m_lastGain(1.f)
     , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
-    m_gain = std::make_shared<AudioParam>("gain", "GAIN", 1.0, 0.0, 10000.0);
-    m_params.push_back(m_gain);
+    m_gain = param("gain");
 
     initialize();
 }

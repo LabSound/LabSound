@@ -27,19 +27,27 @@ namespace lab
 // Prviate PeakCompNode Implementation //
 /////////////////////////////////////////
 
+static AudioParamDescriptor s_pcParams[] = {
+    {"threshold", "THRS", 0.0,   0, -1e6},
+    {"ratio",     "RATI", 1.0,   0,   10},
+    {"attack",    "ATCK", 0.001, 0, 1000},
+    {"release",   "RELS", 0.001, 0, 1000},
+    {"makeup",    "MAKE", 0.0,   0,   60},
+    {"knee",      "KNEE", 0.0,   0,    1}, nullptr };
+
+    
+AudioNodeDescriptor * PeakCompNode::desc()
+{
+    static AudioNodeDescriptor d {s_pcParams, nullptr};
+    return &d;
+}
+
+
 class PeakCompNode::PeakCompNodeInternal : public AudioProcessor
 {
-
 public:
     PeakCompNodeInternal() : AudioProcessor()
     {
-        m_threshold = std::make_shared<AudioParam>("threshold", "THRS", 0, 0, -1e6f);
-        m_ratio = std::make_shared<AudioParam>("ratio", "RATI", 1, 0, 10);
-        m_attack = std::make_shared<AudioParam>("attack", "ATCK", 0.001f, 0, 1000);
-        m_release = std::make_shared<AudioParam>("release", "RELS", 0.001f, 0, 1000);
-        m_makeup = std::make_shared<AudioParam>("makeup", "MAKE", 0, 0, 60);
-        m_knee = std::make_shared<AudioParam>("knee", "KNEE", 0, 0, 1);
-
         for (int i = 0; i < 2; i++)
         {
             kneeRecursive[i] = 0.f;
@@ -176,30 +184,30 @@ public:
         kneeRecursive[1] = kneeRecursive[0];
     }
 
-    float internalSampleRate;
-    double oneOverSampleRate;
+    float internalSampleRate = 44000.f;
+    double oneOverSampleRate = 1.0 / 44000.f;
 
     // Arrays for delay lines
     double kneeRecursive[2];
     double attackRecursive[2];
     double releaseRecursive[2];
 
-    double attack;
-    double release;
-    double ratio;
-    double threshold;
+    double attack = 0.;
+    double release = 0.;
+    double ratio = 1.;
+    double threshold = 0.;
 
-    double knee;
-    double kneeCoeffs;
-    double kneeCoeffsMinus;
+    double knee = 0;
+    double kneeCoeffs = 0;
+    double kneeCoeffsMinus = 0;
 
-    double attackCoeffs;
-    double attackCoeffsMinus;
+    double attackCoeffs = 0;
+    double attackCoeffsMinus = 0;
 
-    double releaseCoeff;
-    double releaseCoeffMinus;
+    double releaseCoeff = 0;
+    double releaseCoeffMinus = 0;
 
-    double makeupGain;
+    double makeupGain = 0;
 
     // Resets filter state
     virtual void reset() override
@@ -253,19 +261,17 @@ std::shared_ptr<AudioParam> PeakCompNode::knee() const
 /////////////////////////
 
 PeakCompNode::PeakCompNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac)
+    : lab::AudioBasicProcessorNode(ac, *desc())
 {
     m_processor.reset(new PeakCompNodeInternal());
 
-    internalNode = static_cast<PeakCompNodeInternal *>(m_processor.get());
-
-    m_params.push_back(internalNode->m_threshold);
-    m_params.push_back(internalNode->m_ratio);
-    m_params.push_back(internalNode->m_attack);
-    m_params.push_back(internalNode->m_release);
-    m_params.push_back(internalNode->m_makeup);
-    m_params.push_back(internalNode->m_knee);
-
+    auto n = static_cast<PeakCompNodeInternal *>(m_processor.get());
+    n->m_threshold = param("threshold");
+    n->m_ratio = param("ratio");
+    n->m_attack = param("attack");
+    n->m_release = param("release");
+    n->m_makeup = param("makeup");
+    n->m_knee = param("knee");
     initialize();
 }
 

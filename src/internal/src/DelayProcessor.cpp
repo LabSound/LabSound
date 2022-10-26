@@ -11,12 +11,13 @@ using namespace std;
 namespace lab
 {
 
-DelayProcessor::DelayProcessor(float sampleRate, double maxDelayTime)
+
+DelayProcessor::DelayProcessor(float sampleRate, double maxDelayTime, std::shared_ptr<AudioSetting> t)
     : AudioDSPKernelProcessor()
     , m_maxDelayTime(maxDelayTime)
     , m_sampleRate(sampleRate)
+    , m_delayTime(t)
 {
-    m_delayTime = std::make_shared<AudioSetting>("delayTime", "DELY", AudioSetting::Type::Float);
 }
 
 DelayProcessor::~DelayProcessor()

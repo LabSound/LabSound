@@ -14,8 +14,14 @@
 namespace lab
 {
 
-ChannelSplitterNode::ChannelSplitterNode(AudioContext& ac, int numberOfOutputs_)
-    : AudioNode(ac)
+AudioNodeDescriptor * ChannelSplitterNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
+ChannelSplitterNode::ChannelSplitterNode(AudioContext & ac, int numberOfOutputs_)
+    : AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutputs(numberOfOutputs_);

@@ -64,6 +64,8 @@ void PingPongDelayNode::SetDelayIndex(TempoSync value)
 
 void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
 {
+    #if 0
+    /// @TODO rewrite with individual splitters
     // Input into splitter
     ac.connect(splitter, input, 0, 0);
 
@@ -86,5 +88,6 @@ void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
 
     // Activate with input->output
     ac.connect(output, input, 0, 0);
+#endif
 }
 }

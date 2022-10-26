@@ -30,24 +30,22 @@
 #endif
 
 #if ((_M_IX86_FP) && (_M_IX86_FP >= 2)) || (_M_AMD64) || defined(_M_X64)
-  #define __SSE2__
-#endif
-
-#if defined(LABSOUND_COMPILER_VISUAL_STUDIO)
-  #include <stdint.h>
-  #define _USE_MATH_DEFINES
-  #include <cmath>
-  #include <math.h>
+  #ifndef __SSE2__
+    #define __SSE2__
+  #endif
 #endif
 
 #if defined(__ARM_NEON__)
   #define ARM_NEON_INTRINSICS 1
 #endif
 
-#if defined(LABSOUND_PLATFORM_OSX) || defined(LABSOUND_PLATFORM_LINUX)
-#  include <cmath>
-#  include <math.h>
+#if defined(LABSOUND_COMPILER_VISUAL_STUDIO)
+  #define _USE_MATH_DEFINES
 #endif
+
+#include <stdint.h>
+#include <cmath>
+#include <math.h>
 
 #if defined(LABSOUND_PLATFORM_WINDOWS)
   #define USE_KISS_FFT

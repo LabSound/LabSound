@@ -55,8 +55,8 @@ public:
 class SpectralMonitorNode::SpectralMonitorNodeInternal
 {
 public:
-    SpectralMonitorNodeInternal()
-        : windowSize(std::make_shared<AudioSetting>("windowSize", "WNDW", AudioSetting::Type::Integer))
+    SpectralMonitorNodeInternal(std::shared_ptr<AudioSetting> windowSize_)
+        : windowSize(windowSize_)
         , fft(nullptr)
     {
         setWindowSize(512);
@@ -99,11 +99,18 @@ public:
 // Public SpectralMonitorNode //
 ////////////////////////////////
 
-SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
-    : AudioBasicInspectorNode(ac, 2)
-    , internalNode(new SpectralMonitorNodeInternal())
+static AudioSettingDescriptor s_smSettings[] = {{"windowSize", "WNSZ", SettingType::Integer}, nullptr};
+
+AudioNodeDescriptor * SpectralMonitorNode::desc()
 {
-    m_settings.push_back(internalNode->windowSize);
+    static AudioNodeDescriptor d {nullptr, s_smSettings};
+    return &d;
+}
+
+SpectralMonitorNode::SpectralMonitorNode(AudioContext & ac)
+    : AudioBasicInspectorNode(ac, *desc(), 2)
+{
+    internalNode = new SpectralMonitorNodeInternal(setting("windowSize"));
     initialize();
 }
 

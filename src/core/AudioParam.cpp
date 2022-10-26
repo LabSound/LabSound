@@ -1,5 +1,4 @@
 // License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioParam.h"
@@ -26,16 +25,10 @@ AudioBus const* const AudioParam::bus() const
 const double AudioParam::DefaultSmoothingConstant = 0.05;
 const double AudioParam::SnapThreshold = 0.001;
 
-AudioParam::AudioParam(const std::string & name, const std::string & shortName, double defaultValue, double minValue, double maxValue, unsigned units)
-    : AudioSummingJunction()
-    , m_name(name)
-    , m_shortName(shortName)
-    , m_value(defaultValue)
-    , m_defaultValue(defaultValue)
-    , m_minValue(minValue)
-    , m_maxValue(maxValue)
-    , m_units(units)
-    , m_smoothedValue(defaultValue)
+AudioParam::AudioParam(AudioParamDescriptor const * const desc) noexcept
+    : _desc(desc)
+    , m_value(desc->defaultValue)
+    , m_smoothedValue(desc->defaultValue)
     , m_smoothingConstant(DefaultSmoothingConstant)
 {
 }
@@ -169,10 +162,12 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
     }
 }
 
-void AudioParam::calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues)
+void AudioParam::calculateTimelineValues(ContextRenderLock & r, 
+    float * values, int numberOfValues)
 {
     // Calculate values for this render quantum.
-    // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames (the render quantum size).
+    // Normally numberOfValues will equal AudioNode::ProcessingSizeInFrames 
+    // (the render quantum size).
     double sampleRate = r.context()->sampleRate();
     double startTime = r.context()->currentTime();
     double endTime = startTime + numberOfValues / sampleRate;

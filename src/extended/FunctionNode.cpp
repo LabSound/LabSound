@@ -15,8 +15,14 @@ using namespace lab;
 namespace lab
 {
 
+AudioNodeDescriptor * FunctionNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
-    : AudioScheduledSourceNode(ac)
+    : AudioScheduledSourceNode(ac, *desc())
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
     initialize();

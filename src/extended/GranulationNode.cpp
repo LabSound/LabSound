@@ -17,29 +17,50 @@
 
 using namespace lab;
 
-GranulationNode::GranulationNode(AudioContext & ac) : AudioScheduledSourceNode(ac)
+
+static AudioParamDescriptor s_GranulationParams[] = {
+    {"NumGrains",         "NGRN", 8.f,  1.f,  256.f},
+    {"GrainDuration",     "GDUR", 0.1f, 0.01f,  0.5f},
+    {"PositionMin",       "GMIN", 0.0f, 0.0f,   1.0f},
+    {"PositionMax",       "GMAX", 1.0f, 0.0f,   1.0f},
+    {"PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f},
+    {nullptr}};
+
+static AudioSettingDescriptor s_GranulationSettings[] = {
+    {"GrainSource",    "GSRC", SettingType::Bus},
+    {"WindowFunction", "WINF", SettingType::Enum, s_window_types},
+    {nullptr}};
+    
+AudioNodeDescriptor * GranulationNode::desc()
+{
+    static AudioNodeDescriptor d {s_GranulationParams, s_GranulationSettings};
+    return &d;
+}
+
+GranulationNode::GranulationNode(AudioContext & ac)
+    : AudioScheduledSourceNode(ac, *desc())
 {
     // Sample that will be granulated
-    grainSourceBus = std::make_shared<AudioSetting>("GrainSource", "GSRC", AudioSetting::Type::Bus);
+    grainSourceBus = setting("GrainSource");
 
     // Windowing function that will be applied as an evelope to each grain during playback
-    windowFunc = std::make_shared<AudioSetting>("WindowFunction", "WINF", s_window_types);
+    windowFunc = setting("WindowFunction");
     windowFunc->setEnumeration(static_cast<int>(WindowFunction::bartlett), true);
 
     // Total number of grains that will be allocated
-    numGrains = std::make_shared<AudioParam>("NumGrains", "NGRN", 8.f, 1.f, 256.f, 1);
+    numGrains = param("NumGrains");
 
     // Duration of each grain in seconds (currently fixed but ideally will be configurable per-grain)
-    grainDuration = std::make_shared<AudioParam>("GrainDuration", "GDUR", 0.1f, 0.01f, 0.5f);
+    grainDuration = param("GrainDuration");
 
     // The min/max positional offset (given in a normalized 0-1 range) from which a grain should
     // be sampled from grainSourceBus. These numbers are used to inform the range of a random
     // number generator. 
-    grainPositionMin = std::make_shared<AudioParam>("PositionMin", "GMIN", 0.0f, 0.0f, 0.99f);
-    grainPositionMax = std::make_shared<AudioParam>("PositionMax", "GMAX", 1.0f, 0.01f, 1.0f);
+    grainPositionMin = param("PositionMin");
+    grainPositionMax = param("PositionMax");
 
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
-    grainPlaybackFreq = std::make_shared<AudioParam>("PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f);
+    grainPlaybackFreq = param("PlaybackFrequency");
 
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 

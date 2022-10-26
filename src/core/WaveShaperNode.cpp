@@ -14,8 +14,22 @@
 
 namespace lab {
 
+AudioNodeDescriptor * WaveShaperNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+    
 WaveShaperNode::WaveShaperNode(AudioContext& ac)
-: AudioNode(ac)
+: AudioNode(ac, *desc())
+{
+    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    initialize();
+}
+    
+WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & desc)
+: AudioNode(ac, desc)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));

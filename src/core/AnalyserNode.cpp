@@ -29,16 +29,29 @@ struct AnalyserNode::Detail
     std::shared_ptr<AudioSetting> _smoothingTimeConstant;
 };
 
+static AudioSettingDescriptor s_AnalyserSettings[] = {
+    {"fftSize",               "FFTS", SettingType::Integer},
+    {"minDecibels",           "MNDB", SettingType::Float},
+    {"maxDecibels",           "MXDB", SettingType::Float},
+    {"smoothingTimeConstant", "STIM", SettingType::Float},
+    {nullptr}};
+
+AudioNodeDescriptor * AnalyserNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, s_AnalyserSettings};
+    return &d;
+}
+
 void AnalyserNode::shared_construction(int fftSize)
 {
     _detail = new Detail;
 
     _detail->m_analyser = new RealtimeAnalyser((uint32_t) fftSize);
 
-    _detail->_fftSize = std::make_shared<AudioSetting>("fftSize", "FFTS", AudioSetting::Type::Integer);
-    _detail->_minDecibels = std::make_shared<AudioSetting>("minDecibels", "MNDB", AudioSetting::Type::Float);
-    _detail->_maxDecibels = std::make_shared<AudioSetting>("maxDecibels", "MXDB", AudioSetting::Type::Float);
-    _detail->_smoothingTimeConstant = std::make_shared<AudioSetting>("smoothingTimeConstant", "STIM", AudioSetting::Type::Float);
+    _detail->_fftSize = setting("fftSize");
+    _detail->_minDecibels = setting("minDecibels");
+    _detail->_maxDecibels = setting("maxDecibels");
+    _detail->_smoothingTimeConstant = setting("smoothingTimeConstant");
 
     _detail->_fftSize->setUint32(static_cast<uint32_t>(fftSize));
     _detail->_fftSize->setValueChanged(
@@ -69,24 +82,19 @@ void AnalyserNode::shared_construction(int fftSize)
             _detail->m_analyser->setSmoothingTimeConstant(_detail->_smoothingTimeConstant->valueFloat());
         });
 
-    m_settings.push_back(_detail->_fftSize);
-    m_settings.push_back(_detail->_minDecibels);
-    m_settings.push_back(_detail->_maxDecibels);
-    m_settings.push_back(_detail->_smoothingTimeConstant);
-
-    // N.B.: inputs and outputs added by AudioBasicInspectorNode... no need to create here.
+    // N.B.: inputs and outputs added by AudioBasicInspectorNode... not here.
     initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
-    : AudioBasicInspectorNode(ac, 1)
+    : AudioBasicInspectorNode(ac, *desc(), 1)
 {
     shared_construction(fftSize);
     initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac)
-    : AudioBasicInspectorNode(ac, 1)
+    : AudioBasicInspectorNode(ac, *desc(), 1)
 {
     shared_construction(1024u);
     initialize();

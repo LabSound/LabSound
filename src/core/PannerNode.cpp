@@ -34,31 +34,69 @@ static void fixNANs(T & x)
         x = T(0);
 }
 
+
 static char const * const s_distance_models[lab::DistanceEffect::ModelType::_Count + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
-static char const * const s_panning_models[lab::PanningMode::_PanningModeCount + 1] = {
+static char const * const s_panning_models[lab::PanningModel::_PanningModeCount + 1] = {
     "Linear", "Inverse", "Exponential", nullptr};
 
+static AudioParamDescriptor s_pDesc[] = {
+    {"orientationX", "OR X", 0.f,    -1.f,    1.f},
+    {"orientationY", "OR Y", 0.f,    -1.f,    1.f},
+    {"orientationZ", "OR Z", 0.f,    -1.f,    1.f},
+    {"velocityX",    "VELX", 0.f, -1000.f, 1000.f},
+    {"velocityY",    "VELY", 0.f, -1000.f, 1000.f},
+    {"velocityZ",    "VELZ", 0.f, -1000.f, 1000.f},
+    {"positionX",    "POSX", 0.f,    -1.e6f,  1.e6f},
+    {"positionY",    "POSY", 0.f,    -1.e6f,  1.e6f},
+    {"positionZ",    "POSZ", 0.f,    -1.e6f,  1.e6f},
+    {"distanceGain", "DGAN", 1.0,     0.0,    1.0},
+    {"coneGain",     "CGAN", 1.0,     0.0,    1.0},
+    nullptr};
+
+static AudioSettingDescriptor s_sDesc[] = {
+    {"distanceModel",  "DSTM", SettingType::Enum, s_distance_models},
+    {"refDistance",    "REFD", SettingType::Float},
+    {"maxDistance",    "MAXD", SettingType::Float},
+    {"rolloffFactor",  "ROLL", SettingType::Float},
+    {"coneInnerAngle", "CONI", SettingType::Float},
+    {"coneOuterAngle", "CONO", SettingType::Float},
+    {"panningMode",    "PANM", SettingType::Enum, s_panning_models},
+    nullptr};
+
+AudioNodeDescriptor * PannerNode::desc()
+{
+    static AudioNodeDescriptor d {s_pDesc, s_sDesc};
+    return &d;
+}
+
 PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
-    : AudioNode(ac)
-    , m_orientationX(std::make_shared<AudioParam>("orientationX", "OR X", 0.f, -1.f, 1.f))
-    , m_orientationY(std::make_shared<AudioParam>("orientationY", "OR Y", 0.f, -1.f, 1.f))
-    , m_orientationZ(std::make_shared<AudioParam>("orientationZ", "OR Z", 0.f, -1.f, 1.f))
-    , m_velocityX(std::make_shared<AudioParam>("velocityX", "VELX", 0.f, -1000.f, 1000.f))
-    , m_velocityY(std::make_shared<AudioParam>("velocityY", "VELY", 0.f, -1000.f, 1000.f))
-    , m_velocityZ(std::make_shared<AudioParam>("velocityZ", "VELZ", 0.f, -1000.f, 1000.f))
-    , m_positionX(std::make_shared<AudioParam>("positionX", "POSX", 0.f, -1.e6f, 1.e6f))
-    , m_positionY(std::make_shared<AudioParam>("positionY", "POSY", 0.f, -1.e6f, 1.e6f))
-    , m_positionZ(std::make_shared<AudioParam>("positionZ", "POSZ", 0.f, -1.e6f, 1.e6f))
-    , m_distanceModel(std::make_shared<AudioSetting>("distanceModel", "DSTM", s_distance_models))
-    , m_refDistance(std::make_shared<AudioSetting>("refDistance", "REFD", AudioSetting::Type::Float))
-    , m_maxDistance(std::make_shared<AudioSetting>("maxDistance", "MAXD", AudioSetting::Type::Float))
-    , m_rolloffFactor(std::make_shared<AudioSetting>("rolloffFactor", "ROLL", AudioSetting::Type::Float))
-    , m_coneInnerAngle(std::make_shared<AudioSetting>("coneInnerAngle", "CONI", AudioSetting::Type::Float))
-    , m_coneOuterAngle(std::make_shared<AudioSetting>("coneOuterAngle", "CONO", AudioSetting::Type::Float))
-    , m_panningModel(std::make_shared<AudioSetting>("panningMode", "PANM", s_panning_models))
+    : AudioNode(ac, *desc())
     , m_sampleRate(ac.sampleRate())
 {
+    /// @TODO in the future a panner could be multi-channel beyond stereo
+    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
+    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
+    
+    m_orientationX = param("orientationX");
+    m_orientationY = param("orientationY");
+    m_orientationZ = param("orientationZ");
+    m_velocityX = param("velocityX");
+    m_velocityY = param("velocityY");
+    m_velocityZ = param("velocityZ");
+    m_positionX = param("positionX");
+    m_positionY = param("positionY");
+    m_positionZ = param("positionZ");
+    m_distanceGain = param("distanceGain");
+    m_coneGain = param("coneGain");
+    m_distanceModel = setting("distanceModel");
+    m_refDistance = setting("refDistance");
+    m_maxDistance = setting("maxDistance");
+    m_rolloffFactor = setting("rolloffFactor");
+    m_coneInnerAngle = setting("coneInnerAngle");
+    m_coneOuterAngle = setting("coneOuterAngle");
+    m_panningModel = setting("panningMode");
+
     if (searchPath.length())
     {
         auto stripSlash = [&](const std::string & path) -> std::string {
@@ -72,15 +110,6 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
 
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
-
-    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
-    m_distanceGain = std::make_shared<AudioParam>("distanceGain", "DGAN", 1.0, 0.0, 1.0);
-    m_coneGain = std::make_shared<AudioParam>("coneGain", "CNGN", 1.0, 0.0, 1.0);
-
-    m_params.push_back(m_distanceGain);
-    m_params.push_back(m_coneGain);
 
     m_distanceModel->setValueChanged(
         [this]() {
@@ -98,42 +127,36 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
                     break;
             }
         });
-    m_settings.push_back(m_distanceModel);
 
     m_refDistance->setValueChanged(
         [this]() {
             m_distanceEffect->setRefDistance(m_refDistance->valueFloat());
         });
-    m_settings.push_back(m_refDistance);
 
     m_maxDistance->setValueChanged(
         [this]() {
             m_distanceEffect->setMaxDistance(m_maxDistance->valueFloat());
         });
-    m_settings.push_back(m_maxDistance);
 
     m_rolloffFactor->setValueChanged(
         [this]() {
             m_distanceEffect->setRolloffFactor(m_maxDistance->valueFloat());
         });
-    m_settings.push_back(m_rolloffFactor);
 
     m_coneInnerAngle->setValueChanged(
         [this]() {
             m_coneEffect->setInnerAngle(m_coneInnerAngle->valueFloat());
         });
-    m_settings.push_back(m_coneInnerAngle);
 
     m_coneOuterAngle->setValueChanged(
         [this]() {
             m_coneEffect->setOuterAngle(m_coneOuterAngle->valueFloat());
         });
-    m_settings.push_back(m_coneOuterAngle);
 
     m_panningModel->setUint32(static_cast<uint32_t>(EQUALPOWER));
     m_panningModel->setValueChanged(
         [this]() {
-            setPanningModel(static_cast<PanningMode>(m_panningModel->valueUint32()));
+            setPanningModel(static_cast<PanningModel>(m_panningModel->valueUint32()));
         });
 
     // Node-specific default mixing rules.
@@ -153,12 +176,12 @@ void PannerNode::initialize()
 {
     if (isInitialized()) return;
 
-    switch (static_cast<PanningMode>(m_panningModel->valueUint32()))
+    switch (static_cast<PanningModel>(m_panningModel->valueUint32()))
     {
-        case PanningMode::EQUALPOWER:
+        case PanningModel::EQUALPOWER:
             m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
             break;
-        case PanningMode::HRTF:
+        case PanningModel::HRTF:
             m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
             break;
         default:
@@ -218,7 +241,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     // HRTFDatabase should be loaded before proceeding for offline audio context
-    if (static_cast<PanningMode>(m_panningModel->valueUint32()) == PanningMode::HRTF && !m_hrtfDatabaseLoader->isLoaded())
+    if (static_cast<PanningModel>(m_panningModel->valueUint32()) == PanningModel::HRTF && !m_hrtfDatabaseLoader->isLoaded())
     {
         if (r.context()->isOfflineContext())
         {
@@ -256,29 +279,29 @@ void PannerNode::reset(ContextRenderLock &)
         m_panner->reset();
 }
 
-PanningMode PannerNode::panningModel() const
+PanningModel PannerNode::panningModel() const
 {
-    return static_cast<PanningMode>(m_panningModel->valueUint32());
+    return static_cast<PanningModel>(m_panningModel->valueUint32());
 }
 
-void PannerNode::setPanningModel(PanningMode model)
+void PannerNode::setPanningModel(PanningModel model)
 {
-    if (model != PanningMode::EQUALPOWER && model != PanningMode::HRTF)
+    if (model != PanningModel::EQUALPOWER && model != PanningModel::HRTF)
         throw std::invalid_argument("Unknown panning model specified");
 
     ASSERT(m_sampleRate);
 
-    PanningMode curr = static_cast<PanningMode>(m_panningModel->valueUint32());
+    PanningModel curr = static_cast<PanningModel>(m_panningModel->valueUint32());
     if (!m_panner.get() || model != curr)
     {
         m_panningModel->setUint32(static_cast<uint32_t>(model));
 
         switch (model)
         {
-            case PanningMode::EQUALPOWER:
+            case PanningModel::EQUALPOWER:
                 m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
                 break;
-            case PanningMode::HRTF:
+            case PanningModel::HRTF:
                 m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
                 break;
             default:

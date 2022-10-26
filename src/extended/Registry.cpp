@@ -22,6 +22,7 @@ NodeRegistry& NodeRegistry::Instance()
 struct NodeDescriptor
 {
     std::string name;
+    AudioNodeDescriptor * desc;
     CreateNodeFn c;
     DeleteNodeFn d;
 };
@@ -42,10 +43,10 @@ NodeRegistry::~NodeRegistry()
     delete _detail;
 }
 
-bool NodeRegistry::Register(char const* const name, CreateNodeFn c, DeleteNodeFn d)
+bool NodeRegistry::Register(char const* const name, AudioNodeDescriptor* desc, CreateNodeFn c, DeleteNodeFn d)
 {
     printf("Registering %s\n", name);
-    _detail->descriptors[name] = { name, c, d };
+    _detail->descriptors[name] = { name, desc, c, d };
     return true;
 }
 
@@ -65,6 +66,15 @@ lab::AudioNode* NodeRegistry::Create(const std::string& n, lab::AudioContext& ac
         return nullptr;
 
     return i->second.c(ac);
+}
+
+AudioNodeDescriptor const * const NodeRegistry::Descriptor(const std::string & n) const
+{
+    auto i = _detail->descriptors.find(n);
+    if (i == _detail->descriptors.end())
+        return nullptr;
+
+    return i->second.desc;
 }
 
 
