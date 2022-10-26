@@ -1,4 +1,14 @@
 
+## alpha 1.2
+
+- rename DelayMode to DelayModel to match spec
+- refactor parameter and setting initializaiton for audio nodes to refer to
+  AudioParamDescriptors and AudioSettingDescriptors.
+- breaking API change: AudioNode now takes an AudioNodeDescriptor. Any custom
+  nodes will need a tweak to match the new API. The interface for existing 
+  nodes hasn't changed. For reference, have a look at any of the built in nodes
+  to see what the descriptor set up looks like.
+
 ## v1.1
 # 23 October 2022
 
