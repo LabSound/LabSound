@@ -35,9 +35,12 @@ public:
     virtual double tailTime(ContextRenderLock& r) const override { return 0.; }
     virtual double latencyTime(ContextRenderLock& r) const override { return 0.f; }
 
+    // gate is a two state signal. Changing the gate signal to one means that the attack/decay segment will start
+    // If oneShot is false, sustainTime is ignored, and sustain is held until gain goes to zero.
+    // If oneShot is true, transitioning the gate to zero has no effect.
     std::shared_ptr<AudioParam> gate() const; // gate signal
+    std::shared_ptr<AudioSetting> oneShot() const;  // If false, gate controls attack and sustain, else sustainTime controls sustain
 
-    std::shared_ptr<AudioSetting> oneShot() const;  // If zero, gate controls attack and sustain, else sustainTime controls sustain
     std::shared_ptr<AudioSetting> attackTime() const;  // Duration in seconds
     std::shared_ptr<AudioSetting> attackLevel() const;  // Level
     std::shared_ptr<AudioSetting> decayTime() const;  // Duration in seconds

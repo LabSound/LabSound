@@ -13,6 +13,11 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 
+//// for debugging only
+#include "LabSound/extended/ADSRNode.h"
+//// for debugging only
+
+
 #include "internal/Assertions.h"
 
 #include "concurrentqueue/concurrentqueue.h"
@@ -669,5 +674,154 @@ void AudioContext::resume()
     device_callback->start();
 }
 
+void AudioContext::debugTraverse(AudioNode * root)
+{
+    ASSERT(root);
+    // bail if shutting down.
+    auto ac = audioContextInterface().lock();
+    if (!ac)
+        return;
+
+    auto ctx = this;
+
+    ContextRenderLock renderLock(this, "lab::pull_graph");
+    if (!renderLock.context())
+        return;  // return if couldn't acquire lock
+
+    if (!ctx->isInitialized())
+    {
+        return;
+    }
+
+    synchronizeConnections();
+
+    // Let the context take care of any business at the start of each render quantum.
+    ctx->handlePreRenderTasks(renderLock);
+
+    /* pass two, implement hardware input
+    // Prepare the local audio input provider for this render quantum.
+    if (optional_hardware_input && src)
+    {
+        optional_hardware_input->set(src);
+    }
+     */
+
+    // process the graph by pulling the inputs, which will recurse the
+    // entire processing graph.
+
+    enum WorkType
+    {
+        processNode,
+        silenceOutputs,
+        unsilenceOutputs,
+        setOutputChannels,
+        sumInputs,
+        setZeroes,
+        manageEnvelope,
+    };
+
+    struct Work
+    {
+        AudioNode * node = nullptr;
+        WorkType type;
+    };
+
+    std::vector<Work> work;
+
+    std::vector<AudioNode *> node_stack;
+    static int color = 1;
+    root->color = color;
+    ++color;
+    node_stack.push_back(root);
+
+
+    static std::map<int, std::vector<AudioBus *>> summing_busses;
+    std::vector<AudioBus *> in_use;
+    std::vector<std::pair<AudioNode *, const char*>> by_whom;
+
+    AudioNode * current_node = nullptr;
+    while (node_stack.size() > 0)
+    {
+        current_node = node_stack.back();
+
+        auto sz = node_stack.size();
+        for (auto & p : current_node->_params)
+        {
+            // if there are rendering connections, be sure they are ready
+            p->updateRenderingState(renderLock);
+
+            int connectionCount = p->numberOfRenderingConnections(renderLock);
+            if (!connectionCount)
+                continue;
+
+            for (int i = 0; i < connectionCount; ++i)
+            {
+                std::shared_ptr<AudioNodeOutput> output = p->renderingOutput(renderLock, i);
+                if (!output)
+                    continue;
+                
+                AudioNode* node = output->sourceNode();
+                if (!node || node->color >= color)
+                    continue;
+
+                by_whom.push_back({current_node, "param input"});
+                node_stack.push_back(node);
+            }
+        }
+
+        // if there were parameters with inputs, queue up their work next
+        if (node_stack.size() > sz)
+            continue;
+
+        // Process all of the AudioNodes connected to our inputs.
+        sz = node_stack.size();
+        int inputCount = current_node->numberOfInputs();
+        for (int i = 0; i < inputCount; ++i)
+        {
+            auto in = current_node->input(i);
+            if (!in)
+                continue;
+
+            int connectionCount = in->numberOfConnections();
+            for (int j = 0; j < connectionCount; ++j) {
+                if (auto destNode = in->connection(renderLock, i)) {
+                    if (destNode->sourceNode()->color < color)
+                    {
+                        node_stack.push_back(destNode->sourceNode());
+                    }
+                }
+            }
+        }
+
+        // if there were inputs on the node current node, queue up their work next
+        if (node_stack.size() > sz)
+            continue;
+
+        // move current_node to the work stack and retire it from the node stack
+        current_node->color = color;
+        work.push_back({current_node, processNode});
+        node_stack.pop_back();
+    }
+
+
+    for (auto& w : work) {
+        // actually do the things in graph order
+        if (w.type == processNode) {
+            if (auto adsr = dynamic_cast<ADSRNode*>(w.node)) {
+                printf("%s %s %s Inputs silent: %s\n",
+                       w.node->name(),
+                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       adsr->finished(renderLock)? "Finished": "Playing",
+                       w.node->inputsAreSilent(renderLock) ? "yes" : "no");
+            }
+            else {
+                printf("%s %s Inputs silent: %s\n",
+                       w.node->name(),
+                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       w.node->inputsAreSilent(renderLock) ? "yes" : "no");
+            }
+        }
+    }
+}
 
 }  // End namespace lab

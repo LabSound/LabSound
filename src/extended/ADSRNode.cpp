@@ -14,8 +14,6 @@
 #include <limits>
 #include <deque>
 
-using namespace lab;
-
 namespace lab
 {
     ///////////////////////////////////////////
@@ -93,8 +91,8 @@ namespace lab
             }
 
             // oneshot == false means gate controls Attack/Sustain
-            // oneshot == true means sustain param controlls sustain
-            bool oneshot = m_oneShot->valueBool(); // false mains gate controls AS, otherwise, sustain param controls S
+            // oneshot == true means sustain param controls sustain
+            bool oneshot = m_oneShot->valueBool();
 
             cached_sample_rate = r.context()->sampleRate();
             for (int i = 0; i < framesToProcess; ++i)

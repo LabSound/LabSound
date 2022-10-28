@@ -25,8 +25,67 @@ using namespace std;
 namespace lab
 {
 
+// static
+void AudioNode::_printGraph(const AudioNode * root, std::function<void(const char *)> prnln, int indent)
+{
+    const int maxIndent = 40;
+    static char * spacesBuff = nullptr;
+    if (!spacesBuff) {
+        spacesBuff = (char *) malloc(maxIndent + 1);
+        memset(spacesBuff, ' ', maxIndent);
+        spacesBuff[maxIndent] = '\0';
+    }
+    int spaceTerminator = indent < maxIndent ? indent : maxIndent;
+    spacesBuff[spaceTerminator] = '\0';
+    std::string spaces = spacesBuff;
+    spacesBuff[spaceTerminator] = ' ';
 
-const char* schedulingStateName(SchedulingState s)
+    std::string str = spaces;
+    str += std::string(root->name());
+    prnln(str.c_str());
+
+    const auto params = root->params();
+    auto names = root->paramNames();
+    for (int i = 0; i < params.size(); ++i)
+    {
+/*        int input_count = params[i]->inputs();
+        if (inputs.sources.size() > 0) {
+            str = spaces + "   [Param] " + names[i];
+            prnln(str.c_str());
+            for (const auto & n : inputs.sources)
+                _printGraph(n->get(), prnln, indent + 3);
+        }*/
+    }
+
+    if (root->m_inputs.size() > 0)
+    {
+        prnln(str.c_str());
+        for (auto & i : root->m_inputs)
+        {
+            if (!i)
+                continue;
+
+            str = spaces + "   [Input] ";
+            prnln(str.c_str());
+//            for (auto & n : i->sources)
+//                _printGraph(n->get(), prnln, indent + 3);
+        }
+    }
+}
+
+
+// static
+void AudioNode::printGraph(const AudioNode * root, std::function<void(const char *)> prnln)
+{
+    if (!root || !prnln)
+        return;
+
+    _printGraph(root, prnln, 0);
+}
+
+/// @TODO when the ls2 merge is done, move this to its own source file
+///
+const char * schedulingStateName(SchedulingState s)
 {
     switch (s)
     {
@@ -578,7 +637,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
 }
 
 bool AudioNode::inputsAreSilent(ContextRenderLock & r)
-{
+{    
     for (auto & in : m_inputs)
     {
         if (!in->bus(r)->isSilent())

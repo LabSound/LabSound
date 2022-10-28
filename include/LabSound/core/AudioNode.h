@@ -7,6 +7,7 @@
 #define AudioNode_h
 
 #include "LabSound/core/AudioNodeDescriptor.h"
+#include "LabSound/core/AudioNodeScheduler.h"
 #include "LabSound/core/AudioParamDescriptor.h"
 #include "LabSound/core/AudioSettingDescriptor.h"
 #include "LabSound/core/Mixing.h"
@@ -55,18 +56,7 @@ enum OscillatorType
     _OscillatorTypeCount
 };
 
-enum class SchedulingState : int
-{
-    UNSCHEDULED = 0, // Initial playback state. Created, but not yet scheduled
-    SCHEDULED,       // Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing
-    FADE_IN,         // First epoch, fade in, then play
-    PLAYING,         // Generating sound
-    STOPPING,        // Transitioning to finished
-    RESETTING,       // Node is resetting to initial, unscheduled state
-    FINISHING,       // Playing has finished
-    FINISHED         // Node has finished
-};
-const char* schedulingStateName(SchedulingState);
+
 // clang-format on
 
 class AudioContext;
@@ -77,51 +67,13 @@ class AudioSetting;
 class ContextGraphLock;
 class ContextRenderLock;
 
-class AudioNodeScheduler
-{
-public:
-    explicit AudioNodeScheduler() = delete;
-    explicit AudioNodeScheduler(float sampleRate);
-    ~AudioNodeScheduler() = default;
 
-    // Scheduling
-    void start(double when);
-    void stop(double when);
-
-    // called when the sound is finished, or noteOff/stop time has been reached
-    void finish(ContextRenderLock&);
-    void reset();
-
-    SchedulingState playbackState() const { return _playbackState; }
-    bool hasFinished() const { return _playbackState == SchedulingState::FINISHED; }
-
-    bool update(ContextRenderLock&, int epoch_length);
-
-    SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
-
-    // epoch is a long count at sample rate; 136 years at 48kHz
-
-    uint64_t _epoch = 0;        // the epoch rendered currently in the busses
-    uint64_t _epochLength = 0;  // number of frames in current epoch
-
-    // start and stop epoch (absolute, not relative)
-    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();
-    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();
-
-    int _renderOffset = 0; // where rendering starts in the current frame
-    int _renderLength = 0; // number of rendered frames in the current frame 
-
-    float _sampleRate = 1;
-
-    std::function<void()> _onEnded;
-
-    std::function<void(double when)> _onStart;
-};
 
     
 // xAudioNode is the basic building block for a signal processing graph.
-// It may be an audio source, an intermediate processing module, or an audio
+// It may be an audio source, an intermediate processing module, or an audio 
 // destination.
+//
 // Each AudioNode can have inputs and/or outputs.
 //
 // An AudioHardwareDeviceNode has one input and no outputs and represents the
@@ -130,18 +82,24 @@ public:
 //
 class AudioNode
 {
-public:
+    static void _printGraph(const AudioNode * root, 
+                        std::function<void(const char *)> prnln, int indent);
+
+public :
     enum : int
     {
         ProcessingSizeInFrames = 128
     };
+
+    int color = 0;
 
     AudioNode() = delete;
     virtual ~AudioNode();
 
     explicit AudioNode(AudioContext &, AudioNodeDescriptor const &);
 
-
+    static void printGraph(const AudioNode* root, 
+                        std::function<void(const char *)> prnln);
 
     //--------------------------------------------------
     // required interface
@@ -236,7 +194,7 @@ public:
     std::shared_ptr<AudioParam> param(int index);
     int param_index(char const * const str);
 
-    // returns a vector of setting names
+    //  settings
     std::vector<std::string> settingNames() const;
     std::vector<std::string> settingShortNames() const;
 
@@ -248,6 +206,7 @@ public:
     std::vector<std::shared_ptr<AudioParam>> params() const { return _params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const { return _settings; }
 
+    // miscelleaneous management
     AudioNodeScheduler _scheduler;
 
     ProfileSample graphTime;    // how much time the node spend pulling inputs

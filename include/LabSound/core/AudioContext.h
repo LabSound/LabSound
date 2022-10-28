@@ -42,15 +42,19 @@ public:
 
     // AudioNodes should not retain the AudioContext. The majority of
     // methods that take AudioContext as a parameter do so via reference.
+    // 
     // If methods from the context, such as currentTime() are
     // required in methods that do not take AudioContext as a parameter, 
     // they should instead retain a weak pointer to the 
     // AudioNodeInterface from the AudioContext they were instantiated from. 
-    // Locking the AudioNodeInterface
-    // pointer is a way to check if the AudioContext is still instantiated.
+    // 
+    // Locking the AudioNodeInterface pointer is a way to check if the 
+    // AudioContext is still instantiated.
+    // 
     // AudioContextInterface contains data that is safe for any thread, or
     // audio processing callback to read, even if the audio context is in
     // the process of stopping or destruction.
+
     class AudioContextInterface
     {
         friend class AudioContext;
@@ -91,6 +95,8 @@ public:
     // LabSound::MakeRealtimeAudioContext(lab::Channels::Stereo)
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
+
+    void debugTraverse(AudioNode * root);
 
     void setDeviceNode(std::shared_ptr<AudioNode> device);
     std::shared_ptr<AudioNode> device();

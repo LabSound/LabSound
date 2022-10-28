@@ -124,11 +124,14 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
 
     nonSilentFramesToProcess += quantumFrameOffset;
 
-    if (bufferSize > m_phaseIncrements.size()) m_phaseIncrements.allocate(bufferSize);
-    if (bufferSize > m_detuneValues.size()) m_detuneValues.allocate(bufferSize);
-    if (bufferSize > m_amplitudeValues.size()) m_amplitudeValues.allocate(bufferSize);
-    if (bufferSize > m_biasValues.size()) m_biasValues.allocate(bufferSize);
-
+    if (bufferSize > m_phaseIncrements.size())
+        m_phaseIncrements.allocate(bufferSize);
+    if (bufferSize > m_detuneValues.size())
+        m_detuneValues.allocate(bufferSize);
+    if (bufferSize > m_amplitudeValues.size())
+        m_amplitudeValues.allocate(bufferSize);
+    if (bufferSize > m_biasValues.size())
+        m_biasValues.allocate(bufferSize);
 
     // calculate phase increments
     float* phaseIncrements = m_phaseIncrements.data();
@@ -225,7 +228,8 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         {
             destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
             phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI)) phase -= 2. * static_cast<float>(LAB_PI);
+            if (phase > 2. * static_cast<float>(LAB_PI))
+                phase -= 2. * static_cast<float>(LAB_PI);
         }
         break;
 
@@ -234,7 +238,8 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         {
             destP[i] = burk_fast_sine(phase);
             phase += phaseIncrements[i];
-            if (phase > static_cast<float>(LAB_PI)) phase -= static_cast<float>(LAB_TAU);
+            if (phase > static_cast<float>(LAB_PI))
+                phase -= static_cast<float>(LAB_TAU);
         }
         break;
 

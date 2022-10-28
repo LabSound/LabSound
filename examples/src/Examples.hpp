@@ -114,6 +114,7 @@ struct ex_play_file : public labsound_example
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext & ac = *context.get();
 
+        //auto musicClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
             return;
@@ -364,7 +365,7 @@ struct ex_tremolo : public labsound_example
             context->connect(context->device(), osc, 0, 0);
         }
 
-        //context->debugTraverse();
+        context->debugTraverse(context->device().get());
 
         Wait(std::chrono::seconds(5));
     }
@@ -398,17 +399,18 @@ struct ex_frequency_modulation : public labsound_example
 
         {
             modulator = std::make_shared<OscillatorNode>(ac);
-            modulator->setType(OscillatorType::SQUARE);
+            modulator->setType(OscillatorType::TRIANGLE);
             modulator->start(0);
 
             modulatorGain = std::make_shared<GainNode>(ac);
 
             osc = std::make_shared<OscillatorNode>(ac);
-            osc->setType(OscillatorType::SQUARE);
+            osc->setType(OscillatorType::SINE);
             osc->frequency()->setValue(300);
             osc->start(0);
 
             trigger = std::make_shared<ADSRNode>(ac);
+            trigger->oneShot()->setBool(true);
 
             signalGain = std::make_shared<GainNode>(ac);
             signalGain->gain()->setValue(1.0f);
@@ -419,11 +421,23 @@ struct ex_frequency_modulation : public labsound_example
             chainDelay = std::make_shared<DelayNode>(ac, 4);
             chainDelay->delayTime()->setFloat(0.0f);  // passthrough delay, not sure if this has the same DSP semantic as ChucK
 
+            // device
+            //   signalGain <- chainDelay <- feedbackTap <- signalGain <- trigger <- osc
+            //   osc->freq <- modulatorGain <- modulator
+                        
             // Set up FM processing chain:
             context->connect(modulatorGain, modulator, 0, 0);  // Modulator to Gain
             context->connectParam(osc->frequency(), modulatorGain, 0);  // Gain to frequency parameter
+
+#if 1
+            // with adsr
             context->connect(trigger, osc, 0, 0);  // Osc to ADSR
             context->connect(signalGain, trigger, 0, 0);  // ADSR to signalGain
+#else
+            // sans adsr
+            context->connect(signalGain, osc, 0, 0);  // Osc to ADSR
+#endif
+            
             context->connect(feedbackTap, signalGain, 0, 0);  // Signal to Feedback
             context->connect(chainDelay, feedbackTap, 0, 0);  // Feedback to Delay
             context->connect(signalGain, chainDelay, 0, 0);  // Delay to signalGain
@@ -449,11 +463,19 @@ struct ex_frequency_modulation : public labsound_example
             const uint32_t delay_time_ms = 500;
             now_in_ms += delay_time_ms;
 
-            std::cout << "[ex_frequency_modulation] car_freq: " << carrier_freq << std::endl;
-            std::cout << "[ex_frequency_modulation] mod_freq: " << mod_freq << std::endl;
-            std::cout << "[ex_frequency_modulation] mod_gain: " << mod_gain << std::endl;
+            std::cout << now_in_ms << "\n";
+            std::cout << "[ex_frequency_modulation] car_freq: " << carrier_freq << "\n";
+            std::cout << "[ex_frequency_modulation] mod_freq: " << mod_freq << "\n";
+            std::cout << "[ex_frequency_modulation] mod_gain: " << mod_gain << "\n";
+            
+            if (now_in_ms == 1000)
+                context->debugTraverse(context->device().get());
+            if (now_in_ms == 3000)
+                context->debugTraverse(context->device().get());
 
-            Wait(std::chrono::milliseconds(delay_time_ms));
+            Wait(std::chrono::milliseconds(delay_time_ms / 2));
+            trigger->gate()->setValue(0.f); // reset the adsr
+            Wait(std::chrono::milliseconds(delay_time_ms / 2));
 
             if (now_in_ms >= 10000) break;
         };
@@ -760,7 +782,7 @@ struct ex_hrtf_spatialization : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
 
-            panner->setPanningModel(PanningMode::HRTF);
+            panner->setPanningModel(PanningModel::HRTF);
             context->connect(context->device(), panner, 0, 0);
 
             audioClipNode->setBus(r, audioClip);
@@ -810,8 +832,8 @@ struct ex_convolution_reverb : public labsound_example
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
 
-        std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
-        std::shared_ptr<AudioBus> voiceClip = MakeBusFromFile("samples/voice.ogg", false);
+        std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromSampleFile("impulse/cardiod-rear-levelled.wav", argc, argv);
+        std::shared_ptr<AudioBus> voiceClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
 
         if (!impulseResponseClip || !voiceClip)
         {
