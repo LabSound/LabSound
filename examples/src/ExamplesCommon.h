@@ -43,6 +43,8 @@ std::string PrintCurrentDirectory()
 
 struct labsound_example
 {
+    virtual ~labsound_example() = default;
+    
     std::mt19937 randomgenerator;
 
     std::vector<std::shared_ptr<lab::AudioNode>> _nodes;

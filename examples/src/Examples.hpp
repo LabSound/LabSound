@@ -249,9 +249,9 @@ struct ex_playback_events : public labsound_example
     }
 };
 
-////////////////////////////////
-//    ex_offline_rendering    //
-////////////////////////////////
+//------------------------------
+//    ex_offline_rendering
+//------------------------------
 
 // This sample illustrates how LabSound can be used "offline," where the graph is not
 // pulled by an actual audio device, but rather a null destination. This sample shows
@@ -467,11 +467,6 @@ struct ex_frequency_modulation : public labsound_example
             std::cout << "[ex_frequency_modulation] car_freq: " << carrier_freq << "\n";
             std::cout << "[ex_frequency_modulation] mod_freq: " << mod_freq << "\n";
             std::cout << "[ex_frequency_modulation] mod_gain: " << mod_gain << "\n";
-            
-            if (now_in_ms == 1000)
-                context->debugTraverse(context->device().get());
-            if (now_in_ms == 3000)
-                context->debugTraverse(context->device().get());
 
             Wait(std::chrono::milliseconds(delay_time_ms / 2));
             trigger->gate()->setValue(0.f); // reset the adsr

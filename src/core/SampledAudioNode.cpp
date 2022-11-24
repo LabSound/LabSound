@@ -390,8 +390,8 @@ namespace lab {
                         src_data->end_of_input = ending ? 1 : 0;
                         src_process(schedule.resampler[i]->sampler, src_data);
                         VectorMath::vadd(buff.data(), 1, buffer + write_index, 1, buffer + write_index, 1, count);
-                        src_increment = src_data->input_frames_used;
-                        dst_increment = src_data->output_frames_gen;
+                        src_increment = static_cast<int>(src_data->input_frames_used);
+                        dst_increment = static_cast<int>(src_data->output_frames_gen);
                     }
                     schedule.cursor += src_increment;
                     write_index += dst_increment;

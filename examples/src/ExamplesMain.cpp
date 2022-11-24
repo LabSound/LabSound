@@ -13,47 +13,51 @@
 
 static constexpr int iterations = 1;
 
-// A simple memory manager for the examples, as they are too large to
-// instantiate all at once on the stack on small machines.
-
-template <typename T>
-class Example
-{
-public:
-    T* ex;
-    Example() { ex = new T; }
-    ~Example() { delete ex; }
-};
-
 int main(int argc, char *argv[]) try
-{   
-    Example<ex_play_file> play_file;
-    Example<ex_simple> simple;
-    Example<ex_osc_pop> osc_pop;
-    Example<ex_playback_events> playback_events;
-    Example<ex_offline_rendering> offline_rendering;
-    Example<ex_tremolo> tremolo;
-    Example<ex_frequency_modulation> frequency_mod;
-    Example<ex_runtime_graph_update> runtime_graph_update;
-    Example<ex_microphone_loopback> microphone_loopback;
-    Example<ex_microphone_reverb> microphone_reverb;
-    Example<ex_peak_compressor> peak_compressor;
-    Example<ex_stereo_panning> stereo_panning;
-    Example<ex_hrtf_spatialization> hrtf_spatialization;
-    Example<ex_convolution_reverb> convolution_reverb;
-    Example<ex_misc> misc;
-    Example<ex_dalek_filter> dalek_filter;
-    Example<ex_redalert_synthesis> redalert_synthesis;
-    Example<ex_wavepot_dsp> wavepot_dsp;
-    Example<ex_granulation_node> granulation;
-    Example<ex_poly_blep> poly_blep;
+{
+    enum Passing { pass, fail };
+    enum Skip { yes, no };
+    struct Example {
+        Passing passing;
+        Skip skip;
+        labsound_example* example;
+    };
+    
+    Example examples[] = {
+        { Passing::pass, Skip::yes, new ex_play_file() },
+        { Passing::pass, Skip::yes, new ex_simple() },
+        { Passing::pass, Skip::yes, new ex_osc_pop() },
+        { Passing::pass, Skip::yes, new ex_playback_events() },
+        { Passing::pass, Skip::yes, new ex_offline_rendering() },
+        { Passing::pass, Skip::yes, new ex_tremolo() },
+        { Passing::pass, Skip::yes, new ex_frequency_modulation() },
+        { Passing::pass, Skip::yes, new ex_runtime_graph_update() },
+        { Passing::fail, Skip::yes,  new ex_microphone_loopback() },
+        { Passing::fail, Skip::yes, new ex_microphone_reverb() },
+        { Passing::pass, Skip::yes, new ex_peak_compressor() },
+        { Passing::pass, Skip::yes, new ex_stereo_panning() },
+        { Passing::fail, Skip::yes, new ex_hrtf_spatialization() },
+        { Passing::fail, Skip::yes, new ex_convolution_reverb() },
+        { Passing::fail, Skip::yes, new ex_misc() },
+        { Passing::fail, Skip::yes, new ex_dalek_filter() },
+        { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
+        { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
+        { Passing::fail, Skip::yes, new ex_granulation_node() },
+        { Passing::pass, Skip::yes, new ex_poly_blep() }
+    };
 
     // We can optionally play for a number of iterations as a way of testing lifetime & memory issues.
     for (int i = 0; i < iterations; ++i)
     {
-        frequency_mod.ex->play(argc, argv);
+        for (auto& example : examples)
+            if (example.skip == Skip::no)
+                example.example->play(argc, argv);
     }
 
+    for (auto& example : examples) {
+        delete example.example;
+    }
+    
     return EXIT_SUCCESS;
 } 
 catch (const std::exception & e) 

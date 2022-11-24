@@ -33,6 +33,7 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac,
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
 
+    m_numChannels = outputConfig.desired_channels;
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
 
     m_channelCount = m_numChannels;
