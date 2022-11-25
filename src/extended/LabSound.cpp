@@ -195,7 +195,7 @@ AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration()
  * IN THE SOFTWARE.
  */
 
-#define LOG_USE_COLOR
+//#define LOG_USE_COLOR
 
 static struct {
   void *udata;

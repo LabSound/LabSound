@@ -9,7 +9,8 @@
 /////////////////////////////////////
 
 // Returns input, output
-inline std::pair<AudioStreamConfig, AudioStreamConfig> GetDefaultAudioDeviceConfiguration(const bool with_input = false)
+inline std::pair<AudioStreamConfig, AudioStreamConfig>
+    GetDefaultAudioDeviceConfiguration(const bool with_input = true)
 {
     AudioStreamConfig inputConfig;
     AudioStreamConfig outputConfig;
@@ -21,8 +22,10 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig> GetDefaultAudioDeviceConf
     AudioDeviceInfo defaultOutputInfo, defaultInputInfo;
     for (auto & info : audioDevices)
     {
-        if (info.index == default_output_device.index) defaultOutputInfo = info; 
-        else if (info.index == default_input_device.index) defaultInputInfo = info;
+        if (info.index == default_output_device.index)
+            defaultOutputInfo = info; 
+        else if (info.index == default_input_device.index)
+            defaultInputInfo = info;
     }
 
     if (defaultOutputInfo.index != -1)
