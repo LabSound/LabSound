@@ -23,7 +23,7 @@ FFTFrame::FFTFrame(int fftSize)
     , m_imagData(fftSize)
 {
     m_FFTSize = fftSize;
-    m_log2FFTSize = static_cast<size_t>(log2(fftSize));
+    m_log2FFTSize = static_cast<int>(log2(fftSize));
 
     // We only allow power of two
     ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -96,7 +96,7 @@ void FFTFrame::multiply(const FFTFrame & frame)
     const float * realP2 = frame2.realData();
     const float * imagP2 = frame2.imagData();
 
-    size_t halfSize = m_FFTSize / 2;
+    int halfSize = m_FFTSize / 2;
     float real0 = realP1[0];
     float imag0 = imagP1[0];
 
