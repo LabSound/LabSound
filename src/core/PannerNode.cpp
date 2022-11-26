@@ -70,7 +70,7 @@ AudioNodeDescriptor * PannerNode::desc()
     return &d;
 }
 
-PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
+PannerNode::PannerNode(AudioContext & ac)
     : AudioNode(ac, *desc())
     , m_sampleRate(ac.sampleRate())
 {
@@ -96,17 +96,6 @@ PannerNode::PannerNode(AudioContext & ac, const std::string & searchPath)
     m_coneInnerAngle = setting("coneInnerAngle");
     m_coneOuterAngle = setting("coneOuterAngle");
     m_panningModel = setting("panningMode");
-
-    if (searchPath.length())
-    {
-        auto stripSlash = [&](const std::string & path) -> std::string {
-            if (path[path.size() - 1] == '/' || path[path.size() - 1] == '\\')
-                return path.substr(0, path.size() - 1);
-            return path;
-        };
-        LOG_INFO("Initializing HRTF Database");
-        m_hrtfDatabaseLoader = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(m_sampleRate, stripSlash(searchPath));
-    }
 
     m_distanceEffect.reset(new DistanceEffect());
     m_coneEffect.reset(new ConeEffect());
@@ -182,7 +171,7 @@ void PannerNode::initialize()
             m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
             break;
         case PanningModel::HRTF:
-            m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
+            //m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
             break;
         default:
             throw std::runtime_error("invalid panning model");
@@ -226,7 +215,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * destination = output(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected() || !m_panner.get())
+    if (!isInitialized() || !input(0)->isConnected())
     {
         destination->zero();
         return;
@@ -240,26 +229,46 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    // HRTFDatabase should be loaded before proceeding for offline audio context
-    if (static_cast<PanningModel>(m_panningModel->valueUint32()) == PanningModel::HRTF && !m_hrtfDatabaseLoader->isLoaded())
-    {
-        if (r.context()->isOfflineContext())
-        {
-            m_hrtfDatabaseLoader->waitForLoaderThreadCompletion();
-        }
-        else
-        {
+    PanningModel curr = static_cast<PanningModel>(m_panningModel->valueUint32());
+    auto db = r.context()->hrtfDatabaseLoader();
+    if (curr == PanningModel::HRTF) {
+        if (!db) {
             destination->zero();
             return;
         }
+        if (!db->isLoaded()) {
+            if (r.context()->isOfflineContext()) {
+                // HRTFDatabase should be loaded before proceeding for offline audio context
+                if (db)
+                    db->waitForLoaderThreadCompletion();
+            }
+            else {
+                destination->zero();
+                return;
+            }
+        }
+
+        if (!m_panner) {
+            uint32_t fftSize = HRTFPanner::fftSizeForSampleLength(db->database()->sampleSize());
+            m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate, fftSize));
+        }
     }
+    
+    if (!m_panner)
+    {
+        destination->zero();
+        return;
+    }
+
 
     // Apply the panning effect.
     double azimuth;
     double elevation;
     getAzimuthElevation(r, &azimuth, &elevation);
-
-    m_panner->pan(r, azimuth, elevation, source + _scheduler._renderOffset, destination + _scheduler._renderOffset, _scheduler._renderLength);
+    
+    m_panner->pan(r, azimuth, elevation,
+                  *source, *destination,
+                  _scheduler._renderOffset, _scheduler._renderLength);
 
     // Get the distance and cone gain.
     float totalGain = distanceConeGain(r);
@@ -302,7 +311,10 @@ void PannerNode::setPanningModel(PanningModel model)
                 m_panner = std::unique_ptr<Panner>(new EqualPowerPanner(m_sampleRate));
                 break;
             case PanningModel::HRTF:
-                m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
+                //m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate));
+                m_panner.reset(nullptr);    // release the old one
+                // @TODO setting the panner is not thread safe.
+                // all of this should be part of the processing graph pre-render step.
                 break;
             default:
                 throw std::invalid_argument("invalid panning model");

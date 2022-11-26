@@ -10,6 +10,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
+#include "internal/HRTFDatabaseLoader.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -73,6 +74,9 @@ struct AudioContext::Internals
     moodycamel::ConcurrentQueue<PendingNodeConnection> pendingNodeConnections;
     moodycamel::ConcurrentQueue<PendingParamConnection> pendingParamConnections;
 
+    std::shared_ptr<HRTFDatabaseLoader> hrtfDatabaseLoader;
+
+    
     std::vector<float> debugBuffer;
     const int debugBufferCapacity = 1024 * 1024;
     int debugBufferIndex = 0;
@@ -123,6 +127,23 @@ void AudioContext::flushDebugBuffer(char const* const wavFilePath)
     m_internal->flushDebugBuffer(wavFilePath);
 }
 
+
+AudioContext::AudioContext(bool isOffline)
+    : m_isOfflineContext(isOffline)
+{
+    static std::atomic<int> id {1};
+    m_internal.reset(new AudioContext::Internals(true));
+    m_listener.reset(new AudioListener());
+    m_audioContextInterface = std::make_shared<AudioContextInterface>(this, id);
+    ++id;
+
+    if (isOffline)
+    {
+        updateThreadShouldRun = 1;
+        graphKeepAlive = 0;
+    }
+}
+
 AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
     : m_isOfflineContext(isOffline)
 {
@@ -138,6 +159,12 @@ AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
         graphKeepAlive = 0;
     }
 }
+
+bool AudioContext::isAutodispatchingEvents() const
+{
+    return m_internal->autoDispatchEvents;
+}
+
 
 AudioContext::~AudioContext()
 {
@@ -167,6 +194,19 @@ AudioContext::~AudioContext()
     ASSERT(!m_renderingAutomaticPullNodes.size());
 
     LOG_INFO("Finish AudioContext::~AudioContext()");
+}
+
+bool AudioContext::loadHrtfDatabase(const std::string & searchPath)
+{
+    auto db = new HRTFDatabaseLoader(sampleRate(), searchPath);
+    m_internal->hrtfDatabaseLoader.reset(db);
+    db->loadAsynchronously();
+    db->waitForLoaderThreadCompletion();
+    return db->database()->numberOfElevations() > 0 && db->database()->numberOfAzimuths() > 0;
+}
+
+std::shared_ptr<HRTFDatabaseLoader> AudioContext::hrtfDatabaseLoader() const {
+    return m_internal->hrtfDatabaseLoader;
 }
 
 void AudioContext::lazyInitialize()

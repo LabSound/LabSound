@@ -27,30 +27,43 @@ EqualPowerPanner::EqualPowerPanner(const float sampleRate)
 {
 }
 
-void EqualPowerPanner::pan(ContextRenderLock & r, double azimuth, double /*elevation*/, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess)
+void EqualPowerPanner::pan(ContextRenderLock & r,
+         double azimuth, double elevation,
+         const AudioBus& inputBus, AudioBus& outputBus,
+         int busOffset,
+         int framesToProcess)
 {
     m_smoothingConstant = AudioUtilities::discreteTimeConstantForSampleRate(SmoothingTimeConstant, r.context()->sampleRate());
 
-    bool isInputSafe = inputBus && (inputBus->numberOfChannels() == Channels::Mono || inputBus->numberOfChannels() == Channels::Stereo) && framesToProcess <= inputBus->length();
+    bool isInputSafe = (inputBus.numberOfChannels() == Channels::Mono ||
+                        inputBus.numberOfChannels() == Channels::Stereo) &&
+                        (framesToProcess + busOffset) <= inputBus.length();
     ASSERT(isInputSafe);
     if (!isInputSafe)
         return;
 
-    unsigned numberOfInputChannels = inputBus->numberOfChannels();
+    unsigned numberOfInputChannels = inputBus.numberOfChannels();
 
-    bool isOutputSafe = outputBus && outputBus->numberOfChannels() == Channels::Stereo && framesToProcess <= outputBus->length();
+    bool isOutputSafe = outputBus.numberOfChannels() == Channels::Stereo &&
+                        (framesToProcess + busOffset) <= outputBus.length();
     ASSERT(isOutputSafe);
     if (!isOutputSafe)
         return;
 
-    const float * sourceL = inputBus->channelByType(Channel::Left)->data();
-    const float * sourceR = numberOfInputChannels > 1 ? inputBus->channelByType(Channel::Right)->data() : sourceL;
-    float * destinationL = outputBus->channelByType(Channel::Left)->mutableData();
-    float * destinationR = outputBus->channelByType(Channel::Right)->mutableData();
+    const float * sourceL = inputBus.channelByType(Channel::Left)->data();
+    const float * sourceR = numberOfInputChannels > 1 ?
+                            inputBus.channelByType(Channel::Right)->data() : sourceL;
+    float * destinationL = outputBus.channelByType(Channel::Left)->mutableData();
+    float * destinationR = outputBus.channelByType(Channel::Right)->mutableData();
 
     if (!sourceL || !sourceR || !destinationL || !destinationR)
         return;
 
+    sourceL += busOffset;
+    sourceR += busOffset;
+    destinationL += busOffset;
+    destinationR += busOffset;
+    
     // Clamp azimuth to allowed range of -180 -> +180.
     azimuth = max(-180.0, azimuth);
     azimuth = min(180.0, azimuth);

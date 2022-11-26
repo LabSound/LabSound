@@ -54,12 +54,13 @@ public:
     // is still alive.  Otherwise this will return 0.
     static HRTFDatabase * defaultHRTFDatabase();
 
-private:
-    static void databaseLoaderEntry(HRTFDatabaseLoader * threadData);
-
     // If it hasn't already been loaded, creates a new thread and initiates asynchronous loading of the default database.
     // This must be called from the main thread.
     void loadAsynchronously();
+
+private:
+    static void databaseLoaderEntry(HRTFDatabaseLoader * threadData);
+
 
     static std::shared_ptr<HRTFDatabaseLoader> s_loader;  // singleton
     std::unique_ptr<HRTFDatabase> m_hrtfDatabase;

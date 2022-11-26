@@ -3,6 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/HRTFDatabase.h"
+#include "internal/HRTFDatabaseInfo.h"
 #include "internal/Assertions.h"
 #include "internal/HRTFElevation.h"
 
@@ -52,6 +53,23 @@ HRTFDatabase::HRTFDatabase(float sampleRate, const std::string & searchPath)
             }
         }
     }
+}
+
+int HRTFDatabase::numberOfElevations() const {
+    int result = 0;
+    for (auto& i : m_elevations) {
+        if (i != nullptr) {
+            ++result;
+        }
+    }
+    return result;
+}
+
+uint32_t HRTFDatabase::sampleSize() const {
+    if (!m_elevations[0])
+        return 0;
+    
+    return 139;
 }
 
 void HRTFDatabase::getKernelsFromAzimuthElevation(double azimuthBlend,

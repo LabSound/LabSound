@@ -72,6 +72,10 @@ public:
 
     // Returns true if the silent bit is set on all channels.
     bool isSilent() const;
+    
+    // Returns true if all channels hold zeros.
+    // meant for debugging as it scans the data.
+    bool isZero() const;
 
     // Returns true if the channel count and frame-size match.
     bool topologyMatches(const AudioBus & sourceBus) const;

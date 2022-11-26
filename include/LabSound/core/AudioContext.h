@@ -32,6 +32,7 @@ class AudioNodeInput;
 class AudioNodeOutput;
 class ContextGraphLock;
 class ContextRenderLock;
+class HRTFDatabaseLoader;
 
 class AudioContext
 {
@@ -59,7 +60,6 @@ public:
     {
         friend class AudioContext;
 
-
         int _id = 0;
         AudioContext * _ac = nullptr;
         double _currentTime = 0;
@@ -81,27 +81,35 @@ public:
 
     std::weak_ptr<AudioContextInterface> audioContextInterface() { return m_audioContextInterface; }
 
-
-    // Debugging/Sanity Checking
-    std::string m_graphLocker;
-    std::string m_renderLocker;
-
-    explicit AudioContext(bool isOffline, bool autoDispatchEvents = true);
+    // ctor/dtor
+    explicit AudioContext(bool isOffline);
+    explicit AudioContext(bool isOffline, bool autoDispatchEvents);
     ~AudioContext();
-
-    bool isInitialized() const;
 
     // External users shouldn't use this; it should be called by
     // LabSound::MakeRealtimeAudioContext(lab::Channels::Stereo)
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
+    bool isInitialized() const;
 
-    void debugTraverse(AudioNode * root);
+    // configuration
+    bool isAutodispatchingEvents() const;
+    bool isOfflineContext() const;
+    bool loadHrtfDatabase(const std::string & searchPath);
+    std::shared_ptr<HRTFDatabaseLoader> hrtfDatabaseLoader() const;
+
+    float sampleRate() const;
 
     void setDeviceNode(std::shared_ptr<AudioNode> device);
     std::shared_ptr<AudioNode> device();
+    std::shared_ptr<AudioListener> listener();
 
-    bool isOfflineContext() const;
+    // Debugging/Sanity Checking
+    std::string m_graphLocker;
+    std::string m_renderLocker;
+    void debugTraverse(AudioNode * root);
+
+    // Timing related
 
     // The current time, measured at the start of the render quantum currently
     // being processed. Most useful in a Node's process routine.
@@ -120,9 +128,18 @@ public:
     // expected audio events and other systems.
     double predictedCurrentTime() const;
 
-    float sampleRate() const;
+    // engine
+    
+    void startOfflineRendering();
+    std::function<void()> offlineRenderCompleteCallback;
 
-    std::shared_ptr<AudioListener> listener();
+    // suspend the progression of time and processing in the audio context,
+    // any queued samples will play
+    void suspend();
+
+    // if the context was suspended, resume the progression of time and processing
+    // in the audio context
+    void resume();
 
     // Called at the start of each render quantum.
     void handlePreRenderTasks(ContextRenderLock &);
@@ -142,6 +159,8 @@ public:
     // Only an AudioHardwareDeviceNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
+    // graph management
+    
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
     bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
@@ -149,6 +168,13 @@ public:
     // completely disconnect the node from the graph
     void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);
 
+    // connecting and disconnecting busses and parameters occurs asynchronously.
+    // synchronizeConnections will block until there are no pending connections,
+    // or until the timeout occurs.
+    void synchronizeConnections(int timeOut_ms = 1000);
+
+    // parameter management
+    
     // connect a parameter to receive the indexed output of a node
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
@@ -158,19 +184,8 @@ public:
     // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
-    // connecting and disconnecting busses and parameters occurs asynchronously.
-    // synchronizeConnections will block until there are no pending connections,
-    // or until the timeout occurs.
-    void synchronizeConnections(int timeOut_ms = 1000);
 
-    void startOfflineRendering();
-    std::function<void()> offlineRenderCompleteCallback;
-
-    // suspend the progression of time in the audio context, any queued samples will play
-    void suspend();
-
-    // if the context was suspended, resume the progression of time and processing in the audio context
-    void resume();
+    // events
     
     // event dispatching will be called automatically, depending on constructor
     // argument. If not automatically dispatching, it is the user's responsibility

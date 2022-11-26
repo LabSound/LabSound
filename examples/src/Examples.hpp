@@ -14,41 +14,45 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig>
 {
     AudioStreamConfig inputConfig;
     AudioStreamConfig outputConfig;
-
+    
     const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
     const AudioDeviceIndex default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
     const AudioDeviceIndex default_input_device = lab::GetDefaultInputAudioDeviceIndex();
-
+    
     AudioDeviceInfo defaultOutputInfo, defaultInputInfo;
-    for (auto & info : audioDevices)
-    {
+    for (auto & info : audioDevices) {
         if (info.index == default_output_device.index)
-            defaultOutputInfo = info; 
+            defaultOutputInfo = info;
         else if (info.index == default_input_device.index)
             defaultInputInfo = info;
     }
-
-    if (defaultOutputInfo.index != -1)
-    {
+    
+    if (defaultOutputInfo.index != -1) {
         outputConfig.device_index = defaultOutputInfo.index;
         outputConfig.desired_channels = std::min(uint32_t(2), defaultOutputInfo.num_output_channels);
         outputConfig.desired_samplerate = defaultOutputInfo.nominal_samplerate;
     }
-
-    if (with_input)
-    {
-        if (defaultInputInfo.index != -1)
-        {
+    
+    if (with_input) {
+        if (defaultInputInfo.index != -1) {
             inputConfig.device_index = defaultInputInfo.index;
             inputConfig.desired_channels = std::min(uint32_t(1), defaultInputInfo.num_input_channels);
             inputConfig.desired_samplerate = defaultInputInfo.nominal_samplerate;
         }
-        else
-        {
+        else {
             throw std::invalid_argument("the default audio input device was requested but none were found");
         }
     }
-
+    
+    // RtAudio doesn't support mismatched input and output rates.
+    // this may be a pecularity of RtAudio, but for now, force an RtAudio
+    // compatible configuration
+    if (defaultOutputInfo.nominal_samplerate != defaultInputInfo.nominal_samplerate) {
+        float min_rate = std::min(defaultOutputInfo.nominal_samplerate, defaultInputInfo.nominal_samplerate);
+        inputConfig.desired_samplerate = min_rate;
+        outputConfig.desired_samplerate = min_rate;
+        printf("Warning ~ input and output sample rates don't match, attempting to set minimum");
+    }
     return {inputConfig, outputConfig};
 }
 
@@ -712,7 +716,7 @@ struct ex_stereo_panning : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         std::unique_ptr<lab::AudioContext> context;
-        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(false);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
 
@@ -771,11 +775,19 @@ struct ex_hrtf_spatialization : public labsound_example
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
+        
+        if (!ac.loadHrtfDatabase("hrtf")) {
+            std::string path = std::string(SAMPLE_SRC_DIR) + "/hrtf";
+            if (!ac.loadHrtfDatabase(path)) {
+                printf("Could not load spatialization database");
+                return;
+            }
+        }
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
         std::cout << "Sample Rate is: " << context->sampleRate() << std::endl;
-        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(ac, "hrtf");  // note hrtf search path
+        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(ac);
 
         {
             ContextRenderLock r(context.get(), "ex_hrtf_spatialization");

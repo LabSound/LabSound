@@ -34,7 +34,8 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
 
     if (!ctx->isInitialized())
     {
-        dst->zero();
+        if (dst)
+            dst->zero();
         return;
     }
 
@@ -60,14 +61,16 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
     // process the graph by pulling the inputs, which will recurse the entire processing graph.
     AudioBus * renderedBus = required_inlet->pull(renderLock, dst, frames);
 
-    if (!renderedBus)
-    {
-        dst->zero();
-    }
-    else if (renderedBus != dst)
-    {
-        // in-place processing was not possible - so copy
-        dst->copyFrom(*renderedBus);
+    if (dst) {
+        if (!renderedBus)
+        {
+            dst->zero();
+        }
+        else if (renderedBus != dst)
+        {
+            // in-place processing was not possible - so copy
+            dst->copyFrom(*renderedBus);
+        }
     }
 
     // Process nodes which need extra help because they are not connected to anything,

@@ -95,6 +95,17 @@ public:
 
     bool isSilent() const { return m_silent; }
 
+    // inspects the buffer data to discover if there are any non-zero values.
+    // meant for debugging.
+    bool isZero() const
+    {
+        const float* ptr = data();
+        for (int i = 0; i < m_length; ++i)
+            if (ptr[i] != 0.f)
+                return false;
+        return true;
+    }
+
     // Scales all samples by the same amount.
     void scale(float scale);
 

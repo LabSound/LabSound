@@ -23,7 +23,6 @@ namespace lab
 class AudioBus;
 class ConeEffect;
 class DistanceEffect;
-class HRTFDatabaseLoader;
 class Panner;
 
 // params: orientation[XYZ], velocity[XYZ], position[XYZ]
@@ -61,7 +60,7 @@ public:
         EXPONENTIAL_DISTANCE = 2,
     };
 
-    PannerNode(AudioContext & ac, const std::string & hrtf_root_dir_path = "");
+    PannerNode(AudioContext & ac);
     virtual ~PannerNode();
 
     static const char* static_name() { return "Panner"; }
@@ -136,8 +135,6 @@ public:
     virtual double latencyTime(ContextRenderLock & r) const override;
 
 protected:
-    std::shared_ptr<HRTFDatabaseLoader> m_hrtfDatabaseLoader;
-
     // Returns the combined distance and cone gain attenuation.
     virtual float distanceConeGain(ContextRenderLock & r);
 

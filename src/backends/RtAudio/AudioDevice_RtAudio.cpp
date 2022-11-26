@@ -136,6 +136,12 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
+    if (outputConfig.desired_channels > 0 && inputConfig.desired_channels > 0) {
+        if (outputConfig.desired_samplerate != inputConfig.desired_samplerate) {
+            throw std::runtime_error("RtAudio can't handle differing input and output rates");
+        }
+    }
+
     if (inputConfig.desired_channels > 0)
     {
         auto inDeviceInfo = rtaudio_ctx.getDeviceInfo(inputParams.deviceId);
@@ -146,6 +152,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
             inputConfig.desired_channels = inputParams.nChannels;
             LOG_INFO("[AudioDevice_RtAudio] adjusting number of input channels: %i ", inputParams.nChannels);
         }
+        authoritativeDeviceSampleRateAtRuntime = inputConfig.desired_samplerate;
     }
 
     RtAudio::StreamOptions options;
@@ -162,8 +169,15 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
 
     try
     {
-        rtaudio_ctx.openStream(&outputParams, (inputParams.nChannels > 0) ? &inputParams : nullptr, RTAUDIO_FLOAT32,
-                               static_cast<unsigned int>(authoritativeDeviceSampleRateAtRuntime), &bufferFrames, &rt_audio_callback, this, &options);
+        rtaudio_ctx.openStream(
+                (outputParams.nChannels > 0) ? &outputParams : nullptr,
+                (inputParams.nChannels > 0) ? &inputParams : nullptr,
+                RTAUDIO_FLOAT32,
+                static_cast<unsigned int>(authoritativeDeviceSampleRateAtRuntime),
+                &bufferFrames,
+                &rt_audio_callback,
+                this,
+                &options);
     }
     catch (const RtAudioError & e)
     {

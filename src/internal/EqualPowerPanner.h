@@ -17,8 +17,10 @@ class EqualPowerPanner : public Panner
 public:
     EqualPowerPanner(const float sampleRate);
 
-    virtual void pan(ContextRenderLock &, double azimuth, double elevation,
-                     const AudioBus * inputBus, AudioBus * outputBuf,
+    virtual void pan(ContextRenderLock & r,
+                     double azimuth, double elevation,
+                     const AudioBus& inputBus, AudioBus& outputBus,
+                     int busOffset,
                      int framesToProcess) override;
 
     virtual void reset() override { m_isFirstRender = true; }

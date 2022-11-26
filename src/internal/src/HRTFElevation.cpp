@@ -110,24 +110,19 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
 
     // Located in $searchPath / [format] .wav
     // @tofix - this assumes we want to open this path and read via libnyquist fopen.
-    // ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
+    // ... will need to change for Android. Maybe MakeBusFromInternalResource / along
+    // with a LoadInternalResources requried by LabSound
     snprintf(tempStr, sizeof(tempStr), "%03d_P%03d", azimuth, positiveElevation);
-    std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
+    std::string resourceName = info->searchPath + "/" +
+                        "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
 
-    std::shared_ptr<AudioBus> impulseResponse = lab::MakeBusFromFile(resourceName.c_str(), false);
+    std::shared_ptr<AudioBus> impulseResponse =
+                lab::MakeBusFromFile(resourceName.c_str(), false, info->sampleRate);
 
     if (!impulseResponse)
     {
         LOG_ERROR("impulse not found %s (bad path?)", resourceName.c_str());
         return false;
-    }
-
-    // The impulse files are 44.1k so we need to resample them if the graph is playing back at any other rate
-    if (info->sampleRate != 44100.0f)
-    {
-        std::unique_ptr<AudioBus> resampledImpulseResponse = AudioBus::createBySampleRateConverting(impulseResponse.get(), false, info->sampleRate);
-        impulseResponse = std::move(resampledImpulseResponse);
-        // LOG_VERBOSE("converting %s impulse to %f hz", resourceName.c_str(), info->sampleRate);
     }
 
     // Check number of channels. For now these are fixed and known.
@@ -139,11 +134,12 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
         return false;
     }
 
-    AudioChannel * leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
-    AudioChannel * rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
+    AudioChannel* leftEarImpulseResponse = impulseResponse->channelByType(Channel::Left);
+    AudioChannel* rightEarImpulseResponse = impulseResponse->channelByType(Channel::Right);
 
-    // Note that depending on the fftSize returned by the panner, we may be truncating the impulse response we just loaded in.
-    const int fftSize = HRTFPanner::fftSizeForSampleRate(info->sampleRate);
+    // Note that depending on the fftSize returned by the panner, we may be truncating the
+    // impulse response that was just loaded.
+    const int fftSize = HRTFPanner::fftSizeForSampleLength(impulseResponse->length());
     kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, info->sampleRate);
     kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, info->sampleRate);
 

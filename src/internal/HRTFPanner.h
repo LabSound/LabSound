@@ -14,17 +14,22 @@ namespace lab
 
 class HRTFPanner : public Panner
 {
-
+    uint32_t _fftSize;
+    
 public:
-    HRTFPanner(const float sampleRate);
+    HRTFPanner(uint32_t sampleRate, uint32_t fftSize);
     virtual ~HRTFPanner();
 
     // Panner
-    virtual void pan(ContextRenderLock &, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess) override;
+    virtual void pan(ContextRenderLock & r,
+                     double azimuth, double elevation,
+                     const AudioBus& inputBus, AudioBus& outputBus,
+                     int busOffset,
+                     int framesToProcess) override;
     virtual void reset() override;
 
-    uint32_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
-    static uint32_t fftSizeForSampleRate(float sampleRate);
+    uint32_t fftSize() const { return _fftSize; }
+    static uint32_t fftSizeForSampleLength(int sampleLength);
 
     virtual double tailTime(ContextRenderLock & r) const override;
     virtual double latencyTime(ContextRenderLock & r) const override;

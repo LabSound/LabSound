@@ -698,7 +698,8 @@ std::unique_ptr<AudioBus> AudioBus::createBySampleRateConverting(const AudioBus 
     if (sourceSampleRate == destinationSampleRate)
     {
         // No sample-rate conversion is necessary.
-        if (mixToMono) return AudioBus::createByMixingToMono(sourceBus);
+        if (mixToMono)
+            return AudioBus::createByMixingToMono(sourceBus);
 
         // Return exact copy.
         return AudioBus::createBufferFromRange(sourceBus, 0, sourceBus->length());
@@ -807,12 +808,16 @@ std::unique_ptr<AudioBus> AudioBus::createByMixingToMono(const AudioBus * source
 bool AudioBus::isSilent() const
 {
     for (int i = 0; i < m_channels.size(); ++i)
-    {
         if (!m_channels[i]->isSilent())
-        {
             return false;
-        }
-    }
+    return true;
+}
+
+bool AudioBus::isZero() const
+{
+    for (int i = 0; i < m_channels.size(); ++i)
+        if (!m_channels[i]->isZero())
+            return false;
     return true;
 }
 

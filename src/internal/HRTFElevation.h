@@ -5,8 +5,7 @@
 #ifndef HRTFElevation_h
 #define HRTFElevation_h
 
-#include "LabSound/extended/Util.h"
-
+#include "internal/HRTFDatabaseInfo.h"
 #include "internal/HRTFKernel.h"
 
 #include <string>

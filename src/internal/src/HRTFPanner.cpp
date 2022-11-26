@@ -9,6 +9,7 @@
 #include "internal/FFTConvolver.h"
 #include "internal/HRTFDatabase.h"
 #include "internal/HRTFDatabaseLoader.h"
+#include "LabSound/extended/Util.h"
 
 #include <algorithm>
 
@@ -18,13 +19,14 @@ namespace lab
 {
 
 // @fixme - will change for new HRTF databases
-// The value of 2 milliseconds is larger than the largest delay which exists in any HRTFKernel from the default HRTFDatabase (0.0136 seconds).
+// The value of 2 milliseconds is larger than the largest delay which exists in any
+// HRTFKernel from the default HRTFDatabase (0.0136 seconds).
 // We ASSERT the delay values used in process() with this value.
 const double MaxDelayTimeSeconds = 0.002;
 const int UninitializedAzimuth = -1;
 const uint32_t RenderingQuantum = AudioNode::ProcessingSizeInFrames;
 
-HRTFPanner::HRTFPanner(const float sampleRate)
+HRTFPanner::HRTFPanner(uint32_t sampleRate, uint32_t fftSize)
     : Panner(sampleRate, PanningModel::HRTF)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)
@@ -33,10 +35,10 @@ HRTFPanner::HRTFPanner(const float sampleRate)
     , m_elevation2(0)
     , m_crossfadeX(0)
     , m_crossfadeIncr(0)
-    , m_convolverL1(fftSizeForSampleRate(sampleRate))
-    , m_convolverR1(fftSizeForSampleRate(sampleRate))
-    , m_convolverL2(fftSizeForSampleRate(sampleRate))
-    , m_convolverR2(fftSizeForSampleRate(sampleRate))
+    , m_convolverL1(fftSize)
+    , m_convolverR1(fftSize)
+    , m_convolverL2(fftSize)
+    , m_convolverR2(fftSize)
     , m_delayLineL(MaxDelayTimeSeconds, sampleRate)
     , m_delayLineR(MaxDelayTimeSeconds, sampleRate)
     , m_tempL1(RenderingQuantum)
@@ -50,13 +52,22 @@ HRTFPanner::~HRTFPanner()
 {
 }
 
-uint32_t HRTFPanner::fftSizeForSampleRate(float sampleRate)
+//static
+uint32_t HRTFPanner::fftSizeForSampleLength(int sampleLength)
 {
-    // The HRTF impulse responses (loaded as audio resources) are 512 sample-frames @44.1KHz.
-    // Currently, we truncate the impulse responses to half this size, but an FFT-size of twice impulse response size is needed (for convolution).
-    // So for sample rates around 44.1KHz an FFT size of 512 is good. We double the FFT-size only for sample rates at least double this.
-    ASSERT(sampleRate >= 44100 && sampleRate <= 96000.0);
-    return (sampleRate < 88200.0) ? 512 : 1024;
+    // originally, this routine assumed 512 sample length impulse responses
+    // truncated to 256 samples, and returned an fft size of 512 for those samples.
+    // to match the reasoning, if the bus is not a power of 2 size, round down to the
+    // previous power of 2 size.
+    // return double the power of 2 size of the bus.
+    // the original logic also doubled the fft size for sample rates >= 88200,
+    // but that feels a bit nonsense, so it's not emulated here.
+
+    uint32_t s = RoundNextPow2(sampleLength);
+    if (s > sampleLength)
+        s /= 2;
+
+    return s * 2;
 }
 
 void HRTFPanner::reset()
@@ -94,55 +105,66 @@ int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double & az
     return desiredAzimuthIndex;
 }
 
-void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess)
+void HRTFPanner::pan(ContextRenderLock & r,
+         double desiredAzimuth, double elevation,
+         const AudioBus& inputBus, AudioBus& outputBus,
+         int busOffset,
+         int framesToProcess)
 {
-    int numInputChannels = inputBus ? inputBus->numberOfChannels() : 0;
+    int numInputChannels = inputBus.numberOfChannels();
 
-    bool isInputGood = inputBus && numInputChannels >= Channels::Mono && numInputChannels <= Channels::Stereo;
+    bool isInputGood = numInputChannels >= Channels::Mono &&
+                        numInputChannels <= Channels::Stereo &&
+                        (framesToProcess + busOffset) <= inputBus.length();
     ASSERT(isInputGood);
 
-    bool isOutputGood = outputBus && outputBus->numberOfChannels() == Channels::Stereo && framesToProcess <= outputBus->length();
+    bool isOutputGood = outputBus.numberOfChannels() == Channels::Stereo &&
+                            (framesToProcess + busOffset) <= outputBus.length();
     ASSERT(isOutputGood);
 
     if (!isInputGood || !isOutputGood)
     {
-        if (outputBus)
-            outputBus->zero();
+        outputBus.zero();
         return;
     }
 
     // This code only runs as long as the context is alive and after database has been loaded.
     HRTFDatabase * database = HRTFDatabaseLoader::defaultHRTFDatabase();
-    ASSERT(database);
-
     if (!database)
     {
-        outputBus->zero();
+        outputBus.zero();
         return;
     }
 
-    // IRCAM HRTF azimuths values from the loaded database is reversed from the panner's notion of azimuth.
+    // IRCAM HRTF azimuths values from the loaded database is reversed
+    // from the panner's notion of azimuth.
     double azimuth = -desiredAzimuth;
 
     bool isAzimuthGood = azimuth >= -180.0 && azimuth <= 180.0;
     ASSERT(isAzimuthGood);
     if (!isAzimuthGood)
     {
-        outputBus->zero();
+        outputBus.zero();
         return;
     }
 
-    // Normally, we'll just be dealing with mono sources.
-    // If we have a stereo input, implement stereo panning with left source processed by left HRTF, and right source by right HRTF.
-    const AudioChannel * inputChannelL = inputBus->channelByType(Channel::Left);
-    const AudioChannel * inputChannelR = numInputChannels > Channels::Mono ? inputBus->channelByType(Channel::Right) : 0;
+    // Normally, mono sources are panned. However, if input is stereo,
+    // implement stereo panning with left source
+    // processed by left HRTF, and right source by right HRTF.
+    const AudioChannel * inputChannelL = inputBus.channelByType(Channel::Left);
+    const AudioChannel * inputChannelR = numInputChannels > Channels::Mono ?
+                                            inputBus.channelByType(Channel::Right) : 0;
 
     // Get source and destination pointers.
     const float * sourceL = inputChannelL->data();
     const float * sourceR = numInputChannels > Channels::Mono ? inputChannelR->data() : sourceL;
 
-    float * destinationL = outputBus->channelByType(Channel::Left)->mutableData();
-    float * destinationR = outputBus->channelByType(Channel::Right)->mutableData();
+    float * destinationL = outputBus.channelByType(Channel::Left)->mutableData();
+    float * destinationR = outputBus.channelByType(Channel::Right)->mutableData();
+    
+    /// @TODO need to offset source and destination by offset
+    /// however that will violate the power of two restriction below,
+    /// so something needs to be changed to allow for partial buffers
 
     double azimuthBlend;
     int desiredAzimuthIndex = calculateDesiredAzimuthIndexAndBlend(azimuth, azimuthBlend);
@@ -188,7 +210,8 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         }
     }
 
-    // This algorithm currently requires that we process in power-of-two size chunks at least RenderingQuantum.
+    // This algorithm currently requires that we process in power-of-two size chunks
+    // at least RenderingQuantum in size
     ASSERT(uint64_t(1) << static_cast<int>(log2(framesToProcess)) == framesToProcess);
     ASSERT(framesToProcess >= RenderingQuantum);
 
@@ -208,20 +231,26 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         double frameDelayL2;
         double frameDelayR2;
 
-        database->getKernelsFromAzimuthElevation(azimuthBlend, m_azimuthIndex1, m_elevation1, kernelL1, kernelR1, frameDelayL1, frameDelayR1);
-        database->getKernelsFromAzimuthElevation(azimuthBlend, m_azimuthIndex2, m_elevation2, kernelL2, kernelR2, frameDelayL2, frameDelayR2);
+        database->getKernelsFromAzimuthElevation(
+                        azimuthBlend, m_azimuthIndex1, m_elevation1,
+                        kernelL1, kernelR1, frameDelayL1, frameDelayR1);
+        database->getKernelsFromAzimuthElevation(
+                        azimuthBlend, m_azimuthIndex2, m_elevation2,
+                        kernelL2, kernelR2, frameDelayL2, frameDelayR2);
 
         bool areKernelsGood = kernelL1 && kernelR1 && kernelL2 && kernelR2;
         ASSERT(areKernelsGood);
 
         if (!areKernelsGood)
         {
-            outputBus->zero();
+            outputBus.zero();
             return;
         }
 
-        ASSERT(frameDelayL1 / r.context()->sampleRate() < MaxDelayTimeSeconds && frameDelayR1 / r.context()->sampleRate() < MaxDelayTimeSeconds);
-        ASSERT(frameDelayL2 / r.context()->sampleRate() < MaxDelayTimeSeconds && frameDelayR2 / r.context()->sampleRate() < MaxDelayTimeSeconds);
+        ASSERT(frameDelayL1 / r.context()->sampleRate() < MaxDelayTimeSeconds &&
+               frameDelayR1 / r.context()->sampleRate() < MaxDelayTimeSeconds);
+        ASSERT(frameDelayL2 / r.context()->sampleRate() < MaxDelayTimeSeconds &&
+               frameDelayR2 / r.context()->sampleRate() < MaxDelayTimeSeconds);
 
         // Crossfade inter-aural delays based on transitions.
         double frameDelayL = (1 - m_crossfadeX) * frameDelayL1 + m_crossfadeX * frameDelayL2;
@@ -249,7 +278,7 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
         float * convolutionDestinationR2 = needsCrossfading ? m_tempR2.data() : segmentDestinationR;
 
         // Now do the convolutions.
-        // Note that we avoid doing convolutions on both sets of convolvers if we're not currently cross-fading.
+        // Avoid doing convolutions on both sets of convolvers if we're not currently cross-fading.
         if (m_crossfadeSelection == CrossfadeSelection1 || needsCrossfading)
         {
             m_convolverL1.process(kernelL1->fftFrame(), segmentDestinationL, convolutionDestinationL1, framesPerSegment);
@@ -298,15 +327,17 @@ void HRTFPanner::pan(ContextRenderLock & r, double desiredAzimuth, double elevat
 
 double HRTFPanner::tailTime(ContextRenderLock & r) const
 {
-    // Because HRTFPanner is implemented with a DelayKernel and a FFTConvolver, the tailTime of the HRTFPanner
-    // is the sum of the tailTime of the DelayKernel and the tailTime of the FFTConvolver, which is MaxDelayTimeSeconds
-    // and fftSize() / 2, respectively.
+    // Because HRTFPanner is implemented with a DelayKernel and a FFTConvolver,
+    // the tailTime of the HRTFPanner
+    // is the sum of the tailTime of the DelayKernel and the tailTime of the FFTConvolver,
+    // which is MaxDelayTimeSeconds and fftSize() / 2, respectively.
     return MaxDelayTimeSeconds + (fftSize() / 2) / static_cast<double>(r.context()->sampleRate());
 }
 
 double HRTFPanner::latencyTime(ContextRenderLock & r) const
 {
-    // The latency of a FFTConvolver is also fftSize() / 2, and is in addition to its tailTime of the same value.
+    // The latency of a FFTConvolver is also fftSize() / 2, and is in addition to
+    // its tailTime of the same value.
     return (fftSize() / 2) / static_cast<double>(r.context()->sampleRate());
 }
 

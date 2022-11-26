@@ -4,7 +4,13 @@
 #define USE_LIVE
 #include "Examples.hpp"
 
-
+/*
+ Note for Airpods ~ airpods only present a mono output if the
+ default input device is set to airpods
+ - if you change the input device to the mac book internal microphone,
+   then the airpods work in stereo; strange behavior.
+    https://discussions.apple.com/thread/252088121
+*/
 int main(int argc, char *argv[]) try
 {
     enum Passing { pass, fail };
@@ -16,7 +22,7 @@ int main(int argc, char *argv[]) try
     };
     
     Example examples[] = {
-        { Passing::pass, Skip::no, new ex_play_file() },
+        { Passing::pass, Skip::yes, new ex_play_file() },
         { Passing::pass, Skip::yes, new ex_simple() },
         { Passing::pass, Skip::yes, new ex_osc_pop() },
         { Passing::pass, Skip::yes, new ex_playback_events() },
@@ -24,14 +30,14 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_tremolo() },
         { Passing::pass, Skip::yes, new ex_frequency_modulation() },
         { Passing::pass, Skip::yes, new ex_runtime_graph_update() },
-        { Passing::fail, Skip::no,  new ex_microphone_loopback() },
-        { Passing::fail, Skip::yes, new ex_microphone_reverb() },
+        { Passing::pass, Skip::yes, new ex_microphone_loopback() },
+        { Passing::fail, Skip::no, new ex_microphone_reverb() },
         { Passing::pass, Skip::yes, new ex_peak_compressor() },
         { Passing::pass, Skip::yes, new ex_stereo_panning() },
         { Passing::fail, Skip::yes, new ex_hrtf_spatialization() },
-        { Passing::fail, Skip::yes, new ex_convolution_reverb() },
+        { Passing::pass, Skip::yes, new ex_convolution_reverb() },
         { Passing::fail, Skip::yes, new ex_misc() },
-        { Passing::fail, Skip::yes, new ex_dalek_filter() },
+        { Passing::pass, Skip::yes, new ex_dalek_filter() },
         { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
         { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
         { Passing::fail, Skip::yes, new ex_granulation_node() },
