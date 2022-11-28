@@ -80,15 +80,13 @@ void HRTFPanner::reset()
     m_delayLineR.reset();
 }
 
-int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(double azimuth, double & azimuthBlend)
+int HRTFPanner::calculateDesiredAzimuthIndexAndBlend(HRTFDatabase * database ,
+                                                     double azimuth, double & azimuthBlend)
 {
     // Convert the azimuth angle from the range -180 -> +180 into the range 0 -> 360.
     // The azimuth index may then be calculated from this positive value.
     if (azimuth < 0)
         azimuth += 360.0;
-
-    HRTFDatabase * database = HRTFDatabaseLoader::defaultHRTFDatabase();
-    ASSERT(database);
 
     int numberOfAzimuths = database->numberOfAzimuths();
     const double angleBetweenAzimuths = 360.0 / numberOfAzimuths;
@@ -129,7 +127,7 @@ void HRTFPanner::pan(ContextRenderLock & r,
     }
 
     // This code only runs as long as the context is alive and after database has been loaded.
-    HRTFDatabase * database = HRTFDatabaseLoader::defaultHRTFDatabase();
+    HRTFDatabase * database = r.context()->hrtfDatabaseLoader()->database();
     if (!database)
     {
         outputBus.zero();
@@ -167,7 +165,8 @@ void HRTFPanner::pan(ContextRenderLock & r,
     /// so something needs to be changed to allow for partial buffers
 
     double azimuthBlend;
-    int desiredAzimuthIndex = calculateDesiredAzimuthIndexAndBlend(azimuth, azimuthBlend);
+    int desiredAzimuthIndex = calculateDesiredAzimuthIndexAndBlend(
+                                    database, azimuth, azimuthBlend);
 
     // Initially snap azimuth and elevation values to first values encountered.
     if (m_azimuthIndex1 == UninitializedAzimuth)

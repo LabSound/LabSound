@@ -11,38 +11,21 @@
 namespace lab
 {
 
-// Singleton
-std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
-
-std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath)
-{
-    if (!s_loader)
-    {
-        s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate, searchPath);
-        s_loader->loadAsynchronously();
-    }
-    return s_loader;
-}
-
 HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & searchPath)
     : m_loading(false)
     , m_databaseSampleRate(sampleRate)
     , searchPath(searchPath)
 {
-    ASSERT(!s_loader.get());
 }
 
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
 {
     waitForLoaderThreadCompletion();
 
-    if (m_databaseLoaderThread.joinable()) m_databaseLoaderThread.join();
+    if (m_databaseLoaderThread.joinable())
+        m_databaseLoaderThread.join();
 
     m_hrtfDatabase.reset();
-
-    ASSERT(this == s_loader.get());
-
-    s_loader.reset();
 }
 
 // Asynchronously load the database in this thread.
@@ -91,10 +74,5 @@ void HRTFDatabaseLoader::waitForLoaderThreadCompletion()
     }
 }
 
-HRTFDatabase * HRTFDatabaseLoader::defaultHRTFDatabase()
-{
-    if (!s_loader) return nullptr;
-    return s_loader->database();
-}
 
 }  // namespace lab

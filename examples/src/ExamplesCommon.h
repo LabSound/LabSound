@@ -48,6 +48,8 @@ struct labsound_example
     std::mt19937 randomgenerator;
 
     std::vector<std::shared_ptr<lab::AudioNode>> _nodes;
+    std::vector<std::shared_ptr<lab::PowerMonitorNode>> _powerNodes;
+    std::unique_ptr<lab::AudioContext> context;
 
     virtual void play(int argc, char** argv) = 0;
 
@@ -56,10 +58,33 @@ struct labsound_example
         return 440.0f * pow(2.0f, (midiNote - 57.0f) / 12.0f);
     }
 
-    template <typename Duration>
-    void Wait(Duration duration)
+    void Wait(uint32_t ms)
     {
-        std::this_thread::sleep_for(duration);
+        int32_t remainder = static_cast<int32_t>(ms);
+        while (remainder > 200) {
+            remainder -= 200;
+            std::chrono::milliseconds t(200);
+            std::this_thread::sleep_for(t);
+            if (_powerNodes.size()) {
+                for (auto& n : _powerNodes) {
+                    printf("%f ", n->db());
+                }
+                printf("\n");
+            }
+        }
+        if (remainder < 200 && remainder > 0) {
+            std::chrono::milliseconds t(remainder);
+            std::this_thread::sleep_for(t);
+        }
+    }
+    
+    void AddMonitorNodes() {
+        for (auto n : _nodes) {
+            std::shared_ptr<lab::PowerMonitorNode> pn(new PowerMonitorNode(*context.get()));
+            context->connect(pn, n, 0, 0);
+            context->addAutomaticPullNode(pn);
+            _powerNodes.push_back(pn);
+        }
     }
     
     inline std::vector<std::string> SplitCommandLine(int argc, char ** argv)

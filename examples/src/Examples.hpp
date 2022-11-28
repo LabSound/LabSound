@@ -65,7 +65,6 @@ struct ex_simple : public labsound_example
 {
     virtual void play(int argc, char** argv) override final
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -102,7 +101,7 @@ struct ex_simple : public labsound_example
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
 
-        Wait(std::chrono::seconds(6));
+        Wait(6000);
     }
 };
 
@@ -116,7 +115,6 @@ struct ex_play_file : public labsound_example
 {
     virtual void play(int argc, char ** argv) override final
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext & ac = *context.get();
@@ -147,7 +145,7 @@ struct ex_play_file : public labsound_example
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
 
-        Wait(std::chrono::seconds(6));
+        Wait(6000);
     }
 };
 
@@ -163,7 +161,6 @@ struct ex_osc_pop : public labsound_example
 {
     virtual void play(int argc, char** argv) override final
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -200,7 +197,7 @@ struct ex_osc_pop : public labsound_example
         {
             oscillator->start(0);
             oscillator->stop(0.5f);
-            Wait(std::chrono::milliseconds(1000));
+            Wait(1000);
         }
 
         recorder->stopRecording();
@@ -216,7 +213,7 @@ struct ex_osc_pop : public labsound_example
         // are not released until the example is finished.
 
         context->disconnect(context->device());
-        Wait(std::chrono::milliseconds(100));
+        Wait(100);
     }
 };
 
@@ -230,7 +227,6 @@ struct ex_playback_events : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -252,7 +248,7 @@ struct ex_playback_events : public labsound_example
 
         sampledAudio->schedule(0.0);
 
-        Wait(std::chrono::seconds(6));
+        Wait(6000);
     }
 };
 
@@ -274,15 +270,15 @@ struct ex_offline_rendering : public labsound_example
 
         const float recording_time_ms = 1000.f;
 
-        std::unique_ptr<lab::AudioContext> context = lab::MakeOfflineAudioContext(offlineConfig, recording_time_ms);
-        lab::AudioContext& ac = *context.get();
+        context = lab::MakeOfflineAudioContext(offlineConfig, recording_time_ms);
+        lab::AudioContext* ac = context.get();
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> musicClipNode;
         std::shared_ptr<GainNode> gain;
 
-        auto recorder = std::make_shared<RecorderNode>(ac, offlineConfig);
+        std::shared_ptr<RecorderNode> recorder(new RecorderNode(*ac, offlineConfig));
 
         context->addAutomaticPullNode(recorder);
 
@@ -291,30 +287,30 @@ struct ex_offline_rendering : public labsound_example
         {
             ContextRenderLock r(context.get(), "ex_offline_rendering");
 
-            gain = std::make_shared<GainNode>(ac);
+            gain.reset(new GainNode(*ac));
             gain->gain()->setValue(0.125f);
 
             // osc -> gain -> recorder
-            oscillator = std::make_shared<OscillatorNode>(ac);
+            oscillator.reset(new OscillatorNode(*ac));
             context->connect(gain, oscillator, 0, 0);
             context->connect(recorder, gain, 0, 0);
             oscillator->frequency()->setValue(880.f);
             oscillator->setType(OscillatorType::SINE);
             oscillator->start(0.0f);
 
-            musicClipNode = std::make_shared<SampledAudioNode>(ac);
+            musicClipNode.reset(new SampledAudioNode(*ac));
             context->connect(recorder, musicClipNode, 0, 0);
             musicClipNode->setBus(r, musicClip);
             musicClipNode->schedule(0.0);
         }
 
         bool complete = false;
-        context->offlineRenderCompleteCallback = [&context, &recorder, &complete]() {
+        context->offlineRenderCompleteCallback = [ac, &recorder, &complete]() {
             recorder->stopRecording();
 
             printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
 
-            context->removeAutomaticPullNode(recorder);
+            ac->removeAutomaticPullNode(recorder);
             recorder->writeRecordingToWav("ex_offline_rendering.wav", false);
             complete = true;
         };
@@ -326,7 +322,7 @@ struct ex_offline_rendering : public labsound_example
 
         while (!complete)
         {
-            Wait(std::chrono::milliseconds(100));
+            Wait(100);
         }
     }
 };
@@ -341,7 +337,6 @@ struct ex_tremolo : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -374,7 +369,7 @@ struct ex_tremolo : public labsound_example
 
         context->debugTraverse(context->device().get());
 
-        Wait(std::chrono::seconds(5));
+        Wait(5000);
     }
 };
 
@@ -390,7 +385,6 @@ struct ex_frequency_modulation : public labsound_example
     {
         UniformRandomGenerator fmrng;
 
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -475,9 +469,9 @@ struct ex_frequency_modulation : public labsound_example
             std::cout << "[ex_frequency_modulation] mod_freq: " << mod_freq << "\n";
             std::cout << "[ex_frequency_modulation] mod_gain: " << mod_gain << "\n";
 
-            Wait(std::chrono::milliseconds(delay_time_ms / 2));
+            Wait(delay_time_ms / 2);
             trigger->gate()->setValue(0.f); // reset the adsr
-            Wait(std::chrono::milliseconds(delay_time_ms / 2));
+            Wait(delay_time_ms / 2);
 
             if (now_in_ms >= 10000) break;
         };
@@ -498,7 +492,6 @@ struct ex_runtime_graph_update : public labsound_example
         std::shared_ptr<GainNode> gain;
 
         {
-            std::unique_ptr<lab::AudioContext> context;
             const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
             context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
             lab::AudioContext& ac = *context.get();
@@ -532,11 +525,11 @@ struct ex_runtime_graph_update : public labsound_example
             {
                 context->disconnect(nullptr, oscillator1, 0, 0);
                 context->connect(gain, oscillator2, 0, 0);
-                Wait(std::chrono::milliseconds(200));
+                Wait(200);
 
                 context->disconnect(nullptr, oscillator2, 0, 0);
                 context->connect(gain, oscillator1, 0, 0);
-                Wait(std::chrono::milliseconds(200));
+                Wait(200);
             }
 
             context->disconnect(nullptr, oscillator1, 0, 0);
@@ -559,7 +552,6 @@ struct ex_microphone_loopback : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
 
@@ -570,7 +562,7 @@ struct ex_microphone_loopback : public labsound_example
             context->connect(context->device(), input, 0, 0);
         }
 
-        Wait(std::chrono::seconds(10));
+        Wait(10000);
     }
 };
 
@@ -585,13 +577,13 @@ struct ex_microphone_reverb : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
 
         {
-            std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromFile("impulse/cardiod-rear-levelled.wav", false);
+            std::shared_ptr<AudioBus> impulseResponseClip =
+                MakeBusFromSampleFile("impulse/cardiod-rear-levelled.wav", argc, argv);
             std::shared_ptr<AudioHardwareInputNode> input;
             std::shared_ptr<ConvolverNode> convolve;
             std::shared_ptr<GainNode> wetGain;
@@ -602,14 +594,13 @@ struct ex_microphone_reverb : public labsound_example
 
                 input = lab::MakeAudioHardwareInputNode(r);
 
-                recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
+                recorder.reset(new RecorderNode(ac, defaultAudioDeviceConfigurations.second));
                 context->addAutomaticPullNode(recorder);
-                recorder->startRecording();
 
-                convolve = std::make_shared<ConvolverNode>(ac);
+                convolve.reset(new ConvolverNode(ac));
                 convolve->setImpulse(impulseResponseClip);
 
-                wetGain = std::make_shared<GainNode>(ac);
+                wetGain.reset(new GainNode(ac));
                 wetGain->gain()->setValue(0.6f);
 
                 context->connect(convolve, input, 0, 0);
@@ -617,8 +608,14 @@ struct ex_microphone_reverb : public labsound_example
                 context->connect(context->device(), wetGain, 0, 0);
                 context->connect(recorder, wetGain, 0, 0);
             }
+            
+            _nodes.push_back(input);
+            _nodes.push_back(convolve);
+            _nodes.push_back(wetGain);
 
-            Wait(std::chrono::seconds(10));
+            recorder->startRecording();
+
+            Wait(10000);
 
             recorder->stopRecording();
             context->removeAutomaticPullNode(recorder);
@@ -638,7 +635,6 @@ struct ex_peak_compressor : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -702,7 +698,7 @@ struct ex_peak_compressor : public labsound_example
                 hihat_node->schedule(time + bar_length * i / hihat_beat);
         }
 
-        Wait(std::chrono::seconds(10));
+        Wait(10000);
     }
 };
 
@@ -715,7 +711,6 @@ struct ex_stereo_panning : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(false);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -741,17 +736,17 @@ struct ex_stereo_panning : public labsound_example
 
             const int seconds = 8;
 
-            std::thread controlThreadTest([&stereoPanner, seconds]() {
+            std::thread controlThreadTest([this, &stereoPanner, seconds]() {
                 float halfTime = seconds * 0.5f;
                 for (float i = 0; i < seconds; i += 0.01f)
                 {
                     float x = (i - halfTime) / halfTime;
                     stereoPanner->pan()->setValue(x);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                    Wait(10);
                 }
             });
 
-            Wait(std::chrono::seconds(seconds));
+            Wait(seconds * 1000);
 
             controlThreadTest.join();
         }
@@ -771,7 +766,6 @@ struct ex_hrtf_spatialization : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -807,7 +801,7 @@ struct ex_hrtf_spatialization : public labsound_example
 
             context->listener()->setPosition({0, 0, 0});
             panner->setVelocity(4, 0, 0);
-
+            
             const int seconds = 10;
             float halfTime = seconds * 0.5f;
             for (float i = 0; i < seconds; i += 0.01f)
@@ -817,8 +811,7 @@ struct ex_hrtf_spatialization : public labsound_example
                 // Put position a +up && +front, because if it goes right through the
                 // listener at (0, 0, 0) it abruptly switches from left to right.
                 panner->setPosition({x, 0.1f, 0.1f});
-
-                Wait(std::chrono::milliseconds(10));
+                Wait(10);
             }
         }
         else
@@ -828,16 +821,15 @@ struct ex_hrtf_spatialization : public labsound_example
     }
 };
 
-////////////////////////////////
-//    ex_convolution_reverb    //
-////////////////////////////////
+//-------------------------
+//    ex_convolution_reverb
+//-------------------------
 
 // This shows the use of the `ConvolverNode` to produce reverb from an arbitrary impulse response.
 struct ex_convolution_reverb : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -894,7 +886,7 @@ struct ex_convolution_reverb : public labsound_example
         _nodes.push_back(voiceNode);
         _nodes.push_back(outputGain);
 
-        Wait(std::chrono::seconds(20));
+        Wait(20000);
     }
 };
 
@@ -907,7 +899,6 @@ struct ex_misc : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -922,7 +913,7 @@ struct ex_misc : public labsound_example
         auto randomScaleDegree = std::uniform_int_distribution<int>(0, int(pentatonicMajor.size()) - 1);
         auto randomTimeIndex = std::uniform_int_distribution<int>(0, static_cast<int>(delayTimes.size()) - 1);
 
-        std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/cello_pluck/cello_pluck_As0.wav", argc, argv);
+        auto audioClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
         std::shared_ptr<PingPongDelayNode> pingping = std::make_shared<PingPongDelayNode>(ac, 240.0f);
 
@@ -943,9 +934,22 @@ struct ex_misc : public labsound_example
         }
 
         _nodes.push_back(audioClipNode);
-        //_nodes.push_back(pingping);
+        
+        _nodes.push_back(pingping->output);
+        _nodes.push_back(pingping->input);
+        _nodes.push_back(pingping->leftDelay);
+        _nodes.push_back(pingping->rightDelay);
+        _nodes.push_back(pingping->splitterGain);
+        _nodes.push_back(pingping->wetGain);
+        _nodes.push_back(pingping->feedbackGain);
+        _nodes.push_back(pingping->merger);
+        _nodes.push_back(pingping->splitter);
 
-        Wait(std::chrono::seconds(10));
+        AddMonitorNodes();  // testing
+        Wait(2000);         // testing
+
+
+        Wait(10000);
     }
 };
 
@@ -959,7 +963,6 @@ struct ex_dalek_filter : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration(true);
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -1077,7 +1080,7 @@ struct ex_dalek_filter : public labsound_example
         _nodes.push_back(outGain);
         _nodes.push_back(compressor);
 
-        Wait(std::chrono::seconds(30));
+        Wait(30000);
     }
 };
 
@@ -1092,7 +1095,6 @@ struct ex_redalert_synthesis : public labsound_example
 {
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -1247,7 +1249,7 @@ struct ex_redalert_synthesis : public labsound_example
         for (int i = 0; i < 5; ++i) _nodes.push_back(delay[i]);
         for (int i = 0; i < 5; ++i) _nodes.push_back(filter[i]);
 
-        Wait(std::chrono::seconds(10));
+        Wait(10000);
     }
 };
 
@@ -1389,7 +1391,6 @@ struct ex_wavepot_dsp : public labsound_example
 
     virtual void play(int argc, char ** argv) override
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -1469,7 +1470,7 @@ struct ex_wavepot_dsp : public labsound_example
         _nodes.push_back(grooveBox);
         _nodes.push_back(envelope);
 
-        Wait(std::chrono::seconds(1 + (int) songLenSeconds));
+        Wait(1000 * (1 + (int) songLenSeconds));
         context.reset();
     }
 };
@@ -1482,7 +1483,6 @@ struct ex_granulation_node : public labsound_example
 {
     virtual void play(int argc, char** argv) override final
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -1514,7 +1514,7 @@ struct ex_granulation_node : public labsound_example
         _nodes.push_back(gain);
         _nodes.push_back(recorder);
 
-        Wait(std::chrono::seconds(10));
+        Wait(10000);
 
         recorder->stopRecording();
         context->removeAutomaticPullNode(recorder);
@@ -1530,7 +1530,6 @@ struct ex_poly_blep : public labsound_example
 {
     virtual void play(int argc, char** argv) override final
     {
-        std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
         lab::AudioContext& ac = *context.get();
@@ -1575,7 +1574,7 @@ struct ex_poly_blep : public labsound_example
             auto waveform = blepWaveforms[waveformIndex % blepWaveforms.size()];
             polyBlep->setType(waveform);
 
-            Wait(std::chrono::milliseconds(delay_time_ms));
+            Wait(delay_time_ms);
 
             waveformIndex++;
             if (now_in_ms >= 10000) break;

@@ -15,6 +15,7 @@
   in nodes to see what the descriptor set up looks like.
 - PannerNode no longer is responsible for managing the HRTF database
 - HRTF database is owned by the AudioContext, and must be explicitly loaded.
+- There is no default HRTF database
 
 ## v1.1
 # 23 October 2022

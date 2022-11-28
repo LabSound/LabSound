@@ -49,8 +49,7 @@ int PowerMonitorNode::windowSize() const
 
 void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
 {
-    // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
-    // It's merely a pass through though.
+    // This node acts as a pass-through if it is embedded in a chain
 
     AudioBus * outputBus = output(0)->bus(r);
 
@@ -69,27 +68,23 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    // specific to this node
+    // calculate the power of this buffer
     {
-        std::vector<const float *> channels;
-        int numberOfChannels = bus->numberOfChannels();
-        for (int i = 0; i < numberOfChannels; ++i)
-        {
-            channels.push_back(bus->channel(i)->data());
-        }
-
         int start = static_cast<int>(bufferSize) - static_cast<int>(_windowSize->valueUint32());
         int end = static_cast<int>(bufferSize);
         if (start < 0)
             start = 0;
 
         float power = 0;
-        for (int c = 0; c < numberOfChannels; ++c)
+        int numberOfChannels = bus->numberOfChannels();
+        for (int c = 0; c < numberOfChannels; ++c) {
+            const float* data = bus->channel(c)->data();
             for (int i = start; i < end; ++i)
             {
-                float p = channels[c][i];
+                float p = data[i];
                 power += p * p;
             }
+        }
         float rms = sqrtf(power / (numberOfChannels * bufferSize));
 
         // Protect against accidental overload due to bad values in input stream

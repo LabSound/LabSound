@@ -45,7 +45,7 @@ public:
 
     // if the destination array size differs from the fft size, the
     // data will be interpolated if resample is true. Otherwise, the
-    // destination array will be resized t fit.
+    // destination array will be resized to fit
     void getByteFrequencyData(std::vector<uint8_t> &, bool resample);
     void getByteTimeDomainData(std::vector<uint8_t> &);
 

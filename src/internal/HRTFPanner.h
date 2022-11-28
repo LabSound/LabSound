@@ -12,6 +12,8 @@
 namespace lab
 {
 
+class HRTFDatabase;
+
 class HRTFPanner : public Panner
 {
     uint32_t _fftSize;
@@ -37,7 +39,8 @@ public:
 private:
     // Given an azimuth angle in the range -180 -> +180, returns the corresponding azimuth index for the database,
     // and azimuthBlend which is an interpolation value from 0 -> 1.
-    int calculateDesiredAzimuthIndexAndBlend(double azimuth, double & azimuthBlend);
+    int calculateDesiredAzimuthIndexAndBlend(HRTFDatabase * database,
+                                             double azimuth, double & azimuthBlend);
 
     // We maintain two sets of convolvers for smooth cross-faded interpolations when
     // then azimuth and elevation are dynamically changing.

@@ -31,12 +31,12 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_frequency_modulation() },
         { Passing::pass, Skip::yes, new ex_runtime_graph_update() },
         { Passing::pass, Skip::yes, new ex_microphone_loopback() },
-        { Passing::fail, Skip::no, new ex_microphone_reverb() },
+        { Passing::pass, Skip::yes, new ex_microphone_reverb() },
         { Passing::pass, Skip::yes, new ex_peak_compressor() },
         { Passing::pass, Skip::yes, new ex_stereo_panning() },
-        { Passing::fail, Skip::yes, new ex_hrtf_spatialization() },
+        { Passing::pass, Skip::yes, new ex_hrtf_spatialization() },
         { Passing::pass, Skip::yes, new ex_convolution_reverb() },
-        { Passing::fail, Skip::yes, new ex_misc() },
+        { Passing::pass, Skip::yes, new ex_misc() },
         { Passing::pass, Skip::yes, new ex_dalek_filter() },
         { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
         { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
@@ -48,8 +48,9 @@ int main(int argc, char *argv[]) try
     for (int i = 0; i < iterations; ++i)
     {
         for (auto& example : examples)
-            if (example.skip == Skip::no)
+            if (example.skip == Skip::no) {
                 example.example->play(argc, argv);
+            }
     }
 
     for (auto& example : examples) {
