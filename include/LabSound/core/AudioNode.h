@@ -70,7 +70,7 @@ class ContextRenderLock;
 
 
     
-// xAudioNode is the basic building block for a signal processing graph.
+// AudioNode is the basic building block for a signal processing graph.
 // It may be an audio source, an intermediate processing module, or an audio 
 // destination.
 //
