@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_dalek_filter() },
         { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
         { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
-        { Passing::fail, Skip::yes, new ex_granulation_node() },
+        { Passing::pass, Skip::yes, new ex_granulation_node() }, // note: node is under development
         { Passing::pass, Skip::yes, new ex_poly_blep() }
     };
 

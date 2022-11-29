@@ -20,7 +20,7 @@ using namespace lab;
 
 static AudioParamDescriptor s_GranulationParams[] = {
     {"NumGrains",         "NGRN", 8.f,  1.f,  256.f},
-    {"GrainDuration",     "GDUR", 0.1f, 0.01f,  0.5f},
+    {"GrainDuration",     "GDUR", 0.5f, 0.01f,  0.5f},
     {"PositionMin",       "GMIN", 0.0f, 0.0f,   1.0f},
     {"PositionMax",       "GMAX", 1.0f, 0.0f,   1.0f},
     {"PlaybackFrequency", "FREQ", 1.0f, 0.01f, 12.0f},
@@ -43,7 +43,7 @@ GranulationNode::GranulationNode(AudioContext & ac)
     // Sample that will be granulated
     grainSourceBus = setting("GrainSource");
 
-    // Windowing function that will be applied as an evelope to each grain during playback
+    // Windowing function that will be applied as an envelope to each grain during playback
     windowFunc = setting("WindowFunction");
     windowFunc->setEnumeration(static_cast<int>(WindowFunction::bartlett), true);
 
@@ -169,12 +169,16 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     // Setup grains
     UniformRandomGenerator rnd;
     auto sample_to_granulate = grainSourceBus->valueBus();
-    /// @fixme should be setting
-    for (int i = 0; i < numGrains->value(); ++i)
+    
+    int ng = static_cast<int>(numGrains->value());
+    for (int i = 0; i < ng; ++i)
     {
         /// @fixme these values should be per sample, not per quantum
         /// -or- they should be settings if they don't vary per sample
         const float random_pos_offset = rnd.random_float(grainPositionMin->value(), grainPositionMax->value());
+        
+        printf("grain offset %f\n", random_pos_offset);
+        
         grain_pool.emplace_back(grain(sample_to_granulate, window_bus, r.context()->sampleRate(), random_pos_offset, grain_duration_seconds, grainPlaybackFreq->value()));
     }
 

@@ -945,10 +945,6 @@ struct ex_misc : public labsound_example
         _nodes.push_back(pingping->merger);
         _nodes.push_back(pingping->splitter);
 
-        AddMonitorNodes();  // testing
-        Wait(2000);         // testing
-
-
         Wait(10000);
     }
 };
@@ -1475,9 +1471,9 @@ struct ex_wavepot_dsp : public labsound_example
     }
 };
 
-///////////////////////////////
-//    ex_granulation_node    //
-///////////////////////////////
+//-----------------------
+//    ex_granulation_node
+//-----------------------
 
 struct ex_granulation_node : public labsound_example
 {
@@ -1488,19 +1484,20 @@ struct ex_granulation_node : public labsound_example
         lab::AudioContext& ac = *context.get();
 
         auto grain_source = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
-        if (!grain_source) return;
+        if (!grain_source)
+            return;
 
-        std::shared_ptr<GranulationNode> granulation_node = std::make_shared<GranulationNode>(ac);
-        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
+        std::shared_ptr<GranulationNode> granulation_node(new GranulationNode(ac));
+        std::shared_ptr<GainNode> gain(new GainNode(ac));
         std::shared_ptr<RecorderNode> recorder;
         gain->gain()->setValue(0.75f);
+        granulation_node->numGrains->setValue(20.f);
 
         {
             ContextRenderLock r(context.get(), "ex_granulation_node");
             recorder = std::make_shared<RecorderNode>(ac, defaultAudioDeviceConfigurations.second);
             context->addAutomaticPullNode(recorder);
             recorder->startRecording();
-
             granulation_node->setGrainSource(r, grain_source);
         }
 
@@ -1513,7 +1510,8 @@ struct ex_granulation_node : public labsound_example
         _nodes.push_back(granulation_node);
         _nodes.push_back(gain);
         _nodes.push_back(recorder);
-
+        
+        //AddMonitorNodes();  // testing
         Wait(10000);
 
         recorder->stopRecording();

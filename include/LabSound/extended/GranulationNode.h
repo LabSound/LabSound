@@ -23,9 +23,9 @@ class GranulationNode : public AudioScheduledSourceNode
         bool in_use {true};
 
         // Values in samples
-        uint64_t grain_start {0};
-        uint64_t grain_duration {0};
-        uint64_t grain_end {0};
+        uint64_t grain_start {0};    // frames into the sample
+        uint64_t grain_duration {0}; // duration, seconds * samplerate
+        uint64_t grain_end {0};      // start + duration
         uint64_t envelope_index {0};
 
         double playback_frequency;
@@ -33,8 +33,13 @@ class GranulationNode : public AudioScheduledSourceNode
         double sample_accurate_time;  // because of double precision, it's actually subsample-accurate
 
         // position between 0-1, duration in seconds
-        grain(std::shared_ptr<AudioBus> _sample, std::shared_ptr<AudioBus> _window, const float sample_rate,
-              const double _position_offset, const double _duration, const double _speed) : sample(_sample), window(_window)
+        grain(std::shared_ptr<AudioBus> _sample,
+              std::shared_ptr<AudioBus> _window,
+              const float sample_rate,
+              const double _position_offset,
+              const double _duration,
+              const double _speed)
+        : sample(_sample), window(_window)
         {
             grain_start = static_cast<uint64_t>(sample->length() * _position_offset);
             grain_duration = static_cast<uint64_t>(_duration * sample_rate);
