@@ -36,9 +36,9 @@ NullDeviceNode::NullDeviceNode(AudioContext & ac,
     m_numChannels = outputConfig.desired_channels;
     m_renderBus = std::unique_ptr<AudioBus>(new AudioBus(m_numChannels, offlineRenderSizeQuantum));
 
-    m_channelCount = m_numChannels;
-    m_channelCountMode = ChannelCountMode::Explicit;
-    m_channelInterpretation = ChannelInterpretation::Discrete;
+    _self->m_channelCount = m_numChannels;
+    _self->m_channelCountMode = ChannelCountMode::Explicit;
+    _self->m_channelInterpretation = ChannelInterpretation::Discrete;
 
     // We need to partially fill the the info struct here so that the context's graph thread
     // has enough initial info to make connections/disconnections appropriately
@@ -116,8 +116,8 @@ bool NullDeviceNode::isRunning() const
 
 void NullDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
-    ProfileScope profile(graphTime);
-    totalTime.zero();
+    ProfileScope profile(_self->graphTime);
+    _self->totalTime.zero();
 
     pull_graph(m_context, input(0).get(), src, dst, frames, info, nullptr);
     profile.finalize(); // ensure profile is not prematurely destructed

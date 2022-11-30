@@ -63,8 +63,8 @@ AudioHardwareDeviceNode::AudioHardwareDeviceNode(AudioContext & context,
 
     // Node-specific default mixing rules.
     //m_channelCount = outputConfig.desired_channels;
-    m_channelCountMode = ChannelCountMode::Explicit;
-    m_channelInterpretation = ChannelInterpretation::Speakers;
+    _self->m_channelCountMode = ChannelCountMode::Explicit;
+    _self->m_channelInterpretation = ChannelInterpretation::Speakers;
 
     ContextGraphLock glock(&context, "AudioHardwareDeviceNode");
     AudioNode::setChannelCount(glock, outputConfig.desired_channels);
@@ -144,8 +144,8 @@ void AudioHardwareDeviceNode::reset(ContextRenderLock &)
 
 void AudioHardwareDeviceNode::render(AudioBus * src, AudioBus * dst, int frames, const SamplingInfo & info)
 {
-    ProfileScope selfProfile(totalTime);
-    ProfileScope profile(graphTime);
+    ProfileScope selfProfile(_self->totalTime);
+    ProfileScope profile(_self->graphTime);
     pull_graph(m_context, input(0).get(), src, dst, frames, info, m_audioHardwareInput);
     last_info = info;
     profile.finalize(); // ensure profile is not prematurely destructed

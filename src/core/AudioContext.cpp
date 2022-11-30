@@ -297,7 +297,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 
                 // if unscheduled, the source should start to play as soon as possible
                 if (!param_connection.source->isScheduledNode())
-                    param_connection.source->_scheduler.start(0);
+                    param_connection.source->_self->_scheduler.start(0);
             }
             else
                 AudioParam::disconnect(gLock,
@@ -319,7 +319,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                                             node_connection.source->output(node_connection.srcIndex));
 
                     if (!node_connection.source->isScheduledNode())
-                        node_connection.source->_scheduler.start(0);
+                        node_connection.source->_self->_scheduler.start(0);
                 }
                 break;
 
@@ -569,7 +569,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
         m_automaticPullNodesNeedUpdating = true;
         if (!node->isScheduledNode())
         {
-            node->_scheduler.start(0);
+            node->_self->_scheduler.start(0);
         }
     }
 }
@@ -770,7 +770,7 @@ void AudioContext::debugTraverse(AudioNode * root)
 
     std::vector<AudioNode *> node_stack;
     static int color = 1;
-    root->color = color;
+    root->_self->color = color;
     ++color;
     node_stack.push_back(root);
 
@@ -785,7 +785,7 @@ void AudioContext::debugTraverse(AudioNode * root)
         current_node = node_stack.back();
 
         auto sz = node_stack.size();
-        for (auto & p : current_node->_params)
+        for (auto & p : current_node->_self->_params)
         {
             // if there are rendering connections, be sure they are ready
             p->updateRenderingState(renderLock);
@@ -801,7 +801,7 @@ void AudioContext::debugTraverse(AudioNode * root)
                     continue;
                 
                 AudioNode* node = output->sourceNode();
-                if (!node || node->color >= color)
+                if (!node || node->_self->color >= color)
                     continue;
 
                 by_whom.push_back({current_node, "param input"});
@@ -825,7 +825,7 @@ void AudioContext::debugTraverse(AudioNode * root)
             int connectionCount = in->numberOfConnections();
             for (int j = 0; j < connectionCount; ++j) {
                 if (auto destNode = in->connection(renderLock, i)) {
-                    if (destNode->sourceNode()->color < color)
+                    if (destNode->sourceNode()->_self->color < color)
                     {
                         node_stack.push_back(destNode->sourceNode());
                     }
@@ -838,7 +838,7 @@ void AudioContext::debugTraverse(AudioNode * root)
             continue;
 
         // move current_node to the work stack and retire it from the node stack
-        current_node->color = color;
+        current_node->_self->color = color;
         work.push_back({current_node, processNode});
         node_stack.pop_back();
     }
@@ -850,14 +850,14 @@ void AudioContext::debugTraverse(AudioNode * root)
             if (auto adsr = dynamic_cast<ADSRNode*>(w.node)) {
                 printf("%s %s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
                        adsr->finished(renderLock)? "Finished": "Playing",
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
             }
             else {
                 printf("%s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
             }
         }

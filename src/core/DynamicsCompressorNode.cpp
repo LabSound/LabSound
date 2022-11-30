@@ -89,7 +89,7 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     AudioBus* outputBus = output(0)->bus(r);
     ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
 
-    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);

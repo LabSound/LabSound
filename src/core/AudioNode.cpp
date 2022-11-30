@@ -25,6 +25,10 @@ using namespace std;
 namespace lab
 {
 
+AudioNode::Internal::Internal(AudioContext & ac)
+:  _scheduler(ac.sampleRate())
+{}
+
 // static
 void AudioNode::_printGraph(const AudioNode * root, std::function<void(const char *)> prnln, int indent)
 {
@@ -57,10 +61,10 @@ void AudioNode::_printGraph(const AudioNode * root, std::function<void(const cha
         }*/
     }
 
-    if (root->m_inputs.size() > 0)
+    if (root->_self->m_inputs.size() > 0)
     {
         prnln(str.c_str());
-        for (auto & i : root->m_inputs)
+        for (auto & i : root->_self->m_inputs)
         {
             if (!i)
                 continue;
@@ -317,14 +321,14 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
 }
 
 AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
-    : _scheduler(ac.sampleRate())
+    : _self(new Internal(ac))
 {
     if (desc.params)
     {
         AudioParamDescriptor const * i = desc.params;
         while (i->name)
         {
-            _params.push_back(std::make_shared<AudioParam>(i));
+            _self->_params.push_back(std::make_shared<AudioParam>(i));
             ++i;
         }
     }
@@ -333,7 +337,7 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
         AudioSettingDescriptor const * i = desc.settings;
         while (i->name)
         {
-            _settings.push_back(std::make_shared<AudioSetting>(i));
+            _self->_settings.push_back(std::make_shared<AudioSetting>(i));
             ++i;
         }
     }
@@ -346,42 +350,42 @@ AudioNode::~AudioNode()
 
 void AudioNode::initialize()
 {
-    m_isInitialized = true;
+    _self->m_isInitialized = true;
 }
 
 void AudioNode::uninitialize()
 {
-    m_isInitialized = false;
+    _self->m_isInitialized = false;
 }
 
 void AudioNode::reset(ContextRenderLock & r)
 {
-    _scheduler.reset();
+    _self->_scheduler.reset();
 }
 
 void AudioNode::addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input)
 {
-    m_inputs.emplace_back(std::move(input));
+    _self->m_inputs.emplace_back(std::move(input));
 }
 
 void AudioNode::addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output)
 {
-    m_outputs.emplace_back(std::move(output));
+    _self->m_outputs.emplace_back(std::move(output));
 }
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
-    m_inputs.emplace_back(std::move(input));
+    _self->m_inputs.emplace_back(std::move(input));
 }
 
 void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
-    m_outputs.emplace_back(std::move(output));
+    _self->m_outputs.emplace_back(std::move(output));
 }
 
 std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
 {
-    for (auto & i : m_outputs)
+    for (auto & i : _self->m_outputs)
     {
         if (i->name() == str)
             return i;
@@ -393,21 +397,23 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
 {
-    if (i < m_inputs.size()) return m_inputs[i];
+    if (i < _self->m_inputs.size())
+        return _self->m_inputs[i];
     return nullptr;
 }
 
 // safe without a Render lock because vector is immutable
 std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
 {
-    if (i < m_outputs.size()) return m_outputs[i];
+    if (i < _self->m_outputs.size())
+        return _self->m_outputs[i];
     return nullptr;
 }
 
 int AudioNode::channelCount()
 {
-    ASSERT(m_channelCount != 0);
-    return m_channelCount;
+    ASSERT(_self->m_channelCount != 0);
+    return _self->m_channelCount;
 }
 
 void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
@@ -417,12 +423,12 @@ void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
         throw std::invalid_argument("No context specified");
     }
 
-    if (m_channelCount != channelCount)
+    if (_self->m_channelCount != channelCount)
     {
-        m_channelCount = channelCount;
-        if (m_channelCountMode != ChannelCountMode::Max)
+        _self->m_channelCount = channelCount;
+        if (_self->m_channelCountMode != ChannelCountMode::Max)
         {
-            for (auto& input : m_inputs)
+            for (auto& input : _self->m_inputs)
                 input->changedOutputs(g);
         }
     }
@@ -435,10 +441,10 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
         throw std::invalid_argument("No context specified");
     }
 
-    if (m_channelCountMode != mode)
+    if (_self->m_channelCountMode != mode)
     {
-        m_channelCountMode = mode;
-        for (auto& input : m_inputs)
+        _self->m_channelCountMode = mode;
+        for (auto& input : _self->m_inputs)
             input->changedOutputs(g);
     }
 }
@@ -456,15 +462,15 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     // if the scheduler's recorded epoch is the same as the context's, the node
     // shall bail out as it has been processed once already this epoch.
 
-    if (!_scheduler.update(r, bufferSize))
+    if (!_self->_scheduler.update(r, bufferSize))
         return;
 
-    ProfileScope selfScope(totalTime);
-    graphTime.zero();
+    ProfileScope selfScope(_self->totalTime);
+    _self->graphTime.zero();
 
     if (isScheduledNode() && 
-        (_scheduler._playbackState < SchedulingState::FADE_IN ||
-         _scheduler._playbackState == SchedulingState::FINISHED))
+        (_self->_scheduler._playbackState < SchedulingState::FADE_IN ||
+         _self->_scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
         return;
@@ -473,8 +479,8 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // there may need to be silence at the beginning or end of the current quantum.
 
-    int start_zero_count = _scheduler._renderOffset;
-    int final_zero_start = _scheduler._renderOffset + _scheduler._renderLength;
+    int start_zero_count = _self->_scheduler._renderOffset;
+    int final_zero_start = _self->_scheduler._renderOffset + _self->_scheduler._renderLength;
     int final_zero_count = bufferSize - final_zero_start;
 
     // if the input counts need to match the output counts,
@@ -483,26 +489,26 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // get inputs in preparation for processing
     {
-        ProfileScope scope(graphTime);
+        ProfileScope scope(_self->graphTime);
         pullInputs(r, bufferSize);
         scope.finalize();   // ensure the scope is not prematurely destructed
     }
 
     // ensure all requested channel count updates have been resolved
-    for (auto& out : m_outputs)
+    for (auto& out : _self->m_outputs)
         out->updateRenderingState(r);
 
     //  initialize the busses with start and final zeroes.
     if (start_zero_count)
     {
-        for (auto & out : m_outputs)
+        for (auto & out : _self->m_outputs)
             for (int i = 0; i < out->numberOfChannels(); ++i)
                 memset(out->bus(r)->channel(i)->mutableData(), 0, sizeof(float) * start_zero_count);
     }
 
     if (final_zero_count)
     {
-        for (auto & out : m_outputs)
+        for (auto & out : _self->m_outputs)
             for (int i = 0; i < out->numberOfChannels(); ++i)
                 memset(out->bus(r)->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
     }
@@ -514,7 +520,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     // clean pops resulting from starting or stopping
 
 #define OOS(x) (float(x) / float(steps))
-    if (start_zero_count > 0 || _scheduler._playbackState == SchedulingState::FADE_IN)
+    if (start_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::FADE_IN)
     {
         int steps = start_envelope;
         int damp_start = start_zero_count;
@@ -527,7 +533,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
         // damp out the first samples
         if (damp_end > 0)
-            for (auto & out : m_outputs)
+            for (auto & out : _self->m_outputs)
                 for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
                 {
                     float* data = out->bus(r)->channel(i)->mutableData();
@@ -536,7 +542,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
                 }
     }
 
-    if (final_zero_count > 0 || _scheduler._playbackState == SchedulingState::STOPPING)
+    if (final_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::STOPPING)
     {
         int steps = end_envelope;
         int damp_end, damp_start;
@@ -561,7 +567,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
         if (steps > 0)
         {
             //printf("out: %d %d\n", damp_start, damp_end);
-            for (auto& out : m_outputs)
+            for (auto& out : _self->m_outputs)
                 for (int i = 0; i < out->numberOfChannels(); ++i)
                 {
                     float* data = out->bus(r)->channel(i)->mutableData();
@@ -609,7 +615,7 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
     if (!input || input != this->input(0).get())
         return;
 
-    for (auto & in : m_inputs)
+    for (auto & in : _self->m_inputs)
     {
         if (in.get() == input)
         {
@@ -621,8 +627,8 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
 
 bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
-    return _scheduler._playbackState < SchedulingState::FADE_IN ||
-        _scheduler._playbackState == SchedulingState::FINISHED;
+    return _self->_scheduler._playbackState < SchedulingState::FADE_IN ||
+    _self->_scheduler._playbackState == SchedulingState::FINISHED;
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
@@ -630,7 +636,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
     ASSERT(r.context());
 
     // Process all of the AudioNodes connected to our inputs.
-    for (auto & in : m_inputs)
+    for (auto & in : _self->m_inputs)
     {
         in->pull(r, 0, bufferSize);
     }
@@ -638,7 +644,7 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
 
 bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 {    
-    for (auto & in : m_inputs)
+    for (auto & in : _self->m_inputs)
     {
         if (!in->bus(r)->isSilent())
         {
@@ -650,7 +656,7 @@ bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 
 void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
-    for (auto out : m_outputs)
+    for (auto out : _self->m_outputs)
     {
         out->bus(r)->zero();
     }
@@ -658,7 +664,7 @@ void AudioNode::silenceOutputs(ContextRenderLock & r)
 
 void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 {
-    for (auto out : m_outputs)
+    for (auto out : _self->m_outputs)
     {
         out->bus(r)->clearSilentFlag();
     }
@@ -666,7 +672,7 @@ void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 
 std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 {
-    for (auto & p : _params)
+    for (auto & p : _self->_params)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -676,10 +682,10 @@ std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 
 int AudioNode::param_index(char const * const str)
 {
-    int count = (int) _params.size();
+    int count = (int) _self->_params.size();
     for (int i = 0; i < count; ++i)
     {
-        if (!strcmp(str, _params[i]->name().c_str()))
+        if (!strcmp(str, _self->_params[i]->name().c_str()))
             return i;
     }
     return -1;
@@ -687,15 +693,15 @@ int AudioNode::param_index(char const * const str)
 
 std::shared_ptr<AudioParam> AudioNode::param(int index)
 {
-    if (index >= _params.size())
+    if (index >= _self->_params.size())
         return {};
 
-    return _params[index];
+    return _self->_params[index];
 }
 
 std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 {
-    for (auto & p : _settings)
+    for (auto & p : _self->_settings)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -705,10 +711,10 @@ std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 
 int AudioNode::setting_index(char const * const str)
 {
-    int count = (int) _settings.size();
+    int count = (int) _self->_settings.size();
     for (int i = 0; i < count; ++i)
     {
-        if (!strcmp(str, _settings[i]->name().c_str()))
+        if (!strcmp(str, _self->_settings[i]->name().c_str()))
             return i;
     }
     return -1;
@@ -716,16 +722,16 @@ int AudioNode::setting_index(char const * const str)
 
 std::shared_ptr<AudioSetting> AudioNode::setting(int index)
 {
-    if (index >= _settings.size())
+    if (index >= _self->_settings.size())
         return {};
 
-    return _settings[index];
+    return _self->_settings[index];
 }
 
 std::vector<std::string> AudioNode::paramNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _params)
+    for (auto & p : _self->_params)
     {
         ret.push_back(p->name());
     }
@@ -734,7 +740,7 @@ std::vector<std::string> AudioNode::paramNames() const
 std::vector<std::string> AudioNode::paramShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _params)
+    for (auto & p : _self->_params)
     {
         ret.push_back(p->shortName());
     }
@@ -744,7 +750,7 @@ std::vector<std::string> AudioNode::paramShortNames() const
 std::vector<std::string> AudioNode::settingNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _settings)
+    for (auto & p : _self->_settings)
     {
         ret.push_back(p->name());
     }
@@ -753,7 +759,7 @@ std::vector<std::string> AudioNode::settingNames() const
 std::vector<std::string> AudioNode::settingShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _settings)
+    for (auto & p : _self->_settings)
     {
         ret.push_back(p->shortName());
     }

@@ -27,21 +27,21 @@ public:
 
     bool isPlayingOrScheduled() const
     {
-        return _scheduler._playbackState >= SchedulingState::SCHEDULED &&
-               _scheduler._playbackState <= SchedulingState::STOPPING;
+        return _self->_scheduler._playbackState >= SchedulingState::SCHEDULED &&
+               _self->_scheduler._playbackState <= SchedulingState::STOPPING;
     }
 
     // Start time, measured as seconds from the current epochal time
-    void start(float when) { _scheduler.start(when); }
+    void start(float when) { _self->_scheduler.start(when); }
 
-    uint64_t startWhen() const { return _scheduler._startWhen; }
+    uint64_t startWhen() const { return _self->_scheduler._startWhen; }
 
     // Stop time, measured as seconds from the current epochal time
-    void stop(float when) { _scheduler.stop(when); }
+    void stop(float when) { _self->_scheduler.stop(when); }
 
-    SchedulingState playbackState() const { return _scheduler._playbackState; }
-    bool hasFinished() const { return _scheduler.hasFinished(); }
-    void setOnEnded(std::function<void()> fn) { _scheduler._onEnded = fn; }
+    SchedulingState playbackState() const { return _self->_scheduler._playbackState; }
+    bool hasFinished() const { return _self->_scheduler.hasFinished(); }
+    void setOnEnded(std::function<void()> fn) { _self->_scheduler._onEnded = fn; }
 };
 
 }  // namespace lab

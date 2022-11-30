@@ -291,7 +291,7 @@ void OscillatorNode::process(ContextRenderLock & r, int bufferSize)
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     if (type != OscillatorType::CUSTOM)
     {
-        process_oscillator(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+        process_oscillator(r, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
         return;
     }
 

@@ -147,7 +147,7 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
         initialize();
@@ -166,7 +166,7 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
         initialize();
@@ -185,7 +185,7 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         float r = bus->sampleRate();
         int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
@@ -212,7 +212,7 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         float r = bus->sampleRate();
         int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
@@ -231,7 +231,7 @@ namespace lab {
     void SampledAudioNode::schedule(float when)
     {
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
         if (bus)
@@ -243,7 +243,7 @@ namespace lab {
     void SampledAudioNode::schedule(float when, int loopCount)
     {
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
         if (bus)
@@ -255,7 +255,7 @@ namespace lab {
     void SampledAudioNode::schedule(float when, float grainOffset, int loopCount)
     {
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
         if (bus) {
@@ -276,7 +276,7 @@ namespace lab {
     void SampledAudioNode::schedule(float when, float grainOffset, float grainDuration, int loopCount)
     {
         if (!isPlayingOrScheduled())
-            _scheduler.start(0.);
+            _self->_scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
         if (!bus) {
@@ -532,8 +532,8 @@ namespace lab {
                 _internals->scheduled.pop_back();
                 --schedule_count;
 
-                if (_scheduler._onEnded)
-                    r.context()->enqueueEvent(_scheduler._onEnded);
+                if (_self->_scheduler._onEnded)
+                    r.context()->enqueueEvent(_self->_scheduler._onEnded);
             }
         }
     }

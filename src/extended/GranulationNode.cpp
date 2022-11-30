@@ -195,8 +195,8 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _scheduler._renderOffset;
-    int bufferFramesToProcess = _scheduler._renderLength;
+    int quantumFrameOffset = _self->_scheduler._renderOffset;
+    int bufferFramesToProcess = _self->_scheduler._renderLength;
 
     if (!bufferFramesToProcess)
     {
