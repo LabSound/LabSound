@@ -129,7 +129,7 @@ PannerNode::PannerNode(AudioContext & ac)
 
     m_rolloffFactor->setValueChanged(
         [this]() {
-            m_distanceEffect->setRolloffFactor(m_maxDistance->valueFloat());
+            m_distanceEffect->setRolloffFactor(m_rolloffFactor->valueFloat());
         });
 
     m_coneInnerAngle->setValueChanged(
@@ -250,7 +250,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
 
         if (!m_panner) {
             uint32_t fftSize = HRTFPanner::fftSizeForSampleLength(db->database()->sampleSize());
-            m_panner = std::unique_ptr<Panner>(new HRTFPanner(m_sampleRate, fftSize));
+            m_panner = std::unique_ptr<Panner>(new HRTFPanner(static_cast<uint32_t>(m_sampleRate), fftSize));
         }
     }
     

@@ -22,7 +22,8 @@ int main(int argc, char *argv[]) try
     };
     
     Example examples[] = {
-        { Passing::pass, Skip::no, new ex_play_file() },
+        { Passing::pass, Skip::no, new ex_devices() },
+        { Passing::pass, Skip::yes, new ex_play_file() },
         { Passing::pass, Skip::yes, new ex_simple() },
         { Passing::pass, Skip::yes, new ex_osc_pop() },
         { Passing::pass, Skip::yes, new ex_playback_events() },
