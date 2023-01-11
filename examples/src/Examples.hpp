@@ -56,6 +56,22 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig>
     return {inputConfig, outputConfig};
 }
 
+struct ex_devices : public labsound_example {
+    virtual void play(int argc, char ** argv) override final
+    {
+        const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
+        for (auto & info : audioDevices) {
+            printf("Device %d: %s\n", info.index, info.identifier.c_str());
+            printf("  input channels: %d\n", info.num_input_channels);
+            printf("  output channels: %d\n", info.num_output_channels);
+            printf("  default sample rate: %f\n", info.nominal_samplerate);
+            printf("  is default input: %s\n", info.is_default_input ? "true" : "false");
+            printf("  is default output: %s\n", info.is_default_output ? "true" : "false");
+        }
+    }
+};
+
+
 /////////////////////
 //    ex_simple    //
 /////////////////////
