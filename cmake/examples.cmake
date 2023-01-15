@@ -76,7 +76,7 @@ endif()
 if (APPLE)
 endif()
 
-target_link_libraries(LabSoundExample LabSound)
+target_link_libraries(LabSoundExample LabSound LabSoundRtAudio)
 
 set_target_properties(LabSoundExample PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY bin)

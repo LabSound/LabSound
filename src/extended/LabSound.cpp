@@ -3,7 +3,7 @@
 
 #include "LabSound/LabSound.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -22,152 +22,6 @@
 #include <mutex>
 #include <thread>
 
-
-#if defined(_MSC_VER)
-#pragma warning(disable:4996)
-#endif
-
-namespace lab
-{
-const std::vector<AudioDeviceInfo> MakeAudioDeviceList()
-{
-    LOG_TRACE("MakeAudioDeviceList()");
-    return AudioDevice::MakeAudioDeviceList();
-}
-
-const AudioDeviceIndex GetDefaultOutputAudioDeviceIndex()
-{
-    LOG_TRACE("GetDefaultOutputAudioDeviceIndex()");
-    return AudioDevice::GetDefaultOutputAudioDeviceIndex();
-}
-
-const AudioDeviceIndex GetDefaultInputAudioDeviceIndex()
-{
-    LOG_TRACE("GetDefaultInputAudioDeviceIndex()");
-    return AudioDevice::GetDefaultInputAudioDeviceIndex();
-}
-
-std::unique_ptr<lab::AudioContext> MakeRealtimeAudioContext(
-    const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig)
-{
-    LOG_TRACE("MakeRealtimeAudioContext()");
-
-    std::unique_ptr<AudioContext> ctx(new lab::AudioContext(false));
-    ctx->setDeviceNode(std::make_shared<lab::AudioHardwareDeviceNode>(*ctx.get(), outputConfig, inputConfig));
-    ctx->lazyInitialize();
-    return ctx;
-}
-
-std::unique_ptr<lab::AudioContext> MakeOfflineAudioContext(
-    const AudioStreamConfig & offlineConfig, double recordTimeMilliseconds)
-{
-    LOG_TRACE("MakeOfflineAudioContext(duration)");
-
-    const double secondsToRun = recordTimeMilliseconds * 0.001;
-
-    std::unique_ptr<AudioContext> ctx(new lab::AudioContext(true));
-    ctx->setDeviceNode(std::make_shared<lab::NullDeviceNode>(*ctx.get(), offlineConfig, secondsToRun));
-    ctx->lazyInitialize();
-    return ctx;
-}
-
-OfflineContext MakeOfflineAudioContext(const AudioStreamConfig & offlineConfig)
-{
-    LOG_TRACE("MakeOfflineAudioContext()");
-    OfflineContext ret;
-    ret.context = std::make_unique<lab::AudioContext>(true);
-
-    auto dev = std::make_shared<lab::NullDeviceNode>(
-        *ret.context.get(),
-        offlineConfig, 
-        std::numeric_limits<double>::max());
-    ret.context->setDeviceNode(dev);
-    ret.context->lazyInitialize();
-    ret.device = dev;
-    return ret;
-}
-
-void OfflineContext::process(size_t samples)
-{
-    if (!device || !samples)
-        return;
-
-    device->offlineRenderFrames(samples);
-}
-
-
-std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r)
-{
-    LOG_TRACE("MakeAudioHardwareInputNode()");
-
-    auto device = r.context()->device();
-
-    if (device)
-    {
-        if (auto * hardwareDevice = dynamic_cast<AudioHardwareDeviceNode *>(device.get()))
-        {
-            std::shared_ptr<AudioHardwareInputNode> inputNode( 
-                new AudioHardwareInputNode(*r.context(), hardwareDevice->AudioHardwareInputProvider()));
-            return inputNode;
-        }
-        else
-        {
-            throw std::runtime_error("Cannot create AudioHardwareInputNode. Context does not own an AudioHardwareInputNode.");
-        }
-    }
-    return {};
-}
-
-AudioStreamConfig GetDefaultInputAudioDeviceConfiguration()
-{
-    AudioStreamConfig inputConfig;
-
-    const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
-    /*const AudioDeviceIndex default_output_device =*/ lab::GetDefaultOutputAudioDeviceIndex();
-    const AudioDeviceIndex default_input_device = lab::GetDefaultInputAudioDeviceIndex();
-
-    AudioDeviceInfo defaultInputInfo;
-    for (auto& info : audioDevices)
-    {
-        if (info.index == default_input_device.index)
-            defaultInputInfo = info;
-    }
-
-    if (defaultInputInfo.index == -1)
-        throw std::invalid_argument("the default audio input device was requested but none were found");
-
-    inputConfig.device_index = defaultInputInfo.index;
-    inputConfig.desired_channels = std::min(uint32_t(1), defaultInputInfo.num_input_channels);
-    inputConfig.desired_samplerate = defaultInputInfo.nominal_samplerate;
-    return inputConfig;
-}
-
-AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration()
-{
-    AudioStreamConfig outputConfig;
-
-    const std::vector<AudioDeviceInfo> audioDevices = lab::MakeAudioDeviceList();
-    const AudioDeviceIndex default_output_device = lab::GetDefaultOutputAudioDeviceIndex();
-    const AudioDeviceIndex default_input_device = lab::GetDefaultInputAudioDeviceIndex();
-
-    AudioDeviceInfo defaultOutputInfo;
-    for (auto& info : audioDevices)
-    {
-        if (info.index == default_output_device.index) 
-            defaultOutputInfo = info;
-    }
-
-    if (defaultOutputInfo.index == -1)
-        throw std::invalid_argument("the default audio output device was requested but none were found");
-
-    outputConfig.device_index = defaultOutputInfo.index;
-    outputConfig.desired_channels = std::min(uint32_t(2), defaultOutputInfo.num_output_channels);
-    outputConfig.desired_samplerate = defaultOutputInfo.nominal_samplerate;
-    return outputConfig;
-}
-
-
-}  // lab
 
 ///////////////////////
 // Logging Utilities //
@@ -327,7 +181,7 @@ void LabSoundRegistryInit(lab::NodeRegistry& reg)
             [](AudioNode* n) { delete n; });
 
         reg.Register(
-            AudioHardwareDeviceNode::static_name(), AudioHardwareDeviceNode::desc(),
+            AudioRenderingNode::static_name(), AudioRenderingNode::desc(),
             [](AudioContext& ac)->AudioNode* { return nullptr; },
             [](AudioNode* n) { delete n; });
         
@@ -369,11 +223,6 @@ void LabSoundRegistryInit(lab::NodeRegistry& reg)
         reg.Register(
             GainNode::static_name(), GainNode::desc(),
             [](AudioContext& ac)->AudioNode* { return new GainNode(ac); },
-            [](AudioNode* n) { delete n; });
-        
-        reg.Register(
-            NullDeviceNode::static_name(), NullDeviceNode::desc(),
-            [](AudioContext& ac)->AudioNode* { return nullptr; },
             [](AudioNode* n) { delete n; });
         
         reg.Register(

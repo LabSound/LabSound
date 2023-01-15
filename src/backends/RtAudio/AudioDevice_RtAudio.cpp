@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (C) 2020, The LabSound Authors. All rights reserved.
 
-#include "AudioDevice_RtAudio.h"
+#include "LabSound/backends/AudioDevice_RtAudio.h"
 
 #include "internal/Assertions.h"
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
@@ -17,11 +16,19 @@
 namespace lab
 {
 
-////////////////////////////////////////////////////
-//   Platform/backend specific static functions   //
-////////////////////////////////////////////////////
 
-std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
+int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
+{
+    AudioDevice_RtAudio * self = reinterpret_cast<AudioDevice_RtAudio *>(userData);
+    float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
+    memset(fltOutputBuffer, 0, nBufferFrames * self->outputConfig.desired_channels * sizeof(float));
+    self->render(self->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
+    return 0;
+}
+
+// static
+std::vector<AudioDeviceInfo>
+    AudioDevice_RtAudio::MakeAudioDeviceList() 
 {
     std::vector<std::string> rt_audio_apis{
         "unspecified",
@@ -75,28 +82,6 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     return devices;
 }
 
-AudioDeviceIndex AudioDevice::GetDefaultOutputAudioDeviceIndex() noexcept
-{
-    RtAudio rt;
-    if (rt.getDeviceCount() <= 0) return {0, false};
-    return {rt.getDefaultOutputDevice(), true};
-}
-
-AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
-{
-    RtAudio rt;
-    if (rt.getDeviceCount() <= 0) return {0, false};
-    return {rt.getDefaultInputDevice(), true};
-}
-
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(
-    AudioDeviceRenderCallback & callback,
-    const AudioStreamConfig & outputConfig, 
-    const AudioStreamConfig & inputConfig)
-{
-    return new AudioDevice_RtAudio(callback, outputConfig, inputConfig);
-}
-
 
 /////////////////////////////
 //   AudioDevice_RtAudio   //
@@ -106,19 +91,22 @@ const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-AudioDevice_RtAudio::AudioDevice_RtAudio(
-    AudioDeviceRenderCallback & callback,
-    const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
-    : _callback(callback)
-    , outputConfig(_outputConfig)
-    , inputConfig(_inputConfig)
+void AudioDevice_RtAudio::createContext()
 {
-    if (rtaudio_ctx.getDeviceCount() < 1)
+    rtaudio_ctx = new RtAudio();
+    if (rtaudio_ctx->getDeviceCount() < 1)
     {
         LOG_ERROR("no audio devices available");
     }
+    
+    // Ensure that input and output sample rates match
+    if (inputConfig.device_index != -1 && outputConfig.device_index != -1)
+    {
+        ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
+    }
 
-    rtaudio_ctx.showWarnings(true);
+
+    rtaudio_ctx->showWarnings(true);
 
     // Translate AudioStreamConfig into RTAudio-native data structures
 
@@ -126,13 +114,13 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
     outputParams.deviceId = outputConfig.device_index;
     outputParams.nChannels = outputConfig.desired_channels;
     LOG_INFO("using output device idx: %i", outputConfig.device_index);
-    if (outputConfig.device_index >= 0) LOG_INFO("using output device name: %s", rtaudio_ctx.getDeviceInfo(outputParams.deviceId).name.c_str());
+    if (outputConfig.device_index >= 0) LOG_INFO("using output device name: %s", rtaudio_ctx->getDeviceInfo(outputParams.deviceId).name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = inputConfig.device_index;
     inputParams.nChannels = inputConfig.desired_channels;
     LOG_INFO("using input device idx: %i", inputConfig.device_index);
-    if (inputConfig.device_index >= 0) LOG_INFO("using input device name: %s", rtaudio_ctx.getDeviceInfo(inputParams.deviceId).name.c_str());
+    if (inputConfig.device_index >= 0) LOG_INFO("using input device name: %s", rtaudio_ctx->getDeviceInfo(inputParams.deviceId).name.c_str());
 
     authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
 
@@ -144,7 +132,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
 
     if (inputConfig.desired_channels > 0)
     {
-        auto inDeviceInfo = rtaudio_ctx.getDeviceInfo(inputParams.deviceId);
+        auto inDeviceInfo = rtaudio_ctx->getDeviceInfo(inputParams.deviceId);
         if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
         {
             // ensure that the number of input channels buffered does not exceed the number available.
@@ -169,7 +157,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
 
     try
     {
-        rtaudio_ctx.openStream(
+        rtaudio_ctx->openStream(
                 (outputParams.nChannels > 0) ? &outputParams : nullptr,
                 (inputParams.nChannels > 0) ? &inputParams : nullptr,
                 RTAUDIO_FLOAT32,
@@ -185,20 +173,44 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
     }
 }
 
+AudioDevice_RtAudio::AudioDevice_RtAudio(
+    const AudioStreamConfig & _outputConfig,
+    const AudioStreamConfig & _inputConfig)
+    : AudioDevice(_outputConfig, _inputConfig)
+    , outputConfig(_outputConfig)
+    , inputConfig(_inputConfig)
+{
+    createContext();
+}
+
 AudioDevice_RtAudio::~AudioDevice_RtAudio()
 {
-    if (rtaudio_ctx.isStreamOpen())
-    {
-        rtaudio_ctx.closeStream();
+    if (rtaudio_ctx) {
+        if (rtaudio_ctx->isStreamOpen())
+            rtaudio_ctx->closeStream();
+
+        delete rtaudio_ctx;
     }
 }
+
+void AudioDevice_RtAudio::backendReinitialize()
+{
+    if (rtaudio_ctx) {
+        if (rtaudio_ctx->isStreamOpen())
+            rtaudio_ctx->closeStream();
+
+        delete rtaudio_ctx;
+    }
+    createContext();
+}
+
 
 void AudioDevice_RtAudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
     try
     {
-        rtaudio_ctx.startStream();
+        rtaudio_ctx->startStream();
     }
     catch (const RtAudioError & e)
     {
@@ -210,7 +222,7 @@ void AudioDevice_RtAudio::stop()
 {
     try
     {
-        rtaudio_ctx.stopStream();
+        rtaudio_ctx->stopStream();
     }
     catch (const RtAudioError & e)
     {
@@ -222,7 +234,7 @@ bool AudioDevice_RtAudio::isRunning() const
 {
     try
     {
-        return rtaudio_ctx.isStreamRunning();
+        return rtaudio_ctx->isStreamRunning();
     }
     catch (const RtAudioError & e)
     {
@@ -233,7 +245,9 @@ bool AudioDevice_RtAudio::isRunning() const
 
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void * inputBuffer)
+void AudioDevice_RtAudio::render(
+    AudioSourceProvider* provider,
+    int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
     float * fltInputBuffer = reinterpret_cast<float *>(inputBuffer);
@@ -288,7 +302,7 @@ void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void *
     samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
     // Pull on the graph
-    _callback.render(_inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
+    _renderingNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
     if (outputConfig.desired_channels)
@@ -313,15 +327,6 @@ void AudioDevice_RtAudio::render(int numberOfFrames, void * outputBuffer, void *
             }
         }
     }
-}
-
-int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
-{
-    AudioDevice_RtAudio * self = reinterpret_cast<AudioDevice_RtAudio *>(userData);
-    float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
-    memset(fltOutputBuffer, 0, nBufferFrames * self->outputConfig.desired_channels * sizeof(float));
-    self->render(nBufferFrames, fltOutputBuffer, inputBuffer);
-    return 0;
 }
 
 }  // namespace lab

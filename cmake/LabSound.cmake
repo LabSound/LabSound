@@ -47,42 +47,23 @@ endif()
 
 if (LABSOUND_USE_MINIAUDIO)
     message(STATUS "Using miniaudio backend")
-    if (IOS)
-        set(labsnd_backend
-            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
-            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-            "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
-        )
-    else()
-        set(labsnd_backend
-            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
-            "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
-            "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
-        )
-    endif()
 elseif (LABSOUND_USE_RTAUDIO)
     message(STATUS "Using RtAudio backend")
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
-    )
 endif()
 
 
 # FFT
 if (IOS)
-    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/FFTFrameAppleAcclerate.cpp")
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/internal/FFTFrameAppleAccelerate.cpp")
 elseif (APPLE)
-    set(labsnd_fft_src "${LABSOUND_ROOT}/src/backends/FFTFrameAppleAcclerate.cpp")
+    set(labsnd_fft_src "${LABSOUND_ROOT}/src/internal/FFTFrameAppleAccelerate.cpp")
 elseif (WIN32)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 elseif (UNIX)
     file(GLOB labsnd_fft_src "${LABSOUND_ROOT}/third_party/kissfft/src/*")
 endif()
 
-# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameAppleAcclerate
+# TODO ooura or kissfft? benchmark and choose. Then benchmark vs FFTFrameAppleAccelerate
 set(ooura_src
     "${LABSOUND_ROOT}/third_party/ooura/src/fftsg.cpp"
     "${LABSOUND_ROOT}/third_party/ooura/fftsg.h")
@@ -92,10 +73,30 @@ add_library(LabSound STATIC
     ${labsnd_core_h}     ${labsnd_core}
     ${labsnd_extended_h} ${labsnd_extended}
     ${labsnd_int_h}      ${labsnd_int_src}
-    ${labsnd_backend}
     ${labsnd_fft_src}
     ${ooura_src}
  )
+
+add_library(LabSoundRtAudio STATIC
+    "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
+    "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
+    "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
+    "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
+)
+
+if (IOS)
+add_library(LabSoundMiniAudio STATIC
+    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
+    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+    "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
+)
+else()
+add_library(LabSoundMiniAudio STATIC
+    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
+    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+    "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
+)
+endif()
 
 if (APPLE)
     set_target_properties(LabSound PROPERTIES
@@ -114,55 +115,59 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(proj LabSound)
-if(WIN32)
-    # Arch AVX is problematic for many users, so disable it until
-    # some reasonable strategy (a separate AVX target?) is determined
-    #target_compile_options(${proj} PRIVATE /arch:AVX /Zi)
-    target_compile_options(${proj} PRIVATE /Zi)
-    target_compile_definitions(${proj} PRIVATE __WINDOWS_WASAPI__=1)
-    # TODO: These vars are for libniquist and should be set in the find libynquist script.
-    target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
-elseif(APPLE)
-elseif(ANDROID)
-    target_compile_options(${proj} PRIVATE -fPIC)
-    target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
-    target_link_libraries(${proj} OpenSLES)
-    if(LABSOUND_JACK)
-        target_link_libraries(${proj} jack)
-        target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
+function (configureProj proj)
+    if(WIN32)
+        # Arch AVX is problematic for many users, so disable it until
+        # some reasonable strategy (a separate AVX target?) is determined
+        #target_compile_options(${proj} PRIVATE /arch:AVX /Zi)
+        target_compile_options(${proj} PRIVATE /Zi)
+        target_compile_definitions(${proj} PRIVATE __WINDOWS_WASAPI__=1)
+        # TODO: These vars are for libniquist and should be set in the find libynquist script.
+        target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
+    elseif(APPLE)
+    elseif(ANDROID)
+        target_compile_options(${proj} PRIVATE -fPIC)
+        target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
+        target_link_libraries(${proj} OpenSLES)
+        if(LABSOUND_JACK)
+            target_link_libraries(${proj} jack)
+            target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
+        endif()
+        if(LABSOUND_PULSE)
+            target_link_libraries(${proj} pulse pulse-simple)
+            target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
+        endif()
+        if(LABSOUND_ASOUND)
+            target_link_libraries(${proj} asound)
+            target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
+        endif()
+        # TODO: These vars are for libnyquist and should be set in the find libynquist script.
+        # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
+        target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
+    elseif(UNIX)
+        target_link_libraries(${proj} pthread)
+        target_compile_options(${proj} PRIVATE -fPIC)
+        target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
+        if(LABSOUND_JACK)
+            target_link_libraries(${proj} jack)
+            target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
+        endif()
+        if(LABSOUND_PULSE)
+            target_link_libraries(${proj} pulse pulse-simple)
+            target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
+        endif()
+        if(LABSOUND_ASOUND)
+            target_link_libraries(${proj} asound)
+            target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
+        endif()
+        # TODO: These vars are for libnyquist and should be set in the find libynquist script.
+        # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
+        target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
     endif()
-    if(LABSOUND_PULSE)
-        target_link_libraries(${proj} pulse pulse-simple)
-        target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
-    endif()
-    if(LABSOUND_ASOUND)
-        target_link_libraries(${proj} asound)
-        target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
-    endif()
-    # TODO: These vars are for libnyquist and should be set in the find libynquist script.
-    # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
-    target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
-elseif(UNIX)
-    target_link_libraries(${proj} pthread)
-    target_compile_options(${proj} PRIVATE -fPIC)
-    target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
-    if(LABSOUND_JACK)
-        target_link_libraries(${proj} jack)
-        target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
-    endif()
-    if(LABSOUND_PULSE)
-        target_link_libraries(${proj} pulse pulse-simple)
-        target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
-    endif()
-    if(LABSOUND_ASOUND)
-        target_link_libraries(${proj} asound)
-        target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
-    endif()
-    # TODO: These vars are for libnyquist and should be set in the find libynquist script.
-    # TODO: libnyquist's loadabc calls getenv and setenv. That's undesirable.
-    target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
-endif()
+endfunction()
+configureProj(LabSound)
+configureProj(LabSoundRtAudio)
+configureProj(LabSoundRtMiniAudio)
 
 target_include_directories(LabSound PUBLIC
     ${LABSOUND_ROOT}/include)
@@ -173,11 +178,24 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
 
-if (LABSOUND_USE_MINIAUDIO)
-    target_include_directories(LabSound PRIVATE
-        ${LABSOUND_ROOT}/third_party/miniaudio)
-endif()
+target_include_directories(LabSoundRtAudio PUBLIC
+    ${LABSOUND_ROOT}/include)
 
+target_include_directories(LabSoundRtAudio PRIVATE
+    ${LABSOUND_ROOT}/src
+    ${LABSOUND_ROOT}/src/internal
+    ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/libnyquist/include)
+
+target_include_directories(LabSoundMiniAudio PUBLIC
+    ${LABSOUND_ROOT}/include)
+
+target_include_directories(LabSoundMiniAudio PRIVATE
+    ${LABSOUND_ROOT}/third_party/miniaudio
+    ${LABSOUND_ROOT}/src
+    ${LABSOUND_ROOT}/src/internal
+    ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/libnyquist/include)
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
@@ -185,6 +203,20 @@ if (MSVC_IDE)
 endif()
 
 set_target_properties(LabSound
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+set_target_properties(LabSoundRtAudio
+    PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+set_target_properties(LabSoundMiniAudio
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
@@ -219,6 +251,18 @@ target_link_libraries(LabSound
     ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 
 install(TARGETS LabSound
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
+    RUNTIME DESTINATION bin)
+
+install(TARGETS LabSoundRtAudio
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    FRAMEWORK DESTINATION lib
+    RUNTIME DESTINATION bin)
+
+install(TARGETS LabSoundMiniAudio
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     FRAMEWORK DESTINATION lib
@@ -259,3 +303,6 @@ install(FILES
 )
 
 add_library(Lab::Sound ALIAS LabSound)
+add_library(Lab::SoundRtAudio ALIAS LabSoundRtAudio)
+add_library(Lab::SoundMiniAudio ALIAS LabSoundMiniAudio)
+

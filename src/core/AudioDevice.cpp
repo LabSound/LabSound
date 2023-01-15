@@ -15,10 +15,24 @@
 
 using namespace lab;
 
-void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioBus * src, AudioBus * dst, int frames,
-                     const SamplingInfo & info, AudioHardwareInput * optional_hardware_input)
+
+AudioNodeDescriptor * AudioRenderingNode::desc()
 {
-    // The audio system might still be invoking callbacks during shutdown, so bail out if so.
+    static AudioNodeDescriptor d {nullptr, nullptr};
+    return &d;
+}
+
+
+void lab::pull_graph(
+        AudioContext * ctx,
+        AudioNodeInput * required_inlet,
+        AudioBus * src, AudioBus * dst,
+        int frames,
+        const SamplingInfo & info,
+        AudioSourceProvider * optional_hardware_input)
+{
+    // The audio system might still be invoking callbacks during shutdown,
+    // so bail out if called without a context
     if (!ctx) 
         return;
 
@@ -79,4 +93,68 @@ void lab::pull_graph(AudioContext * ctx, AudioNodeInput * required_inlet, AudioB
 
     // Let the context take care of any business at the end of each render quantum.
     ctx->handlePostRenderTasks(renderLock);
+}
+
+namespace lab {
+
+
+AudioRenderingNode::AudioRenderingNode(
+    AudioContext& ac,
+    std::unique_ptr<AudioDevice> && device)
+: AudioNode(ac, *desc())
+, _context(&ac)
+{
+    _platformAudioDevice = std::move(device);
+    
+    // This is the "final node" in the chain. It will pull on all others from this input.
+    addInput(std::make_unique<AudioNodeInput>(this));
+
+    // Node-specific default mixing rules.
+    //m_channelCount = outputConfig.desired_channels;
+    _self->m_channelCountMode = ChannelCountMode::Explicit;
+    _self->m_channelInterpretation = ChannelInterpretation::Speakers;
+
+    ContextGraphLock glock(&ac, "AudioRenderingNode");
+    AudioNode::setChannelCount(glock, device->getOutputConfig().desired_channels);
+
+    // Info is provided by the backend every frame, but some nodes need to be constructed
+    // with a valid sample rate before the first frame so we make our best guess here
+    _last_info = {};
+    _last_info.sampling_rate = device->getOutputConfig().desired_samplerate;
+
+    initialize();
+}
+
+void AudioRenderingNode::offlineRender(AudioBus * dst, size_t framesToProcess)
+{
+    static const int offlineRenderSizeQuantum = AudioNode::ProcessingSizeInFrames;
+
+    if (!dst || !framesToProcess || !_context || !_context->isInitialized())
+        return;
+
+    bool isRenderBusAllocated = dst->length() >= offlineRenderSizeQuantum;
+    ASSERT(isRenderBusAllocated);
+    if (!isRenderBusAllocated)
+        return;
+
+    LOG_TRACE("offline rendering started");
+
+    while (framesToProcess > 0)
+    {
+        _context->update();
+        AudioSourceProvider* asp = nullptr;
+        render(asp, 0, dst, offlineRenderSizeQuantum, _last_info);
+
+        // Update sampling info
+        const int index = 1 - (_last_info.current_sample_frame & 1);
+        const uint64_t t = _last_info.current_sample_frame & ~1;
+        _last_info.current_sample_frame = t + offlineRenderSizeQuantum + index;
+        _last_info.current_time = _last_info.current_sample_frame / static_cast<double>(_last_info.sampling_rate);
+        _last_info.epoch[index] += std::chrono::nanoseconds {
+                static_cast<uint64_t>(1.e9 * (double) framesToProcess / (double) offlineRenderSizeQuantum)};
+
+        framesToProcess--;
+    }
+}
+
 }

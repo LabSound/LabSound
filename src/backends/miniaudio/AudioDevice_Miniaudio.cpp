@@ -9,7 +9,6 @@
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
@@ -86,7 +85,11 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
 
-    result = ma_context_get_devices(&g_context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
+    result = ma_context_get_devices(&g_context,
+                                    &pPlaybackDeviceInfos,
+                                    &playbackDeviceCount,
+                                    &pCaptureDeviceInfos,
+                                    &captureDeviceCount);
     if (result != MA_SUCCESS)
     {
         LOG_ERROR("Failed to retrieve audio device information.\n");
@@ -99,16 +102,38 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.index = (int32_t) g_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&g_context, ma_device_type_playback,
-                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice])
+        if (ma_context_get_device_info(&g_context,
+                                       ma_device_type_playback,
+                                       &pPlaybackDeviceInfos[iDevice].id,
+                                       &pPlaybackDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
 
-        lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].maxChannels;
+        
+#if 0
+        typedef struct
+        {
+            /* Basic info. This is the only information guaranteed to be filled in during device enumeration. */
+            ma_device_id id;
+            char name[MA_MAX_DEVICE_NAME_LENGTH + 1];   /* +1 for null terminator. */
+            ma_bool32 isDefault;
+
+            ma_uint32 nativeDataFormatCount;
+            struct
+            {
+                ma_format format;       /* Sample format. If set to ma_format_unknown, all sample formats are supported. */
+                ma_uint32 channels;     /* If set to 0, all channels are supported. */
+                ma_uint32 sampleRate;   /* If set to 0, all sample rates are supported. */
+                ma_uint32 flags;        /* A combination of MA_DATA_FORMAT_FLAG_* flags. */
+            } nativeDataFormats[/*ma_format_count * ma_standard_sample_rate_count * MA_MAX_CHANNELS*/ 64];  /* Not sure how big to make this. There can be *many* permutations for virtual devices which can support anything. */
+        } ma_device_info;
+#endif
+        
+        lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].nativeDataFormats[0].channels;
         lab_device_info.num_input_channels = 0;
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].minSampleRate));
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate);
+        lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].nativeDataFormats[0].sampleRate));
+        lab_device_info.nominal_samplerate =
+            static_cast<float>(pPlaybackDeviceInfos[iDevice].nativeDataFormats[0].sampleRate);
         lab_device_info.is_default_output = iDevice == 0;
         lab_device_info.is_default_input = false;
 
@@ -122,15 +147,15 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
         if (ma_context_get_device_info(&g_context, ma_device_type_capture,
-                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice])
+                                       &pPlaybackDeviceInfos[iDevice].id, &pPlaybackDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
 
         lab_device_info.num_output_channels = 0;
         lab_device_info.num_input_channels = 2;  // pCaptureDeviceInfos[iDevice].maxChannels;
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].minSampleRate));
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = 48000.f;  // static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
+        lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].nativeDataFormats[0].sampleRate));
+        lab_device_info.nominal_samplerate =
+            static_cast<float>(pCaptureDeviceInfos[iDevice].nativeDataFormats[0].sampleRate);
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
@@ -138,26 +163,6 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     }
 
     return g_devices;
-}
-
-AudioDeviceIndex AudioDevice::GetDefaultOutputAudioDeviceIndex() noexcept
-{
-    auto devices = MakeAudioDeviceList();
-    size_t c = devices.size();
-    for (uint32_t i = 0; i < c; ++i)
-        if (devices[i].is_default_output)
-            return {i, true};
-    return {0, false};
-}
-
-AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
-{
-    auto devices = MakeAudioDeviceList();
-    size_t c = devices.size();
-    for (uint32_t i = 0; i < c; ++i)
-        if (devices[i].is_default_input)
-            return {i, true};
-    return {0, false};
 }
 
 namespace
@@ -172,13 +177,7 @@ namespace
     }
 }
 
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
-                                                      const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig)
-{
-    return new AudioDevice_Miniaudio(callback, outputConfig, inputConfig);
-}
-
-AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callback,
+AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceNodeBase & callback,
                                              const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
     : _callback(callback)
     , outputConfig(_outputConfig)

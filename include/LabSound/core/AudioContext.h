@@ -6,8 +6,6 @@
 #ifndef lab_audio_context_h
 #define lab_audio_context_h
 
-#include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
 #include <atomic>
@@ -20,16 +18,16 @@
 #include <thread>
 #include <vector>
 
-namespace lab
-{
+namespace lab {
 
-class AudioHardwareDeviceNode;
+class AudioBus;
+class AudioHardwareInputNode;
 class AudioListener;
 class AudioNode;
-class AudioScheduledSourceNode;
-class AudioHardwareInputNode;
 class AudioNodeInput;
 class AudioNodeOutput;
+class AudioRenderingNode;
+class AudioScheduledSourceNode;
 class ContextGraphLock;
 class ContextRenderLock;
 class HRTFDatabaseLoader;
@@ -38,6 +36,7 @@ class AudioContext
 {
     friend class ContextGraphLock;
     friend class ContextRenderLock;
+    friend class AudioRenderingNode;
 
 public:
 
@@ -100,8 +99,8 @@ public:
 
     float sampleRate() const;
 
-    void setDeviceNode(std::shared_ptr<AudioNode> device);
-    std::shared_ptr<AudioNode> device();
+    void setRenderingNode(std::shared_ptr<AudioRenderingNode> device);
+    std::shared_ptr<AudioRenderingNode> renderingNode();
     std::shared_ptr<AudioListener> listener();
 
     // Debugging/Sanity Checking
@@ -156,7 +155,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to
     // be pulled even when they are not connected to anything.
-    // Only an AudioHardwareDeviceNode should call this.
+    // Only an AudioRenderingNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
     // graph management
@@ -226,8 +225,7 @@ private:
     void updateAutomaticPullNodes();
     void uninitialize();
 
-    AudioDeviceRenderCallback * device_callback{nullptr};
-    std::shared_ptr<AudioNode> m_device;
+    std::shared_ptr<AudioRenderingNode> _renderingNode;
 
     std::shared_ptr<AudioListener> m_listener;
 

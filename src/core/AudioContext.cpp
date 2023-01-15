@@ -3,12 +3,11 @@
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "internal/HRTFDatabaseLoader.h"
 
@@ -28,8 +27,8 @@
 #include <queue>
 #include <stdio.h>
 
-namespace lab
-{
+namespace lab {
+
 enum class ConnectionOperationKind : int
 {
     Disconnect = 0,
@@ -219,7 +218,7 @@ void AudioContext::lazyInitialize()
     if (m_isAudioThreadFinished)
         return;
 
-    if (m_device.get())
+    if (auto d = _renderingNode.get())
     {
         if (!isOfflineContext())
         {
@@ -229,7 +228,7 @@ void AudioContext::lazyInitialize()
 
             graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
             graphUpdateThread = std::thread(&AudioContext::update, this);
-            device_callback->start();
+            d->device()->start();
         }
 
         cv.notify_all();
@@ -238,7 +237,7 @@ void AudioContext::lazyInitialize()
     else
     {
         LOG_ERROR("m_device not specified");
-        ASSERT(m_device);
+        ASSERT(_renderingNode);
     }
 }
 
@@ -249,11 +248,13 @@ void AudioContext::uninitialize()
     if (!m_isInitialized)
         return;
 
-    // for the case where an OfflineAudioDestinationNode needs to update the graph:
+    // for the case where an OfflineAudioDestinationNode needs to update the graph
+    // before shutting done
     updateAutomaticPullNodes();
 
     // This stops the audio thread and all audio rendering.
-    device_callback->stop();
+    if (_renderingNode && _renderingNode->device())
+        _renderingNode->device()->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
@@ -405,9 +406,11 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::synchronizeConnections(int timeOut_ms)
 {
     cv.notify_all();
+    if (!_renderingNode || !_renderingNode->device())
+        return;
 
-    // don't synch if the context is suspended as that will simply max out the timeout
-    if (!device_callback->isRunning())
+    // don't synch a suspended context as that will simply max out the timeout
+    if (!_renderingNode->device()->isRunning())
         return;
 
     while (m_internal->pendingNodeConnections.size_approx() > 0 && timeOut_ms > 0)
@@ -632,19 +635,14 @@ void AudioContext::dispatchEvents()
     }
 }
 
-void AudioContext::setDeviceNode(std::shared_ptr<AudioNode> device)
+void AudioContext::setRenderingNode(std::shared_ptr<AudioRenderingNode> device)
 {
-    m_device = device;
-
-    if (auto * callback = dynamic_cast<AudioDeviceRenderCallback *>(device.get()))
-    {
-        device_callback = callback;
-    }
+    _renderingNode = device;
 }
 
-std::shared_ptr<AudioNode> AudioContext::device()
+std::shared_ptr<AudioRenderingNode> AudioContext::renderingNode()
 {
-    return m_device;
+    return _renderingNode;
 }
 
 bool AudioContext::isOfflineContext() const
@@ -659,17 +657,17 @@ std::shared_ptr<AudioListener> AudioContext::listener()
 
 double AudioContext::currentTime() const
 {
-    return device_callback->getSamplingInfo().current_time;
+    return _renderingNode->getSamplingInfo().current_time;
 }
 
 uint64_t AudioContext::currentSampleFrame() const
 {
-    return device_callback->getSamplingInfo().current_sample_frame;
+    return _renderingNode->getSamplingInfo().current_sample_frame;
 }
 
 double AudioContext::predictedCurrentTime() const
 {
-    auto info = device_callback->getSamplingInfo();
+    auto info = _renderingNode->getSamplingInfo();
     uint64_t t = info.current_sample_frame;
     double val = t / info.sampling_rate;
     auto t2 = std::chrono::high_resolution_clock::now();
@@ -688,10 +686,10 @@ float AudioContext::sampleRate() const
     // scheduler, but DeviceNodes are not scheduled.
     // during construction of DeviceNodes, the device_callback will not yet be
     // ready, so bail out.
-    if (!device_callback)
-        return 0;
+    if (!_renderingNode)
+        return 0.f;
 
-    return device_callback->getSamplingInfo().sampling_rate;
+    return _renderingNode->getSamplingInfo().sampling_rate;
 }
 
 void AudioContext::startOfflineRendering()
@@ -700,18 +698,28 @@ void AudioContext::startOfflineRendering()
         throw std::runtime_error("context was not constructed for offline rendering");
 
     m_isInitialized = true;
-    device_callback->start();
+    
+    if (!_renderingNode && !_renderingNode->device())
+        return;
+    
+    _renderingNode->device()->start();
 }
 
 void AudioContext::suspend()
 {
-    device_callback->stop();
+    if (!_renderingNode && !_renderingNode->device())
+        return;
+
+    _renderingNode->device()->stop();
 }
 
 // if the context was suspended, resume the progression of time and processing in the audio context
 void AudioContext::resume()
 {
-    device_callback->start();
+    if (!_renderingNode && !_renderingNode->device())
+        return;
+
+    _renderingNode->device()->start();
 }
 
 void AudioContext::debugTraverse(AudioNode * root)

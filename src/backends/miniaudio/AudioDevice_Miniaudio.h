@@ -5,7 +5,7 @@
 #define labsound_audiodevice_miniaudio_hpp
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
 
 #include <assert.h>
@@ -199,7 +199,7 @@ class AudioDevice_Miniaudio : public AudioDevice
 {
     cinder::RingBufferT<float> * _ring = nullptr;
     float * _scratch = nullptr;
-    AudioDeviceRenderCallback & _callback;
+    AudioRenderingNode& _callback;
     AudioBus * _renderBus = nullptr;
     AudioBus * _inputBus = nullptr;
     ma_device _device;
@@ -214,7 +214,7 @@ public:
     void operator delete(void * p) { _mm_free(p); }
 #endif
 
-    AudioDevice_Miniaudio(AudioDeviceRenderCallback &, const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
+    AudioDevice_Miniaudio(AudioRenderingNode&, const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
     virtual ~AudioDevice_Miniaudio();
 
     AudioStreamConfig outputConfig;
