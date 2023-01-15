@@ -46,13 +46,14 @@ enum FilterType
 
 enum OscillatorType
 {
-    OSCILLATOR_NONE = 0,
-    SINE            = 1,
-    FAST_SINE       = 2,
-    SQUARE          = 3,
-    SAWTOOTH        = 4,
-    TRIANGLE        = 5,
-    CUSTOM          = 6,
+    OSCILLATOR_NONE  = 0,
+    SINE             = 1,
+    FAST_SINE        = 2,
+    SQUARE           = 3,
+    SAWTOOTH         = 4,
+    FALLING_SAWTOOTH = 5,
+    TRIANGLE         = 6,
+    CUSTOM           = 7,
     _OscillatorTypeCount
 };
 

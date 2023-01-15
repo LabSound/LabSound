@@ -110,20 +110,20 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         outputBus->zero();
         return;
     }
-
+    
     const float sample_rate = r.context()->sampleRate();
-
+    
     int quantumFrameOffset = offset;
     int nonSilentFramesToProcess = count;
-
+    
     if (!nonSilentFramesToProcess)
     {
         outputBus->zero();
         return;
     }
-
+    
     nonSilentFramesToProcess += quantumFrameOffset;
-
+    
     if (bufferSize > m_phaseIncrements.size())
         m_phaseIncrements.allocate(bufferSize);
     if (bufferSize > m_detuneValues.size())
@@ -132,10 +132,10 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         m_amplitudeValues.allocate(bufferSize);
     if (bufferSize > m_biasValues.size())
         m_biasValues.allocate(bufferSize);
-
+    
     // calculate phase increments
     float* phaseIncrements = m_phaseIncrements.data();
-
+    
     if (m_frequency->hasSampleAccurateValues())
     {
         // Get the sample-accurate frequency values in preparation for conversion to phase increments.
@@ -152,14 +152,14 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             phaseIncrements[i] = frequency;
         }
     }
-
+    
     if (m_detune->hasSampleAccurateValues())
     {
         // Get the sample-accurate detune values.
         float* detuneValues = m_detuneValues.data();
         float* offset_detunes = detuneValues + +quantumFrameOffset;
         m_detune->calculateSampleAccurateValues(r, offset_detunes, nonSilentFramesToProcess);
-
+        
         // Convert from cents to rate scalar and perform detuning
         float k = 1.f / 1200.f;
         VectorMath::vsmul(offset_detunes, 1, &k, offset_detunes, 1, nonSilentFramesToProcess);
@@ -180,13 +180,13 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
                 phaseIncrements[i] *= detuneScale;
         }
     }
-
+    
     // convert frequencies to phase increments
     for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
     {
         phaseIncrements[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI)* phaseIncrements[i] / sample_rate);
     }
-
+    
     // fetch the amplitudes
     float* amplitudes = m_amplitudeValues.data();
     if (m_amplitude->hasSampleAccurateValues())
@@ -200,7 +200,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
             amplitudes[i] = amp;
     }
-
+    
     // fetch the bias values
     float* bias = m_biasValues.data();
     if (m_bias->hasSampleAccurateValues())
@@ -216,73 +216,85 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             bias[i] = b;
         }
     }
-
+    
     // calculate and write the wave
     float* destP = outputBus->channel(0)->mutableData();
-
+    const float pi = static_cast<float>(LAB_PI);
+    
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     switch (type)
     {
-    case OscillatorType::SINE:
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
-            phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
-        }
-        break;
-
-    case OscillatorType::FAST_SINE:
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            destP[i] = burk_fast_sine(phase);
-            phase += phaseIncrements[i];
-            if (phase > static_cast<float>(LAB_PI))
-                phase -= static_cast<float>(LAB_TAU);
-        }
-        break;
-
-    case OscillatorType::SQUARE:
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            float amp = amplitudes[i];
-            destP[i] = static_cast<float>(bias[i] + (phase < static_cast<float>(LAB_PI) ? amp : -amp));
-            phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
-        }
-        break;
-
-    case OscillatorType::SAWTOOTH:
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            float amp = amplitudes[i];
-            destP[i] = static_cast<float>(bias[i] + amp - (amp / static_cast<float>(LAB_PI)* phase));
-            phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
-        }
-        break;
-
-    case OscillatorType::TRIANGLE:
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            float amp = amplitudes[i];
-            if (phase < static_cast<float>(LAB_PI))
-                destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / static_cast<float>(LAB_PI))* phase);
-            else
-                destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / static_cast<float>(LAB_PI))* phase);
-
-            phase += phaseIncrements[i];
-            if (phase > 2. * static_cast<float>(LAB_PI))
-                phase -= 2. * static_cast<float>(LAB_PI);
-        }
-        break;
+        case OscillatorType::SINE:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
+                phase += phaseIncrements[i];
+                if (phase > 2.f * pi)
+                    phase -= 2.f * pi;
+            }
+            break;
             
-    default: break; // other types do nothing
+        case OscillatorType::FAST_SINE:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                destP[i] = burk_fast_sine(phase);
+                phase += phaseIncrements[i];
+                if (phase > pi)
+                    phase -= 0.5f * pi;
+            }
+            break;
+            
+        case OscillatorType::SQUARE:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                float amp = amplitudes[i];
+                destP[i] = static_cast<float>(bias[i] + (phase < pi ? amp : -amp));
+                phase += phaseIncrements[i];
+                if (phase > 2.f * pi)
+                    phase -= 2.f * pi;
+            }
+            break;
+            
+        case OscillatorType::SAWTOOTH:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                float amp = amplitudes[i];
+                destP[i] = static_cast<float>(bias[i] + amp - (amp / pi * phase));
+                phase += phaseIncrements[i];
+                if (phase > 2.f * pi)
+                    phase -= 2.f * pi;
+            }
+            break;
+            
+        case OscillatorType::FALLING_SAWTOOTH:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                float amp = amplitudes[i];
+                destP[i] = static_cast<float>(bias[i] - (amp / pi * phase));
+                phase += phaseIncrements[i];
+                if (phase > 2. * pi)
+                    phase -= 2. * pi;
+            }
+            break;
+            
+        case OscillatorType::TRIANGLE:
+            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+            {
+                float amp = amplitudes[i];
+                if (phase < pi)
+                    destP[i] = static_cast<float>(bias[i] - amp + (2.f * amp / pi * phase));
+                else
+                    destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / pi *  phase));
+                
+                phase += phaseIncrements[i];
+                if (phase > 2.f * pi)
+                    phase -= 2.f * pi;
+            }
+            break;
+            
+        default: break; // other types do nothing
     }
-
+    
     outputBus->clearSilentFlag();
 }
 
