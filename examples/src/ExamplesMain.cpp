@@ -21,28 +21,38 @@ int main(int argc, char *argv[]) try
         labsound_example* example;
     };
     
+    AudioStreamConfig _inputConfig;
+    AudioStreamConfig _outputConfig;
+    auto config = GetDefaultAudioDeviceConfiguration(true);
+    _inputConfig = config.first;
+    _outputConfig = config.second;
+    std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(_inputConfig, _outputConfig));
+    
+    const bool NoInput = false;
+    const bool UseInput = true;
+    
     Example examples[] = {
-        { Passing::pass, Skip::no, new ex_devices() },
-        { Passing::pass, Skip::yes, new ex_play_file() },
-        { Passing::pass, Skip::yes, new ex_simple() },
-        { Passing::pass, Skip::yes, new ex_osc_pop() },
-        { Passing::pass, Skip::yes, new ex_playback_events() },
-        { Passing::pass, Skip::yes, new ex_offline_rendering() },
-        { Passing::pass, Skip::yes, new ex_tremolo() },
-        { Passing::pass, Skip::yes, new ex_frequency_modulation() },
-        { Passing::pass, Skip::yes, new ex_runtime_graph_update() },
-        { Passing::pass, Skip::yes, new ex_microphone_loopback() },
-        { Passing::pass, Skip::yes, new ex_microphone_reverb() },
-        { Passing::pass, Skip::yes, new ex_peak_compressor() },
-        { Passing::pass, Skip::yes, new ex_stereo_panning() },
-        { Passing::pass, Skip::yes, new ex_hrtf_spatialization() },
-        { Passing::pass, Skip::yes, new ex_convolution_reverb() },
-        { Passing::pass, Skip::yes, new ex_misc() },
-        { Passing::pass, Skip::yes, new ex_dalek_filter() },
-        { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
-        { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
-        { Passing::pass, Skip::yes, new ex_granulation_node() }, // note: node is under development
-        { Passing::pass, Skip::yes, new ex_poly_blep() }
+        { Passing::pass, Skip::no, new ex_devices(device, NoInput) },
+        { Passing::pass, Skip::no, new ex_play_file(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_simple(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_osc_pop(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_playback_events(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_offline_rendering(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_tremolo(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_frequency_modulation(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_runtime_graph_update(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_microphone_loopback(device, UseInput) },
+        { Passing::pass, Skip::yes, new ex_microphone_reverb(device, UseInput) },
+        { Passing::pass, Skip::yes, new ex_peak_compressor(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_stereo_panning(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_hrtf_spatialization(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_convolution_reverb(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_misc(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_dalek_filter(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_redalert_synthesis(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_wavepot_dsp(device, NoInput) },
+        { Passing::pass, Skip::yes, new ex_granulation_node(device, NoInput) }, // note: node is under development
+        { Passing::pass, Skip::yes, new ex_poly_blep(device, NoInput) }
     };
 
     static constexpr int iterations = 1;

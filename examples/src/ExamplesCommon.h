@@ -78,19 +78,10 @@ struct labsound_example
     std::unique_ptr<lab::AudioContext> context;
     std::shared_ptr<lab::RecorderNode> _recorder;
 
-    AudioStreamConfig _inputConfig;
-    AudioStreamConfig _outputConfig;
-
-    labsound_example(bool with_input = true)
+    labsound_example(std::shared_ptr<lab::AudioDevice> device, bool with_input)
     {
         context = std::make_unique<lab::AudioContext>(false, true);
-        auto config = GetDefaultAudioDeviceConfiguration(with_input);
-        _inputConfig =config.first;
-        _outputConfig = config.second;
-        std::shared_ptr<lab::AudioRenderingNode> rn(
-                new lab::AudioRenderingNode(
-                        *context.get(),
-                        std::make_unique<lab::AudioDevice_RtAudio>(_inputConfig, _outputConfig)));
+        std::shared_ptr<lab::AudioRenderingNode> rn(new lab::AudioRenderingNode(*context.get(), device));
         rn->device()->setRenderingNode(rn.get());
         context->setRenderingNode(rn);
     }
@@ -101,7 +92,7 @@ struct labsound_example
     void AddRecorder(std::shared_ptr<lab::AudioNode> node)
     {
         lab::AudioContext& ac = *context.get();
-        _recorder.reset(new RecorderNode(ac, _outputConfig));
+        _recorder.reset(new RecorderNode(ac, ac.renderingNode()->device()->getOutputConfig()));
         context->addAutomaticPullNode(_recorder);
         context->connect(_recorder, node, 0, 0);
         _recorder->startRecording();

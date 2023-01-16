@@ -6,6 +6,8 @@
 #include "LabSound/backends/AudioDevice_RtAudio.h"
 
 struct ex_devices : public labsound_example {
+    ex_devices(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_devices() = default;
     virtual void play(int argc, char ** argv) override final
     {
         const std::vector<AudioDeviceInfo> audioDevices = lab::AudioDevice_RtAudio::MakeAudioDeviceList();
@@ -28,6 +30,8 @@ struct ex_devices : public labsound_example {
 // ex_simple demonstrates the use of an audio clip loaded from disk and a basic sine oscillator. 
 struct ex_simple : public labsound_example
 {
+    ex_simple(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_simple() = default;
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *context.get();
@@ -55,6 +59,7 @@ struct ex_simple : public labsound_example
         // osc -> gain -> destination
         context->connect(gain, oscillator, 0, 0);
         context->connect(context->renderingNode(), gain, 0, 0);
+        //context->connect(context->destinationNode(), context->renderingNode(), 0, 0);
 
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(OscillatorType::SINE);
@@ -76,6 +81,8 @@ struct ex_simple : public labsound_example
 
 struct ex_play_file : public labsound_example
 {
+    ex_play_file(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_play_file() = default;
     virtual void play(int argc, char ** argv) override final
     {
         lab::AudioContext & ac = *context.get();
@@ -96,7 +103,6 @@ struct ex_play_file : public labsound_example
             ContextRenderLock r(context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
         }
-        context->connect(context->renderingNode(), musicClipNode, 0, 0);
         musicClipNode->schedule(0.0);
 
         // osc -> gain -> destination
@@ -105,8 +111,14 @@ struct ex_play_file : public labsound_example
 
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
+        
+        context->synchronizeConnections();
 
-        Wait(6000);
+        printf("------\n");
+        ac.debugTraverse(context->renderingNode().get());
+        printf("------\n");
+
+        Wait(1000);
     }
 };
 
@@ -120,6 +132,8 @@ struct ex_play_file : public labsound_example
 // ex_osc_pop to test oscillator start/stop popping (it shouldn't pop). 
 struct ex_osc_pop : public labsound_example
 {
+    ex_osc_pop(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_osc_pop() = default;
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *context.get();
@@ -173,6 +187,8 @@ struct ex_osc_pop : public labsound_example
 // ex_playback_events showcases the use of a `setOnEnded` callback on a `SampledAudioNode`
 struct ex_playback_events : public labsound_example
 {
+    ex_playback_events(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_playback_events() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -207,6 +223,8 @@ struct ex_playback_events : public labsound_example
 // how a `RecorderNode` can be used to capture the rendered audio to disk.
 struct ex_offline_rendering : public labsound_example
 {
+    ex_offline_rendering(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_offline_rendering() = default;
     virtual void play(int argc, char ** argv) override
     {
         AudioStreamConfig offlineConfig;
@@ -269,6 +287,8 @@ struct ex_offline_rendering : public labsound_example
 // Params are effectively control signals that operate at audio rate.
 struct ex_tremolo : public labsound_example
 {
+    ex_tremolo(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_tremolo() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -313,6 +333,8 @@ struct ex_tremolo : public labsound_example
 // LabSound's ability to construct arbitrary graphs of oscillators a-la FM synthesis.
 struct ex_frequency_modulation : public labsound_example
 {
+    ex_frequency_modulation(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_frequency_modulation() = default;
     virtual void play(int argc, char ** argv) override
     {
         UniformRandomGenerator fmrng;
@@ -416,6 +438,8 @@ struct ex_frequency_modulation : public labsound_example
 // can be arbitrarily connected/disconnected during runtime while the graph is live. 
 struct ex_runtime_graph_update : public labsound_example
 {
+    ex_runtime_graph_update(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_runtime_graph_update() = default;
     virtual void play(int argc, char ** argv) override
     {
         std::shared_ptr<OscillatorNode> oscillator1, oscillator2;
@@ -478,6 +502,8 @@ struct ex_runtime_graph_update : public labsound_example
 // DANGER! This sample creates an open feedback loop. It is best used when the output audio device is a pair of headphones. 
 struct ex_microphone_loopback : public labsound_example
 {
+    ex_microphone_loopback(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_microphone_loopback() = default;
     virtual void play(int argc, char ** argv) override
     {
         ContextRenderLock r(context.get(), "ex_microphone_loopback");
@@ -497,6 +523,8 @@ struct ex_microphone_loopback : public labsound_example
 // DANGER! This sample creates an open feedback loop. It is best used when the output audio device is a pair of headphones. 
 struct ex_microphone_reverb : public labsound_example
 {
+    ex_microphone_reverb(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_microphone_reverb() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -542,6 +570,8 @@ struct ex_microphone_reverb : public labsound_example
 // Demonstrates the use of the `PeakCompNode` and many scheduled audio sources.
 struct ex_peak_compressor : public labsound_example
 {
+    ex_peak_compressor(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_peak_compressor() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -616,6 +646,8 @@ struct ex_peak_compressor : public labsound_example
 // This illustrates the use of equal-power stereo panning.
 struct ex_stereo_panning : public labsound_example
 {
+    ex_stereo_panning(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_stereo_panning() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -669,6 +701,8 @@ struct ex_stereo_panning : public labsound_example
 // This illustrates 3d sound spatialization and doppler shift. Headphones are recommended for this sample.
 struct ex_hrtf_spatialization : public labsound_example
 {
+    ex_hrtf_spatialization(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_hrtf_spatialization() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -731,6 +765,8 @@ struct ex_hrtf_spatialization : public labsound_example
 // This shows the use of the `ConvolverNode` to produce reverb from an arbitrary impulse response.
 struct ex_convolution_reverb : public labsound_example
 {
+    ex_convolution_reverb(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_convolution_reverb() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -798,6 +834,8 @@ struct ex_convolution_reverb : public labsound_example
 // An example with a several of nodes to verify api + functionality changes/improvements/regressions
 struct ex_misc : public labsound_example
 {
+    ex_misc(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_misc() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -856,6 +894,8 @@ struct ex_misc : public labsound_example
 // This is used as an example of a complex graph constructed using the LabSound API.
 struct ex_dalek_filter : public labsound_example
 {
+    ex_dalek_filter(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_dalek_filter() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -987,6 +1027,8 @@ struct ex_dalek_filter : public labsound_example
 // LabSound internals directly.
 struct ex_redalert_synthesis : public labsound_example
 {
+    ex_redalert_synthesis(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_redalert_synthesis() = default;
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *context.get();
@@ -1154,6 +1196,8 @@ struct ex_redalert_synthesis : public labsound_example
 // This sample shows the utility of LabSound as an experimental playground for DSP (synthesis + processing) using the `FunctionNode`. 
 struct ex_wavepot_dsp : public labsound_example
 {
+    ex_wavepot_dsp(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_wavepot_dsp() = default;
     float note(int n, int octave = 0)
     {
         return std::pow(2.0f, (n - 33.f + (12.f * octave)) / 12.0f) * 440.f;
@@ -1371,6 +1415,8 @@ struct ex_wavepot_dsp : public labsound_example
 
 struct ex_granulation_node : public labsound_example
 {
+    ex_granulation_node(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_granulation_node() = default;
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *context.get();
@@ -1410,6 +1456,8 @@ struct ex_granulation_node : public labsound_example
 
 struct ex_poly_blep : public labsound_example
 {
+    ex_poly_blep(std::shared_ptr<lab::AudioDevice> device, bool with_input) : labsound_example(device, with_input) {}
+    virtual ~ex_poly_blep() = default;
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *context.get();

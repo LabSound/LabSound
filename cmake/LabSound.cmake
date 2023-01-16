@@ -79,7 +79,7 @@ add_library(LabSound STATIC
 
 add_library(LabSoundRtAudio STATIC
     "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
-    "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_RtAudio.h"
     "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
     "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
 )
@@ -87,13 +87,13 @@ add_library(LabSoundRtAudio STATIC
 if (IOS)
 add_library(LabSoundMiniAudio STATIC
     "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
-    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
     "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
 )
 else()
 add_library(LabSoundMiniAudio STATIC
     "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
-    "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.h"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
     "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
 )
 endif()
@@ -227,18 +227,23 @@ set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 
 if (WIN32)
     target_compile_definitions(LabSound PRIVATE __WINDOWS_WASAPI__=1)
+    target_compile_definitions(LabSoundRtAudio PRIVATE __WINDOWS_WASAPI__=1)
 elseif (APPLE)
     target_compile_definitions(LabSound PRIVATE __MACOSX_CORE__=1)
+    target_compile_definitions(LabSoundRtAudio PRIVATE __MACOSX_CORE__=1)
 else()
     set(LABSOUND_PLATFORM_LINK_LIBRARIES dl)
     if (LABSOUND_JACK)
         target_compile_definitions(LabSound PRIVATE __UNIX_JACK__=1)
+        target_compile_definitions(LabSoundRtAudio PRIVATE __UNIX_JACK__=1)
         set(LIBNYQUIST_JACK ON)
     elseif (LABSOUND_PULSE)
         target_compile_definitions(LabSound PRIVATE __LINUX_PULSE__=1)
+        target_compile_definitions(LabSoundRtAudio PRIVATE __LINUX_PULSE__=1)
         set(LIBNYQUIST_PULSE ON)
     elseif (LABSOUND_ASOUND)
         target_compile_definitions(LabSound PRIVATE __LINUX_ALSA__=1)
+        target_compile_definitions(LabSoundRtAudio PRIVATE __LINUX_ALSA__=1)
         set(LIBNYQUIST_ASOUND ON)
     else()
         message(FATAL, "On Linux, one of LABSOUND_JACK, LABSOUND_PULSE, or LABSOUND_ASOUND must be set ON.")

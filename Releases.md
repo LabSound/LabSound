@@ -1,4 +1,19 @@
+## alpha 1.3
+### breaking changes
 
+- all functions that take an input and output configuration
+  are now consistently input, output. Please double check usages during
+  ugrade.
+- The miniaudio and RtAudio backends are no longer selected via cmake options.
+  They are built as linkable libraries, and it is us to the LabSound
+  user to pick one and use it, or to supply a custom backend.
+  To make this easier, the joining of the AudioContext and a backend is
+  now much simpler. The complex node hierarchy around hardware nodes
+  has been reduced to an AudioDevice, from which a backend may be derived,
+  an AudioRenderingNode that is supplied with, and owns an AudioDevice.
+  The AudioRenderingNode is optionally supplied to the context to be
+  pulled by a DestinationNode. Alternatively, the AudioRenderNode can
+  be used directly for offline rendering via its offlineRender function.
 ## alpha 1.2
 
 - rename DelayMode to DelayModel to match spec

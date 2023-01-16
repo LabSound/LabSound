@@ -169,8 +169,6 @@ AudioContext::~AudioContext()
 {
     LOG_TRACE("Begin AudioContext::~AudioContext()");
 
-    m_audioContextInterface.reset();
-
     if (!isOfflineContext())
         graphKeepAlive = 0.25f;
 
@@ -187,6 +185,8 @@ AudioContext::~AudioContext()
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
 #endif
+
+    m_audioContextInterface.reset();
 
     ASSERT(!m_isInitialized);
     ASSERT(!m_automaticPullNodes.size());
@@ -549,6 +549,8 @@ void AudioContext::update()
         {
             const double now = currentTime();
             const float delta = static_cast<float>(now - lastGraphUpdateTime);
+            if (delta <= 0.f) // no need to keep running if the graph is no longer updating
+                break;
             lastGraphUpdateTime = static_cast<float>(now);
             graphKeepAlive -= delta;
         }
@@ -560,7 +562,10 @@ void AudioContext::update()
             break;
     }
 
-    if (!m_isOfflineContext) { LOG_TRACE("End UpdateGraphThread"); }
+    if (!m_isOfflineContext)
+    {
+        LOG_TRACE("End UpdateGraphThread");
+    }
 }
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
@@ -638,6 +643,7 @@ void AudioContext::dispatchEvents()
 void AudioContext::setRenderingNode(std::shared_ptr<AudioRenderingNode> device)
 {
     _renderingNode = device;
+    lazyInitialize();
 }
 
 std::shared_ptr<AudioRenderingNode> AudioContext::renderingNode()
@@ -741,6 +747,7 @@ void AudioContext::debugTraverse(AudioNode * root)
         return;
     }
 
+    // make sure any pending connections are made.
     synchronizeConnections();
 
     // Let the context take care of any business at the start of each render quantum.
@@ -780,15 +787,16 @@ void AudioContext::debugTraverse(AudioNode * root)
     static int color = 1;
     root->_self->color = color;
     ++color;
-    node_stack.push_back(root);
 
+    // start the traversal at the root node
+    node_stack.push_back(root);
 
     static std::map<int, std::vector<AudioBus *>> summing_busses;
     std::vector<AudioBus *> in_use;
     std::vector<std::pair<AudioNode *, const char*>> by_whom;
 
     AudioNode * current_node = nullptr;
-    while (node_stack.size() > 0)
+    while (!node_stack.empty())
     {
         current_node = node_stack.back();
 

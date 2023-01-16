@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeInput.h"
+#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 #include "LabSound/extended/AudioContextLock.h"
 
@@ -100,27 +101,28 @@ namespace lab {
 
 AudioRenderingNode::AudioRenderingNode(
     AudioContext& ac,
-    std::unique_ptr<AudioDevice> && device)
+    std::shared_ptr<AudioDevice> device)
 : AudioNode(ac, *desc())
 , _context(&ac)
+, _platformAudioDevice(device)
 {
-    _platformAudioDevice = std::move(device);
-    
     // This is the "final node" in the chain. It will pull on all others from this input.
     addInput(std::make_unique<AudioNodeInput>(this));
 
     // Node-specific default mixing rules.
-    //m_channelCount = outputConfig.desired_channels;
     _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Speakers;
 
+    int numChannels = _platformAudioDevice->getOutputConfig().desired_channels;
     ContextGraphLock glock(&ac, "AudioRenderingNode");
-    AudioNode::setChannelCount(glock, device->getOutputConfig().desired_channels);
+    AudioNode::setChannelCount(glock, numChannels);
 
     // Info is provided by the backend every frame, but some nodes need to be constructed
     // with a valid sample rate before the first frame so we make our best guess here
     _last_info = {};
-    _last_info.sampling_rate = device->getOutputConfig().desired_samplerate;
+    _last_info.sampling_rate = _platformAudioDevice->getOutputConfig().desired_samplerate;
+
+    // addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
 
     initialize();
 }
@@ -155,6 +157,28 @@ void AudioRenderingNode::offlineRender(AudioBus * dst, size_t framesToProcess)
 
         framesToProcess--;
     }
+}
+
+void AudioRenderingNode::initialize()
+{
+    if (!isInitialized())
+        AudioNode::initialize();
+}
+
+void AudioRenderingNode::uninitialize()
+{
+    if (!isInitialized())
+        return;
+    
+    _platformAudioDevice->stop();
+    AudioNode::uninitialize();
+    _platformAudioDevice.reset();
+}
+
+void AudioRenderingNode::reset(ContextRenderLock &)
+{
+    _platformAudioDevice->stop();
+    _platformAudioDevice->start();
 }
 
 }

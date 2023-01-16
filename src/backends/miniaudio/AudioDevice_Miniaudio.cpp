@@ -3,7 +3,7 @@
 
 #define LABSOUND_ENABLE_LOGGING
 
-#include "AudioDevice_Miniaudio.h"
+#include "LabSound/backends/AudioDevice_Miniaudio.h"
 
 #include "internal/Assertions.h"
 #include "internal/VectorMath.h"
@@ -13,8 +13,19 @@
 
 #include "LabSound/extended/Logging.h"
 
+#include <assert.h>
+
 //#define MA_DEBUG_OUTPUT
 #define MINIAUDIO_IMPLEMENTATION
+
+#define MA_NO_DECODING
+#define MA_NO_ENCODING
+#define MA_NO_GENERATION
+//#define MA_DEBUG_OUTPUT
+#include "miniaudio.h"
+#include <atomic>
+#include <cstring>
+
 #include "miniaudio.h"
 
 namespace lab
@@ -69,7 +80,7 @@ void PrintAudioDeviceList()
         }
 }
 
-std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
+std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
 {
     init_context();
     static bool probed = false;
@@ -177,13 +188,12 @@ namespace
     }
 }
 
-AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceNodeBase & callback,
-                                             const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
-    : _callback(callback)
-    , outputConfig(_outputConfig)
-    , inputConfig(_inputConfig)
+AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputConfig,
+                                             const AudioStreamConfig & _outputConfig)
+: AudioDevice(_inputConfig, _outputConfig)
 {
-    auto device_list = AudioDevice::MakeAudioDeviceList();
+    _device = new ma_device();
+    auto device_list = MakeAudioDeviceList();
     PrintAudioDeviceList();
 
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
@@ -201,7 +211,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceNodeBase & callback,
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
-    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
+    if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
@@ -211,7 +221,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceNodeBase & callback,
 
     samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
 
-    _ring = new cinder::RingBufferT<float>();
+    _ring = new lab::RingBufferT<float>();
     _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
     _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
 }
@@ -219,7 +229,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceNodeBase & callback,
 AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
 {
     stop();
-    ma_device_uninit(&_device);
+    ma_device_uninit(_device);
     ma_context_uninit(&g_context);
     g_must_init = true;
     delete _renderBus;
@@ -227,11 +237,12 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
     delete _ring;
     if (_scratch)
         free(_scratch);
+    delete _device;
 }
 
 void AudioDevice_Miniaudio::backendReinitialize()
 {
-    auto device_list = AudioDevice::MakeAudioDeviceList();
+    auto device_list = MakeAudioDeviceList();
     PrintAudioDeviceList();
 
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
@@ -249,7 +260,7 @@ void AudioDevice_Miniaudio::backendReinitialize()
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
-    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
+    if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
@@ -260,7 +271,7 @@ void AudioDevice_Miniaudio::backendReinitialize()
 void AudioDevice_Miniaudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
-    if (ma_device_start(&_device) != MA_SUCCESS)
+    if (ma_device_start(_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to start audio device");
     }
@@ -268,7 +279,7 @@ void AudioDevice_Miniaudio::start()
 
 void AudioDevice_Miniaudio::stop()
 {
-    if (ma_device_stop(&_device) != MA_SUCCESS)
+    if (ma_device_stop(_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to stop audio device");
     }
@@ -276,7 +287,7 @@ void AudioDevice_Miniaudio::stop()
 
 bool AudioDevice_Miniaudio::isRunning() const
 {
-    return ma_device_is_started(&_device);
+    return ma_device_is_started(_device);
 }
 
 
@@ -358,7 +369,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
             // generate new data
-            _callback.render(_inputBus, _renderBus, kRenderQuantum, samplingInfo);
+            _renderingNode->render(sourceProvider(), _inputBus, _renderBus, kRenderQuantum, samplingInfo);
             _remainder = kRenderQuantum;
         }
     }

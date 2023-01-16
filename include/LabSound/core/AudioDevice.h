@@ -161,7 +161,7 @@ protected:
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
     // Platform specific implementation
-    std::unique_ptr<AudioDevice> _platformAudioDevice;
+    std::shared_ptr<AudioDevice> _platformAudioDevice;
     
 public:
     static const char* static_name() { return "AudioRenderingNode"; }
@@ -170,7 +170,7 @@ public:
 
     explicit AudioRenderingNode(
         AudioContext& ac,
-        std::unique_ptr<AudioDevice> && device);
+        std::shared_ptr<AudioDevice> device);
     
     virtual ~AudioRenderingNode()
     {
@@ -202,28 +202,9 @@ public:
     // process should never be called
     virtual void process(ContextRenderLock &, int bufferSize) override {}
 
-    
-    virtual void initialize() override
-    {
-        if (!isInitialized())
-            AudioNode::initialize();
-    }
-
-    virtual void uninitialize() override
-    {
-        if (!isInitialized())
-            return;
-        
-        _platformAudioDevice->stop();
-        AudioNode::uninitialize();
-        _platformAudioDevice.reset();
-    }
-
-    virtual void reset(ContextRenderLock &) override
-    {
-        _platformAudioDevice->stop();
-        _platformAudioDevice->start();
-    }
+    virtual void initialize() override;
+    virtual void uninitialize() override;
+    virtual void reset(ContextRenderLock &) override;
 
 };
 

@@ -19,21 +19,17 @@ class AudioDevice_RtAudio : public AudioDevice
 {
     std::unique_ptr<AudioBus> _renderBus;
     std::unique_ptr<AudioBus> _inputBus;
-
     RtAudio* rtaudio_ctx;
-
     SamplingInfo samplingInfo;
 
     void createContext();
 
 public:
     AudioDevice_RtAudio(
-            const AudioStreamConfig & outputConfig,
-            const AudioStreamConfig & inputConfig);
+            const AudioStreamConfig & inputConfig,
+            const AudioStreamConfig & outputConfig);
     virtual ~AudioDevice_RtAudio();
 
-    AudioStreamConfig outputConfig;
-    AudioStreamConfig inputConfig;
     float authoritativeDeviceSampleRateAtRuntime {0.f};
 
     // AudioDevice Interface

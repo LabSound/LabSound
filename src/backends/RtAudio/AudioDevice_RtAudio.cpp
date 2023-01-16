@@ -17,11 +17,14 @@ namespace lab
 {
 
 
-int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData)
+int rt_audio_callback(
+    void * outputBuffer, void * inputBuffer,
+    unsigned int nBufferFrames, double streamTime,
+    RtAudioStreamStatus status, void * userData)
 {
     AudioDevice_RtAudio * self = reinterpret_cast<AudioDevice_RtAudio *>(userData);
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
-    memset(fltOutputBuffer, 0, nBufferFrames * self->outputConfig.desired_channels * sizeof(float));
+    memset(fltOutputBuffer, 0, nBufferFrames * self->getOutputConfig().desired_channels * sizeof(float));
     self->render(self->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
     return 0;
 }
@@ -30,7 +33,7 @@ int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBuf
 std::vector<AudioDeviceInfo>
     AudioDevice_RtAudio::MakeAudioDeviceList() 
 {
-    std::vector<std::string> rt_audio_apis{
+    std::vector<std::string> rt_audio_apis {
         "unspecified",
         "linux_alsa",
         "linux_pulse",
@@ -40,10 +43,11 @@ std::vector<AudioDeviceInfo>
         "windows_wasapi",
         "windows_asio",
         "windows_directsound",
-        "rtaudio_dummy"};
+        "rtaudio_dummy" };
 
-    RtAudio rt;
-    if (rt.getDeviceCount() <= 0) throw std::runtime_error("no rtaudio devices available!");
+    RtAudio rt = {};
+    if (rt.getDeviceCount() <= 0)
+        throw std::runtime_error("no rtaudio devices available!");
 
     const auto api_enum = rt.getCurrentApi();
     LOG_INFO("using rtaudio api %s", rt_audio_apis[static_cast<int>(api_enum)].c_str());
@@ -100,9 +104,9 @@ void AudioDevice_RtAudio::createContext()
     }
     
     // Ensure that input and output sample rates match
-    if (inputConfig.device_index != -1 && outputConfig.device_index != -1)
+    if (_inConfig.device_index != -1 && _outConfig.device_index != -1)
     {
-        ASSERT(outputConfig.desired_samplerate == inputConfig.desired_samplerate);
+        ASSERT(_inConfig.desired_samplerate == _outConfig.desired_samplerate);
     }
 
 
@@ -111,36 +115,39 @@ void AudioDevice_RtAudio::createContext()
     // Translate AudioStreamConfig into RTAudio-native data structures
 
     RtAudio::StreamParameters outputParams;
-    outputParams.deviceId = outputConfig.device_index;
-    outputParams.nChannels = outputConfig.desired_channels;
-    LOG_INFO("using output device idx: %i", outputConfig.device_index);
-    if (outputConfig.device_index >= 0) LOG_INFO("using output device name: %s", rtaudio_ctx->getDeviceInfo(outputParams.deviceId).name.c_str());
+    outputParams.deviceId = _outConfig.device_index;
+    outputParams.nChannels = _outConfig.desired_channels;
+    LOG_INFO("using output device idx: %i", _outConfig.device_index);
+    if (_outConfig.device_index >= 0)
+        LOG_INFO("using output device name: %s", rtaudio_ctx->getDeviceInfo(outputParams.deviceId).name.c_str());
 
     RtAudio::StreamParameters inputParams;
-    inputParams.deviceId = inputConfig.device_index;
-    inputParams.nChannels = inputConfig.desired_channels;
-    LOG_INFO("using input device idx: %i", inputConfig.device_index);
-    if (inputConfig.device_index >= 0) LOG_INFO("using input device name: %s", rtaudio_ctx->getDeviceInfo(inputParams.deviceId).name.c_str());
+    inputParams.deviceId = _inConfig.device_index;
+    inputParams.nChannels = _inConfig.desired_channels;
+    LOG_INFO("using input device idx: %i", _inConfig.device_index);
+    if (_inConfig.device_index >= 0)
+        LOG_INFO("using input device name: %s", rtaudio_ctx->getDeviceInfo(inputParams.deviceId).name.c_str());
 
-    authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
+    authoritativeDeviceSampleRateAtRuntime = _outConfig.desired_samplerate;
 
-    if (outputConfig.desired_channels > 0 && inputConfig.desired_channels > 0) {
-        if (outputConfig.desired_samplerate != inputConfig.desired_samplerate) {
+    if (_outConfig.desired_channels > 0 && _outConfig.desired_channels > 0) {
+        if (_outConfig.desired_samplerate != _outConfig.desired_samplerate) {
             throw std::runtime_error("RtAudio can't handle differing input and output rates");
         }
     }
 
-    if (inputConfig.desired_channels > 0)
+    if (_inConfig.desired_channels > 0)
     {
         auto inDeviceInfo = rtaudio_ctx->getDeviceInfo(inputParams.deviceId);
         if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
         {
             // ensure that the number of input channels buffered does not exceed the number available.
-            inputParams.nChannels = (inDeviceInfo.inputChannels < inputConfig.desired_channels) ? inDeviceInfo.inputChannels : inputConfig.desired_channels;
-            inputConfig.desired_channels = inputParams.nChannels;
+            inputParams.nChannels = (inDeviceInfo.inputChannels < _inConfig.desired_channels) ?
+                inDeviceInfo.inputChannels : _inConfig.desired_channels;
+            _inConfig.desired_channels = inputParams.nChannels;
             LOG_INFO("[AudioDevice_RtAudio] adjusting number of input channels: %i ", inputParams.nChannels);
         }
-        authoritativeDeviceSampleRateAtRuntime = inputConfig.desired_samplerate;
+        authoritativeDeviceSampleRateAtRuntime = _inConfig.desired_samplerate;
     }
 
     RtAudio::StreamOptions options;
@@ -174,11 +181,9 @@ void AudioDevice_RtAudio::createContext()
 }
 
 AudioDevice_RtAudio::AudioDevice_RtAudio(
-    const AudioStreamConfig & _outputConfig,
-    const AudioStreamConfig & _inputConfig)
-    : AudioDevice(_outputConfig, _inputConfig)
-    , outputConfig(_outputConfig)
-    , inputConfig(_inputConfig)
+    const AudioStreamConfig & _inputConfig,
+    const AudioStreamConfig & _outputConfig)
+    : AudioDevice(_inputConfig, _outputConfig)
 {
     createContext();
 }
@@ -210,7 +215,8 @@ void AudioDevice_RtAudio::start()
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
     try
     {
-        rtaudio_ctx->startStream();
+        if (!rtaudio_ctx->isStreamRunning())
+            rtaudio_ctx->startStream();
     }
     catch (const RtAudioError & e)
     {
@@ -222,7 +228,8 @@ void AudioDevice_RtAudio::stop()
 {
     try
     {
-        rtaudio_ctx->stopStream();
+        if (rtaudio_ctx->isStreamRunning())
+            rtaudio_ctx->stopStream();
     }
     catch (const RtAudioError & e)
     {
@@ -252,39 +259,41 @@ void AudioDevice_RtAudio::render(
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
     float * fltInputBuffer = reinterpret_cast<float *>(inputBuffer);
 
-    if (outputConfig.desired_channels)
+    if (_outConfig.desired_channels)
     {
         if (!_renderBus || _renderBus->length() < numberOfFrames)
         {
-            _renderBus.reset(new AudioBus(outputConfig.desired_channels, numberOfFrames, true));
+            _renderBus.reset(new AudioBus(_outConfig.desired_channels, numberOfFrames, true));
             _renderBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
         }
     }
 
-    if (inputConfig.desired_channels)
+    if (_inConfig.desired_channels)
     {
         if (!_inputBus || _inputBus->length() < numberOfFrames)
         {
-            _inputBus.reset(new AudioBus(inputConfig.desired_channels, numberOfFrames, true));
+            _inputBus.reset(new AudioBus(_inConfig.desired_channels, numberOfFrames, true));
             _inputBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
         }
     }
 
     // copy the input buffer
-    if (inputConfig.desired_channels)
+    if (_inConfig.desired_channels)
     {
         if (kInterleaved)
         {
-            for (uint32_t i = 0; i < inputConfig.desired_channels; ++i)
+            for (uint32_t i = 0; i < _inConfig.desired_channels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &fltInputBuffer[i];
-                VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold, channel->mutableData(), inputConfig.desired_channels, numberOfFrames);
+                VectorMath::vclip(src, 1, &kLowThreshold, &kHighThreshold,
+                                  channel->mutableData(), _inConfig.desired_channels,
+                                  numberOfFrames);
             }
         }
         else
         {
-            for (uint32_t i = 0; i < inputConfig.desired_channels; ++i)
+            for (uint32_t i = 0; i < _inConfig.desired_channels; ++i)
             {
                 AudioChannel * channel = _inputBus->channel(i);
                 float * src = &fltInputBuffer[i * numberOfFrames];
@@ -305,21 +314,22 @@ void AudioDevice_RtAudio::render(
     _renderingNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
-    if (outputConfig.desired_channels)
+    if (_outConfig.desired_channels)
     {
         // Clamp values at 0db (i.e., [-1.0, 1.0]) and also copy result to the DAC output buffer
         if (kInterleaved)
         {
-            for (uint32_t i = 0; i < outputConfig.desired_channels; ++i)
+            for (uint32_t i = 0; i < _outConfig.desired_channels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
                 float * dst = &fltOutputBuffer[i];
-                VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst, outputConfig.desired_channels, numberOfFrames);
+                VectorMath::vclip(channel->data(), 1, &kLowThreshold, &kHighThreshold, dst,
+                                  _outConfig.desired_channels, numberOfFrames);
             }
         }
         else
         {
-            for (uint32_t i = 0; i < outputConfig.desired_channels; ++i)
+            for (uint32_t i = 0; i < _outConfig.desired_channels; ++i)
             {
                 AudioChannel * channel = _renderBus->channel(i);
                 float * dst = &fltOutputBuffer[i * numberOfFrames];
