@@ -218,7 +218,7 @@ void AudioContext::lazyInitialize()
     if (m_isAudioThreadFinished)
         return;
 
-    if (auto d = __destinationNode.get())
+    if (auto d = _destinationNode.get())
     {
         if (!isOfflineContext())
         {
@@ -237,7 +237,7 @@ void AudioContext::lazyInitialize()
     else
     {
         LOG_ERROR("m_device not specified");
-        ASSERT(__destinationNode);
+        ASSERT(_destinationNode);
     }
 }
 
@@ -253,8 +253,8 @@ void AudioContext::uninitialize()
     updateAutomaticPullNodes();
 
     // This stops the audio thread and all audio rendering.
-    if (__destinationNode && __destinationNode->device())
-        __destinationNode->device()->stop();
+    if (_destinationNode && _destinationNode->device())
+        _destinationNode->device()->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
@@ -406,11 +406,11 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::synchronizeConnections(int timeOut_ms)
 {
     cv.notify_all();
-    if (!__destinationNode || !__destinationNode->device())
+    if (!_destinationNode || !_destinationNode->device())
         return;
 
     // don't synch a suspended context as that will simply max out the timeout
-    if (!__destinationNode->device()->isRunning())
+    if (!_destinationNode->device()->isRunning())
         return;
 
     while (m_internal->pendingNodeConnections.size_approx() > 0 && timeOut_ms > 0)
@@ -642,13 +642,13 @@ void AudioContext::dispatchEvents()
 
 void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> device)
 {
-    __destinationNode = device;
+    _destinationNode = device;
     lazyInitialize();
 }
 
 std::shared_ptr<AudioDestinationNode> AudioContext::destinationNode()
 {
-    return __destinationNode;
+    return _destinationNode;
 }
 
 bool AudioContext::isOfflineContext() const
@@ -663,17 +663,17 @@ std::shared_ptr<AudioListener> AudioContext::listener()
 
 double AudioContext::currentTime() const
 {
-    return __destinationNode->getSamplingInfo().current_time;
+    return _destinationNode->getSamplingInfo().current_time;
 }
 
 uint64_t AudioContext::currentSampleFrame() const
 {
-    return __destinationNode->getSamplingInfo().current_sample_frame;
+    return _destinationNode->getSamplingInfo().current_sample_frame;
 }
 
 double AudioContext::predictedCurrentTime() const
 {
-    auto info = __destinationNode->getSamplingInfo();
+    auto info = _destinationNode->getSamplingInfo();
     uint64_t t = info.current_sample_frame;
     double val = t / info.sampling_rate;
     auto t2 = std::chrono::high_resolution_clock::now();
@@ -692,10 +692,10 @@ float AudioContext::sampleRate() const
     // scheduler, but DeviceNodes are not scheduled.
     // during construction of DeviceNodes, the device_callback will not yet be
     // ready, so bail out.
-    if (!__destinationNode)
+    if (!_destinationNode)
         return 0.f;
 
-    return __destinationNode->getSamplingInfo().sampling_rate;
+    return _destinationNode->getSamplingInfo().sampling_rate;
 }
 
 void AudioContext::startOfflineRendering()
@@ -705,27 +705,27 @@ void AudioContext::startOfflineRendering()
 
     m_isInitialized = true;
     
-    if (!__destinationNode && !__destinationNode->device())
+    if (!_destinationNode && !_destinationNode->device())
         return;
     
-    __destinationNode->device()->start();
+    _destinationNode->device()->start();
 }
 
 void AudioContext::suspend()
 {
-    if (!__destinationNode && !__destinationNode->device())
+    if (!_destinationNode && !_destinationNode->device())
         return;
 
-    __destinationNode->device()->stop();
+    _destinationNode->device()->stop();
 }
 
 // if the context was suspended, resume the progression of time and processing in the audio context
 void AudioContext::resume()
 {
-    if (!__destinationNode && !__destinationNode->device())
+    if (!_destinationNode && !_destinationNode->device())
         return;
 
-    __destinationNode->device()->start();
+    _destinationNode->device()->start();
 }
 
 void AudioContext::debugTraverse(AudioNode * root)

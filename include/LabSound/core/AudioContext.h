@@ -225,7 +225,7 @@ private:
     void updateAutomaticPullNodes();
     void uninitialize();
 
-    std::shared_ptr<AudioDestinationNode> __destinationNode;
+    std::shared_ptr<AudioDestinationNode> _destinationNode;
 
     std::shared_ptr<AudioListener> m_listener;
 
