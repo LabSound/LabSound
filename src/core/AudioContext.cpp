@@ -728,6 +728,12 @@ void AudioContext::resume()
     _destinationNode->device()->start();
 }
 
+void AudioContext::close()
+{
+    suspend();
+    _destinationNode.reset();
+}
+
 void AudioContext::debugTraverse(AudioNode * root)
 {
     ASSERT(root);

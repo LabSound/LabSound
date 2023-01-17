@@ -139,6 +139,14 @@ public:
     // if the context was suspended, resume the progression of time and processing
     // in the audio context
     void resume();
+    
+    // Close releases any system audio resources that it uses. It is asynchronous,
+    // returning a promise object that can wait() until all AudioContext-creation-blocking
+    // resources have been released. Closed contexts can decode audio data, create
+    // buffers, etc. Closing the context will forcibly release any system audio resources
+    // that might prevent additional AudioContexts from being created and used, suspend
+    // the progression of audio time in the audio context, and stop processing audio data.
+    void close();
 
     // Called at the start of each render quantum.
     void handlePreRenderTasks(ContextRenderLock &);
