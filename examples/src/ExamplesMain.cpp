@@ -28,9 +28,9 @@ int main(int argc, char *argv[]) try
     _outputConfig = config.second;
     std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(_inputConfig, _outputConfig));
     auto context = std::make_shared<lab::AudioContext>(false, true);
-    auto renderingNode = std::make_shared<lab::AudioRenderingNode>(*context.get(), device);
-    device->setRenderingNode(renderingNode);
-    context->setRenderingNode(renderingNode);
+    auto destinationNode = std::make_shared<lab::AudioDestinationNode>(*context.get(), device);
+    device->setDestinationNode(destinationNode);
+    context->setDestinationNode(destinationNode);
     
     const bool NoInput = false;
     const bool UseInput = true;
@@ -73,9 +73,9 @@ int main(int argc, char *argv[]) try
     }
     
     // device, context, and rendernode are cicrularly referenced, so break the cycle manually.
-    renderingNode.reset();
-    device->setRenderingNode(renderingNode);
-    context->setRenderingNode(renderingNode);
+    destinationNode.reset();
+    device->setDestinationNode(destinationNode);
+    context->setDestinationNode(destinationNode);
     return EXIT_SUCCESS;
 } 
 catch (const std::exception & e) 

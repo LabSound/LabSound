@@ -26,7 +26,7 @@ class AudioListener;
 class AudioNode;
 class AudioNodeInput;
 class AudioNodeOutput;
-class AudioRenderingNode;
+class AudioDestinationNode;
 class AudioScheduledSourceNode;
 class ContextGraphLock;
 class ContextRenderLock;
@@ -36,7 +36,7 @@ class AudioContext
 {
     friend class ContextGraphLock;
     friend class ContextRenderLock;
-    friend class AudioRenderingNode;
+    friend class AudioDestinationNode;
 
 public:
 
@@ -99,8 +99,8 @@ public:
 
     float sampleRate() const;
 
-    void setRenderingNode(std::shared_ptr<AudioRenderingNode> node);
-    std::shared_ptr<AudioRenderingNode> renderingNode();
+    void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
+    std::shared_ptr<AudioDestinationNode> destinationNode();
     std::shared_ptr<AudioListener> listener();
 
     // Debugging/Sanity Checking
@@ -155,7 +155,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to
     // be pulled even when they are not connected to anything.
-    // Only an AudioRenderingNode should call this.
+    // Only an AudioDestinationNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
     // graph management
@@ -225,7 +225,7 @@ private:
     void updateAutomaticPullNodes();
     void uninitialize();
 
-    std::shared_ptr<AudioRenderingNode> _renderingNode;
+    std::shared_ptr<AudioDestinationNode> __destinationNode;
 
     std::shared_ptr<AudioListener> m_listener;
 

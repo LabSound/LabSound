@@ -1,5 +1,4 @@
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #pragma once
@@ -95,7 +94,7 @@ protected:
     AudioStreamConfig _outConfig = {};
     AudioStreamConfig _inConfig = {};
     AudioSourceProvider* _sourceProvider = nullptr;
-    std::shared_ptr<AudioRenderingNode> _renderingNode;
+    std::shared_ptr<AudioDestinationNode> _destinationNode;
 
 public:
     AudioDevice(const AudioStreamConfig & inputConfig,
@@ -118,8 +117,8 @@ public:
         delete _sourceProvider;
     }
 
-    void setRenderingNode(std::shared_ptr<AudioRenderingNode> callback) { 
-        _renderingNode = callback; 
+    void setDestinationNode(std::shared_ptr<AudioDestinationNode> callback) { 
+        _destinationNode = callback; 
     }
 
     const AudioStreamConfig & getOutputConfig() const {
@@ -149,7 +148,7 @@ public:
     virtual void backendReinitialize() { stop(); }
 };
 
-class AudioRenderingNode : public AudioNode {
+class AudioDestinationNode : public AudioNode {
 protected:
     AudioContext * _context;
     SamplingInfo _last_info = {};
@@ -162,15 +161,15 @@ protected:
     std::shared_ptr<AudioDevice> _platformAudioDevice;
     
 public:
-    static const char* static_name() { return "AudioRenderingNode"; }
+    static const char* static_name() { return "AudioDestination"; }
     virtual const char* name() const override { return static_name(); }
     static AudioNodeDescriptor * desc();
 
-    explicit AudioRenderingNode(
+    explicit AudioDestinationNode(
         AudioContext& ac,
         std::shared_ptr<AudioDevice> device);
     
-    virtual ~AudioRenderingNode()
+    virtual ~AudioDestinationNode()
     {
         uninitialize();
     }

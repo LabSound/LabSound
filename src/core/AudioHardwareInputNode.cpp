@@ -46,8 +46,8 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
     // This used to be the function of a manual call to setFormat()
     if (m_sourceNumberOfChannels == 0)
     {
-        auto renderingNode = r.context()->renderingNode();
-        auto device = renderingNode->device();
+        auto destinationNode = r.context()->destinationNode();
+        auto device = destinationNode->device();
         auto inputConfig = device->getInputConfig();
         m_sourceNumberOfChannels = inputConfig.desired_channels;
         output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.

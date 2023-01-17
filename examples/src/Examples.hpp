@@ -35,7 +35,7 @@ struct ex_simple : public labsound_example
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *_context.get();
-        ac.disconnect(ac.renderingNode());
+        ac.disconnect(ac.destinationNode());
 
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
@@ -54,13 +54,12 @@ struct ex_simple : public labsound_example
             ContextRenderLock r(_context.get(), "ex_simple");
             musicClipNode->setBus(r, musicClip);
         }
-        //ac.connect(ac.renderingNode(), musicClipNode, 0, 0);
+        //ac.connect(ac.destinationNode(), musicClipNode, 0, 0);
         musicClipNode->schedule(0.0);
 
         // osc -> gain -> destination
         ac.connect(gain, oscillator, 0, 0);
-        ac.connect(ac.renderingNode(), gain, 0, 0);
-        //ac.connect(ac.destinationNode(), ac.renderingNode(), 0, 0);
+        ac.connect(ac.destinationNode(), gain, 0, 0);
 
         oscillator->frequency()->setValue(440.f);
         oscillator->setType(OscillatorType::SINE);
@@ -87,7 +86,7 @@ struct ex_play_file : public labsound_example
     virtual void play(int argc, char ** argv) override final
     {
         lab::AudioContext & ac = *_context.get();
-        ac.disconnect(ac.renderingNode());
+        ac.disconnect(ac.destinationNode());
 
         //auto musicClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
@@ -109,7 +108,7 @@ struct ex_play_file : public labsound_example
 
         // osc -> gain -> destination
         ac.connect(gain, musicClipNode, 0, 0);
-        ac.connect(ac.renderingNode(), gain, 0, 0);
+        ac.connect(ac.destinationNode(), gain, 0, 0);
 
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
@@ -117,7 +116,7 @@ struct ex_play_file : public labsound_example
         ac.synchronizeConnections();
 
         printf("------\n");
-        ac.debugTraverse(ac.renderingNode().get());
+        ac.debugTraverse(ac.destinationNode().get());
         printf("------\n");
 
         Wait(10000);
@@ -150,7 +149,7 @@ struct ex_osc_pop : public labsound_example
 
             // osc -> destination
             ac.connect(gain, oscillator, 0, 0);
-            ac.connect(ac.renderingNode(), gain, 0, 0);
+            ac.connect(ac.destinationNode(), gain, 0, 0);
 
             oscillator->frequency()->setValue(1000.f);
             oscillator->setType(OscillatorType::SINE);
@@ -176,7 +175,7 @@ struct ex_osc_pop : public labsound_example
         // @TODO the example app should have a set<shared_ptr<AudioNode>> so that the shared_ptrs
         // are not released until the example is finished.
 
-        ac.disconnect(ac.renderingNode());
+        ac.disconnect(ac.destinationNode());
         Wait(100);
     }
 };
@@ -204,7 +203,7 @@ struct ex_playback_events : public labsound_example
             ContextRenderLock r(&ac, "ex_playback_events");
             sampledAudio->setBus(r, musicClip);
         }
-        ac.connect(ac.renderingNode(), sampledAudio, 0, 0);
+        ac.connect(ac.destinationNode(), sampledAudio, 0, 0);
 
         sampledAudio->setOnEnded([]() {
             std::cout << "sampledAudio finished..." << std::endl;
@@ -238,8 +237,8 @@ struct ex_offline_rendering : public labsound_example
 
         const float recording_time_ms = 1000.f;
 
-        std::shared_ptr<lab::AudioRenderingNode> rn =
-            std::make_shared<lab::AudioRenderingNode>(ac,
+        std::shared_ptr<lab::AudioDestinationNode> rn =
+            std::make_shared<lab::AudioDestinationNode>(ac,
                 std::make_unique<lab::AudioDevice_Null>(inputConfig, offlineConfig));
 
         std::shared_ptr<OscillatorNode> oscillator;
@@ -317,10 +316,10 @@ struct ex_tremolo : public labsound_example
             //                                osc > context
             ac.connect(modulatorGain, modulator, 0, 0);
             ac.connectParam(osc->detune(), modulatorGain, 0);
-            ac.connect(ac.renderingNode(), osc, 0, 0);
+            ac.connect(ac.destinationNode(), osc, 0, 0);
         }
 
-        ac.debugTraverse(ac.renderingNode().get());
+        ac.debugTraverse(ac.destinationNode().get());
 
         Wait(5000);
     }
@@ -395,7 +394,7 @@ struct ex_frequency_modulation : public labsound_example
             ac.connect(feedbackTap, signalGain, 0, 0);  // Signal to Feedback
             ac.connect(chainDelay, feedbackTap, 0, 0);  // Feedback to Delay
             ac.connect(signalGain, chainDelay, 0, 0);  // Delay to signalGain
-            ac.connect(ac.renderingNode(), signalGain, 0, 0);  // signalGain to DAC
+            ac.connect(ac.destinationNode(), signalGain, 0, 0);  // signalGain to DAC
         }
 
         double now_in_ms = 0;
@@ -459,7 +458,7 @@ struct ex_runtime_graph_update : public labsound_example
                 // osc -> gain -> destination
                 ac.connect(gain, oscillator1, 0, 0);
                 ac.connect(gain, oscillator2, 0, 0);
-                ac.connect(ac.renderingNode(), gain, 0, 0);
+                ac.connect(ac.destinationNode(), gain, 0, 0);
 
                 oscillator1->setType(OscillatorType::SINE);
                 oscillator1->frequency()->setValue(220.f);
@@ -510,8 +509,8 @@ struct ex_microphone_loopback : public labsound_example
         lab::AudioContext& ac = *_context.get();
         ContextRenderLock r(&ac, "ex_microphone_loopback");
         std::shared_ptr<AudioHardwareInputNode> inputNode(
-                new AudioHardwareInputNode(ac, ac.renderingNode()->device()->sourceProvider()));
-        ac.connect(ac.renderingNode(), inputNode, 0, 0);
+                new AudioHardwareInputNode(ac, ac.destinationNode()->device()->sourceProvider()));
+        ac.connect(ac.destinationNode(), inputNode, 0, 0);
         Wait(10000);
     }
 };
@@ -541,7 +540,7 @@ struct ex_microphone_reverb : public labsound_example
                 ContextRenderLock r(&ac, "ex_microphone_reverb");
 
                 std::shared_ptr<AudioHardwareInputNode> inputNode(
-                        new AudioHardwareInputNode(ac, ac.renderingNode()->device()->sourceProvider()));
+                        new AudioHardwareInputNode(ac, ac.destinationNode()->device()->sourceProvider()));
 
                 convolve.reset(new ConvolverNode(ac));
                 convolve->setImpulse(impulseResponseClip);
@@ -551,7 +550,7 @@ struct ex_microphone_reverb : public labsound_example
 
                 ac.connect(convolve, inputNode, 0, 0);
                 ac.connect(wetGain, convolve, 0, 0);
-                ac.connect(ac.renderingNode(), wetGain, 0, 0);
+                ac.connect(ac.destinationNode(), wetGain, 0, 0);
             }
             
             _nodes.push_back(input);
@@ -596,7 +595,7 @@ struct ex_peak_compressor : public labsound_example
 
             peakComp = std::make_shared<PeakCompNode>(ac);
             ac.connect(peakComp, filter, 0, 0);
-            ac.connect(ac.renderingNode(), peakComp, 0, 0);
+            ac.connect(ac.destinationNode(), peakComp, 0, 0);
 
             kick_node->setBus(r, kick);
             ac.connect(filter, kick_node, 0, 0);
@@ -663,7 +662,7 @@ struct ex_stereo_panning : public labsound_example
             ac.connect(stereoPanner, audioClipNode, 0, 0);
             audioClipNode->schedule(0.0, -1); // -1 to loop forever
 
-            ac.connect(ac.renderingNode(), stereoPanner, 0, 0);
+            ac.connect(ac.destinationNode(), stereoPanner, 0, 0);
         }
 
         if (audioClipNode)
@@ -724,7 +723,7 @@ struct ex_hrtf_spatialization : public labsound_example
             ContextRenderLock r(&ac, "ex_hrtf_spatialization");
 
             panner->setPanningModel(PanningModel::HRTF);
-            ac.connect(ac.renderingNode(), panner, 0, 0);
+            ac.connect(ac.destinationNode(), panner, 0, 0);
 
             audioClipNode->setBus(r, audioClip);
             ac.connect(panner, audioClipNode, 0, 0);
@@ -814,7 +813,7 @@ struct ex_convolution_reverb : public labsound_example
 
             voiceNode->schedule(0.0);
 
-            ac.connect(ac.renderingNode(), outputGain, 0, 0);
+            ac.connect(ac.destinationNode(), outputGain, 0, 0);
         }
 
         _nodes.push_back(convolve);
@@ -861,7 +860,7 @@ struct ex_misc : public labsound_example
             pingping->SetFeedback(.75f);
             pingping->SetDelayIndex(lab::TempoSync::TS_16);
 
-            ac.connect(ac.renderingNode(), pingping->output, 0, 0);
+            ac.connect(ac.destinationNode(), pingping->output, 0, 0);
 
             audioClipNode->setBus(r, audioClip);
 
@@ -966,7 +965,7 @@ struct ex_dalek_filter : public labsound_example
 
 #ifdef USE_LIVE
             std::shared_ptr<AudioHardwareInputNode> inputNode(
-                    new AudioHardwareInputNode(ac, ac.renderingNode()->device()->sourceProvider()));
+                    new AudioHardwareInputNode(ac, ac.destinationNode()->device()->sourceProvider()));
             ac.connect(vcInverter1, inputNode, 0, 0);
             ac.connect(vcDiode4, inputNode, 0, 0);
 #else
@@ -997,7 +996,7 @@ struct ex_dalek_filter : public labsound_example
             ac.connect(compressor, vcDiode4, 0, 0);
 
             ac.connect(outGain, compressor, 0, 0);
-            ac.connect(ac.renderingNode(), outGain, 0, 0);
+            ac.connect(ac.destinationNode(), outGain, 0, 0);
         }
 
         _nodes.push_back(inputNode);
@@ -1168,7 +1167,7 @@ struct ex_redalert_synthesis : public labsound_example
 
             // filterSum --> destination
             ac.connectParam(filterSum->gain(), outputGainFunction, 0);
-            ac.connect(ac.renderingNode(), filterSum, 0, 0);
+            ac.connect(ac.destinationNode(), filterSum, 0, 0);
         }
 
         _nodes.push_back(sweep);
@@ -1398,7 +1397,7 @@ struct ex_wavepot_dsp : public labsound_example
             envelope->gate()->setValue(1.f);
 
             ac.connect(envelope, grooveBox, 0, 0);
-            ac.connect(ac.renderingNode(), envelope, 0, 0);
+            ac.connect(ac.destinationNode(), envelope, 0, 0);
         }
 
         _nodes.push_back(grooveBox);
@@ -1436,7 +1435,7 @@ struct ex_granulation_node : public labsound_example
         }
 
         ac.connect(gain, granulation_node, 0, 0);
-        ac.connect(ac.renderingNode(), gain, 0, 0);
+        ac.connect(ac.destinationNode(), gain, 0, 0);
 
         granulation_node->start(0.0f);
 
@@ -1466,7 +1465,7 @@ struct ex_poly_blep : public labsound_example
 
         gain->gain()->setValue(1.0f);
         ac.connect(gain, polyBlep, 0, 0);
-        ac.connect(ac.renderingNode(), gain, 0, 0);
+        ac.connect(ac.destinationNode(), gain, 0, 0);
 
         polyBlep->frequency()->setValue(220.f);
         polyBlep->setType(PolyBLEPType::TRIANGLE);

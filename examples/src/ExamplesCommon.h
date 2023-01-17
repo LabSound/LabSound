@@ -88,7 +88,7 @@ struct labsound_example
 
     void AddRecorder(std::shared_ptr<lab::AudioNode> node)
     {
-        _recorder.reset(new RecorderNode(*_context.get(), _context->renderingNode()->device()->getOutputConfig()));
+        _recorder.reset(new RecorderNode(*_context.get(), _context->destinationNode()->device()->getOutputConfig()));
         _context->addAutomaticPullNode(_recorder);
         _context->connect(_recorder, node, 0, 0);
         _recorder->startRecording();

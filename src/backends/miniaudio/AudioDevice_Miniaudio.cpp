@@ -369,7 +369,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
             // generate new data
-            _renderingNode->render(sourceProvider(), _inputBus, _renderBus, kRenderQuantum, samplingInfo);
+            _destinationNode->render(sourceProvider(), _inputBus, _renderBus, kRenderQuantum, samplingInfo);
             _remainder = kRenderQuantum;
         }
     }

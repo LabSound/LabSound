@@ -181,7 +181,7 @@ void LabSoundRegistryInit(lab::NodeRegistry& reg)
             [](AudioNode* n) { delete n; });
 
         reg.Register(
-            AudioRenderingNode::static_name(), AudioRenderingNode::desc(),
+            AudioDestinationNode::static_name(), AudioDestinationNode::desc(),
             [](AudioContext& ac)->AudioNode* { return nullptr; },
             [](AudioNode* n) { delete n; });
         
