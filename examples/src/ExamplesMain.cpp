@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) try
     Example examples[] = {
         { Passing::pass, Skip::no, new ex_devices(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_play_file(context, NoInput) },
-        { Passing::pass, Skip::no, new ex_simple(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_simple(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_osc_pop(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_playback_events(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_offline_rendering(context, NoInput) },
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_peak_compressor(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_stereo_panning(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_hrtf_spatialization(context, NoInput) },
-        { Passing::pass, Skip::yes, new ex_convolution_reverb(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_convolution_reverb(context, NoInput) }, // note: exhibits severe popping
         { Passing::pass, Skip::yes, new ex_misc(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_dalek_filter(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_redalert_synthesis(context, NoInput) },

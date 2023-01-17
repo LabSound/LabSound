@@ -36,6 +36,7 @@ struct ex_simple : public labsound_example
     {
         lab::AudioContext& ac = *_context.get();
         ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
         if (!musicClip)
@@ -69,7 +70,7 @@ struct ex_simple : public labsound_example
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
 
-        Wait(6000);
+        Wait(2000);
     }
 };
 
@@ -87,6 +88,7 @@ struct ex_play_file : public labsound_example
     {
         lab::AudioContext & ac = *_context.get();
         ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         //auto musicClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         auto musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
@@ -119,7 +121,7 @@ struct ex_play_file : public labsound_example
         ac.debugTraverse(ac.destinationNode().get());
         printf("------\n");
 
-        Wait(10000);
+        Wait(1000.f * musicClip->length() / musicClip->sampleRate());
     }
 };
 
@@ -138,6 +140,8 @@ struct ex_osc_pop : public labsound_example
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<OscillatorNode> oscillator;
         std::shared_ptr<GainNode> gain;
@@ -193,6 +197,8 @@ struct ex_playback_events : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         auto musicClip = MakeBusFromSampleFile("samples/mono-music-clip.wav", argc, argv);
         if (!musicClip)
@@ -229,6 +235,9 @@ struct ex_offline_rendering : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
+
         AudioStreamConfig offlineConfig;
         offlineConfig.device_index = 0;
         offlineConfig.desired_samplerate = LABSOUND_DEFAULT_SAMPLERATE;
@@ -292,6 +301,8 @@ struct ex_tremolo : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -340,6 +351,8 @@ struct ex_frequency_modulation : public labsound_example
         UniformRandomGenerator fmrng;
 
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<OscillatorNode> modulator;
         std::shared_ptr<GainNode> modulatorGain;
@@ -447,6 +460,8 @@ struct ex_runtime_graph_update : public labsound_example
 
         {
             lab::AudioContext& ac = *_context.get();
+            ac.disconnect(ac.destinationNode());
+            ac.synchronizeConnections();
 
             {
                 oscillator1 = std::make_shared<OscillatorNode>(ac);
@@ -507,6 +522,9 @@ struct ex_microphone_loopback : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
+
         ContextRenderLock r(&ac, "ex_microphone_loopback");
         std::shared_ptr<AudioHardwareInputNode> inputNode(
                 new AudioHardwareInputNode(ac, ac.destinationNode()->device()->sourceProvider()));
@@ -529,6 +547,8 @@ struct ex_microphone_reverb : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         {
             std::shared_ptr<AudioBus> impulseResponseClip =
@@ -574,6 +594,8 @@ struct ex_peak_compressor : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<AudioBus> kick = MakeBusFromSampleFile("samples/kick.wav", argc, argv);
         std::shared_ptr<AudioBus> hihat = MakeBusFromSampleFile("samples/hihat.wav", argc, argv);
@@ -650,6 +672,8 @@ struct ex_stereo_panning : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
@@ -705,7 +729,9 @@ struct ex_hrtf_spatialization : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
-        
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
+
         if (!ac.loadHrtfDatabase("hrtf")) {
             std::string path = std::string(SAMPLE_SRC_DIR) + "/hrtf";
             if (!ac.loadHrtfDatabase(path)) {
@@ -769,6 +795,8 @@ struct ex_convolution_reverb : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<AudioBus> impulseResponseClip = MakeBusFromSampleFile("impulse/cardiod-rear-levelled.wav", argc, argv);
         std::shared_ptr<AudioBus> voiceClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
@@ -838,6 +866,8 @@ struct ex_misc : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::array<int, 8> majorScale = {0, 2, 4, 5, 7, 9, 11, 12};
         std::array<int, 8> naturalMinorScale = {0, 2, 3, 5, 7, 9, 11, 12};
@@ -898,6 +928,8 @@ struct ex_dalek_filter : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
 #ifndef USE_LIVE
         auto audioClip = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
@@ -1031,6 +1063,8 @@ struct ex_redalert_synthesis : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<FunctionNode> sweep;
         std::shared_ptr<FunctionNode> outputGainFunction;
@@ -1327,6 +1361,8 @@ struct ex_wavepot_dsp : public labsound_example
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<FunctionNode> grooveBox;
         std::shared_ptr<ADSRNode> envelope;
@@ -1418,6 +1454,8 @@ struct ex_granulation_node : public labsound_example
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         auto grain_source = MakeBusFromSampleFile("samples/voice.ogg", argc, argv);
         if (!grain_source)
@@ -1459,6 +1497,8 @@ struct ex_poly_blep : public labsound_example
     virtual void play(int argc, char** argv) override final
     {
         lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
 
         std::shared_ptr<PolyBLEPNode> polyBlep = std::make_shared<PolyBLEPNode>(ac);
         std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
