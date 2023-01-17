@@ -22,10 +22,10 @@ int rt_audio_callback(
     unsigned int nBufferFrames, double streamTime,
     RtAudioStreamStatus status, void * userData)
 {
-    AudioDevice_RtAudio * self = reinterpret_cast<AudioDevice_RtAudio *>(userData);
+    AudioDevice_RtAudio * device = reinterpret_cast<AudioDevice_RtAudio *>(userData);
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
-    memset(fltOutputBuffer, 0, nBufferFrames * self->getOutputConfig().desired_channels * sizeof(float));
-    self->render(self->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
+    memset(fltOutputBuffer, 0, nBufferFrames * device->getOutputConfig().desired_channels * sizeof(float));
+    device->render(device->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
     return 0;
 }
 
@@ -251,7 +251,9 @@ bool AudioDevice_RtAudio::isRunning() const
 }
 
 
+// called by RtAudio periodically to get audio data.
 // Pulls on our provider to get rendered audio stream.
+//
 void AudioDevice_RtAudio::render(
     AudioSourceProvider* provider,
     int numberOfFrames, void * outputBuffer, void * inputBuffer)
@@ -311,7 +313,8 @@ void AudioDevice_RtAudio::render(
     samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
     // Pull on the graph
-    _renderingNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
+    if (_renderingNode)
+        _renderingNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
     if (_outConfig.desired_channels)

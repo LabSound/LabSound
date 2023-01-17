@@ -75,15 +75,12 @@ struct labsound_example
 
     std::vector<std::shared_ptr<lab::AudioNode>> _nodes;
     std::vector<std::shared_ptr<lab::PowerMonitorNode>> _powerNodes;
-    std::unique_ptr<lab::AudioContext> context;
+    std::shared_ptr<lab::AudioContext> _context;
     std::shared_ptr<lab::RecorderNode> _recorder;
 
-    labsound_example(std::shared_ptr<lab::AudioDevice> device, bool with_input)
+    labsound_example(std::shared_ptr<lab::AudioContext> context, bool with_input)
+    : _context(context)
     {
-        context = std::make_unique<lab::AudioContext>(false, true);
-        std::shared_ptr<lab::AudioRenderingNode> rn(new lab::AudioRenderingNode(*context.get(), device));
-        rn->device()->setRenderingNode(rn.get());
-        context->setRenderingNode(rn);
     }
     virtual ~labsound_example() = default;    
 
@@ -91,17 +88,16 @@ struct labsound_example
 
     void AddRecorder(std::shared_ptr<lab::AudioNode> node)
     {
-        lab::AudioContext& ac = *context.get();
-        _recorder.reset(new RecorderNode(ac, ac.renderingNode()->device()->getOutputConfig()));
-        context->addAutomaticPullNode(_recorder);
-        context->connect(_recorder, node, 0, 0);
+        _recorder.reset(new RecorderNode(*_context.get(), _context->renderingNode()->device()->getOutputConfig()));
+        _context->addAutomaticPullNode(_recorder);
+        _context->connect(_recorder, node, 0, 0);
         _recorder->startRecording();
     }
    
    void StopRecording(const std::string& wav_out_path)
     {
        _recorder->stopRecording();
-       context->removeAutomaticPullNode(_recorder);
+       _context->removeAutomaticPullNode(_recorder);
        _recorder->writeRecordingToWav(wav_out_path.c_str(), false);
    }
 
@@ -132,9 +128,9 @@ struct labsound_example
     
     void AddMonitorNodes() {
         for (auto n : _nodes) {
-            std::shared_ptr<lab::PowerMonitorNode> pn(new PowerMonitorNode(*context.get()));
-            context->connect(pn, n, 0, 0);
-            context->addAutomaticPullNode(pn);
+            std::shared_ptr<lab::PowerMonitorNode> pn(new PowerMonitorNode(*_context.get()));
+            _context->connect(pn, n, 0, 0);
+            _context->addAutomaticPullNode(pn);
             _powerNodes.push_back(pn);
         }
     }

@@ -98,7 +98,6 @@ void lab::pull_graph(
 
 namespace lab {
 
-
 AudioRenderingNode::AudioRenderingNode(
     AudioContext& ac,
     std::shared_ptr<AudioDevice> device)
@@ -125,6 +124,19 @@ AudioRenderingNode::AudioRenderingNode(
     // addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
 
     initialize();
+}
+
+void AudioRenderingNode::render(AudioSourceProvider* provider,
+        AudioBus * src, AudioBus * dst,
+        int frames,
+        const SamplingInfo & info)
+{
+    ProfileScope selfProfile(_self->totalTime);
+    ProfileScope profile(_self->graphTime);
+    pull_graph(_context, input(0).get(), src, dst, frames, info, provider);
+    _last_info = info;
+    profile.finalize();
+    selfProfile.finalize();
 }
 
 void AudioRenderingNode::offlineRender(AudioBus * dst, size_t framesToProcess)

@@ -27,32 +27,36 @@ int main(int argc, char *argv[]) try
     _inputConfig = config.first;
     _outputConfig = config.second;
     std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(_inputConfig, _outputConfig));
+    auto context = std::make_shared<lab::AudioContext>(false, true);
+    auto renderingNode = std::make_shared<lab::AudioRenderingNode>(*context.get(), device);
+    device->setRenderingNode(renderingNode);
+    context->setRenderingNode(renderingNode);
     
     const bool NoInput = false;
     const bool UseInput = true;
     
     Example examples[] = {
-        { Passing::pass, Skip::no, new ex_devices(device, NoInput) },
-        { Passing::pass, Skip::no, new ex_play_file(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_simple(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_osc_pop(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_playback_events(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_offline_rendering(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_tremolo(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_frequency_modulation(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_runtime_graph_update(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_microphone_loopback(device, UseInput) },
-        { Passing::pass, Skip::yes, new ex_microphone_reverb(device, UseInput) },
-        { Passing::pass, Skip::yes, new ex_peak_compressor(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_stereo_panning(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_hrtf_spatialization(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_convolution_reverb(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_misc(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_dalek_filter(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_redalert_synthesis(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_wavepot_dsp(device, NoInput) },
-        { Passing::pass, Skip::yes, new ex_granulation_node(device, NoInput) }, // note: node is under development
-        { Passing::pass, Skip::yes, new ex_poly_blep(device, NoInput) }
+        { Passing::pass, Skip::no, new ex_devices(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_play_file(context, NoInput) },
+        { Passing::pass, Skip::no, new ex_simple(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_osc_pop(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_playback_events(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_offline_rendering(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_tremolo(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_frequency_modulation(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_runtime_graph_update(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_microphone_loopback(context, UseInput) },
+        { Passing::pass, Skip::yes, new ex_microphone_reverb(context, UseInput) },
+        { Passing::pass, Skip::yes, new ex_peak_compressor(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_stereo_panning(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_hrtf_spatialization(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_convolution_reverb(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_misc(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_dalek_filter(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_redalert_synthesis(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_wavepot_dsp(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_granulation_node(context, NoInput) }, // note: node is under development
+        { Passing::pass, Skip::yes, new ex_poly_blep(context, NoInput) }
     };
 
     static constexpr int iterations = 1;
@@ -68,6 +72,10 @@ int main(int argc, char *argv[]) try
         delete example.example;
     }
     
+    // device, context, and rendernode are cicrularly referenced, so break the cycle manually.
+    renderingNode.reset();
+    device->setRenderingNode(renderingNode);
+    context->setRenderingNode(renderingNode);
     return EXIT_SUCCESS;
 } 
 catch (const std::exception & e) 

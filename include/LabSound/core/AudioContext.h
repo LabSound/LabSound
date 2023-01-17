@@ -99,7 +99,7 @@ public:
 
     float sampleRate() const;
 
-    void setRenderingNode(std::shared_ptr<AudioRenderingNode> device);
+    void setRenderingNode(std::shared_ptr<AudioRenderingNode> node);
     std::shared_ptr<AudioRenderingNode> renderingNode();
     std::shared_ptr<AudioListener> listener();
 

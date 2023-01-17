@@ -48,8 +48,6 @@ struct AudioStreamConfig
     float desired_samplerate{0};
 };
 
-
-
 //-------------------------------------------
 //   Audio Device Configuration Settings
 //-------------------------------------------
@@ -91,14 +89,13 @@ void pull_graph(AudioContext * ctx,
                 const SamplingInfo & info,
                 AudioSourceProvider * optional_hardware_input = nullptr);
 
-
 class AudioDevice
 {
 protected:
     AudioStreamConfig _outConfig = {};
     AudioStreamConfig _inConfig = {};
     AudioSourceProvider* _sourceProvider = nullptr;
-    AudioRenderingNode* _renderingNode = nullptr;
+    std::shared_ptr<AudioRenderingNode> _renderingNode;
 
 public:
     AudioDevice(const AudioStreamConfig & inputConfig,
@@ -121,8 +118,9 @@ public:
         delete _sourceProvider;
     }
 
-    void setRenderingNode(AudioRenderingNode* callback) { _renderingNode = callback; }
-
+    void setRenderingNode(std::shared_ptr<AudioRenderingNode> callback) { 
+        _renderingNode = callback; 
+    }
 
     const AudioStreamConfig & getOutputConfig() const {
         return _outConfig; }
@@ -182,15 +180,7 @@ public:
     void render(AudioSourceProvider* provider,
                 AudioBus * src, AudioBus * dst,
                 int frames,
-                const SamplingInfo & info)
-    {
-        ProfileScope selfProfile(_self->totalTime);
-        ProfileScope profile(_self->graphTime);
-        pull_graph(_context, input(0).get(), src, dst, frames, info, provider);
-        _last_info = info;
-        profile.finalize(); // ensure profile is not prematurely destructed
-        selfProfile.finalize();
-    }
+                const SamplingInfo & info);
     
     
     void offlineRender(AudioBus * dst, size_t framesToProcess);
