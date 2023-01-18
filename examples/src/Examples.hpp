@@ -796,28 +796,28 @@ struct ex_hrtf_spatialization : public labsound_example
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);
-        std::cout << "Sample Rate is: " << context->sampleRate() << std::endl;
-        std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(ac);
-
-        {
-            ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
-
-            panner->setPanningModel(PanningModel::HRTF);
-            context->connect(context->device(), panner, 0, 0);
-
-            audioClipNode->setBus(r, audioClip);
-            context->connect(panner, audioClipNode, 0, 0);
-            audioClipNode->schedule(0.0, -1); // -1 to loop forever
-        }
-
         if (audioClipNode)
         {
+            std::shared_ptr<PannerNode> panner = std::make_shared<PannerNode>(ac);
             _nodes.push_back(audioClipNode);
             _nodes.push_back(panner);
 
+
+            panner->setPanningModel(PanningModel::EQUALPOWER);  // HRTF);
+            {
+                ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
+                audioClipNode->setBus(r, audioClip);
+            }
+            audioClipNode->schedule(0.0, -1);  // -1 to loop forever
+            context->connect(panner, audioClipNode, 0, 0);
+            context->connect(context->device(), panner, 0, 0);
+
             context->listener()->setPosition({0, 0, 0});
             panner->setVelocity(4, 0, 0);
-            
+
+            context->synchronizeConnections();
+            //context->debugTraverse(context->device().get());
+
             const int seconds = 10;
             float halfTime = seconds * 0.5f;
             for (float i = 0; i < seconds; i += 0.01f)
@@ -1360,7 +1360,7 @@ struct ex_wavepot_dsp : public labsound_example
         float oldy2 = 0;
         float oldy3 = 0;
 
-        float p, k, t1, t2, r, x;
+        float p = 0, k = 0, t1 = 0, t2 = 0, r = 0, x = 0;
 
         float process(float cutoff_, float resonance_, float sample_, float sampleRate)
         {

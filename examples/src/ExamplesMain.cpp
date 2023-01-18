@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_microphone_reverb() },
         { Passing::pass, Skip::yes, new ex_peak_compressor() },
         { Passing::pass, Skip::yes, new ex_stereo_panning() },
-        { Passing::pass, Skip::yes, new ex_hrtf_spatialization() },
+        { Passing::pass, Skip::no, new ex_hrtf_spatialization() },
         { Passing::pass, Skip::yes, new ex_convolution_reverb() },
         { Passing::pass, Skip::yes, new ex_misc() },
         { Passing::pass, Skip::yes, new ex_dalek_filter() },

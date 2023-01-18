@@ -78,7 +78,7 @@ void WaveShaperNode::processBuffer(ContextRenderLock&, const float* source, floa
         const float input = source[i];
 
         // Calculate an index based on input -1 -> +1 with 0 being at the center of the curve data.
-        int index = (curveLength * (input + 1)) / 2;
+        int index = static_cast<int>( (curveLength * (input + 1)) / 2 );
 
         // Clip index to the input range of the curve.
         // This takes care of input outside of nominal range -1 -> +1
