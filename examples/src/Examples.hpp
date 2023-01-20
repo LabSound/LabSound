@@ -803,7 +803,7 @@ struct ex_hrtf_spatialization : public labsound_example
             _nodes.push_back(panner);
 
 
-            panner->setPanningModel(PanningModel::EQUALPOWER);  // HRTF);
+            panner->setPanningModel(PanningModel::HRTF);
             {
                 ContextRenderLock r(context.get(), "ex_hrtf_spatialization");
                 audioClipNode->setBus(r, audioClip);

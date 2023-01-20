@@ -32,12 +32,17 @@ void FFTConvolver::process(FFTFrame * fftKernel, const float * sourceP, float * 
     if (!isGood)
         return;
 
+    // for testing, disable the convolver
+    //for (int i = 0; i < framesToProcess; ++i)
+    //    destP[i] = sourceP[i];
+    //return;
+
     int numberOfDivisions = halfSize <= framesToProcess ? (framesToProcess / halfSize) : 1;
     int divisionSize = numberOfDivisions == 1 ? framesToProcess : halfSize;
 
     for (int i = 0; i < numberOfDivisions; ++i, sourceP += divisionSize, destP += divisionSize)
     {
-        // Copy samples to input buffer (note contraint above!)
+        // Copy samples to input buffer (note constraint above!)
         float * inputP = m_inputBuffer.data();
 
         // Sanity check

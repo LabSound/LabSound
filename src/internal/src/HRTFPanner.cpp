@@ -165,8 +165,8 @@ void HRTFPanner::pan(ContextRenderLock & r,
     /// so something needs to be changed to allow for partial buffers
 
     double azimuthBlend;
-    int desiredAzimuthIndex = calculateDesiredAzimuthIndexAndBlend(
-                                    database, azimuth, azimuthBlend);
+    int desiredAzimuthIndex = 
+        calculateDesiredAzimuthIndexAndBlend(database, azimuth, azimuthBlend);
 
     // Initially snap azimuth and elevation values to first values encountered.
     if (m_azimuthIndex1 == UninitializedAzimuth)
