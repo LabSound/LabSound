@@ -16,7 +16,7 @@ class HRTFPanner : public Panner
 {
 
 public:
-    HRTFPanner(const float sampleRate);
+    HRTFPanner(float sampleRate);
     virtual ~HRTFPanner();
 
     // Panner
@@ -31,6 +31,7 @@ public:
 
     uint32_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
     static uint32_t fftSizeForSampleRate(float sampleRate);
+    static uint32_t fftSizeForSampleLength(int sampleLength);
 
     virtual double tailTime(ContextRenderLock & r) const override;
     virtual double latencyTime(ContextRenderLock & r) const override;

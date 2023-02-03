@@ -197,10 +197,10 @@ public:
     // Lazily creates the singleton HRTFDatabaseLoader (if not already created) and starts loading asynchronously (when created the first time).
     // Returns the singleton HRTFDatabaseLoader.
     // Must be called from the main thread.
-    static std::shared_ptr<HRTFDatabaseLoader> MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath);
+    static HRTFDatabaseLoader* MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath);
 
     // Returns the singleton HRTFDatabaseLoader.
-    static std::shared_ptr<HRTFDatabaseLoader> loader() { return s_loader; }
+    static HRTFDatabaseLoader* loader() { return s_loader; }
 
     // Both constructor and destructor must be called from the main thread.
     ~HRTFDatabaseLoader();
@@ -231,7 +231,7 @@ private:
     static void databaseLoaderEntry(HRTFDatabaseLoader * threadData);
 
 
-    static std::shared_ptr<HRTFDatabaseLoader> s_loader;  // singleton
+    static HRTFDatabaseLoader* s_loader;  // convenience pointer, owned elsewhere
     std::unique_ptr<HRTFDatabase> m_hrtfDatabase;
 
     // Holding a m_threadLock is required when accessing m_databaseLoaderThread.

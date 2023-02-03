@@ -115,13 +115,13 @@ void HRTFDatabase::getKernelsFromAzimuthElevation(double azimuthBlend,
 
 
 // Singleton
-std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::s_loader;
+HRTFDatabaseLoader* HRTFDatabaseLoader::s_loader;
 
-std::shared_ptr<HRTFDatabaseLoader> HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath)
+HRTFDatabaseLoader* HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath)
 {
     if (!s_loader)
     {
-        s_loader = std::make_shared<HRTFDatabaseLoader>(sampleRate, searchPath);
+        s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
         s_loader->loadAsynchronously();
     }
     return s_loader;
@@ -132,7 +132,7 @@ HRTFDatabaseLoader::HRTFDatabaseLoader(float sampleRate, const std::string & sea
     , m_databaseSampleRate(sampleRate)
     , searchPath(searchPath)
 {
-    ASSERT(!s_loader.get());
+    s_loader = this;
 }
 
 HRTFDatabaseLoader::~HRTFDatabaseLoader()
@@ -143,9 +143,9 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
 
     m_hrtfDatabase.reset();
 
-    ASSERT(this == s_loader.get());
+    ASSERT(this == s_loader);
 
-    s_loader.reset();
+    s_loader = nullptr;
 }
 
 // Asynchronously load the database in this thread.
@@ -538,7 +538,7 @@ const double MaxDelayTimeSeconds = 0.002;
 const int UninitializedAzimuth = -1;
 const uint32_t RenderingQuantum = AudioNode::ProcessingSizeInFrames;
 
-HRTFPanner::HRTFPanner(const float sampleRate)
+HRTFPanner::HRTFPanner(float sampleRate)
     : Panner(sampleRate, PanningModel::HRTF)
     , m_crossfadeSelection(CrossfadeSelection1)
     , m_azimuthIndex1(UninitializedAzimuth)
@@ -571,6 +571,24 @@ uint32_t HRTFPanner::fftSizeForSampleRate(float sampleRate)
     // So for sample rates around 44.1KHz an FFT size of 512 is good. We double the FFT-size only for sample rates at least double this.
     ASSERT(sampleRate >= 44100 && sampleRate <= 96000.0);
     return (sampleRate < 88200.0) ? 512 : 1024;
+}
+
+//static 
+uint32_t HRTFPanner::fftSizeForSampleLength(int sampleLength)
+{
+    // originally, this routine assumed 512 sample length impulse responses
+    // truncated to 256 samples, and returned an fft size of 512 for those samples.
+    // to match the reasoning, if the bus is not a power of 2 size, round down to the
+    // previous power of 2 size.
+    // return double the power of 2 size of the bus.
+    // the original logic also doubled the fft size for sample rates >= 88200,
+    // but that feels a bit nonsense, so it's not emulated here.
+
+    int s = RoundNextPow2(sampleLength);
+    if (s > sampleLength)
+        s /= 2;
+
+    return s * 2;
 }
 
 void HRTFPanner::reset()
