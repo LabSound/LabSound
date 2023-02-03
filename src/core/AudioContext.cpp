@@ -10,7 +10,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
-#include "internal/HRTFDatabaseLoader.h"
+#include "internal/HRTFDatabase.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 

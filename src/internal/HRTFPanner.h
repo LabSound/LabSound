@@ -12,26 +12,25 @@
 namespace lab
 {
 
-class HRTFDatabase;
-
 class HRTFPanner : public Panner
 {
-    uint32_t _fftSize;
-    
+
 public:
-    HRTFPanner(uint32_t sampleRate, uint32_t fftSize);
+    HRTFPanner(const float sampleRate);
     virtual ~HRTFPanner();
 
     // Panner
     virtual void pan(ContextRenderLock & r,
                      double azimuth, double elevation,
-                     const AudioBus& inputBus, AudioBus& outputBus,
+                     const AudioBus & inputBus, AudioBus & outputBus,
                      int busOffset,
-                     int framesToProcess) override;
+                     int framesToProcess)
+        override;
+
     virtual void reset() override;
 
-    uint32_t fftSize() const { return _fftSize; }
-    static uint32_t fftSizeForSampleLength(int sampleLength);
+    uint32_t fftSize() const { return fftSizeForSampleRate(m_sampleRate); }
+    static uint32_t fftSizeForSampleRate(float sampleRate);
 
     virtual double tailTime(ContextRenderLock & r) const override;
     virtual double latencyTime(ContextRenderLock & r) const override;
@@ -39,8 +38,7 @@ public:
 private:
     // Given an azimuth angle in the range -180 -> +180, returns the corresponding azimuth index for the database,
     // and azimuthBlend which is an interpolation value from 0 -> 1.
-    int calculateDesiredAzimuthIndexAndBlend(HRTFDatabase * database,
-                                             double azimuth, double & azimuthBlend);
+    int calculateDesiredAzimuthIndexAndBlend(double azimuth, double & azimuthBlend);
 
     // We maintain two sets of convolvers for smooth cross-faded interpolations when
     // then azimuth and elevation are dynamically changing.

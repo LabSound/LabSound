@@ -14,6 +14,12 @@
 #include <cstring>
 #include <mutex>
 
+
+#if defined(_MSC_VER)
+// suppress warnings about fopen
+#pragma warning(disable : 4996)
+#endif
+
 namespace detail
 {
 std::shared_ptr<lab::AudioBus> LoadInternal(nqr::AudioData * audioData, bool mixToMono)

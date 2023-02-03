@@ -18,7 +18,7 @@
 #include "internal/Cone.h"
 #include "internal/Distance.h"
 #include "internal/EqualPowerPanner.h"
-#include "internal/HRTFDatabaseLoader.h"
+#include "internal/HRTFDatabase.h"
 #include "internal/HRTFPanner.h"
 #include "internal/Panner.h"
 
