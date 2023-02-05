@@ -264,7 +264,9 @@ bool HRTFElevation::calculateSymmetricKernelsForAzimuthElevation(HRTFDatabaseInf
     return true;
 }
 
-bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info, int azimuth, int elevation, std::shared_ptr<HRTFKernel> & kernelL, std::shared_ptr<HRTFKernel> & kernelR)
+bool HRTFElevation::calculateKernelsForAzimuthElevation(
+    HRTFDatabaseInfo * info, int azimuth, int elevation, 
+    std::shared_ptr<HRTFKernel> & kernelL, std::shared_ptr<HRTFKernel> & kernelR)
 {
     // Valid values for azimuth are 0 -> 345 in 15 degree increments.
     // Valid values for elevation are -45 -> +90 in 15 degree increments.
@@ -285,7 +287,8 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(HRTFDatabaseInfo * info,
 
     // Located in $searchPath / [format] .wav
     // @tofix - this assumes we want to open this path and read via libnyquist fopen.
-    // ... will need to change for Android. Maybe MakeBusFromInternalResource / along with a LoadInternalResources requried by LabSound
+    // ... will need to change for Android. Maybe MakeBusFromInternalResource / along 
+    // with a LoadInternalResources required by LabSound
     sprintf(tempStr, "%03d_P%03d", azimuth, positiveElevation);
     std::string resourceName = info->searchPath + "/" + "IRC_" + info->subjectName + "_C_R0195_T" + tempStr + ".wav";
 
@@ -344,7 +347,12 @@ std::unique_ptr<HRTFElevation> HRTFElevation::createForSubject(HRTFDatabaseInfo 
         int maxElevation = maxElevations[rawIndex];
         int actualElevation = min(elevation, maxElevation);
 
-        bool success = calculateKernelsForAzimuthElevation(info, rawIndex * AzimuthSpacing, actualElevation, kernelListL->at(interpolatedIndex), kernelListR->at(interpolatedIndex));
+        bool success = calculateKernelsForAzimuthElevation(
+            info,
+            rawIndex * AzimuthSpacing, 
+            actualElevation, kernelListL->at(interpolatedIndex), 
+            kernelListR->at(interpolatedIndex));
+
         if (!success)
             return nullptr;
 
@@ -525,6 +533,7 @@ std::unique_ptr<HRTFKernel> MakeInterpolatedKernel(HRTFKernel * kernel1, HRTFKer
         return 0;
 
     float frameDelay = (1 - x) * kernel1->frameDelay() + x * kernel2->frameDelay();
+    //kernel1->fftFrame()->print();
 
     std::unique_ptr<FFTFrame> interpolatedFrame = FFTFrame::createInterpolatedFrame(*kernel1->fftFrame(), *kernel2->fftFrame(), x);
     return std::unique_ptr<HRTFKernel>(new HRTFKernel(std::move(interpolatedFrame), frameDelay, sampleRate1));

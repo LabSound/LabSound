@@ -73,6 +73,7 @@ public:
         , m_frameDelay(frameDelay)
         , m_sampleRate(sampleRate)
     {
+        //m_fftFrame->print();
     }
 
     FFTFrame * fftFrame() { return m_fftFrame.get(); }

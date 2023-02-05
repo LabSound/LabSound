@@ -235,19 +235,25 @@ void FFTFrame::print()
     FFTFrame & frame = *this;
     float * realP = frame.realData();
     float * imagP = frame.imagData();
-    LOG_INFO("**** \n");
-    LOG_INFO("DC = %f : nyquist = %f\n", realP[0], imagP[0]);
+    printf("**** \n");
+    printf("DC = %f : nyquist = %f\n", realP[0], imagP[0]);
 
     int n = m_FFTSize / 2;
 
-    for (int i = 1; i < n; i++)
+    for (int i = 1; i < n; i += 16)
     {
-        double mag = sqrt(realP[i] * realP[i] + imagP[i] * imagP[i]);
-        double phase = atan2(realP[i], imagP[i]);
-
-        LOG_INFO("[%d] (%f %f)\n", i, mag, phase);
+        printf("[%d] ", i);
+        for (int j = 0; j < 16; ++j)
+        {
+            double mag = sqrt(realP[i] * realP[i] + imagP[i] * imagP[i]);
+            double phase = atan2(realP[i], imagP[i]);
+            printf("(%f, %f), ", mag, phase);
+            if (i + j > n)
+                break;
+        }
+        printf("\n");
     }
-    LOG_INFO("****\n");
+    printf("****\n");
 }
 #endif  // NDEBUG
 

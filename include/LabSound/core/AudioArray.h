@@ -47,7 +47,7 @@ public:
                 free(_allocation);
 
             if (n) {
-                _allocation = static_cast<T*>(malloc(initialSize));
+                _allocation = static_cast<T*>(calloc(initialSize, 1));
                 _data = (T*)((((intptr_t)_allocation) + (alignment-1)) & mask);
             }
             else {
