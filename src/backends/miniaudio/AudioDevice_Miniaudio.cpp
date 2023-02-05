@@ -18,6 +18,8 @@
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
+#include <set>
+
 namespace lab
 {
 
@@ -86,12 +88,18 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
 
-    result = ma_context_get_devices(&g_context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount);
+    result = ma_context_get_devices(
+                    &g_context, 
+                    &pPlaybackDeviceInfos, &playbackDeviceCount, 
+                    &pCaptureDeviceInfos,  &captureDeviceCount);
+
     if (result != MA_SUCCESS)
     {
         LOG_ERROR("Failed to retrieve audio device information.\n");
         return {};
     }
+
+    std::set<float> playbackRates;
 
     for (iDevice = 0; iDevice < playbackDeviceCount; ++iDevice)
     {
@@ -99,16 +107,28 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.index = (int32_t) g_devices.size();
         lab_device_info.identifier = pPlaybackDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&g_context, ma_device_type_playback,
-                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_shared, &pPlaybackDeviceInfos[iDevice])
+        if (ma_context_get_device_info(
+                    &g_context, 
+                    ma_device_type_playback,
+                    &pPlaybackDeviceInfos[iDevice].id, 
+                    &pPlaybackDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
 
-        lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].maxChannels;
         lab_device_info.num_input_channels = 0;
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].minSampleRate));
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = static_cast<float>(pPlaybackDeviceInfos[iDevice].maxSampleRate);
+        lab_device_info.num_output_channels = 0;
+        for (uint32_t i = 0; i < pPlaybackDeviceInfos[iDevice].nativeDataFormatCount; ++i)
+        {
+            playbackRates.insert(static_cast<float>(pPlaybackDeviceInfos[iDevice].nativeDataFormats[i].sampleRate));
+            if (pPlaybackDeviceInfos[iDevice].nativeDataFormats[i].channels > lab_device_info.num_output_channels)
+                lab_device_info.num_output_channels = pPlaybackDeviceInfos[iDevice].nativeDataFormats[i].channels;
+        }
+        for (auto r : playbackRates)
+        {
+            lab_device_info.supported_samplerates.push_back(r);
+        }
+
+        lab_device_info.nominal_samplerate = playbackRates.size() > 0 ? lab_device_info.supported_samplerates.back() : 0;
         lab_device_info.is_default_output = iDevice == 0;
         lab_device_info.is_default_input = false;
 
@@ -121,16 +141,28 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         lab_device_info.index = (int32_t) g_devices.size();
         lab_device_info.identifier = pCaptureDeviceInfos[iDevice].name;
 
-        if (ma_context_get_device_info(&g_context, ma_device_type_capture,
-                                       &pPlaybackDeviceInfos[iDevice].id, ma_share_mode_exclusive, &pPlaybackDeviceInfos[iDevice])
+        if (ma_context_get_device_info(
+                    &g_context, 
+                    ma_device_type_capture,
+                    &pCaptureDeviceInfos[iDevice].id,
+                    &pCaptureDeviceInfos[iDevice])
             != MA_SUCCESS)
             continue;
 
+        lab_device_info.num_input_channels = 0;
         lab_device_info.num_output_channels = 0;
-        lab_device_info.num_input_channels = 2;  // pCaptureDeviceInfos[iDevice].maxChannels;
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].minSampleRate));
-        lab_device_info.supported_samplerates.push_back(static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate));
-        lab_device_info.nominal_samplerate = 48000.f;  // static_cast<float>(pCaptureDeviceInfos[iDevice].maxSampleRate);
+        for (uint32_t i = 0; i < pCaptureDeviceInfos[iDevice].nativeDataFormatCount; ++i)
+        {
+            playbackRates.insert(static_cast<float>(pPlaybackDeviceInfos[iDevice].nativeDataFormats[i].sampleRate));
+            if (pCaptureDeviceInfos[iDevice].nativeDataFormats[i].channels > lab_device_info.num_input_channels)
+                lab_device_info.num_input_channels = pCaptureDeviceInfos[iDevice].nativeDataFormats[i].channels;
+        }
+        for (auto r : playbackRates)
+        {
+            lab_device_info.supported_samplerates.push_back(r);
+        }
+
+        lab_device_info.nominal_samplerate = playbackRates.size() > 0 ? lab_device_info.supported_samplerates.back() : 0;
         lab_device_info.is_default_output = false;
         lab_device_info.is_default_input = iDevice == 0;
 
