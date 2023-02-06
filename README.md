@@ -33,7 +33,7 @@ The engine is packaged as a batteries-included static library meant for integrat
 
 # Platforms
 
-LabSound supports a variety of backends, including RtAudio and CoreAudio.
+LabSound supports a variety of platforms, via either an RtAudio, or miniaudio backend. 
 
 LabSound is currently tested on
 
