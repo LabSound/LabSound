@@ -48,8 +48,9 @@ void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
         output->setNumberOfChannels(r, m_desiredNumberOfOutputChannels);
     }
 
-    // Merge all the channels from all the inputs into one output.
-    /* Per the spec, the processing should be as follows
+    // Merge all the the zero-etch channels from all the inputs into one output.
+    /* Per the spec, a channel merge node takes a bunch of mono inputs.
+    The processing should be as follows
 
     let a = number of input channels
     let b = number of output channels
@@ -64,19 +65,18 @@ void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
         // initialize sum
         output->bus(r)->channel(i)->zero();
     }
+
     int in = numberOfInputs();
-    int lim = m_desiredNumberOfOutputChannels < in ? m_desiredNumberOfOutputChannels : in;
-    for (int inputIdx = 0; inputIdx < lim; ++inputIdx) {
-        auto input = this->input(inputIdx);
-        if (input->isConnected()) {
-            for (int c = 0; c < m_desiredNumberOfOutputChannels; ++c)
+    for (int c = 0; c < m_desiredNumberOfOutputChannels; ++c)
+    {
+        AudioChannel * outputChannel = output->bus(r)->channel(c);
+        if (c < in) 
+        {
+            auto input = this->input(c);
+            if (input->isConnected())
             {
-                if (c < input->bus(r)->numberOfChannels())
-                {
-                    AudioChannel * inputChannel = input->bus(r)->channel(c);
-                    AudioChannel * outputChannel = output->bus(r)->channel(c);
-                    outputChannel->sumFrom(inputChannel);
-                }
+                AudioChannel * inputChannel = input->bus(r)->channel(0);
+                outputChannel->sumFrom(inputChannel);
             }
         }
     }

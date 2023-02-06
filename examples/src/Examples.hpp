@@ -1601,6 +1601,8 @@ struct ex_split_merge : public labsound_example
 {
     virtual void play(int argc, char ** argv) override final
     {
+        _nodes.clear();
+
         std::unique_ptr<lab::AudioContext> context;
         const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
         context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
@@ -1620,14 +1622,19 @@ struct ex_split_merge : public labsound_example
         }
 
         context->connect(splitter, musicClipNode);
-        //context->connect(gain, splitter, 0, 0);
-        //context->connect(merger, gain, 0, 1);
-        //context->connect(merger, splitter, 1, 0);
-        context->connect(merger, splitter, 0, 0);
-        context->connect(context->device(), merger, 0, 0);
+        context->connect(merger, splitter, 0, 1); // swap front-left
+        context->connect(merger, splitter, 1, 0); // and front right to demonstrate channels can be swapped
+        context->connect(gain, merger, 0, 0);
+        context->connect(context->device(), gain, 0, 0);
         musicClipNode->schedule(0.0);
 
-        const uint32_t delay_time_ms = 8000;
+        // ensure nodes last until the end of the demo
+        _nodes.push_back(musicClipNode);
+        _nodes.push_back(gain);
+        _nodes.push_back(merger);
+        _nodes.push_back(splitter);
+
+        const uint32_t delay_time_ms = 2000;
         Wait(delay_time_ms);
     }
 };
