@@ -1592,6 +1592,40 @@ struct ex_poly_blep : public labsound_example
 
             waveformIndex++;
             if (now_in_ms >= 10000) break;
-        };
+        }
+    }
+};
+
+
+struct ex_split_merge : public labsound_example
+{
+    virtual void play(int argc, char ** argv) override final
+    {
+        std::unique_ptr<lab::AudioContext> context;
+        const auto defaultAudioDeviceConfigurations = GetDefaultAudioDeviceConfiguration();
+        context = lab::MakeRealtimeAudioContext(defaultAudioDeviceConfigurations.second, defaultAudioDeviceConfigurations.first);
+        lab::AudioContext & ac = *context.get();
+
+        std::shared_ptr<ChannelSplitterNode> splitter = std::make_shared<ChannelSplitterNode>(ac,6);
+        std::shared_ptr<ChannelMergerNode> merger = std::make_shared<ChannelMergerNode>(ac,6);
+        std::shared_ptr<GainNode> gain = std::make_shared<GainNode>(ac);
+        auto chan6_source = MakeBusFromSampleFile("samples/6_Channel_ID.wav", argc, argv);
+        std::shared_ptr<SampledAudioNode> musicClipNode;
+        musicClipNode = std::make_shared<SampledAudioNode>(ac);
+        {
+            ContextRenderLock r(context.get(), "ex_split_merge");
+            musicClipNode->setBus(r, chan6_source);
+        }
+
+        context->connect(splitter, musicClipNode);
+        gain->gain()->setValueAtTime(.5f,(float)ac.currentTime());
+        context->connect(gain, splitter, 0, 0);
+        context->connect(merger, gain, 0, 1);
+        context->connect(merger, splitter, 1, 0);
+        context->connect(context->device(), merger, 0, 0);
+        musicClipNode->schedule(0.0);
+
+        const uint32_t delay_time_ms = 8000;
+        Wait(delay_time_ms);
     }
 };

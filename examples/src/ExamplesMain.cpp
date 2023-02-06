@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) try
     };
     
     Example examples[] = {
-        { Passing::pass, Skip::no, new ex_devices() },
+        { Passing::pass, Skip::no,  new ex_devices() },
         { Passing::pass, Skip::yes, new ex_play_file() },
         { Passing::pass, Skip::yes, new ex_simple() },
         { Passing::pass, Skip::yes, new ex_osc_pop() },
@@ -35,14 +35,15 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_microphone_reverb() },
         { Passing::pass, Skip::yes, new ex_peak_compressor() },
         { Passing::pass, Skip::yes, new ex_stereo_panning() },
-        { Passing::pass, Skip::no, new ex_hrtf_spatialization() },
+        { Passing::pass, Skip::yes, new ex_hrtf_spatialization() },
         { Passing::pass, Skip::yes, new ex_convolution_reverb() },
         { Passing::pass, Skip::yes, new ex_misc() },
         { Passing::pass, Skip::yes, new ex_dalek_filter() },
         { Passing::pass, Skip::yes, new ex_redalert_synthesis() },
         { Passing::pass, Skip::yes, new ex_wavepot_dsp() },
         { Passing::pass, Skip::yes, new ex_granulation_node() }, // note: node is under development
-        { Passing::pass, Skip::yes, new ex_poly_blep() }
+        { Passing::pass, Skip::yes, new ex_poly_blep() },
+        { Passing::fail, Skip::no,  new ex_split_merge() },
     };
 
     static constexpr int iterations = 1;

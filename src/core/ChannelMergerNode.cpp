@@ -24,7 +24,7 @@ AudioNodeDescriptor * ChannelMergerNode::desc()
 
 ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
     : AudioNode(ac, *desc())
-    , m_desiredNumberOfOutputChannels(1)
+    , m_desiredNumberOfOutputChannels(numberOfInputs_)
 {
     addInputs(numberOfInputs_);
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
@@ -49,28 +49,37 @@ void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     // Merge all the channels from all the inputs into one output.
-    uint32_t outputChannelIndex = 0;
-    for (int i = 0; i < numberOfInputs(); ++i)
+    /* Per the spec, the processing should be as follows
+
+    let a = number of input channels
+    let b = number of output channels
+
+    if a == b copy 1:1
+    if a < b copy 1:1 up to a, then zero the other channels
+    if b < a copy 1:1 up to b, then ignore the other channels
+    */
+
+    for (int i = 0; i < m_desiredNumberOfOutputChannels; ++i)
     {
-        auto input = this->input(i);
-
-        if (input->isConnected())
-        {
-            size_t numberOfInputChannels = input->bus(r)->numberOfChannels();
-
-            // Merge channels from this particular input.
-            for (int j = 0; j < numberOfInputChannels; ++j)
+        // initialize sum
+        output->bus(r)->channel(i)->zero();
+    }
+    int in = numberOfInputs();
+    int lim = m_desiredNumberOfOutputChannels < in ? m_desiredNumberOfOutputChannels : in;
+    for (int inputIdx = 0; inputIdx < lim; ++inputIdx) {
+        auto input = this->input(inputIdx);
+        if (input->isConnected()) {
+            for (int c = 0; c < m_desiredNumberOfOutputChannels; ++c)
             {
-                AudioChannel * inputChannel = input->bus(r)->channel(j);
-                AudioChannel * outputChannel = output->bus(r)->channel(outputChannelIndex);
-
-                outputChannel->copyFrom(inputChannel);
-                ++outputChannelIndex;
+                if (c < input->bus(r)->numberOfChannels())
+                {
+                    AudioChannel * inputChannel = input->bus(r)->channel(c);
+                    AudioChannel * outputChannel = output->bus(r)->channel(c);
+                    outputChannel->sumFrom(inputChannel);
+                }
             }
         }
     }
-
-    ASSERT(outputChannelIndex == output->numberOfChannels());
 }
 
 
