@@ -10,7 +10,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/Macros.h"
-#include "LabSound/core/WaveTable.h"
+#include "LabSound/core/PeriodicWave.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"

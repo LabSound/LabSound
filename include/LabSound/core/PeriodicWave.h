@@ -2,8 +2,8 @@
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#ifndef WaveTable_h
-#define WaveTable_h
+#ifndef PeriodicWave_h
+#define PeriodicWave_h
 
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/AudioNode.h"
@@ -14,14 +14,13 @@
 namespace lab
 {
 
-class WaveTable
+class PeriodicWave
 {
-
 public:
-    WaveTable(const float sampleRate, OscillatorType basicWaveform);
-    WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
+    PeriodicWave(const float sampleRate, OscillatorType basicWaveform);
+    PeriodicWave(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag);
 
-    ~WaveTable();
+    ~PeriodicWave();
 
     // Returns pointers to the lower and higher wavetable data for the pitch range containing
     // the given fundamental frequency. These two tables are in adjacent "pitch" ranges
@@ -64,4 +63,4 @@ private:
 
 }  // namespace lab
 
-#endif  // WaveTable_h
+#endif  // PeriodicWave_h

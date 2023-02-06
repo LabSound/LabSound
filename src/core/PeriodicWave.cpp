@@ -2,7 +2,7 @@
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#include "LabSound/core/WaveTable.h"
+#include "LabSound/core/PeriodicWave.h"
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/OscillatorNode.h"
 
@@ -29,7 +29,7 @@ namespace lab
 
 using namespace VectorMath;
 
-WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform)
+PeriodicWave::PeriodicWave(const float sampleRate, OscillatorType basicWaveform)
     : m_centsPerRange(CentsPerRange)
     , m_sampleRate(sampleRate)
 {
@@ -44,7 +44,7 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform)
     generateBasicWaveform(basicWaveform);
 }
 
-WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
+PeriodicWave::PeriodicWave(const float sampleRate, OscillatorType basicWaveform, std::vector<float> & real, std::vector<float> & imag)
     : m_centsPerRange(CentsPerRange)
     , m_sampleRate(sampleRate)
 {
@@ -68,11 +68,11 @@ WaveTable::WaveTable(const float sampleRate, OscillatorType basicWaveform, std::
     }
 }
 
-WaveTable::~WaveTable()
+PeriodicWave::~PeriodicWave()
 {
 }
 
-unsigned WaveTable::periodicWaveSize() const
+unsigned PeriodicWave::periodicWaveSize() const
 {
     // Choose an appropriate wave size for the given sample rate.  This allows us to use shorter
     // FFTs when possible to limit the complexity.  The breakpoints here are somewhat arbitrary, but
@@ -84,7 +84,7 @@ unsigned WaveTable::periodicWaveSize() const
     return kMaxPeriodicWaveSize;
 }
 
-void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, float *& lowerWaveData, float *& higherWaveData, float & tableInterpolationFactor)
+void PeriodicWave::waveDataForFundamentalFrequency(float fundamentalFrequency, float *& lowerWaveData, float *& higherWaveData, float & tableInterpolationFactor)
 {
     // Negative frequencies are allowed, in which case we alias to the positive frequency.
     fundamentalFrequency = std::abs(fundamentalFrequency);
@@ -112,12 +112,12 @@ void WaveTable::waveDataForFundamentalFrequency(float fundamentalFrequency, floa
     tableInterpolationFactor = pitchRange - rangeIndex1;
 }
 
-int WaveTable::maxNumberOfPartials() const
+int PeriodicWave::maxNumberOfPartials() const
 {
     return periodicWaveSize() / 2;
 }
 
-int WaveTable::numberOfPartialsForRange(int rangeIndex) const
+int PeriodicWave::numberOfPartialsForRange(int rangeIndex) const
 {
     // Number of cents below nyquist where we cull partials.
     float centsToCull = rangeIndex * m_centsPerRange;
@@ -134,7 +134,7 @@ int WaveTable::numberOfPartialsForRange(int rangeIndex) const
 // Convert into time-domain wave tables.
 // One table is created for each range for non-aliasing playback at different playback rates.
 // Thus, higher ranges have more high-frequency partials culled out.
-void WaveTable::createBandLimitedTables(const float * realData, const float * imagData, int numberOfComponents)
+void PeriodicWave::createBandLimitedTables(const float * realData, const float * imagData, int numberOfComponents)
 {
     float normalizationScale = 1.f;
 
@@ -199,7 +199,7 @@ void WaveTable::createBandLimitedTables(const float * realData, const float * im
     }
 }
 
-void WaveTable::generateBasicWaveform(OscillatorType shape)
+void PeriodicWave::generateBasicWaveform(OscillatorType shape)
 {
     unsigned fftSize = periodicWaveSize();
     unsigned halfSize = fftSize / 2;
