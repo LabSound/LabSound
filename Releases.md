@@ -14,13 +14,47 @@
   The AudioRenderingNode is optionally supplied to the context to be
   pulled by a DestinationNode. Alternatively, the AudioRenderNode can
   be used directly for offline rendering via its offlineRender function.
-## alpha 1.2
+- the final output of the graph should now be connected to a DestinationNode
+  rather than the removed DeviceNode. This matches the WebAudio specification.
+- see GetDefaultAudioDeviceConfiguration in ExamplesCommon to see one way to
+  obtain input and output configurations. Set up now looks as follows:
+
+```cpp
+    AudioStreamConfig _inputConfig;
+    AudioStreamConfig _outputConfig;
+    auto config = GetDefaultAudioDeviceConfiguration(true);
+    _inputConfig = config.first;
+    _outputConfig = config.second;
+    std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(_inputConfig, _outputConfig));
+    auto context = std::make_shared<lab::AudioContext>(false, true);
+    auto destinationNode = std::make_shared<lab::AudioDestinationNode>(*context.get(), device);
+    device->setDestinationNode(destinationNode);
+    context->setDestinationNode(destinationNode);
+```
+
+- Note the explicit management of the Context, AudioDevice, and the DestinationNode. This 
+  separation means that the audio backend (RtAudio in this example), is no longer hidden
+  in cmake settings and behind the scenes code, but up front declarative. It's possible
+  to instantiate more than one kind of backend, and manage them on the fly. Due to the nature
+  of the back end systems, it may not be possible to have more than one AudioDevice active
+  at a time though, as some systems, such as RtAudio, use global variables and make other 
+  assumptions that break such usage.
+- This separated management will be leveraged more highly in the future to make it much
+  more straight forward to bind LabSound to other audio backends.
+
+
+## v1.2.0
 
 - rename DelayMode to DelayModel to match spec
 - refactor parameter and setting initializaiton for audio nodes to refer to
-  AudioParamDescriptors and AudioSettingDescriptors.
+  AudioParamDescriptors and AudioSettingDescriptors. This makes parameters
+  and settings fully dynamic, and consistently iterable from external programs.
 - HRTF panner now works for sample rates other than 44.1 khz.
 - panners no longer buzz or pop at the end of a sample file
+- the HRTF database is manually loaded now, so that the application has full
+  control of when and how to load it. See ex_hrtf_spatialization for details.
+- channel merger and splitter now function per the WebAudio spec
+- WaveTable has been renamed to PeriodicWave to match the rename in the WebAudio spec.
 
 ### breaking changes
 
