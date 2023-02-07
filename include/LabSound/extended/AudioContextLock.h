@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: BSD-2-Clause
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
-#pragma once
-
 //#define DEBUG_LOCKS
+#pragma once
 
 #ifndef AUDIO_CONTEXT_LOCK_H
 #define AUDIO_CONTEXT_LOCK_H
@@ -14,10 +13,7 @@
 #include <iostream>
 #include <mutex>
 
-//#define DEBUG_LOCKS
-
-namespace lab
-{
+namespace lab {
 
 class ContextGraphLock
 {

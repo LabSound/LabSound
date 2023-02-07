@@ -43,8 +43,8 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _scheduler._renderOffset;
-    int nonSilentFramesToProcess = _scheduler._renderLength;
+    int quantumFrameOffset = _self->_scheduler._renderOffset;
+    int nonSilentFramesToProcess = _self->_scheduler._renderLength;
 
     if (!nonSilentFramesToProcess)
     {

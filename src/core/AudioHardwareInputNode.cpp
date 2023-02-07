@@ -5,6 +5,7 @@
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 
@@ -23,9 +24,10 @@ AudioNodeDescriptor * AudioHardwareInputNode::desc()
     return &d;
 }
 
-AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * audioSourceProvider)
-    : AudioNode(ac, *desc())
-    , m_audioSourceProvider(audioSourceProvider)
+AudioHardwareInputNode::AudioHardwareInputNode(
+    AudioContext & ac, AudioSourceProvider * audioSourceProvider)
+: AudioNode(ac, *desc())
+, m_audioSourceProvider(audioSourceProvider)
 {
     addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
     initialize();
@@ -44,15 +46,12 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
     // This used to be the function of a manual call to setFormat()
     if (m_sourceNumberOfChannels == 0)
     {
-        auto DeviceAsAudioNode = r.context()->device();
-
-        if (auto DeviceAsRenderCallback = std::dynamic_pointer_cast<AudioDeviceRenderCallback>(DeviceAsAudioNode))
-        {
-            auto inputConfig = DeviceAsRenderCallback->getInputConfig();
-            m_sourceNumberOfChannels = inputConfig.desired_channels;
-            output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
-            outputBus = output(0)->bus(r);  // outputBus pointer was invalidated
-        }
+        auto destinationNode = r.context()->destinationNode();
+        auto device = destinationNode->device();
+        auto inputConfig = device->getInputConfig();
+        m_sourceNumberOfChannels = inputConfig.desired_channels;
+        output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
+        outputBus = output(0)->bus(r);  // outputBus pointer was invalidated
     }
 
     if (!m_audioSourceProvider)

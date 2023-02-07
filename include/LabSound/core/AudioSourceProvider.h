@@ -12,50 +12,39 @@ namespace lab
 {
 class AudioBus;
 
-/////////////////////////////
-//   AudioSourceProvider   //
-/////////////////////////////
+//----------------------------------------------------
+//   AudioSourceProvider
+// Buffers independent input reads to an output cache
+//-----------------------------------------------------
 
-// Abstract base-class for a pull-model client.
 // provideInput() gets called repeatedly to render time-slices of a continuous audio stream.
-struct AudioSourceProvider
+class AudioSourceProvider
 {
-    virtual void provideInput(AudioBus * bus, int bufferSize) = 0;
-    virtual ~AudioSourceProvider() {}
-};
-
-////////////////////////////
-//   AudioHardwareInput   //
-////////////////////////////
-
-// AudioHardwareInput allows us to expose an AudioSourceProvider for local/live audio input.
-// If there is local/live audio input, we call set() with the audio input data every render quantum.
-// `set()` is called in ... which is one or two frames above the actual hardware io.
-class AudioHardwareInput : public AudioSourceProvider
-{
-    AudioBus m_sourceBus;
+    AudioBus _sourceBus;
 
 public:
-    AudioHardwareInput(int channelCount)
-        : m_sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
+    AudioSourceProvider(int channelCount)
+        : _sourceBus(channelCount, AudioNode::ProcessingSizeInFrames)
     {
     }
 
-    virtual ~AudioHardwareInput() {}
+    virtual ~AudioSourceProvider() = default;
 
+    // every input quantum set can be called to copy from the supplied bus to the internal buffer
     void set(AudioBus * bus)
     {
-        if (bus) m_sourceBus.copyFrom(*bus);
+        if (bus)
+            _sourceBus.copyFrom(*bus);
     }
 
-    // Satisfy the AudioSourceProvider interface
+    // every output quantum provideInput can be called to copy data retained in _sourceBus
+    // to the supplied destinationBus
     virtual void provideInput(AudioBus * destinationBus, int bufferSize)
     {
-        bool isGood = destinationBus && destinationBus->length() == bufferSize && m_sourceBus.length() == bufferSize;
-        //ASSERT(isGood);
-        if (isGood) destinationBus->copyFrom(m_sourceBus);
-    }
-};
+        bool isGood = destinationBus && destinationBus->length() == bufferSize && _sourceBus.length() == bufferSize;
+        if (isGood)
+            destinationBus->copyFrom(_sourceBus);
+    }};
 
 }  // lab
 

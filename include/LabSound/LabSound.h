@@ -12,7 +12,6 @@
 #include "LabSound/core/AudioBasicProcessorNode.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
@@ -24,7 +23,6 @@
 #include "LabSound/core/DelayNode.h"
 #include "LabSound/core/DynamicsCompressorNode.h"
 #include "LabSound/core/GainNode.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "LabSound/core/PannerNode.h"
 #include "LabSound/core/SampledAudioNode.h"
@@ -53,35 +51,6 @@
 #include "LabSound/extended/SpatializationNode.h"
 #include "LabSound/extended/SpectralMonitorNode.h"
 #include "LabSound/extended/SupersawNode.h"
-
-namespace lab
-{
-    const std::vector<AudioDeviceInfo> MakeAudioDeviceList();
-    const AudioDeviceIndex GetDefaultOutputAudioDeviceIndex();
-    const AudioDeviceIndex GetDefaultInputAudioDeviceIndex();
-
-    std::unique_ptr<AudioContext> MakeRealtimeAudioContext(
-        const AudioStreamConfig & outputConfig, 
-        const AudioStreamConfig & inputConfig);
-
-    std::unique_ptr<AudioContext> MakeOfflineAudioContext(
-        const AudioStreamConfig & offlineConfig,
-        double recordTimeMilliseconds);
-
-    struct OfflineContext
-    {
-        std::shared_ptr<NullDeviceNode> device;
-        std::unique_ptr<AudioContext> context;
-        void process(size_t samples);
-    };
-    OfflineContext MakeOfflineAudioContext(const AudioStreamConfig &);
-
-    std::shared_ptr<AudioHardwareInputNode> MakeAudioHardwareInputNode(ContextRenderLock & r);
-
-    AudioStreamConfig GetDefaultInputAudioDeviceConfiguration();
-    AudioStreamConfig GetDefaultOutputAudioDeviceConfiguration();
-}
-
 
 #endif
 

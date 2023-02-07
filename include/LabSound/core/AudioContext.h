@@ -6,8 +6,6 @@
 #ifndef lab_audio_context_h
 #define lab_audio_context_h
 
-#include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioScheduledSourceNode.h"
 
 #include <atomic>
@@ -20,16 +18,16 @@
 #include <thread>
 #include <vector>
 
-namespace lab
-{
+namespace lab {
 
-class AudioHardwareDeviceNode;
+class AudioBus;
+class AudioHardwareInputNode;
 class AudioListener;
 class AudioNode;
-class AudioScheduledSourceNode;
-class AudioHardwareInputNode;
 class AudioNodeInput;
 class AudioNodeOutput;
+class AudioDestinationNode;
+class AudioScheduledSourceNode;
 class ContextGraphLock;
 class ContextRenderLock;
 class HRTFDatabaseLoader;
@@ -38,6 +36,7 @@ class AudioContext
 {
     friend class ContextGraphLock;
     friend class ContextRenderLock;
+    friend class AudioDestinationNode;
 
 public:
 
@@ -100,8 +99,8 @@ public:
 
     float sampleRate() const;
 
-    void setDeviceNode(std::shared_ptr<AudioNode> device);
-    std::shared_ptr<AudioNode> device();
+    void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
+    std::shared_ptr<AudioDestinationNode> destinationNode();
     std::shared_ptr<AudioListener> listener();
 
     // Debugging/Sanity Checking
@@ -140,6 +139,14 @@ public:
     // if the context was suspended, resume the progression of time and processing
     // in the audio context
     void resume();
+    
+    // Close releases any system audio resources that it uses. It is asynchronous,
+    // returning a promise object that can wait() until all AudioContext-creation-blocking
+    // resources have been released. Closed contexts can decode audio data, create
+    // buffers, etc. Closing the context will forcibly release any system audio resources
+    // that might prevent additional AudioContexts from being created and used, suspend
+    // the progression of audio time in the audio context, and stop processing audio data.
+    void close();
 
     // Called at the start of each render quantum.
     void handlePreRenderTasks(ContextRenderLock &);
@@ -156,7 +163,7 @@ public:
 
     // Called right before handlePostRenderTasks() to handle nodes which need to
     // be pulled even when they are not connected to anything.
-    // Only an AudioHardwareDeviceNode should call this.
+    // Only an AudioDestinationNode should call this.
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
     // graph management
@@ -226,8 +233,7 @@ private:
     void updateAutomaticPullNodes();
     void uninitialize();
 
-    AudioDeviceRenderCallback * device_callback{nullptr};
-    std::shared_ptr<AudioNode> m_device;
+    std::shared_ptr<AudioDestinationNode> _destinationNode;
 
     std::shared_ptr<AudioListener> m_listener;
 

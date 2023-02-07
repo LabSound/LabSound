@@ -3,19 +3,29 @@
 
 #define LABSOUND_ENABLE_LOGGING
 
-#include "AudioDevice_Miniaudio.h"
+#include "LabSound/backends/AudioDevice_Miniaudio.h"
 
 #include "internal/Assertions.h"
 #include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
 #include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
 
+#include <assert.h>
+
 //#define MA_DEBUG_OUTPUT
 #define MINIAUDIO_IMPLEMENTATION
+
+#define MA_NO_DECODING
+#define MA_NO_ENCODING
+#define MA_NO_GENERATION
+//#define MA_DEBUG_OUTPUT
+#include "miniaudio.h"
+#include <atomic>
+#include <cstring>
+
 #include "miniaudio.h"
 
 #include <set>
@@ -72,7 +82,7 @@ void PrintAudioDeviceList()
         }
 }
 
-std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
+std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
 {
     init_context();
     static bool probed = false;
@@ -88,10 +98,11 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     ma_uint32 captureDeviceCount;
     ma_uint32 iDevice;
 
-    result = ma_context_get_devices(
-                    &g_context, 
-                    &pPlaybackDeviceInfos, &playbackDeviceCount, 
-                    &pCaptureDeviceInfos,  &captureDeviceCount);
+    result = ma_context_get_devices(&g_context,
+                                    &pPlaybackDeviceInfos,
+                                    &playbackDeviceCount,
+                                    &pCaptureDeviceInfos,
+                                    &captureDeviceCount);
 
     if (result != MA_SUCCESS)
     {
@@ -129,6 +140,7 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
         }
 
         lab_device_info.nominal_samplerate = playbackRates.size() > 0 ? lab_device_info.supported_samplerates.back() : 0;
+
         lab_device_info.is_default_output = iDevice == 0;
         lab_device_info.is_default_input = false;
 
@@ -172,26 +184,6 @@ std::vector<AudioDeviceInfo> AudioDevice::MakeAudioDeviceList()
     return g_devices;
 }
 
-AudioDeviceIndex AudioDevice::GetDefaultOutputAudioDeviceIndex() noexcept
-{
-    auto devices = MakeAudioDeviceList();
-    size_t c = devices.size();
-    for (uint32_t i = 0; i < c; ++i)
-        if (devices[i].is_default_output)
-            return {i, true};
-    return {0, false};
-}
-
-AudioDeviceIndex AudioDevice::GetDefaultInputAudioDeviceIndex() noexcept
-{
-    auto devices = MakeAudioDeviceList();
-    size_t c = devices.size();
-    for (uint32_t i = 0; i < c; ++i)
-        if (devices[i].is_default_input)
-            return {i, true};
-    return {0, false};
-}
-
 namespace
 {
     void outputCallback(ma_device * pDevice, void * pOutput, const void * pInput, ma_uint32 frameCount)
@@ -204,19 +196,12 @@ namespace
     }
 }
 
-AudioDevice * AudioDevice::MakePlatformSpecificDevice(AudioDeviceRenderCallback & callback,
-                                                      const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig)
+AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputConfig,
+                                             const AudioStreamConfig & _outputConfig)
+: AudioDevice(_inputConfig, _outputConfig)
 {
-    return new AudioDevice_Miniaudio(callback, outputConfig, inputConfig);
-}
-
-AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callback,
-                                             const AudioStreamConfig & _outputConfig, const AudioStreamConfig & _inputConfig)
-    : _callback(callback)
-    , outputConfig(_outputConfig)
-    , inputConfig(_inputConfig)
-{
-    auto device_list = AudioDevice::MakeAudioDeviceList();
+    _device = new ma_device();
+    auto device_list = MakeAudioDeviceList();
     PrintAudioDeviceList();
 
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
@@ -234,7 +219,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
-    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
+    if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
@@ -244,7 +229,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
 
     samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
 
-    _ring = new cinder::RingBufferT<float>();
+    _ring = new lab::RingBufferT<float>();
     _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
     _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
 }
@@ -252,7 +237,7 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(AudioDeviceRenderCallback & callbac
 AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
 {
     stop();
-    ma_device_uninit(&_device);
+    ma_device_uninit(_device);
     ma_context_uninit(&g_context);
     g_must_init = true;
     delete _renderBus;
@@ -260,11 +245,12 @@ AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
     delete _ring;
     if (_scratch)
         free(_scratch);
+    delete _device;
 }
 
 void AudioDevice_Miniaudio::backendReinitialize()
 {
-    auto device_list = AudioDevice::MakeAudioDeviceList();
+    auto device_list = MakeAudioDeviceList();
     PrintAudioDeviceList();
 
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
@@ -282,7 +268,7 @@ void AudioDevice_Miniaudio::backendReinitialize()
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
-    if (ma_device_init(&g_context, &deviceConfig, &_device) != MA_SUCCESS)
+    if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
@@ -293,7 +279,7 @@ void AudioDevice_Miniaudio::backendReinitialize()
 void AudioDevice_Miniaudio::start()
 {
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
-    if (ma_device_start(&_device) != MA_SUCCESS)
+    if (ma_device_start(_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to start audio device");
     }
@@ -301,7 +287,7 @@ void AudioDevice_Miniaudio::start()
 
 void AudioDevice_Miniaudio::stop()
 {
-    if (ma_device_stop(&_device) != MA_SUCCESS)
+    if (ma_device_stop(_device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to stop audio device");
     }
@@ -309,7 +295,7 @@ void AudioDevice_Miniaudio::stop()
 
 bool AudioDevice_Miniaudio::isRunning() const
 {
-    return ma_device_is_started(&_device);
+    return ma_device_is_started(_device);
 }
 
 
@@ -391,7 +377,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
             // generate new data
-            _callback.render(_inputBus, _renderBus, kRenderQuantum, samplingInfo);
+            _destinationNode->render(sourceProvider(), _inputBus, _renderBus, kRenderQuantum, samplingInfo);
             _remainder = kRenderQuantum;
         }
     }

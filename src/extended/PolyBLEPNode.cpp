@@ -481,7 +481,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
 
 void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize)
 {
-    return processPolyBLEP(r, bufferSize, _scheduler._renderOffset, _scheduler._renderLength);
+    return processPolyBLEP(r, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
 }
 
 bool PolyBLEPNode::propagatesSilence(ContextRenderLock & r) const

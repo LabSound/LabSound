@@ -667,7 +667,7 @@ SfxrNode::SfxrNode(AudioContext & ac)
     sfxr->ResetSample(true);
     sfxr->PlaySample();
 
-    _scheduler._onStart = [this](double when)
+    _self->_scheduler._onStart = [this](double when)
     {
         // when is ignored.
         this->sfxr->ResetSample(true);
@@ -710,8 +710,8 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _scheduler._renderOffset;
-    int nonSilentFramesToProcess = _scheduler._renderLength;
+    int quantumFrameOffset = _self->_scheduler._renderOffset;
+    int nonSilentFramesToProcess = _self->_scheduler._renderLength;
 
     if (!nonSilentFramesToProcess)
     {

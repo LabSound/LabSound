@@ -81,11 +81,11 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
         if (bufferSize <= m_sampleAccurateGainValues.size())
         {
             float* gainValues_base = m_sampleAccurateGainValues.data();
-            float* gainValues = gainValues_base + _scheduler._renderOffset;
-            gain()->calculateSampleAccurateValues(r, gainValues, _scheduler._renderLength);
-            if (_scheduler._renderOffset > 0)
-                memset(gainValues_base, 0, sizeof(float) * _scheduler._renderOffset);
-            int bzero_start = _scheduler._renderOffset + _scheduler._renderLength;
+            float* gainValues = gainValues_base + _self->_scheduler._renderOffset;
+            gain()->calculateSampleAccurateValues(r, gainValues, _self->_scheduler._renderLength);
+            if (_self->_scheduler._renderOffset > 0)
+                memset(gainValues_base, 0, sizeof(float) * _self->_scheduler._renderOffset);
+            int bzero_start = _self->_scheduler._renderOffset + _self->_scheduler._renderLength;
             if (bzero_start < bufferSize)
                 memset(gainValues_base + bzero_start, 0, sizeof(float) * bufferSize - bzero_start);
             outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, m_sampleAccurateGainValues.data(), bufferSize);

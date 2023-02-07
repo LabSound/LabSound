@@ -7,6 +7,7 @@
 #define LABSOUND_EXAMPLE_BASE_APP_H
 
 #include "LabSound/LabSound.h"
+#include "LabSound/backends/AudioDevice_RtAudio.h"
 
 #include <algorithm>
 #include <array>
@@ -14,44 +15,91 @@
 #include <condition_variable>
 #include <cstdint>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <mutex>
 #include <random>
 #include <string>
 #include <thread>
 #include <vector>
-#include <iostream>
-#include <string>
-
-// In the future, this class could do all kinds of clever things, like setting up the context,
-// handling recording functionality, etc.
-
-#include <string>
-#include <vector>
 
 using namespace lab;
 
-#ifdef _MSC_VER
-#include <windows.h>
-std::string PrintCurrentDirectory()
-{
-    char buffer[MAX_PATH] = {0};
-    GetCurrentDirectory(MAX_PATH, buffer);
-    return std::string(buffer);
+// Returns input, output
+inline std::pair<AudioStreamConfig, AudioStreamConfig>
+    GetDefaultAudioDeviceConfiguration(const bool with_input = true)
+{    
+    const std::vector<AudioDeviceInfo> audioDevices = lab::AudioDevice_RtAudio::MakeAudioDeviceList();
+    AudioDeviceInfo defaultOutputInfo, defaultInputInfo;
+    for (auto & info : audioDevices) {
+        if (info.is_default_output)
+            defaultOutputInfo = info;
+        if (info.is_default_input)
+            defaultInputInfo = info;
+    }
+    
+    AudioStreamConfig outputConfig;
+    if (defaultOutputInfo.index != -1) {
+        outputConfig.device_index = defaultOutputInfo.index;
+        outputConfig.desired_channels = std::min(uint32_t(2), defaultOutputInfo.num_output_channels);
+        outputConfig.desired_samplerate = defaultOutputInfo.nominal_samplerate;
+    }
+    
+    AudioStreamConfig inputConfig;
+    if (with_input) {
+        if (defaultInputInfo.index != -1) {
+            inputConfig.device_index = defaultInputInfo.index;
+            inputConfig.desired_channels = std::min(uint32_t(1), defaultInputInfo.num_input_channels);
+            inputConfig.desired_samplerate = defaultInputInfo.nominal_samplerate;
+        }
+        else {
+            throw std::invalid_argument("the default audio input device was requested but none were found");
+        }
+    }
+    
+    // RtAudio doesn't support mismatched input and output rates.
+    // this may be a pecularity of RtAudio, but for now, force an RtAudio
+    // compatible configuration
+    if (defaultOutputInfo.nominal_samplerate != defaultInputInfo.nominal_samplerate) {
+        float min_rate = std::min(defaultOutputInfo.nominal_samplerate, defaultInputInfo.nominal_samplerate);
+        inputConfig.desired_samplerate = min_rate;
+        outputConfig.desired_samplerate = min_rate;
+        printf("Warning ~ input and output sample rates don't match, attempting to set minimum");
+    }
+    return {inputConfig, outputConfig};
 }
-#endif
 
 struct labsound_example
 {
-    virtual ~labsound_example() = default;
-    
     std::mt19937 randomgenerator;
 
     std::vector<std::shared_ptr<lab::AudioNode>> _nodes;
     std::vector<std::shared_ptr<lab::PowerMonitorNode>> _powerNodes;
-    std::unique_ptr<lab::AudioContext> context;
+    std::shared_ptr<lab::AudioContext> _context;
+    std::shared_ptr<lab::RecorderNode> _recorder;
+
+    labsound_example(std::shared_ptr<lab::AudioContext> context, bool with_input)
+    : _context(context)
+    {
+    }
+    virtual ~labsound_example() = default;    
 
     virtual void play(int argc, char** argv) = 0;
+
+    void AddRecorder(std::shared_ptr<lab::AudioNode> node)
+    {
+        _recorder.reset(new RecorderNode(*_context.get(), _context->destinationNode()->device()->getOutputConfig()));
+        _context->addAutomaticPullNode(_recorder);
+        _context->connect(_recorder, node, 0, 0);
+        _recorder->startRecording();
+    }
+   
+   void StopRecording(const std::string& wav_out_path)
+    {
+       _recorder->stopRecording();
+       _context->removeAutomaticPullNode(_recorder);
+       _recorder->writeRecordingToWav(wav_out_path.c_str(), false);
+   }
 
     float MidiToFrequency(int midiNote)
     {
@@ -80,9 +128,9 @@ struct labsound_example
     
     void AddMonitorNodes() {
         for (auto n : _nodes) {
-            std::shared_ptr<lab::PowerMonitorNode> pn(new PowerMonitorNode(*context.get()));
-            context->connect(pn, n, 0, 0);
-            context->addAutomaticPullNode(pn);
+            std::shared_ptr<lab::PowerMonitorNode> pn(new PowerMonitorNode(*_context.get()));
+            _context->connect(pn, n, 0, 0);
+            _context->addAutomaticPullNode(pn);
             _powerNodes.push_back(pn);
         }
     }

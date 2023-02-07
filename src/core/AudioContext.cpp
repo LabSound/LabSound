@@ -3,12 +3,11 @@
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AnalyserNode.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/NullDeviceNode.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "internal/HRTFDatabase.h"
 
@@ -28,8 +27,8 @@
 #include <queue>
 #include <stdio.h>
 
-namespace lab
-{
+namespace lab {
+
 enum class ConnectionOperationKind : int
 {
     Disconnect = 0,
@@ -170,8 +169,6 @@ AudioContext::~AudioContext()
 {
     LOG_TRACE("Begin AudioContext::~AudioContext()");
 
-    m_audioContextInterface.reset();
-
     if (!isOfflineContext())
         graphKeepAlive = 0.25f;
 
@@ -188,6 +185,8 @@ AudioContext::~AudioContext()
 #if USE_ACCELERATE_FFT
     FFTFrame::cleanup();
 #endif
+
+    m_audioContextInterface.reset();
 
     ASSERT(!m_isInitialized);
     ASSERT(!m_automaticPullNodes.size());
@@ -219,7 +218,7 @@ void AudioContext::lazyInitialize()
     if (m_isAudioThreadFinished)
         return;
 
-    if (m_device.get())
+    if (auto d = _destinationNode.get())
     {
         if (!isOfflineContext())
         {
@@ -229,7 +228,7 @@ void AudioContext::lazyInitialize()
 
             graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
             graphUpdateThread = std::thread(&AudioContext::update, this);
-            device_callback->start();
+            d->device()->start();
         }
 
         cv.notify_all();
@@ -238,7 +237,7 @@ void AudioContext::lazyInitialize()
     else
     {
         LOG_ERROR("m_device not specified");
-        ASSERT(m_device);
+        ASSERT(_destinationNode);
     }
 }
 
@@ -249,11 +248,13 @@ void AudioContext::uninitialize()
     if (!m_isInitialized)
         return;
 
-    // for the case where an OfflineAudioDestinationNode needs to update the graph:
+    // for the case where an Offline AudioDestinationNode needs to update the graph
+    // before shutting done
     updateAutomaticPullNodes();
 
     // This stops the audio thread and all audio rendering.
-    device_callback->stop();
+    if (_destinationNode && _destinationNode->device())
+        _destinationNode->device()->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
@@ -297,7 +298,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 
                 // if unscheduled, the source should start to play as soon as possible
                 if (!param_connection.source->isScheduledNode())
-                    param_connection.source->_scheduler.start(0);
+                    param_connection.source->_self->_scheduler.start(0);
             }
             else
                 AudioParam::disconnect(gLock,
@@ -319,7 +320,7 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                                             node_connection.source->output(node_connection.srcIndex));
 
                     if (!node_connection.source->isScheduledNode())
-                        node_connection.source->_scheduler.start(0);
+                        node_connection.source->_self->_scheduler.start(0);
                 }
                 break;
 
@@ -405,9 +406,11 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::synchronizeConnections(int timeOut_ms)
 {
     cv.notify_all();
+    if (!_destinationNode || !_destinationNode->device())
+        return;
 
-    // don't synch if the context is suspended as that will simply max out the timeout
-    if (!device_callback->isRunning())
+    // don't synch a suspended context as that will simply max out the timeout
+    if (!_destinationNode->device()->isRunning())
         return;
 
     while (m_internal->pendingNodeConnections.size_approx() > 0 && timeOut_ms > 0)
@@ -546,6 +549,8 @@ void AudioContext::update()
         {
             const double now = currentTime();
             const float delta = static_cast<float>(now - lastGraphUpdateTime);
+            if (delta <= 0.f) // no need to keep running if the graph is no longer updating
+                break;
             lastGraphUpdateTime = static_cast<float>(now);
             graphKeepAlive -= delta;
         }
@@ -557,7 +562,10 @@ void AudioContext::update()
             break;
     }
 
-    if (!m_isOfflineContext) { LOG_TRACE("End UpdateGraphThread"); }
+    if (!m_isOfflineContext)
+    {
+        LOG_TRACE("End UpdateGraphThread");
+    }
 }
 
 void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
@@ -569,7 +577,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
         m_automaticPullNodesNeedUpdating = true;
         if (!node->isScheduledNode())
         {
-            node->_scheduler.start(0);
+            node->_self->_scheduler.start(0);
         }
     }
 }
@@ -632,19 +640,15 @@ void AudioContext::dispatchEvents()
     }
 }
 
-void AudioContext::setDeviceNode(std::shared_ptr<AudioNode> device)
+void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> device)
 {
-    m_device = device;
-
-    if (auto * callback = dynamic_cast<AudioDeviceRenderCallback *>(device.get()))
-    {
-        device_callback = callback;
-    }
+    _destinationNode = device;
+    lazyInitialize();
 }
 
-std::shared_ptr<AudioNode> AudioContext::device()
+std::shared_ptr<AudioDestinationNode> AudioContext::destinationNode()
 {
-    return m_device;
+    return _destinationNode;
 }
 
 bool AudioContext::isOfflineContext() const
@@ -659,17 +663,17 @@ std::shared_ptr<AudioListener> AudioContext::listener()
 
 double AudioContext::currentTime() const
 {
-    return device_callback->getSamplingInfo().current_time;
+    return _destinationNode->getSamplingInfo().current_time;
 }
 
 uint64_t AudioContext::currentSampleFrame() const
 {
-    return device_callback->getSamplingInfo().current_sample_frame;
+    return _destinationNode->getSamplingInfo().current_sample_frame;
 }
 
 double AudioContext::predictedCurrentTime() const
 {
-    auto info = device_callback->getSamplingInfo();
+    auto info = _destinationNode->getSamplingInfo();
     uint64_t t = info.current_sample_frame;
     double val = t / info.sampling_rate;
     auto t2 = std::chrono::high_resolution_clock::now();
@@ -688,10 +692,10 @@ float AudioContext::sampleRate() const
     // scheduler, but DeviceNodes are not scheduled.
     // during construction of DeviceNodes, the device_callback will not yet be
     // ready, so bail out.
-    if (!device_callback)
-        return 0;
+    if (!_destinationNode)
+        return 0.f;
 
-    return device_callback->getSamplingInfo().sampling_rate;
+    return _destinationNode->getSamplingInfo().sampling_rate;
 }
 
 void AudioContext::startOfflineRendering()
@@ -700,18 +704,34 @@ void AudioContext::startOfflineRendering()
         throw std::runtime_error("context was not constructed for offline rendering");
 
     m_isInitialized = true;
-    device_callback->start();
+    
+    if (!_destinationNode && !_destinationNode->device())
+        return;
+    
+    _destinationNode->device()->start();
 }
 
 void AudioContext::suspend()
 {
-    device_callback->stop();
+    if (!_destinationNode && !_destinationNode->device())
+        return;
+
+    _destinationNode->device()->stop();
 }
 
 // if the context was suspended, resume the progression of time and processing in the audio context
 void AudioContext::resume()
 {
-    device_callback->start();
+    if (!_destinationNode && !_destinationNode->device())
+        return;
+
+    _destinationNode->device()->start();
+}
+
+void AudioContext::close()
+{
+    suspend();
+    _destinationNode.reset();
 }
 
 void AudioContext::debugTraverse(AudioNode * root)
@@ -733,6 +753,7 @@ void AudioContext::debugTraverse(AudioNode * root)
         return;
     }
 
+    // make sure any pending connections are made.
     synchronizeConnections();
 
     // Let the context take care of any business at the start of each render quantum.
@@ -770,22 +791,23 @@ void AudioContext::debugTraverse(AudioNode * root)
 
     std::vector<AudioNode *> node_stack;
     static int color = 1;
-    root->color = color;
+    root->_self->color = color;
     ++color;
-    node_stack.push_back(root);
 
+    // start the traversal at the root node
+    node_stack.push_back(root);
 
     static std::map<int, std::vector<AudioBus *>> summing_busses;
     std::vector<AudioBus *> in_use;
     std::vector<std::pair<AudioNode *, const char*>> by_whom;
 
     AudioNode * current_node = nullptr;
-    while (node_stack.size() > 0)
+    while (!node_stack.empty())
     {
         current_node = node_stack.back();
 
         auto sz = node_stack.size();
-        for (auto & p : current_node->_params)
+        for (auto & p : current_node->_self->_params)
         {
             // if there are rendering connections, be sure they are ready
             p->updateRenderingState(renderLock);
@@ -801,7 +823,7 @@ void AudioContext::debugTraverse(AudioNode * root)
                     continue;
                 
                 AudioNode* node = output->sourceNode();
-                if (!node || node->color >= color)
+                if (!node || node->_self->color >= color)
                     continue;
 
                 by_whom.push_back({current_node, "param input"});
@@ -825,7 +847,7 @@ void AudioContext::debugTraverse(AudioNode * root)
             int connectionCount = in->numberOfConnections();
             for (int j = 0; j < connectionCount; ++j) {
                 if (auto destNode = in->connection(renderLock, i)) {
-                    if (destNode->sourceNode()->color < color)
+                    if (destNode->sourceNode()->_self->color < color)
                     {
                         node_stack.push_back(destNode->sourceNode());
                     }
@@ -838,7 +860,7 @@ void AudioContext::debugTraverse(AudioNode * root)
             continue;
 
         // move current_node to the work stack and retire it from the node stack
-        current_node->color = color;
+        current_node->_self->color = color;
         work.push_back({current_node, processNode});
         node_stack.pop_back();
     }
@@ -850,14 +872,14 @@ void AudioContext::debugTraverse(AudioNode * root)
             if (auto adsr = dynamic_cast<ADSRNode*>(w.node)) {
                 printf("%s %s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
                        adsr->finished(renderLock)? "Finished": "Playing",
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
             }
             else {
                 printf("%s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
             }
         }

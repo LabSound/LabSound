@@ -7,41 +7,40 @@
 #define labsound_audiodevice_rtaudio_hpp
 
 #include "LabSound/core/AudioBus.h"
-#include "LabSound/core/AudioHardwareDeviceNode.h"
+#include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
 
-#include "RtAudio.h"
+class RtAudio;
 
 namespace lab
 {
 
 class AudioDevice_RtAudio : public AudioDevice
 {
-    AudioDeviceRenderCallback & _callback;
-
     std::unique_ptr<AudioBus> _renderBus;
     std::unique_ptr<AudioBus> _inputBus;
-
-    RtAudio rtaudio_ctx;
-
+    RtAudio* rtaudio_ctx;
     SamplingInfo samplingInfo;
 
+    void createContext();
+
 public:
-    AudioDevice_RtAudio(AudioDeviceRenderCallback &, const AudioStreamConfig & outputConfig, const AudioStreamConfig & inputConfig);
+    AudioDevice_RtAudio(
+            const AudioStreamConfig & inputConfig,
+            const AudioStreamConfig & outputConfig);
     virtual ~AudioDevice_RtAudio();
 
-    AudioStreamConfig outputConfig;
-    AudioStreamConfig inputConfig;
-    float authoritativeDeviceSampleRateAtRuntime{0.f};
+    float authoritativeDeviceSampleRateAtRuntime {0.f};
 
     // AudioDevice Interface
-    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
+    void render(AudioSourceProvider*, int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;
+    virtual void backendReinitialize() override final;
+    
+    static std::vector<AudioDeviceInfo> MakeAudioDeviceList();
 };
-
-int rt_audio_callback(void * outputBuffer, void * inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void * userData);
 
 }  // namespace lab
 
