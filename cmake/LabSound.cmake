@@ -77,12 +77,14 @@ add_library(LabSound STATIC
     ${ooura_src}
  )
 
+if (NOT IOS)
 add_library(LabSoundRtAudio STATIC
     "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
     "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_RtAudio.h"
     "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
     "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
 )
+endif()
 
 if (IOS)
 add_library(LabSoundMiniAudio STATIC
@@ -166,7 +168,9 @@ function (configureProj proj)
     endif()
 endfunction()
 configureProj(LabSound)
+if (NOT IOS)
 configureProj(LabSoundRtAudio)
+endif()
 configureProj(LabSoundMiniAudio)
 
 target_include_directories(LabSound PUBLIC
@@ -178,6 +182,7 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
 
+if (NOT IOS)
 target_include_directories(LabSoundRtAudio PUBLIC
     ${LABSOUND_ROOT}/include)
 
@@ -186,6 +191,7 @@ target_include_directories(LabSoundRtAudio PRIVATE
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
+endif()
 
 target_include_directories(LabSoundMiniAudio PUBLIC
     ${LABSOUND_ROOT}/include)
@@ -209,12 +215,14 @@ set_target_properties(LabSound
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
+if (NOT IOS)
 set_target_properties(LabSoundRtAudio
     PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+endif()
 
 set_target_properties(LabSoundMiniAudio
     PROPERTIES
@@ -230,7 +238,9 @@ if (WIN32)
     target_compile_definitions(LabSoundRtAudio PRIVATE __WINDOWS_WASAPI__=1)
 elseif (APPLE)
     target_compile_definitions(LabSound PRIVATE __MACOSX_CORE__=1)
+    if (NOT IOS)
     target_compile_definitions(LabSoundRtAudio PRIVATE __MACOSX_CORE__=1)
+    endif()
 else()
     set(LABSOUND_PLATFORM_LINK_LIBRARIES dl)
     if (LABSOUND_JACK)
@@ -261,11 +271,13 @@ install(TARGETS LabSound
     FRAMEWORK DESTINATION lib
     RUNTIME DESTINATION bin)
 
+if (NOT IOS)
 install(TARGETS LabSoundRtAudio
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     FRAMEWORK DESTINATION lib
     RUNTIME DESTINATION bin)
+endif()
 
 install(TARGETS LabSoundMiniAudio
     LIBRARY DESTINATION lib
@@ -308,6 +320,8 @@ install(FILES
 )
 
 add_library(Lab::Sound ALIAS LabSound)
+if (NOT IOS)
 add_library(Lab::SoundRtAudio ALIAS LabSoundRtAudio)
+endif()
 add_library(Lab::SoundMiniAudio ALIAS LabSoundMiniAudio)
 
