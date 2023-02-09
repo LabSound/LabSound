@@ -25,7 +25,6 @@ class AudioContext;
 class AudioNodeInput;
 class AudioHardwareInput;
 class AudioSourceProvider;
-class AudioStreamConfig;
 struct AudioDeviceInfo;
 
 //-------------------

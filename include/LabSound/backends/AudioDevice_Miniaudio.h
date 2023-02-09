@@ -9,8 +9,7 @@
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/ConcurrentQueue.h"
 
-class ma_device;
-
+struct ma_device;
 
 namespace lab {
 
