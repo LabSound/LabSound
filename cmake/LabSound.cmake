@@ -257,6 +257,11 @@ install(FILES ${labsnd_core_h}
     DESTINATION include/LabSound/core)
 install(FILES ${labsnd_extended_h}
     DESTINATION include/LabSound/extended)
+install(FILES
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_RtAudio.h"
+   DESTINATION include/LabSound/backends)
+
 install(DIRECTORY
     assets/hrtf
     assets/images
