@@ -130,6 +130,9 @@ public :
 
     static void printGraph(const AudioNode* root, 
                         std::function<void(const char *)> prnln);
+    
+    ProfileSample graphTime() const { return _self->graphTime; }
+    ProfileSample totalTime() const { return _self->totalTime; }
 
     //--------------------------------------------------
     // required interface
