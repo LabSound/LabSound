@@ -24,6 +24,7 @@ class AudioNodeInput : public AudioSummingJunction
 {
     AudioNode * m_destinationNode;
     std::unique_ptr<AudioBus> m_internalSummingBus;
+    std::string _name;
 
 public:
     explicit AudioNodeInput(AudioNode * audioNode, int processingSizeInFrames = AudioNode::ProcessingSizeInFrames);
@@ -53,6 +54,9 @@ public:
     // The number of channels of the connection with the largest number of channels.
     // Only valid during render quantum because it is dependent on the active bus
     int numberOfChannels(ContextRenderLock &) const;
+    
+    const std::string& name() const { return _name; }
+    void setName(const std::string& n) { _name = n; }
 };
 
 }  // namespace lab

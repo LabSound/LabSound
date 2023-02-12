@@ -47,6 +47,24 @@ void AudioBus::setChannelMemory(int channelIndex, float * storage, int length)
     }
 }
 
+void AudioBus::setNumberOfChannels(ContextRenderLock& r, int c)
+{
+    if (c == m_channels.size())
+        return;
+    
+    if (c < m_channels.size())
+    {
+        m_channels.resize(c);
+        return;
+    }
+
+    while (c > m_channels.size())
+    {
+        AudioChannel * newChannel = new AudioChannel(m_length);
+        m_channels.emplace_back(std::unique_ptr<AudioChannel>(newChannel));
+    }
+}
+
 void AudioBus::resizeSmaller(int newLength)
 {
     ASSERT(newLength <= m_length);

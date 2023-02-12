@@ -375,12 +375,39 @@ void AudioNode::addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> ou
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
+    input->setName("in" + to_string((int) _self->m_inputs.size()));
     _self->m_inputs.emplace_back(std::move(input));
 }
 
 void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
     _self->m_outputs.emplace_back(std::move(output));
+}
+
+// safe without a Render lock because vector is immutable
+std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
+{
+    if (i < _self->m_inputs.size())
+        return _self->m_inputs[i];
+    return {};
+}
+
+std::shared_ptr<AudioNodeInput> AudioNode::input(char const* const str)
+{
+    for (auto & i : _self->m_inputs)
+    {
+        if (i->name() == str)
+            return i;
+    }
+    return {};
+}
+
+// safe without a Render lock because vector is immutable
+std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
+{
+    if (i < _self->m_outputs.size())
+        return _self->m_outputs[i];
+    return {};
 }
 
 std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
@@ -391,23 +418,6 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
             return i;
     }
     return {};
-}
-
-
-// safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
-{
-    if (i < _self->m_inputs.size())
-        return _self->m_inputs[i];
-    return nullptr;
-}
-
-// safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
-{
-    if (i < _self->m_outputs.size())
-        return _self->m_outputs[i];
-    return nullptr;
 }
 
 int AudioNode::channelCount()
