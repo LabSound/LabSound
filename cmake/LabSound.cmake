@@ -6,20 +6,7 @@
 #
 # Will create a target named LabSound
 
-option(LIBSAMPLERATE_EXAMPLES "" OFF)
-option(LIBSAMPLERATE_INSTALL "" ON)
-option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
-add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
-
-file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
-file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
-file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
-file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
-file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
-file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
-
 # backend selection
-
 if (IOS)
     option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
     option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
@@ -56,6 +43,18 @@ elseif (LABSOUND_USE_RTAUDIO)
         "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
     )
 endif()
+
+#option(LIBSAMPLERATE_EXAMPLES "" OFF)
+#option(LIBSAMPLERATE_INSTALL "" ON)
+#option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
+#add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
+
+file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
+file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
+file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
+file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
+file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
+file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
 
 # FFT
 if (IOS)
@@ -206,17 +205,21 @@ if (NOT IOS)
 endif()
 
 target_include_directories(LabSound PUBLIC
-    ${LABSOUND_ROOT}/include)
-
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<INSTALL_INTERFACE:include>
+)
 target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/libsamplerate/include
     ${LABSOUND_ROOT}/third_party/libnyquist/include)
 
 if (NOT IOS)
     target_include_directories(LabSoundRtAudio PUBLIC
-        ${LABSOUND_ROOT}/include)
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+        $<INSTALL_INTERFACE:include>
+    )
 
     target_include_directories(LabSoundRtAudio PRIVATE
         ${LABSOUND_ROOT}/src
@@ -226,7 +229,9 @@ if (NOT IOS)
 endif()
 
 target_include_directories(LabSoundMiniAudio PUBLIC
-    ${LABSOUND_ROOT}/include)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<INSTALL_INTERFACE:include>
+)
 
 target_include_directories(LabSoundMiniAudio PRIVATE
     ${LABSOUND_ROOT}/third_party/miniaudio
@@ -248,7 +253,7 @@ set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
 
 target_link_libraries(LabSound
     libnyquist #libwavpack
-    samplerate
+    #samplerate
     ${LABSOUND_PLATFORM_LINK_LIBRARIES})
 
 install(FILES "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
@@ -283,15 +288,56 @@ source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\ooura FILES ${ooura_src})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
 
-configure_file("${LABSOUND_ROOT}/cmake/LabSoundConfig.cmake.in"
-  "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake" @ONLY)
-install(FILES
-  "${PROJECT_BINARY_DIR}/LabSoundConfig.cmake"
-  DESTINATION "${CMAKE_INSTALL_PREFIX}"
-)
-
 add_library(Lab::Sound ALIAS LabSound)
 add_library(Lab::SoundMiniAudio ALIAS LabSoundMiniAudio)
 if (NOT IOS)
     add_library(Lab::SoundRtAudio ALIAS LabSoundRtAudio)
+endif()
+
+install(TARGETS LabSound
+    EXPORT LabSoundConfig
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+export(TARGETS LabSound
+    NAMESPACE LabSound::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundConfig.cmake"
+)
+install(EXPORT LabSoundConfig
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSound/cmake"
+    NAMESPACE LabSound::
+)
+install(TARGETS LabSoundMiniAudio
+    EXPORT LabSoundMiniAudioConfig
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+export(TARGETS LabSoundMiniAudio
+    NAMESPACE LabSoundMiniAudio::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundMiniAudioConfig.cmake"
+)
+install(EXPORT LabSoundMiniAudioConfig
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSoundMiniAudio/cmake"
+    NAMESPACE LabSoundMiniAudio::
+)
+if (NOT IOS)
+install(TARGETS LabSoundRtAudio
+    EXPORT LabSoundRtAudioConfig
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+export(TARGETS LabSoundRtAudio
+    NAMESPACE LabSoundRtAudio::
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundRtAudioConfig.cmake"
+)
+install(EXPORT LabSoundRtAudioConfig
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSoundRtAudio/cmake"
+    NAMESPACE LabSoundRtAudio::
+)
 endif()
