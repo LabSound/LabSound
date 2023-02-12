@@ -141,12 +141,18 @@ if (APPLE)
 endif()
 
 function (configureProj proj)
-
     install(TARGETS ${proj}
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        FRAMEWORK DESTINATION lib
-        RUNTIME DESTINATION bin)
+        EXPORT ${proj}Config
+        LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+        FRAMEWORK DESTINATION "${CMAKE_INSTALL_PREFIX}/lib"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    export(TARGETS ${proj}
+        NAMESPACE ${proj}::
+        FILE "${CMAKE_CURRENT_BINARY_DIR}/${proj}Config.cmake")
+    install(EXPORT ${proj}Config
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/${proj}/cmake"
+        NAMESPACE ${proj}:: )
 
     set_target_properties(${proj}
         PROPERTIES
@@ -292,52 +298,4 @@ add_library(Lab::Sound ALIAS LabSound)
 add_library(Lab::SoundMiniAudio ALIAS LabSoundMiniAudio)
 if (NOT IOS)
     add_library(Lab::SoundRtAudio ALIAS LabSoundRtAudio)
-endif()
-
-install(TARGETS LabSound
-    EXPORT LabSoundConfig
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-export(TARGETS LabSound
-    NAMESPACE LabSound::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundConfig.cmake"
-)
-install(EXPORT LabSoundConfig
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSound/cmake"
-    NAMESPACE LabSound::
-)
-install(TARGETS LabSoundMiniAudio
-    EXPORT LabSoundMiniAudioConfig
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-export(TARGETS LabSoundMiniAudio
-    NAMESPACE LabSoundMiniAudio::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundMiniAudioConfig.cmake"
-)
-install(EXPORT LabSoundMiniAudioConfig
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSoundMiniAudio/cmake"
-    NAMESPACE LabSoundMiniAudio::
-)
-if (NOT IOS)
-install(TARGETS LabSoundRtAudio
-    EXPORT LabSoundRtAudioConfig
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    FRAMEWORK DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-export(TARGETS LabSoundRtAudio
-    NAMESPACE LabSoundRtAudio::
-    FILE "${CMAKE_CURRENT_BINARY_DIR}/LabSoundRtAudioConfig.cmake"
-)
-install(EXPORT LabSoundRtAudioConfig
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/LabSoundRtAudio/cmake"
-    NAMESPACE LabSoundRtAudio::
-)
 endif()
