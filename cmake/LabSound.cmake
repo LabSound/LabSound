@@ -244,7 +244,7 @@ if (MSVC_IDE)
 endif()
 
 if (LINUX)
-    set(LABSOUND_PLATFORM_LINK_LIBRARIES dl)
+    set(LABSOUND_PLATFORM_LINK_LIBRARIES PUBLIC dl)
 endif()
 
 target_link_libraries(LabSound
