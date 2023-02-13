@@ -98,13 +98,10 @@ if (NOT IOS)
     else()
         if (LABSOUND_JACK)
             target_compile_definitions(LabSoundRtAudio PRIVATE __UNIX_JACK__=1)
-            set(LIBNYQUIST_JACK ON)
         elseif (LABSOUND_PULSE)
             target_compile_definitions(LabSoundRtAudio PRIVATE __LINUX_PULSE__=1)
-            set(LIBNYQUIST_PULSE ON)
         elseif (LABSOUND_ASOUND)
             target_compile_definitions(LabSoundRtAudio PRIVATE __LINUX_ALSA__=1)
-            set(LIBNYQUIST_ASOUND ON)
         endif()
     endif()
 
@@ -153,6 +150,8 @@ function (configureProj proj)
     install(EXPORT ${proj}Config
         DESTINATION "${CMAKE_INSTALL_PREFIX}/${proj}/cmake"
         NAMESPACE ${proj}:: )
+
+    set_target_properties(${proj} PROPERTIES OUTPUT_NAME_DEBUG ${proj}_d)
 
     set_target_properties(${proj}
         PROPERTIES
@@ -204,12 +203,6 @@ function (configureProj proj)
     endif()
 endfunction()
 
-configureProj(LabSound)
-configureProj(LabSoundMiniAudio)
-if (NOT IOS)
-    configureProj(LabSoundRtAudio)
-endif()
-
 target_include_directories(LabSound PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
     $<INSTALL_INTERFACE:include>
@@ -219,14 +212,13 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libsamplerate/include
-    ${LABSOUND_ROOT}/third_party/libnyquist/include)
+)
 
 if (NOT IOS)
     target_include_directories(LabSoundRtAudio PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
         $<INSTALL_INTERFACE:include>
     )
-
     target_include_directories(LabSoundRtAudio PRIVATE
         ${LABSOUND_ROOT}/src
         ${LABSOUND_ROOT}/src/internal
@@ -255,13 +247,17 @@ if (LINUX)
     set(LABSOUND_PLATFORM_LINK_LIBRARIES dl)
 endif()
 
-set_target_properties(LabSound PROPERTIES OUTPUT_NAME_DEBUG LabSound_d)
-
 target_link_libraries(LabSound
-    libnyquist #libwavpack
-    #samplerate
-    ${LABSOUND_PLATFORM_LINK_LIBRARIES})
+    ${LABSOUND_PLATFORM_LINK_LIBRARIES}
+    PRIVATE libnyquist::libnyquist
+)
 
+configureProj(LabSound)
+configureProj(LabSoundMiniAudio)
+if (NOT IOS)
+    configureProj(LabSoundRtAudio)
+endif()
+    
 install(FILES "${LABSOUND_ROOT}/include/LabSound/LabSound.h"
     DESTINATION include/LabSound)
 install(FILES ${labsnd_core_h}
@@ -294,8 +290,8 @@ source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\ooura FILES ${ooura_src})
 source_group(third_party\\rtaudio FILES ${third_rtaudio})
 
-add_library(Lab::Sound ALIAS LabSound)
-add_library(Lab::SoundMiniAudio ALIAS LabSoundMiniAudio)
+add_library(LabSound::LabSound ALIAS LabSound)
+add_library(LabSoundMiniAudio::LabSoundMiniAudio ALIAS LabSoundMiniAudio)
 if (NOT IOS)
-    add_library(Lab::SoundRtAudio ALIAS LabSoundRtAudio)
+    add_library(LabSoundRtAudio::LabSoundRtAudio ALIAS LabSoundRtAudio)
 endif()
