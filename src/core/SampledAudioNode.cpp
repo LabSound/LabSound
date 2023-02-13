@@ -230,13 +230,19 @@ namespace lab {
 
     void SampledAudioNode::schedule(float when)
     {
-        if (!isPlayingOrScheduled())
+        if (!isPlayingOrScheduled()) {
             _self->_scheduler.start(0.);
+        }
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (bus)
+        if (bus) {
             _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
-        
+        }
+        else {
+            if (_internals->bus_setting_updated)
+                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, 0});
+        }
+
         initialize();
     }
 
@@ -248,6 +254,10 @@ namespace lab {
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
         if (bus)
             _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
+        else {
+            if (_internals->bus_setting_updated)
+                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, 0});
+        }
         
         initialize();
     }
@@ -439,12 +449,17 @@ namespace lab {
 
     void SampledAudioNode::process(ContextRenderLock& r, int framesToProcess)
     {
+        auto ac = r.context();
+        if (!ac)
+            return;
+        bool diagnosing_silence = ac->diagnosing().get() == this;
+
         if (_internals->bus_setting_updated) {
             _internals->bus_setting_updated = false;
             setBus(r, m_sourceBus->valueBus());
         }
         _internals->greatest_cursor = -1;
-
+      
         AudioBus* dstBus = output(0)->bus(r);
         size_t dstChannelCount = dstBus->numberOfChannels();
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
@@ -460,16 +475,24 @@ namespace lab {
                     m_retainedSourceBus = s.sourceBus;
                     m_sourceBus->setBus(s.sourceBus.get());
                     srcBus = s.sourceBus;
-                    this->_internals->bus_setting_updated = false; // setting bus causes this -3 state to occur so clear it immediately
-                }
+                    _internals->bus_setting_updated = false; // setting bus causes this -3 state to occur so clear it immediately
+                    if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::bus has been set");
+                }   
                 else if (s.loopCount == -2)
                 {
                     _internals->scheduled.clear();
+                    if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::clearing schedule");
                 }
                 else if (srcBus)
                 {
                     _internals->scheduled.push_back(s);
+                    if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::push_back schedule");
                 }
+                else if (diagnosing_silence)
+                    ac->diagnosed_silence("SampledAudioNode::schedule encountered, but no source bus has been set");
             }
         }
 
@@ -479,8 +502,11 @@ namespace lab {
 
         // silence the outputs if there's nothing to play.
         int schedule_count = static_cast<int>(_internals->scheduled.size());
-        if (!schedule_count || !srcBus)
+        if (!schedule_count || !srcBus) {
+            if (diagnosing_silence)
+                ac->diagnosed_silence("SampledAudioNode::process no schedule_count");
             return;
+        }
 
         // if there's something to play, conform the output channel count.
         int srcChannelCount = srcBus->numberOfChannels();

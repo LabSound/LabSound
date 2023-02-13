@@ -886,4 +886,17 @@ void AudioContext::debugTraverse(AudioNode * root)
     }
 }
 
-}  // End namespace lab
+void AudioContext::diagnose(std::shared_ptr<AudioNode> n)
+{
+    _diagnose = n;
+}
+
+void AudioContext::diagnosed_silence(const char* msg)
+{
+    if (_diagnose)
+    {
+        printf("*** ls::diagnosed silence: %s:%s\n", _diagnose->name(), msg);
+    }
+}
+
+} // end namespace lab

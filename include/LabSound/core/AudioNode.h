@@ -119,6 +119,8 @@ public :
     ProfileSample graphTime() const { return _self->graphTime; }
     ProfileSample totalTime() const { return _self->totalTime; }
 
+    SchedulingState schedulingState() const { return _self->_scheduler.playbackState(); }
+
     //--------------------------------------------------
     // required interface
     //

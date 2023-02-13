@@ -461,19 +461,35 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
-    if (!isInitialized())
-        return;
-
     auto ac = r.context();
     if (!ac)
         return;
+
+    bool diagnosing_silence = ac->diagnosing().get() == this;
+
+    if (diagnosing_silence) {
+        if (_self->_scheduler._playbackState < SchedulingState::FADE_IN ||
+            _self->_scheduler._playbackState > SchedulingState::PLAYING)
+        {
+            ac->diagnosed_silence("Scheduled node not playing");
+        }
+    }
+
+    if (!isInitialized()) {
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Not initialized");
+        return;
+    }
 
     // outputs cache results in their busses.
     // if the scheduler's recorded epoch is the same as the context's, the node
     // shall bail out as it has been processed once already this epoch.
 
-    if (!_self->_scheduler.update(r, bufferSize))
+    if (!_self->_scheduler.update(r, bufferSize)) {
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Already processed");
         return;
+    }
 
     ProfileScope selfScope(_self->totalTime);
     _self->graphTime.zero();
@@ -483,6 +499,8 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
          _self->_scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Unscheduled");
         return;
     }
 
@@ -529,7 +547,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // clean pops resulting from starting or stopping
 
-#define OOS(x) (float(x) / float(steps))
+    #define OOS(x) (float(x) / float(steps))
     if (start_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::FADE_IN)
     {
         int steps = start_envelope;
@@ -638,7 +656,7 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
 bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
     return _self->_scheduler._playbackState < SchedulingState::FADE_IN ||
-    _self->_scheduler._playbackState == SchedulingState::FINISHED;
+           _self->_scheduler._playbackState == SchedulingState::FINISHED;
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
