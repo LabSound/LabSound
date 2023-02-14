@@ -256,7 +256,7 @@ namespace lab {
             _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
         else {
             if (_internals->bus_setting_updated)
-                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, 0});
+                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, loopCount});
         }
         
         initialize();
