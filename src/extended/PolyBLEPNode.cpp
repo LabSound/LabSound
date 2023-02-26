@@ -14,7 +14,7 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <algorithm>
 
@@ -430,7 +430,7 @@ void PolyBLEPNode::setType(PolyBLEPType type)
 
 void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output;
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
     {
         outputBus->zero();
@@ -481,7 +481,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
 
 void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize)
 {
-    return processPolyBLEP(r, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
+    return processPolyBLEP(r, bufferSize, _self->scheduler._renderOffset, _self->scheduler._renderLength);
 }
 
 bool PolyBLEPNode::propagatesSilence(ContextRenderLock & r) const

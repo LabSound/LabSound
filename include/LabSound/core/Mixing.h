@@ -9,11 +9,6 @@
 namespace lab
 {
 
-enum class ChannelInterpretation
-{
-    Speakers,
-    Discrete,
-};
 
 enum class Channel : int
 {
@@ -40,6 +35,13 @@ namespace Channels
         Surround_5_1 = 6,
         Surround_7_1 = 8
     };
+};
+
+
+enum class ChannelInterpretation
+{
+    Speakers,
+    Discrete,
 };
 
 enum class ChannelCountMode

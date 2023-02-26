@@ -1596,19 +1596,24 @@ struct ex_split_merge : public labsound_example
         }
 
         ac.connect(splitter, musicClipNode);
-        ac.connect(merger, splitter, 0, 1); // swap front-left
-        ac.connect(merger, splitter, 1, 0); // and front right to demonstrate channels can be swapped
+        ac.connect(merger, splitter, 0, 0); // front left
+        ac.connect(merger, splitter, 1, 1); // front right
+        ac.connect(merger, splitter, 2, 0); // center
+        ac.connect(merger, splitter, 2, 1); // center
+        ac.connect(merger, splitter, 3, 1); // back left
+        ac.connect(merger, splitter, 4, 0); // back right
+        ac.connect(merger, splitter, 5, 1); // tone
         ac.connect(gain, merger, 0, 0);
         ac.connect(ac.destinationNode(), gain, 0, 0);
         musicClipNode->schedule(0.0);
-
+        
         // ensure nodes last until the end of the demo
         _nodes.push_back(musicClipNode);
         _nodes.push_back(gain);
         _nodes.push_back(merger);
         _nodes.push_back(splitter);
 
-        const uint32_t delay_time_ms = 2000;
+        const uint32_t delay_time_ms = 6000;
         Wait(delay_time_ms);
     }
     

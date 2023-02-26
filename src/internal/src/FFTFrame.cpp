@@ -4,7 +4,7 @@
 
 #include "LabSound/extended/Logging.h"
 
-#include "internal/FFTFrame.h"
+#include "LabSound/extended/FFTFrame.h"
 
 #ifndef NDEBUG
 #include <stdio.h>

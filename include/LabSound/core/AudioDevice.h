@@ -7,7 +7,6 @@
 #define lab_audiodevice_h
 
 #include "LabSound/core/AudioNode.h"
-#include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioSourceProvider.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Logging.h"
@@ -62,30 +61,6 @@ struct AudioDeviceInfo
     bool is_default_input{false};
 };
 
-
-// low bit of current_sample_frame indexes time point 0 or 1
-// (so that time and epoch are written atomically, after the alternative epoch has been filled in)
-struct SamplingInfo
-{
-    uint64_t current_sample_frame{0};
-    double current_time{0.0};
-    float sampling_rate{0.0};
-    std::chrono::high_resolution_clock::time_point epoch[2];
-};
-
-// This is a free function to consolidate and implement the required functionality to take buffers
-// from the hardware (both input and output) and begin pulling the graph until fully rendered per quanta.
-// This was formerly a function found on the removed `AudioDestinationNode` class (removed
-// to de-complicate some annoying inheritance chains).
-//
-// `pull_graph(...)` will need to be called by a single AudioNode per-context. For instance,
-// the `AudioHardwareDeviceNode` or the `NullDeviceNode`.
-void pull_graph(AudioContext * ctx,
-                AudioNodeInput * required_inlet,
-                AudioBus * src, AudioBus * dst,
-                int frames,
-                const SamplingInfo & info,
-                AudioSourceProvider * optional_hardware_input = nullptr);
 
 class AudioDevice
 {
@@ -150,9 +125,7 @@ public:
 class AudioDestinationNode : public AudioNode {
 protected:
     AudioContext * _context;
-    SamplingInfo _last_info = {};
 
-    // AudioNode interface
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
@@ -160,9 +133,11 @@ protected:
     std::shared_ptr<AudioDevice> _platformAudioDevice;
     
 public:
+    SamplingInfo _last_info = {};
+
     static const char* static_name() { return "AudioDestination"; }
     virtual const char* name() const override { return static_name(); }
-    static AudioNodeDescriptor * desc();
+    static AudioNodeDescriptor* desc();
 
     explicit AudioDestinationNode(
         AudioContext& ac,
@@ -175,25 +150,14 @@ public:
     
     AudioDevice* device() const { return _platformAudioDevice.get(); }
 
-    void render(AudioSourceProvider* provider,
-                AudioBus * src, AudioBus * dst,
-                int frames,
-                const SamplingInfo & info);
-    
     
     void offlineRender(AudioBus * dst, size_t framesToProcess);
 
     const SamplingInfo & getSamplingInfo() const { return _last_info; }
     
-    
-    // AudioNode interface
-    // process should never be called
-    virtual void process(ContextRenderLock &, int bufferSize) override {}
-
     virtual void initialize() override;
     virtual void uninitialize() override;
     virtual void reset(ContextRenderLock &) override;
-
 };
 
 }  // lab

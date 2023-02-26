@@ -23,12 +23,9 @@ AudioNodeDescriptor * RecorderNode::desc()
 RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     : AudioNode(r, *desc())
 {
+    _self->desiredChannelCount = channelCount;
     m_sampleRate = r.sampleRate();
-    _self->m_channelCount = channelCount;
-    _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
@@ -36,11 +33,8 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfi
     : AudioNode(ac, *desc())
 {
     m_sampleRate = outConfig.desired_samplerate;
-    _self->m_channelCount = outConfig.desired_channels;
-    _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    _self->desiredChannelCount = 1;
     initialize();
 }
 
@@ -52,8 +46,8 @@ RecorderNode::~RecorderNode()
 
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    AudioBus * inputBus = input(0)->bus(r);
+    AudioBus * outputBus = _self->output.get();
+    auto inputBus = summedInput();
 
     bool has_input = inputBus != nullptr && input(0)->isConnected() && inputBus->numberOfChannels() > 0;
     if ((!isInitialized() || !has_input) && outputBus)
@@ -81,7 +75,7 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
         {
             output(0)->setNumberOfChannels(r, inputBusNumChannels);
             outputBusNumChannels = inputBusNumChannels;
-            outputBus = output(0)->bus(r);
+            outputBus = _self->output;
         }
     }
 

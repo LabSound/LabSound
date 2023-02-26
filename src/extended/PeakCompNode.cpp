@@ -11,7 +11,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/PeakCompNode.h"
 
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include "LabSound/core/Macros.h"
 

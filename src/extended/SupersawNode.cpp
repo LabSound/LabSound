@@ -159,7 +159,7 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
 {
     internalNode->update(r, true);
 
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output;
 
     if (!isInitialized() || !outputBus->numberOfChannels())
     {
@@ -168,10 +168,10 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     }
 
     AudioBus * dst = nullptr;
-    internalNode->gainNode->input(0)->bus(r)->zero();
+    internalNode->gainNode->_self->inputs[0].node->output()->zero();
     /*AudioBus * renderedBus =*/ internalNode->gainNode->input(0)->pull(r, dst, bufferSize);
     internalNode->gainNode->process(r, bufferSize);
-    AudioBus * inputBus = internalNode->gainNode->output(0)->bus(r);
+    AudioBus * inputBus = internalNode->gainNode->_self->output;
     outputBus->copyFrom(*inputBus);
     outputBus->clearSilentFlag();
 }

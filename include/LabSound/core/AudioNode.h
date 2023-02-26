@@ -58,11 +58,11 @@ enum OscillatorType
 };
 // clang-format on
 
+class AudioBus;
 class AudioContext;
-class AudioNodeInput;
-class AudioNodeOutput;
 class AudioParam;
 class AudioSetting;
+class AudioSourceProvider;
 class ContextGraphLock;
 class ContextRenderLock;
 
@@ -70,6 +70,18 @@ class ContextRenderLock;
 // It may be an audio source, an intermediate processing module, or an audio 
 // destination.
 //
+
+// low bit of current_sample_frame indexes time point 0 or 1
+// (so that time and epoch are written atomically, after the alternative epoch has been filled in)
+struct SamplingInfo
+{
+    uint64_t current_sample_frame{0};
+    double current_time{0.0};
+    float sampling_rate{0.f};
+    std::chrono::high_resolution_clock::time_point epoch[2];
+};
+
+
 class AudioNode
 {
 protected:
@@ -79,26 +91,34 @@ protected:
     // the processing graph when no references are being held any more.
 
     struct Internal {
-        explicit Internal(AudioContext & ac);
+        explicit Internal(AudioContext& ac);
+                
+        AudioNodeScheduler scheduler;
+
+        struct InputMapping {
+            std::shared_ptr<AudioNode> node;
+            int inputChannel = -1;
+            int outputChannel = -1;
+        };
+
+        std::vector<InputMapping> inputs;
+        std::shared_ptr<AudioBus> output;
+        std::shared_ptr<AudioBus> summingBus;
         
-        AudioNodeScheduler _scheduler;
+        std::vector<std::shared_ptr<AudioNode>> receivers;
 
-        std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
-        std::vector<std::shared_ptr<AudioNodeOutput>> m_outputs;
-
-        std::vector<std::shared_ptr<AudioParam>> _params;
-        std::vector<std::shared_ptr<AudioSetting>> _settings;
-
-        int m_channelCount{ 0 };
-
-        ChannelCountMode m_channelCountMode{ ChannelCountMode::Max };
-        ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
+        std::vector<std::shared_ptr<AudioParam>>   params;
+        std::vector<std::shared_ptr<AudioSetting>> settings;
 
         ProfileSample graphTime;    // how much time the node spend pulling inputs
         ProfileSample totalTime;    // total time spent by the node. total-graph is the self time.
 
+        ChannelInterpretation m_channelInterpretation{ ChannelInterpretation::Speakers };
+        int desiredChannelCount;
         int color = 0;
-        bool m_isInitialized {false};
+        bool isInitialized {false};
+        
+        uint64_t graphEpoch = 0;
     };
     std::shared_ptr<Internal> _self;
     
@@ -119,7 +139,11 @@ public :
     ProfileSample graphTime() const { return _self->graphTime; }
     ProfileSample totalTime() const { return _self->totalTime; }
 
-    SchedulingState schedulingState() const { return _self->_scheduler.playbackState(); }
+    SchedulingState schedulingState() const { return _self->scheduler.playbackState(); }
+
+    // update the scheduler, and report whether the node is scheduled to play
+    // during this quantum
+    bool updateSchedule(ContextRenderLock& r, int bufferSize);
 
     //--------------------------------------------------
     // required interface
@@ -130,7 +154,7 @@ public :
     // when process() is called. Subclasses will take this input data and 
     // render into this node's output buses.
     // Called from context's audio thread.
-    virtual void process(ContextRenderLock &, int bufferSize) = 0;
+    virtual void process(ContextRenderLock &, int bufferSize);
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
@@ -179,21 +203,24 @@ public :
 
     //--------------------------------------------------
     // inputs and outputs
-    bool isInitialized() const { return _self->m_isInitialized; }
-
-    // These locked versions can be called at run time.
-    void addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input);
-    void addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output);
+    bool isInitialized() const { return _self->isInitialized; }
 
     int numberOfInputs() const {
-        return static_cast<int>(_self->m_inputs.size()); }
-    int numberOfOutputs() const {
-        return static_cast<int>(_self->m_outputs.size()); }
+        return static_cast<int>(_self->inputs.size()); }
+    
+    bool isConnected(std::shared_ptr<AudioNode>) const;
 
-    std::shared_ptr<AudioNodeInput> input(int index);
-    std::shared_ptr<AudioNodeInput> input(char const* const str);
-    std::shared_ptr<AudioNodeOutput> output(int index);
-    std::shared_ptr<AudioNodeOutput> output(char const* const str);
+    std::shared_ptr<AudioNode> input(int index);
+    std::shared_ptr<AudioBus> output() { return _self->output; }
+    std::shared_ptr<AudioBus> summedInput();
+    
+    std::shared_ptr<AudioBus> renderedOutputCurrentQuantum(ContextRenderLock& r);
+
+    static void connect(std::shared_ptr<AudioNode> rcv,
+                        std::shared_ptr<AudioNode> send,
+                        int inputSrcChannel, int dstChannel);
+    void disconnect(std::shared_ptr<AudioNode> inputSrc, int inputSrcChannel, int dstChannel);
+    void disconnectReceivers();
     
     //--------------------------------------------------
     // channel management
@@ -201,21 +228,12 @@ public :
     // Called when a new connection has been made to one of our inputs or the connection number of channels has changed.
     // This potentially gives us enough information to perform a lazy initialization or, if necessary, a re-initialization.
     // Called from main thread.
-    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
+//    virtual void checkNumberOfChannelsForInput(ContextRenderLock &, AudioNodeInput *);
 
-    virtual void conformChannelCounts();
+//    virtual void conformChannelCounts();
 
     int channelCount();
-    void setChannelCount(ContextGraphLock & g, int channelCount);
-
-    ChannelCountMode channelCountMode() const {
-        return _self->m_channelCountMode; }
-    void setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode);
-
-    ChannelInterpretation channelInterpretation() const {
-        return _self->m_channelInterpretation; }
-    void setChannelInterpretation(ChannelInterpretation interpretation) {
-        _self->m_channelInterpretation = interpretation; }
+    void setChannelCount(int channelCount);
 
     //--------------------------------------------------
     // parameters and settings
@@ -236,15 +254,18 @@ public :
     int setting_index(char const * const str);
 
     std::vector<std::shared_ptr<AudioParam>> params() const {
-        return _self->_params; }
+        return _self->params; }
     std::vector<std::shared_ptr<AudioSetting>> settings() const {
-        return _self->_settings; }
+        return _self->settings; }
+
+    void render(AudioContext* context,
+                AudioSourceProvider* provider,
+                AudioBus* inputBus, AudioBus* renderToThisBus,
+                const SamplingInfo & info);
 
 protected:
-    // Inputs and outputs must be created before the AudioNode is initialized.
-    // It is only legal to call this during a constructor.
-    void addInput(std::unique_ptr<AudioNodeInput> input);
-    void addOutput(std::unique_ptr<AudioNodeOutput> output);
+
+    virtual void runWorkBeforeScheduleUpdate(ContextRenderLock&) {}
 
     // Called by processIfNecessary() to cause all parts of the rendering graph connected to us to process.
     // Each rendering quantum, the audio data for each of the AudioNode's inputs will be available after this method is called.
@@ -254,17 +275,26 @@ protected:
     friend class AudioContext;
 
     // starts an immediate ramp to zero in preparation for disconnection
-    void scheduleDisconnect() { _self->_scheduler.stop(0); }
+    void scheduleDisconnect() { _self->scheduler.stop(0); }
 
     // returns true if the disconnection ramp has reached zero.
     // This is intended to allow the AudioContext to manage popping artifacts
     bool disconnectionReady() const {
-        return _self->_scheduler._playbackState != SchedulingState::PLAYING; }
+        return _self->scheduler._playbackState != SchedulingState::PLAYING; }
 
     static void _printGraph(const AudioNode * root,
                         std::function<void(const char *)> prnln, int indent);
 
+    static void gatherInputsAndUpdateSchedules(ContextRenderLock& renderLock, 
+                             AudioNode* root,
+                             std::vector<AudioNode*>& scheduled,
+                             std::vector<AudioNode*>& unscheduled,
+                             int frames,
+                             uint64_t current_sample_frame);
+
 };
+
+
 
 }  // namespace lab
 

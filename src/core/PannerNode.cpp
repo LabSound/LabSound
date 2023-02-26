@@ -213,7 +213,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
 
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destination = output(0)->bus(r);
+    AudioBus * destination = _self->output;
 
     if (!isInitialized() || !input(0)->isConnected())
     {
@@ -221,7 +221,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    AudioBus * source = input(0)->bus(r);
+    AudioBus * source = _self->inputs[0].node->output();
 
     if (!source)
     {
@@ -268,7 +268,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
     
     m_panner->pan(r, azimuth, elevation,
                   *source, *destination,
-                  _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
+                  _self->scheduler._renderOffset, _self->scheduler._renderLength);
 
     // Get the distance and cone gain.
     float totalGain = distanceConeGain(r);

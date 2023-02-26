@@ -22,7 +22,6 @@ public:
     virtual const char* name() const override { return static_name(); }
     static AudioNodeDescriptor * desc();
 
-    void addInputs(int n);
     void setOutputChannelCount(int n) { m_desiredNumberOfOutputChannels = n; }
 
     // AudioNode

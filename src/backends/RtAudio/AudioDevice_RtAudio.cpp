@@ -4,7 +4,7 @@
 #include "LabSound/backends/AudioDevice_RtAudio.h"
 
 #include "internal/Assertions.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"

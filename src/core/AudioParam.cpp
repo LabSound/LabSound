@@ -121,13 +121,6 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
         values[0] = static_cast<float>(m_value);
     }
 
-    // if there are rendering connections, be sure they are ready
-    updateRenderingState(r);
-
-    int connectionCount = numberOfRenderingConnections(r);
-    if (!connectionCount)
-        return;
-
     // Now sum all of the audio-rate connections together (unity-gain summing junction).
     // Note that parameter connections would normally be mono, so mix down to mono if necessary.
 
@@ -142,23 +135,9 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
     // point the summing bus at the values array
     m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
-    for (int i = 0; i < connectionCount; ++i)
-    {
-        auto output = renderingOutput(r, i);
-
-        ASSERT(output);
-
-        // Render audio from this output.
-        AudioBus * connectionBus = output->pull(r, nullptr, AudioNode::ProcessingSizeInFrames);
-
-        // Sum, with unity-gain.
-        /// @TODO it was surprising in practice that the inputs are summed, as opposed to simply overriding.
-        /// Summing might be useful, but pure override should be an option as well.
-        /// The case in point was to construct a vibrato around A440 by making an oscillator provide
-        /// a signal with frequency 4, bias 440, amplitude 10, and supply that as an override to the frequency of
-        /// a second oscillator. Since it's summed, the solution that works is that the first oscillator should
-        /// have a bias of zero. It seems like sum or override should be a setting of some sort...
-        m_internalSummingBus->sumFrom(*connectionBus);
+    if (_overridingInput) {
+        auto output = _overridingInput->renderedOutputCurrentQuantum(r);
+        m_internalSummingBus->sumFrom(*output.get(), _overridingInputChannel, 0);
     }
 }
 
@@ -177,37 +156,25 @@ void AudioParam::calculateTimelineValues(ContextRenderLock & r,
     m_value = m_timeline.valuesForTimeRange(startTime, endTime, static_cast<float>(m_value), values, numberOfValues, sampleRate, sampleRate);
 }
 
-void AudioParam::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
-{
-    if (!output)
-        return;
-
-    if (param->isConnected(output))
-        return;
-
-    param->junctionConnectOutput(output);
-    output->addParam(g, param);
-}
-
-void AudioParam::disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNodeOutput> output)
+void AudioParam::connect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> output, int channel)
 {
     if (!param || !output)
         return;
 
-    if (param->isConnected(output))
-    {
-        param->junctionDisconnectOutput(output);
-    }
-    output->removeParam(g, param);
+    param->_overridingInput = output;
+    param->_overridingInputChannel = channel;
+}
+
+void AudioParam::disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> output)
+{
+    if (!param || !output)
+        return;
+
+    if (param->_overridingInput == output)
+        param->_overridingInput.reset();
 }
 
 void AudioParam::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam> param)
 {
-    for (auto i : param->m_connectedOutputs)
-    {
-        auto j = i.lock();
-        if (j)
-            j->removeParam(g, param);
-    }
-    param->junctionDisconnectAllOutputs();
+    param->_overridingInput.reset();
 }

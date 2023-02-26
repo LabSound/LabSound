@@ -1,4 +1,8 @@
 
+#ifndef _MSC_VER
+#pragma GCC diagnostic ignored "-Wshorten-64-to-32"
+#endif
+
 #include <stdbool.h>
 #define PACKAGE "ls-lsr"
 #define VERSION "1.0"

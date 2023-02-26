@@ -11,7 +11,7 @@
 #include "internal/HRTFDatabase.h"
 #include "internal/Biquad.h"
 #include "internal/FFTConvolver.h"
-#include "internal/FFTFrame.h"
+#include "LabSound/extended/FFTFrame.h"
 
 #include <algorithm>
 #include <iostream>

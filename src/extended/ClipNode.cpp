@@ -12,7 +12,7 @@
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/Registry.h"
 
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <iostream>
 #include <vector>
@@ -65,7 +65,7 @@ public:
         if (dstChannels != srcChannels)
         {
             _owner->output(0)->setNumberOfChannels(r, srcChannels);
-            destinationBus = _owner->output(0)->bus(r); 
+            destinationBus = _owner->_self->output; 
             /// @todo no need to pass in the destination bus since owner is retained.
             /// @todo perhaps flatten out AudioProcessor as well, as it's not adding anything particularly
         }

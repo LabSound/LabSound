@@ -24,7 +24,7 @@ AudioNodeDescriptor * FunctionNode::desc()
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, channels)));
+    _self->desiredChannelCount = channels;
     initialize();
 }
 
@@ -35,7 +35,7 @@ FunctionNode::~FunctionNode()
 
 void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output;
 
     if (!isInitialized() || !outputBus->numberOfChannels() || !_function)
     {
@@ -43,8 +43,8 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _self->_scheduler._renderOffset;
-    int nonSilentFramesToProcess = _self->_scheduler._renderLength;
+    int quantumFrameOffset = _self->scheduler._renderOffset;
+    int nonSilentFramesToProcess = _self->scheduler._renderLength;
 
     if (!nonSilentFramesToProcess)
     {

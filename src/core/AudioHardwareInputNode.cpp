@@ -29,7 +29,6 @@ AudioHardwareInputNode::AudioHardwareInputNode(
 : AudioNode(ac, *desc())
 , m_audioSourceProvider(audioSourceProvider)
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
     initialize();
 }
 
@@ -41,7 +40,7 @@ AudioHardwareInputNode::~AudioHardwareInputNode()
 
 void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output.get();
 
     // This used to be the function of a manual call to setFormat()
     if (m_sourceNumberOfChannels == 0)
@@ -50,8 +49,10 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
         auto device = destinationNode->device();
         auto inputConfig = device->getInputConfig();
         m_sourceNumberOfChannels = inputConfig.desired_channels;
-        output(0)->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
-        outputBus = output(0)->bus(r);  // outputBus pointer was invalidated
+    }
+    
+    if (m_sourceNumberOfChannels > 0 && m_sourceNumberOfChannels != outputBus->numberOfChannels()) {
+        outputBus->setNumberOfChannels(r, m_sourceNumberOfChannels);  // Reconfigure the output's number of channels.
     }
 
     if (!m_audioSourceProvider)

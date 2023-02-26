@@ -1,7 +1,7 @@
 // License: BSD 2 Clause
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
-
+#if 0
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
@@ -81,6 +81,7 @@ void AudioNodeOutput::updateRenderingState(ContextRenderLock & r)
 
 void AudioNodeOutput::propagateChannelCount(ContextRenderLock & r)
 {
+/*
     if (isChannelCountKnown())
     {
         ASSERT(r.context());
@@ -92,6 +93,7 @@ void AudioNodeOutput::propagateChannelCount(ContextRenderLock & r)
             connectionNode->checkNumberOfChannelsForInput(r, in.get());
         }
     }
+ */
 }
 
 AudioBus * AudioNodeOutput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, int bufferSize)
@@ -130,6 +132,7 @@ AudioBus * AudioNodeOutput::bus(ContextRenderLock & r) const
     return m_inPlaceBus ? m_inPlaceBus : m_internalBus.get();
 }
 
+/*
 int AudioNodeOutput::fanOutCount()
 {
     return static_cast<int>(m_inputs.size());
@@ -186,6 +189,7 @@ void AudioNodeOutput::disconnectAllInputs(ContextGraphLock & g, std::shared_ptr<
         AudioNodeInput::disconnect(g, *ptr, self);
     }
 }
+*/
 
 void AudioNodeOutput::addParam(ContextGraphLock & g, std::shared_ptr<AudioParam> param)
 {
@@ -222,3 +226,4 @@ void AudioNodeOutput::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioN
 }
 
 }  // namespace lab
+#endif

@@ -17,7 +17,7 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <algorithm>
 //#include <emmintrin.h>
@@ -104,7 +104,7 @@ void OscillatorNode::setType(OscillatorType type)
 
 void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output;
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
     {
         outputBus->zero();
@@ -303,7 +303,7 @@ void OscillatorNode::process(ContextRenderLock & r, int bufferSize)
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     if (type != OscillatorType::CUSTOM)
     {
-        process_oscillator(r, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
+        process_oscillator(r, bufferSize, _self->scheduler._renderOffset, _self->scheduler._renderLength);
         return;
     }
 

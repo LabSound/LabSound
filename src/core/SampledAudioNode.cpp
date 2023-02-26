@@ -7,12 +7,12 @@
 #include "LabSound/core/SampledAudioNode.h"
 
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
 
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include "internal/Assertions.h"
 
 #include "concurrentqueue/concurrentqueue.h"
@@ -24,9 +24,7 @@ namespace lab {
 
     /*
     * outputs silence when no source bus is playing
-    * overall playing state govered by audioscheduledsourcenode
-    * onended is dispatched both when the node is stopped, and when the end of a buffer is reached
-    * start/stop(when)
+    * OnEnded is dispatched both when the node is stopped, and when the end of a buffer is reached
      */
 
     struct SRC_Resampler
@@ -48,8 +46,13 @@ namespace lab {
     };
 
 
-    struct SampledAudioNode::Scheduled
+    enum SANWorkKind
     {
+        SetBus, ClearSchedule, Start
+    };
+    struct SampledAudioNode::WorkPacket
+    {
+        SANWorkKind kind;
         double when;          // in context temporal frame
         int32_t grain_start;  // in source bus temporal frame
         int32_t grain_end;
@@ -67,8 +70,8 @@ namespace lab {
         {
         }
         ~Internals() = default;
-        moodycamel::ConcurrentQueue<Scheduled> incoming;
-        std::vector<Scheduled> scheduled;
+        moodycamel::ConcurrentQueue<WorkPacket> incoming;
+        std::vector<WorkPacket> scheduled;
         int32_t greatest_cursor = -1;
         std::weak_ptr<AudioContext::AudioContextInterface> ac;
         bool bus_setting_updated = false;
@@ -91,6 +94,8 @@ namespace lab {
         : AudioScheduledSourceNode(ac, *desc())
         , _internals(new Internals(ac))
     {
+        // Per WebAudio's AudioBufferSourceNode a SAN will default to silent stereo.
+        _self->desiredChannelCount = 2;
         m_sourceBus = setting("sourceBus");
         m_playbackRate = param("playbackRate");
         m_detune = param("detune");
@@ -99,9 +104,6 @@ namespace lab {
         m_sourceBus->setValueChanged([this]() {
             this->_internals->bus_setting_updated = true;
         });
- 
-        // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
         initialize();
     }
@@ -117,59 +119,32 @@ namespace lab {
 
     void SampledAudioNode::clearSchedules()
     {
-        Scheduled s;
+        WorkPacket s;
         while (_internals->incoming.try_dequeue(s)) {}
-        _internals->incoming.enqueue({ 0., 0,0,0, -2 });
+        _internals->incoming.enqueue({ SANWorkKind::ClearSchedule });
     }
 
     void SampledAudioNode::setBus(ContextRenderLock& r, std::shared_ptr<AudioBus> sourceBus)
     {
         // loop count of -3 means set the bus.
-        _internals->incoming.enqueue({ 0, 0, 0, 0, -3, sourceBus });
+        _internals->incoming.enqueue({ SANWorkKind::SetBus, 0, 0, 0, 0, -3, sourceBus });
         initialize();
 
         // set the pending pointer, so that a synchronous call to getBus will reflect
         // the value last scheduled. This eliminates a confusing sitatuion where getBus
         // will not be useful until the scheduling queue is serviced
         m_pendingSourceBus = sourceBus;
+        setChannelCount(sourceBus->numberOfChannels());
     }
 
     void SampledAudioNode::start(float when)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
-        auto ac = _internals->ac.lock();
-        if (!ac)
-            return;
-
-        when = static_cast<float>(when - ac->currentTime());
-
-        if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
-
-        _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
-        initialize();
+        start(when, 0, 0);
     }
 
     void SampledAudioNode::start(float when, int loopCount)
     {
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus)
-            return;
-
-        auto ac = _internals->ac.lock();
-        if (!ac)
-            return;
-
-        when = static_cast<float>(when - ac->currentTime());
-
-        if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
-
-        _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
-        initialize();
+        start(when, 0, loopCount);
     }
 
     void SampledAudioNode::start(float when, float grainOffset, int loopCount)
@@ -185,14 +160,15 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
+            _self->scheduler.start(0.);
 
         float r = bus->sampleRate();
         int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
         int32_t grainEnd = bus->length();
         if (grainStart < grainEnd)
         {
-            _internals->incoming.enqueue({when,
+            _internals->incoming.enqueue({SANWorkKind::Start,
+                                          when,
                                           grainStart, grainEnd, grainStart,
                                           loopCount});
         }
@@ -212,7 +188,7 @@ namespace lab {
         when = static_cast<float>(when - ac->currentTime());
 
         if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
+            _self->scheduler.start(0.);
 
         float r = bus->sampleRate();
         int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
@@ -221,7 +197,8 @@ namespace lab {
             grainEnd = bus->length() - grainStart;
         if (grainStart < grainEnd)
         {
-            _internals->incoming.enqueue({when,
+            _internals->incoming.enqueue({SANWorkKind::Start,
+                                          when,
                                           grainStart, grainEnd, grainStart,
                                           loopCount});
         }
@@ -230,86 +207,28 @@ namespace lab {
 
     void SampledAudioNode::schedule(float when)
     {
-        if (!isPlayingOrScheduled()) {
-            _self->_scheduler.start(0.);
-        }
-
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (bus) {
-            _internals->incoming.enqueue({when, 0, bus->length(), 0, 0});
-        }
-        else {
-            if (_internals->bus_setting_updated)
-                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, 0});
-        }
-
-        initialize();
+        start(when);
     }
 
     void SampledAudioNode::schedule(float when, int loopCount)
     {
-        if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
-
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (bus)
-            _internals->incoming.enqueue({when, 0, bus->length(), 0, loopCount});
-        else {
-            if (_internals->bus_setting_updated)
-                _internals->incoming.enqueue({when, 0, m_sourceBus->valueBus()->length(), 0, loopCount});
-        }
-        
-        initialize();
+        start(when, loopCount);
     }
 
     void SampledAudioNode::schedule(float when, float grainOffset, int loopCount)
     {
-        if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
-
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (bus) {
-            float r = bus->sampleRate();
-            int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
-            int32_t grainEnd = bus->length();
-            if (grainStart < grainEnd)
-            {
-                _internals->incoming.enqueue({when,
-                                              grainStart, grainEnd, grainStart,
-                                              loopCount});
-            }
-        }
-
-        initialize();
+        start(when, grainOffset, loopCount);
     }
 
     void SampledAudioNode::schedule(float when, float grainOffset, float grainDuration, int loopCount)
     {
-        if (!isPlayingOrScheduled())
-            _self->_scheduler.start(0.);
-
-        std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus) {
-            float r = bus->sampleRate();
-            int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
-            int32_t grainEnd = grainStart + static_cast<uint32_t>(grainDuration * r);
-            if (grainEnd > bus->length())
-                grainEnd = bus->length() - grainStart;
-            if (grainStart < grainEnd)
-            {
-                _internals->incoming.enqueue({when,
-                                              grainStart, grainEnd, grainStart,
-                                              loopCount});
-            }
-        }
-        
-        initialize();
+        start(when, grainOffset, grainDuration, loopCount);
     }
 
-    bool SampledAudioNode::renderSample(ContextRenderLock& r, Scheduled& schedule, size_t destinationSampleOffset, size_t frameSize)
+    bool SampledAudioNode::renderSample(ContextRenderLock& r, WorkPacket& schedule, size_t destinationSampleOffset, size_t frameSize)
     {
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
-        AudioBus* dstBus = output(0)->bus(r);
+        AudioBus* dstBus = _self->output.get();
         size_t dstChannelCount = dstBus->numberOfChannels();
         size_t srcChannelCount = srcBus->numberOfChannels();
         ASSERT(dstChannelCount == srcChannelCount);
@@ -446,75 +365,81 @@ namespace lab {
         return true;
     }
 
+    void SampledAudioNode::runWorkBeforeScheduleUpdate(ContextRenderLock& r)
+    {
+        auto ac = r.context();
+        ASSERT(ac); // should never happen
+        bool diagnosing_silence = ac->diagnosing().get() == this;
+
+        // manage the introduction of a new source bus.
+        //
+        // move requested starts to the internal schedule if there's a source bus.
+        // if there's no source bus, the schedule requests are discarded.
+        auto srcBus = m_sourceBus->valueBus();
+        WorkPacket s;
+        while (_internals->incoming.try_dequeue(s))
+        {
+            switch (s.kind) {
+                case SANWorkKind::SetBus:
+                    m_retainedSourceBus = s.sourceBus;
+                    m_sourceBus->setBus(s.sourceBus.get());
+                    srcBus = m_retainedSourceBus;
+                    srcBus = s.sourceBus;
+                    _internals->bus_setting_updated = false; // setting bus causes this -3 state to occur so clear it immediately
+                    _self->desiredChannelCount = srcBus->numberOfChannels();
+                    if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::bus has been set");
+                    break;
+
+                case SANWorkKind::ClearSchedule:
+                    _internals->scheduled.clear();
+                    if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::schedule cleared");
+                    break;
+
+                case SANWorkKind::Start:
+                    if (srcBus)
+                    {
+                        if (s.when <= 0.0) {
+                            // start immediately
+                            s.when = 0.0;
+                        }
+                        else {
+                            // start at a future time
+                            s.cursor = static_cast<int>(s.when * srcBus->sampleRate());
+                            s.when = 0.0;
+                        }
+                        _internals->scheduled.push_back(s);
+                        if (diagnosing_silence)
+                            ac->diagnosed_silence("SampledAudioNode::push_back schedule");
+                    }
+                    else if (diagnosing_silence)
+                        ac->diagnosed_silence("SampledAudioNode::schedule encountered, but no source bus has been set");
+                    break;
+            }
+        }
+    }
 
     void SampledAudioNode::process(ContextRenderLock& r, int framesToProcess)
     {
         auto ac = r.context();
-        if (!ac)
-            return;
+        ASSERT(ac); // should never happen
         bool diagnosing_silence = ac->diagnosing().get() == this;
 
-        if (_internals->bus_setting_updated) {
-            _internals->bus_setting_updated = false;
-            setBus(r, m_sourceBus->valueBus());
-        }
-        _internals->greatest_cursor = -1;
-      
-        AudioBus* dstBus = output(0)->bus(r);
-        size_t dstChannelCount = dstBus->numberOfChannels();
-        std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
-
-        // move requested starts to the internal schedule if there's a source bus.
-        // if there's no source bus, the schedule requests are discarded.
-        {
-            Scheduled s;
-            while (_internals->incoming.try_dequeue(s))
-            {
-                if (s.loopCount == -3)
-                {
-                    m_retainedSourceBus = s.sourceBus;
-                    m_sourceBus->setBus(s.sourceBus.get());
-                    srcBus = s.sourceBus;
-                    _internals->bus_setting_updated = false; // setting bus causes this -3 state to occur so clear it immediately
-                    if (diagnosing_silence)
-                        ac->diagnosed_silence("SampledAudioNode::bus has been set");
-                }   
-                else if (s.loopCount == -2)
-                {
-                    _internals->scheduled.clear();
-                    if (diagnosing_silence)
-                        ac->diagnosed_silence("SampledAudioNode::clearing schedule");
-                }
-                else if (srcBus)
-                {
-                    _internals->scheduled.push_back(s);
-                    if (diagnosing_silence)
-                        ac->diagnosed_silence("SampledAudioNode::push_back schedule");
-                }
-                else if (diagnosing_silence)
-                    ac->diagnosed_silence("SampledAudioNode::schedule encountered, but no source bus has been set");
-            }
-        }
+        AudioBus* dstBus = _self->output.get();
+        int dstChannelCount = dstBus->numberOfChannels();
 
         // zero out the buffer for summing, or for silence
         for (int i = 0; i < dstChannelCount; ++i)
-            output(0)->bus(r)->zero();
+            dstBus->channel(i)->zero();
 
-        // silence the outputs if there's nothing to play.
+        // if not playing, or the source bus is empty, bail
+        auto srcBus = m_sourceBus->valueBus();
         int schedule_count = static_cast<int>(_internals->scheduled.size());
         if (!schedule_count || !srcBus) {
             if (diagnosing_silence)
                 ac->diagnosed_silence("SampledAudioNode::process no schedule_count");
             return;
-        }
-
-        // if there's something to play, conform the output channel count.
-        int srcChannelCount = srcBus->numberOfChannels();
-        if (dstChannelCount != srcChannelCount)
-        {
-            output(0)->setNumberOfChannels(r, srcChannelCount);
-            dstChannelCount = srcChannelCount;
-            dstBus = output(0)->bus(r);
         }
 
         // compute the frame timing in samples and seconds
@@ -525,14 +450,15 @@ namespace lab {
         double quantumEndTime = quantumStartTime + quantumDuration;
 
         // is anything playing in this quantum?
+        _internals->greatest_cursor = -1;
         for (int i = 0; i < schedule_count; ++i)
         {
-            Scheduled& s = _internals->scheduled.at(i);
+            WorkPacket& s = _internals->scheduled.at(i);
             if (s.when < quantumDuration)   // has s.when counted down to within this quantum?
             {
                 int32_t offset = (s.when < quantumStartTime) ? 0 : static_cast<int32_t>(s.when * r.context()->sampleRate());
                 renderSample(r, s, (size_t) offset, AudioNode::ProcessingSizeInFrames);
-                output(0)->bus(r)->clearSilentFlag();
+                dstBus->clearSilentFlag();
                 if (s.cursor > _internals->greatest_cursor)
                     _internals->greatest_cursor = s.cursor;
             }
@@ -544,7 +470,7 @@ namespace lab {
         // retire any schedules whose loopcount is -2, which means that renderSample signalled a finish
         for (int i = 0; i < schedule_count; ++i)
         {
-            Scheduled& s = _internals->scheduled.at(i);
+            WorkPacket& s = _internals->scheduled.at(i);
             if (s.loopCount < -1)
             {
                 while (s.resampler.size())
@@ -558,8 +484,8 @@ namespace lab {
                 _internals->scheduled.pop_back();
                 --schedule_count;
 
-                if (_self->_scheduler._onEnded)
-                    r.context()->enqueueEvent(_self->_scheduler._onEnded);
+                if (_self->scheduler._onEnded)
+                    r.context()->enqueueEvent(_self->scheduler._onEnded);
             }
         }
     }

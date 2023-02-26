@@ -7,7 +7,7 @@
 #if defined(USE_KISS_FFT)
 
 #include "internal/FFTFrame.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <iostream>
 #include <kissfft/kiss_fftr.hpp>

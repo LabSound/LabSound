@@ -1,7 +1,7 @@
 // License: BSD 2 Clause
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
-
+#if 0
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
@@ -33,13 +33,16 @@ AudioNodeInput::~AudioNodeInput()
 {
 }
 
-void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
+void AudioNodeInput::connect(ContextGraphLock & g,
+                             std::shared_ptr<AudioNodeInput> junction,
+                             std::shared_ptr<AudioNodeOutput> toOutput)
 {
     if (!junction || !toOutput || !junction->destinationNode())
         return;
 
     // return if input is already connected to this output.
-    if (junction->isConnected(toOutput)) return;
+    if (junction->isConnected(toOutput))
+        return;
 
     toOutput->addInput(g, junction);
     junction->junctionConnectOutput(toOutput);
@@ -183,3 +186,4 @@ AudioBus * AudioNodeInput::pull(ContextRenderLock & r, AudioBus * inPlaceBus, in
 }
 
 }  // namespace lab
+#endif

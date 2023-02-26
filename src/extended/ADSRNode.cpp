@@ -9,7 +9,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/Registry.h"
 
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <limits>
 #include <deque>
@@ -263,8 +263,8 @@ namespace lab
 
     void ADSRNode::process(ContextRenderLock& r, int bufferSize)
     {
-        AudioBus* destinationBus = output(0)->bus(r);
-        AudioBus* sourceBus = input(0)->bus(r);
+        AudioBus* destinationBus = _self->output;
+        AudioBus* sourceBus = _self->inputs[0].node->output();
         if (!isInitialized() || !input(0)->isConnected())
         {
             destinationBus->zero();
@@ -275,7 +275,7 @@ namespace lab
         if (numberOfInputChannels != output(0)->numberOfChannels())
         {
             output(0)->setNumberOfChannels(r, numberOfInputChannels);
-            destinationBus = output(0)->bus(r);
+            destinationBus = _self->output;
         }
 
         // process entire buffer

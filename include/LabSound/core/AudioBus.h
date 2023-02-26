@@ -15,7 +15,6 @@ namespace lab
 
 class ContextRenderLock;
 using lab::Channel;
-using lab::ChannelInterpretation;
 
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".
@@ -44,10 +43,17 @@ public:
     void setNumberOfChannels(ContextRenderLock&, int c);
 
     // Use this when looping over channels
-    AudioChannel * channel(int channel) { return m_channels[channel].get(); }
+    AudioChannel * channel(int channel)
+    {
+        if (channel >= m_channels.size())
+            return nullptr;
+        return m_channels[channel].get();
+    }
 
     const AudioChannel * channel(int channel) const
     {
+        if (channel >= m_channels.size())
+            return nullptr;
         return const_cast<AudioBus *>(this)->m_channels[channel].get();
     }
 
@@ -89,10 +95,12 @@ public:
 
     // Assuming sourceBus has the same topology, copies sample data from each channel of sourceBus to our corresponding channel.
     void copyFrom(const AudioBus & sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
+    void copyFrom(std::shared_ptr<AudioBus> bus, ChannelInterpretation = ChannelInterpretation::Speakers);
 
     // Sums the sourceBus into our bus with unity gain.
     // Our own internal gain m_busGain is ignored.
     void sumFrom(const AudioBus & sourceBus, ChannelInterpretation = ChannelInterpretation::Speakers);
+    void sumFrom(const AudioBus & sourceBus, int sourceChannel, int destChannel);
 
     // Copy each channel from sourceBus into our corresponding channel.
     // We scale by targetGain (and our own internal gain m_busGain), performing "de-zippering" to smoothly change from *lastMixGain to (targetGain*m_busGain).

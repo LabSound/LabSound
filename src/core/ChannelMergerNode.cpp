@@ -26,58 +26,39 @@ ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
     : AudioNode(ac, *desc())
     , m_desiredNumberOfOutputChannels(numberOfInputs_)
 {
-    addInputs(numberOfInputs_);
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
-void ChannelMergerNode::addInputs(int n)
-{
-    // Create the requested number of inputs.
-    for (int i = 0; i < n; ++i)
-        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-}
 
 void ChannelMergerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    auto output = this->output(0);
-    ASSERT_UNUSED(bufferSize, bufferSize == output->bus(r)->length());
+    auto inputBus = summedInput();
+    auto output = _self->output.get();
+    
+    if (!output) {
+        _self->output.reset(new AudioBus(m_desiredNumberOfOutputChannels, bufferSize));
+    }
 
     if (m_desiredNumberOfOutputChannels != output->numberOfChannels())
     {
         output->setNumberOfChannels(r, m_desiredNumberOfOutputChannels);
     }
 
-    // Merge all the the zero-etch channels from all the inputs into one output.
-    /* Per the spec, a channel merge node takes a bunch of mono inputs.
-    The processing should be as follows
-
-    let a = number of input channels
-    let b = number of output channels
-
-    if a == b copy 1:1
-    if a < b copy 1:1 up to a, then zero the other channels
-    if b < a copy 1:1 up to b, then ignore the other channels
-    */
-
     for (int i = 0; i < m_desiredNumberOfOutputChannels; ++i)
     {
-        // initialize sum
-        output->bus(r)->channel(i)->zero();
+        // initialize output sum to zero
+        output->channel(i)->zero();
     }
 
     int in = numberOfInputs();
     for (int c = 0; c < m_desiredNumberOfOutputChannels; ++c)
     {
-        AudioChannel * outputChannel = output->bus(r)->channel(c);
+        AudioChannel * outputChannel = output->channel(c);
         if (c < in) 
         {
-            auto input = this->input(c);
-            if (input->isConnected())
-            {
-                AudioChannel * inputChannel = input->bus(r)->channel(0);
-                outputChannel->sumFrom(inputChannel);
-            }
+            auto& input = _self->inputs[c];
+            AudioChannel * inputChannel = input.node->output()->channel(0);
+            outputChannel->sumFrom(inputChannel);
         }
     }
 }

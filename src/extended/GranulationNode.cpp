@@ -187,7 +187,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
 
 void GranulationNode::process(ContextRenderLock& r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output;
 
     if (!isInitialized() || !outputBus->numberOfChannels()) 
     {
@@ -195,8 +195,8 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _self->_scheduler._renderOffset;
-    int bufferFramesToProcess = _self->_scheduler._renderLength;
+    int quantumFrameOffset = _self->scheduler._renderOffset;
+    int bufferFramesToProcess = _self->scheduler._renderLength;
 
     if (!bufferFramesToProcess)
     {

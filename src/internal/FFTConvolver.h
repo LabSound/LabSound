@@ -7,7 +7,7 @@
 
 #include "LabSound/core/AudioArray.h"
 
-#include "internal/FFTFrame.h"
+#include "LabSound/extended/FFTFrame.h"
 
 namespace lab
 {

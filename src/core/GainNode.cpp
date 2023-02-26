@@ -47,7 +47,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     // happen in the summing junction input of the AudioNode we're connected to.
     // Then we can avoid all of the following:
 
-    AudioBus * outputBus = output(0)->bus(r);
+    AudioBus * outputBus = _self->output.get();
     ASSERT(outputBus);
 
 
@@ -58,7 +58,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     }
 
 
-    AudioBus* inputBus = input(0)->bus(r);
+    AudioBus* inputBus = _self->inputs[0].node->output();
     const int inputBusChannelCount = inputBus->numberOfChannels();
     if (!inputBusChannelCount)
     {
@@ -71,7 +71,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     {
         output(0)->setNumberOfChannels(r, inputBusChannelCount);
         outputBusChannelCount = inputBusChannelCount;
-        outputBus = output(0)->bus(r);
+        outputBus = _self->output;
     }
 
     if (gain()->hasSampleAccurateValues())
@@ -81,11 +81,11 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
         if (bufferSize <= m_sampleAccurateGainValues.size())
         {
             float* gainValues_base = m_sampleAccurateGainValues.data();
-            float* gainValues = gainValues_base + _self->_scheduler._renderOffset;
-            gain()->calculateSampleAccurateValues(r, gainValues, _self->_scheduler._renderLength);
-            if (_self->_scheduler._renderOffset > 0)
-                memset(gainValues_base, 0, sizeof(float) * _self->_scheduler._renderOffset);
-            int bzero_start = _self->_scheduler._renderOffset + _self->_scheduler._renderLength;
+            float* gainValues = gainValues_base + _self->scheduler._renderOffset;
+            gain()->calculateSampleAccurateValues(r, gainValues, _self->scheduler._renderLength);
+            if (_self->scheduler._renderOffset > 0)
+                memset(gainValues_base, 0, sizeof(float) * _self->scheduler._renderOffset);
+            int bzero_start = _self->scheduler._renderOffset + _self->scheduler._renderLength;
             if (bzero_start < bufferSize)
                 memset(gainValues_base + bzero_start, 0, sizeof(float) * bufferSize - bzero_start);
             outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, m_sampleAccurateGainValues.data(), bufferSize);

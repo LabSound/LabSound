@@ -5,6 +5,7 @@
 #ifndef AudioNodeOutput_h
 #define AudioNodeOutput_h
 
+#if 0
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
 
@@ -40,28 +41,31 @@ public:
 
     // renderingFanOutCount() is the number of AudioNodeInputs that we're connected to during rendering.
     // Unlike fanOutCount() it will not change during the course of a render quantum.
-    int renderingFanOutCount() const;
+    //int renderingFanOutCount() const;
 
     // renderingParamFanOutCount() is the number of AudioParams that we're connected to during rendering.
     // Unlike paramFanOutCount() it will not change during the course of a render quantum.
-    int renderingParamFanOutCount() const;
+    //int renderingParamFanOutCount() const;
 
     void setNumberOfChannels(ContextRenderLock &, int);
     int numberOfChannels() const { return m_numberOfChannels; }
     bool isChannelCountKnown() const { return numberOfChannels() > 0; }
 
-    bool isConnected() { return fanOutCount() > 0 || paramFanOutCount() > 0; }
+    //bool isConnected() { return fanOutCount() > 0 || paramFanOutCount() > 0; }
 
     // updateRenderingState() is called in the audio thread at the start or end of the render quantum to handle any recent changes to the graph state.
     void updateRenderingState(ContextRenderLock &);
 
     const std::string& name() const { return m_name; }
-
+/*
     // Must be called within the context's graph lock.
     static void disconnectAll(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
     static void disconnectAllInputs(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
     static void disconnectAllParams(ContextGraphLock &, std::shared_ptr<AudioNodeOutput>);
 
+    int connectedInputCount() const { return (int) m_inputs.size(); }
+    std::shared_ptr<AudioNodeInput> input(int i) { return m_inputs[i]; }
+*/
 private:
     AudioNode * m_sourceNode;
 
@@ -70,27 +74,27 @@ private:
 
     // These are called from AudioNodeInput.
     // They must be called with the context's graph lock.
-    void addInput(ContextGraphLock & g, std::shared_ptr<AudioNodeInput>);
-    void removeInput(ContextGraphLock & g, std::shared_ptr<AudioNodeInput>);
+    //void addInput(ContextGraphLock & g, std::shared_ptr<AudioNodeInput>);
+    //void removeInput(ContextGraphLock & g, std::shared_ptr<AudioNodeInput>);
     void addParam(ContextGraphLock & g, std::shared_ptr<AudioParam>);
     void removeParam(ContextGraphLock & g, std::shared_ptr<AudioParam>);
 
     // fanOutCount() is the number of AudioNodeInputs that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingFanOutCount() should be used.
     // It must be called with the context's graph lock.
-    int fanOutCount();
+    //int fanOutCount();
 
     // Similar to fanOutCount(), paramFanOutCount() is the number of AudioParams that we're connected to.
     // This method should not be called in audio thread rendering code, instead renderingParamFanOutCount() should be used.
     // It must be called with the context's graph lock.
-    int paramFanOutCount();
+    //int paramFanOutCount();
 
     // updateInternalBus() updates m_internalBus appropriately for the number of channels.
     // It is called in the constructor or in the audio thread with the context's graph lock.
     void updateInternalBus();
 
     // Announce to any nodes we're connected to that we changed our channel count for its input.
-    void propagateChannelCount(ContextRenderLock &);
+    //void propagateChannelCount(ContextRenderLock &);
 
     std::string m_name;
 
@@ -106,12 +110,10 @@ private:
     // @tofix - Should this be some kind of shared pointer? It is only valid for a single render quantum, so probably no.
     AudioBus * m_inPlaceBus;
 
-    std::vector<std::shared_ptr<AudioNodeInput>> m_inputs;
-
     // For the purposes of rendering, keeps track of the number of inputs and AudioParams we're connected to.
     // These value should only be changed at the very start or end of the rendering quantum.
-    int m_renderingFanOutCount;
-    int m_renderingParamFanOutCount;
+    //int m_renderingFanOutCount;
+    //int m_renderingParamFanOutCount;
 
     // connected params
     std::set<std::shared_ptr<AudioParam>> m_params;
@@ -121,3 +123,4 @@ private:
 }  // namespace lab
 
 #endif  // AudioNodeOutput_h
+#endif

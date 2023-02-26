@@ -6,8 +6,6 @@
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
@@ -17,16 +15,14 @@
 using namespace std;
 
 //#define ASN_PRINT(...)
-#define ASN_PRINT(a) printf(a)
-
-
-
+#define ASN_PRINT(a) printf("Scheduler: %s", (a))
 
 namespace lab
 {
 
 AudioNode::Internal::Internal(AudioContext & ac)
-:  _scheduler(ac.sampleRate())
+: scheduler(ac.sampleRate())
+, output(new AudioBus(0, AudioNode::ProcessingSizeInFrames, true))
 {}
 
 // static
@@ -61,19 +57,11 @@ void AudioNode::_printGraph(const AudioNode * root, std::function<void(const cha
         }*/
     }
 
-    if (root->_self->m_inputs.size() > 0)
+    for (auto & i : root->_self->inputs)
     {
+        str = spaces + "   [Input] " + i.node->name();
         prnln(str.c_str());
-        for (auto & i : root->_self->m_inputs)
-        {
-            if (!i)
-                continue;
-
-            str = spaces + "   [Input] ";
-            prnln(str.c_str());
-//            for (auto & n : i->sources)
-//                _printGraph(n->get(), prnln, indent + 3);
-        }
+        _printGraph(i.node.get(), prnln, indent + 3);
     }
 }
 
@@ -94,20 +82,17 @@ const char * schedulingStateName(SchedulingState s)
     switch (s)
     {
     case SchedulingState::UNSCHEDULED: return "UNSCHEDULED";
-    case SchedulingState::SCHEDULED: return "SCHEDULED";
-    case SchedulingState::FADE_IN: return "FADE_IN";
-    case SchedulingState::PLAYING: return "PLAYING";
-    case SchedulingState::STOPPING: return "STOPPING";
-    case SchedulingState::RESETTING: return "RESETTING";
-    case SchedulingState::FINISHING: return "FINISHING";
-    case SchedulingState::FINISHED: return "FINISHED";
+    case SchedulingState::SCHEDULED:   return "SCHEDULED";
+    case SchedulingState::FADE_IN:     return "FADE_IN";
+    case SchedulingState::PLAYING:     return "PLAYING";
+    case SchedulingState::STOPPING:    return "STOPPING";
+    case SchedulingState::RESETTING:   return "RESETTING";
+    case SchedulingState::FINISHING:   return "FINISHING";
+    case SchedulingState::FINISHED:    return "FINISHED";
     }
     return "Unknown";
 }
 
-
-const int start_envelope = 64;
-const int end_envelope = 64;
 
 AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
     : _epoch(0)
@@ -328,7 +313,7 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
         AudioParamDescriptor const * i = desc.params;
         while (i->name)
         {
-            _self->_params.push_back(std::make_shared<AudioParam>(i));
+            _self->params.push_back(std::make_shared<AudioParam>(i));
             ++i;
         }
     }
@@ -337,7 +322,7 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
         AudioSettingDescriptor const * i = desc.settings;
         while (i->name)
         {
-            _self->_settings.push_back(std::make_shared<AudioSetting>(i));
+            _self->settings.push_back(std::make_shared<AudioSetting>(i));
             ++i;
         }
     }
@@ -345,175 +330,207 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
 
 AudioNode::~AudioNode()
 {
+    // the destructor needs to remove "this" from all the receivers in order
+    // to eliminate retain cycles.
+    for (auto rcv : _self->receivers) {
+        // iterate rcv->inputs and remove this from each
+        for (auto it = rcv->_self->inputs.begin(); it != rcv->_self->inputs.end(); ) {
+            if ((*it).node.get() == this) {
+                it = rcv->_self->inputs.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+    }
+
     uninitialize();
 }
 
 void AudioNode::initialize()
 {
-    _self->m_isInitialized = true;
+    _self->isInitialized = true;
 }
 
 void AudioNode::uninitialize()
 {
-    _self->m_isInitialized = false;
+    _self->isInitialized = false;
 }
 
 void AudioNode::reset(ContextRenderLock & r)
 {
-    _self->_scheduler.reset();
-}
-
-void AudioNode::addInput(ContextGraphLock&, std::unique_ptr<AudioNodeInput> input)
-{
-    _self->m_inputs.emplace_back(std::move(input));
-}
-
-void AudioNode::addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> output)
-{
-    _self->m_outputs.emplace_back(std::move(output));
-}
-
-void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
-{
-    input->setName("in" + to_string((int) _self->m_inputs.size()));
-    _self->m_inputs.emplace_back(std::move(input));
-}
-
-void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
-{
-    _self->m_outputs.emplace_back(std::move(output));
+    _self->scheduler.reset();
 }
 
 // safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
+std::shared_ptr<AudioNode> AudioNode::input(int i)
 {
-    if (i < _self->m_inputs.size())
-        return _self->m_inputs[i];
+    if (i < _self->inputs.size())
+        return _self->inputs[i].node;
     return {};
 }
 
-std::shared_ptr<AudioNodeInput> AudioNode::input(char const* const str)
+std::shared_ptr<AudioBus> AudioNode::summedInput()
 {
-    for (auto & i : _self->m_inputs)
-    {
-        if (i->name() == str)
-            return i;
-    }
-    return {};
+    if (_self->inputs.size() == 0)
+        return {};
+    if (_self->inputs.size() == 1)
+        return _self->inputs[0].node->output();
+    if (!_self->summingBus)
+        _self->summingBus = std::move(AudioBus::createByCloning(_self->inputs[0].node->output().get()));
+    for (int i = 1; i < _self->inputs.size(); ++i)
+        _self->summingBus->sumFrom(*_self->inputs[i].node->output().get());
+    return _self->summingBus;
 }
 
-// safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
-{
-    if (i < _self->m_outputs.size())
-        return _self->m_outputs[i];
-    return {};
-}
-
-std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
-{
-    for (auto & i : _self->m_outputs)
-    {
-        if (i->name() == str)
-            return i;
-    }
-    return {};
-}
 
 int AudioNode::channelCount()
 {
-    ASSERT(_self->m_channelCount != 0);
-    return _self->m_channelCount;
+    if (_self->output)
+        return _self->output->numberOfChannels();
+    return 0;
 }
 
-void AudioNode::setChannelCount(ContextGraphLock & g, int channelCount)
+void AudioNode::setChannelCount(int channelCount)
 {
-    if (!g.context())
-    {
-        throw std::invalid_argument("No context specified");
-    }
+    _self->desiredChannelCount = channelCount;
+}
 
-    if (_self->m_channelCount != channelCount)
-    {
-        _self->m_channelCount = channelCount;
-        if (_self->m_channelCountMode != ChannelCountMode::Max)
-        {
-            for (auto& input : _self->m_inputs)
-                input->changedOutputs(g);
+bool AudioNode::isConnected(std::shared_ptr<AudioNode> n) const
+{
+    for (int i = 0; i < _self->inputs.size(); ++i)
+        if (_self->inputs[i].node == n)
+            return true;
+    
+    return false;
+}
+
+// static
+void AudioNode::connect(std::shared_ptr<AudioNode> rcv, std::shared_ptr<AudioNode> send, int inputSrcChannel, int dstChannel)
+{
+    // ignore if this pathway is already explicitly set up
+    for (auto in : rcv->_self->inputs) {
+        if (in.node == send) {
+            if (in.inputChannel == inputSrcChannel && in.outputChannel == dstChannel)
+                return;
         }
     }
+
+    rcv->_self->inputs.push_back((Internal::InputMapping) { send, inputSrcChannel, dstChannel});
+
+    // as many times as there are mappings, push back this
+    send->_self->receivers.push_back(rcv);
 }
 
-void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
+void AudioNode::disconnect(std::shared_ptr<AudioNode> inputSrc, int inputSrcChannel, int dstChannel)
 {
-    if (mode >= ChannelCountMode::End || !g.context())
-    {
-        throw std::invalid_argument("No context specified");
+    if (!inputSrc) {
+        _self->inputs.clear();
+        return;
     }
 
-    if (_self->m_channelCountMode != mode)
-    {
-        _self->m_channelCountMode = mode;
-        for (auto& input : _self->m_inputs)
-            input->changedOutputs(g);
+    bool repeat = true;
+    do {
+        for (auto it = _self->inputs.begin(); it != _self->inputs.end(); ) {
+            // test all the values ~ -1 signals "don't care"
+            if ((*it).node == inputSrc && (*it).inputChannel == inputSrcChannel && (*it).outputChannel == dstChannel) {
+                it = _self->inputs.erase(it);
+                
+                for (auto sit = inputSrc->_self->receivers.begin(); sit != inputSrc->_self->receivers.end(); ++sit) {
+                    // knock out one subscriber to this
+                    if (*sit == inputSrc) {
+                        inputSrc->_self->receivers.erase(sit);
+                        break;
+                    }
+                }
+                break;
+            }
+            else
+                ++it;
+        }
+    } while(repeat);
+}
+
+void AudioNode::disconnectReceivers()
+{
+    for (auto sit = _self->receivers.begin(); sit != _self->receivers.end(); ++sit) {
+        if ((*sit).get() == this)
+            sit = _self->receivers.erase(sit);
+        else
+            ++sit;
     }
 }
 
-void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
+
+std::shared_ptr<AudioBus> AudioNode::renderedOutputCurrentQuantum(ContextRenderLock& r)
 {
     auto ac = r.context();
-    if (!ac)
-        return;
+    ASSERT(ac);
+    
+    if (ac->currentSampleFrame() <_self->scheduler._epoch) {
+        processIfNecessary(r, _self->output->length());
+    }
+    return _self->output;
+}
 
+bool AudioNode::updateSchedule(ContextRenderLock& r, int bufferSize)
+{
+    auto ac = r.context();
+    ASSERT(ac);
     bool diagnosing_silence = ac->diagnosing().get() == this;
 
-    if (diagnosing_silence) {
-        if (_self->_scheduler._playbackState < SchedulingState::FADE_IN ||
-            _self->_scheduler._playbackState > SchedulingState::PLAYING)
-        {
-            ac->diagnosed_silence("Scheduled node not playing");
-        }
-    }
+    runWorkBeforeScheduleUpdate(r);
 
     if (!isInitialized()) {
         if (diagnosing_silence)
             ac->diagnosed_silence("Not initialized");
-        return;
+        return false;
     }
 
     // outputs cache results in their busses.
     // if the scheduler's recorded epoch is the same as the context's, the node
     // shall bail out as it has been processed once already this epoch.
 
-    if (!_self->_scheduler.update(r, bufferSize)) {
-        if (diagnosing_silence)
-            ac->diagnosed_silence("Already processed");
-        return;
+    if (!_self->scheduler.update(r, bufferSize)) {
+        //if (diagnosing_silence)
+        //    ac->diagnosed_silence("Already processed");
+        return false;
     }
 
-    ProfileScope selfScope(_self->totalTime);
-    _self->graphTime.zero();
+    if (diagnosing_silence) {
+        if (_self->scheduler._playbackState < SchedulingState::FADE_IN ||
+            _self->scheduler._playbackState > SchedulingState::PLAYING)
+        {
+            ac->diagnosed_silence("Scheduled node not playing");
+        }
+    }
 
     if (isScheduledNode() && 
-        (_self->_scheduler._playbackState < SchedulingState::FADE_IN ||
-         _self->_scheduler._playbackState == SchedulingState::FINISHED))
+        (_self->scheduler._playbackState < SchedulingState::FADE_IN ||
+         _self->scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
         if (diagnosing_silence)
             ac->diagnosed_silence("Unscheduled");
-        return;
+        return false;
     }
+    return true;
+}
 
+void AudioNode::processIfNecessary(ContextRenderLock& r, int bufferSize)
+{
+    auto ac = r.context();
+    ASSERT(ac);
+    bool diagnosing_silence = ac->diagnosing().get() == this;
+
+    ProfileScope selfScope(_self->totalTime);
+    _self->graphTime.zero();
 
     // there may need to be silence at the beginning or end of the current quantum.
 
-    int start_zero_count = _self->_scheduler._renderOffset;
-    int final_zero_start = _self->_scheduler._renderOffset + _self->_scheduler._renderLength;
+    int start_zero_count = _self->scheduler._renderOffset;
+    int final_zero_start = _self->scheduler._renderOffset + _self->scheduler._renderLength;
     int final_zero_count = bufferSize - final_zero_start;
-
-    // if the input counts need to match the output counts,
-    // do it here before pulling inputs
-    conformChannelCounts();
 
     // get inputs in preparation for processing
     {
@@ -521,24 +538,18 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
         pullInputs(r, bufferSize);
         scope.finalize();   // ensure the scope is not prematurely destructed
     }
-
-    // ensure all requested channel count updates have been resolved
-    for (auto& out : _self->m_outputs)
-        out->updateRenderingState(r);
-
+    
     //  initialize the busses with start and final zeroes.
     if (start_zero_count)
     {
-        for (auto & out : _self->m_outputs)
-            for (int i = 0; i < out->numberOfChannels(); ++i)
-                memset(out->bus(r)->channel(i)->mutableData(), 0, sizeof(float) * start_zero_count);
+        for (int i = 0; i < _self->output->numberOfChannels(); ++i)
+            memset(_self->output->channel(i)->mutableData(), 0, sizeof(float) * start_zero_count);
     }
 
     if (final_zero_count)
     {
-        for (auto & out : _self->m_outputs)
-            for (int i = 0; i < out->numberOfChannels(); ++i)
-                memset(out->bus(r)->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
+        for (int i = 0; i < _self->output->numberOfChannels(); ++i)
+            memset(_self->output->channel(i)->mutableData() + final_zero_start, 0, sizeof(float) * final_zero_count);
     }
 
     // do the signal processing
@@ -547,8 +558,13 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // clean pops resulting from starting or stopping
 
+    
+    const int start_envelope = ProcessingSizeInFrames / 2;
+    const int end_envelope = ProcessingSizeInFrames / 2;
+
+    
     #define OOS(x) (float(x) / float(steps))
-    if (start_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::FADE_IN)
+    if (start_zero_count > 0 || _self->scheduler._playbackState == SchedulingState::FADE_IN)
     {
         int steps = start_envelope;
         int damp_start = start_zero_count;
@@ -561,16 +577,15 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
         // damp out the first samples
         if (damp_end > 0)
-            for (auto & out : _self->m_outputs)
-                for (int i = 0; i < out->bus(r)->numberOfChannels(); ++i)
-                {
-                    float* data = out->bus(r)->channel(i)->mutableData();
-                    for (int j = damp_start; j < damp_end; ++j)
-                        data[j] *= OOS(j - damp_start);
-                }
+            for (int i = 0; i < _self->output->numberOfChannels(); ++i)
+            {
+                float* data = _self->output->channel(i)->mutableData();
+                for (int j = damp_start; j < damp_end; ++j)
+                    data[j] *= OOS(j - damp_start);
+            }
     }
 
-    if (final_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::STOPPING)
+    if (final_zero_count > 0 || _self->scheduler._playbackState == SchedulingState::STOPPING)
     {
         int steps = end_envelope;
         int damp_end, damp_start;
@@ -595,13 +610,12 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
         if (steps > 0)
         {
             //printf("out: %d %d\n", damp_start, damp_end);
-            for (auto& out : _self->m_outputs)
-                for (int i = 0; i < out->numberOfChannels(); ++i)
-                {
-                    float* data = out->bus(r)->channel(i)->mutableData();
-                    for (int j = damp_start; j < damp_end; ++j)
-                        data[j] *= OOS(damp_end - j);
-                }
+            for (int i = 0; i < _self->output->numberOfChannels(); ++i)
+            {
+                float* data = _self->output->channel(i)->mutableData();
+                for (int j = damp_start; j < damp_end; ++j)
+                    data[j] *= OOS(damp_end - j);
+            }
         }
     }
 
@@ -609,54 +623,10 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     selfScope.finalize(); // ensure profile is not prematurely destructed
 }
 
-void AudioNode::conformChannelCounts()
-{
-    return;
-
-    // no generic count conforming. nodes are responsible if they are going to do it at all
-/*
-    int inputChannelCount = input->numberOfChannels(r);
-
-    bool channelCountChanged = false;
-    for (int i = 0; i < numberOfOutputs() && !channelCountChanged; ++i)
-    {
-        channelCountChanged = isInitialized() && inputChannelCount != output(i)->numberOfChannels();
-    }
-
-    if (channelCountChanged)
-    {
-        uninitialize();
-        for (int i = 0; i < numberOfOutputs(); ++i)
-        {
-            // This will propagate the channel count to any nodes connected further down the chain...
-            output(i)->setNumberOfChannels(r, inputChannelCount);
-        }
-        initialize();
-    }
-    */
-}
-
-void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeInput * input)
-{
-    ASSERT(r.context());
-
-    if (!input || input != this->input(0).get())
-        return;
-
-    for (auto & in : _self->m_inputs)
-    {
-        if (in.get() == input)
-        {
-            input->updateInternalBus(r);
-            break;
-        }
-    }
-}
-
 bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
-    return _self->_scheduler._playbackState < SchedulingState::FADE_IN ||
-           _self->_scheduler._playbackState == SchedulingState::FINISHED;
+    return _self->scheduler._playbackState < SchedulingState::FADE_IN ||
+           _self->scheduler._playbackState == SchedulingState::FINISHED;
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
@@ -664,17 +634,17 @@ void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)
     ASSERT(r.context());
 
     // Process all of the AudioNodes connected to our inputs.
-    for (auto & in : _self->m_inputs)
+    for (auto & in : _self->inputs)
     {
-        in->pull(r, 0, bufferSize);
+        in.node->pullInputs(r, bufferSize);
     }
 }
 
 bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 {    
-    for (auto & in : _self->m_inputs)
+    for (auto & in : _self->inputs)
     {
-        if (!in->bus(r)->isSilent())
+        if (!in.node->inputsAreSilent(r))
         {
             return false;
         }
@@ -684,23 +654,19 @@ bool AudioNode::inputsAreSilent(ContextRenderLock & r)
 
 void AudioNode::silenceOutputs(ContextRenderLock & r)
 {
-    for (auto out : _self->m_outputs)
-    {
-        out->bus(r)->zero();
-    }
+    if (_self->output)
+        _self->output->zero();
 }
 
 void AudioNode::unsilenceOutputs(ContextRenderLock & r)
 {
-    for (auto out : _self->m_outputs)
-    {
-        out->bus(r)->clearSilentFlag();
-    }
+    if (_self->output)
+        _self->output->clearSilentFlag();
 }
 
 std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 {
-    for (auto & p : _self->_params)
+    for (auto & p : _self->params)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -710,10 +676,10 @@ std::shared_ptr<AudioParam> AudioNode::param(char const * const str)
 
 int AudioNode::param_index(char const * const str)
 {
-    int count = (int) _self->_params.size();
+    int count = (int) _self->params.size();
     for (int i = 0; i < count; ++i)
     {
-        if (!strcmp(str, _self->_params[i]->name().c_str()))
+        if (!strcmp(str, _self->params[i]->name().c_str()))
             return i;
     }
     return -1;
@@ -721,15 +687,15 @@ int AudioNode::param_index(char const * const str)
 
 std::shared_ptr<AudioParam> AudioNode::param(int index)
 {
-    if (index >= _self->_params.size())
+    if (index >= _self->params.size())
         return {};
 
-    return _self->_params[index];
+    return _self->params[index];
 }
 
 std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 {
-    for (auto & p : _self->_settings)
+    for (auto & p : _self->settings)
     {
         if (!strcmp(str, p->name().c_str()))
             return p;
@@ -739,10 +705,10 @@ std::shared_ptr<AudioSetting> AudioNode::setting(char const * const str)
 
 int AudioNode::setting_index(char const * const str)
 {
-    int count = (int) _self->_settings.size();
+    int count = (int) _self->settings.size();
     for (int i = 0; i < count; ++i)
     {
-        if (!strcmp(str, _self->_settings[i]->name().c_str()))
+        if (!strcmp(str, _self->settings[i]->name().c_str()))
             return i;
     }
     return -1;
@@ -750,16 +716,16 @@ int AudioNode::setting_index(char const * const str)
 
 std::shared_ptr<AudioSetting> AudioNode::setting(int index)
 {
-    if (index >= _self->_settings.size())
+    if (index >= _self->settings.size())
         return {};
 
-    return _self->_settings[index];
+    return _self->settings[index];
 }
 
 std::vector<std::string> AudioNode::paramNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _self->_params)
+    for (auto & p : _self->params)
     {
         ret.push_back(p->name());
     }
@@ -768,7 +734,7 @@ std::vector<std::string> AudioNode::paramNames() const
 std::vector<std::string> AudioNode::paramShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _self->_params)
+    for (auto & p : _self->params)
     {
         ret.push_back(p->shortName());
     }
@@ -778,7 +744,7 @@ std::vector<std::string> AudioNode::paramShortNames() const
 std::vector<std::string> AudioNode::settingNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _self->_settings)
+    for (auto & p : _self->settings)
     {
         ret.push_back(p->name());
     }
@@ -787,7 +753,7 @@ std::vector<std::string> AudioNode::settingNames() const
 std::vector<std::string> AudioNode::settingShortNames() const
 {
     std::vector<std::string> ret;
-    for (auto & p : _self->_settings)
+    for (auto & p : _self->settings)
     {
         ret.push_back(p->shortName());
     }

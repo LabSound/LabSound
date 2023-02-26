@@ -72,7 +72,7 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
     int numberOfSourceChannels = input(0)->numberOfChannels(r);
-    int numberOfActiveBusChannels = input(0)->bus(r)->numberOfChannels();
+    int numberOfActiveBusChannels = _self->inputs[0].node->output()->numberOfChannels();
     if (numberOfActiveBusChannels != numberOfSourceChannels)
     {
         checkNumberOfChannelsForInput(r, input(0).get());
@@ -86,10 +86,10 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
         numberOfDestChannels = output(0)->numberOfChannels();
     }
 
-    AudioBus* outputBus = output(0)->bus(r);
+    AudioBus* outputBus = _self->output;
     ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
 
-    m_dynamicsCompressor->process(r, input(0)->bus(r), outputBus, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
+    m_dynamicsCompressor->process(r, _self->inputs[0].node->output(), outputBus, bufferSize, _self->scheduler._renderOffset, _self->scheduler._renderLength);
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
     m_reduction->setValue(reduction);

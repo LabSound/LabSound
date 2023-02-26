@@ -1,7 +1,7 @@
 // License: BSD 2 Clause
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
-
+#if 0
 #ifndef AudioSummingJunction_h
 #define AudioSummingJunction_h
 
@@ -12,7 +12,6 @@ namespace lab
 {
 
 class AudioContext;
-class AudioNodeOutput;
 class AudioBus;
 class ContextGraphLock;
 class ContextRenderLock;
@@ -82,3 +81,5 @@ protected:
 }  // namespace lab
 
 #endif  // AudioSummingJunction_h
+#endif
+

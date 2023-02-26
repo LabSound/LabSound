@@ -6,7 +6,7 @@
 #define HRTFDatabase_h
 
 #include "LabSound/extended/Util.h"
-#include "internal/FFTFrame.h"
+#include "LabSound/extended/FFTFrame.h"
 
 #include <condition_variable>
 #include <mutex>

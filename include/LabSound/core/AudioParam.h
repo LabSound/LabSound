@@ -8,7 +8,6 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioParamDescriptor.h"
 #include "LabSound/core/AudioParamTimeline.h"
-#include "LabSound/core/AudioSummingJunction.h"
 
 #include <string>
 #include <sys/types.h>
@@ -16,10 +15,8 @@
 namespace lab
 {
 
-class AudioNodeOutput;
 
-
-class AudioParam : public AudioSummingJunction
+class AudioParam
 {
 public:
     static const double DefaultSmoothingConstant;
@@ -65,7 +62,7 @@ public:
     AudioParam & setValueCurveAtTime(std::vector<float> curve, float time, float duration) { m_timeline.setValueCurveAtTime(curve, time, duration); return *this; }
     AudioParam & cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); return *this; }
 
-    bool hasSampleAccurateValues() { return m_timeline.hasValues() || numberOfConnections(); }
+    bool hasSampleAccurateValues() { return m_timeline.hasValues() || _overridingInput; }
 
     // Calculates numberOfValues parameter values starting at the context's current time.
     // Must be called in the context's render thread.
@@ -74,9 +71,12 @@ public:
     AudioBus const* const bus() const;
 
     // Connect an audio-rate signal to control this parameter.
-    static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
-    static void disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNodeOutput>);
+    // the signal comes from the first channel of the node's output bus
+    static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, int channel);
+    static void disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>);
     static void disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam>);
+
+    std::shared_ptr<AudioNode> overridingInput() const { return _overridingInput; }
 
 private:
     // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
@@ -91,6 +91,8 @@ private:
 
     AudioParamTimeline m_timeline;
 
+    std::shared_ptr<AudioNode> _overridingInput;
+    int _overridingInputChannel;
     std::unique_ptr<AudioBus> m_internalSummingBus;
     AudioParamDescriptor const*const _desc;
 };

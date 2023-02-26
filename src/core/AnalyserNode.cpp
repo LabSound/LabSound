@@ -168,23 +168,20 @@ void AnalyserNode::getByteFrequencyData(std::vector<uint8_t> & array, bool resam
 
 void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = output(0)->bus(r);
-    AudioBus * inputBus = input(0)->bus(r);
-
-    if (!isInitialized() || !input(0)->isConnected() || !inputBus)
+    AudioBus * outputBus = _self->output.get();
+    if (!outputBus)
+        return;
+    
+    std::shared_ptr<AudioBus> summed = summedInput();
+    if (!isInitialized() || !summed)
     {
-        if (outputBus)
-           outputBus->zero();
+        outputBus->zero();
         return;
     }
-
+    
     // Give the analyser all the audio which is passing through this AudioNode.
-    _detail->m_analyser->writeInput(r, inputBus, bufferSize);
-
-    if (inputBus != outputBus)
-    {
-        outputBus->copyFrom(*inputBus);
-    }
+    _detail->m_analyser->writeInput(r, summed.get(), bufferSize);
+    outputBus->copyFrom(summed);
 }
 
 void AnalyserNode::reset(ContextRenderLock &)

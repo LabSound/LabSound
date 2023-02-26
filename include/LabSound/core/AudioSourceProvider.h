@@ -31,7 +31,7 @@ public:
     virtual ~AudioSourceProvider() = default;
 
     // every input quantum set can be called to copy from the supplied bus to the internal buffer
-    void set(AudioBus * bus)
+    void fetchSamples(AudioBus * bus)
     {
         if (bus)
             _sourceBus.copyFrom(*bus);

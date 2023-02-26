@@ -21,30 +21,20 @@ AudioNodeDescriptor * ChannelSplitterNode::desc()
 }
 
 ChannelSplitterNode::ChannelSplitterNode(AudioContext & ac, int numberOfOutputs_)
-    : AudioNode(ac, *desc())
+: AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutputs(numberOfOutputs_);
     initialize();
-}
-
-void ChannelSplitterNode::addOutputs(int numberOfOutputs_)
-{
-    // Create a fixed number of outputs (able to handle the maximum number of channels fed to an input).
-    for (int i = 0; i < numberOfOutputs_; ++i)
-    {
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-    }
 }
 
 void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * source = input(0)->bus(r);
-    ASSERT(source);
-    ASSERT_UNUSED(bufferSize, bufferSize == source->length());
+    auto source = summedInput();
+    if (!source) {
+        _self->output->zero();
+        return;
+    }
 
     size_t numberOfSourceChannels = source->numberOfChannels();
-
     for (int i = 0; i < numberOfOutputs(); ++i)
     {
         AudioBus * destination = output(i)->bus(r);

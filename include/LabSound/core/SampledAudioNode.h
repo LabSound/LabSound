@@ -31,7 +31,7 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
     virtual bool propagatesSilence(ContextRenderLock& r) const override { return false; }
 
-    struct Scheduled;
+    struct WorkPacket;
     struct Internals;
     Internals* _internals;
 
@@ -48,8 +48,9 @@ class SampledAudioNode final : public AudioScheduledSourceNode
     // It incorporates the base pitch rate, any sample-rate conversion factor from the buffer, 
     // and any doppler shift from an associated panner node.
     float totalPitchRate(ContextRenderLock&);
-    bool renderSample(ContextRenderLock& r, Scheduled&, size_t destinationSampleOffset, size_t frameSize);
+    bool renderSample(ContextRenderLock& r, WorkPacket&, size_t destinationSampleOffset, size_t frameSize);
 
+    virtual void runWorkBeforeScheduleUpdate(ContextRenderLock&) override;
     virtual void process(ContextRenderLock&, int framesToProcess) override;
 
 public:

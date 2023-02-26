@@ -125,16 +125,16 @@ void SpectralMonitorNode::process(ContextRenderLock &r, int bufferSize)
     // deal with the output in case the power monitor node is embedded in a signal chain for some reason.
     // It's merely a pass through though.
 
-    AudioBus * outputBus = output(0)->bus(r);
-
-    if (!isInitialized() || !input(0)->isConnected())
+    AudioBus * outputBus = _self->output.get();
+    auto summedBus = summedInput();
+    if (!isInitialized() || !summedBus)
     {
         if (outputBus)
             outputBus->zero();
         return;
     }
 
-    AudioBus * bus = input(0)->bus(r);
+    AudioBus * bus = summedBus.get();
     bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
     if (!isBusGood)
     {

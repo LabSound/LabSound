@@ -203,6 +203,12 @@ function (configureProj proj)
     endif()
 endfunction()
 
+
+
+
+
+
+
 target_include_directories(LabSound PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
     $<INSTALL_INTERFACE:include>
@@ -295,3 +301,61 @@ add_library(LabSoundMiniAudio::LabSoundMiniAudio ALIAS LabSoundMiniAudio)
 if (NOT IOS)
     add_library(LabSoundRtAudio::LabSoundRtAudio ALIAS LabSoundRtAudio)
 endif()
+
+
+
+add_library(ls2 STATIC
+    "${LABSOUND_ROOT}/src/core/AudioBus.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioChannel.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioContext.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioDevice.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioHardwareInputNode.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioListener.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioNode.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioParam.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioParamTimeline.cpp"
+    "${LABSOUND_ROOT}/src/extended/AudioFileReader.cpp"
+    "${LABSOUND_ROOT}/src/extended/LabSound.cpp"
+    "${LABSOUND_ROOT}/src/core/SampledAudioNode.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/AudioUtilities.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/DelayDSPKernel.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/FFTConvolver.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/FFTFrame.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/FFTFrameKissFFT.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/HRTFPanner.cpp"
+    "${LABSOUND_ROOT}/src/internal/src/libSampleRate.c"
+    "${LABSOUND_ROOT}/src/internal/src/VectorMath.cpp"
+    ${labsnd_fft_src}
+)
+configureProj(ls2)
+target_include_directories(ls2 PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(ls2 PRIVATE
+    ${LABSOUND_ROOT}/src
+    ${LABSOUND_ROOT}/src/internal
+    ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/libsamplerate/include
+    ${LABSOUND_ROOT}/third_party/libnyquist/include
+)
+
+set(labsound_unittests_src
+    "${LABSOUND_ROOT}/unit_tests/main.cpp"
+)
+add_executable(labsound_unittests  ${labsound_unittests_src})
+
+if (APPLE)
+    set(DARWIN_LIBS
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
+    "-framework Accelerate"
+    "-framework CoreAudio"
+    "-framework Cocoa")
+    target_link_libraries(labsound_unittests PRIVATE ${DARWIN_LIBS})
+endif()
+
+target_link_libraries(labsound_unittests
+    PUBLIC ls2
+    PRIVATE libnyquist::libnyquist
+)

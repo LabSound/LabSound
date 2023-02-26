@@ -7,8 +7,8 @@
 #if defined(LABSOUND_PLATFORM_OSX) && !defined(WEBAUDIO_KISSFFT)
 
 #include "internal/Assertions.h"
-#include "internal/FFTFrame.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/FFTFrame.h"
+#include "LabSound/extended/VectorMath.h"
 
 namespace lab
 {

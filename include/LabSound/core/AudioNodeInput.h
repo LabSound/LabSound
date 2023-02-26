@@ -5,6 +5,8 @@
 #ifndef AudioNodeInput_h
 #define AudioNodeInput_h
 
+#if 0
+
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioSummingJunction.h"
 
@@ -14,7 +16,6 @@ namespace lab
 {
 
 class AudioNode;
-class AudioNodeOutput;
 class AudioBus;
 
 // An AudioNodeInput represents an input to an AudioNode and can be connected from one or more AudioNodeOutputs.
@@ -34,9 +35,14 @@ public:
     AudioNode * destinationNode() const { return m_destinationNode; }
 
     // Must be called with the context's graph lock. Static because a shared pointer to this is required
-    static void connect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnect(ContextGraphLock &, std::shared_ptr<AudioNodeInput> fromInput, std::shared_ptr<AudioNodeOutput> toOutput);
-    static void disconnectAll(ContextGraphLock&, std::shared_ptr<AudioNodeInput> fromInput);
+    static void connect(ContextGraphLock &,
+                        std::shared_ptr<AudioNodeInput> fromInput,
+                        std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnect(ContextGraphLock &,
+                           std::shared_ptr<AudioNodeInput> fromInput,
+                           std::shared_ptr<AudioNodeOutput> toOutput);
+    static void disconnectAll(ContextGraphLock&,
+                              std::shared_ptr<AudioNodeInput> fromInput);
 
     // pull() processes all of the AudioNodes connected to this NodeInput.
     // In the case of multiple connections, the result is summed onto the internal summing bus.
@@ -62,3 +68,4 @@ public:
 }  // namespace lab
 
 #endif  // AudioNodeInput_h
+#endif

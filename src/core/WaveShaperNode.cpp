@@ -23,16 +23,12 @@ AudioNodeDescriptor * WaveShaperNode::desc()
 WaveShaperNode::WaveShaperNode(AudioContext& ac)
 : AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
     
 WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & desc)
 : AudioNode(ac, desc)
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
@@ -99,15 +95,15 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
         delete x;
     }
 
-    AudioBus* destinationBus = output(0)->bus(r);
+    AudioBus* destinationBus = _self->output.get();
     if (!isInitialized() || !m_curve.size())
     {
         destinationBus->zero();
         return;
     }
 
-    AudioBus* sourceBus = input(0)->bus(r);
-    if (!input(0)->isConnected())
+    auto sourceBus = summedInput();
+    if (!sourceBus)
     {
         destinationBus->zero();
         return;
@@ -115,15 +111,12 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
 
     int srcChannelCount = sourceBus->numberOfChannels();
     int dstChannelCount = destinationBus->numberOfChannels();
-    if (srcChannelCount != dstChannelCount)
+    for (int i = 0; i < dstChannelCount; ++i)
     {
-        output(0)->setNumberOfChannels(r, srcChannelCount);
-        destinationBus = output(0)->bus(r);
-    }
-
-    for (int i = 0; i < srcChannelCount; ++i)
-    {
-        processBuffer(r, sourceBus->channel(i)->data(), destinationBus->channel(i)->mutableData(), bufferSize);
+        if (i < srcChannelCount)
+            processBuffer(r, sourceBus->channel(i)->data(), destinationBus->channel(i)->mutableData(), bufferSize);
+        else
+            destinationBus->channel(i)->zero();
     }
 }
 

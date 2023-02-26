@@ -6,8 +6,6 @@
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
-#include "LabSound/core/AudioNodeInput.h"
-#include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/core/OscillatorNode.h"
 #include "internal/HRTFDatabase.h"
 
@@ -21,9 +19,9 @@
 #include "internal/Assertions.h"
 
 #include "concurrentqueue/concurrentqueue.h"
-#include "libnyquist/Encoders.h"
 
 #include <assert.h>
+#include <map>
 #include <queue>
 #include <stdio.h>
 
@@ -98,20 +96,20 @@ struct AudioContext::Internals
         debugBufferIndex += count;
     }
 
-    void flushDebugBuffer(char const* const wavFilePath)
+    void flushDebugBuffer(char const* const rawFilePath)
     {
-        if (!debugBufferIndex || !wavFilePath)
+        if (!debugBufferIndex || !rawFilePath) {
+            debugBufferIndex = 0;
             return;
+        }
 
-        nqr::AudioData fileData;
-        fileData.samples.resize(debugBufferIndex + 32);
-        fileData.channelCount = 1;
-        float* dst = fileData.samples.data();
-        memcpy(dst, debugBuffer.data(), sizeof(float) * debugBufferIndex);
-        fileData.sampleRate = static_cast<int>(44100);
-        fileData.sourceFormat = nqr::PCM_FLT;
-        nqr::EncoderParams params = { 1, nqr::PCM_FLT, nqr::DITHER_NONE };
-        int err = nqr::encode_wav_to_disk(params, &fileData, wavFilePath);
+        FILE* f = fopen(rawFilePath, "wb");
+        if (!f) {
+            debugBufferIndex = 0;
+            return;
+        }
+        fwrite(debugBuffer.data(), sizeof(float) * debugBufferIndex, 1, f);
+        fclose(f);
         debugBufferIndex = 0;
     }
 };
@@ -121,9 +119,9 @@ void AudioContext::appendDebugBuffer(AudioBus* bus, int channel, int count)
     m_internal->appendDebugBuffer(bus, channel, count);
 }
 
-void AudioContext::flushDebugBuffer(char const* const wavFilePath)
+void AudioContext::flushDebugBuffer(char const* const rawFilePath)
 {
-    m_internal->flushDebugBuffer(wavFilePath);
+    m_internal->flushDebugBuffer(rawFilePath);
 }
 
 
@@ -294,16 +292,17 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
             {
                 AudioParam::connect(gLock,
                                     param_connection.destination,
-                                    param_connection.source->output(param_connection.destIndex));
+                                    param_connection.source,
+                                    param_connection.destIndex);
 
                 // if unscheduled, the source should start to play as soon as possible
                 if (!param_connection.source->isScheduledNode())
-                    param_connection.source->_self->_scheduler.start(0);
+                    param_connection.source->_self->scheduler.start(0);
             }
             else
                 AudioParam::disconnect(gLock,
                                        param_connection.destination,
-                                       param_connection.source->output(param_connection.destIndex));
+                                       param_connection.source);
         }
 
         // resolve node connections
@@ -315,12 +314,13 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
             {
                 case ConnectionOperationKind::Connect:
                 {
-                    AudioNodeInput::connect(gLock,
-                                            node_connection.destination->input(node_connection.destIndex),
-                                            node_connection.source->output(node_connection.srcIndex));
+                    // render lock is held, so this is safe
+                    AudioNode::connect(node_connection.destination,
+                                       node_connection.source,
+                                       node_connection.srcIndex, node_connection.destIndex);
 
                     if (!node_connection.source->isScheduledNode())
-                        node_connection.source->_self->_scheduler.start(0);
+                        node_connection.source->_self->scheduler.start(0);
                 }
                 break;
 
@@ -353,34 +353,20 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
 
                     if (node_connection.source && node_connection.destination)
                     {
-                        //if (!node_connection.destination->disconnectionReady() || !node_connection.source->disconnectionReady())
-                        //    requeued_connections.push_back(node_connection);
-                        //else
-                            AudioNodeInput::disconnect(gLock, node_connection.destination->input(node_connection.destIndex), node_connection.source->output(node_connection.srcIndex));
+                        node_connection.destination->disconnect(node_connection.source,
+                                                                node_connection.srcIndex, node_connection.destIndex);
                     }
                     else if (node_connection.destination)
                     {
-                        //if (!node_connection.destination->disconnectionReady())
-                        //    requeued_connections.push_back(node_connection);
-                        //else
-                            for (int in = 0; in < node_connection.destination->numberOfInputs(); ++in)
-                            {
-                                auto input= node_connection.destination->input(in);
-                                if (input)
-                                    AudioNodeInput::disconnectAll(gLock, input);
-                            }
+                        node_connection.destination->disconnect({}, -1, -1);
                     }
                     else if (node_connection.source)
                     {
-                        //if (!node_connection.destination->disconnectionReady())
-                        //    requeued_connections.push_back(node_connection);
-                        //else
-                            for (int out = 0; out < node_connection.source->numberOfOutputs(); ++out)
-                            {
-                                auto output = node_connection.source->output(out);
-                                if (output)
-                                    AudioNodeOutput::disconnectAll(gLock, output);
-                            }
+                        // iterate all nodes an disconnect this from any it feeds into
+                        auto output = node_connection.source->output();
+                        if (output) {
+                            node_connection.destination->disconnectReceivers();
+                        }
                     }
                 }
                 break;
@@ -392,14 +378,12 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
             m_internal->pendingNodeConnections.enqueue(sc);
     }
 
-    AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes();
 }
 
 void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 {
     ASSERT(r.context());
-    AudioSummingJunction::handleDirtyAudioSummingJunctions(r);
     updateAutomaticPullNodes();
 }
 
@@ -427,10 +411,6 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
         throw std::runtime_error("Cannot connect to null destination");
     if (!source)
         throw std::runtime_error("Cannot connect from null source");
-    if (srcIdx > source->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs");
-    if (destIdx > destination->numberOfInputs())
-        throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Connect, destination, source, destIdx, srcIdx});
 }
 
@@ -438,10 +418,6 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
 {
     if (!destination && !source)
         return;
-    if (source && srcIdx > source->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs");
-    if (destination && destIdx > destination->numberOfInputs())
-        throw std::out_of_range("Input index greater than available inputs");
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, destination, source, destIdx, srcIdx});
 }
 
@@ -456,16 +432,8 @@ bool AudioContext::isConnected(std::shared_ptr<AudioNode> destination, std::shar
 {
     if (!destination || !source)
         return false;
-
-    AudioNode* n = source.get();
-    for (int i = 0; i < destination->numberOfInputs(); ++i)
-    {
-        auto c = destination->input(i);
-        if (c->destinationNode() == n)
-            return true;
-    }
-
-    return false;
+    
+    return destination->isConnected(source);
 }
 
 
@@ -475,7 +443,7 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
         throw std::invalid_argument("No parameter specified");
     if (!driver)
         throw std::invalid_argument("No driving node supplied");
-    if (index >= driver->numberOfOutputs())
+    if (index >= driver->output()->numberOfChannels())
         throw std::out_of_range("Output index greater than available outputs on the driver");
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
 }
@@ -495,22 +463,14 @@ void AudioContext::connectParam(std::shared_ptr<AudioNode> destinationNode, char
     if (!driver)
         throw std::invalid_argument("No driving node supplied");
 
-    if (index >= driver->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs on the driver");
-
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
 }
 
 
 void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index)
 {
-    if (!param)
-        throw std::invalid_argument("No parameter specified");
-
-    if (index >= driver->numberOfOutputs())
-        throw std::out_of_range("Output index greater than available outputs on the driver");
-
-    m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Disconnect, param, driver, index});
+    if (param && driver)
+        m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Disconnect, param, driver, index});
 }
 
 void AudioContext::update()
@@ -577,7 +537,7 @@ void AudioContext::addAutomaticPullNode(std::shared_ptr<AudioNode> node)
         m_automaticPullNodesNeedUpdating = true;
         if (!node->isScheduledNode())
         {
-            node->_self->_scheduler.start(0);
+            node->_self->scheduler.start(0);
         }
     }
 }
@@ -807,8 +767,10 @@ void AudioContext::debugTraverse(AudioNode * root)
         current_node = node_stack.back();
 
         auto sz = node_stack.size();
-        for (auto & p : current_node->_self->_params)
+        for (auto & p : current_node->_self->params)
         {
+#if 0
+            /// @TODO rewrite once rendering is back on line
             // if there are rendering connections, be sure they are ready
             p->updateRenderingState(renderLock);
 
@@ -829,6 +791,7 @@ void AudioContext::debugTraverse(AudioNode * root)
                 by_whom.push_back({current_node, "param input"});
                 node_stack.push_back(node);
             }
+#endif
         }
 
         // if there were parameters with inputs, queue up their work next
@@ -844,6 +807,8 @@ void AudioContext::debugTraverse(AudioNode * root)
             if (!in)
                 continue;
 
+#if 0
+            /// @TODO rewrite once rendering is back on line
             int connectionCount = in->numberOfConnections();
             for (int j = 0; j < connectionCount; ++j) {
                 if (auto destNode = in->connection(renderLock, i)) {
@@ -853,6 +818,8 @@ void AudioContext::debugTraverse(AudioNode * root)
                     }
                 }
             }
+#endif
+
         }
 
         // if there were inputs on the node current node, queue up their work next
@@ -869,19 +836,19 @@ void AudioContext::debugTraverse(AudioNode * root)
     for (auto& w : work) {
         // actually do the things in graph order
         if (w.type == processNode) {
-            if (auto adsr = dynamic_cast<ADSRNode*>(w.node)) {
+/*            if (auto adsr = dynamic_cast<ADSRNode*>(w.node)) {
                 printf("%s %s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->scheduler.playbackState()),
                        adsr->finished(renderLock)? "Finished": "Playing",
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
             }
-            else {
+            else {*/
                 printf("%s %s Inputs silent: %s\n",
                        w.node->name(),
-                       schedulingStateName(w.node->_self->_scheduler.playbackState()),
+                       schedulingStateName(w.node->_self->scheduler.playbackState()),
                        w.node->inputsAreSilent(renderLock) ? "yes" : "no");
-            }
+//            }
         }
     }
 }

@@ -1,7 +1,7 @@
 // License: BSD 2 Clause
 // Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
-
+#if 0
 #include "LabSound/core/AudioSummingJunction.h"
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioNodeOutput.h"
@@ -134,3 +134,4 @@ void AudioSummingJunction::updateRenderingState(ContextRenderLock & r)
 }
 
 }  // namespace lab
+#endif

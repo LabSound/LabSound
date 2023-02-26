@@ -24,8 +24,6 @@ class AudioBus;
 class AudioHardwareInputNode;
 class AudioListener;
 class AudioNode;
-class AudioNodeInput;
-class AudioNodeOutput;
 class AudioDestinationNode;
 class AudioScheduledSourceNode;
 class ContextGraphLock;
@@ -203,7 +201,7 @@ public:
     void dispatchEvents();
 
     void appendDebugBuffer(AudioBus* bus, int channel, int count);
-    void flushDebugBuffer(char const* const wavFilePath);
+    void flushDebugBuffer(char const* const rawFilePath);
 
 private:
     // @TODO migrate most of the internal datastructures such as

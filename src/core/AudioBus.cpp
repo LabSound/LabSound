@@ -5,7 +5,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "internal/Assertions.h"
 #include "internal/DenormalDisabler.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include "libsamplerate/include/samplerate.h"
 
 #include <algorithm>
@@ -29,7 +29,7 @@ AudioBus::AudioBus(int numberOfChannels, int length, bool allocate)
     for (int i = 0; i < numberOfChannels; ++i)
     {
         AudioChannel * newChannel;
-        if (allocate)
+        if (allocate) 
             newChannel = new AudioChannel(length);
         else
             newChannel = new AudioChannel(nullptr, length);
@@ -286,6 +286,11 @@ void AudioBus::copyFrom(const AudioBus & sourceBus, ChannelInterpretation channe
     }
 }
 
+void AudioBus::copyFrom(std::shared_ptr<AudioBus> bus, ChannelInterpretation ci) {
+    if (bus)
+        copyFrom(*bus.get(), ci);
+}
+
 void AudioBus::sumFrom(const AudioBus & sourceBus, ChannelInterpretation channelInterpretation)
 {
     if (&sourceBus == this) return;
@@ -310,6 +315,16 @@ void AudioBus::sumFrom(const AudioBus & sourceBus, ChannelInterpretation channel
                 ASSERT_NOT_REACHED();
         }
     }
+}
+
+void AudioBus::sumFrom(const AudioBus & sourceBus, int sourceChannel, int destChannel)
+{
+    int numberOfSourceChannels = sourceBus.numberOfChannels();
+    int numberOfDestinationChannels = numberOfChannels();
+    if (sourceChannel < numberOfSourceChannels || destChannel < numberOfDestinationChannels)
+        return;
+    
+    channel(destChannel)->sumFrom(sourceBus.channel(sourceChannel));
 }
 
 void AudioBus::speakersCopyFrom(const AudioBus & sourceBus)
