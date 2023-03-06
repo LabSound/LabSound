@@ -4,7 +4,7 @@
 #ifndef ConvolverNode_h
 #define ConvolverNode_h
 
-#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioSetting.h"
 
 #include <memory>

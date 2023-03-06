@@ -40,11 +40,6 @@ AudioDestinationNode::AudioDestinationNode(
     ContextGraphLock glock(&ac, "AudioDestinationNode");
     AudioNode::setChannelCount(numChannels);
 
-    // Info is provided by the backend every frame, but some nodes need to be constructed
-    // with a valid sample rate before the first frame so we make our best guess here
-    _last_info = {};
-    _last_info.sampling_rate = _platformAudioDevice->getOutputConfig().desired_samplerate;
-
     initialize();
 }
 
@@ -86,8 +81,8 @@ void AudioNode::gatherInputsAndUpdateSchedules(ContextRenderLock& r,
     for (auto& p : root->_self->params) {
         if (p->overridingInput()) {
             auto input = p->overridingInput();
-            if (input->_self->graphEpoch < current_sample_frame) {
-                input->_self->graphEpoch = current_sample_frame;
+            if (input->_self->graphEpoch <= current_sample_frame) {
+                input->_self->graphEpoch = current_sample_frame + ProcessingSizeInFrames;
                 bool playing = input->updateSchedule(r, frames);
                 if (playing) {
                     n.push_back(input.get());
@@ -100,8 +95,8 @@ void AudioNode::gatherInputsAndUpdateSchedules(ContextRenderLock& r,
     }
 
     for (auto& i : root->_self->inputs) {
-        if (i.node->_self->graphEpoch < current_sample_frame) {
-            i.node->_self->graphEpoch = current_sample_frame;
+        if (i.node->_self->graphEpoch <= current_sample_frame) {
+            i.node->_self->graphEpoch = current_sample_frame + ProcessingSizeInFrames;
             bool playing = i.node->updateSchedule(r, frames);
             if (playing) {
                 n.push_back(i.node.get());
@@ -116,11 +111,12 @@ void AudioNode::gatherInputsAndUpdateSchedules(ContextRenderLock& r,
 void AudioNode::render(AudioContext* context,
                        AudioSourceProvider* provider,
         AudioBus* optional_hardware_input, 
-        AudioBus* write_graph_output_data_here,
-        const SamplingInfo& info)
+        AudioBus* write_graph_output_data_here)
 {
     ProfileScope selfProfile(_self->totalTime);
     ProfileScope profile(_self->graphTime);
+    
+    auto currentSampleFrame = context->audioContextInterface().lock()->currentSampleFrame();
 
     // The audio system might still be invoking callbacks during shutdown,
     // so bail out if called without a context
@@ -163,7 +159,7 @@ void AudioNode::render(AudioContext* context,
     
     std::vector<AudioNode*> processSchedule;
     std::vector<AudioNode*> unscheduled;
-    gatherInputsAndUpdateSchedules(renderLock, this, processSchedule, unscheduled, frames, info.current_sample_frame);
+    gatherInputsAndUpdateSchedules(renderLock, this, processSchedule, unscheduled, frames, currentSampleFrame);
     
     auto diagnosing = context->diagnosing();
     for (auto n : unscheduled) {
@@ -282,6 +278,7 @@ void AudioNode::render(AudioContext* context,
     selfProfile.finalize();
 }
 
+#if 0
 void AudioDestinationNode::offlineRender(AudioBus* dst, size_t framesToProcess)
 {
     static const int offlineRenderSizeQuantum = AudioNode::ProcessingSizeInFrames;
@@ -312,6 +309,7 @@ void AudioDestinationNode::offlineRender(AudioBus* dst, size_t framesToProcess)
         framesToProcess--;
     }
 }
+#endif
 
 void AudioDestinationNode::initialize()
 {

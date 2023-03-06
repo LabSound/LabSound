@@ -6,7 +6,6 @@
 
 #include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/AudioScheduledSourceNode.h"
 
 namespace lab
 {

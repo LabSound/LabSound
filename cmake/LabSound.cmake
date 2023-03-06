@@ -312,6 +312,7 @@ add_library(ls2 STATIC
     "${LABSOUND_ROOT}/src/core/AudioHardwareInputNode.cpp"
     "${LABSOUND_ROOT}/src/core/AudioListener.cpp"
     "${LABSOUND_ROOT}/src/core/AudioNode.cpp"
+    "${LABSOUND_ROOT}/src/core/AudioNodeScheduler.cpp"
     "${LABSOUND_ROOT}/src/core/AudioParam.cpp"
     "${LABSOUND_ROOT}/src/core/AudioParamTimeline.cpp"
     "${LABSOUND_ROOT}/src/extended/AudioFileReader.cpp"

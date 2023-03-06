@@ -125,13 +125,13 @@ void AudioContext::flushDebugBuffer(char const* const rawFilePath)
 }
 
 
-AudioContext::AudioContext(bool isOffline)
+AudioContext::AudioContext(std::shared_ptr<AudioDevice> device, bool isOffline)
     : m_isOfflineContext(isOffline)
 {
     static std::atomic<int> id {1};
     m_internal.reset(new AudioContext::Internals(true));
     m_listener.reset(new AudioListener());
-    m_audioContextInterface = std::make_shared<AudioContextInterface>(this, id);
+    m_audioContextInterface = std::make_shared<AudioContextInterface>(device, this, id);
     ++id;
 
     if (isOffline)
@@ -141,13 +141,13 @@ AudioContext::AudioContext(bool isOffline)
     }
 }
 
-AudioContext::AudioContext(bool isOffline, bool autoDispatchEvents)
+AudioContext::AudioContext(std::shared_ptr<AudioDevice> device, bool isOffline, bool autoDispatchEvents)
     : m_isOfflineContext(isOffline)
 {
     static std::atomic<int> id {1};
     m_internal.reset(new AudioContext::Internals(autoDispatchEvents));
     m_listener.reset(new AudioListener());
-    m_audioContextInterface = std::make_shared<AudioContextInterface>(this, id);
+    m_audioContextInterface = std::make_shared<AudioContextInterface>(device, this, id);
     ++id;
 
     if (isOffline)
@@ -216,7 +216,7 @@ void AudioContext::lazyInitialize()
     if (m_isAudioThreadFinished)
         return;
 
-    if (auto d = _destinationNode.get())
+    if (auto d = m_audioContextInterface->_destinationNode.get())
     {
         if (!isOfflineContext())
         {
@@ -235,8 +235,14 @@ void AudioContext::lazyInitialize()
     else
     {
         LOG_ERROR("m_device not specified");
-        ASSERT(_destinationNode);
+        ASSERT(m_audioContextInterface->_destinationNode);
     }
+}
+
+void AudioContext::backendReinitialize()
+{
+    this->m_audioContextInterface->_device->backendReinitialize();
+    this->m_audioContextInterface->resetSamplingInfo();
 }
 
 void AudioContext::uninitialize()
@@ -251,8 +257,8 @@ void AudioContext::uninitialize()
     updateAutomaticPullNodes();
 
     // This stops the audio thread and all audio rendering.
-    if (_destinationNode && _destinationNode->device())
-        _destinationNode->device()->stop();
+    if (m_audioContextInterface->_destinationNode && m_audioContextInterface->_destinationNode->device())
+        m_audioContextInterface->_destinationNode->device()->stop();
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
     m_isAudioThreadFinished = true;
@@ -274,8 +280,6 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
         return;
 
     // At the beginning of every render quantum, update the graph.
-
-    m_audioContextInterface->_currentTime = currentTime();
 
     // check for pending connections
     if (m_internal->pendingParamConnections.size_approx() > 0 ||
@@ -390,11 +394,11 @@ void AudioContext::handlePostRenderTasks(ContextRenderLock & r)
 void AudioContext::synchronizeConnections(int timeOut_ms)
 {
     cv.notify_all();
-    if (!_destinationNode || !_destinationNode->device())
+    if (!m_audioContextInterface->_destinationNode || !m_audioContextInterface->_destinationNode->device())
         return;
 
     // don't synch a suspended context as that will simply max out the timeout
-    if (!_destinationNode->device()->isRunning())
+    if (!m_audioContextInterface->_destinationNode->device()->isRunning())
         return;
 
     while (m_internal->pendingNodeConnections.size_approx() > 0 && timeOut_ms > 0)
@@ -602,13 +606,13 @@ void AudioContext::dispatchEvents()
 
 void AudioContext::setDestinationNode(std::shared_ptr<AudioDestinationNode> device)
 {
-    _destinationNode = device;
+    m_audioContextInterface->_destinationNode = device;
     lazyInitialize();
 }
 
 std::shared_ptr<AudioDestinationNode> AudioContext::destinationNode()
 {
-    return _destinationNode;
+    return m_audioContextInterface->_destinationNode;
 }
 
 bool AudioContext::isOfflineContext() const
@@ -621,32 +625,51 @@ std::shared_ptr<AudioListener> AudioContext::listener()
     return m_listener;
 }
 
-double AudioContext::currentTime() const
+AudioContext::AudioContextInterface::AudioContextInterface(
+    std::shared_ptr<AudioDevice> device, AudioContext * ac, int id)
+: _id(id)
+, _ac(ac)
+, _device(device)
 {
-    return _destinationNode->getSamplingInfo().current_time;
+    _last_info.sampling_rate = device->getOutputConfig().desired_samplerate;
+    resetSamplingInfo();
 }
 
-uint64_t AudioContext::currentSampleFrame() const
+void AudioContext::AudioContextInterface::resetSamplingInfo()
 {
-    return _destinationNode->getSamplingInfo().current_sample_frame;
+    _last_info.current_sample_frame = 0;
+    _last_info.current_time = 0.f;
+    _last_info.epoch[0] = std::chrono::high_resolution_clock::time_point();
+    _last_info.epoch[1] = std::chrono::high_resolution_clock::time_point();
 }
 
-double AudioContext::predictedCurrentTime() const
+
+double AudioContext::AudioContextInterface::currentTime() const
 {
-    auto info = _destinationNode->getSamplingInfo();
-    uint64_t t = info.current_sample_frame;
-    double val = t / info.sampling_rate;
+    return _last_info.current_time;
+}
+
+uint64_t AudioContext::AudioContextInterface::currentSampleFrame() const
+{
+    return _last_info.current_sample_frame & ~1;
+}
+
+double AudioContext::AudioContextInterface::predictedCurrentTime() const
+{
+    uint64_t t = _last_info.current_sample_frame;
+    double val = t / _last_info.sampling_rate;
     auto t2 = std::chrono::high_resolution_clock::now();
     int index = t & 1;
 
-    if (!info.epoch[index].time_since_epoch().count())
+    if (!_last_info.epoch[index].time_since_epoch().count())
         return val;
 
-    std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - info.epoch[index];
+    std::chrono::duration<double> elapsed =
+        std::chrono::high_resolution_clock::now() - _last_info.epoch[index];
     return val + elapsed.count();
 }
 
-float AudioContext::sampleRate() const
+float AudioContext::AudioContextInterface::sampleRate() const
 {
     // sampleRate is called during AudioNode construction to initialize the
     // scheduler, but DeviceNodes are not scheduled.
@@ -655,7 +678,17 @@ float AudioContext::sampleRate() const
     if (!_destinationNode)
         return 0.f;
 
-    return _destinationNode->getSamplingInfo().sampling_rate;
+    return _last_info.sampling_rate;
+}
+
+void AudioContext::AudioContextInterface::updateSamplingInfo() {
+    auto samplingInfo = _last_info;
+    const int32_t index = 1 - (samplingInfo.current_sample_frame & 1);
+    const uint64_t t = samplingInfo.current_sample_frame & ~1;
+    samplingInfo.current_sample_frame = t + index + AudioNode::ProcessingSizeInFrames;
+    samplingInfo.current_time = samplingInfo.current_sample_frame / static_cast<double>(samplingInfo.sampling_rate);
+    samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
+    _last_info = samplingInfo;
 }
 
 void AudioContext::startOfflineRendering()
@@ -665,33 +698,33 @@ void AudioContext::startOfflineRendering()
 
     m_isInitialized = true;
     
-    if (!_destinationNode && !_destinationNode->device())
+    if (!m_audioContextInterface->_destinationNode && !m_audioContextInterface->_destinationNode->device())
         return;
     
-    _destinationNode->device()->start();
+    m_audioContextInterface->_destinationNode->device()->start();
 }
 
 void AudioContext::suspend()
 {
-    if (!_destinationNode && !_destinationNode->device())
+    if (!m_audioContextInterface->_destinationNode && !m_audioContextInterface->_destinationNode->device())
         return;
 
-    _destinationNode->device()->stop();
+    m_audioContextInterface->_destinationNode->device()->stop();
 }
 
 // if the context was suspended, resume the progression of time and processing in the audio context
 void AudioContext::resume()
 {
-    if (!_destinationNode && !_destinationNode->device())
+    if (!m_audioContextInterface->_destinationNode && !m_audioContextInterface->_destinationNode->device())
         return;
 
-    _destinationNode->device()->start();
+    m_audioContextInterface->_destinationNode->device()->start();
 }
 
 void AudioContext::close()
 {
     suspend();
-    _destinationNode.reset();
+    m_audioContextInterface->_destinationNode.reset();
 }
 
 void AudioContext::debugTraverse(AudioNode * root)

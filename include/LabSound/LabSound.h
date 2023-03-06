@@ -14,7 +14,6 @@
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioHardwareInputNode.h"
 #include "LabSound/core/AudioListener.h"
-#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/core/BiquadFilterNode.h"
 #include "LabSound/core/ChannelMergerNode.h"

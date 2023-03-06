@@ -1,18 +1,20 @@
 
 // License: BSD 2 Clause
-// Copyright (C) 2012, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef AUDIONODESCHEDULER_H
 #define AUDIONODESCHEDULER_H
 
+#include "LabSound/extended/AudioContextLock.h"
+
 #include <cstdint>
 #include <functional>
 #include <limits>
+#include <queue>
 
 namespace lab {
 
-    enum class SchedulingState : int
+enum class SchedulingState : int
 {
     UNSCHEDULED = 0, // Initial playback state. Created, but not yet scheduled
     SCHEDULED,       // Scheduled to play (via noteOn() or noteGrainOn()), but not yet playing
@@ -27,47 +29,62 @@ const char* schedulingStateName(SchedulingState);
 
 class ContextRenderLock;
 
-class AudioNodeScheduler
+class AudioNodeScheduler2
 {
 public:
-    explicit AudioNodeScheduler() = delete;
-    explicit AudioNodeScheduler(float sampleRate);
-    ~AudioNodeScheduler() = default;
+    struct ScheduleOp {
+        SchedulingState state;  // the upcoming state
+        uint64_t epoch;         // when that state occurs; this->_epoch is the clock
+        friend bool operator< (ScheduleOp const& lhs, ScheduleOp const& rhs) {
+            return rhs.epoch < lhs.epoch;
+        }
+    };
+
+    explicit AudioNodeScheduler2() = default;
+    ~AudioNodeScheduler2() = default;
 
     // Scheduling
-    void start(double when);
-    void stop(double when);
+    // when is absolute, e.g. the calculation to start in 0.5s might be
+    //   when + (context.epoch + 0.5 * 44100)
+    void start(uint64_t when) {
+        ScheduleOp opFade { SchedulingState::FADE_IN, when };
+        op.push(opFade);
+    }
+    void stop(uint64_t when) {
+        ScheduleOp opFade { SchedulingState::STOPPING, when };
+        op.push(opFade);
+    }
 
-    // called when the sound is finished, or noteOff/stop time has been reached
-    void finish(ContextRenderLock&);
-    void reset();
+    void reset() {
+        std::priority_queue<ScheduleOp> clear;
+        op.swap(clear);
+        stop(0);
+    }
+
+    bool update(ContextRenderLock& r, int epoch_length);
 
     SchedulingState playbackState() const { return _playbackState; }
+
+    // called by AudioNode when the sound is finished,
+    // or noteOff/stop time has been reached
+    void finish(ContextRenderLock& r) {
+        if (_onEnded)
+            r.context()->enqueueEvent(_onEnded);
+    }
+    
     bool hasFinished() const { return _playbackState == SchedulingState::FINISHED; }
+    void setOnStart(std::function<void(double)> fn) { _onStart = fn; }
+    void setOnEnded(std::function<void()> fn)       { _onEnded = fn; }
 
-    bool update(ContextRenderLock&, int epoch_length);
-
+private:
+    friend class AudioNode;
+    int _renderOffset = 0;
+    int _renderLength = 0;
     SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
-
-    // epoch is a long count at sample rate; 136 years at 48kHz
-
-    uint64_t _epoch = 0;        // the epoch rendered currently in the busses
-    uint64_t _epochLength = 0;  // number of frames in current epoch
-
-    // start and stop epoch (absolute, not relative)
-    uint64_t _startWhen = std::numeric_limits<uint64_t>::max();
-    uint64_t _stopWhen = std::numeric_limits<uint64_t>::max();
-
-    int _renderOffset = 0; // where rendering starts in the current frame
-    int _renderLength = 0; // number of rendered frames in the current frame 
-
-    float _sampleRate = 1;
-
+    std::priority_queue<ScheduleOp> op;  // upcoming events
     std::function<void()> _onEnded;
-
     std::function<void(double when)> _onStart;
 };
-
 } // namespace
 
 #endif

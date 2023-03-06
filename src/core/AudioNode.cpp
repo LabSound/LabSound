@@ -1,5 +1,4 @@
 // License: BSD 2 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioNode.h"
@@ -21,8 +20,13 @@ namespace lab
 {
 
 AudioNode::Internal::Internal(AudioContext & ac)
-: scheduler(ac.sampleRate())
+: scheduler()
 , output(new AudioBus(0, AudioNode::ProcessingSizeInFrames, true))
+, m_channelInterpretation(ChannelInterpretation::Speakers)
+, desiredChannelCount(0)
+, color(0)
+, isInitialized(false)
+, graphEpoch(0)
 {}
 
 // static
@@ -75,201 +79,9 @@ void AudioNode::printGraph(const AudioNode * root, std::function<void(const char
     _printGraph(root, prnln, 0);
 }
 
-/// @TODO when the ls2 merge is done, move this to its own source file
-///
-const char * schedulingStateName(SchedulingState s)
-{
-    switch (s)
-    {
-    case SchedulingState::UNSCHEDULED: return "UNSCHEDULED";
-    case SchedulingState::SCHEDULED:   return "SCHEDULED";
-    case SchedulingState::FADE_IN:     return "FADE_IN";
-    case SchedulingState::PLAYING:     return "PLAYING";
-    case SchedulingState::STOPPING:    return "STOPPING";
-    case SchedulingState::RESETTING:   return "RESETTING";
-    case SchedulingState::FINISHING:   return "FINISHING";
-    case SchedulingState::FINISHED:    return "FINISHED";
-    }
-    return "Unknown";
-}
 
 
-AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
-    : _epoch(0)
-    , _startWhen(std::numeric_limits<uint64_t>::max())
-    , _stopWhen(std::numeric_limits<uint64_t>::max())
-    , _sampleRate(sampleRate)
-{
-}
 
-bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
-{
-    uint64_t proposed_epoch = r.context()->currentSampleFrame();
-    if (_epoch >= proposed_epoch)
-        return false;
-
-    _epoch = proposed_epoch;
-    _renderOffset = 0;
-    _renderLength = epoch_length;
-
-    switch (_playbackState)
-    {
-        case SchedulingState::UNSCHEDULED:
-            break;
-
-        case SchedulingState::SCHEDULED:
-            // start has been called, start looking for the start time
-            if (_startWhen <= _epoch)
-            {
-                // exactly on start, or late, get going straight away
-                _renderOffset = 0;
-                _renderLength = epoch_length;
-                _playbackState = SchedulingState::FADE_IN;
-                ASN_PRINT("fade in\n");
-            }
-            else if (_startWhen < _epoch + epoch_length)
-            {
-                // start falls within the frame
-                _renderOffset = static_cast<int>(_startWhen - _epoch);
-                _renderLength = epoch_length - _renderOffset;
-                _playbackState = SchedulingState::FADE_IN;
-                ASN_PRINT("fade in\n");
-            }
-
-            /// @TODO the case of a start and stop within one epoch needs to be special
-            /// cased, to fit this current architecture, there'd be a FADE_IN_OUT scheduling
-            /// state so that the envelope can be correctly applied.
-            // FADE_IN_OUT would transition to UNSCHEDULED.
-            break;
-
-        case SchedulingState::FADE_IN:
-            // start time has been achieved, there'll be one quantum with fade in applied.
-            _renderOffset = 0;
-            _playbackState = SchedulingState::PLAYING;
-            ASN_PRINT("playing\n");
-            // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
-
-        case SchedulingState::PLAYING:
-            /// @TODO include the end envelope in the stop check so that a scheduled stop that
-            /// spans this quantum and the next ends in the current quantum
-
-            if (_stopWhen <= _epoch)
-            {
-                // exactly on start, or late, stop straight away, render a whole frame of fade out
-                _renderLength = epoch_length - _renderOffset;
-                _playbackState = SchedulingState::STOPPING;
-                ASN_PRINT("stopping\n");
-            }
-            else if (_stopWhen < _epoch + epoch_length)
-            {
-                // stop falls within the frame
-                _renderOffset = 0;
-                _renderLength = static_cast<int>(_stopWhen - _epoch);
-                _playbackState = SchedulingState::STOPPING;
-                ASN_PRINT("stopping\n");
-            }
-
-            // do not fall through to STOPPING because one quantum must render the fade out effect
-            break;
-
-        case SchedulingState::STOPPING:
-            if (_epoch + epoch_length >= _stopWhen)
-            {
-                // scheduled stop has occured, so make sure stop doesn't immediately trigger again
-                _stopWhen = std::numeric_limits<uint64_t>::max();
-                _playbackState = SchedulingState::UNSCHEDULED;
-                if (_onEnded)
-                    r.context()->enqueueEvent(_onEnded);
-                ASN_PRINT("unscheduled\n");
-            }
-            break;
-
-        case SchedulingState::RESETTING:
-            break;
-        case SchedulingState::FINISHING:
-            break;
-        case SchedulingState::FINISHED:
-            break;
-    }
-
-    ASSERT(_renderOffset < epoch_length);
-    return true;
-}
-
-void AudioNodeScheduler::start(double when)
-{
-    // irrespective of start state, onStart will be called if possible
-    // to allow a node to use subsequent starts as a hint
-    if (_onStart)
-        _onStart(when);
-
-    // if already scheduled or playing, nothing to do
-    if (_playbackState == SchedulingState::SCHEDULED || _playbackState == SchedulingState::PLAYING)
-        return;
-
-    // start cancels stop
-    _stopWhen = std::numeric_limits<uint64_t>::max();
-
-    // treat non finite, or max values as a cancellation of stopping or resetting
-    if (!isfinite(when) || when == std::numeric_limits<double>::max())
-    {
-        if (_playbackState == SchedulingState::STOPPING || _playbackState == SchedulingState::RESETTING)
-        {
-            _playbackState = SchedulingState::PLAYING;
-        }
-        return;
-    }
-
-    _startWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
-    _playbackState = SchedulingState::SCHEDULED;
-}
-
-void AudioNodeScheduler::stop(double when)
-{
-    // if the node is on the way to a terminal state do nothing
-    if (_playbackState >= SchedulingState::STOPPING)
-        return;
-
-    // treat non-finite, and FLT_MAX as stop cancellation, if already playing
-    if (!isfinite(when) || when == std::numeric_limits<double>::max())
-    {
-        // stop at a non-finite time means don't stop.
-        _stopWhen = std::numeric_limits<uint64_t>::max();  // cancel stop
-        if (_playbackState == SchedulingState::STOPPING)
-        {
-            // if in the process of stopping, set it back to scheduling to start immediately
-            _playbackState = SchedulingState::SCHEDULED;
-            _startWhen = 0;
-        }
-
-        return;
-    }
-
-    // clamp timing to now or the future
-    if (when < 0)
-        when = 0;
-
-    // let the scheduler know when to activate the STOPPING state
-    _stopWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
-}
-
-void AudioNodeScheduler::reset()
-{
-    _startWhen = std::numeric_limits<uint64_t>::max();
-    _stopWhen = std::numeric_limits<uint64_t>::max();
-    if (_playbackState != SchedulingState::UNSCHEDULED)
-        _playbackState = SchedulingState::RESETTING;
-}
-
-void AudioNodeScheduler::finish(ContextRenderLock & r)
-{
-    if (_playbackState < SchedulingState::PLAYING)
-        _playbackState = SchedulingState::FINISHING;
-    else if (_playbackState >= SchedulingState::PLAYING && _playbackState < SchedulingState::FINISHED)
-        _playbackState = SchedulingState::FINISHING;
-
-    r.context()->enqueueEvent(_onEnded);
-}
 
 AudioParamDescriptor const * const AudioNodeDescriptor::param(char const * const p) const
 {
@@ -304,6 +116,10 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
 
     return nullptr;
 }
+
+
+
+
 
 AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : _self(new Internal(ac))
@@ -461,18 +277,6 @@ void AudioNode::disconnectReceivers()
     }
 }
 
-
-std::shared_ptr<AudioBus> AudioNode::renderedOutputCurrentQuantum(ContextRenderLock& r)
-{
-    auto ac = r.context();
-    ASSERT(ac);
-    
-    if (ac->currentSampleFrame() <_self->scheduler._epoch) {
-        processIfNecessary(r, _self->output->length());
-    }
-    return _self->output;
-}
-
 bool AudioNode::updateSchedule(ContextRenderLock& r, int bufferSize)
 {
     auto ac = r.context();
@@ -498,17 +302,13 @@ bool AudioNode::updateSchedule(ContextRenderLock& r, int bufferSize)
     }
 
     if (diagnosing_silence) {
-        if (_self->scheduler._playbackState < SchedulingState::FADE_IN ||
-            _self->scheduler._playbackState > SchedulingState::PLAYING)
+        if (!isPlayingOrScheduled())
         {
             ac->diagnosed_silence("Scheduled node not playing");
         }
     }
 
-    if (isScheduledNode() && 
-        (_self->scheduler._playbackState < SchedulingState::FADE_IN ||
-         _self->scheduler._playbackState == SchedulingState::FINISHED))
-    {
+    if (isScheduledNode() && !isPlayingOrScheduled()) {
         silenceOutputs(r);
         if (diagnosing_silence)
             ac->diagnosed_silence("Unscheduled");

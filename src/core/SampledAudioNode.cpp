@@ -124,10 +124,10 @@ namespace lab {
         _internals->incoming.enqueue({ SANWorkKind::ClearSchedule });
     }
 
-    void SampledAudioNode::setBus(ContextRenderLock& r, std::shared_ptr<AudioBus> sourceBus)
+    void SampledAudioNode::setBus(std::shared_ptr<AudioBus> sourceBus)
     {
-        // loop count of -3 means set the bus.
-        _internals->incoming.enqueue({ SANWorkKind::SetBus, 0, 0, 0, 0, -3, sourceBus });
+        clearSchedules();
+        _internals->incoming.enqueue({ SANWorkKind::SetBus, 0, 0, 0, 0, 0, sourceBus });
         initialize();
 
         // set the pending pointer, so that a synchronous call to getBus will reflect
@@ -157,7 +157,9 @@ namespace lab {
         if (!ac)
             return;
 
-        when = static_cast<float>(when - ac->currentTime());
+        auto epoch = ac->currentSampleFrame();
+        auto rate = ac->sampleRate();
+        when = epoch + (int64_t) (when * rate);
 
         if (!isPlayingOrScheduled())
             _self->scheduler.start(0.);
@@ -185,7 +187,9 @@ namespace lab {
         if (!ac)
             return;
 
-        when = static_cast<float>(when - ac->currentTime());
+        auto epoch = ac->currentSampleFrame();
+        auto rate = ac->sampleRate();
+        when = epoch + (int64_t) (when * rate);
 
         if (!isPlayingOrScheduled())
             _self->scheduler.start(0.);
@@ -225,7 +229,8 @@ namespace lab {
         start(when, grainOffset, grainDuration, loopCount);
     }
 
-    bool SampledAudioNode::renderSample(ContextRenderLock& r, WorkPacket& schedule, size_t destinationSampleOffset, size_t frameSize)
+    bool SampledAudioNode::renderSample(ContextRenderLock& r, WorkPacket& schedule,
+                                        size_t destinationSampleOffset, size_t frameSize)
     {
         std::shared_ptr<AudioBus> srcBus = m_sourceBus->valueBus();
         AudioBus* dstBus = _self->output.get();
@@ -250,10 +255,11 @@ namespace lab {
                 {
                     float* buffer = dstBus->channel(i)->mutableData();
                     VectorMath::vadd(srcBus->channel(i)->data() + schedule.cursor, 1, 
-                                     buffer + write_index, 1, buffer + write_index, 1, count);
+                                     buffer + write_index, 1,
+                                     buffer + write_index, 1, count);
                 }
 
-                schedule.cursor += count;
+                schedule.cursor += count;                
                 write_index += count;
 
                 if (ending)
@@ -484,8 +490,7 @@ namespace lab {
                 _internals->scheduled.pop_back();
                 --schedule_count;
 
-                if (_self->scheduler._onEnded)
-                    r.context()->enqueueEvent(_self->scheduler._onEnded);
+                _self->scheduler.finish(r);
             }
         }
     }

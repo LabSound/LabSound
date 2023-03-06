@@ -133,8 +133,6 @@ protected:
     std::shared_ptr<AudioDevice> _platformAudioDevice;
     
 public:
-    SamplingInfo _last_info = {};
-
     static const char* static_name() { return "AudioDestination"; }
     virtual const char* name() const override { return static_name(); }
     static AudioNodeDescriptor* desc();
@@ -150,11 +148,6 @@ public:
     
     AudioDevice* device() const { return _platformAudioDevice.get(); }
 
-    
-    void offlineRender(AudioBus * dst, size_t framesToProcess);
-
-    const SamplingInfo & getSamplingInfo() const { return _last_info; }
-    
     virtual void initialize() override;
     virtual void uninitialize() override;
     virtual void reset(ContextRenderLock &) override;

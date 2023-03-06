@@ -18,8 +18,6 @@
 namespace lab
 {
 
-lab::ConcurrentQueue<std::shared_ptr<AudioSummingJunction>> s_dirtySummingJunctions;
-
 namespace
 {
     std::mutex junctionMutex;
@@ -29,8 +27,6 @@ void AudioSummingJunction::handleDirtyAudioSummingJunctions(ContextRenderLock & 
 {
     ASSERT(r.context());
     std::shared_ptr<AudioSummingJunction> asj;
-    while (s_dirtySummingJunctions.try_pop(asj))
-        asj->updateRenderingState(r);
 }
 
 AudioSummingJunction::AudioSummingJunction()

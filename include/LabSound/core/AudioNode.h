@@ -93,7 +93,7 @@ protected:
     struct Internal {
         explicit Internal(AudioContext& ac);
                 
-        AudioNodeScheduler scheduler;
+        AudioNodeScheduler2 scheduler;
 
         struct InputMapping {
             std::shared_ptr<AudioNode> node;
@@ -180,6 +180,12 @@ public :
     // scheduling nodes.
     virtual bool isScheduledNode() const { return false; }
 
+    bool isPlayingOrScheduled() const
+    {
+        return _self->scheduler.playbackState() >= SchedulingState::SCHEDULED &&
+               _self->scheduler.playbackState() <= SchedulingState::STOPPING;
+    }
+
     // No significant resources should be allocated until initialize() is called.
     // Processing may not occur until a node is initialized.
     virtual void initialize();
@@ -214,8 +220,6 @@ public :
     std::shared_ptr<AudioBus> output() { return _self->output; }
     std::shared_ptr<AudioBus> summedInput();
     
-    std::shared_ptr<AudioBus> renderedOutputCurrentQuantum(ContextRenderLock& r);
-
     static void connect(std::shared_ptr<AudioNode> rcv,
                         std::shared_ptr<AudioNode> send,
                         int inputSrcChannel, int dstChannel);
@@ -260,8 +264,7 @@ public :
 
     void render(AudioContext* context,
                 AudioSourceProvider* provider,
-                AudioBus* inputBus, AudioBus* renderToThisBus,
-                const SamplingInfo & info);
+                AudioBus* inputBus, AudioBus* renderToThisBus);
 
 protected:
 
@@ -294,6 +297,32 @@ protected:
 
 };
 
+/*
+    AudioScheduledSourceNode adds a scheduling interface to
+    AudioNode. The scheduler is in the base class, but only nodes
+    derived from AudioScheduledSourceNode can be scheduled.
+ */
+
+class AudioScheduledSourceNode : public AudioNode
+{
+public:
+    AudioScheduledSourceNode() = delete;
+
+    explicit AudioScheduledSourceNode(AudioContext & ac, AudioNodeDescriptor const & desc) : AudioNode(ac, desc) { }
+    virtual ~AudioScheduledSourceNode() = default;
+
+    virtual bool isScheduledNode() const override { return true; }
+
+    // Start time, measured as seconds from the current epochal time
+    void start(float when) { _self->scheduler.start(when); }
+
+    // Stop time, measured as seconds from the current epochal time
+    void stop(float when) { _self->scheduler.stop(when); }
+
+    SchedulingState playbackState() const { return _self->scheduler.playbackState(); }
+    bool hasFinished() const { return _self->scheduler.hasFinished(); }
+    void setOnEnded(std::function<void()> fn) { _self->scheduler.setOnEnded(fn); }
+};
 
 
 }  // namespace lab

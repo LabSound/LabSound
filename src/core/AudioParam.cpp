@@ -136,7 +136,7 @@ void AudioParam::calculateFinalValues(ContextRenderLock & r, float * values, int
     m_internalSummingBus->setChannelMemory(0, values, numberOfValues);
 
     if (_overridingInput) {
-        auto output = _overridingInput->renderedOutputCurrentQuantum(r);
+        auto output = _overridingInput->output();
         m_internalSummingBus->sumFrom(*output.get(), _overridingInputChannel, 0);
     }
 }

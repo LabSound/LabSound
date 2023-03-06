@@ -6,7 +6,7 @@
 #ifndef lab_audio_context_h
 #define lab_audio_context_h
 
-#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "SamplingInfo.h"
 
 #include <atomic>
 #include <condition_variable>
@@ -21,10 +21,12 @@
 namespace lab {
 
 class AudioBus;
+class AudioDestinationNode;
+class AudioDevice;
 class AudioHardwareInputNode;
 class AudioListener;
 class AudioNode;
-class AudioDestinationNode;
+class AudioParam;
 class AudioScheduledSourceNode;
 class ContextGraphLock;
 class ContextRenderLock;
@@ -59,28 +61,31 @@ public:
 
         int _id = 0;
         AudioContext * _ac = nullptr;
-        double _currentTime = 0;
+        std::shared_ptr<AudioDevice> _device;
+        std::shared_ptr<AudioDestinationNode> _destinationNode;
+        SamplingInfo _last_info = {};
 
     public:
-        AudioContextInterface(AudioContext * ac, int id)
-            : _id(id)
-            , _ac(ac)
-        {
-        }
-
-        ~AudioContextInterface() { }
+        AudioContextInterface(std::shared_ptr<AudioDevice> device, AudioContext * ac, int id);
+        ~AudioContextInterface() = default;
 
         // the contextId of two AudioNodeInterfaces can be compared
         // to discover if they refer to the same context.
         int contextId() const { return _id; }
-        double currentTime() const { return _currentTime; }
+        double currentTime() const;
+        uint64_t currentSampleFrame() const;
+        double predictedCurrentTime() const;
+        float sampleRate() const;
+        void updateSamplingInfo();
+        void resetSamplingInfo();
     };
 
-    std::weak_ptr<AudioContextInterface> audioContextInterface() { return m_audioContextInterface; }
+    std::weak_ptr<AudioContextInterface> audioContextInterface() {
+        return m_audioContextInterface; }
 
     // ctor/dtor
-    explicit AudioContext(bool isOffline);
-    explicit AudioContext(bool isOffline, bool autoDispatchEvents);
+    explicit AudioContext(std::shared_ptr<AudioDevice>, bool isOffline);
+    explicit AudioContext(std::shared_ptr<AudioDevice>, bool isOffline, bool autoDispatchEvents);
     ~AudioContext();
 
     // External users shouldn't use this; it should be called by
@@ -88,6 +93,7 @@ public:
     // It *is* harmless to call it though, it's just not necessary.
     void lazyInitialize();
     bool isInitialized() const;
+    void backendReinitialize();
 
     // configuration
     bool isAutodispatchingEvents() const;
@@ -95,7 +101,7 @@ public:
     bool loadHrtfDatabase(const std::string & searchPath);
     std::shared_ptr<HRTFDatabaseLoader> hrtfDatabaseLoader() const;
 
-    float sampleRate() const;
+    float sampleRate() const { return m_audioContextInterface->sampleRate(); }
 
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> node);
     std::shared_ptr<AudioDestinationNode> destinationNode();
@@ -113,12 +119,12 @@ public:
 
     // The current time, measured at the start of the render quantum currently
     // being processed. Most useful in a Node's process routine.
-    double currentTime() const;
+    double currentTime() const { return m_audioContextInterface->currentTime(); }
 
     // The current epoch (total count of previously processed render quanta)
     // Useful in recurrent graphs to discover if a node has already done its
     // processing for the present quanta.
-    uint64_t currentSampleFrame() const;
+    uint64_t currentSampleFrame() const { return m_audioContextInterface->currentSampleFrame(); }
 
     // The current time, accurate versus the audio clock. Whereas currentTime
     // advances discretely, once per render quanta, predictedCurrentTime
@@ -126,7 +132,7 @@ public:
     // elapsed since the start of the current render quanta. This is useful on
     // the main thread of an application in order to precisely synchronize
     // expected audio events and other systems.
-    double predictedCurrentTime() const;
+    double predictedCurrentTime() const { return m_audioContextInterface->predictedCurrentTime(); }
 
     // engine
     
@@ -232,8 +238,6 @@ private:
     void update();
     void updateAutomaticPullNodes();
     void uninitialize();
-
-    std::shared_ptr<AudioDestinationNode> _destinationNode;
 
     std::shared_ptr<AudioListener> m_listener;
     std::shared_ptr<AudioNode> _diagnose;

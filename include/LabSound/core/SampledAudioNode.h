@@ -5,7 +5,7 @@
 #ifndef SampledAudioNode_h
 #define SampledAudioNode_h
 
-#include "LabSound/core/AudioScheduledSourceNode.h"
+#include "LabSound/core/AudioNode.h"
 
 #include <memory>
 
@@ -64,16 +64,12 @@ public:
 
     // setting the bus is an asynchronous operation. getBus returns the most
     // recent set request in order that the interface work in a predictable way.
-    // In the future, setBus and getBus could be deprecated in favor of another
-    // schedule method that takes a source bus as an argument.
-    void setBus(ContextRenderLock&, std::shared_ptr<AudioBus> sourceBus);
+    void setBus(std::shared_ptr<AudioBus> sourceBus);
     std::shared_ptr<AudioBus> getBus() const { return m_pendingSourceBus; }
 
     // loopCount of -1 will loop forever
     // all the schedule routines will call start(0) if necessary, so that a
     // schedule is sufficient for this node to start producing a signal.
-    //
-    // 
     void schedule(float relative_when);
     void schedule(float relative_when, int loopCount);
     void schedule(float relative_when, float grainOffset, int loopCount);
