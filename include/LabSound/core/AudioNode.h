@@ -221,7 +221,7 @@ public :
     ChannelInterpretation channelInterpretation() const {
         return _self->m_channelInterpretation; }
     void setChannelInterpretation(ChannelInterpretation interpretation) {
-        return _self->m_channelInterpretation = interpretation; }
+        _self->m_channelInterpretation = interpretation; }
 
     // returns a vector of parameter names
     std::vector<std::string> paramNames() const;

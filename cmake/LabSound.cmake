@@ -167,7 +167,7 @@ function (configureProj proj)
 endfunction()
 configureProj(LabSound)
 configureProj(LabSoundRtAudio)
-configureProj(LabSoundRtMiniAudio)
+configureProj(LabSoundMiniAudio)
 
 target_include_directories(LabSound PUBLIC
     ${LABSOUND_ROOT}/include)
