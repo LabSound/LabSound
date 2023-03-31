@@ -28,7 +28,8 @@ struct HRTFDatabaseInfo
     int minElevation = -45;
     int maxElevation = 90;
     int rawElevationAngleSpacing = 15;
-
+    bool files_found_and_loaded = false;
+ 
     // Number of elevations loaded from resource
     int numberOfRawElevations = 10;  // -45 -> +90 (each 15 degrees)
 
@@ -177,6 +178,7 @@ public:
     // Returns the number of different azimuth angles.
     static unsigned numberOfAzimuths() { return HRTFElevation::NumberOfTotalAzimuths; }
     int numberOfElevations() const { return (int) m_elevations.size(); }
+    bool files_found_and_loaded() { return info->files_found_and_loaded; }
 
 private:
     std::vector<std::unique_ptr<HRTFElevation>> m_elevations;
