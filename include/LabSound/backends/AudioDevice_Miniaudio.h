@@ -11,7 +11,6 @@
 
 struct ma_device;
 
-
 namespace lab {
 
 class AudioDevice_Miniaudio : public AudioDevice

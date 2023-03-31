@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cstdlib>
+#include <cstring>
 #include <condition_variable>
 #include <mutex>
 #include <queue>

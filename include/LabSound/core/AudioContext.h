@@ -107,6 +107,9 @@ public:
     std::string m_graphLocker;
     std::string m_renderLocker;
     void debugTraverse(AudioNode * root);
+    void diagnose(std::shared_ptr<AudioNode>);
+    void diagnosed_silence(const char*  msg);
+    std::shared_ptr<AudioNode> diagnosing() const { return _diagnose; }
 
     // Timing related
 
@@ -167,7 +170,7 @@ public:
     void processAutomaticPullNodes(ContextRenderLock &, int framesToProcess);
 
     // graph management
-    
+    //
     void connect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcIdx = 0);
     void disconnect(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source, int destIdx = 0, int srcidx = 0);
     bool isConnected(std::shared_ptr<AudioNode> destination, std::shared_ptr<AudioNode> source);
@@ -181,7 +184,7 @@ public:
     void synchronizeConnections(int timeOut_ms = 1000);
 
     // parameter management
-    
+    //
     // connect a parameter to receive the indexed output of a node
     void connectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
@@ -191,9 +194,8 @@ public:
     // disconnect a parameter from the indexed output of a node
     void disconnectParam(std::shared_ptr<AudioParam> param, std::shared_ptr<AudioNode> driver, int index);
 
-
     // events
-    
+    //    
     // event dispatching will be called automatically, depending on constructor
     // argument. If not automatically dispatching, it is the user's responsibility
     // to call dispatchEvents often enough to satisfy the user's needs.
@@ -236,7 +238,7 @@ private:
     std::shared_ptr<AudioDestinationNode> _destinationNode;
 
     std::shared_ptr<AudioListener> m_listener;
-
+    std::shared_ptr<AudioNode> _diagnose;
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;  // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;  // vector of known pull nodes
 };

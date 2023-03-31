@@ -375,12 +375,39 @@ void AudioNode::addOutput(ContextGraphLock&, std::unique_ptr<AudioNodeOutput> ou
 
 void AudioNode::addInput(std::unique_ptr<AudioNodeInput> input)
 {
+    input->setName("in" + to_string((int) _self->m_inputs.size()));
     _self->m_inputs.emplace_back(std::move(input));
 }
 
 void AudioNode::addOutput(std::unique_ptr<AudioNodeOutput> output)
 {
     _self->m_outputs.emplace_back(std::move(output));
+}
+
+// safe without a Render lock because vector is immutable
+std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
+{
+    if (i < _self->m_inputs.size())
+        return _self->m_inputs[i];
+    return {};
+}
+
+std::shared_ptr<AudioNodeInput> AudioNode::input(char const* const str)
+{
+    for (auto & i : _self->m_inputs)
+    {
+        if (i->name() == str)
+            return i;
+    }
+    return {};
+}
+
+// safe without a Render lock because vector is immutable
+std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
+{
+    if (i < _self->m_outputs.size())
+        return _self->m_outputs[i];
+    return {};
 }
 
 std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
@@ -391,23 +418,6 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
             return i;
     }
     return {};
-}
-
-
-// safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeInput> AudioNode::input(int i)
-{
-    if (i < _self->m_inputs.size())
-        return _self->m_inputs[i];
-    return nullptr;
-}
-
-// safe without a Render lock because vector is immutable
-std::shared_ptr<AudioNodeOutput> AudioNode::output(int i)
-{
-    if (i < _self->m_outputs.size())
-        return _self->m_outputs[i];
-    return nullptr;
 }
 
 int AudioNode::channelCount()
@@ -451,19 +461,35 @@ void AudioNode::setChannelCountMode(ContextGraphLock & g, ChannelCountMode mode)
 
 void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 {
-    if (!isInitialized())
-        return;
-
     auto ac = r.context();
     if (!ac)
         return;
+
+    bool diagnosing_silence = ac->diagnosing().get() == this;
+
+    if (diagnosing_silence) {
+        if (_self->_scheduler._playbackState < SchedulingState::FADE_IN ||
+            _self->_scheduler._playbackState > SchedulingState::PLAYING)
+        {
+            ac->diagnosed_silence("Scheduled node not playing");
+        }
+    }
+
+    if (!isInitialized()) {
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Not initialized");
+        return;
+    }
 
     // outputs cache results in their busses.
     // if the scheduler's recorded epoch is the same as the context's, the node
     // shall bail out as it has been processed once already this epoch.
 
-    if (!_self->_scheduler.update(r, bufferSize))
+    if (!_self->_scheduler.update(r, bufferSize)) {
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Already processed");
         return;
+    }
 
     ProfileScope selfScope(_self->totalTime);
     _self->graphTime.zero();
@@ -473,6 +499,8 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
          _self->_scheduler._playbackState == SchedulingState::FINISHED))
     {
         silenceOutputs(r);
+        if (diagnosing_silence)
+            ac->diagnosed_silence("Unscheduled");
         return;
     }
 
@@ -519,7 +547,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
 
     // clean pops resulting from starting or stopping
 
-#define OOS(x) (float(x) / float(steps))
+    #define OOS(x) (float(x) / float(steps))
     if (start_zero_count > 0 || _self->_scheduler._playbackState == SchedulingState::FADE_IN)
     {
         int steps = start_envelope;
@@ -628,7 +656,7 @@ void AudioNode::checkNumberOfChannelsForInput(ContextRenderLock & r, AudioNodeIn
 bool AudioNode::propagatesSilence(ContextRenderLock& r) const
 {
     return _self->_scheduler._playbackState < SchedulingState::FADE_IN ||
-    _self->_scheduler._playbackState == SchedulingState::FINISHED;
+           _self->_scheduler._playbackState == SchedulingState::FINISHED;
 }
 
 void AudioNode::pullInputs(ContextRenderLock & r, int bufferSize)

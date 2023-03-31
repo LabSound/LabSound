@@ -123,7 +123,7 @@ struct ex_play_file : public labsound_example
         ac.debugTraverse(ac.destinationNode().get());
         printf("------\n");
 
-        Wait(1000.f * musicClip->length() / musicClip->sampleRate());
+        Wait(static_cast<uint32_t>(1000.f * musicClip->length() / musicClip->sampleRate()));
     }
 };
 

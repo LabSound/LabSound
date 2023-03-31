@@ -13,6 +13,7 @@
 namespace lab
 {
 
+class ContextRenderLock;
 using lab::Channel;
 using lab::ChannelInterpretation;
 
@@ -40,6 +41,7 @@ public:
 
     // Channels
     int numberOfChannels() const { return static_cast<int>(m_channels.size()); }
+    void setNumberOfChannels(ContextRenderLock&, int c);
 
     // Use this when looping over channels
     AudioChannel * channel(int channel) { return m_channels[channel].get(); }
