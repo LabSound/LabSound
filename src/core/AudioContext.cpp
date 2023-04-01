@@ -197,11 +197,25 @@ AudioContext::~AudioContext()
 
 bool AudioContext::loadHrtfDatabase(const std::string & searchPath)
 {
-    auto db = new HRTFDatabaseLoader(sampleRate(), searchPath);
-    m_internal->hrtfDatabaseLoader.reset(db);
-    db->loadAsynchronously();
-    db->waitForLoaderThreadCompletion();
-    return db->database()->numberOfElevations() > 0 && db->database()->numberOfAzimuths() > 0;
+    //auto db = new HRTFDatabaseLoader(sampleRate(), searchPath);
+    //m_internal->hrtfDatabaseLoader.reset(db);
+    //db->loadAsynchronously();
+    //db->waitForLoaderThreadCompletion();
+    //return db->database()->numberOfElevations() > 0 && db->database()->numberOfAzimuths() > 0;
+    bool loaded = true;
+    auto db = HRTFDatabaseLoader::MakeHRTFLoaderSingleton(sampleRate(), searchPath);
+    // auto db = new HRTFDatabaseLoader(sampleRate(), searchPath);
+    if (!db->database() || !db->database()->files_found_and_loaded())
+    {
+        m_internal->hrtfDatabaseLoader.reset(db);
+        db->loadAsynchronously();
+        db->waitForLoaderThreadCompletion();
+        printf("db files found and loaded %d", db->database()->files_found_and_loaded() ? 1 : 0);
+        printf("num elevs %d num az %d\n", db->database()->numberOfElevations(), db->database()->numberOfAzimuths());
+        loaded = db->database()->files_found_and_loaded();
+        loaded = loaded && db->database()->numberOfElevations() > 0 && db->database()->numberOfAzimuths() > 0;
+    }
+    return loaded;
 }
 
 std::shared_ptr<HRTFDatabaseLoader> AudioContext::hrtfDatabaseLoader() const {

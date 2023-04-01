@@ -746,13 +746,29 @@ struct ex_hrtf_spatialization : public labsound_example
         ac.synchronizeConnections();
         _nodes.clear();
 
-        if (!ac.loadHrtfDatabase("hrtf")) {
+        if (!ac.loadHrtfDatabase("fail/hrtf")) {
+            //should go in here after failing
+            if (!ac.loadHrtfDatabase("hrtf"))
+            {
+                std::string path = std::string(SAMPLE_SRC_DIR) + "/hrtf";
+                if (!ac.loadHrtfDatabase(path))
+                {
+                    printf("Could not load spatialization database");
+                    return;
+                }
+            }
+        }
+        //should not load again if already successfully loaded above
+        if (!ac.loadHrtfDatabase("hrtf"))
+        {
             std::string path = std::string(SAMPLE_SRC_DIR) + "/hrtf";
-            if (!ac.loadHrtfDatabase(path)) {
+            if (!ac.loadHrtfDatabase(path))
+            {
                 printf("Could not load spatialization database");
                 return;
             }
         }
+
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);

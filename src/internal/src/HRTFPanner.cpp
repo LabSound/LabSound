@@ -119,11 +119,25 @@ HRTFDatabaseLoader* HRTFDatabaseLoader::s_loader;
 
 HRTFDatabaseLoader* HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate, const std::string & searchPath)
 {
+    //if (!s_loader)
+    //{
+    //    s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
+    //    s_loader->loadAsynchronously();
+    //}
     if (!s_loader)
     {
         s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
-        s_loader->loadAsynchronously();
+        // s_loader->loadAsynchronously();
     }
+    if (s_loader && !s_loader->database() || !s_loader->database()->files_found_and_loaded())
+    {
+        s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
+    }
+    // if (s_loader && s_loader->database() && (s_loader->searchPath != searchPath ) )
+    //{
+    //     s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
+    // }
+
     return s_loader;
 }
 
@@ -145,7 +159,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader()
 
     ASSERT(this == s_loader);
 
-    s_loader = nullptr;
+    //s_loader = nullptr; //.reset(db) creates new loader before calling this destructor
 }
 
 // Asynchronously load the database in this thread.
@@ -297,6 +311,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(
     if (!impulseResponse)
     {
         LOG_ERROR("impulse not found %s (bad path?)", resourceName.c_str());
+        info->files_found_and_loaded = false;
         return false;
     }
 
@@ -314,6 +329,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(
     ASSERT(isBusGood);
     if (!isBusGood)
     {
+        info->files_found_and_loaded = false;
         return false;
     }
 
@@ -324,6 +340,7 @@ bool HRTFElevation::calculateKernelsForAzimuthElevation(
     const int fftSize = HRTFPanner::fftSizeForSampleRate(info->sampleRate);
     kernelL = std::make_shared<HRTFKernel>(leftEarImpulseResponse, fftSize, info->sampleRate);
     kernelR = std::make_shared<HRTFKernel>(rightEarImpulseResponse, fftSize, info->sampleRate);
+    info->files_found_and_loaded = true;
 
     return true;
 }
