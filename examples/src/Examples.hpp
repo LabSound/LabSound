@@ -1612,8 +1612,24 @@ struct ex_split_merge : public labsound_example
         }
 
         ac.connect(splitter, musicClipNode);
-        ac.connect(merger, splitter, 0, 1); // swap front-left
-        ac.connect(merger, splitter, 1, 0); // and front right to demonstrate channels can be swapped
+        if (0)
+        {
+            // tests channel swapping
+            ac.connect(merger, splitter, 0, 1);  // swap front-left
+            ac.connect(merger, splitter, 1, 0);  // and front right to demonstrate channels can be swapped
+        }
+        else
+        {
+            // tests getting 6 channels from .wav, and merging them into 2 channels (can hear all 6 audibles)
+            //  https://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Samples.html
+            //                                    // chan audible    chron-order
+            ac.connect(merger, splitter, 0, 0);  // 0    front-left  1
+            ac.connect(merger, splitter, 1, 1);  // 1    front right 2
+            ac.connect(merger, splitter, 0, 2);  // 3    center      3
+            ac.connect(merger, splitter, 1, 3);  // 4    tone        6 (plays last)
+            ac.connect(merger, splitter, 0, 4);  // 5    back left   4
+            ac.connect(merger, splitter, 1, 5);  // 6    back right  5
+        }
         ac.connect(gain, merger, 0, 0);
         ac.connect(ac.destinationNode(), gain, 0, 0);
         musicClipNode->schedule(0.0);
@@ -1624,7 +1640,7 @@ struct ex_split_merge : public labsound_example
         _nodes.push_back(merger);
         _nodes.push_back(splitter);
 
-        const uint32_t delay_time_ms = 2000;
+        const uint32_t delay_time_ms = 7000;
         Wait(delay_time_ms);
     }
     
