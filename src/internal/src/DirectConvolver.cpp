@@ -32,9 +32,9 @@
 
 #include "DirectConvolver.h"
 
-//#if OS(DARWIN)
-//#include <Accelerate/Accelerate.h>
-//#endif
+#if OS(DARWIN)
+#include <Accelerate/Accelerate.h>
+#endif
 #include "internal/Assertions.h"
 #include "VectorMath.h"
 #include "LabSound/core/Macros.h"
