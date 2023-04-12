@@ -1645,3 +1645,96 @@ struct ex_split_merge : public labsound_example
     }
     
 };
+// https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper#example
+
+static void makeDistortionCurveA(std::vector<float> & curve, unsigned n_samples, float amount = .5f)
+{
+    float k = amount * 10.0f;
+    float deg = (float) std::_Pi / 180.0f;
+
+    for (unsigned i = 0; i < n_samples; i++)
+    {
+        float x = (float)i * 2.0f / (float)n_samples - 1.0f;
+        curve[i] = ((3.0f + k) * x * 20.0f * deg) / ((float) std::_Pi + k * std::abs(x));
+        //printf("A curve[%d]= %f, ", i, curve[i]);
+    }
+}
+
+static void makeDistortionCurveB(std::vector<float> & curve, unsigned n_samples, float amount = 0.5f)
+{
+    float k = 2.0f * amount / (1.0f - amount);
+    for (unsigned i = 0; i < n_samples; i++)
+    {
+        float x = (float)i * 2.0f / (float)n_samples -1.0f;
+        curve[i] = (1.0f + k) * x / (1.0f + k * std::abs(x));
+        //printf("B curve[%d]= %f, ", i, curve[i]);
+    }
+}
+
+struct ex_waveshaper : public labsound_example
+{
+    ex_waveshaper(std::shared_ptr<lab::AudioContext> context, bool with_input)
+        : labsound_example(context, with_input)
+    {
+    }
+    virtual ~ex_waveshaper() = default;
+
+    virtual void play(int argc, char ** argv) override final
+    {
+        lab::AudioContext & ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
+        _nodes.clear();
+
+        std::shared_ptr<WaveShaperNode> waveshaper = std::make_shared<WaveShaperNode>(ac);
+
+        std::shared_ptr<OscillatorNode> oscillator = std::make_shared<OscillatorNode>(ac);
+        oscillator->setType(OscillatorType::SINE);
+
+        ac.connect(ac.destinationNode(), waveshaper, 0, 0);
+        ac.connect(waveshaper, oscillator, 0, 0);
+        oscillator->start(0.0f);
+
+        // ensure nodes last until the end of the demo
+        _nodes.push_back(oscillator);
+        _nodes.push_back(waveshaper);
+        const uint32_t delay_time_ms = 1000;
+        int n_samples = 44100;
+        std::vector<float> curve(n_samples);
+        for (int i = -2; i < 3; i++)
+        {
+            //std::vector<float> curve = makeDistortionCurve(100.0f * i);
+            makeDistortionCurveB(curve, n_samples, .25f * i + .5f);
+            printf("B i %d curve[0] %f curve[44099] %f oversample none\n", i, curve[0], curve[44099]);
+            waveshaper->setCurve(curve);
+            Wait(delay_time_ms);
+        }
+        for (int i = -2; i < 3; i++)
+        {
+            // std::vector<float> curve = makeDistortionCurve(100.0f * i);
+            makeDistortionCurveB(curve, n_samples, .25f * i + .5f);
+            printf("B i %d curve[0] %f curve[44099] %f oversample 2x\n", i, curve[0], curve[44099]);
+            waveshaper->setCurve(curve);
+            waveshaper->setOversample(lab::OverSampleType::_2X);
+            Wait(delay_time_ms);
+        }
+        for (int i = -2; i < 3; i++)
+        {
+            // std::vector<float> curve = makeDistortionCurve(100.0f * i);
+            makeDistortionCurveB(curve, n_samples, .25f * i + .5f);
+            printf("B i %d curve[0] %f curve[44099] %f oversample 4X\n", i, curve[0], curve[44099]);
+            waveshaper->setCurve(curve);
+            waveshaper->setOversample(lab::OverSampleType::_4X);
+            Wait(delay_time_ms);
+        }
+        for (int i = -2; i < 3; i++)
+        {
+            // std::vector<float> curve = makeDistortionCurve(100.0f * i);
+            makeDistortionCurveA(curve, n_samples, .25f * i + .5f);
+            printf("A i %d curve[0] %f curve[44099] %f oversample none\n", i, curve[0], curve[44099]);
+            waveshaper->setCurve(curve);
+            Wait(delay_time_ms);
+        }
+
+    }
+};
