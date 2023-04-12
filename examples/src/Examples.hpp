@@ -1650,12 +1650,12 @@ struct ex_split_merge : public labsound_example
 static void makeDistortionCurveA(std::vector<float> & curve, unsigned n_samples, float amount = .5f)
 {
     float k = amount * 10.0f;
-    float deg = (float) std::_Pi / 180.0f;
+    float deg = (float) M_PI / 180.0f;
 
     for (unsigned i = 0; i < n_samples; i++)
     {
         float x = (float)i * 2.0f / (float)n_samples - 1.0f;
-        curve[i] = ((3.0f + k) * x * 20.0f * deg) / ((float) std::_Pi + k * std::abs(x));
+        curve[i] = ((3.0f + k) * x * 20.0f * deg) / ((float) M_PI + k * std::abs(x));
         //printf("A curve[%d]= %f, ", i, curve[i]);
     }
 }
