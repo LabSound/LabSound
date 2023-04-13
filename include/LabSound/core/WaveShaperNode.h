@@ -6,9 +6,18 @@
 #define WaveShaperNode_h
 
 #include "LabSound/core/AudioNode.h"
-#include <vector>
+//#include <vector>
+//#include "../src/internal/UpSampler.h" //ouch..how to hide internal from calling application?
+//#include "../src/internal/DownSampler.h"
 
 namespace lab {
+enum OverSampleType
+{
+    NONE = 0,
+    _2X = 1,
+    _4X = 2,
+    _OverSampleTypeCount
+};
 
 class WaveShaperNode : public AudioNode
 {
@@ -23,19 +32,31 @@ public:
 
     // copies the curve
     void setCurve(std::vector<float> & curve);
+    void setOversample(OverSampleType oversample) { m_oversample = oversample; }
+    OverSampleType oversample() const { return m_oversample; }
+
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock&) override {}
 
 protected:
-    void processBuffer(ContextRenderLock&, const float* source, float* destination, int framesToProcess);
+    void processCurve(const float * source, float * destination, int framesToProcess);
     virtual double tailTime(ContextRenderLock& r) const override { return 0.; }
     virtual double latencyTime(ContextRenderLock& r) const override { return 0.; }
 
     std::vector<float> m_curve;
     std::vector<float>* m_newCurve = nullptr;
-};
+
+    // Oversampling.
+    void * m_oversamplingArrays = nullptr;
+    OverSampleType m_oversample = OverSampleType::NONE;
+
+    // Use up-sampling, process at the higher sample-rate, then down-sample.
+    void processCurve2x(const float * source, float * dest, int framesToProcess);
+    void processCurve4x(const float * source, float * dest, int framesToProcess);
+
+    };
 
 }  // namespace lab
 
