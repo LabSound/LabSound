@@ -32,7 +32,7 @@
 
 #include "DirectConvolver.h"
 
-#if OS(DARWIN)
+#if defined(__APPLE__)
 #include <Accelerate/Accelerate.h>
 #endif
 #include "internal/Assertions.h"
