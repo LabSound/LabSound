@@ -72,9 +72,9 @@ GranulationNode::~GranulationNode()
     uninitialize();
 }
 
-void GranulationNode::reset(ContextRenderLock&)
+void GranulationNode::reset(ContextRenderLock& r)
 {
-
+    AudioNode::reset(r);
 }
 
 bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bus, int destinationFrameOffset, int numberOfFrames)

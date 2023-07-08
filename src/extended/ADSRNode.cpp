@@ -159,8 +159,6 @@ namespace lab
             destinationBus->copyWithSampleAccurateGainValuesFrom(*sourceBus, envelope.data(), framesToProcess);
         }
 
-        virtual void reset() override { }
-
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
@@ -282,8 +280,9 @@ namespace lab
         adsr_impl->process(r, sourceBus, destinationBus, bufferSize);
     }
 
-    void ADSRNode::reset(ContextRenderLock&)
+    void ADSRNode::reset(ContextRenderLock& r)
     {
+        AudioNode::reset(r);
         gate()->setValue(0.f);
     }
 

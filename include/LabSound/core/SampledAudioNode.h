@@ -26,7 +26,6 @@ struct SRC_Resampler;
 
 class SampledAudioNode final : public AudioScheduledSourceNode
 {
-    virtual void reset(ContextRenderLock& r) override {}
     virtual double tailTime(ContextRenderLock& r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock& r) const override { return 0; }
     virtual bool propagatesSilence(ContextRenderLock& r) const override { return false; }

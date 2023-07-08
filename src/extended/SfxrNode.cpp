@@ -798,8 +798,9 @@ void SfxrNode::process(ContextRenderLock &r, int bufferSize)
     outputBus->clearSilentFlag();
 }
 
-void SfxrNode::reset(ContextRenderLock &)
+void SfxrNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
 }
 
 bool SfxrNode::propagatesSilence(ContextRenderLock & r) const

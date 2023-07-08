@@ -68,7 +68,6 @@ public:
     static AudioNodeDescriptor * desc();
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override { }
 
     PolyBLEPType type() const;
     void setType(PolyBLEPType type);

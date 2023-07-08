@@ -76,6 +76,8 @@ public:
     void setOnStart(std::function<void(double)> fn) { _onStart = fn; }
     void setOnEnded(std::function<void()> fn)       { _onEnded = fn; }
 
+    void printSchedule(ContextRenderLock& r);
+    
 private:
     friend class AudioNode;
     int _renderOffset = 0;

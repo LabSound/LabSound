@@ -62,8 +62,9 @@ void AudioBasicProcessorNode::process(ContextRenderLock & r, int bufferSize)
 }
 
 
-void AudioBasicProcessorNode::reset(ContextRenderLock &)
+void AudioBasicProcessorNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     if (processor())
         processor()->reset();
 }

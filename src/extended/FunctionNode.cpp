@@ -67,7 +67,7 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 
 void FunctionNode::reset(ContextRenderLock & r)
 {
-    // No-op
+    AudioNode::reset(r);
 }
 
 bool FunctionNode::propagatesSilence(ContextRenderLock & r) const

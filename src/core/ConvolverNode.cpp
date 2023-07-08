@@ -304,8 +304,9 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     outputBus->clearSilentFlag();
 }
 
-void ConvolverNode::reset(ContextRenderLock &)
+void ConvolverNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     _kernels.clear();
 }
 

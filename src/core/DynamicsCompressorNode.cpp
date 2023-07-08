@@ -95,8 +95,9 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_reduction->setValue(reduction);
 }
 
-void DynamicsCompressorNode::reset(ContextRenderLock &)
+void DynamicsCompressorNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     m_dynamicsCompressor->reset();
 }
 

@@ -9,6 +9,7 @@
 // (so that time and epoch are written atomically, after the alternative epoch has been filled in)
 struct SamplingInfo
 {
+    uint32_t current_graph_generation{0};
     uint64_t current_sample_frame{0};
     double current_time{0.0};
     float sampling_rate{0.f};

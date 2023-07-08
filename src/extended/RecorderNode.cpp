@@ -227,8 +227,9 @@ std::unique_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
 }
 
 
-void RecorderNode::reset(ContextRenderLock & r)
+void RecorderNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
     for (int i = 0; i < m_data.size(); ++i)
         m_data[i].clear();

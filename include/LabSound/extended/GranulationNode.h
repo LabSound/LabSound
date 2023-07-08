@@ -111,7 +111,6 @@ public:
     static AudioNodeDescriptor * desc();
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override;
 
     bool setGrainSource(ContextRenderLock &, std::shared_ptr<AudioBus> sourceBus);
     std::shared_ptr<AudioBus> getGrainSource() const { return grainSourceBus->valueBus(); }

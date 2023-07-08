@@ -26,7 +26,6 @@ public:
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock&) override {}
 
 protected:
     void processBuffer(ContextRenderLock&, const float* source, float* destination, int framesToProcess);

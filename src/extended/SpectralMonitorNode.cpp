@@ -193,8 +193,9 @@ void SpectralMonitorNode::process(ContextRenderLock &r, int bufferSize)
         outputBus->copyFrom(*bus);
 }
 
-void SpectralMonitorNode::reset(ContextRenderLock &)
+void SpectralMonitorNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     internalNode->setWindowSize(internalNode->windowSize->valueUint32());
 }
 

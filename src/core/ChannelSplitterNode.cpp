@@ -54,8 +54,9 @@ void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
     }
 }
 
-void ChannelSplitterNode::reset(ContextRenderLock &)
+void ChannelSplitterNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
 }
 
 }  // namespace lab

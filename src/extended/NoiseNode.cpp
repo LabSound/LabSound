@@ -124,6 +124,7 @@ void NoiseNode::process(ContextRenderLock &r, int bufferSize)
 
 void NoiseNode::reset(ContextRenderLock &)
 {
+    AudioNode::reset(r);
 }
 
 bool NoiseNode::propagatesSilence(ContextRenderLock & r) const

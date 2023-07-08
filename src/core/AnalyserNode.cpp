@@ -184,8 +184,9 @@ void AnalyserNode::process(ContextRenderLock & r, int bufferSize)
     outputBus->copyFrom(summed);
 }
 
-void AnalyserNode::reset(ContextRenderLock &)
+void AnalyserNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     _detail->m_analyser->reset();
 }
 

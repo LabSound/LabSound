@@ -101,8 +101,9 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
         outputBus->copyFrom(*bus);
 }
 
-void PowerMonitorNode::reset(ContextRenderLock &)
+void PowerMonitorNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
     _db = 0;
 }
 

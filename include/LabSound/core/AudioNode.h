@@ -72,6 +72,7 @@ class ContextRenderLock;
 //
 
 // low bit of current_sample_frame indexes time point 0 or 1
+// top eight bits are a generation count, for restarting the context
 // (so that time and epoch are written atomically, after the alternative epoch has been filled in)
 struct SamplingInfo
 {
@@ -117,7 +118,7 @@ protected:
         int desiredChannelCount;
         int color = 0;
         bool isInitialized {false};
-        
+
         uint64_t graphEpoch = 0;
     };
     std::shared_ptr<Internal> _self;
@@ -158,7 +159,7 @@ public :
 
     // Resets DSP processing state (clears delay lines, filter memory, etc.)
     // Called from context's audio thread.
-    virtual void reset(ContextRenderLock &) = 0;
+    virtual void reset(ContextRenderLock &);
 
     // tailTime() is the length of time (not counting latency time) where 
     // non-zero output may occur after continuous silent input.
@@ -322,6 +323,8 @@ public:
     SchedulingState playbackState() const { return _self->scheduler.playbackState(); }
     bool hasFinished() const { return _self->scheduler.hasFinished(); }
     void setOnEnded(std::function<void()> fn) { _self->scheduler.setOnEnded(fn); }
+    
+    void printSchedule(ContextRenderLock& r);
 };
 
 

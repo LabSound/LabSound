@@ -102,6 +102,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
 
 void GainNode::reset(ContextRenderLock & r)
 {
+    AudioNode::reset(r);
     // Snap directly to desired gain.
     m_lastGain = gain()->value();
 }

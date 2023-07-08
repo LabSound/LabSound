@@ -38,7 +38,6 @@ public:
     static AudioNodeDescriptor * desc();
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override { }
 
     OscillatorType type() const;
     void setType(OscillatorType type);

@@ -334,7 +334,8 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                     requeued_connections.push_back(node_connection);  // save for later
                     if (node_connection.source)
                     {
-                        // if source and destination are specified, then don't ramp out the destination
+                        // if source and destination are specified,
+                        //   then don't ramp out the destination
                         // source will be completely disconnected
                         node_connection.source->scheduleDisconnect();
                     }
@@ -358,7 +359,8 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                     if (node_connection.source && node_connection.destination)
                     {
                         node_connection.destination->disconnect(node_connection.source,
-                                                                node_connection.srcIndex, node_connection.destIndex);
+                                                                node_connection.srcIndex,
+                                                                node_connection.destIndex);
                     }
                     else if (node_connection.destination)
                     {
@@ -366,11 +368,13 @@ void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
                     }
                     else if (node_connection.source)
                     {
-                        // iterate all nodes an disconnect this from any it feeds into
+                        // iterate all nodes and disconnect this from any it feeds into
                         auto output = node_connection.source->output();
                         if (output) {
                             node_connection.destination->disconnectReceivers();
                         }
+                        // nb: the node tree feeding into this node is not disconnected, and
+                        // those nodes may still be actively feeding other parts of the tree.
                     }
                 }
                 break;
@@ -635,12 +639,17 @@ AudioContext::AudioContextInterface::AudioContextInterface(
     resetSamplingInfo();
 }
 
+
 void AudioContext::AudioContextInterface::resetSamplingInfo()
 {
+    ContextRenderLock r(_ac, "resetSamplingInfo");
     _last_info.current_sample_frame = 0;
     _last_info.current_time = 0.f;
     _last_info.epoch[0] = std::chrono::high_resolution_clock::time_point();
     _last_info.epoch[1] = std::chrono::high_resolution_clock::time_point();
+    if (_destinationNode) {
+        _destinationNode->reset(r);
+    }
 }
 
 

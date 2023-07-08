@@ -7,12 +7,21 @@
 
 using namespace lab;
 
+
+void writeData(const char* path, const float* data, int samples) {
+    FILE* f = fopen(path, "wb");
+    if (f) {
+        fwrite(data, sizeof(float)*samples, 1, f);
+        fclose(f);
+    }
+}
 std::shared_ptr<AudioBus> makeBus440()
 {
     // Create AudioBus where we'll put the PCM audio data
     std::shared_ptr<lab::AudioBus> audioBus(new lab::AudioBus(1, 44100));
     audioBus->setSampleRate(44100.f);
     float* data = audioBus->channel(0)->mutableData();
+    float* buff = data;
     // Generate a 440 Hz sine wave
     const float kTwoPi = 2 * 3.14159265358979323846f;
     const float kFrequency = 440.0f;
@@ -23,7 +32,9 @@ std::shared_ptr<AudioBus> makeBus440()
     {
         data[i] = sinf(phase);
         phase += kPhaseIncrement;
+        printf("%f\n", data[i]);
     }
+    writeData("/var/tmp/base440.dat", buff, 44100);
     return audioBus;
 }
 
@@ -199,13 +210,6 @@ void verifyNoInputs(char const*const title, AudioNode* n)
     printf("%s: node %s is properly disconnected\n", title, n->name());
 }
 
-void writeData(const char* path, const float* data, int samples) {
-    FILE* f = fopen(path, "wb");
-    if (f) {
-        fwrite(data, sizeof(float)*samples, 1, f);
-        fclose(f);
-    }
-}
 
 int main(int argc, char *argv[]) try
 {
@@ -244,11 +248,29 @@ int main(int argc, char *argv[]) try
     writeData("/var/tmp/foo.dat", audio.data(), 44100);
     ac.backendReinitialize();
 
-    // reset the waveform to the begining
+    // reset the waveform to the beginning
     san->setBus(bus440);
+    {
+        ContextRenderLock r(context.get(), "schedule");
+        san->printSchedule(r);
+    }
     san->stop(0.f);
+    {
+        ContextRenderLock r(context.get(), "schedule");
+        san->printSchedule(r);
+    }
     san->schedule(0.25f);
+    {
+        ContextRenderLock r(context.get(), "schedule");
+        san->printSchedule(r);
+    }
     san->stop(0.75f);
+    
+    {
+        ContextRenderLock r(context.get(), "schedule");
+        san->printSchedule(r);
+    }
+    
     device->render(context.get(), nullptr, (int32_t) output_length, audio.data(), nullptr);
     float sample1 = *(audio.data() + 44100/4 - 1000); // a few samples less than 1/4 of second
     float sample2 = *(audio.data() + 44100/4 + 1000); // a few samples past 1/4 of second

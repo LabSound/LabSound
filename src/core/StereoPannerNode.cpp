@@ -307,9 +307,9 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
     outputBus->clearSilentFlag();
 }
 
-void StereoPannerNode::reset(ContextRenderLock &)
+void StereoPannerNode::reset(ContextRenderLock & r)
 {
-    // No-op
+    AudioNode::reset(r);
 }
 
 void StereoPannerNode::initialize()

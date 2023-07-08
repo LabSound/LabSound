@@ -25,6 +25,20 @@ const char * schedulingStateName(SchedulingState s)
     return "Unknown";
 }
 
+void AudioNodeScheduler2::printSchedule(ContextRenderLock& r)
+{
+    std::priority_queue<ScheduleOp> foo;  // upcoming events
+    printf("-----------\n");
+    while (!op.empty()) {
+        auto top = op.top();
+        op.pop();
+        printf("%s %lld\n", schedulingStateName(top.state), top.epoch);
+        foo.push(top);
+    }
+    printf("-----------\n");
+    op.swap(foo);
+}
+
 bool AudioNodeScheduler2::update(ContextRenderLock& r, int epoch_length)
 {
     uint64_t epoch = r.context()->currentSampleFrame();

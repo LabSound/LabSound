@@ -75,7 +75,6 @@ public:
         the_filter->process(sourceBus->channel(0)->data(), destinationBus->channel(0)->mutableData(), framesToProcess);
     }
 
-    virtual void reset() override {}
     virtual double tailTime(ContextRenderLock & r) const override { return 0.25f; } // fixed 250ms
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 

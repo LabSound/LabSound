@@ -82,8 +82,9 @@ void AudioHardwareInputNode::process(ContextRenderLock &r, int bufferSize)
     }
 }
 
-void AudioHardwareInputNode::reset(ContextRenderLock & r)
+void AudioHardwareInputNode::reset(ContextRenderLock& r)
 {
+    AudioNode::reset(r);
 }
 
 }  // namespace lab
