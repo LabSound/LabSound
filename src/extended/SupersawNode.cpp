@@ -12,6 +12,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/Registry.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <cfloat>
 
@@ -38,99 +39,15 @@ AudioNodeDescriptor * SupersawNode::desc()
 class SupersawNode::SupersawNodeInternal
 {
 public:
-    SupersawNodeInternal(AudioContext & ac)
-        : cachedDetune(FLT_MAX)
-        , cachedFrequency(FLT_MAX)
-    {
-        gainNode = std::make_shared<GainNode>(ac);
-    }
 
+    SupersawNodeInternal() = default;
     ~SupersawNodeInternal() = default;
 
-    void update(ContextRenderLock & r)
-    {
-        /// @fixme these values should be per sample, not per quantum
-        /// -or- they should be settings if they don't vary per sample
-        if (cachedFrequency != frequency->value())
-        {
-            cachedFrequency = frequency->value();
-            for (auto i : saws)
-            {
-                i->frequency()->setValue(cachedFrequency);
-                i->frequency()->resetSmoothedValue();
-            }
-        }
-
-        /// @fixme these values should be per sample, not per quantum
-        /// -or- they should be settings if they don't vary per sample
-        if (cachedDetune != detune->value())
-        {
-            cachedDetune = detune->value();
-            float n = cachedDetune / ((float) saws.size() - 1.0f);
-            for (size_t i = 0; i < saws.size(); ++i)
-            {
-                saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
-                saws[i]->detune()->resetSmoothedValue();
-            }
-        }
-    }
-
-    void update(ContextRenderLock & r, bool okayToReallocate)
-    {
-        size_t currentN = saws.size();
-        int n = int(sawCount->valueUint32() + 0.5f);
-
-        auto context = r.context();
-
-        if (okayToReallocate && (n != currentN))
-        {
-            sampleRate = r.context()->sampleRate();
-
-            // This implementation is similar to the technique illustrated here
-            // https://noisehack.com/how-to-build-supersaw-synth-web-audio-api/
-            //
-            for (auto i : sawStorage)
-            {
-                context->disconnect(i, nullptr);
-            }
-
-            sawStorage.clear();
-            saws.clear();
-
-            for (int i = 0; i < n; ++i)
-                sawStorage.emplace_back(std::make_shared<OscillatorNode>(*context));
-
-            for (int i = 0; i < n; ++i)
-                saws.push_back(sawStorage[i].get());
-
-            for (auto i : sawStorage)
-            {
-                i->setType(OscillatorType::SAWTOOTH);
-                context->connect(gainNode, i, 0, 0);
-                i->start(0);
-            }
-
-            gainNode->gain()->setValue(1.f / float(n));
-
-            cachedFrequency = FLT_MAX;
-            cachedDetune = FLT_MAX;
-        }
-
-        update(r);
-    }
-
-    std::shared_ptr<GainNode> gainNode;
     std::shared_ptr<AudioParam> detune;
     std::shared_ptr<AudioParam> frequency;
     std::shared_ptr<AudioSetting> sawCount;
-
-private:
-    float sampleRate;
-    float cachedDetune;
-    float cachedFrequency;
-
-    std::vector<std::shared_ptr<OscillatorNode>> sawStorage;
-    std::vector<OscillatorNode *> saws;
+    std::vector<std::vector<float>> phaseIncremements;
+    std::vector<float> phases;
 };
 
 //////////////////////////
@@ -140,13 +57,11 @@ private:
 SupersawNode::SupersawNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    internalNode.reset(new SupersawNodeInternal(ac));
-    internalNode->sawCount = setting("sawCount");
-    internalNode->sawCount->setUint32(1);
-    internalNode->detune = param("detune");
-    internalNode->frequency = param("frequency");
-
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
+    _internalNode.reset(new SupersawNodeInternal());
+    _internalNode->sawCount = setting("sawCount");
+    _internalNode->sawCount->setUint32(1);
+    _internalNode->detune = param("detune");
+    _internalNode->frequency = param("frequency");
     initialize();
 }
 
@@ -157,23 +72,87 @@ SupersawNode::~SupersawNode()
 
 void SupersawNode::process(ContextRenderLock & r, int bufferSize)
 {
-    internalNode->update(r, true);
-
-    AudioBus * outputBus = _self->output;
-
-    if (!isInitialized() || !outputBus->numberOfChannels())
+    AudioBus * outputBus = _self->output.get();
+    if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
     {
         outputBus->zero();
         return;
     }
+    
+    const float sample_rate = r.context()->sampleRate();
+    
+    int quantumFrameOffset = _self->scheduler.renderOffset();
+    int nonSilentFramesToProcess = _self->scheduler.renderLength();
+    int voices = _internalNode->sawCount->valueUint32();
 
-    AudioBus * dst = nullptr;
-    internalNode->gainNode->_self->inputs[0].node->output()->zero();
-    /*AudioBus * renderedBus =*/ internalNode->gainNode->input(0)->pull(r, dst, bufferSize);
-    internalNode->gainNode->process(r, bufferSize);
-    AudioBus * inputBus = internalNode->gainNode->_self->output;
-    outputBus->copyFrom(*inputBus);
+    if (!nonSilentFramesToProcess || !voices)
+    {
+        outputBus->zero();
+        return;
+    }
+    
+    // allocate storage for the sawtooths
+    while (_internal->phaseIncrements.size() < voices) {
+        _internal->phaseIncremements.push_back(std::vector<float>());
+    }
+    for (int i = 0; i < voices; ++i) {
+        _internal->phaseIncremements[i].resize(bufferSize);
+    }
+    if (!_internal->phases.size()) {
+        _internal->phases.resize(voices);
+        for (int i = 0; i < voices; ++i)
+            _internal->phases[i] = 0;
+    }
+    
+    nonSilentFramesToProcess += quantumFrameOffset;
+    
+    float detuneRate[128];
+    
+    // calculate phase increments
+    const float* frequencies = _internalNode->frequency->bus()->channel(0)->data();
+    const float* detunes = _internalNode->detune->bus()->channel(0)->data();
+    for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
+        detuneRate[i] = detunes[i];
+    }
+    
+    // divide by number of voices, as the detunes will be spread evenly across the
+    // sawtooth waves
+    float k = 1.f / (1200.f * float(voices));
+    VectorMath::vsmul(detuneRate + quantumFrameOffset, 1,
+                      &k,
+                      detuneRate + quantumFrameOffset, 1, nonSilentFramesToProcess);
+
+    for (int v = 0; v < voices; ++v) {
+        std::vector<float>& pi = _internal->phaseIncrements[i]
+        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
+            pi[i] = frequencies[i] * powf(2, detuneRate[i] * float(v));
+        }
+        // convert frequencies to phase increments
+        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+        {
+            pi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI)* phaseIncrements[i] / sample_rate);
+        }
+    }
+
+    // calculate and write the wave
+    float* destP = outputBus->channel(0)->mutableData();
+    const float pi = static_cast<float>(LAB_PI);
+
+    memset(destP, 0, sizeof(float) * bufferSize);
+    float amp = 1.f / float(voices);
+    for (int v = 0; v < voices; ++v) {
+        std::vector<float>& pi = _internal->phaseIncrements[i]
+        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
+        {
+            destP[i] += amp - (amp / pi * _internal->phase[v]);
+            _internal->phase[v] += pi[i];
+            if (_internal->phase[v] > 2.f * pi)
+                _internal->phase[v] -= 2.f * pi;
+        }
+    }
+    
     outputBus->clearSilentFlag();
+#endif
 }
 
 void SupersawNode::update(ContextRenderLock & r)

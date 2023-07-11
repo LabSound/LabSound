@@ -216,6 +216,7 @@ public :
         return static_cast<int>(_self->inputs.size()); }
     
     bool isConnected(std::shared_ptr<AudioNode>) const;
+    bool isConnected() const;
 
     std::shared_ptr<AudioNode> input(int index);
     std::shared_ptr<AudioBus> output() { return _self->output; }

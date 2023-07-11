@@ -24,15 +24,9 @@ AudioNodeDescriptor * GainNode::desc()
 }
 
 GainNode::GainNode(AudioContext& ac)
-    : AudioNode(ac, *desc())
-    , m_lastGain(1.f)
-    , m_sampleAccurateGainValues(AudioNode::ProcessingSizeInFrames)  // FIXME: can probably share temp buffer in context
+: AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
     m_gain = param("gain");
-
     initialize();
 }
 
@@ -58,7 +52,7 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     }
 
 
-    AudioBus* inputBus = _self->inputs[0].node->output();
+    auto inputBus = _self->inputs[0].node->output();
     const int inputBusChannelCount = inputBus->numberOfChannels();
     if (!inputBusChannelCount)
     {
@@ -69,42 +63,19 @@ void GainNode::process(ContextRenderLock &r, int bufferSize)
     int outputBusChannelCount = outputBus->numberOfChannels();
     if (inputBusChannelCount != outputBusChannelCount)
     {
-        output(0)->setNumberOfChannels(r, inputBusChannelCount);
+        output()->setNumberOfChannels(r, inputBusChannelCount);
         outputBusChannelCount = inputBusChannelCount;
-        outputBus = _self->output;
+        outputBus = _self->output.get();
     }
 
-    if (gain()->hasSampleAccurateValues())
-    {
-        // Apply sample-accurate gain scaling for precise envelopes, grain windows, etc.
-        ASSERT(bufferSize <= m_sampleAccurateGainValues.size());
-        if (bufferSize <= m_sampleAccurateGainValues.size())
-        {
-            float* gainValues_base = m_sampleAccurateGainValues.data();
-            float* gainValues = gainValues_base + _self->scheduler._renderOffset;
-            gain()->calculateSampleAccurateValues(r, gainValues, _self->scheduler._renderLength);
-            if (_self->scheduler._renderOffset > 0)
-                memset(gainValues_base, 0, sizeof(float) * _self->scheduler._renderOffset);
-            int bzero_start = _self->scheduler._renderOffset + _self->scheduler._renderLength;
-            if (bzero_start < bufferSize)
-                memset(gainValues_base + bzero_start, 0, sizeof(float) * bufferSize - bzero_start);
-            outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, m_sampleAccurateGainValues.data(), bufferSize);
-        }
-    }
-    else
-    {
-        // Apply the gain with de-zippering into the output bus.
-        outputBus->copyWithGainFrom(*inputBus, &m_lastGain, gain()->value());
-    }
-
+    const float* gainValues = gain()->bus()->channel(0)->data();
+    outputBus->copyWithSampleAccurateGainValuesFrom(*inputBus, gainValues, bufferSize);
     outputBus->clearSilentFlag();
 }
 
 void GainNode::reset(ContextRenderLock & r)
 {
     AudioNode::reset(r);
-    // Snap directly to desired gain.
-    m_lastGain = gain()->value();
 }
 
 

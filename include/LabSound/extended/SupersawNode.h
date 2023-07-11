@@ -14,7 +14,7 @@ namespace lab
 class SupersawNode : public AudioScheduledSourceNode
 {
     class SupersawNodeInternal;
-    std::unique_ptr<SupersawNodeInternal> internalNode;
+    std::unique_ptr<SupersawNodeInternal> _internal;
 
 public:
     SupersawNode(AudioContext & ac);

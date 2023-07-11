@@ -40,10 +40,7 @@ protected:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    float m_lastGain;  // for de-zippering
     std::shared_ptr<AudioParam> m_gain;
-
-    AudioFloatArray m_sampleAccurateGainValues;
 };
 
 }  // namespace lab

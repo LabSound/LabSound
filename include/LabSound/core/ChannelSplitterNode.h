@@ -25,7 +25,6 @@ public:
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override;
 
 private:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }

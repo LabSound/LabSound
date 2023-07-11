@@ -104,7 +104,7 @@ void OscillatorNode::setType(OscillatorType type)
 
 void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = _self->output;
+    AudioBus * outputBus = _self->output.get();
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
     {
         outputBus->zero();

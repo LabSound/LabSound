@@ -42,29 +42,29 @@ AudioListener::AudioListener()
 
 void AudioListener::setForward(const FloatPoint3D & fwd)
 {
-    m_forwardX->setValue(fwd.x);
-    m_forwardY->setValue(fwd.y);
-    m_forwardZ->setValue(fwd.z);
+    m_forwardX->setValueAtTime(fwd.x, 0);
+    m_forwardY->setValueAtTime(fwd.y, 0);
+    m_forwardZ->setValueAtTime(fwd.z, 0);
 }
 
 void AudioListener::setUpVector(const FloatPoint3D & upVector)
 {
-    m_upX->setValue(upVector.x);
-    m_upY->setValue(upVector.y);
-    m_upZ->setValue(upVector.z);
+    m_upX->setValueAtTime(upVector.x, 0);
+    m_upY->setValueAtTime(upVector.y, 0);
+    m_upZ->setValueAtTime(upVector.z, 0);
 }
 
 void AudioListener::setPosition(const FloatPoint3D & position)
 {
-    m_positionX->setValue(position.x);
-    m_positionY->setValue(position.y);
-    m_positionZ->setValue(position.z);
+    m_positionX->setValueAtTime(position.x, 0);
+    m_positionY->setValueAtTime(position.y, 0);
+    m_positionZ->setValueAtTime(position.z, 0);
 }
 
 void AudioListener::setVelocity(const FloatPoint3D & velocity)
 {
-    m_velocityX->setValue(velocity.x);
-    m_velocityY->setValue(velocity.y);
-    m_velocityZ->setValue(velocity.z);
+    m_velocityX->setValueAtTime(velocity.x, 0);
+    m_velocityY->setValueAtTime(velocity.y, 0);
+    m_velocityZ->setValueAtTime(velocity.z, 0);
 }
 }

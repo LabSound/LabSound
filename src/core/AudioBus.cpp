@@ -674,7 +674,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     *lastMixGain = gain;
 }
 
-void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float * gainValues, int numberOfGainValues)
+void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, const float * gainValues, int numberOfGainValues)
 {
     // Make sure we're processing from the same type of bus.
     // We *are* able to process from mono -> stereo

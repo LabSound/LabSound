@@ -225,6 +225,15 @@ void AudioNode::setChannelCount(int channelCount)
     _self->desiredChannelCount = channelCount;
 }
 
+bool AudioNode::isConnected() const
+{
+    for (int i = 0; i < _self->inputs.size(); ++i)
+        if (_self->inputs[i].node)
+            return true;
+    
+    return false;
+}
+
 bool AudioNode::isConnected(std::shared_ptr<AudioNode> n) const
 {
     for (int i = 0; i < _self->inputs.size(); ++i)

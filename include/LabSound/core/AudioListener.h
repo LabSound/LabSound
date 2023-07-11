@@ -71,11 +71,11 @@ public:
     std::shared_ptr<AudioParam> velocityZ() const { return m_velocityZ; }
 
     // Doppler factor
-    void setDopplerFactor(float dopplerFactor) { m_dopplerFactor->setValue(dopplerFactor); }
+    void setDopplerFactor(float dopplerFactor) { m_dopplerFactor->setIntrinsicValue(dopplerFactor); }
     std::shared_ptr<AudioParam> dopplerFactor() const { return m_dopplerFactor; }
 
     // Speed of sound
-    void setSpeedOfSound(float speedOfSound) { m_speedOfSound->setValue(speedOfSound); }
+    void setSpeedOfSound(float speedOfSound) { m_speedOfSound->setIntrinsicValue(speedOfSound); }
     std::shared_ptr<AudioParam> speedOfSound() const { return m_speedOfSound; }
 };
 

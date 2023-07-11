@@ -33,30 +33,14 @@ void ChannelSplitterNode::process(ContextRenderLock & r, int bufferSize)
         _self->output->zero();
         return;
     }
-
-    size_t numberOfSourceChannels = source->numberOfChannels();
-    for (int i = 0; i < numberOfOutputs(); ++i)
-    {
-        AudioBus * destination = output(i)->bus(r);
-        ASSERT(destination);
-
-        if (i < numberOfSourceChannels)
-        {
-            // Split the channel out if it exists in the source.
-            // It would be nice to avoid the copy and simply pass along pointers, but this becomes extremely difficult with fanout and fanin.
-            destination->channel(0)->copyFrom(source->channel(i));
-        }
-        else if (output(i)->renderingFanOutCount() > 0)
-        {
-            // Only bother zeroing out the destination if it's connected to anything
-            destination->zero();
-        }
-    }
-}
-
-void ChannelSplitterNode::reset(ContextRenderLock& r)
-{
-    AudioNode::reset(r);
+    
+    /// @TODO the ONLY reason there's multiple outputs in the webaudio spec at all is for this
+    /// one node. Need to figure out how to satisfy a desire for a splitterNode for compatibility, and
+    /// also not cause undue compexity to satisfy it.
+    
+    auto destination = output();
+    if (destination)
+        destination->channel(0)->copyFrom(source->channel(0));
 }
 
 }  // namespace lab

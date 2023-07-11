@@ -78,6 +78,9 @@ public:
 
     void printSchedule(ContextRenderLock& r);
     
+    int renderOffset() const { return _renderOffset; }
+    int renderLength() const { return _renderLength; }
+    
 private:
     friend class AudioNode;
     int _renderOffset = 0;

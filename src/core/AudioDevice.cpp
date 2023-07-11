@@ -37,7 +37,7 @@ AudioDestinationNode::AudioDestinationNode(
 
     int numChannels = _platformAudioDevice->getOutputConfig().desired_channels;
     ContextGraphLock glock(&ac, "AudioDestinationNode");
-    AudioNode::setChannelCount(numChannels);
+    setChannelCount(numChannels);
 
     initialize();
 }

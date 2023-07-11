@@ -1,6 +1,6 @@
 
 #include "LabSound/extended/Registry.h"
-
+#include "LabSound/LabSound.h"
 #include <cstdio>
 #include <memory>
 #include <map>

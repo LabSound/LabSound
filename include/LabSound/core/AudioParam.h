@@ -1,5 +1,5 @@
+
 // License: BSD 3 Clause
-// Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #ifndef AudioParam_h
@@ -7,94 +7,87 @@
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioParamDescriptor.h"
-#include "LabSound/core/AudioParamTimeline.h"
 
 #include <string>
-#include <sys/types.h>
+#include <vector>
 
-namespace lab
-{
+namespace lab {
 
+struct AudioParamKnot { float t, v; };
+
+/// @TODO overriding input should instead be a summing bus
 
 class AudioParam
 {
-public:
-    static const double DefaultSmoothingConstant;
-    static const double SnapThreshold;
+    const AudioParamDescriptor* _descriptor;
+    std::shared_ptr<AudioNode> _overridingInput;
+    std::shared_ptr<AudioBus> _bus;
+    float _intrinsicValue;
+    int _overridingChannel;
+    std::vector<AudioParamKnot> _knots;
     
+public:
     AudioParam(AudioParamDescriptor const * const desc) noexcept;
-    virtual ~AudioParam();
+    virtual ~AudioParam() = default;
+    AudioParam() = delete;
+    
+    // updates the values in the internal bus; either computes values per
+    // the _knots vector, or propagates the overriding input's output.
+    void process(ContextRenderLock &, int bufferSize);
+    
+    std::string name() const { return _descriptor->name; }
+    std::string shortName() const { return _descriptor->shortName; }
+    
+    float minValue() const { return _descriptor->minValue; }
+    float maxValue() const { return _descriptor->maxValue; }
 
-    // Intrinsic value.
-    float value() const;
-    void setValue(float);
+    void setIntrinsicValue(float v) { _intrinsicValue = v; }
+    float intrinsicValue() const { return _intrinsicValue; }
+    
+    // returns either the intrinsic bus with the current quantum's values,
+    // or the overridingInput's output bus.
+    // To determine the current value, fetch the bus and make a determination
+    // from that.
+    std::shared_ptr<AudioBus> bus() const;
 
-    // Final value for k-rate parameters, otherwise use calculateSampleAccurateValues() for a-rate.
-    float finalValue(ContextRenderLock &);
+    // if the param is constant it is either the intrinsic value, or otherwise
+    // held. value will be set to the first stored in the bus by the most recent
+    // call to process().
+    bool isConstant(float* value = nullptr) const;
 
-    std::string name() const { return _desc->name; }
-    std::string shortName() const { return _desc->shortName; }
-
-    double minValue() const { return _desc->minValue; }
-    double maxValue() const { return _desc->maxValue; }
-    double defaultValue() const { return _desc->defaultValue; }
-
-    // Value smoothing:
-
-    // When a new value is set with setValue(), in our internal use of the parameter we don't immediately jump to it.
-    // Instead we smoothly approach this value to avoid glitching.
-    float smoothedValue();
-
-    // Smoothly exponentially approaches to (de-zippers) the desired value.
-    // Returns true if smoothed value has already snapped exactly to value.
-    bool smooth(ContextRenderLock &);
-
-    void resetSmoothedValue() { m_smoothedValue = m_value; }
-    void setSmoothingConstant(double k) { m_smoothingConstant = k; }
-
-    // Parameter automation. 
-    // Time is a double representing the time (in seconds) after the AudioContext was first created that the change in value will happen
-    // Returns a reference for chaining calls.
-    AudioParam & setValueAtTime(float value, float time) { m_timeline.setValueAtTime(value, time); return *this; }
-    AudioParam & linearRampToValueAtTime(float value, float time) { m_timeline.linearRampToValueAtTime(value, time); return *this; }
-    AudioParam & exponentialRampToValueAtTime(float value, float time) { m_timeline.exponentialRampToValueAtTime(value, time); return *this; }
-    AudioParam & setTargetAtTime(float target, float time, float timeConstant) { m_timeline.setTargetAtTime(target, time, timeConstant); return *this; }
-    AudioParam & setValueCurveAtTime(std::vector<float> curve, float time, float duration) { m_timeline.setValueCurveAtTime(curve, time, duration); return *this; }
-    AudioParam & cancelScheduledValues(float startTime) { m_timeline.cancelScheduledValues(startTime); return *this; }
-
-    bool hasSampleAccurateValues() { return m_timeline.hasValues() || _overridingInput; }
-
-    // Calculates numberOfValues parameter values starting at the context's current time.
-    // Must be called in the context's render thread.
-    void calculateSampleAccurateValues(ContextRenderLock &, float * values, int numberOfValues);
-
-    AudioBus const* const bus() const;
-
+    // a short hand convenience to get the value at the beginning of the quantum
+    float value() const {
+        float r;
+        isConstant(&r);
+        return r;
+    }
+    
     // Connect an audio-rate signal to control this parameter.
     // the signal comes from the first channel of the node's output bus
-    static void connect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, int channel);
-    static void disconnect(ContextGraphLock & g, std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>);
-    static void disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioParam>);
-
+    static void connect(ContextGraphLock & g,
+                        std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>, int channel);
+    static void disconnect(ContextGraphLock & g,
+                           std::shared_ptr<AudioParam>, std::shared_ptr<AudioNode>);
+    static void disconnectAll(ContextGraphLock & g,
+                              std::shared_ptr<AudioParam>);
+    
     std::shared_ptr<AudioNode> overridingInput() const { return _overridingInput; }
 
-private:
-    // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web Audio specification.
-    void calculateFinalValues(ContextRenderLock & r, float * values, int numberOfValues, bool sampleAccurate);
-    void calculateTimelineValues(ContextRenderLock & r, float * values, int numberOfValues);
+    // truncate any timeline at t seconds in the future, then hold value
+    void setValueAtTime(float value, float t);
+    
+    // replace any timeline with a ramp to value at t seconds in the future,
+    // then hold value
+    void linearRampToValueAtTime(float value, float t);
+    void exponentialRampToValueAtTime(float value, float t);
+    
+    // replace any timeline at t seconds in the future,
+    // and hold at whatever value is then current
+    void holdValueAtTime(float t);
 
-    double m_value;
-
-    // Smoothing (de-zippering)
-    double m_smoothedValue;
-    double m_smoothingConstant;
-
-    AudioParamTimeline m_timeline;
-
-    std::shared_ptr<AudioNode> _overridingInput;
-    int _overridingInputChannel;
-    std::unique_ptr<AudioBus> m_internalSummingBus;
-    AudioParamDescriptor const*const _desc;
+    // replace any timeline at t seconds in the future with
+    // a curve (a vector of t, v pairs), and hold at the last value
+    void setCurve(const std::vector<AudioParamKnot>&, float t);
 };
 
 }  // namespace lab

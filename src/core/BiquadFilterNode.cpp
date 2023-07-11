@@ -6,6 +6,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
@@ -92,7 +93,8 @@ public:
         m_filterCoefficientsDirty = false;
         m_hasSampleAccurateValues = false;
 
-        if (m_frequency->hasSampleAccurateValues() || m_q->hasSampleAccurateValues() || m_gain->hasSampleAccurateValues() || m_detune->hasSampleAccurateValues())
+        if (!m_frequency->isConstant() && !m_q->isConstant() &&
+            !m_gain->isConstant() && !m_detune->isConstant())
         {
             m_filterCoefficientsDirty = true;
             m_hasSampleAccurateValues = true;

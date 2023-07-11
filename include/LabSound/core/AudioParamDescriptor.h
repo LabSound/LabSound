@@ -12,7 +12,7 @@ struct AudioParamDescriptor
 {
     char const * const name;
     char const * const shortName;
-    double defaultValue, minValue, maxValue;
+    float defaultValue, minValue, maxValue;
 };
 
 } // namespace
