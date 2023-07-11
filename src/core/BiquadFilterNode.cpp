@@ -34,7 +34,7 @@ static AudioSettingDescriptor s_bqSettings[] = {
     nullptr};
 
 AudioNodeDescriptor* BiquadFilterNode::desc() {
-    static AudioNodeDescriptor d {s_bqParams, s_bqSettings};
+    static AudioNodeDescriptor d {s_bqParams, s_bqSettings, 0};
     return &d;
 }
 

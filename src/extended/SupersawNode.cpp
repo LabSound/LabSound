@@ -32,7 +32,7 @@ static AudioSettingDescriptor s_ssSettings[] = {{"sawCount", "SAWC", SettingType
 
 AudioNodeDescriptor * SupersawNode::desc()
 {
-    static AudioNodeDescriptor d {s_ssParams, s_ssSettings};
+    static AudioNodeDescriptor d {s_ssParams, s_ssSettings, 1};
     return &d;
 }
 
@@ -57,11 +57,11 @@ public:
 SupersawNode::SupersawNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
-    _internalNode.reset(new SupersawNodeInternal());
-    _internalNode->sawCount = setting("sawCount");
-    _internalNode->sawCount->setUint32(1);
-    _internalNode->detune = param("detune");
-    _internalNode->frequency = param("frequency");
+    _internal.reset(new SupersawNodeInternal());
+    _internal->sawCount = setting("sawCount");
+    _internal->sawCount->setUint32(1);
+    _internal->detune = param("detune");
+    _internal->frequency = param("frequency");
     initialize();
 }
 
@@ -83,7 +83,7 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     
     int quantumFrameOffset = _self->scheduler.renderOffset();
     int nonSilentFramesToProcess = _self->scheduler.renderLength();
-    int voices = _internalNode->sawCount->valueUint32();
+    int voices = _internal->sawCount->valueUint32();
 
     if (!nonSilentFramesToProcess || !voices)
     {
@@ -109,8 +109,8 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     float detuneRate[128];
     
     // calculate phase increments
-    const float* frequencies = _internalNode->frequency->bus()->channel(0)->data();
-    const float* detunes = _internalNode->detune->bus()->channel(0)->data();
+    const float* frequencies = _internal->frequency->bus()->channel(0)->data();
+    const float* detunes = _internal->detune->bus()->channel(0)->data();
     for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
         detuneRate[i] = detunes[i];
     }

@@ -21,7 +21,7 @@ AudioSettingDescriptor s_dSettings[] = {
 
 AudioNodeDescriptor * DiodeNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_dSettings};
+    static AudioNodeDescriptor d {nullptr, s_dSettings, 0};
     return &d;
 }
 

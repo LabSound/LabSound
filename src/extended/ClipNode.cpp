@@ -37,7 +37,7 @@ static AudioSettingDescriptor s_cnSettings[] = {{"mode", "MODE", SettingType::En
 
 AudioNodeDescriptor * ClipNode::desc()
 {
-    static AudioNodeDescriptor d {s_cnParams, s_cnSettings};
+    static AudioNodeDescriptor d {s_cnParams, s_cnSettings, 0};
     return &d;
 }
 

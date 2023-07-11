@@ -32,7 +32,7 @@ namespace lab
 
     AudioNodeDescriptor * ADSRNode::desc()
     {
-        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings};
+        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings, 0};
         return &d;
     }
 

@@ -104,7 +104,7 @@ lab::AudioSettingDescriptor s_cSettings[] = {{"normalize", "NRML", SettingType::
                                              {"impulseResponse", "IMPL", SettingType::Bus}, nullptr};
 AudioNodeDescriptor * ConvolverNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_cSettings};
+    static AudioNodeDescriptor d {nullptr, s_cSettings, 0};
     return &d;
 }
 

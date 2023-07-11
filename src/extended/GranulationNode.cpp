@@ -33,7 +33,7 @@ static AudioSettingDescriptor s_GranulationSettings[] = {
     
 AudioNodeDescriptor * GranulationNode::desc()
 {
-    static AudioNodeDescriptor d {s_GranulationParams, s_GranulationSettings};
+    static AudioNodeDescriptor d {s_GranulationParams, s_GranulationSettings, 0};
     return &d;
 }
 

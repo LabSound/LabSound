@@ -20,9 +20,9 @@ using namespace std;
 namespace lab
 {
 
-AudioNode::Internal::Internal(AudioContext & ac)
+AudioNode::Internal::Internal(AudioContext & ac, AudioNodeDescriptor const & desc)
 : scheduler()
-, output(new AudioBus(0, AudioNode::ProcessingSizeInFrames, true))
+, output(new AudioBus(desc.initialChannelCount, AudioNode::ProcessingSizeInFrames, true))
 , m_channelInterpretation(ChannelInterpretation::Speakers)
 , desiredChannelCount(0)
 , color(0)
@@ -123,7 +123,7 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
 
 
 AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
-    : _self(new Internal(ac))
+    : _self(new Internal(ac, desc))
 {
     if (desc.params)
     {

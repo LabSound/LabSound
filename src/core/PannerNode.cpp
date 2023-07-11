@@ -66,7 +66,7 @@ static AudioSettingDescriptor s_sDesc[] = {
 
 AudioNodeDescriptor * PannerNode::desc()
 {
-    static AudioNodeDescriptor d {s_pDesc, s_sDesc};
+    static AudioNodeDescriptor d {s_pDesc, s_sDesc, 2};
     return &d;
 }
 

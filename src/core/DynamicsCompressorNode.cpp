@@ -30,7 +30,7 @@ static AudioParamDescriptor s_dcParams[] = {
 
 AudioNodeDescriptor * DynamicsCompressorNode::desc()
 {
-    static AudioNodeDescriptor d {s_dcParams, nullptr};
+    static AudioNodeDescriptor d {s_dcParams, nullptr, 0};
     return &d;
 }
 

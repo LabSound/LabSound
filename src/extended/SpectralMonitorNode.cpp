@@ -103,7 +103,7 @@ static AudioSettingDescriptor s_smSettings[] = {{"windowSize", "WNSZ", SettingTy
 
 AudioNodeDescriptor * SpectralMonitorNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_smSettings};
+    static AudioNodeDescriptor d {nullptr, s_smSettings, 0};
     return &d;
 }
 

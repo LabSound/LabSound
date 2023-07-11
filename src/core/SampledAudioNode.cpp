@@ -86,7 +86,7 @@ namespace lab {
     
     AudioNodeDescriptor * SampledAudioNode::desc()
     {
-        static AudioNodeDescriptor d = {s_saParams, s_saSettings};
+        static AudioNodeDescriptor d = {s_saParams, s_saSettings, 0};
         return &d;
     }
 

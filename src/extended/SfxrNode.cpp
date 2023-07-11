@@ -628,7 +628,7 @@ static AudioSettingDescriptor s_sfxSettings[] = {
 
 AudioNodeDescriptor * SfxrNode::desc()
 {
-    static AudioNodeDescriptor d {s_sfxParams, s_sfxSettings};
+    static AudioNodeDescriptor d {s_sfxParams, s_sfxSettings, 1};
     return &d;
 }
 

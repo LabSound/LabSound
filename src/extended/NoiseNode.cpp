@@ -21,7 +21,7 @@ static AudioSettingDescriptor s_nSettings[] = {{"type", "TYPE", SettingType::Enu
 
 AudioNodeDescriptor * NoiseNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_nSettings};
+    static AudioNodeDescriptor d {nullptr, s_nSettings, 1};
     return &d;
 }
 
@@ -29,7 +29,6 @@ NoiseNode::NoiseNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
 {
     _type = setting("type");
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

@@ -390,7 +390,7 @@ static AudioSettingDescriptor s_pbSettings[] = {{"type", "TYPE", SettingType::En
 
 AudioNodeDescriptor * PolyBLEPNode::desc()
 {
-    static AudioNodeDescriptor d {s_pbParams, s_pbSettings};
+    static AudioNodeDescriptor d {s_pbParams, s_pbSettings, 0};
     return &d;
 }
 

@@ -38,7 +38,7 @@ static AudioSettingDescriptor s_AnalyserSettings[] = {
 
 AudioNodeDescriptor * AnalyserNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_AnalyserSettings};
+    static AudioNodeDescriptor d {nullptr, s_AnalyserSettings, 0};
     return &d;
 }
 

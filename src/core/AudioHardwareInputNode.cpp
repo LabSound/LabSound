@@ -20,7 +20,7 @@ namespace lab
 
 AudioNodeDescriptor * AudioHardwareInputNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 0};
     return &d;
 }
 

@@ -18,7 +18,7 @@ namespace lab
 
 AudioNodeDescriptor * PWMNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 0 };
     return &d;
 }
 

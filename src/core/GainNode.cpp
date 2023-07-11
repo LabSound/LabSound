@@ -19,7 +19,7 @@ namespace lab
 static AudioParamDescriptor s_gainParams[] = {{"gain", "GAIN", 1.0, 0.0, 10000.0}, nullptr};
 AudioNodeDescriptor * GainNode::desc()
 {
-    static AudioNodeDescriptor d {s_gainParams, nullptr};
+    static AudioNodeDescriptor d {s_gainParams, nullptr, 0};
     return &d;
 }
 
