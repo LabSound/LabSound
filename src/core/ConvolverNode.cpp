@@ -260,8 +260,8 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         outputBus = _self->output;  // set number of channels invalidates the pointer
     }
 
-    int quantumFrameOffset = _self->scheduler._renderOffset;
-    int nonSilentFramesToProcess = _self->scheduler._renderLength;
+    int quantumFrameOffset = _self->scheduler.renderOffset();
+    int nonSilentFramesToProcess = _self->scheduler.renderLength();
 
     int numInputChannels = static_cast<int>(inputBus->numberOfChannels());
     int numOutputChannels = static_cast<int>(outputBus->numberOfChannels());
