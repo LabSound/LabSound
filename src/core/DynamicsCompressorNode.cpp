@@ -37,9 +37,6 @@ AudioNodeDescriptor * DynamicsCompressorNode::desc()
 DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
     : AudioNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
     m_threshold = param("threshold");
     m_knee = param("knee");
     m_ratio = param("ratio");
@@ -57,8 +54,8 @@ DynamicsCompressorNode::~DynamicsCompressorNode()
 
 void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
 {
-    /// @fixme these values should be per sample, not per quantum
-    /// -or- they should be settings if they don't vary per sample
+    /// @fixme it doesn't make sense for these parameters to be animated over time.
+    /// @todo Switch them to settings
     float threshold = m_threshold->value();
     float knee = m_knee->value();
     float ratio = m_ratio->value();
@@ -71,28 +68,23 @@ void DynamicsCompressorNode::process(ContextRenderLock &r, int bufferSize)
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamAttack, attack);
     m_dynamicsCompressor->setParameterValue(DynamicsCompressor::ParamRelease, release);
 
-    int numberOfSourceChannels = input(0)->numberOfChannels(r);
-    int numberOfActiveBusChannels = _self->inputs[0].node->output()->numberOfChannels();
-    if (numberOfActiveBusChannels != numberOfSourceChannels)
+    int numberOfSourceChannels = _self->summingBus->numberOfChannels();
+    auto outputBus = _self->output;
+    int numberOfDestChannels = outputBus->numberOfChannels();
+    if (numberOfDestChannels != numberOfSourceChannels)
     {
-        checkNumberOfChannelsForInput(r, input(0).get());
+        outputBus->setNumberOfChannels(r, numberOfSourceChannels);
+        numberOfDestChannels = output()->numberOfChannels();
     }
 
-    int numberOfDestChannels = output(0)->numberOfChannels();
-    if (numberOfDestChannels != numberOfActiveBusChannels)
-    {
-        output(0)->setNumberOfChannels(r, numberOfActiveBusChannels);
-        output(0)->updateRenderingState(r);
-        numberOfDestChannels = output(0)->numberOfChannels();
-    }
-
-    AudioBus* outputBus = _self->output;
-    ASSERT(outputBus && outputBus->numberOfChannels() == numberOfDestChannels);
-
-    m_dynamicsCompressor->process(r, _self->inputs[0].node->output(), outputBus, bufferSize, _self->scheduler._renderOffset, _self->scheduler._renderLength);
+    m_dynamicsCompressor->process(r,
+                                  _self->summingBus.get(), outputBus.get(),
+                                  bufferSize,
+                                  _self->scheduler.renderOffset(),
+                                  _self->scheduler.renderLength());
 
     float reduction = m_dynamicsCompressor->parameterValue(DynamicsCompressor::ParamReduction);
-    m_reduction->setValue(reduction);
+    m_reduction->setValueAtTime(reduction, 0);
 }
 
 void DynamicsCompressorNode::reset(ContextRenderLock& r)

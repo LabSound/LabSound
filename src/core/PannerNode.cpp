@@ -73,11 +73,7 @@ AudioNodeDescriptor * PannerNode::desc()
 PannerNode::PannerNode(AudioContext & ac)
     : AudioNode(ac, *desc())
     , m_sampleRate(ac.sampleRate())
-{
-    /// @TODO in the future a panner could be multi-channel beyond stereo
-    addInput(unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-    
+{    
     m_orientationX = param("orientationX");
     m_orientationY = param("orientationY");
     m_orientationZ = param("orientationZ");

@@ -35,7 +35,7 @@ FunctionNode::~FunctionNode()
 
 void FunctionNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = _self->output;
+    auto outputBus = _self->output;
 
     if (!isInitialized() || !outputBus->numberOfChannels() || !_function)
     {
@@ -43,8 +43,8 @@ void FunctionNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _self->scheduler._renderOffset;
-    int nonSilentFramesToProcess = _self->scheduler._renderLength;
+    int quantumFrameOffset = _self->scheduler.renderOffset();
+    int nonSilentFramesToProcess = _self->scheduler.renderLength();
 
     if (!nonSilentFramesToProcess)
     {

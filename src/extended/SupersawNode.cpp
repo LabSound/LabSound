@@ -46,7 +46,7 @@ public:
     std::shared_ptr<AudioParam> detune;
     std::shared_ptr<AudioParam> frequency;
     std::shared_ptr<AudioSetting> sawCount;
-    std::vector<std::vector<float>> phaseIncremements;
+    std::vector<std::vector<float>> phaseIncrements;
     std::vector<float> phases;
 };
 
@@ -93,10 +93,10 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     
     // allocate storage for the sawtooths
     while (_internal->phaseIncrements.size() < voices) {
-        _internal->phaseIncremements.push_back(std::vector<float>());
+        _internal->phaseIncrements.push_back(std::vector<float>());
     }
     for (int i = 0; i < voices; ++i) {
-        _internal->phaseIncremements[i].resize(bufferSize);
+        _internal->phaseIncrements[i].resize(bufferSize);
     }
     if (!_internal->phases.size()) {
         _internal->phases.resize(voices);
@@ -123,14 +123,14 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
                       detuneRate + quantumFrameOffset, 1, nonSilentFramesToProcess);
 
     for (int v = 0; v < voices; ++v) {
-        std::vector<float>& pi = _internal->phaseIncrements[i]
+        std::vector<float>& pi = _internal->phaseIncrements[v];
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
             pi[i] = frequencies[i] * powf(2, detuneRate[i] * float(v));
         }
         // convert frequencies to phase increments
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
-            pi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI)* phaseIncrements[i] / sample_rate);
+            pi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI) * pi[i] / sample_rate);
         }
     }
 
@@ -141,36 +141,34 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
     memset(destP, 0, sizeof(float) * bufferSize);
     float amp = 1.f / float(voices);
     for (int v = 0; v < voices; ++v) {
-        std::vector<float>& pi = _internal->phaseIncrements[i]
+        std::vector<float>& pi = _internal->phaseIncrements[v];
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
-            destP[i] += amp - (amp / pi * _internal->phase[v]);
-            _internal->phase[v] += pi[i];
-            if (_internal->phase[v] > 2.f * pi)
-                _internal->phase[v] -= 2.f * pi;
+            destP[i] += amp - (amp / pi * _internal->phases[v]);
+            _internal->phases[v] += pi[i];
+            if (_internal->phases[v] > 2.f * pi)
+                _internal->phases[v] -= 2.f * pi;
         }
     }
     
     outputBus->clearSilentFlag();
-#endif
 }
 
 void SupersawNode::update(ContextRenderLock & r)
 {
-    internalNode->update(r, true);
 }
 
 std::shared_ptr<AudioParam> SupersawNode::detune() const
 {
-    return internalNode->detune;
+    return _internal->detune;
 }
 std::shared_ptr<AudioParam> SupersawNode::frequency() const
 {
-    return internalNode->frequency;
+    return _internal->frequency;
 }
 std::shared_ptr<AudioSetting> SupersawNode::sawCount() const
 {
-    return internalNode->sawCount;
+    return _internal->sawCount;
 }
 
 bool SupersawNode::propagatesSilence(ContextRenderLock & r) const

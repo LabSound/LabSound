@@ -116,12 +116,9 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     _normalize = setting("normalize");
     _normalize->setBool(true);
     _impulseResponseClip = setting("impulseResponse");
-
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
-
+    
+    // init soundpipe context
     lab::sp_create(&_sp);
-
     _impulseResponseClip->setValueChanged([this]() {
         this->_activateNewImpulse();
     });
@@ -132,6 +129,8 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
 ConvolverNode::~ConvolverNode()
 {
     _kernels.clear();
+    
+    // destroy soundpipe context
     lab::sp_destroy(&_sp);
     uninitialize();
 }
@@ -245,8 +244,8 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         _pending_kernels.clear();
     }
 
-    AudioBus * outputBus = _self->output;
-    AudioBus * inputBus = _self->inputs[0].node->output();
+    auto outputBus = _self->output;
+    auto inputBus = _self->inputs[0].node->output();
 
     if (!isInitialized() || !outputBus || !inputBus || !inputBus->numberOfChannels() || !_kernels.size())
     {
@@ -257,7 +256,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     // if the user never specified the number of output channels, make it match the input
     if (!outputBus->numberOfChannels())
     {
-        output(0)->setNumberOfChannels(r, inputBus->numberOfChannels());
+        output()->setNumberOfChannels(r, inputBus->numberOfChannels());
         outputBus = _self->output;  // set number of channels invalidates the pointer
     }
 

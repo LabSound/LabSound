@@ -109,7 +109,7 @@ public:
     void copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain, float targetGain);
 
     // Copies the sourceBus by scaling with sample-accurate gain values.
-    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, const float * gainValues, int numberOfGainValues);
+    void copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, const float* gainValues, int numberOfGainValues);
 
     // Returns maximum absolute value across all channels (useful for normalization).
     float maxAbsValue() const;

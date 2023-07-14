@@ -92,7 +92,7 @@ protected:
     // the processing graph when no references are being held any more.
 
     struct Internal {
-        explicit Internal(AudioContext& ac);
+        explicit Internal(AudioContext& ac, AudioNodeDescriptor const& desc);
                 
         AudioNodeScheduler2 scheduler;
 

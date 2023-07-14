@@ -16,6 +16,7 @@
 
 using namespace std;
 
+#if 0
 namespace lab
 {
 
@@ -406,3 +407,4 @@ float AudioParamTimeline::valuesForTimeRangeImpl(
 }
 
 }  // namespace lab
+#endif

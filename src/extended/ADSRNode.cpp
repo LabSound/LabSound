@@ -270,9 +270,9 @@ namespace lab
         }
 
         int numberOfInputChannels = input(0)->numberOfChannels(r);
-        if (numberOfInputChannels != output(0)->numberOfChannels())
+        if (numberOfInputChannels != output()->numberOfChannels())
         {
-            output(0)->setNumberOfChannels(r, numberOfInputChannels);
+            output()->setNumberOfChannels(r, numberOfInputChannels);
             destinationBus = _self->output;
         }
 

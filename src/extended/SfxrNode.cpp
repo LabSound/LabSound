@@ -666,12 +666,12 @@ SfxrNode::SfxrNode(AudioContext & ac)
     sfxr->ResetSample(true);
     sfxr->PlaySample();
 
-    _self->scheduler._onStart = [this](double when)
+    _self->scheduler.setOnStart([this](double when)
     {
         // when is ignored.
         this->sfxr->ResetSample(true);
         this->sfxr->PlaySample();
-    };
+    });
 
     initialize();
 

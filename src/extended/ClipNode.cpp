@@ -64,8 +64,8 @@ public:
         int dstChannels = (int) destinationBus->numberOfChannels();
         if (dstChannels != srcChannels)
         {
-            _owner->output(0)->setNumberOfChannels(r, srcChannels);
-            destinationBus = _owner->_self->output; 
+            _owner->output()->setNumberOfChannels(r, srcChannels);
+            destinationBus = _owner->_self->output.get();
             /// @todo no need to pass in the destination bus since owner is retained.
             /// @todo perhaps flatten out AudioProcessor as well, as it's not adding anything particularly
         }

@@ -33,7 +33,7 @@ static AudioSettingDescriptor s_GranulationSettings[] = {
     
 AudioNodeDescriptor * GranulationNode::desc()
 {
-    static AudioNodeDescriptor d {s_GranulationParams, s_GranulationSettings, 0};
+    static AudioNodeDescriptor d { s_GranulationParams, s_GranulationSettings, 1 };
     return &d;
 }
 
@@ -61,20 +61,12 @@ GranulationNode::GranulationNode(AudioContext & ac)
 
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
     grainPlaybackFreq = param("PlaybackFrequency");
-
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
     initialize();
 }
 
 GranulationNode::~GranulationNode()
 {
     uninitialize();
-}
-
-void GranulationNode::reset(ContextRenderLock& r)
-{
-    AudioNode::reset(r);
 }
 
 bool GranulationNode::RenderGranulation(ContextRenderLock & r, AudioBus * out_bus, int destinationFrameOffset, int numberOfFrames)
@@ -145,7 +137,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
     std::cout << "GranulationNode::grainPlaybackFreq " << grainPlaybackFreq->value() << std::endl;
 
     grainSourceBus->setBus(buffer.get());
-    output(0)->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
+    output()->setNumberOfChannels(r, buffer ? buffer->numberOfChannels() : 0);
 
     // Compute useful values
     /// @fixme these values should be per sample, not per quantum
@@ -187,7 +179,7 @@ bool GranulationNode::setGrainSource(ContextRenderLock & r, std::shared_ptr<Audi
 
 void GranulationNode::process(ContextRenderLock& r, int bufferSize)
 {
-    AudioBus * outputBus = _self->output;
+    auto outputBus = _self->output;
 
     if (!isInitialized() || !outputBus->numberOfChannels()) 
     {
@@ -195,8 +187,8 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    int quantumFrameOffset = _self->scheduler._renderOffset;
-    int bufferFramesToProcess = _self->scheduler._renderLength;
+    int quantumFrameOffset = _self->scheduler.renderOffset();
+    int bufferFramesToProcess = _self->scheduler.renderLength();
 
     if (!bufferFramesToProcess)
     {
@@ -204,7 +196,7 @@ void GranulationNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    if (!RenderGranulation(r, outputBus, quantumFrameOffset, bufferFramesToProcess))
+    if (!RenderGranulation(r, outputBus.get(), quantumFrameOffset, bufferFramesToProcess))
     {
         outputBus->zero();
         return;

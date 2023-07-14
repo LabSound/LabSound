@@ -51,7 +51,7 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
 {
     // This node acts as a pass-through if it is embedded in a chain
 
-    AudioBus * outputBus = _self->output;
+    auto outputBus = _self->output;
 
     if (!isInitialized() || !input(0)->isConnected())
     {
@@ -60,7 +60,7 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    AudioBus * bus = _self->inputs[0].node->output();
+    auto bus = _self->inputs[0].node->output();
     bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
     if (!isBusGood)
     {

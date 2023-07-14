@@ -73,7 +73,7 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 
         if (inputBusNumChannels != outputBusNumChannels)
         {
-            output(0)->setNumberOfChannels(r, inputBusNumChannels);
+            output()->setNumberOfChannels(r, inputBusNumChannels);
             outputBusNumChannels = inputBusNumChannels;
             outputBus = _self->output;
         }
