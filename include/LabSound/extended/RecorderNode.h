@@ -14,23 +14,21 @@ namespace lab
 
 class RecorderNode : public AudioNode
 {
+    struct RecorderSettings;
+    std::unique_ptr<RecorderSettings> _settings;
+
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
-
-    bool m_recording{false};
-
-    std::vector<std::vector<float>> m_data;  // non-interleaved
-    mutable std::recursive_mutex m_mutex;
-
-    float m_sampleRate;
-
+    
 public:
 
     // create a recorder
-    RecorderNode(AudioContext & r, int channelCount = 2);
+    RecorderNode(AudioContext & r, int recordChannelCount = 1);
 
     // create a recorder with a specific configuration
-    RecorderNode(AudioContext & r, const AudioStreamConfig & outConfig);
+    /// @TODO if the recording cofing has a different sample rate, the output should be resampled.
+    /// at the moment the samples get written as is, without rate conversion.
+    RecorderNode(AudioContext & r, const AudioStreamConfig & recordingConfig);
     virtual ~RecorderNode();
 
     static  const char* static_name() { return "Recorder"; }
@@ -41,16 +39,17 @@ public:
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override;
 
-    void startRecording() { m_recording = true; }
-    void stopRecording() { m_recording = false; }
+    void startRecording();
+    void stopRecording();
 
     float recordedLengthInSeconds() const;
 
     // create a bus from the recording; it can be used by other nodes
-    // such as a SampledAudioNode.
+    // such as a SampledAudioNode. The recording is cleared after the bus is
+    // created.
     std::unique_ptr<AudioBus> createBusFromRecording(bool mixToMono);
 
-    // returns true for success
+    // returns true for success. The recording is cleared after the bus is created.
     bool writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono);
 };
 

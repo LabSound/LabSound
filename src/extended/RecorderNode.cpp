@@ -13,28 +13,41 @@
 
 using namespace lab;
 
+struct RecorderNode::RecorderSettings {
+    RecorderSettings() = default;
+    ~RecorderSettings() = default;
+
+    bool recording = false;
+    float recordingSampleRate = 44100.f;
+    int numChannelsToRecord = 1;
+
+    std::vector<std::vector<float>> data;  // non-interleaved
+    mutable std::recursive_mutex mutex;
+};
 
 AudioNodeDescriptor * RecorderNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr, 0};
+    static AudioNodeDescriptor d { nullptr, nullptr, 1 };
     return &d;
 }
 
 RecorderNode::RecorderNode(AudioContext& r, int channelCount)
-    : AudioNode(r, *desc())
+: AudioNode(r, *desc())
+, _settings(new RecorderSettings())
 {
-    _self->desiredChannelCount = channelCount;
-    m_sampleRate = r.sampleRate();
+    _settings->recordingSampleRate = r.sampleRate();
+    _settings->numChannelsToRecord = channelCount;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
     initialize();
 }
 
-RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfig)
-    : AudioNode(ac, *desc())
+RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig& recordingConfig)
+: AudioNode(ac, *desc())
+, _settings(new RecorderSettings())
 {
-    m_sampleRate = outConfig.desired_samplerate;
+    _settings->recordingSampleRate = recordingConfig.desired_samplerate;
+    _settings->numChannelsToRecord = recordingConfig.desired_channels;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
-    _self->desiredChannelCount = 1;
     initialize();
 }
 
@@ -43,18 +56,15 @@ RecorderNode::~RecorderNode()
     uninitialize();
 }
 
+void RecorderNode::startRecording() { _settings->recording = true; }
+void RecorderNode::stopRecording()  { _settings->recording = false; }
 
 void RecorderNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * outputBus = _self->output.get();
+    auto outputBus = _self->output;
     auto inputBus = summedInput();
-
-    bool has_input = inputBus != nullptr && input(0)->isConnected() && inputBus->numberOfChannels() > 0;
-    if ((!isInitialized() || !has_input) && outputBus)
-    {
-        outputBus->zero();
-    }
-
+    const int inputBusNumChannels = inputBus->numberOfChannels();
+    bool has_input = inputBus && input(0)->isConnected() && inputBusNumChannels > 0;
     if (!has_input)
     {
         // nothing to record.
@@ -63,85 +73,53 @@ void RecorderNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    // the recorder will conform the number of output channels to the number of input
-    // in order that it can function as a pass-through node.
-    const int inputBusNumChannels = inputBus->numberOfChannels();
-    int outputBusNumChannels = inputBusNumChannels;
-    if (outputBus)
-    {
-        outputBusNumChannels = outputBus->numberOfChannels();
-
-        if (inputBusNumChannels != outputBusNumChannels)
-        {
-            output()->setNumberOfChannels(r, inputBusNumChannels);
-            outputBusNumChannels = inputBusNumChannels;
-            outputBus = _self->output;
-        }
-    }
-
-    if (m_recording)
-    {
-        const int numChannels = std::min(inputBusNumChannels, outputBusNumChannels);
-
-        std::vector<const float*> channels;
-        for (int i = 0; i < numChannels; ++i)
-        {
-            channels.push_back(inputBus->channel(i)->data());
-        }
-
-        if (m_data.size() < numChannels)
-        {
-            // allocate the recording buffers lazily when the number of input channels is finally known
-            for (int i = 0; i < numChannels; ++i)
-            {
-                m_data.emplace_back(std::vector<float>());
-                m_data[i].reserve(1024 * 1024);
+    if (_settings->recording) {
+        std::lock_guard<std::recursive_mutex> lock(_settings->mutex);
+        
+        if (_settings->data.size() < inputBusNumChannels) {
+            for (int i = 0; i < inputBusNumChannels; ++i) {
+                _settings->data.emplace_back(std::vector<float>());
+                _settings->data[i].reserve(1024 * 1024);
             }
         }
 
-        // copy the output. @TODO this should be a memcpy
-        std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        for (int c = 0; c < numChannels; ++c)
-        {
+        for (int c = 0; c < inputBusNumChannels; ++c) {
+            // relying on the doubling behavior of push_back to keep increasing
+            // the size of thebuffer.
+            const float* channelData = inputBus->channel(c)->data();
             for (int i = 0; i < bufferSize; ++i)
-                m_data[c].push_back(channels[c][i]);
+                _settings->data[c].push_back(channelData[i]);
         }
     }
 
-    // pass through 
-    if (outputBus)
+    // if the recorder node is being used as a pass through, conform the
+    // number of outputs to match the number of inputs.
+    if (outputBus) {
+        if (inputBusNumChannels != outputBus->numberOfChannels()) {
+            output()->setNumberOfChannels(r, inputBusNumChannels);
+            outputBus = output();
+        }
         outputBus->copyFrom(*inputBus);
+    }
 }
 
 
 float RecorderNode::recordedLengthInSeconds() const
 {
-    size_t recordedChannelCount = m_data.size();
-    if (!recordedChannelCount) 
-        return 0;
-
-    size_t numSamples = m_data[0].size();
-    return numSamples / m_sampleRate;
+    return _settings->data[0].size() / _settings->recordingSampleRate;
 }
 
 
 bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtension, bool mixToMono)
 {
-    size_t recordedChannelCount = m_data.size();
+    std::lock_guard<std::recursive_mutex> lock(_settings->mutex);
+    int recordedChannelCount = (int) _settings->data.size();
     if (!recordedChannelCount) return false;
-    size_t numSamples = m_data[0].size();
+    int numSamples = (int) _settings->data[0].size();
     if (!numSamples) return false;
+    const int writingChannelCount = mixToMono ? 1 : recordedChannelCount;
 
     std::unique_ptr<nqr::AudioData> fileData(new nqr::AudioData());
-
-    std::vector<std::vector<float>> clear_data;
-    for (int i = 0; i < recordedChannelCount; ++i)
-        clear_data.emplace_back(std::vector<float>());
-
-    {
-        std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        m_data.swap(clear_data);
-    }
 
     if (recordedChannelCount == 1)
     {
@@ -149,7 +127,7 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         fileData->samples.resize(numSamples);
         fileData->channelCount = 1;
         float* dst = fileData->samples.data();
-        memcpy(dst, clear_data[0].data(), sizeof(float) * numSamples);
+        memcpy(dst, _settings->data[0].data(), sizeof(float) * numSamples);
     }
     else if (recordedChannelCount > 1 && mixToMono)
     {
@@ -160,9 +138,9 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         for (size_t i = 0; i < numSamples; i++)
         {
             dst[i] = 0;
-            for (size_t j = 0; j < _self->m_channelCount; ++j)
-                dst[i] += clear_data[j][i];
-            dst[i] *= 1.f / static_cast<float>(_self->m_channelCount);
+            for (size_t j = 0; j < recordedChannelCount; ++j)
+                dst[i] += _settings->data[j][i];
+            dst[i] *= 1.f / static_cast<float>(recordedChannelCount);
         }
     }
     else
@@ -174,54 +152,57 @@ bool RecorderNode::writeRecordingToWav(const std::string & filenameWithWavExtens
         for (size_t i = 0; i < numSamples; i++)
         {
             for (size_t j = 0; j < recordedChannelCount; ++j)
-                *dst++ = clear_data[j][i];
+                *dst++ = _settings->data[j][i];
         }
     }
 
-    fileData->sampleRate = static_cast<int>(m_sampleRate);
+    fileData->sampleRate = static_cast<int>(_settings->recordingSampleRate);
     fileData->sourceFormat = nqr::PCM_FLT;
 
     nqr::EncoderParams params = {static_cast<int>(recordedChannelCount), nqr::PCM_FLT, nqr::DITHER_NONE};
     bool result = nqr::EncoderError::NoError == nqr::encode_wav_to_disk(params, fileData.get(), filenameWithWavExtension);
+
+    for (int i = 0; i < _settings->data.size(); ++i)
+        _settings->data[i].clear();
+
     return result;
 }
 
 std::unique_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
 {
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
-
-    int numSamples = static_cast<int>(m_data[0].size());
+    std::lock_guard<std::recursive_mutex> lock(_settings->mutex);
+    int recordedChannelCount = (int) _settings->data.size();
+    if (!recordedChannelCount) return {};
+    int numSamples = (int) _settings->data[0].size();
     if (!numSamples) return {};
-
-    const int result_channel_count = mixToMono ? 1 : _self->m_channelCount;
+    const int writingChannelCount = mixToMono ? 1 : recordedChannelCount;
 
     // Create AudioBus where we'll put the PCM audio data
-    std::unique_ptr<lab::AudioBus> result_audioBus(new lab::AudioBus(result_channel_count, numSamples));
-    result_audioBus->setSampleRate(m_sampleRate);
+    std::unique_ptr<lab::AudioBus> result_audioBus(new lab::AudioBus(writingChannelCount, numSamples));
+    result_audioBus->setSampleRate(_settings->recordingSampleRate);
 
     // Mix channels to mono if requested, and there's more than one input channel.
-    if (_self->m_channelCount > 1 && mixToMono)
-    {
+    if (mixToMono) {
         float* destinationMono = result_audioBus->channel(0)->mutableData();
 
         for (int i = 0; i < numSamples; i++)
         {
             destinationMono[i] = 0;
-            for (size_t j = 0; j < _self->m_channelCount; ++j)
-                destinationMono[i] += m_data[j][i];
-            destinationMono[i] *= 1.f / static_cast<float>(_self->m_channelCount);
+            for (size_t j = 0; j < recordedChannelCount; ++j)
+                destinationMono[i] += _settings->data[j][i];
+            destinationMono[i] *= 1.f / static_cast<float>(recordedChannelCount);
         }
     }
     else
     {
-        for (int i = 0; i < result_channel_count; ++i)
+        for (int i = 0; i < writingChannelCount; ++i)
         {
-            memcpy(result_audioBus->channel(i)->mutableData(), m_data[0].data(), numSamples * sizeof(float));
+            memcpy(result_audioBus->channel(i)->mutableData(), _settings->data[0].data(), numSamples * sizeof(float));
         }
     }
 
-    for (int i = 0; i < m_data.size(); ++i)
-        m_data[i].clear();
+    for (int i = 0; i < _settings->data.size(); ++i)
+        _settings->data[i].clear();
 
     return result_audioBus;
 }
@@ -230,7 +211,7 @@ std::unique_ptr<AudioBus> RecorderNode::createBusFromRecording(bool mixToMono)
 void RecorderNode::reset(ContextRenderLock& r)
 {
     AudioNode::reset(r);
-    std::lock_guard<std::recursive_mutex> lock(m_mutex);
-    for (int i = 0; i < m_data.size(); ++i)
-        m_data[i].clear();
+    std::lock_guard<std::recursive_mutex> lock(_settings->mutex);
+    for (int i = 0; i < _settings->data.size(); ++i)
+        _settings->data[i].clear();
 }
