@@ -10,6 +10,8 @@ struct ex_devices : public labsound_example {
     virtual ~ex_devices() = default;
     virtual void play(int argc, char ** argv) override final
     {
+        printf("\nex_devices fetching device info\n--------------------------------\n\n");
+        
         const std::vector<AudioDeviceInfo> audioDevices = lab::AudioDevice_RtAudio::MakeAudioDeviceList();
         for (auto & info : audioDevices) {
             printf("Device %d: %s\n", info.index, info.identifier.c_str());
@@ -19,6 +21,8 @@ struct ex_devices : public labsound_example {
             printf("  is default input: %s\n", info.is_default_input ? "true" : "false");
             printf("  is default output: %s\n", info.is_default_output ? "true" : "false");
         }
+        
+        printf("\nex_devices has finished normally\n--------------------------------\n\n");
     }
 };
 
@@ -54,7 +58,7 @@ struct ex_simple : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(_context.get(), "ex_simple");
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
         }
         //ac.connect(ac.destinationNode(), musicClipNode, 0, 0);
         musicClipNode->schedule(0.0);
@@ -106,7 +110,7 @@ struct ex_play_file : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_simple");
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
         }
         musicClipNode->schedule(0.0);
 
@@ -211,7 +215,7 @@ struct ex_playback_events : public labsound_example
         auto sampledAudio = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_playback_events");
-            sampledAudio->setBus(r, musicClip);
+            sampledAudio->setBus(musicClip);
         }
         ac.connect(ac.destinationNode(), sampledAudio, 0, 0);
 
@@ -234,8 +238,10 @@ struct ex_playback_events : public labsound_example
 // how a `RecorderNode` can be used to capture the rendered audio to disk.
 struct ex_offline_rendering : public labsound_example
 {
-    ex_offline_rendering(std::shared_ptr<lab::AudioContext> context, bool with_input) : labsound_example(context, with_input) {}
+    ex_offline_rendering(std::shared_ptr<lab::AudioContext> context, bool with_input)
+    : labsound_example(context, with_input) {}
     virtual ~ex_offline_rendering() = default;
+
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
@@ -251,7 +257,7 @@ struct ex_offline_rendering : public labsound_example
 
         const float recording_time_ms = 1000.f;
 
-        std::shared_ptr<lab::AudioDestinationNode> rn =
+        std::shared_ptr<lab::AudioDestinationNode> renderNode =
             std::make_shared<lab::AudioDestinationNode>(ac,
                 std::make_unique<lab::AudioDevice_Null>(inputConfig, offlineConfig));
 
@@ -262,7 +268,7 @@ struct ex_offline_rendering : public labsound_example
 
         std::shared_ptr<RecorderNode> recorder(new RecorderNode(ac, offlineConfig));
 
-        ac.connect(rn, recorder);
+        ac.connect(renderNode, recorder);
 
         recorder->startRecording();
         {
@@ -281,12 +287,14 @@ struct ex_offline_rendering : public labsound_example
 
             musicClipNode.reset(new SampledAudioNode(ac));
             ac.connect(recorder, musicClipNode, 0, 0);
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
             musicClipNode->schedule(0.0);
         }
 
         auto bus = std::make_shared<lab::AudioBus>(2, 128);
-        rn->offlineRender(bus.get(), musicClip->length());
+        lab::AudioSourceProvider* provider = nullptr;
+        lab::AudioBus* outputBus = nullptr;
+        renderNode->render(&ac, provider, bus.get(), outputBus);
         recorder->stopRecording();
         printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
         recorder->writeRecordingToWav("ex_offline_rendering.wav", false);
@@ -630,14 +638,14 @@ struct ex_peak_compressor : public labsound_example
             ac.connect(peakComp, filter, 0, 0);
             ac.connect(ac.destinationNode(), peakComp, 0, 0);
 
-            kick_node->setBus(r, kick);
+            kick_node->setBus(kick);
             ac.connect(filter, kick_node, 0, 0);
 
-            hihat_node->setBus(r, hihat);
+            hihat_node->setBus(hihat);
             ac.connect(filter, hihat_node, 0, 0);
             //hihat_node->gain()->setValue(0.2f);
 
-            snare_node->setBus(r, snare);
+            snare_node->setBus(snare);
             ac.connect(filter, snare_node, 0, 0);
 
             _nodes.push_back(kick_node);
@@ -695,7 +703,7 @@ struct ex_stereo_panning : public labsound_example
         {
             ContextRenderLock r(&ac, "ex_stereo_panning");
 
-            audioClipNode->setBus(r, audioClip);
+            audioClipNode->setBus(audioClip);
             ac.connect(stereoPanner, audioClipNode, 0, 0);
             audioClipNode->schedule(0.0, -1); // -1 to loop forever
 
@@ -765,7 +773,7 @@ struct ex_hrtf_spatialization : public labsound_example
             panner->setPanningModel(PanningModel::HRTF);
             {
                 ContextRenderLock r(&ac, "ex_hrtf_spatialization");
-                audioClipNode->setBus(r, audioClip);
+                audioClipNode->setBus(audioClip);
             }
             audioClipNode->schedule(0.0, -1);  // -1 to loop forever
             ac.connect(panner, audioClipNode, 0, 0);
@@ -850,7 +858,7 @@ struct ex_convolution_reverb : public labsound_example
             outputGain->gain()->setValue(0.5f);
 
             voiceNode = std::make_shared<SampledAudioNode>(ac);
-            voiceNode->setBus(r, voiceClip);
+            voiceNode->setBus(voiceClip);
             ac.connect(dryGain, voiceNode, 0, 0);
 
             voiceNode->schedule(0.0);
@@ -907,7 +915,7 @@ struct ex_misc : public labsound_example
 
             ac.connect(ac.destinationNode(), pingping->output, 0, 0);
 
-            audioClipNode->setBus(r, audioClip);
+            audioClipNode->setBus(audioClip);
 
             ac.connect(pingping->input, audioClipNode, 0, 0);
 
@@ -1592,7 +1600,7 @@ struct ex_split_merge : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_split_merge");
-            musicClipNode->setBus(r, chan6_source);
+            musicClipNode->setBus(chan6_source);
         }
 
         ac.connect(splitter, musicClipNode);

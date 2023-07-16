@@ -25,7 +25,7 @@ int rt_audio_callback(
     AudioDevice_RtAudio * device = reinterpret_cast<AudioDevice_RtAudio *>(userData);
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
     memset(fltOutputBuffer, 0, nBufferFrames * device->getOutputConfig().desired_channels * sizeof(float));
-    device->render(device->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
+    device->renderToDevice(nBufferFrames, fltOutputBuffer, inputBuffer);
     return 0;
 }
 
@@ -95,7 +95,7 @@ const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-void AudioDevice_RtAudio::createContext()
+void AudioDevice_RtAudio::createRtAudioEngine()
 {
     rtaudio_ctx = new RtAudio();
     if (rtaudio_ctx->getDeviceCount() < 1)
@@ -185,7 +185,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
     const AudioStreamConfig & _outputConfig)
     : AudioDevice(_inputConfig, _outputConfig)
 {
-    createContext();
+    createRtAudioEngine();
 }
 
 AudioDevice_RtAudio::~AudioDevice_RtAudio()
@@ -206,7 +206,7 @@ void AudioDevice_RtAudio::backendReinitialize()
 
         delete rtaudio_ctx;
     }
-    createContext();
+    createRtAudioEngine();
 }
 
 
@@ -254,10 +254,12 @@ bool AudioDevice_RtAudio::isRunning() const
 // called by RtAudio periodically to get audio data.
 // Pulls on our provider to get rendered audio stream.
 //
-void AudioDevice_RtAudio::render(
-    AudioSourceProvider* provider,
+void AudioDevice_RtAudio::renderToDevice(
     int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
+    const AudioContext& ac = *_context.get();
+    AudioSourceProvider* provider = sourceProvider();
+        
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
     float * fltInputBuffer = reinterpret_cast<float *>(inputBuffer);
 
@@ -314,7 +316,7 @@ void AudioDevice_RtAudio::render(
 
     // Pull on the graph
     if (_destinationNode)
-        _destinationNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
+        _destinationNode->render(context().get(), provider, _inputBus.get(), _renderBus.get());
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
     if (_outConfig.desired_channels)

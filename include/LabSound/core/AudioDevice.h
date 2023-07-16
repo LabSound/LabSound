@@ -69,6 +69,7 @@ protected:
     AudioStreamConfig _inConfig = {};
     AudioSourceProvider* _sourceProvider = nullptr;
     std::shared_ptr<AudioDestinationNode> _destinationNode;
+    std::shared_ptr<AudioContext> _context;
 
 public:
     AudioDevice(const AudioStreamConfig & inputConfig,
@@ -94,6 +95,11 @@ public:
     void setDestinationNode(std::shared_ptr<AudioDestinationNode> callback) { 
         _destinationNode = callback; 
     }
+    
+    void setContext(std::shared_ptr<AudioContext> ctx) {
+        _context = ctx;
+    }
+    std::shared_ptr<AudioContext> context() { return _context; }
 
     const AudioStreamConfig & getOutputConfig() const {
         return _outConfig; }

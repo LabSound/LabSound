@@ -22,7 +22,7 @@ class AudioDevice_RtAudio : public AudioDevice
     RtAudio* rtaudio_ctx;
     SamplingInfo samplingInfo;
 
-    void createContext();
+    void createRtAudioEngine();
 
 public:
     AudioDevice_RtAudio(
@@ -33,7 +33,7 @@ public:
     float authoritativeDeviceSampleRateAtRuntime {0.f};
 
     // AudioDevice Interface
-    void render(AudioSourceProvider*, int numberOfFrames, void * outputBuffer, void * inputBuffer);
+    void renderToDevice(int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;

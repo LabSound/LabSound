@@ -21,16 +21,19 @@ int main(int argc, char *argv[]) try
         labsound_example* example;
     };
     
-    AudioStreamConfig _inputConfig;
-    AudioStreamConfig _outputConfig;
-    auto config = GetDefaultAudioDeviceConfiguration(true);
-    _inputConfig = config.first;
-    _outputConfig = config.second;
-    std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(_inputConfig, _outputConfig));
-    auto context = std::make_shared<lab::AudioContext>(false, true);
+    std::pair<AudioStreamConfig, AudioStreamConfig> config = GetDefaultAudioDeviceConfiguration(true);
+    std::shared_ptr<lab::AudioDevice_RtAudio> device(new lab::AudioDevice_RtAudio(config.first, config.second));
+    auto context = std::make_shared<lab::AudioContext>(device, false, true);
     auto destinationNode = std::make_shared<lab::AudioDestinationNode>(*context.get(), device);
-    device->setDestinationNode(destinationNode);
     context->setDestinationNode(destinationNode);
+    device->setDestinationNode(destinationNode);
+    device->setContext(context);
+    
+    // Context owns the graph
+    // Device manages the hardware
+    // Destination node is the root that's pulled for rendering
+    // rendering is done by the device
+    
     
     const bool NoInput = false;
     const bool UseInput = true;
@@ -58,7 +61,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_wavepot_dsp(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_granulation_node(context, NoInput) }, // note: node is under development
         { Passing::pass, Skip::yes, new ex_poly_blep(context, NoInput) },
-        { Passing::fail, Skip::no,  new ex_split_merge(context, NoInput) },
+        { Passing::fail, Skip::yes, new ex_split_merge(context, NoInput) },
     };
 
     static constexpr int iterations = 1;
@@ -78,6 +81,7 @@ int main(int argc, char *argv[]) try
     destinationNode.reset();
     device->setDestinationNode(destinationNode);
     context->setDestinationNode(destinationNode);
+    device->setContext({});
     return EXIT_SUCCESS;
 } 
 catch (const std::exception & e) 
