@@ -207,7 +207,7 @@ void PannerNode::setVelocity(const FloatPoint3D & velocity)
 
 void PannerNode::process(ContextRenderLock & r, int bufferSize)
 {
-    AudioBus * destination = _self->output;
+    auto destination = output();
 
     if (!isInitialized() || !input(0)->isConnected())
     {
@@ -215,7 +215,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    AudioBus * source = _self->inputs[0].node->output();
+    auto source = _self->inputs[0].node->output();
 
     if (!source)
     {
@@ -514,27 +514,6 @@ float PannerNode::distanceConeGain(ContextRenderLock & r)
     m_coneGain->setValue(static_cast<float>(coneGain));
 
     return float(distanceGain * coneGain);
-}
-
-void PannerNode::notifyAudioSourcesConnectedToNode(ContextRenderLock & r, AudioNode * node)
-{
-    ASSERT(node);
-    if (!node)
-        return;
-
-    // Go through all inputs to this node.
-    for (int i = 0; i < node->numberOfInputs(); ++i)
-    {
-        auto input = node->input(i);
-
-        // For each input, go through all of its connections, looking for SampledAudioNodes.
-        for (int j = 0; j < input->numberOfRenderingConnections(r); ++j)
-        {
-            auto connectedOutput = input->renderingOutput(r, j);
-            AudioNode * connectedNode = connectedOutput->sourceNode();
-            notifyAudioSourcesConnectedToNode(r, connectedNode);  // recurse
-        }
-    }
 }
 
 float PannerNode::refDistance()
