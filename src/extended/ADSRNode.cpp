@@ -33,7 +33,7 @@ namespace lab
 
     AudioNodeDescriptor * ADSRNode::desc()
     {
-        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings, 0};
+        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings, 1};
         return &d;
     }
 
@@ -51,11 +51,12 @@ namespace lab
 
         virtual ~ADSRNodeImpl() {}
 
-        virtual void initialize() override { }
-        virtual void uninitialize() override { }
+        void initialize() override { }
+        void uninitialize() override { }
 
         // Processes the source to destination bus. The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, int framesToProcess) override
+        void process(ContextRenderLock & r,
+                     const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, int framesToProcess) override
         {
             using std::deque;
 
@@ -73,27 +74,15 @@ namespace lab
             if (envelope.size() != framesToProcess)
                 envelope.resize(framesToProcess);
 
-            // scan the gate signal
-            const bool gate_is_connected = m_gate->hasSampleAccurateValues();
-            if (gate_is_connected)
-            {
-                m_gate->calculateSampleAccurateValues(r, _gateArray.data(), framesToProcess);
-
-                // threshold the gate to on or off
-                for (int i = 0; i < framesToProcess; ++i)
-                    _gateArray[i] = _gateArray[i] > 0 ? 1.f : 0.f;
-            }
-            else
-            {
-                float g = m_gate->value();
-                // threshold the gate to on or off
-                for (int i = 0; i < framesToProcess; ++i)
-                    _gateArray[i] = g > 0 ? 1.f : 0.f;
-            }
-
+            const float* gate = m_gate->bus()->channel(0)->data();
+            // threshold the gate to on or off
+            for (int i = 0; i < framesToProcess; ++i)
+                _gateArray[i] = gate[i] > 0 ? 1.f : 0.f;
+            
             // oneshot == false means gate controls Attack/Sustain
             // oneshot == true means sustain param controls sustain
             bool oneshot = m_oneShot->valueBool();
+            bool gate_is_connected = !!m_gate->overridingInput();
 
             cached_sample_rate = r.context()->sampleRate();
             for (int i = 0; i < framesToProcess; ++i)
@@ -159,6 +148,8 @@ namespace lab
 
             destinationBus->copyWithSampleAccurateGainValuesFrom(*sourceBus, envelope.data(), framesToProcess);
         }
+        
+        void reset() override {}
 
         virtual double tailTime(ContextRenderLock & r) const override { return 0; }
         virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
@@ -189,9 +180,6 @@ namespace lab
         : AudioNode(ac, *desc())
         , adsr_impl(new ADSRNodeImpl)
     {
-        addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-        
         adsr_impl->m_gate = param("gate");
 
         adsr_impl->m_oneShot = setting("oneShot");
@@ -262,23 +250,16 @@ namespace lab
 
     void ADSRNode::process(ContextRenderLock& r, int bufferSize)
     {
-        AudioBus* destinationBus = _self->output;
-        AudioBus* sourceBus = _self->inputs[0].node->output();
+        auto destinationBus = output();
+        auto sourceBus = _self->inputs[0].node->output();
         if (!isInitialized() || !input(0)->isConnected())
         {
             destinationBus->zero();
             return;
         }
 
-        int numberOfInputChannels = input(0)->numberOfChannels(r);
-        if (numberOfInputChannels != output()->numberOfChannels())
-        {
-            output()->setNumberOfChannels(r, numberOfInputChannels);
-            destinationBus = _self->output;
-        }
-
         // process entire buffer
-        adsr_impl->process(r, sourceBus, destinationBus, bufferSize);
+        adsr_impl->process(r, sourceBus.get(), destinationBus.get(), bufferSize);
     }
 
     void ADSRNode::reset(ContextRenderLock& r)

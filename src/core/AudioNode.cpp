@@ -24,7 +24,7 @@ AudioNode::Internal::Internal(AudioContext & ac, AudioNodeDescriptor const & des
 : scheduler()
 , output(new AudioBus(desc.initialChannelCount, AudioNode::ProcessingSizeInFrames, true))
 , m_channelInterpretation(ChannelInterpretation::Speakers)
-, numChannelsToRecord(0)
+, desiredChannelCount(0)
 , color(0)
 , isInitialized(false)
 , graphEpoch(0)

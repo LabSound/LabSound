@@ -696,15 +696,20 @@ void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, 
         return;
     }
 
-    // We handle both the 1 -> N and N -> N case here.
-    const float * source = sourceBus.channel(0)->data();
+    // if there are fewer source channels than destination, zero the supernumerary channels
+    int lastSourceChannel = sourceBus.numberOfChannels();
     for (int channelIndex = 0; channelIndex < numberOfChannels(); ++channelIndex)
     {
-        if (sourceBus.numberOfChannels() == numberOfChannels())
-        {
-            source = sourceBus.channel(channelIndex)->data();
+        const float* source;
+        if (channelIndex >= lastSourceChannel) {
+            channel(channelIndex)->zero();
         }
-        vmul(source, 1, gainValues, 1, channel(channelIndex)->mutableData(), 1, numberOfGainValues);
+        else {
+            vmul(sourceBus.channel(channelIndex)->data(), 1,
+                 gainValues, 1,
+                 channel(channelIndex)->mutableData(), 1,
+                 numberOfGainValues);
+        }
     }
 }
 
