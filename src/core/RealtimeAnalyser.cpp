@@ -3,6 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "LabSound/core/AudioBus.h"
+#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/Macros.h"
 #include "LabSound/core/WindowFunctions.h"
 

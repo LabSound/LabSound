@@ -123,29 +123,28 @@ void SupersawNode::process(ContextRenderLock & r, int bufferSize)
                       detuneRate + quantumFrameOffset, 1, nonSilentFramesToProcess);
 
     for (int v = 0; v < voices; ++v) {
-        std::vector<float>& pi = _internal->phaseIncrements[v];
+        std::vector<float>& phi = _internal->phaseIncrements[v];
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
-            pi[i] = frequencies[i] * powf(2, detuneRate[i] * float(v));
+            phi[i] = frequencies[i] * powf(2, detuneRate[i] * float(v));
         }
         // convert frequencies to phase increments
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
-            pi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI) * pi[i] / sample_rate);
+            phi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI) * phi[i] / sample_rate);
         }
     }
 
     // calculate and write the wave
     float* destP = outputBus->channel(0)->mutableData();
     const float pi = static_cast<float>(LAB_PI);
-
     memset(destP, 0, sizeof(float) * bufferSize);
     float amp = 1.f / float(voices);
     for (int v = 0; v < voices; ++v) {
-        std::vector<float>& pi = _internal->phaseIncrements[v];
+        std::vector<float>& phi = _internal->phaseIncrements[v];
         for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
         {
             destP[i] += amp - (amp / pi * _internal->phases[v]);
-            _internal->phases[v] += pi[i];
+            _internal->phases[v] += phi[i];
             if (_internal->phases[v] > 2.f * pi)
                 _internal->phases[v] -= 2.f * pi;
         }

@@ -79,8 +79,6 @@ public:
     std::shared_ptr<AudioParam> m_frequency; // hz
 
     void processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count);
-
-    AudioFloatArray m_amplitudeValues;
 };
 
 }  // namespace lab

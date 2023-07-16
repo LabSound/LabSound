@@ -76,6 +76,8 @@ public:
     // truncate any timeline at t seconds in the future, then hold value
     void setValueAtTime(float value, float t);
     
+    void setValue(float value) { setValueAtTime(value, 0); }
+    
     // replace any timeline with a ramp to value at t seconds in the future,
     // then hold value
     void linearRampToValueAtTime(float value, float t);

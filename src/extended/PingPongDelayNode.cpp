@@ -47,13 +47,13 @@ void PingPongDelayNode::SetTempo(float t)
 void PingPongDelayNode::SetFeedback(float f)
 {
     auto clamped = clampTo<float>(f, 0.0f, 1.0f);
-    feedbackGain->gain()->setValue(clamped);
+    feedbackGain->gain()->setValueAtTime(clamped, 0);
 }
 
 void PingPongDelayNode::SetLevel(float f)
 {
     auto clamped = clampTo<float>(f, 0.0f, 1.0f);
-    wetGain->gain()->setValue(clamped);
+    wetGain->gain()->setValueAtTime(clamped, 0);
 }
 
 void PingPongDelayNode::SetDelayIndex(TempoSync value)
@@ -72,7 +72,7 @@ void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
     ac.connect(splitterGain, splitter, 1, 0);
     
     ac.connect(wetGain, splitterGain, 0, 0);
-    splitterGain->gain()->setValue(0.5f);
+    splitterGain->gain()->setValueAtTime(0.5f, 0);
     
     ac.connect(leftDelay, wetGain, 0, 0);
     ac.connect(leftDelay, feedbackGain, 0, 0);

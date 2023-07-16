@@ -5,6 +5,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/Registry.h"

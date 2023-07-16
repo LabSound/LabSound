@@ -145,8 +145,6 @@ PannerNode::PannerNode(AudioContext & ac)
         });
 
     // Node-specific default mixing rules.
-    _self->m_channelCount = 2;
-    _self->m_channelCountMode = ChannelCountMode::ClampedMax;
     _self->m_channelInterpretation = ChannelInterpretation::Speakers;
 
     initialize();
@@ -264,7 +262,7 @@ void PannerNode::process(ContextRenderLock & r, int bufferSize)
     
     m_panner->pan(r, azimuth, elevation,
                   *source, *destination,
-                  _self->scheduler._renderOffset, _self->scheduler._renderLength);
+                  _self->scheduler.renderOffset(), _self->scheduler.renderLength());
 
     // Get the distance and cone gain.
     float totalGain = distanceConeGain(r);

@@ -76,9 +76,8 @@ public:
 ////////////////////
 
 PWMNode::PWMNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+: lab::AudioBasicProcessorNode(ac, *desc())
 {
-    addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     m_processor.reset(new PWMNodeInternal());
     internalNode = static_cast<PWMNodeInternal *>(m_processor.get());  // Currently unused
     initialize();

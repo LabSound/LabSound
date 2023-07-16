@@ -161,10 +161,13 @@ namespace lab {
         auto rate = ac->sampleRate();
         when = epoch + (int64_t) (when * rate);
 
+        /*
+         @TODO
+        
         i think _internals->incoming has to go away completely.
         and the SANWork should be attached to the schedule.
         or something. but having two schedulers is confusing.
-        
+*/
         _self->scheduler.start(when);
 
         float r = bus->sampleRate();

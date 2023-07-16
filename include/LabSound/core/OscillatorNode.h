@@ -55,9 +55,7 @@ public:
     void process_oscillator(ContextRenderLock & r, int bufferSize, int offset, int count);
 
     AudioFloatArray m_phaseIncrements;
-    AudioFloatArray m_biasValues;
     AudioFloatArray m_detuneValues;
-    AudioFloatArray m_amplitudeValues;
 };
 
 }  // namespace lab

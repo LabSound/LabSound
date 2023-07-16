@@ -390,7 +390,7 @@ static AudioSettingDescriptor s_pbSettings[] = {{"type", "TYPE", SettingType::En
 
 AudioNodeDescriptor * PolyBLEPNode::desc()
 {
-    static AudioNodeDescriptor d {s_pbParams, s_pbSettings, 0};
+    static AudioNodeDescriptor d {s_pbParams, s_pbSettings, 1};
     return &d;
 }
 
@@ -404,9 +404,6 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     m_type->setValueChanged([this]() { 
         setType(PolyBLEPType(m_type->valueUint32())); 
     });
-
-    // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);
@@ -430,7 +427,7 @@ void PolyBLEPNode::setType(PolyBLEPType type)
 
 void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int offset, int count)
 {
-    AudioBus * outputBus = _self->output;
+    auto outputBus = _self->output;
     if (!r.context() || !isInitialized() || !outputBus->numberOfChannels())
     {
         outputBus->zero();
@@ -448,20 +445,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
         return;
     }
 
-    if (bufferSize > m_amplitudeValues.size()) m_amplitudeValues.allocate(bufferSize);
-
-    // fetch the amplitudes
-    float * amplitudes = m_amplitudeValues.data();
-    if (m_amplitude->hasSampleAccurateValues())
-    {
-        m_amplitude->calculateSampleAccurateValues(r, amplitudes, bufferSize);
-    }
-    else
-    {
-        m_amplitude->smooth(r);
-        float amp = m_amplitude->smoothedValue();
-        for (int i = 0; i < bufferSize; ++i) amplitudes[i] = amp;
-    }
+    const float * amplitudes = m_amplitude->bus()->channel(0)->data();
 
     // calculate and write the wave
     float* destination = outputBus->channel(0)->mutableData() + offset;
@@ -481,7 +465,7 @@ void PolyBLEPNode::processPolyBLEP(ContextRenderLock & r, int bufferSize, int of
 
 void PolyBLEPNode::process(ContextRenderLock & r, int bufferSize)
 {
-    return processPolyBLEP(r, bufferSize, _self->scheduler._renderOffset, _self->scheduler._renderLength);
+    return processPolyBLEP(r, bufferSize, _self->scheduler.renderOffset(), _self->scheduler.renderLength());
 }
 
 bool PolyBLEPNode::propagatesSilence(ContextRenderLock & r) const

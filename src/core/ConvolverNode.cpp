@@ -280,16 +280,16 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     {
         int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
         lab::sp_conv * conv = _kernels[kernel].conv;
-        float* destP = outputBus->channel(i)->mutableData() + _self->scheduler._renderOffset;
+        float* destP = outputBus->channel(i)->mutableData() + _self->scheduler.renderOffset();
 
         // Start rendering at the correct offset.
         destP += quantumFrameOffset;
         {
-            AudioBus * input_bus = _self->inputs[0].node->output();
+            auto input_bus = _self->inputs[0].node->output();
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
             float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;
             size_t c = input_bus->channel(in_channel)->length();
-            for (int j = 0; j < _self->scheduler._renderLength; ++j)
+            for (int j = 0; j < _self->scheduler.renderLength(); ++j)
             {
                 lab::SPFLOAT in = j < c ? data[j] : 0.f;  // don't read off the end of the input buffer
                 lab::SPFLOAT out = 0.f;
@@ -299,7 +299,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
         }
     }
 
-    _now += double(_self->scheduler._renderLength) / r.context()->sampleRate();
+    _now += double(_self->scheduler.renderLength()) / r.context()->sampleRate();
     outputBus->clearSilentFlag();
 }
 

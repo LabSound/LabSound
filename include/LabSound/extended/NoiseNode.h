@@ -34,7 +34,7 @@ public:
     static AudioNodeDescriptor * desc();
 
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock &) override {}
+    virtual void reset(ContextRenderLock &) override;
 
     NoiseType type() const;
     void setType(NoiseType newType);

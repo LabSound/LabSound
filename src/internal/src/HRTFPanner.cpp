@@ -9,7 +9,6 @@
 #include "LabSound/extended/AudioFileReader.h"
 #include "internal/Assertions.h"
 #include "internal/HRTFDatabase.h"
-#include "internal/Biquad.h"
 #include "internal/FFTConvolver.h"
 #include "LabSound/extended/FFTFrame.h"
 
