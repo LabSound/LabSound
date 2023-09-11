@@ -82,6 +82,10 @@ if (NOT IOS)
 target_link_libraries(LabSoundExample LabSound LabSoundRtAudio)
 endif()
 
+if(MINGW)
+    target_link_libraries(LabSoundExample mfuuid mfplat ksuser wmcodecdspuuid)
+endif(MINGW)
+
 set_target_properties(LabSoundExample PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY bin)
 
