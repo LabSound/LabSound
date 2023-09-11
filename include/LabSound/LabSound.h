@@ -30,7 +30,7 @@
 #include "LabSound/core/SampledAudioNode.h"
 #include "LabSound/core/StereoPannerNode.h"
 #include "LabSound/core/WaveShaperNode.h"
-
+#include "LabSound/core/ConstantSourceNode.h"
 // LabSound Extended Public API
 #include "LabSound/extended/ADSRNode.h"
 #include "LabSound/extended/AudioFileReader.h"
