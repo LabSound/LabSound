@@ -2,11 +2,11 @@
 // Copyright (C) 2010, Google Inc. All rights reserved.
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
+#include "LabSound/core/ConstantSourceNode.h"
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
-#include "LabSound/core/ConstantSourceNode.h"
 
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
@@ -72,7 +72,7 @@ void ConstantSourceNode::process_internal(ContextRenderLock & r, int bufferSize,
 
     int outputBusChannelCount = outputBus->numberOfChannels();
 
-    if (bufferSize > m_sampleAccurateOffsetValues.size()) 
+    if (bufferSize > m_sampleAccurateOffsetValues.size())
     {
         m_sampleAccurateOffsetValues.allocate(bufferSize);
     }
@@ -90,12 +90,15 @@ void ConstantSourceNode::process_internal(ContextRenderLock & r, int bufferSize,
         for (int i = 0; i < bufferSize; ++i) offsets[i] = val;
     }
 
-    float * destination = outputBus->channel(0)->mutableData() + offset;
-    const double sample_rate = (double) r.context()->sampleRate();
-
-    for (int i = offset; i < offset + nonSilentFramesToProcess; ++i)
+    for (int c = 0; c < outputBus->numberOfChannels(); c++)
     {
-        destination[i] = offsets[i];
+        float * destination = outputBus->channel(c)->mutableData() + offset;
+        const double sample_rate = (double) r.context()->sampleRate();
+
+        for (int i = offset; i < offset + nonSilentFramesToProcess; ++i)
+        {
+            destination[i] = offsets[i];
+        }
     }
 
     outputBus->clearSilentFlag();
