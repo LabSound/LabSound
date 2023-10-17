@@ -1662,7 +1662,8 @@ static void makeDistortionCurveA(std::vector<float> & curve, unsigned n_samples,
 
 static void makeDistortionCurveB(std::vector<float> & curve, unsigned n_samples, float amount = 0.5f)
 {
-    float k = 2.0f * amount / (1.0f - amount);
+    constexpr float epsilon = 0.00001f; // Division by zero results in nan output = dropped audio
+    float k = 2.0f * amount / (1.0f - amount + epsilon);
     for (unsigned i = 0; i < n_samples; i++)
     {
         float x = (float)i * 2.0f / (float)n_samples -1.0f;
