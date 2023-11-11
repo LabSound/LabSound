@@ -5,7 +5,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "internal/Assertions.h"
 #include "internal/DenormalDisabler.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include "libsamplerate/include/samplerate.h"
 
 #include <algorithm>
@@ -659,7 +659,7 @@ void AudioBus::copyWithGainFrom(const AudioBus & sourceBus, float * lastMixGain,
     *lastMixGain = gain;
 }
 
-void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, float * gainValues, int numberOfGainValues)
+void AudioBus::copyWithSampleAccurateGainValuesFrom(const AudioBus & sourceBus, const float* gainValues, int numberOfGainValues)
 {
     // Make sure we're processing from the same type of bus.
     // We *are* able to process from mono -> stereo

@@ -10,6 +10,8 @@ struct ex_devices : public labsound_example {
     virtual ~ex_devices() = default;
     virtual void play(int argc, char ** argv) override final
     {
+        printf("\nex_devices fetching device info\n--------------------------------\n\n");
+        
         const std::vector<AudioDeviceInfo> audioDevices = lab::AudioDevice_RtAudio::MakeAudioDeviceList();
         for (auto & info : audioDevices) {
             printf("Device %d: %s\n", info.index, info.identifier.c_str());
@@ -19,6 +21,8 @@ struct ex_devices : public labsound_example {
             printf("  is default input: %s\n", info.is_default_input ? "true" : "false");
             printf("  is default output: %s\n", info.is_default_output ? "true" : "false");
         }
+        
+        printf("\nex_devices has finished normally\n--------------------------------\n\n");
     }
 };
 
@@ -234,8 +238,10 @@ struct ex_playback_events : public labsound_example
 // how a `RecorderNode` can be used to capture the rendered audio to disk.
 struct ex_offline_rendering : public labsound_example
 {
-    ex_offline_rendering(std::shared_ptr<lab::AudioContext> context, bool with_input) : labsound_example(context, with_input) {}
+    ex_offline_rendering(std::shared_ptr<lab::AudioContext> context, bool with_input)
+    : labsound_example(context, with_input) {}
     virtual ~ex_offline_rendering() = default;
+
     virtual void play(int argc, char ** argv) override
     {
         lab::AudioContext& ac = *_context.get();
@@ -251,7 +257,7 @@ struct ex_offline_rendering : public labsound_example
 
         const float recording_time_ms = 1000.f;
 
-        std::shared_ptr<lab::AudioDestinationNode> rn =
+        std::shared_ptr<lab::AudioDestinationNode> renderNode =
             std::make_shared<lab::AudioDestinationNode>(ac,
                 std::make_unique<lab::AudioDevice_Null>(inputConfig, offlineConfig));
 
@@ -262,7 +268,7 @@ struct ex_offline_rendering : public labsound_example
 
         std::shared_ptr<RecorderNode> recorder(new RecorderNode(ac, offlineConfig));
 
-        ac.connect(rn, recorder);
+        ac.connect(renderNode, recorder);
 
         recorder->startRecording();
         {
@@ -286,7 +292,7 @@ struct ex_offline_rendering : public labsound_example
         }
 
         auto bus = std::make_shared<lab::AudioBus>(2, 128);
-        rn->offlineRender(bus.get(), musicClip->length());
+        renderNode->offlineRender(bus.get(), musicClip->length());
         recorder->stopRecording();
         printf("Recorded %f seconds of audio\n", recorder->recordedLengthInSeconds());
         recorder->writeRecordingToWav("ex_offline_rendering.wav", false);
@@ -768,7 +774,6 @@ struct ex_hrtf_spatialization : public labsound_example
                 return;
             }
         }
-
 
         std::shared_ptr<AudioBus> audioClip = MakeBusFromSampleFile("samples/trainrolling.wav", argc, argv);
         std::shared_ptr<SampledAudioNode> audioClipNode = std::make_shared<SampledAudioNode>(ac);

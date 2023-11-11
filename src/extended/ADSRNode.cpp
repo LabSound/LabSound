@@ -8,8 +8,7 @@
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/Registry.h"
-
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <limits>
 #include <deque>

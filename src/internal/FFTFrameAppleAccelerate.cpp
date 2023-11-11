@@ -8,7 +8,7 @@
 
 #include "internal/Assertions.h"
 #include "internal/FFTFrame.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 namespace lab
 {

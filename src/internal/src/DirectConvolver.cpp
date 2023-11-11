@@ -36,7 +36,7 @@
 #include <Accelerate/Accelerate.h>
 #endif
 #include "internal/Assertions.h"
-#include "VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include "LabSound/core/Macros.h"
 
 namespace lab {

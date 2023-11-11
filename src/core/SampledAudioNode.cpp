@@ -11,8 +11,8 @@
 #include "LabSound/core/AudioSetting.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
+#include "LabSound/extended/VectorMath.h"
 
-#include "internal/VectorMath.h"
 #include "internal/Assertions.h"
 
 #include "concurrentqueue/concurrentqueue.h"

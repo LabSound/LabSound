@@ -5,10 +5,10 @@
 #include "LabSound/core/PeriodicWave.h"
 #include "LabSound/core/AudioArray.h"
 #include "LabSound/core/OscillatorNode.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include "internal/Assertions.h"
 #include "internal/FFTFrame.h"
-#include "internal/VectorMath.h"
 
 #include <algorithm>
 #include <cmath>

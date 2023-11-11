@@ -8,7 +8,7 @@
 #include "LabSound/core/AudioNodeOutput.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include <cmath>
 
 namespace lab

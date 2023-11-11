@@ -1,7 +1,7 @@
-﻿---
+---
 BasedOnStyle: WebKit
-ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
-BreakConstructorInitializersBeforeComma: 'false'
+Language: Cpp
+AlignArrayOfStructures: Left
 AlignAfterOpenBracket: Align
 AlignOperands: 'true'
 AllowShortFunctionsOnASingleLine: Inline
@@ -10,9 +10,12 @@ AllowShortLoopsOnASingleLine: 'true'
 AlwaysBreakAfterDefinitionReturnType: None
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: 'false'
+BreakConstructorInitializersBeforeComma: 'false'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
 Cpp11BracedListStyle: 'true'
+DerivePointerAlignment: false
 IndentCaseLabels: 'true'
-PointerAlignment: Middle
+PointerAlignment: Left
 SpaceAfterCStyleCast: 'true'
 SpaceInEmptyParentheses: 'false'
 SpacesBeforeTrailingComments: '2'
