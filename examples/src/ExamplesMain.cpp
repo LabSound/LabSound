@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) try
     
     Example examples[] = {
 
-        { Passing::pass, Skip::yes,  new ex_devices(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_devices(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_play_file(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_simple(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_osc_pop(context, NoInput) },
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_granulation_node(context, NoInput) }, // note: node is under development
         { Passing::pass, Skip::yes, new ex_poly_blep(context, NoInput) },
         { Passing::fail, Skip::yes, new ex_split_merge(context, NoInput) },
-        { Passing::fail, Skip::no, new ex_waveshaper(context, NoInput)},
+        { Passing::fail, Skip::no,  new ex_waveshaper(context, NoInput)},
     };
 
     static constexpr int iterations = 1;

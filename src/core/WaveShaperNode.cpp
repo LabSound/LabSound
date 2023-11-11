@@ -17,8 +17,8 @@
 namespace lab {
 struct OverSamplingArrays
 {
-    std::unique_ptr<AudioFloatArray> m_tempBuffer;
-    std::unique_ptr<AudioFloatArray> m_tempBuffer2;
+    AudioFloatArray m_tempBuffer;
+    AudioFloatArray m_tempBuffer2;
     std::unique_ptr<UpSampler> m_upSampler;
     std::unique_ptr<DownSampler> m_downSampler;
     std::unique_ptr<UpSampler> m_upSampler2;
@@ -28,8 +28,8 @@ static void* createOversamplingArrays()
 {
     struct OverSamplingArrays * osa = new struct OverSamplingArrays;
     int renderQuantumSize = 128;  // from https://www.w3.org/TR/webaudio/#render-quantum-size
-    osa->m_tempBuffer = std::make_unique<AudioFloatArray>(renderQuantumSize * 2);
-    osa->m_tempBuffer2 = std::make_unique<AudioFloatArray>(renderQuantumSize * 4);
+    osa->m_tempBuffer.allocate(renderQuantumSize * 2);
+    osa->m_tempBuffer2.allocate(renderQuantumSize * 4);
     osa->m_upSampler = std::make_unique<UpSampler>(renderQuantumSize);
     osa->m_downSampler = std::make_unique<DownSampler>(renderQuantumSize * 2);
     osa->m_upSampler2 = std::make_unique<UpSampler>(renderQuantumSize * 2);
@@ -114,7 +114,7 @@ void WaveShaperNode::processCurve(const float* source, float* destination, int f
 void WaveShaperNode::processCurve2x(const float * source, float * destination, int framesToProcess)
 {
     struct OverSamplingArrays * osa = (struct OverSamplingArrays *) m_oversamplingArrays;
-    float * tempP = osa->m_tempBuffer->data();
+    float * tempP = osa->m_tempBuffer.data();
 
     osa->m_upSampler->process(source, tempP, framesToProcess);
 
@@ -127,8 +127,8 @@ void WaveShaperNode::processCurve4x(const float * source, float * destination, i
 {
     struct OverSamplingArrays * osa = (struct OverSamplingArrays *) m_oversamplingArrays;
 
-    float * tempP = osa->m_tempBuffer->data();
-    float * tempP2 = osa->m_tempBuffer2->data();
+    float * tempP = osa->m_tempBuffer.data();
+    float * tempP2 = osa->m_tempBuffer2.data();
 
     osa->m_upSampler->process(source, tempP, framesToProcess);
     osa->m_upSampler2->process(tempP, tempP2, framesToProcess * 2);
