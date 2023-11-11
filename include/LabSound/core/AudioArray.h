@@ -17,21 +17,27 @@ class AudioArray
     T * _allocation = nullptr;
     T * _data = nullptr;
     int _size = 0;
+    T _safety;
 
 public:
-    AudioArray() = default;
+    explicit AudioArray()
+    : _allocation(nullptr)
+    , _data(nullptr)
+    , _size(0)
+    , _safety(0) {}
+    
     explicit AudioArray(int n)
     : _allocation(nullptr)
     , _data(nullptr)
-    , _size(-1)
+    , _size(0)
+    , _safety(0)
     {
         allocate(n);
     }
 
     ~AudioArray()
     {
-        if (_allocation)
-            free(_allocation);
+        free(_allocation);
     }
 
     // allocation will realloc if necessary.
@@ -43,19 +49,18 @@ public:
         const uintptr_t mask = ~0xf;
         size_t initialSize = sizeof(T) * n + alignment;
         if (_size != n) {
-            if (_allocation)
-                free(_allocation);
+            free(_allocation);
 
-            if (n) {
+            if (n > 0) {
                 _allocation = static_cast<T*>(calloc(initialSize, 1));
                 _data = (T*)((((intptr_t)_allocation) + (alignment-1)) & mask);
+                _size = n;
             }
             else {
                 _allocation = nullptr;
                 _data = nullptr;
+                _size = 0;
             }
-
-            _size = n;
         }
     }
 
@@ -65,29 +70,40 @@ public:
     // size in samples, not bytes
     int size() const { return _size; }
 
-    T & operator[](size_t i) { return data()[i]; }
+    T & operator[](size_t i) {
+        if (_data)
+            return _data[i];
+        return _safety;
+    }
 
     void zero()
     {
-        memset(data(), 0, sizeof(T) * size());
+        if (_data)
+            memset(_data, 0, sizeof(T) * size());
     }
 
     void zeroRange(unsigned start, unsigned end)
     {
+        if (_data == nullptr || _size <= 0)
+            return;
+        
         bool isSafe = (start <= end) && (end <= (unsigned) size());
         if (!isSafe)
             return;
 
-        memset(data() + start, 0, sizeof(T) * (end - start));
+        memset(_data + start, 0, sizeof(T) * (end - start));
     }
 
     void copyToRange(const T * sourceData, unsigned start, unsigned end)
     {
+        if (_data == nullptr || _size <= 0)
+            return;
+
         bool isSafe = (start <= end) && (end <= (unsigned) size());
         if (!isSafe)
             return;
 
-        memcpy(data() + start, sourceData, sizeof(T) * (end - start));
+        memcpy(_data + start, sourceData, sizeof(T) * (end - start));
     }
 
 };

@@ -29,7 +29,7 @@ AudioBus::AudioBus(int numberOfChannels, int length, bool allocate)
     for (int i = 0; i < numberOfChannels; ++i)
     {
         AudioChannel * newChannel;
-        if (allocate) 
+        if (allocate)
             newChannel = new AudioChannel(length);
         else
             newChannel = new AudioChannel(nullptr, length);

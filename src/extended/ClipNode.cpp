@@ -11,7 +11,6 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/ClipNode.h"
 #include "LabSound/extended/Registry.h"
-
 #include "LabSound/extended/VectorMath.h"
 
 #include <iostream>

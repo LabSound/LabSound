@@ -4,6 +4,7 @@
 #include "LabSound/extended/PolyBLEPNode.h"
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/Registry.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/core/AudioContext.h"
@@ -14,7 +15,6 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "LabSound/extended/VectorMath.h"
 
 #include <algorithm>
 
