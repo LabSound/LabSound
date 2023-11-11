@@ -265,7 +265,8 @@ namespace lab {
                                      buffer + write_index, 1, count);
                 }
 
-                schedule.cursor += count;                
+                schedule.cursor += count;
+                
                 write_index += count;
 
                 if (ending)

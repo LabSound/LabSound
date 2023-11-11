@@ -40,10 +40,10 @@ int main(int argc, char *argv[]) try
     
     Example examples[] = {
 
-        { Passing::pass, Skip::no,  new ex_devices(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_devices(context, NoInput) },
+        { Passing::pass, Skip::no,  new ex_osc_pop(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_play_file(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_simple(context, NoInput) },
-        { Passing::pass, Skip::yes, new ex_osc_pop(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_playback_events(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_offline_rendering(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_tremolo(context, NoInput) },

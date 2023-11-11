@@ -4,17 +4,30 @@
 #include <LabSound/LabSound.h>
 #include <LabSound/extended/FFTFrame.h>
 #include <LabSound/extended/VectorMath.h>
+#include <vector>
 
 using namespace lab;
 
 
-void writeData(const char* path, const float* data, int samples) {
+void writeData(const char* path, const float* data, int stride, int samples) {
     FILE* f = fopen(path, "wb");
     if (f) {
-        fwrite(data, sizeof(float)*samples, 1, f);
-        fclose(f);
+        if (stride == 1) {
+            fwrite(data, sizeof(float)*samples, 1, f);
+            fclose(f);
+        }
+        else {
+            std::vector<float> buff;
+            buff.resize(samples / stride);
+            for (int i = 0, c = 0; i < samples; i += stride, ++c) {
+                buff[c] = data[i];
+            }
+            fwrite(data, sizeof(float)*buff.size(), 1, f);
+            fclose(f);
+        }
     }
 }
+
 std::shared_ptr<AudioBus> makeBus440()
 {
     // Create AudioBus where we'll put the PCM audio data
@@ -34,7 +47,6 @@ std::shared_ptr<AudioBus> makeBus440()
         phase += kPhaseIncrement;
         printf("%f\n", data[i]);
     }
-    writeData("/var/tmp/base440.dat", buff, 44100);
     return audioBus;
 }
 
@@ -228,6 +240,7 @@ int main(int argc, char *argv[]) try
     destinationNode->setChannelCount(outputConfig.desired_channels);
     device->setDestinationNode(destinationNode);
     context->setDestinationNode(destinationNode);
+    device->setContext(context);
  
     // need to hold the bus til the end of the test
     auto bus440 = makeBus440();
@@ -244,8 +257,8 @@ int main(int argc, char *argv[]) try
     device->render(context.get(), nullptr, (int32_t) output_length, audio.data(), nullptr);
     
     verifySame("440", audio.data(), 2, bus440->channel(0)->data(), 1, 1000, 8192);
-    writeData("/var/tmp/foo440.dat", bus440->channel(0)->data(), 44100);
-    writeData("/var/tmp/foo.dat", audio.data(), 44100);
+    writeData("/var/tmp/440reference.dat", bus440->channel(0)->data(), 1, 44100);
+    writeData("/var/tmp/440rendered.dat", audio.data(), 2, 44100);
     ac.backendReinitialize();
 
     // reset the waveform to the beginning
@@ -276,9 +289,8 @@ int main(int argc, char *argv[]) try
     float sample2 = *(audio.data() + 44100/4 + 1000); // a few samples past 1/4 of second
     float sample3 = *(audio.data() + 3*44100/4 - 1000); // a few samples before 3/4 of second
     float sample4 = *(audio.data() + 3*44100/4 + 1000); // a few samples before 3/4 of second
-    writeData("/var/tmp/foo2.dat", audio.data(), 44100);
+    writeData("/var/tmp/foo2.dat", audio.data(), 2, output_length);
     ac.backendReinitialize();
-
 
     // sample1 and 4 should be 0, 2 and 3 should be non-zero.
 

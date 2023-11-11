@@ -52,21 +52,17 @@ typedef struct {
 }
 biquad;
 
-// @todo line these up with the audio node's
-
 /* filter types */
 enum {
-    LPF, /* low pass filter */
-    HPF, /* High pass filter */
-    BPF, /* band pass filter */
-    NOTCH, /* Notch Filter */
-    PEQ, /* Peaking band EQ filter */
-    LSH, /* Low shelf filter */
-    HSH /* High shelf filter */
+    LPF = lab::FilterType::LOWPASS,
+    HPF = lab::FilterType::HIGHPASS,
+    BPF = lab::FilterType::BANDPASS,
+    NCH = lab::FilterType::NOTCH,
+    PEQ = lab::FilterType::PEAKING,
+    LSH = lab::FilterType::LOWSHELF,
+    HSH = lab::FilterType::HIGHSHELF,
 };
 
-
-/* Below this would be biquad.c */
 /* Computes a BiQuad filter on a sample */
 static smp_type BiQuad(smp_type sample, biquad * b)
 {
@@ -136,7 +132,7 @@ static void BiQuad_update(biquad *b,
         a1 = -2 * cs;
         a2 = 1 - alpha;
         break;
-    case NOTCH:
+    case NCH:
         b0 = 1;
         b1 = -2 * cs;
         b2 = 1;
