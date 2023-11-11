@@ -15,7 +15,7 @@
 
 #include "internal/Assertions.h"
 #include "internal/AudioUtilities.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <algorithm>
 //#include <emmintrin.h>

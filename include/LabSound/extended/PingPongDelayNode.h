@@ -30,6 +30,7 @@ class PingPongDelayNode : public Subgraph
 {
     float tempo;
 
+public:
     std::shared_ptr<BPMDelay> leftDelay;
     std::shared_ptr<BPMDelay> rightDelay;
 
@@ -40,7 +41,6 @@ class PingPongDelayNode : public Subgraph
     std::shared_ptr<ChannelMergerNode> merger;
     std::shared_ptr<ChannelSplitterNode> splitter;
 
-public:
     PingPongDelayNode(AudioContext &, float tempo);
 
     void SetTempo(float t);

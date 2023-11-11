@@ -21,7 +21,11 @@ public:
     Panner(const float sampleRate, PanningModel mode) : m_sampleRate(sampleRate) , m_panningModel(mode) {}
     virtual ~Panner() {};
     PanningModel panningModel() const { return m_panningModel; }
-    virtual void pan(ContextRenderLock & r, double azimuth, double elevation, const AudioBus * inputBus, AudioBus * outputBus, int framesToProcess) = 0;
+    virtual void pan(ContextRenderLock & r,
+                     double azimuth, double elevation,
+                     const AudioBus& inputBus, AudioBus& outputBus,
+                     int busOffset,
+                     int framesToProcess) = 0;
     virtual void reset() = 0;
     virtual double tailTime(ContextRenderLock & r) const = 0;
     virtual double latencyTime(ContextRenderLock & r) const = 0;

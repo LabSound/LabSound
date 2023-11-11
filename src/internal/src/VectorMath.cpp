@@ -5,7 +5,7 @@
 #include "LabSound/core/Macros.h"
 #include "internal/Assertions.h"
 
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #if defined(LABSOUND_PLATFORM_OSX)
 #include <Accelerate/Accelerate.h>

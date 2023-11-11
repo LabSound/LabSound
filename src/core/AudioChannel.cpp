@@ -3,7 +3,7 @@
 // Copyright (C) 2015+, The LabSound Authors. All rights reserved.
 
 #include "internal/Assertions.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include "LabSound/core/AudioChannel.h"
 

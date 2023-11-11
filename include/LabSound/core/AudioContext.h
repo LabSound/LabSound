@@ -55,7 +55,6 @@ public:
     {
         friend class AudioContext;
 
-
         int _id = 0;
         AudioContext * _ac = nullptr;
         double _currentTime = 0;

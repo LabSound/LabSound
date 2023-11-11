@@ -29,7 +29,7 @@ class UniformRandomGenerator
     std::random_device rd;
     std::mt19937_64 gen;
     std::uniform_real_distribution<float> dist_full {0.f, 1.f};
-
+    
 public:
     UniformRandomGenerator() : rd(), gen(rd()) {}
     float random_float() { return dist_full(gen); }  // [0.f, 1.f]

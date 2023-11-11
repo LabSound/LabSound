@@ -23,7 +23,7 @@ public:
     AudioHardwareInputNode(AudioContext & ac, AudioSourceProvider * provider_from_context);
     virtual ~AudioHardwareInputNode();
 
-    static const char* static_name() { return "AudioHardwareDevice"; }
+    static const char* static_name() { return "AudioHardwareInputNode"; }
     virtual const char* name() const override { return static_name(); }
     static AudioNodeDescriptor * desc();
 

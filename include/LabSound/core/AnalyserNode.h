@@ -6,6 +6,7 @@
 #define AnalyserNode_h
 
 #include "LabSound/core/AudioBasicInspectorNode.h"
+#include "LabSound/core/AudioNodeDescriptor.h"
 
 namespace lab
 {

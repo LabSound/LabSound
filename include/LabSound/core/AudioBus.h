@@ -14,7 +14,6 @@
 namespace lab
 {
 
-
 using lab::Channel;
 using lab::ChannelInterpretation;
 

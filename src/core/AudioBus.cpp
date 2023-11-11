@@ -5,7 +5,7 @@
 #include "LabSound/core/AudioBus.h"
 #include "internal/Assertions.h"
 #include "internal/DenormalDisabler.h"
-#include "internal/VectorMath.h"
+#include "LabSound/extended/VectorMath.h"
 #include "libsamplerate/include/samplerate.h"
 
 #include <algorithm>

@@ -23,15 +23,15 @@ protected:
     virtual double tailTime(ContextRenderLock & r) const override { return 0; }
     virtual double latencyTime(ContextRenderLock & r) const override { return 0; }
 
-    AudioContext * m_context;
+    AudioContext * m_context = nullptr;
 
     // Platform specific implementation
     std::unique_ptr<AudioDevice> m_platformAudioDevice;
-    AudioHardwareInput * m_audioHardwareInput{nullptr};
-    SamplingInfo last_info;
+    AudioHardwareInput * m_audioHardwareInput = nullptr;
+    SamplingInfo last_info = {};
 
-    const AudioStreamConfig outConfig;
-    const AudioStreamConfig inConfig;
+    const AudioStreamConfig outConfig = {};
+    const AudioStreamConfig inConfig = {};
 
 public:
     AudioHardwareDeviceNode(AudioContext & context, 

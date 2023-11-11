@@ -64,7 +64,6 @@ namespace lab
         const AudioStreamConfig & outputConfig, 
         const AudioStreamConfig & inputConfig);
 
-    /// @deprecated
     std::unique_ptr<AudioContext> MakeOfflineAudioContext(
         const AudioStreamConfig & offlineConfig,
         double recordTimeMilliseconds);
