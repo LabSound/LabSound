@@ -6,9 +6,7 @@
 #define WaveShaperNode_h
 
 #include "LabSound/core/AudioNode.h"
-//#include <vector>
-//#include "../src/internal/UpSampler.h" //ouch..how to hide internal from calling application?
-//#include "../src/internal/DownSampler.h"
+#include <mutex>
 
 namespace lab {
 enum OverSampleType
@@ -38,15 +36,18 @@ public:
 
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
-    virtual void reset(ContextRenderLock&) override {}
+    virtual void reset(ContextRenderLock &) override {}
 
 protected:
     void processCurve(const float * source, float * destination, int framesToProcess);
     virtual double tailTime(ContextRenderLock& r) const override { return 0.; }
     virtual double latencyTime(ContextRenderLock& r) const override { return 0.; }
 
+    std::mutex _curveMutex;
+    
     std::vector<float> m_curve;
-    std::vector<float>* m_newCurve = nullptr;
+    std::vector<float> m_newCurve;
+    bool _newCurveReady = false;
 
     // Oversampling.
     void * m_oversamplingArrays = nullptr;

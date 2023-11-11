@@ -9,7 +9,6 @@
 #include "internal/Assertions.h"
 #include <algorithm>
 #include <memory>
-#include <mutex>
 #include <vector>
 #include "internal/UpSampler.h" //ouch..how to hide internal from calling application?
 #include "internal/DownSampler.h"
@@ -60,26 +59,14 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & de
 
 WaveShaperNode::~WaveShaperNode()
 {
-    if (m_newCurve)
-    {
-        // @TODO mutex
-        delete m_newCurve;
-    }
-    if (m_oversamplingArrays) delete m_oversamplingArrays;
+    delete (OverSamplingArrays*) m_oversamplingArrays;
 }
 
 void WaveShaperNode::setCurve(std::vector<float> & curve)
 {
-    std::vector<float>* new_curve = new std::vector<float>();
-    *new_curve = curve;
-    if (m_newCurve)
-    {
-        // @TODO mutex
-        std::vector<float>* x = nullptr;
-        std::swap(x, m_newCurve);
-        delete x;
-    }
-    m_newCurve = new_curve;
+    std::lock_guard<std::mutex> lock(_curveMutex);
+    m_newCurve = curve;
+    _newCurveReady = true;
 }
 
 void WaveShaperNode::processCurve(const float* source, float* destination, int framesToProcess)
@@ -113,7 +100,7 @@ void WaveShaperNode::processCurve(const float* source, float* destination, int f
 // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/Modules/webaudio/WaveShaperDSPKernel.cpp
 void WaveShaperNode::processCurve2x(const float * source, float * destination, int framesToProcess)
 {
-    struct OverSamplingArrays * osa = (struct OverSamplingArrays *) m_oversamplingArrays;
+    OverSamplingArrays * osa = (OverSamplingArrays *) m_oversamplingArrays;
     float * tempP = osa->m_tempBuffer.data();
 
     osa->m_upSampler->process(source, tempP, framesToProcess);
@@ -123,9 +110,10 @@ void WaveShaperNode::processCurve2x(const float * source, float * destination, i
 
     osa->m_downSampler->process(tempP, destination, framesToProcess * 2);
 }
+
 void WaveShaperNode::processCurve4x(const float * source, float * destination, int framesToProcess)
 {
-    struct OverSamplingArrays * osa = (struct OverSamplingArrays *) m_oversamplingArrays;
+    OverSamplingArrays * osa = (OverSamplingArrays *) m_oversamplingArrays;
 
     float * tempP = osa->m_tempBuffer.data();
     float * tempP2 = osa->m_tempBuffer2.data();
@@ -142,13 +130,12 @@ void WaveShaperNode::processCurve4x(const float * source, float * destination, i
 
 void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
 {
-    if (m_newCurve)
+    if (_newCurveReady)
     {
-        // @TODO mutex
-        std::vector<float>* x = nullptr;
-        std::swap(x, m_newCurve);
-        m_curve = *x;
-        delete x;
+        // this could cause a pop, but setting a curve should be extremely rare
+        std::lock_guard<std::mutex> lock(_curveMutex);
+        std::swap(m_curve, m_newCurve);
+        _newCurveReady = false;
     }
 
     AudioBus* destinationBus = output(0)->bus(r);
