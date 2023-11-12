@@ -183,7 +183,7 @@ void AudioDevice_RtAudio::createContext()
 AudioDevice_RtAudio::AudioDevice_RtAudio(
     const AudioStreamConfig & _inputConfig,
     const AudioStreamConfig & _outputConfig)
-    : AudioDevice(_inputConfig, _outputConfig)
+: AudioDevice(_inputConfig, _outputConfig)
 {
     createContext();
 }

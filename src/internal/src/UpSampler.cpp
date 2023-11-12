@@ -110,7 +110,7 @@ void UpSampler::process(const float* sourceP, float* destP, size_t sourceFramesT
     float* oddSamplesP = m_tempBuffer.data();
     m_convolver.process(&m_kernel, sourceP, oddSamplesP, sourceFramesToProcess);
 
-    for (unsigned i = 0; i < sourceFramesToProcess; ++i)
+    for (unsigned i = 0; i < sourceFramesToProcess - 1; ++i)
         destP[i * 2 + 1] = oddSamplesP[i];
 
     // Copy 2nd half of input buffer to 1st half.

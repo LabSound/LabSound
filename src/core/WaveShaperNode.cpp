@@ -23,6 +23,7 @@ struct OverSamplingArrays
     std::unique_ptr<UpSampler> m_upSampler2;
     std::unique_ptr<DownSampler> m_downSampler2;
 };
+
 static void* createOversamplingArrays()
 {
     struct OverSamplingArrays * osa = new struct OverSamplingArrays;
@@ -35,6 +36,7 @@ static void* createOversamplingArrays()
     osa->m_downSampler2 = std::make_unique<DownSampler>(renderQuantumSize * 4);
     return (void *) osa;
 }
+
 AudioNodeDescriptor * WaveShaperNode::desc()
 {
     static AudioNodeDescriptor d {nullptr, nullptr, 1};

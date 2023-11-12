@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) try
         delete example.example;
     }
     
-    // device, context, and rendernode are cicrularly referenced, so break the cycle manually.
+    // device, context, and rendernode are circularly referenced, so break the cycle manually.
     destinationNode.reset();
     device->setDestinationNode(destinationNode);
     context->setDestinationNode(destinationNode);

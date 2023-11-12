@@ -129,7 +129,7 @@ HRTFDatabaseLoader* HRTFDatabaseLoader::MakeHRTFLoaderSingleton(float sampleRate
         s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
         // s_loader->loadAsynchronously();
     }
-    if (s_loader && !s_loader->database() || !s_loader->database()->files_found_and_loaded())
+    if (s_loader && (!s_loader->database() || !s_loader->database()->files_found_and_loaded()))
     {
         s_loader = new HRTFDatabaseLoader(sampleRate, searchPath);
     }

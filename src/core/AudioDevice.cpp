@@ -17,12 +17,6 @@
 using namespace lab;
 
 
-AudioNodeDescriptor * AudioDestinationNode::desc()
-{
-    static AudioNodeDescriptor d {nullptr, nullptr};
-    return &d;
-}
-
 
 void lab::pull_graph(
         AudioContext * ctx,
@@ -98,10 +92,17 @@ void lab::pull_graph(
 
 namespace lab {
 
+
+AudioNodeDescriptor * AudioDestinationNode::desc()
+{
+    static AudioNodeDescriptor d {nullptr, nullptr, 2};
+    return &d;
+}
+
 AudioDestinationNode::AudioDestinationNode(
     AudioContext& ac,
     std::shared_ptr<AudioDevice> device)
-: AudioNode(ac, *desc())
+: AudioNode(ac, {nullptr, nullptr, (int) device->getOutputConfig().desired_channels})
 , _context(&ac)
 , _platformAudioDevice(device)
 {
@@ -111,10 +112,6 @@ AudioDestinationNode::AudioDestinationNode(
     // Node-specific default mixing rules.
     _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Speakers;
-
-    int numChannels = _platformAudioDevice->getOutputConfig().desired_channels;
-    ContextGraphLock glock(&ac, "AudioDestinationNode");
-    AudioNode::setChannelCount(glock, numChannels);
 
     // Info is provided by the backend every frame, but some nodes need to be constructed
     // with a valid sample rate before the first frame so we make our best guess here
