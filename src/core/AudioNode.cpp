@@ -17,10 +17,7 @@
 using namespace std;
 
 //#define ASN_PRINT(...)
-#define ASN_PRINT(a) printf(a)
-
-
-
+#define ASN_PRINT(a) printf("Scheduler: %s", (a))
 
 namespace lab
 {
@@ -323,8 +320,7 @@ AudioSettingDescriptor const * const AudioNodeDescriptor::setting(char const * c
 AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
     : _self(new Internal(ac))
 {
-    if (desc.params)
-    {
+    if (desc.params) {
         AudioParamDescriptor const * i = desc.params;
         while (i->name)
         {
@@ -332,14 +328,19 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
             ++i;
         }
     }
-    if (desc.settings)
-    {
+    if (desc.settings) {
         AudioSettingDescriptor const * i = desc.settings;
         while (i->name)
         {
             _self->_settings.push_back(std::make_shared<AudioSetting>(i));
             ++i;
         }
+    }
+    
+    int c = desc.initialChannelCount;
+    if (c > 0) {
+        addOutput(std::unique_ptr<AudioNodeOutput>(
+                    new AudioNodeOutput(this, c)));
     }
 }
 

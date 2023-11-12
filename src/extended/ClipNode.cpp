@@ -36,7 +36,7 @@ static AudioSettingDescriptor s_cnSettings[] = {{"mode", "MODE", SettingType::En
 
 AudioNodeDescriptor * ClipNode::desc()
 {
-    static AudioNodeDescriptor d {s_cnParams, s_cnSettings};
+    static AudioNodeDescriptor d {s_cnParams, s_cnSettings, 0};
     return &d;
 }
 
@@ -138,7 +138,7 @@ public:
 /////////////////////
 
 ClipNode::ClipNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+: lab::AudioBasicProcessorNode(ac, *desc())
 {
     internalNode = new ClipNodeInternal(this);
     internalNode->aVal = param("a");

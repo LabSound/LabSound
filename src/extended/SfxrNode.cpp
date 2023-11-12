@@ -627,7 +627,7 @@ static AudioSettingDescriptor s_sfxSettings[] = {
 
 AudioNodeDescriptor * SfxrNode::desc()
 {
-    static AudioNodeDescriptor d {s_sfxParams, s_sfxSettings};
+    static AudioNodeDescriptor d {s_sfxParams, s_sfxSettings, 1};
     return &d;
 }
 
@@ -635,9 +635,6 @@ SfxrNode::SfxrNode(AudioContext & ac)
     : AudioScheduledSourceNode(ac, *desc())
     , sfxr(new SfxrNode::Sfxr())
 {
-    // Output is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
     _preset = setting("preset");
     _waveType = setting("waveType");
     _attack = param("attack");

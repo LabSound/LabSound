@@ -21,17 +21,15 @@ static AudioParamDescriptor s_constantFilterParams[] = {
     nullptr};
 AudioNodeDescriptor * ConstantSourceNode::desc()
 {
-    static AudioNodeDescriptor d {s_constantFilterParams, nullptr};
+    static AudioNodeDescriptor d {s_constantFilterParams, nullptr, 1};
     return &d;
 }
 
 ConstantSourceNode::ConstantSourceNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac, *desc())
-    , m_sampleAccurateOffsetValues(AudioNode::ProcessingSizeInFrames)
+: AudioScheduledSourceNode(ac, *desc())
+, m_sampleAccurateOffsetValues(AudioNode::ProcessingSizeInFrames)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
-
     m_offset = param("offset");
     m_offset->setValue(1.0f);
     initialize();

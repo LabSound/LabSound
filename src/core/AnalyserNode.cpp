@@ -38,7 +38,7 @@ static AudioSettingDescriptor s_AnalyserSettings[] = {
 
 AudioNodeDescriptor * AnalyserNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_AnalyserSettings};
+    static AudioNodeDescriptor d {nullptr, s_AnalyserSettings, 1};
     return &d;
 }
 
@@ -87,14 +87,14 @@ void AnalyserNode::shared_construction(int fftSize)
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac, int fftSize)
-    : AudioBasicInspectorNode(ac, *desc(), 1)
+: AudioBasicInspectorNode(ac, *desc())
 {
     shared_construction(fftSize);
     initialize();
 }
 
 AnalyserNode::AnalyserNode(AudioContext & ac)
-    : AudioBasicInspectorNode(ac, *desc(), 1)
+: AudioBasicInspectorNode(ac, *desc())
 {
     shared_construction(1024u);
     initialize();

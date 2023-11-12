@@ -83,13 +83,13 @@ namespace lab {
     
     AudioNodeDescriptor * SampledAudioNode::desc()
     {
-        static AudioNodeDescriptor d = {s_saParams, s_saSettings};
+        static AudioNodeDescriptor d = {s_saParams, s_saSettings, 2};
         return &d;
     }
 
     SampledAudioNode::SampledAudioNode(AudioContext& ac)
-        : AudioScheduledSourceNode(ac, *desc())
-        , _internals(new Internals(ac))
+    : AudioScheduledSourceNode(ac, *desc())
+    , _internals(new Internals(ac))
     {
         m_sourceBus = setting("sourceBus");
         m_playbackRate = param("playbackRate");
@@ -100,9 +100,6 @@ namespace lab {
             this->_internals->bus_setting_updated = true;
         });
  
-        // Default to a single stereo output, per ABSN. A call to setBus() will set the number of output channels to that of the bus.
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
-
         initialize();
     }
 

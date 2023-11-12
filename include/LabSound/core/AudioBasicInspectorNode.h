@@ -25,7 +25,7 @@ namespace lab
 class AudioBasicInspectorNode : public AudioNode
 {
 public:
-    AudioBasicInspectorNode(AudioContext & ac, AudioNodeDescriptor const & desc, int outputChannelCount);
+    AudioBasicInspectorNode(AudioContext & ac, AudioNodeDescriptor const & desc);
     virtual ~AudioBasicInspectorNode() = default;
 };
 

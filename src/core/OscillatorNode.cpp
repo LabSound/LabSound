@@ -63,14 +63,14 @@ static AudioSettingDescriptor s_osDesc[] = {
 
 AudioNodeDescriptor * OscillatorNode::desc()
 {
-    static AudioNodeDescriptor d {s_opDesc, s_osDesc};
+    static AudioNodeDescriptor d {s_opDesc, s_osDesc, 1};
     return &d;
 }
 
 OscillatorNode::OscillatorNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac, *desc())
-    , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
-    , m_detuneValues(AudioNode::ProcessingSizeInFrames)
+: AudioScheduledSourceNode(ac, *desc())
+, m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
+, m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
     m_frequency = param("frequency");
     m_detune = param("detune");
@@ -81,9 +81,6 @@ OscillatorNode::OscillatorNode(AudioContext & ac)
     m_type->setValueChanged([this]() { setType(OscillatorType(m_type->valueUint32())); });
 
     setType(OscillatorType::SINE);
-
-    // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

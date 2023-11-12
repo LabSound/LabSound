@@ -37,7 +37,7 @@ static AudioParamDescriptor s_pcParams[] = {
     
 AudioNodeDescriptor * PeakCompNode::desc()
 {
-    static AudioNodeDescriptor d {s_pcParams, nullptr};
+    static AudioNodeDescriptor d {s_pcParams, nullptr, 1};
     return &d;
 }
 
@@ -260,7 +260,7 @@ std::shared_ptr<AudioParam> PeakCompNode::knee() const
 /////////////////////////
 
 PeakCompNode::PeakCompNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+: lab::AudioBasicProcessorNode(ac, *desc())
 {
     m_processor.reset(new PeakCompNodeInternal());
 

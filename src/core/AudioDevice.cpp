@@ -121,8 +121,6 @@ AudioDestinationNode::AudioDestinationNode(
     _last_info = {};
     _last_info.sampling_rate = _platformAudioDevice->getOutputConfig().desired_samplerate;
 
-    // addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, numChannels)));
-
     initialize();
 }
 

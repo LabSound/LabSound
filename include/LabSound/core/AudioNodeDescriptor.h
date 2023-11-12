@@ -11,8 +11,9 @@ struct AudioParamDescriptor;
 struct AudioSettingDescriptor;
 struct AudioNodeDescriptor
 {
-    AudioParamDescriptor * params;
-    AudioSettingDescriptor * settings;
+    AudioParamDescriptor * params = nullptr;
+    AudioSettingDescriptor * settings = nullptr;
+    int initialChannelCount = 0;
 
     AudioParamDescriptor const * const param(char const * const) const;
     AudioSettingDescriptor const * const setting(char const * const) const;

@@ -104,12 +104,12 @@ lab::AudioSettingDescriptor s_cSettings[] = {{"normalize", "NRML", SettingType::
                                              {"impulseResponse", "IMPL", SettingType::Bus}, nullptr};
 AudioNodeDescriptor * ConvolverNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_cSettings};
+    static AudioNodeDescriptor d {nullptr, s_cSettings, 1};
     return &d;
 }
 
 ConvolverNode::ConvolverNode(AudioContext& ac)
-    : AudioScheduledSourceNode(ac, *desc())
+: AudioScheduledSourceNode(ac, *desc())
 {
     _swap_ready = false;
 
@@ -118,7 +118,6 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
     _impulseResponseClip = setting("impulseResponse");
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 0)));
 
     lab::sp_create(&_sp);
 

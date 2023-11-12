@@ -18,7 +18,7 @@ namespace lab
 
 AudioNodeDescriptor * PWMNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 1 };
     return &d;
 }
 
@@ -76,7 +76,7 @@ public:
 ////////////////////
 
 PWMNode::PWMNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+: lab::AudioBasicProcessorNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
     m_processor.reset(new PWMNodeInternal());

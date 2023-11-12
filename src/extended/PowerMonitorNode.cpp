@@ -19,12 +19,12 @@ static AudioSettingDescriptor s_pmSettings[] = {{"windowSize", "WNSZ", SettingTy
 
 AudioNodeDescriptor * PowerMonitorNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_pmSettings};
+    static AudioNodeDescriptor d {nullptr, s_pmSettings, 0};
     return &d;
 }
 
 PowerMonitorNode::PowerMonitorNode(AudioContext & ac)
-    : AudioBasicInspectorNode(ac, *desc(), 2)
+    : AudioBasicInspectorNode(ac, *desc())
     , _db(0)
 {
     _windowSize = setting("windowSize");

@@ -37,7 +37,7 @@ static void* createOversamplingArrays()
 }
 AudioNodeDescriptor * WaveShaperNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 1};
     return &d;
 }
     
@@ -45,7 +45,6 @@ WaveShaperNode::WaveShaperNode(AudioContext& ac)
 : AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
     
@@ -53,7 +52,6 @@ WaveShaperNode::WaveShaperNode(AudioContext & ac, AudioNodeDescriptor const & de
 : AudioNode(ac, desc)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

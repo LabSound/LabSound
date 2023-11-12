@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_microphone_loopback(context, UseInput) },
         { Passing::pass, Skip::yes, new ex_microphone_reverb(context, UseInput) },
         { Passing::pass, Skip::yes, new ex_peak_compressor(context, NoInput) },
-        { Passing::pass, Skip::yes, new ex_stereo_panning(context, NoInput) },
+        { Passing::pass, Skip::no,  new ex_stereo_panning(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_hrtf_spatialization(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_convolution_reverb(context, NoInput) }, // note: exhibits severe popping
         { Passing::pass, Skip::yes, new ex_misc(context, NoInput) },

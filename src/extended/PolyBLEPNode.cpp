@@ -390,7 +390,7 @@ static AudioSettingDescriptor s_pbSettings[] = {{"type", "TYPE", SettingType::En
 
 AudioNodeDescriptor * PolyBLEPNode::desc()
 {
-    static AudioNodeDescriptor d {s_pbParams, s_pbSettings};
+    static AudioNodeDescriptor d {s_pbParams, s_pbSettings, 1};
     return &d;
 }
 
@@ -404,9 +404,6 @@ PolyBLEPNode::PolyBLEPNode(AudioContext & ac)
     m_type->setValueChanged([this]() { 
         setType(PolyBLEPType(m_type->valueUint32())); 
     });
-
-    // An oscillator is always mono.
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     polyblep.reset(new PolyBlepImpl(ac.sampleRate()));
     setType(PolyBLEPType::TRIANGLE);

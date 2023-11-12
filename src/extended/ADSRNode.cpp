@@ -31,7 +31,7 @@ namespace lab
 
     AudioNodeDescriptor * ADSRNode::desc()
     {
-        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings};
+        static AudioNodeDescriptor d {s_adsrParams, s_adsrSettings, 1};
         return &d;
     }
 
@@ -190,7 +190,6 @@ namespace lab
         , adsr_impl(new ADSRNodeImpl)
     {
         addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-        addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
         
         adsr_impl->m_gate = param("gate");
 

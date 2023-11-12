@@ -246,7 +246,7 @@ static AudioParamDescriptor s_spParams[] = {
 
 AudioNodeDescriptor * StereoPannerNode::desc()
 {
-    static AudioNodeDescriptor d {s_spParams, nullptr};
+    static AudioNodeDescriptor d {s_spParams, nullptr, 2};
     return &d;
 }
 
@@ -256,7 +256,6 @@ StereoPannerNode::StereoPannerNode(AudioContext& ac)
     m_sampleAccuratePanValues.reset(new AudioFloatArray(AudioNode::ProcessingSizeInFrames));
 
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
     m_stereoPanner.reset(new Spatializer(ac.sampleRate(), Spatializer::PanningModelEqualPower));
 

@@ -18,16 +18,15 @@ namespace lab
 
 AudioNodeDescriptor * ChannelMergerNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 0};
     return &d;
 }
 
 ChannelMergerNode::ChannelMergerNode(AudioContext & ac, int numberOfInputs_)
-    : AudioNode(ac, *desc())
-    , m_desiredNumberOfOutputChannels(numberOfInputs_)
+: AudioNode(ac, *desc())
+, m_desiredNumberOfOutputChannels(numberOfInputs_)
 {
     addInputs(numberOfInputs_);
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

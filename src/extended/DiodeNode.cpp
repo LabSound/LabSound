@@ -21,12 +21,12 @@ AudioSettingDescriptor s_dSettings[] = {
 
 AudioNodeDescriptor * DiodeNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_dSettings};
+    static AudioNodeDescriptor d {nullptr, s_dSettings, 0};
     return &d;
 }
 
 DiodeNode::DiodeNode(AudioContext & ac)
-    : WaveShaperNode(ac, *desc())
+: WaveShaperNode(ac, *desc())
 {
     _distortion = setting("distortion");
     _vb = setting("vb");

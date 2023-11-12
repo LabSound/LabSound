@@ -14,10 +14,9 @@ namespace lab
 {
 
 AudioBasicProcessorNode::AudioBasicProcessorNode(AudioContext & ac, AudioNodeDescriptor const& desc)
-    : AudioNode(ac, desc)
+: AudioNode(ac, desc)
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
 
     // The subclass must create m_processor.
 }

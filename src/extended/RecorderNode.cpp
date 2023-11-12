@@ -16,7 +16,7 @@ using namespace lab;
 
 AudioNodeDescriptor * RecorderNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d { nullptr, nullptr, 1 };
     return &d;
 }
 
@@ -28,7 +28,6 @@ RecorderNode::RecorderNode(AudioContext& r, int channelCount)
     _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 
@@ -40,7 +39,6 @@ RecorderNode::RecorderNode(AudioContext & ac, const AudioStreamConfig & outConfi
     _self->m_channelCountMode = ChannelCountMode::Explicit;
     _self->m_channelInterpretation = ChannelInterpretation::Discrete;
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

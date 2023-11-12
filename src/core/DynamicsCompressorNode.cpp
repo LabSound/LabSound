@@ -30,15 +30,14 @@ static AudioParamDescriptor s_dcParams[] = {
 
 AudioNodeDescriptor * DynamicsCompressorNode::desc()
 {
-    static AudioNodeDescriptor d {s_dcParams, nullptr};
+    static AudioNodeDescriptor d {s_dcParams, nullptr, 2};
     return &d;
 }
 
 DynamicsCompressorNode::DynamicsCompressorNode(AudioContext& ac)
-    : AudioNode(ac, *desc())
+: AudioNode(ac, *desc())
 {
     addInput(std::unique_ptr<AudioNodeInput>(new AudioNodeInput(this)));
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 2)));
 
     m_threshold = param("threshold");
     m_knee = param("knee");

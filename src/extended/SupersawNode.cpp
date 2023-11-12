@@ -12,6 +12,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/extended/SupersawNode.h"
 #include "LabSound/extended/Registry.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <cfloat>
 
@@ -31,7 +32,7 @@ static AudioSettingDescriptor s_ssSettings[] = {{"sawCount", "SAWC", SettingType
 
 AudioNodeDescriptor * SupersawNode::desc()
 {
-    static AudioNodeDescriptor d {s_ssParams, s_ssSettings};
+    static AudioNodeDescriptor d {s_ssParams, s_ssSettings, 1};
     return &d;
 }
 
@@ -138,15 +139,13 @@ private:
 //////////////////////////
 
 SupersawNode::SupersawNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac, *desc())
+: AudioScheduledSourceNode(ac, *desc())
 {
     internalNode.reset(new SupersawNodeInternal(ac));
     internalNode->sawCount = setting("sawCount");
     internalNode->sawCount->setUint32(1);
     internalNode->detune = param("detune");
     internalNode->frequency = param("frequency");
-
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));
     initialize();
 }
 

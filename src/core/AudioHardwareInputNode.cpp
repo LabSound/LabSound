@@ -20,16 +20,15 @@ namespace lab
 
 AudioNodeDescriptor * AudioHardwareInputNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr};
+    static AudioNodeDescriptor d {nullptr, nullptr, 1};
     return &d;
 }
 
-AudioHardwareInputNode::AudioHardwareInputNode(
-    AudioContext & ac, AudioSourceProvider * audioSourceProvider)
+AudioHardwareInputNode::AudioHardwareInputNode(AudioContext & ac,
+                                               AudioSourceProvider * audioSourceProvider)
 : AudioNode(ac, *desc())
 , m_audioSourceProvider(audioSourceProvider)
 {
-    addOutput(std::unique_ptr<AudioNodeOutput>(new AudioNodeOutput(this, 1)));  // Num output channels will be re-configured in process
     initialize();
 }
 
