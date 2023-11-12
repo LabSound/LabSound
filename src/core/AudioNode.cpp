@@ -337,10 +337,10 @@ AudioNode::AudioNode(AudioContext & ac, AudioNodeDescriptor const & desc)
         }
     }
     
-    int c = desc.initialChannelCount;
-    if (c > 0) {
+    _self->m_channelCount = desc.initialChannelCount;
+    if (_self->m_channelCount > 0) {
         addOutput(std::unique_ptr<AudioNodeOutput>(
-                    new AudioNodeOutput(this, c)));
+                    new AudioNodeOutput(this, _self->m_channelCount)));
     }
 }
 
@@ -423,6 +423,9 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
 
 int AudioNode::channelCount()
 {
+    if (_self->m_channelCount == 0) {
+        printf("WUY\n");
+    }
     ASSERT(_self->m_channelCount != 0);
     return _self->m_channelCount;
 }
