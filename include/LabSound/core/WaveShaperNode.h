@@ -33,7 +33,6 @@ public:
     void setOversample(OverSampleType oversample) { m_oversample = oversample; }
     OverSampleType oversample() const { return m_oversample; }
 
-
     // AudioNode
     virtual void process(ContextRenderLock &, int bufferSize) override;
     virtual void reset(ContextRenderLock &) override {}
@@ -56,8 +55,7 @@ protected:
     // Use up-sampling, process at the higher sample-rate, then down-sample.
     void processCurve2x(const float * source, float * dest, int framesToProcess);
     void processCurve4x(const float * source, float * dest, int framesToProcess);
-
-    };
+};
 
 }  // namespace lab
 

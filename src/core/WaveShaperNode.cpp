@@ -16,24 +16,24 @@
 namespace lab {
 struct OverSamplingArrays
 {
-    AudioFloatArray m_tempBuffer;
-    AudioFloatArray m_tempBuffer2;
-    std::unique_ptr<UpSampler> m_upSampler;
-    std::unique_ptr<DownSampler> m_downSampler;
-    std::unique_ptr<UpSampler> m_upSampler2;
-    std::unique_ptr<DownSampler> m_downSampler2;
+    std::shared_ptr<AudioFloatArray> m_tempBuffer;
+    std::shared_ptr<AudioFloatArray> m_tempBuffer2;
+    std::shared_ptr<UpSampler> m_upSampler;
+    std::shared_ptr<DownSampler> m_downSampler;
+    std::shared_ptr<UpSampler> m_upSampler2;
+    std::shared_ptr<DownSampler> m_downSampler2;
 };
 
 static void* createOversamplingArrays()
 {
     struct OverSamplingArrays * osa = new struct OverSamplingArrays;
     int renderQuantumSize = 128;  // from https://www.w3.org/TR/webaudio/#render-quantum-size
-    osa->m_tempBuffer.allocate(renderQuantumSize * 2);
-    osa->m_tempBuffer2.allocate(renderQuantumSize * 4);
-    osa->m_upSampler = std::make_unique<UpSampler>(renderQuantumSize);
-    osa->m_downSampler = std::make_unique<DownSampler>(renderQuantumSize * 2);
-    osa->m_upSampler2 = std::make_unique<UpSampler>(renderQuantumSize * 2);
-    osa->m_downSampler2 = std::make_unique<DownSampler>(renderQuantumSize * 4);
+    osa->m_tempBuffer = std::make_shared<AudioFloatArray>(renderQuantumSize * 2);
+    osa->m_tempBuffer2 = std::make_shared<AudioFloatArray>(renderQuantumSize * 4);
+    osa->m_upSampler = std::make_shared<UpSampler>(renderQuantumSize);
+    osa->m_downSampler = std::make_shared<DownSampler>(renderQuantumSize * 2);
+    osa->m_upSampler2 = std::make_shared<UpSampler>(renderQuantumSize * 2);
+    osa->m_downSampler2 = std::make_shared<DownSampler>(renderQuantumSize * 4);
     return (void *) osa;
 }
 
@@ -101,7 +101,10 @@ void WaveShaperNode::processCurve(const float* source, float* destination, int f
 void WaveShaperNode::processCurve2x(const float * source, float * destination, int framesToProcess)
 {
     OverSamplingArrays * osa = (OverSamplingArrays *) m_oversamplingArrays;
-    float * tempP = osa->m_tempBuffer.data();
+    
+    auto hold_buffer_pointer = osa->m_tempBuffer;
+    auto hold_sampler = osa->m_upSampler;
+    float * tempP = osa->m_tempBuffer->data();
 
     osa->m_upSampler->process(source, tempP, framesToProcess);
 
@@ -115,8 +118,14 @@ void WaveShaperNode::processCurve4x(const float * source, float * destination, i
 {
     OverSamplingArrays * osa = (OverSamplingArrays *) m_oversamplingArrays;
 
-    float * tempP = osa->m_tempBuffer.data();
-    float * tempP2 = osa->m_tempBuffer2.data();
+    auto hold_buffer_pointer = osa->m_tempBuffer;
+    auto hold_buffer_pointer2 = osa->m_tempBuffer2;
+    auto hold_sampler = osa->m_upSampler;
+    auto hold_sampler2 = osa->m_upSampler2;
+
+    
+    float * tempP = osa->m_tempBuffer->data();
+    float * tempP2 = osa->m_tempBuffer2->data();
 
     osa->m_upSampler->process(source, tempP, framesToProcess);
     osa->m_upSampler2->process(tempP, tempP2, framesToProcess * 2);
