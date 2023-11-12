@@ -6,12 +6,12 @@
 #include "LabSound/backends/AudioDevice_Miniaudio.h"
 
 #include "internal/Assertions.h"
-#include "internal/VectorMath.h"
 
 #include "LabSound/core/AudioDevice.h"
 #include "LabSound/core/AudioNode.h"
 
 #include "LabSound/extended/Logging.h"
+#include "LabSound/extended/VectorMath.h"
 
 #include <assert.h>
 
