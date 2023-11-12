@@ -65,7 +65,8 @@ public:
     // recent set request in order that the interface work in a predictable way.
     // In the future, setBus and getBus could be deprecated in favor of another
     // schedule method that takes a source bus as an argument.
-    void setBus(ContextRenderLock&, std::shared_ptr<AudioBus> sourceBus);
+    void setBus(ContextRenderLock&, std::shared_ptr<AudioBus> sourceBus); // deprecated
+    void setBus(std::shared_ptr<AudioBus> sourceBus);
     std::shared_ptr<AudioBus> getBus() const { return m_pendingSourceBus; }
 
     // loopCount of -1 will loop forever

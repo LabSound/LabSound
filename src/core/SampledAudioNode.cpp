@@ -24,7 +24,7 @@ namespace lab {
 
     /*
     * outputs silence when no source bus is playing
-    * overall playing state govered by audioscheduledsourcenode
+    * overall playing state governed by audioscheduledsourcenode
     * onended is dispatched both when the node is stopped, and when the end of a buffer is reached
     * start/stop(when)
      */
@@ -99,7 +99,7 @@ namespace lab {
         m_sourceBus->setValueChanged([this]() {
             this->_internals->bus_setting_updated = true;
         });
- 
+
         initialize();
     }
 
@@ -119,7 +119,7 @@ namespace lab {
         _internals->incoming.enqueue({ 0., 0,0,0, -2 });
     }
 
-    void SampledAudioNode::setBus(ContextRenderLock& r, std::shared_ptr<AudioBus> sourceBus)
+    void SampledAudioNode::setBus(std::shared_ptr<AudioBus> sourceBus)
     {
         // loop count of -3 means set the bus.
         _internals->incoming.enqueue({ 0, 0, 0, 0, -3, sourceBus });
@@ -129,6 +129,10 @@ namespace lab {
         // the value last scheduled. This eliminates a confusing sitatuion where getBus
         // will not be useful until the scheduling queue is serviced
         m_pendingSourceBus = sourceBus;
+    }
+    
+    void SampledAudioNode::setBus(ContextRenderLock&, std::shared_ptr<AudioBus> sourceBus) {
+        setBus(sourceBus);
     }
 
     void SampledAudioNode::start(float when)
@@ -328,7 +332,8 @@ namespace lab {
                 {
                     float* buffer = dstBus->channel(i)->mutableData();
                     VectorMath::vadd(srcBus->channel(i)->data() + schedule.cursor, 1, 
-                                     buffer + write_index, 1, buffer + write_index, 1, count);
+                                     buffer + write_index, 1,
+                                     buffer + write_index, 1, count);
                 }
 
                 schedule.cursor += count;
@@ -442,7 +447,6 @@ namespace lab {
         dstBus->clearSilentFlag();
         return true;
     }
-
 
     void SampledAudioNode::process(ContextRenderLock& r, int framesToProcess)
     {

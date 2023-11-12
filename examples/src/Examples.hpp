@@ -58,7 +58,7 @@ struct ex_simple : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(_context.get(), "ex_simple");
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
         }
         //ac.connect(ac.destinationNode(), musicClipNode, 0, 0);
         musicClipNode->schedule(0.0);
@@ -110,7 +110,7 @@ struct ex_play_file : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_simple");
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
         }
         musicClipNode->schedule(0.0);
 
@@ -215,7 +215,7 @@ struct ex_playback_events : public labsound_example
         auto sampledAudio = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_playback_events");
-            sampledAudio->setBus(r, musicClip);
+            sampledAudio->setBus(musicClip);
         }
         ac.connect(ac.destinationNode(), sampledAudio, 0, 0);
 
@@ -287,7 +287,7 @@ struct ex_offline_rendering : public labsound_example
 
             musicClipNode.reset(new SampledAudioNode(ac));
             ac.connect(recorder, musicClipNode, 0, 0);
-            musicClipNode->setBus(r, musicClip);
+            musicClipNode->setBus(musicClip);
             musicClipNode->schedule(0.0);
         }
 
@@ -636,14 +636,14 @@ struct ex_peak_compressor : public labsound_example
             ac.connect(peakComp, filter, 0, 0);
             ac.connect(ac.destinationNode(), peakComp, 0, 0);
 
-            kick_node->setBus(r, kick);
+            kick_node->setBus(kick);
             ac.connect(filter, kick_node, 0, 0);
 
-            hihat_node->setBus(r, hihat);
+            hihat_node->setBus(hihat);
             ac.connect(filter, hihat_node, 0, 0);
             //hihat_node->gain()->setValue(0.2f);
 
-            snare_node->setBus(r, snare);
+            snare_node->setBus(snare);
             ac.connect(filter, snare_node, 0, 0);
 
             _nodes.push_back(kick_node);
@@ -701,7 +701,7 @@ struct ex_stereo_panning : public labsound_example
         {
             ContextRenderLock r(&ac, "ex_stereo_panning");
 
-            audioClipNode->setBus(r, audioClip);
+            audioClipNode->setBus(audioClip);
             ac.connect(stereoPanner, audioClipNode, 0, 0);
             audioClipNode->schedule(0.0, -1); // -1 to loop forever
 
@@ -786,7 +786,7 @@ struct ex_hrtf_spatialization : public labsound_example
             panner->setPanningModel(PanningModel::HRTF);
             {
                 ContextRenderLock r(&ac, "ex_hrtf_spatialization");
-                audioClipNode->setBus(r, audioClip);
+                audioClipNode->setBus(audioClip);
             }
             audioClipNode->schedule(0.0, -1);  // -1 to loop forever
             ac.connect(panner, audioClipNode, 0, 0);
@@ -871,7 +871,7 @@ struct ex_convolution_reverb : public labsound_example
             outputGain->gain()->setValue(0.5f);
 
             voiceNode = std::make_shared<SampledAudioNode>(ac);
-            voiceNode->setBus(r, voiceClip);
+            voiceNode->setBus(voiceClip);
             ac.connect(dryGain, voiceNode, 0, 0);
 
             voiceNode->schedule(0.0);
@@ -928,7 +928,7 @@ struct ex_misc : public labsound_example
 
             ac.connect(ac.destinationNode(), pingping->output, 0, 0);
 
-            audioClipNode->setBus(r, audioClip);
+            audioClipNode->setBus(audioClip);
 
             ac.connect(pingping->input, audioClipNode, 0, 0);
 
@@ -1613,7 +1613,7 @@ struct ex_split_merge : public labsound_example
         musicClipNode = std::make_shared<SampledAudioNode>(ac);
         {
             ContextRenderLock r(&ac, "ex_split_merge");
-            musicClipNode->setBus(r, chan6_source);
+            musicClipNode->setBus(chan6_source);
         }
 
         ac.connect(splitter, musicClipNode);
