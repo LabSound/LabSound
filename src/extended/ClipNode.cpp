@@ -89,10 +89,11 @@ public:
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
                 float * destination = destinationBus->channel(channelIndex)->mutableData();
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    *destination++ = outputGain * tanhf(inputGain * source[i]);
-                }
+                if (destination)
+                    for (int i = 0; i < framesToProcess; ++i)
+                    {
+                        *destination++ = outputGain * tanhf(inputGain * source[i]);
+                    }
             }
         }
         else
@@ -107,17 +108,18 @@ public:
                 int srcIndex = srcChannels < channelIndex ? srcChannels : channelIndex;
                 float const * source = sourceBus->channel(srcIndex)->data();
                 float * destination = destinationBus->channel(channelIndex)->mutableData();
-                for (int i = 0; i < framesToProcess; ++i)
-                {
-                    float d = source[i];
+                if (destination)
+                    for (int i = 0; i < framesToProcess; ++i)
+                    {
+                        float d = source[i];
 
-                    if (d < minf)
-                        d = minf;
-                    else if (d > maxf)
-                        d = maxf;
+                        if (d < minf)
+                            d = minf;
+                        else if (d > maxf)
+                            d = maxf;
 
-                    *destination++ = d;
-                }
+                        *destination++ = d;
+                    }
             }
         }
     }

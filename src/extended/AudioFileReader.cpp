@@ -85,6 +85,7 @@ std::shared_ptr<AudioBus> MakeBusFromFile(const char * filePath, bool mixToMono)
             printf("Loaded %s\n", filePath);
         }
         else {
+            delete audioData;
             printf("could not load %s\n", filePath);
             return {};
         }

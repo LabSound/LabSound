@@ -70,6 +70,10 @@ void NoiseNode::process(ContextRenderLock &r, int bufferSize)
     }
 
     float * destP = outputBus->channel(0)->mutableData();
+    if (!destP) {
+        outputBus->zero();
+        return;
+    }
 
     // Start rendering at the correct offset.
     destP += quantumFrameOffset;

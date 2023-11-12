@@ -249,7 +249,8 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
 
     if (!isInitialized() || !outputBus || !inputBus || !inputBus->numberOfChannels() || !_kernels.size())
     {
-        outputBus->zero();
+        if (outputBus)
+            outputBus->zero();
         return;
     }
 
@@ -280,11 +281,12 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
     {
         int kernel = i < numReverbChannels ? i : numReverbChannels - 1;
         lab::sp_conv * conv = _kernels[kernel].conv;
-        float* destP = outputBus->channel(i)->mutableData() + _self->_scheduler._renderOffset;
+        float* destP = outputBus->channel(i)->mutableData();
+        if (destP) {
+            destP += _self->_scheduler._renderOffset;
 
-        // Start rendering at the correct offset.
-        destP += quantumFrameOffset;
-        {
+            // Start rendering at the correct offset.
+            destP += quantumFrameOffset;
             AudioBus * input_bus = input(0)->bus(r);
             int in_channel = i < numInputChannels ? i : numInputChannels - 1;
             float const* data = input_bus->channel(in_channel)->data() + quantumFrameOffset;

@@ -272,9 +272,10 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
 {
     AudioBus * outputBus = output(0)->bus(r);
 
-    if (!isInitialized() || !input(0)->isConnected() || !m_stereoPanner.get())
+    if (!isInitialized() || !outputBus || !input(0)->isConnected() || !m_stereoPanner.get())
     {
-        outputBus->zero();
+        if (outputBus)
+            outputBus->zero();
         return;
     }
 
@@ -282,7 +283,7 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
 
     if (!inputBus)
     {
-        inputBus->zero();
+        outputBus->zero();
         return;
     }
 

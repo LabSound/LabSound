@@ -37,8 +37,8 @@ namespace lab {
 DownSampler::DownSampler(size_t inputBlockSize)
     : m_inputBlockSize(inputBlockSize)
     , m_convolver(inputBlockSize / 2) // runs at 1/2 source sample-rate
-    , m_tempBuffer(inputBlockSize / 2)
-    , m_inputBuffer(inputBlockSize * 2)
+    , m_tempBuffer((int) inputBlockSize / 2)
+    , m_inputBuffer((int) inputBlockSize * 2)
 {
     initializeKernel();
 }
