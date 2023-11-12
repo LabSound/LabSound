@@ -188,7 +188,7 @@ AudioContext::~AudioContext()
 
     m_audioContextInterface.reset();
 
-    ASSERT(!m_isInitialized);
+    ASSERT(!_contextIsInitialized);
     ASSERT(!m_automaticPullNodes.size());
     ASSERT(!m_renderingAutomaticPullNodes.size());
 
@@ -224,7 +224,7 @@ std::shared_ptr<HRTFDatabaseLoader> AudioContext::hrtfDatabaseLoader() const {
 
 void AudioContext::lazyInitialize()
 {
-    if (m_isInitialized)
+    if (_contextIsInitialized)
         return;
 
     // Don't allow the context to initialize a second time after it's already been explicitly uninitialized.
@@ -236,17 +236,19 @@ void AudioContext::lazyInitialize()
     {
         if (!isOfflineContext())
         {
-            // This starts the audio thread and all audio rendering.
+            // start the device
+            d->device()->start();
+
+            // start the audio thread and all audio rendering.
             // The destination node's provideInput() method will now be called repeatedly to render audio.
             // Each time provideInput() is called, a portion of the audio stream is rendered.
 
             graphKeepAlive = 0.25f;  // pump the graph for the first 0.25 seconds
             graphUpdateThread = std::thread(&AudioContext::update, this);
-            d->device()->start();
         }
 
+        _contextIsInitialized = 1;
         cv.notify_all();
-        m_isInitialized = true;
     }
     else
     {
@@ -259,7 +261,7 @@ void AudioContext::uninitialize()
 {
     LOG_TRACE("AudioContext::uninitialize()");
 
-    if (!m_isInitialized)
+    if (!_contextIsInitialized)
         return;
 
     // for the case where an Offline AudioDestinationNode needs to update the graph
@@ -275,12 +277,12 @@ void AudioContext::uninitialize()
 
     updateAutomaticPullNodes();  // added for the case where an NullDeviceNode needs to update the graph
 
-    m_isInitialized = false;
+    _contextIsInitialized = 0;
 }
 
 bool AudioContext::isInitialized() const
 {
-    return m_isInitialized;
+    return _contextIsInitialized != 0;
 }
 
 void AudioContext::handlePreRenderTasks(ContextRenderLock & r)
@@ -716,12 +718,11 @@ void AudioContext::startOfflineRendering()
 {
     if (!m_isOfflineContext)
         throw std::runtime_error("context was not constructed for offline rendering");
-
-    m_isInitialized = true;
     
     if (!_destinationNode && !_destinationNode->device())
         return;
     
+    _contextIsInitialized = 1;
     _destinationNode->device()->start();
 }
 

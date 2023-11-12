@@ -16,6 +16,10 @@
 namespace lab
 {
 
+// there can only be one audio context. More than one introduces data races
+// in internal RtAudio mutexes.
+
+static RtAudio* g_rtaudio_ctx = nullptr;
 
 int rt_audio_callback(
     void * outputBuffer, void * inputBuffer,
@@ -31,7 +35,7 @@ int rt_audio_callback(
 
 // static
 std::vector<AudioDeviceInfo>
-    AudioDevice_RtAudio::MakeAudioDeviceList() 
+AudioDevice_RtAudio::MakeAudioDeviceList() 
 {
     std::vector<std::string> rt_audio_apis {
         "unspecified",
@@ -45,11 +49,13 @@ std::vector<AudioDeviceInfo>
         "windows_directsound",
         "rtaudio_dummy" };
 
-    RtAudio rt = {};
-    if (rt.getDeviceCount() <= 0)
+    if (!g_rtaudio_ctx)
+        g_rtaudio_ctx = new RtAudio();
+
+    if (g_rtaudio_ctx->getDeviceCount() <= 0)
         throw std::runtime_error("no rtaudio devices available!");
 
-    const auto api_enum = rt.getCurrentApi();
+    const auto api_enum = g_rtaudio_ctx->getCurrentApi();
     LOG_INFO("using rtaudio api %s", rt_audio_apis[static_cast<int>(api_enum)].c_str());
 
     auto to_flt_vec = [](const std::vector<unsigned int> & vec) {
@@ -59,9 +65,9 @@ std::vector<AudioDeviceInfo>
     };
 
     std::vector<AudioDeviceInfo> devices;
-    for (uint32_t i = 0; i < rt.getDeviceCount(); ++i)
+    for (uint32_t i = 0; i < g_rtaudio_ctx->getDeviceCount(); ++i)
     {
-        RtAudio::DeviceInfo info = rt.getDeviceInfo(i);
+        RtAudio::DeviceInfo info = g_rtaudio_ctx->getDeviceInfo(i);
 
         if (info.probed)
         {
@@ -97,8 +103,10 @@ const bool kInterleaved = false;
 
 void AudioDevice_RtAudio::createContext()
 {
-    rtaudio_ctx = new RtAudio();
-    if (rtaudio_ctx->getDeviceCount() < 1)
+    if (!g_rtaudio_ctx)
+        g_rtaudio_ctx = new RtAudio();
+    
+    if (g_rtaudio_ctx->getDeviceCount() < 1)
     {
         LOG_ERROR("no audio devices available");
     }
@@ -110,7 +118,7 @@ void AudioDevice_RtAudio::createContext()
     }
 
 
-    rtaudio_ctx->showWarnings(true);
+    g_rtaudio_ctx->showWarnings(true);
 
     // Translate AudioStreamConfig into RTAudio-native data structures
 
@@ -119,14 +127,14 @@ void AudioDevice_RtAudio::createContext()
     outputParams.nChannels = _outConfig.desired_channels;
     LOG_INFO("using output device idx: %i", _outConfig.device_index);
     if (_outConfig.device_index >= 0)
-        LOG_INFO("using output device name: %s", rtaudio_ctx->getDeviceInfo(outputParams.deviceId).name.c_str());
+        LOG_INFO("using output device name: %s", g_rtaudio_ctx->getDeviceInfo(outputParams.deviceId).name.c_str());
 
     RtAudio::StreamParameters inputParams;
     inputParams.deviceId = _inConfig.device_index;
     inputParams.nChannels = _inConfig.desired_channels;
     LOG_INFO("using input device idx: %i", _inConfig.device_index);
     if (_inConfig.device_index >= 0)
-        LOG_INFO("using input device name: %s", rtaudio_ctx->getDeviceInfo(inputParams.deviceId).name.c_str());
+        LOG_INFO("using input device name: %s", g_rtaudio_ctx->getDeviceInfo(inputParams.deviceId).name.c_str());
 
     authoritativeDeviceSampleRateAtRuntime = _outConfig.desired_samplerate;
 
@@ -138,7 +146,7 @@ void AudioDevice_RtAudio::createContext()
 
     if (_inConfig.desired_channels > 0)
     {
-        auto inDeviceInfo = rtaudio_ctx->getDeviceInfo(inputParams.deviceId);
+        auto inDeviceInfo = g_rtaudio_ctx->getDeviceInfo(inputParams.deviceId);
         if (inDeviceInfo.probed && inDeviceInfo.inputChannels > 0)
         {
             // ensure that the number of input channels buffered does not exceed the number available.
@@ -164,7 +172,7 @@ void AudioDevice_RtAudio::createContext()
 
     try
     {
-        rtaudio_ctx->openStream(
+        g_rtaudio_ctx->openStream(
                 (outputParams.nChannels > 0) ? &outputParams : nullptr,
                 (inputParams.nChannels > 0) ? &inputParams : nullptr,
                 RTAUDIO_FLOAT32,
@@ -190,21 +198,23 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
 
 AudioDevice_RtAudio::~AudioDevice_RtAudio()
 {
-    if (rtaudio_ctx) {
-        if (rtaudio_ctx->isStreamOpen())
-            rtaudio_ctx->closeStream();
+    if (g_rtaudio_ctx) {
+        if (g_rtaudio_ctx->isStreamOpen())
+            g_rtaudio_ctx->closeStream();
 
-        delete rtaudio_ctx;
+        delete g_rtaudio_ctx;
+        g_rtaudio_ctx = nullptr;
     }
 }
 
 void AudioDevice_RtAudio::backendReinitialize()
 {
-    if (rtaudio_ctx) {
-        if (rtaudio_ctx->isStreamOpen())
-            rtaudio_ctx->closeStream();
+    if (g_rtaudio_ctx) {
+        if (g_rtaudio_ctx->isStreamOpen())
+            g_rtaudio_ctx->closeStream();
 
-        delete rtaudio_ctx;
+        delete g_rtaudio_ctx;
+        g_rtaudio_ctx = nullptr;
     }
     createContext();
 }
@@ -212,11 +222,12 @@ void AudioDevice_RtAudio::backendReinitialize()
 
 void AudioDevice_RtAudio::start()
 {
+    ASSERT(g_rtaudio_ctx);
     ASSERT(authoritativeDeviceSampleRateAtRuntime != 0.f);  // something went very wrong
     try
     {
-        if (!rtaudio_ctx->isStreamRunning())
-            rtaudio_ctx->startStream();
+        if (!g_rtaudio_ctx->isStreamRunning())
+            g_rtaudio_ctx->startStream();
     }
     catch (const RtAudioError & e)
     {
@@ -226,10 +237,11 @@ void AudioDevice_RtAudio::start()
 
 void AudioDevice_RtAudio::stop()
 {
+    ASSERT(g_rtaudio_ctx);
     try
     {
-        if (rtaudio_ctx->isStreamRunning())
-            rtaudio_ctx->stopStream();
+        if (g_rtaudio_ctx->isStreamRunning())
+            g_rtaudio_ctx->stopStream();
     }
     catch (const RtAudioError & e)
     {
@@ -239,9 +251,10 @@ void AudioDevice_RtAudio::stop()
 
 bool AudioDevice_RtAudio::isRunning() const
 {
+    ASSERT(g_rtaudio_ctx);
     try
     {
-        return rtaudio_ctx->isStreamRunning();
+        return g_rtaudio_ctx->isStreamRunning();
     }
     catch (const RtAudioError & e)
     {

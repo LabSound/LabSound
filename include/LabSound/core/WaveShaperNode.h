@@ -47,7 +47,7 @@ protected:
     
     std::vector<float> m_curve;
     std::vector<float> m_newCurve;
-    bool _newCurveReady = false;
+    std::atomic<int> _newCurveReady{0};
 
     // Oversampling.
     void * m_oversamplingArrays = nullptr;

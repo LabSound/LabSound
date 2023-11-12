@@ -225,7 +225,7 @@ private:
     float graphKeepAlive{0.f};
     float lastGraphUpdateTime{0.f};
 
-    bool m_isInitialized = false;
+    std::atomic<int> _contextIsInitialized{0};
     bool m_isAudioThreadFinished = false;
     bool m_isOfflineContext = false;
     bool m_automaticPullNodesNeedUpdating = false;  // indicates m_automaticPullNodes was modified.

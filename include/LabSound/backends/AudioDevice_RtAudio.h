@@ -19,7 +19,6 @@ class AudioDevice_RtAudio : public AudioDevice
 {
     std::unique_ptr<AudioBus> _renderBus;
     std::unique_ptr<AudioBus> _inputBus;
-    RtAudio* rtaudio_ctx;
     SamplingInfo samplingInfo;
 
     void createContext();

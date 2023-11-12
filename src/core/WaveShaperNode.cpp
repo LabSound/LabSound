@@ -66,7 +66,7 @@ void WaveShaperNode::setCurve(std::vector<float> & curve)
 {
     std::lock_guard<std::mutex> lock(_curveMutex);
     m_newCurve = curve;
-    _newCurveReady = true;
+    _newCurveReady = 1;
 }
 
 void WaveShaperNode::processCurve(const float* source, float* destination, int framesToProcess)
@@ -135,7 +135,7 @@ void WaveShaperNode::process(ContextRenderLock & r, int bufferSize)
         // this could cause a pop, but setting a curve should be extremely rare
         std::lock_guard<std::mutex> lock(_curveMutex);
         std::swap(m_curve, m_newCurve);
-        _newCurveReady = false;
+        _newCurveReady = 0;
     }
 
     AudioBus* destinationBus = output(0)->bus(r);

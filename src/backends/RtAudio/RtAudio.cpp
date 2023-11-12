@@ -49,6 +49,10 @@
 #include <cmath>
 #include <algorithm>
 
+#include <atomic>
+
+std::atomic<int> hack_ls_stream_started = 0;
+
 // Static variable definitions.
 const unsigned int RtApi::MAX_SAMPLE_RATES = 14;
 const unsigned int RtApi::SAMPLE_RATES[] = {
@@ -1602,7 +1606,8 @@ void RtApiCore :: startStream( void )
   handle->drainCounter = 0;
   handle->internalDrain = false;
   stream_.state = STREAM_RUNNING;
-
+    hack_ls_stream_started = 1;  /// XXX LabSound
+    
  unlock:
   if ( result == noErr ) return;
   error( RtAudioError::SYSTEM_ERROR );
@@ -1692,6 +1697,9 @@ bool RtApiCore :: callbackEvent( AudioDeviceID deviceId,
                                  const AudioBufferList *inBufferList,
                                  const AudioBufferList *outBufferList )
 {
+    if (!hack_ls_stream_started)
+        return SUCCESS;
+    
   if ( stream_.state == STREAM_STOPPED || stream_.state == STREAM_STOPPING ) return SUCCESS;
   if ( stream_.state == STREAM_CLOSED ) {
     errorText_ = "RtApiCore::callbackEvent(): the stream is closed ... this shouldn't happen!";
