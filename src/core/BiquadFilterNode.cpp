@@ -222,7 +222,7 @@ public:
 };
  
 BiquadFilterNode::BiquadFilterNode(AudioContext & ac)
-    : AudioBasicProcessorNode(ac, *desc())
+: AudioBasicProcessorNode(ac, *desc())
 {
     biquad_impl = new BiquadFilterNodeInternal(this);
     m_processor.reset(biquad_impl);

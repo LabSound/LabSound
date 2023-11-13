@@ -68,9 +68,9 @@ AudioNodeDescriptor * OscillatorNode::desc()
 }
 
 OscillatorNode::OscillatorNode(AudioContext & ac)
-: AudioScheduledSourceNode(ac, *desc())
-, m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
-, m_detuneValues(AudioNode::ProcessingSizeInFrames)
+    : AudioScheduledSourceNode(ac, *desc())
+    , m_phaseIncrements(AudioNode::ProcessingSizeInFrames)
+    , m_detuneValues(AudioNode::ProcessingSizeInFrames)
 {
     m_frequency = param("frequency");
     m_detune = param("detune");
@@ -125,94 +125,34 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
         m_phaseIncrements.allocate(bufferSize);
     if (bufferSize > m_detuneValues.size())
         m_detuneValues.allocate(bufferSize);
-    if (bufferSize > m_amplitudeValues.size())
-        m_amplitudeValues.allocate(bufferSize);
-    if (bufferSize > m_biasValues.size())
-        m_biasValues.allocate(bufferSize);
     
     // calculate phase increments
-    float* phaseIncrements = m_phaseIncrements.data();
-    
-    if (m_frequency->hasSampleAccurateValues())
-    {
-        // Get the sample-accurate frequency values in preparation for conversion to phase increments.
-        // They will be converted to phase increments below.
-        m_frequency->calculateSampleAccurateValues(r, phaseIncrements, nonSilentFramesToProcess);
-    }
-    else
-    {
-        // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_frequency->smooth(r);
-        float frequency = m_frequency->smoothedValue();
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            phaseIncrements[i] = frequency;
-        }
+    float detuneRate[128];
+    const float* frequencies = m_frequency->bus()->channel(0)->data();
+    const float* detunes = m_detune->bus()->channel(0)->data();
+    for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
+        detuneRate[i] = detunes[i];
     }
     
-    if (m_detune->hasSampleAccurateValues())
-    {
-        // Get the sample-accurate detune values.
-        float* detuneValues = m_detuneValues.data();
-        float* offset_detunes = detuneValues + +quantumFrameOffset;
-        m_detune->calculateSampleAccurateValues(r, offset_detunes, nonSilentFramesToProcess);
-        
-        // Convert from cents to rate scalar and perform detuning
-        float k = 1.f / 1200.f;
-        VectorMath::vsmul(offset_detunes, 1, &k, offset_detunes, 1, nonSilentFramesToProcess);
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            phaseIncrements[i] *= powf(2, detuneValues[i]);  // FIXME: converting to expf() will be faster.
-        }
+    // Convert from cents to rate scalar and perform detuning
+    float k = 1.f / 1200.f;
+    VectorMath::vsmul(detuneRate + quantumFrameOffset, 1,
+                      &k,
+                      detuneRate + quantumFrameOffset, 1, nonSilentFramesToProcess);
+
+
+    float* phi = m_phaseIncrements.data();
+    for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i) {
+        phi[i] = frequencies[i] * powf(2, detuneRate[i]);
     }
-    else
-    {
-        // Handle ordinary parameter smoothing/de-zippering if there are no scheduled changes.
-        m_detune->smooth(r);
-        float detune = m_detune->smoothedValue();
-        if (fabsf(detune) > 0.01f)
-        {
-            float detuneScale = powf(2, detune / 1200);
-            for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-                phaseIncrements[i] *= detuneScale;
-        }
-    }
-    
     // convert frequencies to phase increments
     for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
     {
-        phaseIncrements[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI)* phaseIncrements[i] / sample_rate);
+        phi[i] = static_cast<float>(2.f * static_cast<float>(LAB_PI) * phi[i] / sample_rate);
     }
-    
-    // fetch the amplitudes
-    float* amplitudes = m_amplitudeValues.data();
-    if (m_amplitude->hasSampleAccurateValues())
-    {
-        m_amplitude->calculateSampleAccurateValues(r, amplitudes + quantumFrameOffset, nonSilentFramesToProcess);
-    }
-    else
-    {
-        m_amplitude->smooth(r);
-        float amp = m_amplitude->smoothedValue();
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-            amplitudes[i] = amp;
-    }
-    
-    // fetch the bias values
-    float* bias = m_biasValues.data();
-    if (m_bias->hasSampleAccurateValues())
-    {
-        m_bias->calculateSampleAccurateValues(r, bias + quantumFrameOffset, nonSilentFramesToProcess);
-    }
-    else
-    {
-        m_bias->smooth(r);
-        float b = m_bias->smoothedValue();
-        for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
-        {
-            bias[i] = b;
-        }
-    }
+
+    const float* amplitudes = m_amplitude->bus()->channel(0)->data();
+    const float* bias = m_bias->bus()->channel(0)->data();
     
     // calculate and write the wave
     float* destP = outputBus->channel(0)->mutableData();
@@ -225,7 +165,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
             {
                 destP[i] = static_cast<float>(bias[i] + amplitudes[i] * static_cast<float>(sin(phase)));
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > 2.f * pi)
                     phase -= 2.f * pi;
             }
@@ -235,7 +175,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             for (int i = quantumFrameOffset; i < nonSilentFramesToProcess; ++i)
             {
                 destP[i] = burk_fast_sine(phase);
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > pi)
                     phase -= 0.5f * pi;
             }
@@ -246,7 +186,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             {
                 float amp = amplitudes[i];
                 destP[i] = static_cast<float>(bias[i] + (phase < pi ? amp : -amp));
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > 2.f * pi)
                     phase -= 2.f * pi;
             }
@@ -257,7 +197,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             {
                 float amp = amplitudes[i];
                 destP[i] = static_cast<float>(bias[i] + amp - (amp / pi * phase));
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > 2.f * pi)
                     phase -= 2.f * pi;
             }
@@ -268,7 +208,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
             {
                 float amp = amplitudes[i];
                 destP[i] = static_cast<float>(bias[i] - (amp / pi * phase));
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > 2. * pi)
                     phase -= 2. * pi;
             }
@@ -283,7 +223,7 @@ void OscillatorNode::process_oscillator(ContextRenderLock & r, int bufferSize, i
                 else
                     destP[i] = static_cast<float>(bias[i] + 3.f * amp - (2.f * amp / pi *  phase));
                 
-                phase += phaseIncrements[i];
+                phase += phi[i];
                 if (phase > 2.f * pi)
                     phase -= 2.f * pi;
             }
@@ -300,7 +240,7 @@ void OscillatorNode::process(ContextRenderLock & r, int bufferSize)
     OscillatorType type = static_cast<OscillatorType>(m_type->valueUint32());
     if (type != OscillatorType::CUSTOM)
     {
-        process_oscillator(r, bufferSize, _self->_scheduler._renderOffset, _self->_scheduler._renderLength);
+        process_oscillator(r, bufferSize, _self->scheduler.renderOffset(), _self->scheduler.renderLength());
         return;
     }
 

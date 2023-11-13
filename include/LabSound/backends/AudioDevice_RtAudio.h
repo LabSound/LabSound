@@ -21,7 +21,7 @@ class AudioDevice_RtAudio : public AudioDevice
     std::unique_ptr<AudioBus> _inputBus;
     SamplingInfo samplingInfo;
 
-    void createContext();
+    void initRtAudio();
 
 public:
     AudioDevice_RtAudio(
@@ -32,7 +32,7 @@ public:
     float authoritativeDeviceSampleRateAtRuntime {0.f};
 
     // AudioDevice Interface
-    void render(AudioSourceProvider*, int numberOfFrames, void * outputBuffer, void * inputBuffer);
+    void renderCallback(AudioSourceProvider*, int numberOfFrames, void * outputBuffer, void * inputBuffer);
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;

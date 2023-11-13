@@ -131,6 +131,8 @@ ConvolverNode::ConvolverNode(AudioContext& ac)
 ConvolverNode::~ConvolverNode()
 {
     _kernels.clear();
+    
+    // destroy soundpipe context
     lab::sp_destroy(&_sp);
     uninitialize();
 }
@@ -307,6 +309,7 @@ void ConvolverNode::process(ContextRenderLock & r, int bufferSize)
 
 void ConvolverNode::reset(ContextRenderLock &)
 {
+    AudioNode::reset(r);
     _kernels.clear();
 }
 

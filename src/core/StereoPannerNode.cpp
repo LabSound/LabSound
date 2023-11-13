@@ -287,29 +287,16 @@ void StereoPannerNode::process(ContextRenderLock & r, int bufferSize)
         return;
     }
 
-    if (m_pan->hasSampleAccurateValues())
-    {
-        // Apply sample-accurate panning specified by AudioParam automation.
-        ASSERT(bufferSize <= m_sampleAccuratePanValues->size());
-
-        if (bufferSize <= m_sampleAccuratePanValues->size())
-        {
-            float * panValues = m_sampleAccuratePanValues->data();
-            m_pan->calculateSampleAccurateValues(r, panValues, bufferSize);
-            m_stereoPanner->panWithSampleAccurateValues(inputBus, outputBus, panValues, bufferSize);
-        }
-    }
-    else
-    {
-        m_stereoPanner->panToTargetValue(inputBus, outputBus, m_pan->value(), bufferSize);
-    }
+    const float* panValues = m_pan->bus()->channel(0)->data();
+    m_stereoPanner->panWithSampleAccurateValues(inputBus.get(), outputBus.get(),
+                                                panValues, bufferSize);
 
     outputBus->clearSilentFlag();
 }
 
-void StereoPannerNode::reset(ContextRenderLock &)
+void StereoPannerNode::reset(ContextRenderLock & r)
 {
-    // No-op
+    AudioNode::reset(r);
 }
 
 void StereoPannerNode::initialize()

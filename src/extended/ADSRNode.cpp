@@ -5,6 +5,7 @@
 #include "LabSound/extended/AudioContextLock.h"
 #include "LabSound/core/AudioNodeInput.h"
 #include "LabSound/core/AudioNodeOutput.h"
+#include "LabSound/core/AudioParam.h"
 #include "LabSound/core/AudioProcessor.h"
 #include "LabSound/core/AudioBus.h"
 #include "LabSound/extended/Registry.h"
@@ -49,11 +50,12 @@ namespace lab
 
         virtual ~ADSRNodeImpl() {}
 
-        virtual void initialize() override { }
-        virtual void uninitialize() override { }
+        void initialize() override { }
+        void uninitialize() override { }
 
         // Processes the source to destination bus. The number of channels must match in source and destination.
-        virtual void process(ContextRenderLock & r, const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, int framesToProcess) override
+        void process(ContextRenderLock & r,
+                     const lab::AudioBus * sourceBus, lab::AudioBus* destinationBus, int framesToProcess) override
         {
             using std::deque;
 
@@ -71,27 +73,15 @@ namespace lab
             if (envelope.size() != framesToProcess)
                 envelope.resize(framesToProcess);
 
-            // scan the gate signal
-            const bool gate_is_connected = m_gate->hasSampleAccurateValues();
-            if (gate_is_connected)
-            {
-                m_gate->calculateSampleAccurateValues(r, _gateArray.data(), framesToProcess);
-
-                // threshold the gate to on or off
-                for (int i = 0; i < framesToProcess; ++i)
-                    _gateArray[i] = _gateArray[i] > 0 ? 1.f : 0.f;
-            }
-            else
-            {
-                float g = m_gate->value();
-                // threshold the gate to on or off
-                for (int i = 0; i < framesToProcess; ++i)
-                    _gateArray[i] = g > 0 ? 1.f : 0.f;
-            }
-
+            const float* gate = m_gate->bus()->channel(0)->data();
+            // threshold the gate to on or off
+            for (int i = 0; i < framesToProcess; ++i)
+                _gateArray[i] = gate[i] > 0 ? 1.f : 0.f;
+            
             // oneshot == false means gate controls Attack/Sustain
             // oneshot == true means sustain param controls sustain
             bool oneshot = m_oneShot->valueBool();
+            bool gate_is_connected = !!m_gate->overridingInput();
 
             cached_sample_rate = r.context()->sampleRate();
             for (int i = 0; i < framesToProcess; ++i)

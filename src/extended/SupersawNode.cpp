@@ -58,7 +58,6 @@ public:
             for (auto i : saws)
             {
                 i->frequency()->setValue(cachedFrequency);
-                i->frequency()->resetSmoothedValue();
             }
         }
 
@@ -71,7 +70,6 @@ public:
             for (size_t i = 0; i < saws.size(); ++i)
             {
                 saws[i]->detune()->setValue(-cachedDetune + float(i) * 2 * n);
-                saws[i]->detune()->resetSmoothedValue();
             }
         }
     }

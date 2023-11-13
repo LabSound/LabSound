@@ -29,7 +29,7 @@ int rt_audio_callback(
     AudioDevice_RtAudio * device = reinterpret_cast<AudioDevice_RtAudio *>(userData);
     float * fltOutputBuffer = reinterpret_cast<float *>(outputBuffer);
     memset(fltOutputBuffer, 0, nBufferFrames * device->getOutputConfig().desired_channels * sizeof(float));
-    device->render(device->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
+    device->renderCallback(device->sourceProvider(), nBufferFrames, fltOutputBuffer, inputBuffer);
     return 0;
 }
 
@@ -101,7 +101,7 @@ const float kLowThreshold = -1.0f;
 const float kHighThreshold = 1.0f;
 const bool kInterleaved = false;
 
-void AudioDevice_RtAudio::createContext()
+void AudioDevice_RtAudio::initRtAudio()
 {
     if (!g_rtaudio_ctx)
         g_rtaudio_ctx = new RtAudio();
@@ -193,7 +193,7 @@ AudioDevice_RtAudio::AudioDevice_RtAudio(
     const AudioStreamConfig & _outputConfig)
 : AudioDevice(_inputConfig, _outputConfig)
 {
-    createContext();
+    initRtAudio();
 }
 
 AudioDevice_RtAudio::~AudioDevice_RtAudio()
@@ -216,7 +216,7 @@ void AudioDevice_RtAudio::backendReinitialize()
         delete g_rtaudio_ctx;
         g_rtaudio_ctx = nullptr;
     }
-    createContext();
+    initRtAudio();
 }
 
 
@@ -267,7 +267,7 @@ bool AudioDevice_RtAudio::isRunning() const
 // called by RtAudio periodically to get audio data.
 // Pulls on our provider to get rendered audio stream.
 //
-void AudioDevice_RtAudio::render(
+void AudioDevice_RtAudio::renderCallback(
     AudioSourceProvider* provider,
     int numberOfFrames, void * outputBuffer, void * inputBuffer)
 {
