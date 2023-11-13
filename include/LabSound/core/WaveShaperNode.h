@@ -6,6 +6,7 @@
 #define WaveShaperNode_h
 
 #include "LabSound/core/AudioNode.h"
+#include <atomic>
 #include <mutex>
 
 namespace lab {
