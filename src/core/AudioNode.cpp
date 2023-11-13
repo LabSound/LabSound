@@ -423,9 +423,6 @@ std::shared_ptr<AudioNodeOutput> AudioNode::output(char const* const str)
 
 int AudioNode::channelCount()
 {
-    if (_self->m_channelCount == 0) {
-        printf("WUY\n");
-    }
     ASSERT(_self->m_channelCount != 0);
     return _self->m_channelCount;
 }
