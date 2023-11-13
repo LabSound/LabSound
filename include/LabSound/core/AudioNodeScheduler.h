@@ -6,6 +6,7 @@
 #ifndef AUDIONODESCHEDULER_H
 #define AUDIONODESCHEDULER_H
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <limits>
@@ -51,8 +52,8 @@ public:
 
     // epoch is a long count at sample rate; 136 years at 48kHz
 
-    uint64_t _epoch = 0;        // the epoch rendered currently in the busses
-    uint64_t _epochLength = 0;  // number of frames in current epoch
+    std::atomic<uint64_t> _epoch{0}; // the epoch rendered currently in the busses
+    uint64_t _epochLength = 0;        // number of frames in current epoch
 
     // start and stop epoch (absolute, not relative)
     uint64_t _startWhen = std::numeric_limits<uint64_t>::max();

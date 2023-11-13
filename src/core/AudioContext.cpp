@@ -679,7 +679,10 @@ std::shared_ptr<AudioListener> AudioContext::listener()
 
 double AudioContext::currentTime() const
 {
-    return _destinationNode->getSamplingInfo().current_time;
+    auto dn = _destinationNode;
+    if (dn)
+        return dn->getSamplingInfo().current_time;
+    return 0.f;
 }
 
 uint64_t AudioContext::currentSampleFrame() const

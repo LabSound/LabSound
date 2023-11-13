@@ -50,6 +50,8 @@
 #include <algorithm>
 
 #include <atomic>
+#include <chrono>
+#include <thread>
 
 std::atomic<int> hack_ls_stream_started = 0;
 
@@ -555,7 +557,8 @@ struct CoreHandle {
   bool xrun[2];
   char *deviceBuffer;
   pthread_cond_t condition;
-  int drainCounter;       // Tracks callback counts when draining
+    std::atomic<int> drainCounter{0};       // Tracks callback counts when draining
+    /// LabSound made it atomic to avoid data race
   bool internalDrain;     // Indicates if stop is initiated from callback or not.
 
   CoreHandle()
@@ -1621,7 +1624,7 @@ void RtApiCore :: stopStream( void )
     error( RtAudioError::WARNING );
     return;
   }
-
+    
   OSStatus result = noErr;
   CoreHandle *handle = (CoreHandle *) stream_.apiHandle;
   if ( stream_.mode == OUTPUT || stream_.mode == DUPLEX ) {
@@ -2047,7 +2050,8 @@ struct JackHandle {
   std::string deviceName[2];
   bool xrun[2];
   pthread_cond_t condition;
-  int drainCounter;       // Tracks callback counts when draining
+    std::atomic<int> drainCounter{0};       // Tracks callback counts when draining
+    /// LabSound atomic
   bool internalDrain;     // Indicates if stop is initiated from callback or not.
 
   JackHandle()
@@ -2820,7 +2824,8 @@ static CallbackInfo *asioCallbackInfo;
 static bool asioXRun;
 
 struct AsioHandle {
-  int drainCounter;       // Tracks callback counts when draining
+  std::atomic<int> drainCounter;       // Tracks callback counts when draining
+    // LabSound atomic
   bool internalDrain;     // Indicates if stop is initiated from callback or not.
   ASIOBufferInfo *bufferInfos;
   HANDLE condition;
@@ -5623,7 +5628,8 @@ static inline DWORD dsPointerBetween( DWORD pointer, DWORD laterPointer, DWORD e
 // A structure to hold various information related to the DirectSound
 // API implementation.
 struct DsHandle {
-  unsigned int drainCounter; // Tracks callback counts when draining
+  std::atomic<unsigned int> drainCounter; // Tracks callback counts when draining
+    /// LabSound atomic
   bool internalDrain;        // Indicates if stop is initiated from callback or not.
   void *id[2];
   void *buffer[2];

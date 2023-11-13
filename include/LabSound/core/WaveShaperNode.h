@@ -51,7 +51,7 @@ protected:
 
     // Oversampling.
     void * m_oversamplingArrays = nullptr;
-    OverSampleType m_oversample = OverSampleType::NONE;
+    std::atomic<OverSampleType> m_oversample{OverSampleType::NONE};
 
     // Use up-sampling, process at the higher sample-rate, then down-sample.
     void processCurve2x(const float * source, float * dest, int framesToProcess);

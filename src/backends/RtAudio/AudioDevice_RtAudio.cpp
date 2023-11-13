@@ -326,8 +326,9 @@ void AudioDevice_RtAudio::render(
     samplingInfo.epoch[index] = std::chrono::high_resolution_clock::now();
 
     // Pull on the graph
-    if (_destinationNode)
-        _destinationNode->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
+    auto dn = _destinationNode; // up the ref count
+    if (dn)
+        dn->render(provider, _inputBus.get(), _renderBus.get(), numberOfFrames, samplingInfo);
 
     // Then deliver the rendered audio back to rtaudio, ready for the next callback
     if (_outConfig.desired_channels)
