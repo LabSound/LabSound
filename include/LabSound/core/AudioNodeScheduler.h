@@ -46,7 +46,7 @@ public:
     SchedulingState playbackState() const { return _playbackState; }
     bool hasFinished() const { return _playbackState == SchedulingState::FINISHED; }
 
-    bool update(ContextRenderLock&, int epoch_length);
+    bool update(ContextRenderLock&, int epoch_length, const char* node_name);
 
     SchedulingState _playbackState = SchedulingState::UNSCHEDULED;
 

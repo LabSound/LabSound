@@ -17,7 +17,7 @@
 using namespace std;
 
 //#define ASN_PRINT(...)
-#define ASN_PRINT(a) printf("Scheduler: %s", (a))
+#define ASN_PRINT(a, name) printf("Scheduler: %s (%s)\n", (a), (name))
 
 namespace lab
 {
@@ -114,8 +114,9 @@ AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
 {
 }
 
-bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
+bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length, const char* node_name)
 {
+    assert(node_name != nullptr);
     uint64_t proposed_epoch = r.context()->currentSampleFrame();
     if (_epoch >= proposed_epoch)
         return false;
@@ -137,7 +138,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _renderOffset = 0;
                 _renderLength = epoch_length;
                 _playbackState = SchedulingState::FADE_IN;
-                ASN_PRINT("fade in\n");
+                ASN_PRINT("fade in", node_name);
             }
             else if (_startWhen < _epoch + epoch_length)
             {
@@ -145,7 +146,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _renderOffset = static_cast<int>(_startWhen - _epoch);
                 _renderLength = epoch_length - _renderOffset;
                 _playbackState = SchedulingState::FADE_IN;
-                ASN_PRINT("fade in\n");
+                ASN_PRINT("fade in", node_name);
             }
 
             /// @TODO the case of a start and stop within one epoch needs to be special
@@ -158,7 +159,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
             // start time has been achieved, there'll be one quantum with fade in applied.
             _renderOffset = 0;
             _playbackState = SchedulingState::PLAYING;
-            ASN_PRINT("playing\n");
+            ASN_PRINT("playing", node_name);
             // fall through to PLAYING to allow render length to be adjusted if stop-start is less than one quantum length
 
         case SchedulingState::PLAYING:
@@ -170,7 +171,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 // exactly on start, or late, stop straight away, render a whole frame of fade out
                 _renderLength = epoch_length - _renderOffset;
                 _playbackState = SchedulingState::STOPPING;
-                ASN_PRINT("stopping\n");
+                ASN_PRINT("stopping", node_name);
             }
             else if (_stopWhen < _epoch + epoch_length)
             {
@@ -178,7 +179,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _renderOffset = 0;
                 _renderLength = static_cast<int>(_stopWhen - _epoch);
                 _playbackState = SchedulingState::STOPPING;
-                ASN_PRINT("stopping\n");
+                ASN_PRINT("stopping", node_name);
             }
 
             // do not fall through to STOPPING because one quantum must render the fade out effect
@@ -192,7 +193,7 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length)
                 _playbackState = SchedulingState::UNSCHEDULED;
                 if (_onEnded)
                     r.context()->enqueueEvent(_onEnded);
-                ASN_PRINT("unscheduled\n");
+                ASN_PRINT("unscheduled", node_name);
             }
             break;
 
@@ -486,7 +487,7 @@ void AudioNode::processIfNecessary(ContextRenderLock & r, int bufferSize)
     // if the scheduler's recorded epoch is the same as the context's, the node
     // shall bail out as it has been processed once already this epoch.
 
-    if (!_self->_scheduler.update(r, bufferSize)) {
+    if (!_self->_scheduler.update(r, bufferSize, name())) {
         if (diagnosing_silence)
             ac->diagnosed_silence("Already processed");
         return;
