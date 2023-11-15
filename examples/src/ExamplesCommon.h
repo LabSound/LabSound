@@ -64,7 +64,7 @@ inline std::pair<AudioStreamConfig, AudioStreamConfig>
         float min_rate = std::min(defaultOutputInfo.nominal_samplerate, defaultInputInfo.nominal_samplerate);
         inputConfig.desired_samplerate = min_rate;
         outputConfig.desired_samplerate = min_rate;
-        printf("Warning ~ input and output sample rates don't match, attempting to set minimum");
+        printf("Warning ~ input and output sample rates don't match, attempting to set minimum\n");
     }
     return {inputConfig, outputConfig};
 }
