@@ -290,7 +290,7 @@ namespace lab {
             _self->_scheduler.start(0.);
 
         std::shared_ptr<AudioBus> bus = m_pendingSourceBus;
-        if (!bus) {
+        if (bus) {
             float r = bus->sampleRate();
             int32_t grainStart = static_cast<uint32_t>(grainOffset * r);
             int32_t grainEnd = grainStart + static_cast<uint32_t>(grainDuration * r);
