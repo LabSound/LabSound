@@ -191,7 +191,7 @@ namespace
         // Buffer is nBufferFrames * channels, interleaved
         float * fBufOut = (float *) pOutput;
         AudioDevice_Miniaudio * ad = reinterpret_cast<AudioDevice_Miniaudio *>(pDevice->pUserData);
-        memset(fBufOut, 0, sizeof(float) * frameCount * ad->outputConfig.desired_channels);
+        memset(fBufOut, 0, sizeof(float) * frameCount * ad->getOutputConfig().desired_channels);
         ad->render(frameCount, pOutput, const_cast<void *>(pInput));
     }
 }
@@ -207,10 +207,10 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputCon
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = ma_format_f32;
-    deviceConfig.playback.channels = outputConfig.desired_channels;
-    deviceConfig.sampleRate = static_cast<int>(outputConfig.desired_samplerate);
+    deviceConfig.playback.channels = _outConfig.desired_channels;
+    deviceConfig.sampleRate = static_cast<int>(_outConfig.desired_samplerate);
     deviceConfig.capture.format = ma_format_f32;
-    deviceConfig.capture.channels = inputConfig.desired_channels;
+    deviceConfig.capture.channels = _inConfig.desired_channels;
     deviceConfig.dataCallback = outputCallback;
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
@@ -225,13 +225,13 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputCon
         return;
     }
 
-    authoritativeDeviceSampleRateAtRuntime = outputConfig.desired_samplerate;
+    authoritativeDeviceSampleRateAtRuntime = _outConfig.desired_samplerate;
 
     samplingInfo.epoch[0] = samplingInfo.epoch[1] = std::chrono::high_resolution_clock::now();
 
     _ring = new lab::RingBufferT<float>();
     _ring->resize(static_cast<int>(authoritativeDeviceSampleRateAtRuntime));  // ad hoc. hold one second
-    _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * inputConfig.desired_channels));
+    _scratch = reinterpret_cast<float *>(malloc(sizeof(float) * kRenderQuantum * _inConfig.desired_channels));
 }
 
 AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
@@ -256,10 +256,10 @@ void AudioDevice_Miniaudio::backendReinitialize()
     //ma_device_config deviceConfig = ma_device_config_init(ma_device_type_duplex);
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
     deviceConfig.playback.format = ma_format_f32;
-    deviceConfig.playback.channels = outputConfig.desired_channels;
-    deviceConfig.sampleRate = static_cast<int>(outputConfig.desired_samplerate);
+    deviceConfig.playback.channels = _outConfig.desired_channels;
+    deviceConfig.sampleRate = static_cast<int>(_outConfig.desired_samplerate);
     deviceConfig.capture.format = ma_format_f32;
-    deviceConfig.capture.channels = inputConfig.desired_channels;
+    deviceConfig.capture.channels = _inConfig.desired_channels;
     deviceConfig.dataCallback = outputCallback;
     deviceConfig.performanceProfile = ma_performance_profile_low_latency;
     deviceConfig.pUserData = this;
@@ -305,21 +305,21 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
     int numberOfFrames = numberOfFrames_;
     if (!_renderBus)
     {
-        _renderBus = new AudioBus(outputConfig.desired_channels, kRenderQuantum, true);
+        _renderBus = new AudioBus(_outConfig.desired_channels, kRenderQuantum, true);
         _renderBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
-    if (!_inputBus && inputConfig.desired_channels)
+    if (!_inputBus && _inConfig.desired_channels)
     {
-        _inputBus = new AudioBus(inputConfig.desired_channels, kRenderQuantum, true);
+        _inputBus = new AudioBus(_inConfig.desired_channels, kRenderQuantum, true);
         _inputBus->setSampleRate(authoritativeDeviceSampleRateAtRuntime);
     }
 
     float * pIn = static_cast<float *>(inputBuffer);
     float * pOut = static_cast<float *>(outputBuffer);
 
-    int in_channels = inputConfig.desired_channels;
-    int out_channels = outputConfig.desired_channels;
+    int in_channels = _inConfig.desired_channels;
+    int out_channels = _outConfig.desired_channels;
 
     if (pIn && numberOfFrames * in_channels)
         _ring->write(pIn, numberOfFrames * in_channels);

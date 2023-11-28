@@ -37,8 +37,6 @@ public:
         const AudioStreamConfig & inputConfig);
     virtual ~AudioDevice_Miniaudio();
 
-    AudioStreamConfig outputConfig;
-    AudioStreamConfig inputConfig;
     float authoritativeDeviceSampleRateAtRuntime{0.f};
 
     // AudioDevice Interface
