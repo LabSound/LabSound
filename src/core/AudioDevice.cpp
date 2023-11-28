@@ -134,7 +134,7 @@ void AudioDestinationNode::render(AudioSourceProvider* provider,
     selfProfile.finalize();
 }
 
-void AudioDestinationNode::offlineRender(AudioBus * dst, size_t framesToProcess)
+void AudioDestinationNode::offlineRender(AudioBus * dst, int framesToProcess)
 {
     static const int offlineRenderSizeQuantum = AudioNode::ProcessingSizeInFrames;
 
@@ -162,7 +162,7 @@ void AudioDestinationNode::offlineRender(AudioBus * dst, size_t framesToProcess)
         _last_info.epoch[index] += std::chrono::nanoseconds {
                 static_cast<uint64_t>(1.e9 * (double) framesToProcess / (double) offlineRenderSizeQuantum)};
 
-        framesToProcess--;
+        framesToProcess -= offlineRenderSizeQuantum;
     }
 }
 
