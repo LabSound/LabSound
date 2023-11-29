@@ -182,7 +182,7 @@ public:
                 const SamplingInfo & info);
     
     
-    void offlineRender(AudioBus * dst, size_t framesToProcess);
+    void offlineRender(AudioBus * dst, int framesToProcess);
 
     const SamplingInfo & getSamplingInfo() const { return _last_info; }
     
