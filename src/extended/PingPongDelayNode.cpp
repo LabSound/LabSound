@@ -69,7 +69,7 @@ void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
     ac.connect(splitter, input, 0, 0);
     
     ac.connect(splitterGain, splitter, 0, 0);
-    ac.connect(splitterGain, splitter, 1, 0);
+    ac.connect(splitterGain, splitter, 0, 1);
     
     ac.connect(wetGain, splitterGain, 0, 0);
     splitterGain->gain()->setValue(0.5f);
@@ -81,7 +81,7 @@ void PingPongDelayNode::BuildSubgraph(AudioContext & ac)
     ac.connect(feedbackGain, rightDelay, 0, 0);
     
     ac.connect(merger, leftDelay, 0, 0);
-    ac.connect(merger, rightDelay, 0, 1);
+    ac.connect(merger, rightDelay, 1, 0);
     
     ac.connect(output, merger, 0, 0);
     
