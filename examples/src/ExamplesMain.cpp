@@ -49,8 +49,8 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_microphone_loopback(context, UseInput) },
         { Passing::pass, Skip::yes, new ex_microphone_reverb(context, UseInput) },
         { Passing::pass, Skip::yes, new ex_peak_compressor(context, NoInput) },
-        { Passing::pass, Skip::no,  new ex_stereo_panning(context, NoInput) },
-        { Passing::pass, Skip::yes, new ex_hrtf_spatialization(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_stereo_panning(context, NoInput) },
+        { Passing::pass, Skip::no,  new ex_hrtf_spatialization(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_convolution_reverb(context, NoInput) }, // note: exhibits severe popping
         { Passing::pass, Skip::yes, new ex_misc(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_dalek_filter(context, NoInput) },
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_granulation_node(context, NoInput) }, // note: node is under development
         { Passing::pass, Skip::yes, new ex_poly_blep(context, NoInput) },
         { Passing::fail, Skip::yes, new ex_split_merge(context, NoInput) },
-        { Passing::fail, Skip::no,  new ex_waveshaper(context, NoInput)},
+        { Passing::fail, Skip::yes,  new ex_waveshaper(context, NoInput)},
     };
 
     static constexpr int iterations = 1;
