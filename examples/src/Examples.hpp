@@ -1741,6 +1741,9 @@ struct ex_waveshaper : public labsound_example
             waveshaper->setCurve(curve);
             Wait(delay_time_ms);
         }
-
+        
+        // ensure the waveshaper node is not being processed before deleting it
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
     }
 };
