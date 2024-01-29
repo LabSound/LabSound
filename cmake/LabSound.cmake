@@ -48,6 +48,7 @@ endif()
 #option(LIBSAMPLERATE_INSTALL "" ON)
 #option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
 #add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
+#add_definitions(-DHAVE_CONFIG_H)
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -214,6 +215,7 @@ target_include_directories(LabSound PRIVATE
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
     ${LABSOUND_ROOT}/third_party/libsamplerate/include
+#    ${PROJECT_BINARY_DIR}/third_party/libsamplerate
 )
 
 if (NOT IOS)
