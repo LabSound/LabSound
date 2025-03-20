@@ -132,6 +132,11 @@ public:
     virtual void stop() = 0;
     virtual bool isRunning() const = 0;
     virtual void backendReinitialize() = 0;
+
+    // some audio devices can render directly to a buffer on demand.
+    // the number of frames to render is passed in, and the output buffer is filled.
+    // the return value is the number of frames rendered.
+    virtual int render(int numberOfFrames, void * outputBuffer, void * inputBuffer) { return 0; }
 };
 
 class AudioDevice_Null : public AudioDevice {

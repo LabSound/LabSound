@@ -107,6 +107,10 @@ if (NOT IOS)
 
 endif()
 
+add_library(LabSoundMock STATIC
+    "${LABSOUND_ROOT}/src/backends/mockAudio/AudioDevice_MockAudio.cpp"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_MockAudio.h")
+
  #--- CONFIGURE MINIAUDIO
  if (APPLE)
     add_library(LabSoundMiniAudio STATIC
@@ -228,6 +232,16 @@ if (NOT IOS)
         ${LABSOUND_ROOT}/third_party/libnyquist/include)
 endif()
 
+target_include_directories(LabSoundMock PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<INSTALL_INTERFACE:include>
+)
+target_include_directories(LabSoundMock PRIVATE
+    ${LABSOUND_ROOT}/src
+    ${LABSOUND_ROOT}/src/internal
+    ${LABSOUND_ROOT}/third_party
+    ${LABSOUND_ROOT}/third_party/libnyquist/include)
+
 target_include_directories(LabSoundMiniAudio PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
     $<INSTALL_INTERFACE:include>
@@ -255,6 +269,7 @@ target_link_libraries(LabSound
 )
 
 configureProj(LabSound)
+configureProj(LabSoundMock)
 configureProj(LabSoundMiniAudio)
 if (NOT IOS)
     configureProj(LabSoundRtAudio)
@@ -269,6 +284,7 @@ install(FILES ${labsnd_extended_h}
 install(FILES
     "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
     "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_RtAudio.h"
+    "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_MockAudio.h"
    DESTINATION include/LabSound/backends)
 
 install(DIRECTORY
@@ -294,6 +310,7 @@ source_group(third_party\\rtaudio FILES ${third_rtaudio})
 
 add_library(LabSound::LabSound ALIAS LabSound)
 add_library(LabSoundMiniAudio::LabSoundMiniAudio ALIAS LabSoundMiniAudio)
+add_library(LabSoundMock::LabSoundMock ALIAS LabSoundMock)
 if (NOT IOS)
     add_library(LabSoundRtAudio::LabSoundRtAudio ALIAS LabSoundRtAudio)
 endif()
