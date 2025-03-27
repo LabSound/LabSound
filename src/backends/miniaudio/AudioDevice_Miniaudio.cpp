@@ -300,7 +300,7 @@ bool AudioDevice_Miniaudio::isRunning() const
 
 
 // Pulls on our provider to get rendered audio stream.
-void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, void * inputBuffer)
+int AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, void * inputBuffer)
 {
     int numberOfFrames = numberOfFrames_;
     if (!_renderBus)
@@ -381,6 +381,7 @@ void AudioDevice_Miniaudio::render(int numberOfFrames_, void * outputBuffer, voi
             _remainder = kRenderQuantum;
         }
     }
+    return numberOfFrames_;
 }
 
 }  // namespace lab

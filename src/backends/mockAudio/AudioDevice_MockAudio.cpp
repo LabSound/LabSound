@@ -214,7 +214,7 @@ int AudioDevice_Mockaudio::render(int numberOfFrames, void * outputBuffer, void 
                     // Buffer is full, write to WAV file and stop processing
                     _bufferFull = true;
                     writeToWavFile();
-                    return;
+                    return rendered;
                 }
             }
             

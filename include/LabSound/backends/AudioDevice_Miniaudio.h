@@ -40,7 +40,7 @@ public:
     float authoritativeDeviceSampleRateAtRuntime{0.f};
 
     // AudioDevice Interface
-    void render(int numberOfFrames, void * outputBuffer, void * inputBuffer);
+    int render(int numberOfFrames, void * outputBuffer, void * inputBuffer) override final;
     virtual void start() override final;
     virtual void stop() override final;
     virtual bool isRunning() const override final;
