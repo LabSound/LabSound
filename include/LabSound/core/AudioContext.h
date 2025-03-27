@@ -21,6 +21,7 @@
 namespace lab {
 
 class AudioBus;
+class AudioContext;
 class AudioHardwareInputNode;
 class AudioListener;
 class AudioNode;
@@ -31,6 +32,61 @@ class AudioScheduledSourceNode;
 class ContextGraphLock;
 class ContextRenderLock;
 class HRTFDatabaseLoader;
+
+
+
+/*
+    // ConnectionChain allows stream operators thusly:
+
+    auto a = std::make_shared<AudioNode>();
+    auto b = std::make_shared<AudioNode>();
+    auto c = std::make_shared<AudioNode>();
+    AudioContext ctx;
+
+    a >> b >> c >> ctx;
+*/
+
+class ContextConnector {
+public:
+    explicit ContextConnector(AudioContext& ctx) : ctx(ctx) {}
+
+    // Connects the last node in the chain to the destination node of ctx
+    void operator>>(std::shared_ptr<AudioNode> lastNode) const;
+
+private:
+    AudioContext& ctx;
+};
+    
+class ConnectionChain {
+public:
+    ConnectionChain(std::shared_ptr<AudioNode> node) {
+        nodes.push_back(std::move(node));
+    }
+
+    ConnectionChain& operator>>(std::shared_ptr<AudioNode> next) {
+        nodes.push_back(std::move(next));
+        return *this;
+    }
+
+    // invoke a chain terminator
+    void operator>>(ContextConnector connector) const {
+        if (!nodes.empty()) {
+            connector >> nodes.back();
+        }
+    }
+    
+    void operator>>(AudioContext& ctx);
+
+private:
+    std::vector<std::shared_ptr<AudioNode>> nodes;
+};
+
+
+// Overload >> to start a chain
+ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<AudioNode> rhs);
+
+// Overload >> to end a chain
+ConnectionChain& operator>>(ConnectionChain& chain, AudioContext& ctx);
 
 class AudioContext
 {
@@ -179,6 +235,10 @@ public:
     // completely disconnect the node from the graph
     void disconnect(std::shared_ptr<AudioNode> node, int destIdx = 0);
 
+    ContextConnector connector() {
+        return ContextConnector(*this);
+    }
+
     // connecting and disconnecting busses and parameters occurs asynchronously.
     // synchronizeConnections will block until there are no pending connections,
     // or until the timeout occurs.
@@ -244,36 +304,6 @@ private:
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;  // vector of known pull nodes
 };
 
-/*
-    // ConnectionChain allows stream operators thusly:
-
-    auto a = std::make_shared<AudioNode>();
-    auto b = std::make_shared<AudioNode>();
-    auto c = std::make_shared<AudioNode>();
-    AudioContext ctx;
-
-    a >> b >> c >> ctx;
-*/
-
-class ConnectionChain {
-public:
-    ConnectionChain(std::shared_ptr<AudioNode> node) {
-        nodes.push_back(std::move(node));
-    }
-
-    ConnectionChain& operator>>(std::shared_ptr<AudioNode> next) {
-        nodes.push_back(std::move(next));
-        return *this;
-    }
-
-    void operator>>(AudioContext& ctx);
-
-private:
-    std::vector<std::shared_ptr<AudioNode>> nodes;
-};
-
-// Overload >> to start a chain
-ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<AudioNode> rhs);
 
 }  // End namespace lab
 

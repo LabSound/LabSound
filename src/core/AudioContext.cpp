@@ -931,5 +931,15 @@ ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<Audio
     return chain;
 }
 
+// Connects the last node in the chain to the destination node of ctx
+void ContextConnector::operator>>(std::shared_ptr<AudioNode> lastNode) const {
+    ctx.connect(ctx.destinationNode(), lastNode);
+}
+
+ConnectionChain& operator>>(ConnectionChain& chain, AudioContext& ctx) {
+    chain >> ctx.connector();
+    return chain;
+}
+
 
 } // end namespace lab
