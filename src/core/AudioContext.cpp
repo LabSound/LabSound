@@ -917,4 +917,19 @@ void AudioContext::diagnosed_silence(const char* msg)
     }
 }
 
+// Overload >> to finalize with a Context
+void ConnectionChain::operator>>(AudioContext& ctx) {
+    for (size_t i = 0; i + 1 < nodes.size(); ++i) {
+        ctx.connect(nodes[i + 1], nodes[i]);
+    }
+    ctx.connect(std::dynamic_pointer_cast<AudioNode>(ctx.destinationNode()), nodes.back());
+}
+
+ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<AudioNode> rhs) {
+    ConnectionChain chain(std::move(lhs));
+    chain >> std::move(rhs);
+    return chain;
+}
+
+
 } // end namespace lab

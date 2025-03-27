@@ -80,6 +80,7 @@ public:
 
     std::weak_ptr<AudioContextInterface> audioContextInterface() { return m_audioContextInterface; }
 
+
     // ctor/dtor
     explicit AudioContext(bool isOffline);
     explicit AudioContext(bool isOffline, bool autoDispatchEvents);
@@ -242,6 +243,37 @@ private:
     std::set<std::shared_ptr<AudioNode>> m_automaticPullNodes;  // queue for added pull nodes
     std::vector<std::shared_ptr<AudioNode>> m_renderingAutomaticPullNodes;  // vector of known pull nodes
 };
+
+/*
+    // ConnectionChain allows stream operators thusly:
+
+    auto a = std::make_shared<AudioNode>();
+    auto b = std::make_shared<AudioNode>();
+    auto c = std::make_shared<AudioNode>();
+    AudioContext ctx;
+
+    a >> b >> c >> ctx;
+*/
+
+class ConnectionChain {
+public:
+    ConnectionChain(std::shared_ptr<AudioNode> node) {
+        nodes.push_back(std::move(node));
+    }
+
+    ConnectionChain& operator>>(std::shared_ptr<AudioNode> next) {
+        nodes.push_back(std::move(next));
+        return *this;
+    }
+
+    void operator>>(AudioContext& ctx);
+
+private:
+    std::vector<std::shared_ptr<AudioNode>> nodes;
+};
+
+// Overload >> to start a chain
+ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<AudioNode> rhs);
 
 }  // End namespace lab
 
