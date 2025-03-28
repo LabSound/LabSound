@@ -101,10 +101,25 @@ class HRTFDatabaseLoader;
     music1 >> createFilterChain(ctx) >> ctx;
     music2 >> createFilterChain(ctx) >> ctx;
  *
- * Here a funcrtion creates a subgraph for sidechain processing.
+ * Here, a function creates a subgraph for sidechain processing.
  *
+ * Example 5: Connecting to a param
  * ---------------------------------------------
- * 
+
+auto lfo = std::make_shared<OscillatorNode>(ctx);
+auto gain = std::make_shared<GainNode>(ctx);
+auto filter = std::make_shared<BiquadFilterNode>(ctx);
+auto gain2 = std::make_shared<GainNode>(ctx);
+
+// Valid: Modulating the filter's frequency with an LFO
+lfo >> gain >> filter->param("frequency") >> ctx;
+
+// Compile-time error: Connecting an AudioParam to an AudioNode is illegal
+// lfo >> gain >> filter->param("frequency") >> gain2;
+
+* It's easy to create a chain of nodes and drive a parameter from them.
+*
+* ==============================================
  * Takeaways:
  * - Both explicit and concise constructions are possible.
  * - Encourages graph-style thinking.
@@ -122,37 +137,67 @@ public:
 private:
     AudioContext& ctx;
 };
-    
+
 class ConnectionChain {
 public:
-    ConnectionChain(std::shared_ptr<AudioNode> node) {
-        nodes.push_back(std::move(node));
+    using NodePtr = std::shared_ptr<AudioNode>;
+    using ParamPtr = std::shared_ptr<AudioParam>;
+
+    explicit ConnectionChain(NodePtr node) {
+        nodes.push_back(node);
     }
 
-    ConnectionChain& operator>>(std::shared_ptr<AudioNode> next) {
-        nodes.push_back(std::move(next));
+    // Node-to-Node connection (valid)
+    ConnectionChain& operator>>(NodePtr next) {
+        if (targetParam) {
+            throw std::logic_error("Cannot connect a node after an AudioParam!");
+        }
+        nodes.push_back(next);
         return *this;
     }
 
-    // invoke a chain terminator
-    void operator>>(ContextConnector connector) const {
+    // Node-to-Param connection (valid)
+    ConnectionChain& operator>>(ParamPtr param) {
         if (!nodes.empty()) {
-            connector >> nodes.back();
+            targetParam = param;
+        } else {
+            throw std::logic_error("Cannot connect an AudioParam without a source node!");
         }
+        return *this;
     }
-    
+
+    // Prevent Param-to-Node connection at compile time
+    template <typename T>
+    ConnectionChain& operator>>(std::shared_ptr<T> next) {
+        static_assert(!std::is_same<T, AudioNode>::value,
+                    "Invalid connection: Cannot connect an AudioParam to an AudioNode!");
+        return *this;
+    }
+
     void operator>>(AudioContext& ctx);
 
 private:
-    std::vector<std::shared_ptr<AudioNode>> nodes;
+    std::vector<NodePtr> nodes;
+    ParamPtr targetParam ;
 };
 
+// Overload >> for node-to-node connection
+inline ConnectionChain operator>>(std::shared_ptr<AudioNode> src, std::shared_ptr<AudioNode> dst) {
+    return ConnectionChain(src) >> dst;
+}
 
-// Overload >> to start a chain
-ConnectionChain operator>>(std::shared_ptr<AudioNode> lhs, std::shared_ptr<AudioNode> rhs);
+// Overload >> for node-to-param connection
+inline ConnectionChain operator>>(std::shared_ptr<AudioNode> src, std::shared_ptr<AudioParam> param) {
+    return ConnectionChain(src) >> param;
+}
 
-// Overload >> to end a chain
-ConnectionChain& operator>>(ConnectionChain& chain, AudioContext& ctx);
+// Prevent param-to-node connection at compile time
+template <typename T>
+inline ConnectionChain operator>>(std::shared_ptr<AudioParam> src, std::shared_ptr<T> dst) {
+    static_assert(!std::is_same<T, AudioNode>::value,
+                  "Invalid connection: Cannot connect an AudioParam to an AudioNode!");
+    return ConnectionChain(nullptr); // Won't be reached due to static_assert
+}
 
 class AudioContext
 {
