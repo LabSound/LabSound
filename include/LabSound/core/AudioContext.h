@@ -150,9 +150,11 @@ public:
     // Node-to-Node connection (valid)
     ConnectionChain& operator>>(NodePtr next) {
         if (targetParam) {
-            throw std::logic_error("Cannot connect a node after an AudioParam!");
+            //throw std::logic_error("Cannot connect a node after an AudioParam!");
         }
-        nodes.push_back(next);
+        else {
+            nodes.push_back(next);
+        }
         return *this;
     }
 
@@ -160,8 +162,9 @@ public:
     ConnectionChain& operator>>(ParamPtr param) {
         if (!nodes.empty()) {
             targetParam = param;
-        } else {
-            throw std::logic_error("Cannot connect an AudioParam without a source node!");
+        } 
+        else {
+            //throw std::logic_error("Cannot connect an AudioParam without a source node!");
         }
         return *this;
     }
