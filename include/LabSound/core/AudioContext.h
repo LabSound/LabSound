@@ -35,16 +35,82 @@ class HRTFDatabaseLoader;
 
 
 
-/*
-    // ConnectionChain allows stream operators thusly:
+/**
+ * Example: Creating a wet/dry audio processing chain using LabSound nodes.
+ *
+ * Graph Overview:
+ * - A SampledAudioNode plays a sound.
+ * - The dry chain connects directly to the AudioContext.
+ * - The wet chain passes through:
+ *   - A reverb effect (ConvolverNode).
+ *   - A compressor (DynamicsCompressorNode) before merging.
+ * - Both chains merge at a GainNode before reaching the AudioContext.
+ *
+ * Example 1: Explicit Chains
+ * --------------------------------------------
+    auto source = std::make_shared<SampledAudioNode>(ctx);
+    auto reverb = std::make_shared<ConvolverNode>(ctx);
+    auto compressor = std::make_shared<DynamicsCompressorNode>(ctx);
+    auto dryGain = std::make_shared<GainNode>(ctx);
+    auto wetGain = std::make_shared<GainNode>(ctx);
+    auto masterGain = std::make_shared<GainNode>(ctx);
 
-    auto a = std::make_shared<AudioNode>();
-    auto b = std::make_shared<AudioNode>();
-    auto c = std::make_shared<AudioNode>();
-    AudioContext ctx;
+    dryGain->gain()->setValue(0.5f);
+    wetGain->gain()->setValue(0.5f);
 
-    a >> b >> c >> ctx;
-*/
+    auto dryChain = source >> dryGain;
+    auto wetChain = source >> reverb >> compressor >> wetGain;
+
+    dryChain >> masterGain;
+    wetChain >> masterGain;
+    masterGain >> ctx;
+ *
+ * Example 2: Alternative Construction
+ * --------------------------------------------
+ * Using a single stream, merging inside the chain:
+ *
+    source >> (dryGain >> masterGain);
+    source >> (reverb >> compressor >> wetGain >> masterGain);
+    masterGain >> ctx;
+ *
+ * Both dry and wet paths flow into masterGain, then into ctx.
+ *
+ * Example 3: Creating a Subgraph
+ * --------------------------------------------
+    auto wetEffect = reverb >> compressor >> wetGain;
+    source >> dryGain >> masterGain;
+    source >> wetEffect >> masterGain;
+    masterGain >> ctx;
+ *
+ * Here, 'wetEffect' is a reusable subgraph, making the graph modular.
+ *
+ * Example 4: A Sidechain helper
+ * ---------------------------------------------
+    auto createFilterChain = [&](AudioContext& ctx) {
+        auto gain = std::make_shared<GainNode>(ctx);
+        auto compressor = std::make_shared<DynamicsCompressorNode>(ctx);
+        auto postGain = std::make_shared<GainNode>(ctx);
+        
+        return gain >> compressor >> postGain;
+    };
+
+    // Now apply it separately to different sources:
+    auto music1 = std::make_shared<SampledAudioNode>(ctx);
+    auto music2 = std::make_shared<SampledAudioNode>(ctx);
+
+    music1 >> createFilterChain(ctx) >> ctx;
+    music2 >> createFilterChain(ctx) >> ctx;
+ *
+ * Here a funcrtion creates a subgraph for sidechain processing.
+ *
+ * ---------------------------------------------
+ * 
+ * Takeaways:
+ * - Both explicit and concise constructions are possible.
+ * - Encourages graph-style thinking.
+ * - Modular subgraphs enable reuse.
+ */
+
 
 class ContextConnector {
 public:
