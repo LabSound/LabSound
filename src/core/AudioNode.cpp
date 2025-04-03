@@ -16,7 +16,14 @@
 
 using namespace std;
 
-#define LOG_PLAYBACK_STATE_TRANSITION(node_name, old_state, new_state) printf("Scheduler: %s ⮕ %s (%s)\n", (schedulingStateName(old_state)), (schedulingStateName(new_state)), (node_name))
+#if 0
+#define LOG_PLAYBACK_STATE_TRANSITION(node_name, old_state, new_state) \
+        printf("Scheduler: %s ⮕ %s (%s)\n", \
+        (schedulingStateName(old_state)), (schedulingStateName(new_state)), (node_name))
+#else
+#define LOG_PLAYBACK_STATE_TRANSITION(node_name, old_state, new_state)
+#endif
+
 
 namespace lab
 {

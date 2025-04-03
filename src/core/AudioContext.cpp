@@ -911,8 +911,7 @@ void AudioContext::diagnose(std::shared_ptr<AudioNode> n)
 
 void AudioContext::diagnosed_silence(const char* msg)
 {
-    if (_diagnose)
-    {
+    if (_diagnose) {
         printf("*** ls::diagnosed silence: %s:%s\n", _diagnose->name(), msg);
     }
 }
@@ -921,7 +920,8 @@ void AudioContext::diagnosed_silence(const char* msg)
 void ConnectionChain::operator>>(AudioContext& ctx) {
     if (targetParam) {
         ctx.connectParam(targetParam, nodes.back(), 0);
-    } else {
+    } 
+    else {
         for (size_t i = 0; i < nodes.size() - 1; ++i) {
             ctx.connect(nodes[i], nodes[i + 1]);
         }
@@ -932,6 +932,5 @@ void ConnectionChain::operator>>(AudioContext& ctx) {
 void ContextConnector::operator>>(std::shared_ptr<AudioNode> lastNode) const {
     ctx.connect(ctx.destinationNode(), lastNode);
 }
-
 
 } // end namespace lab

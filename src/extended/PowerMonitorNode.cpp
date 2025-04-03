@@ -50,20 +50,22 @@ int PowerMonitorNode::windowSize() const
 void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
 {
     // This node acts as a pass-through if it is embedded in a chain
+    auto output0 = output(0);
+    if (!output0) {
+        return;
+    }
+    AudioBus* outputBus = output0->bus(r);
 
-    AudioBus * outputBus = output(0)->bus(r);
-
-    if (!isInitialized() || !input(0)->isConnected())
-    {
-        if (outputBus)
+    if (!isInitialized() || !input(0)->isConnected()) {
+        if (outputBus) {
             outputBus->zero();
+        }
         return;
     }
 
-    AudioBus * bus = input(0)->bus(r);
+    AudioBus* bus = input(0)->bus(r);
     bool isBusGood = bus && bus->numberOfChannels() > 0 && bus->channel(0)->length() >= bufferSize;
-    if (!isBusGood)
-    {
+    if (!isBusGood) {
         outputBus->zero();
         return;
     }
@@ -79,8 +81,7 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
         int numberOfChannels = bus->numberOfChannels();
         for (int c = 0; c < numberOfChannels; ++c) {
             const float* data = bus->channel(c)->data();
-            for (int i = start; i < end; ++i)
-            {
+            for (int i = start; i < end; ++i) {
                 float p = data[i];
                 power += p * p;
             }
@@ -89,16 +90,18 @@ void PowerMonitorNode::process(ContextRenderLock & r, int bufferSize)
 
         // Protect against accidental overload due to bad values in input stream
         const float kMinPower = 0.000125f;
-        if (std::isinf(power) || std::isnan(power) || power < kMinPower)
+        if (std::isinf(power) || std::isnan(power) || power < kMinPower) {
             power = kMinPower;
+        }
 
         // db is 20 * log10(rms/Vref) where Vref is 1.0
         _db = 20.0f * logf(rms) / logf(10.0f);
     }
     // to here
 
-    if (bus != outputBus)
+    if (bus != outputBus) {
         outputBus->copyFrom(*bus);
+    }
 }
 
 void PowerMonitorNode::reset(ContextRenderLock &)

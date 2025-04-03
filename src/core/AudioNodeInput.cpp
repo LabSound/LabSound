@@ -35,11 +35,14 @@ AudioNodeInput::~AudioNodeInput()
 
 void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
-    if (!junction || !toOutput || !junction->destinationNode())
+    if (!junction || !toOutput || !junction->destinationNode()) {
         return;
+    }
 
     // return if input is already connected to this output.
-    if (junction->isConnected(toOutput)) return;
+    if (junction->isConnected(toOutput)) {
+        return;
+    }
 
     toOutput->addInput(g, junction);
     junction->junctionConnectOutput(toOutput);
@@ -48,11 +51,11 @@ void AudioNodeInput::connect(ContextGraphLock & g, std::shared_ptr<AudioNodeInpu
 void AudioNodeInput::disconnect(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> junction, std::shared_ptr<AudioNodeOutput> toOutput)
 {
     ASSERT(g.context());
-    if (!junction || !junction->destinationNode() || !toOutput)
+    if (!junction || !junction->destinationNode() || !toOutput) {
         return;
+    }
 
-    if (junction->isConnected(toOutput))
-    {
+    if (junction->isConnected(toOutput)) {
         junction->junctionDisconnectOutput(toOutput);
         toOutput->removeInput(g, junction);
     }
@@ -61,14 +64,13 @@ void AudioNodeInput::disconnect(ContextGraphLock & g, std::shared_ptr<AudioNodeI
 void AudioNodeInput::disconnectAll(ContextGraphLock & g, std::shared_ptr<AudioNodeInput> fromInput)
 {
     ASSERT(g.context());
-    if (!fromInput || !fromInput->destinationNode())
+    if (!fromInput || !fromInput->destinationNode()) {
         return;
+    }
 
-    for (auto i : fromInput->m_connectedOutputs)
-    {
+    for (auto i : fromInput->m_connectedOutputs) {
         auto o = i.lock();
-        if (o)
-        {
+        if (o) {
             fromInput->junctionDisconnectOutput(o);
             o->removeInput(g, fromInput);
         }

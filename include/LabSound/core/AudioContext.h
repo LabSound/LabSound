@@ -63,7 +63,9 @@ class HRTFDatabaseLoader;
 
     dryChain >> masterGain;
     wetChain >> masterGain;
-    masterGain >> ctx;
+
+    // let's hear it
+    masterGain >> ctx.destinationNode() >> ctx;
  *
  * Example 2: Alternative Construction
  * --------------------------------------------
@@ -71,16 +73,18 @@ class HRTFDatabaseLoader;
  *
     source >> (dryGain >> masterGain);
     source >> (reverb >> compressor >> wetGain >> masterGain);
-    masterGain >> ctx;
+
+    // let's hear it
+    masterGain >> ctx.destinationNode() >> ctx;
  *
  * Both dry and wet paths flow into masterGain, then into ctx.
  *
  * Example 3: Creating a Subgraph
  * --------------------------------------------
     auto wetEffect = reverb >> compressor >> wetGain;
-    source >> dryGain >> masterGain;
-    source >> wetEffect >> masterGain;
-    masterGain >> ctx;
+    source >> dryGain >> masterGain >> ctx;
+    source >> wetEffect >> masterGain >> ctx;
+    masterGain >> ctx.destinationNode() >> ctx;
  *
  * Here, 'wetEffect' is a reusable subgraph, making the graph modular.
  *
@@ -98,8 +102,8 @@ class HRTFDatabaseLoader;
     auto music1 = std::make_shared<SampledAudioNode>(ctx);
     auto music2 = std::make_shared<SampledAudioNode>(ctx);
 
-    music1 >> createFilterChain(ctx) >> ctx;
-    music2 >> createFilterChain(ctx) >> ctx;
+    music1 >> createFilterChain(ctx) >> ctx.destinationNode() >> ctx;
+    music2 >> createFilterChain(ctx) >> ctx.destinationNode() >> ctx;
  *
  * Here, a function creates a subgraph for sidechain processing.
  *
@@ -125,8 +129,6 @@ lfo >> gain >> filter->param("frequency") >> ctx;
  * - Encourages graph-style thinking.
  * - Modular subgraphs enable reuse.
  */
-
-
 class ContextConnector {
 public:
     explicit ContextConnector(AudioContext& ctx) : ctx(ctx) {}
@@ -177,6 +179,7 @@ public:
         return *this;
     }
 
+    // finalize connections
     void operator>>(AudioContext& ctx);
 
 private:
