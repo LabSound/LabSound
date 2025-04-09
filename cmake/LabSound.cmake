@@ -44,17 +44,28 @@ elseif (LABSOUND_USE_RTAUDIO)
     )
 endif()
 
-#option(LIBSAMPLERATE_EXAMPLES "" OFF)
-#option(LIBSAMPLERATE_INSTALL "" ON)
-#option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
-#add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
+option(LABSOUND_INTERNAL_LIBSAMPLERATE, "Use internal libsamplerate", ON)
+if (LABSOUND_INTERNAL_LIBSAMPLERATE)
+    set(LABSOUND_LSR "${LABSOUND_ROOT}/src/internal/src/samplerate.c")
+else()
+    find_package(libsamplerate)
+    if (NOT libsamplerate_FOUND)
+        message(INFO "libsamplerate not found, using submodule")
+        option(LIBSAMPLERATE_EXAMPLES "" OFF)
+        option(LIBSAMPLERATE_INSTALL "" ON)
+        option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
+        add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
+    endif()
+    set(LABSOUND_LSR SampleRate::samplerate)
+endif()
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
 file(GLOB labsnd_core       "${LABSOUND_ROOT}/src/core/*")
 file(GLOB labsnd_extended   "${LABSOUND_ROOT}/src/extended/*")
 file(GLOB labsnd_int_h      "${LABSOUND_ROOT}/src/internal/*")
-file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*")
+# only pick up the cpp, don't pick up libsamplerate.c
+file(GLOB labsnd_int_src    "${LABSOUND_ROOT}/src/internal/src/*.cpp")
 
 # FFT
 if (IOS)
@@ -79,6 +90,7 @@ add_library(LabSound STATIC
     ${labsnd_int_h}      ${labsnd_int_src}
     ${labsnd_fft_src}
     ${ooura_src}
+    ${LABSOUND_LSR}
  )
 
  #--- CONFIGURE RTAUDIO
