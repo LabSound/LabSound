@@ -138,7 +138,7 @@ public:
 /////////////////////
 
 ClipNode::ClipNode(AudioContext & ac)
-    : lab::AudioBasicProcessorNode(ac, *desc())
+: lab::AudioBasicProcessorNode(ac, *desc())
 {
     internalNode = new ClipNodeInternal(this);
     internalNode->aVal = param("a");

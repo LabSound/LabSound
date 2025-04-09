@@ -37,7 +37,7 @@ static AudioParamDescriptor s_pcParams[] = {
     
 AudioNodeDescriptor * PeakCompNode::desc()
 {
-    static AudioNodeDescriptor d {s_pcParams, nullptr, 0};
+    static AudioNodeDescriptor d {s_pcParams, nullptr, 1};
     return &d;
 }
 

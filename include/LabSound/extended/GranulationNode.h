@@ -6,7 +6,7 @@
 
 #include "LabSound/core/AudioContext.h"
 #include "LabSound/core/AudioParam.h"
-#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/AudioSetting.h"
 #include <algorithm>
 #include <cmath>

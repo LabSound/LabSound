@@ -17,12 +17,12 @@ namespace lab
 
 AudioNodeDescriptor * FunctionNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, nullptr, 0};
+    static AudioNodeDescriptor d {nullptr, nullptr, 1};
     return &d;
 }
 
 FunctionNode::FunctionNode(AudioContext & ac, int channels)
-    : AudioScheduledSourceNode(ac, *desc())
+: AudioScheduledSourceNode(ac, {nullptr, nullptr, channels})
 {
     _self->desiredChannelCount = channels;
     initialize();

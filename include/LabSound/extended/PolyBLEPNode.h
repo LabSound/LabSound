@@ -5,8 +5,8 @@
 #define lab_poly_blep_node_h
 
 #include "LabSound/core/AudioArray.h"
-#include "LabSound/core/AudioNode.h"
 #include "LabSound/core/AudioParam.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 #include "LabSound/core/Macros.h"
 
 namespace lab

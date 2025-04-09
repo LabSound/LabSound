@@ -11,10 +11,10 @@
 namespace lab
 {
 
-AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, AudioNodeDescriptor const & desc, int outputChannelCount)
+AudioBasicInspectorNode::AudioBasicInspectorNode(AudioContext & ac, AudioNodeDescriptor const & desc)
 : AudioNode(ac, desc)
 {
-    _self->desiredChannelCount = outputChannelCount;
+    _self->desiredChannelCount = desc.initialChannelCount;
     initialize();
 }
 

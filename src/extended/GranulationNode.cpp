@@ -38,7 +38,7 @@ AudioNodeDescriptor * GranulationNode::desc()
 }
 
 GranulationNode::GranulationNode(AudioContext & ac)
-    : AudioScheduledSourceNode(ac, *desc())
+: AudioScheduledSourceNode(ac, *desc())
 {
     // Sample that will be granulated
     grainSourceBus = setting("GrainSource");
@@ -61,6 +61,7 @@ GranulationNode::GranulationNode(AudioContext & ac)
 
     // How fast the grain should play, given as a multiplier. Useful for pitch-shifting effects.
     grainPlaybackFreq = param("PlaybackFrequency");
+
     initialize();
 }
 

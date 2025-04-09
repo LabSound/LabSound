@@ -5,7 +5,7 @@
 #ifndef SampledAudioNode_h
 #define SampledAudioNode_h
 
-#include "LabSound/core/AudioNode.h"
+#include "LabSound/core/AudioScheduledSourceNode.h"
 
 #include <memory>
 

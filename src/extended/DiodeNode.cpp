@@ -26,7 +26,7 @@ AudioNodeDescriptor * DiodeNode::desc()
 }
 
 DiodeNode::DiodeNode(AudioContext & ac)
-    : WaveShaperNode(ac, *desc())
+: WaveShaperNode(ac, *desc())
 {
     _distortion = setting("distortion");
     _vb = setting("vb");
