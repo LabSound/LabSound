@@ -141,7 +141,7 @@ std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
 
         lab_device_info.nominal_samplerate = playbackRates.size() > 0 ? lab_device_info.supported_samplerates.back() : 0;
 
-        lab_device_info.is_default_output = iDevice == 0;
+        lab_device_info.is_default_output = pPlaybackDeviceInfos[iDevice].isDefault;
         lab_device_info.is_default_input = false;
 
         g_devices.push_back(lab_device_info);
@@ -176,7 +176,7 @@ std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
 
         lab_device_info.nominal_samplerate = playbackRates.size() > 0 ? lab_device_info.supported_samplerates.back() : 0;
         lab_device_info.is_default_output = false;
-        lab_device_info.is_default_input = iDevice == 0;
+        lab_device_info.is_default_input = pCaptureDeviceInfos[iDevice].isDefault;
 
         g_devices.push_back(lab_device_info);
     }
