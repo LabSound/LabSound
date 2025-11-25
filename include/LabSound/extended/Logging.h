@@ -23,6 +23,8 @@ typedef void (*log_LockFn)(void *udata, int lock);
 enum { LOGLEVEL_TRACE = 0, LOGLEVEL_DEBUG, LOGLEVEL_INFO, 
        LOGLEVEL_WARN, LOGLEVEL_ERROR, LOGLEVEL_FATAL };
 
+typedef void (*log_WriteFn)(void *udata, int level, const char* message);
+
 #define LOG_TRACE(...) LabSoundLog(LOGLEVEL_TRACE, __FILE__, __LINE__, __VA_ARGS__)
 #define LOG_DEBUG(...) LabSoundLog(LOGLEVEL_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
 #define LOG_INFO(...)  LabSoundLog(LOGLEVEL_INFO,  __FILE__, __LINE__, __VA_ARGS__)
@@ -35,6 +37,7 @@ void log_set_lock(log_LockFn fn);
 void log_set_fp(FILE *fp);
 void log_set_level(int level);
 void log_set_quiet(int enable);
+void log_set_write(log_WriteFn fn);
 
 void LabSoundLog(int level, const char *file, int line, const char *fmt, ...);
 void LabSoundAssertLog(const char * file, int line, const char * function, const char * assertion);
