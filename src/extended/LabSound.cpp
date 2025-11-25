@@ -129,7 +129,6 @@ void LabSoundLog(int level, const char *file, int line, const char *fmt, ...) {
 
   /* Log to stderr */
   if (!L.quiet) {
-    char messageBuffer[1024];
     va_list args;
     char buf[16];
     buf[strftime(buf, sizeof(buf), "%H:%M:%S", lt)] = '\0';
@@ -165,7 +164,7 @@ void LabSoundLog(int level, const char *file, int line, const char *fmt, ...) {
     va_list args;
     char buf[32];
     buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
-    char messageBuffer[2048];
+    char messageBuffer[1024];
     va_start(args, fmt);
     vsnprintf(messageBuffer, sizeof(messageBuffer), fmt, args);
     va_end(args);
