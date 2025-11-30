@@ -57,6 +57,7 @@ static struct {
   FILE *fp;
   int level;
   int quiet;
+  log_WriteFn write;
 } L;
 
 
@@ -109,6 +110,10 @@ void log_set_quiet(int enable) {
   L.quiet = enable ? 1 : 0;
 }
 
+void log_set_write(log_WriteFn fn)
+{
+    L.write = fn;
+}
 
 void LabSoundLog(int level, const char *file, int line, const char *fmt, ...) {
   if (level < L.level) {
@@ -152,6 +157,18 @@ void LabSoundLog(int level, const char *file, int line, const char *fmt, ...) {
     va_end(args);
     fprintf(L.fp, "\n");
     fflush(L.fp);
+  }
+
+  if (L.write)
+  {
+    va_list args;
+    char buf[32];
+    buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", lt)] = '\0';
+    char messageBuffer[1024];
+    va_start(args, fmt);
+    vsnprintf(messageBuffer, sizeof(messageBuffer), fmt, args);
+    va_end(args);
+    L.write(L.udata, level, messageBuffer);
   }
 
   /* Release lock */
