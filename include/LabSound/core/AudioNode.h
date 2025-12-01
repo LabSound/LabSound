@@ -70,7 +70,7 @@ class ContextRenderLock;
 // It may be an audio source, an intermediate processing module, or an audio 
 // destination.
 //
-class AudioNode
+class AudioNode : public std::enable_shared_from_this<AudioNode>
 {
 protected:
     // all storage to the node is in this struct ~ the graph and
