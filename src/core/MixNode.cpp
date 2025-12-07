@@ -86,7 +86,8 @@ void MixNode::process(ContextRenderLock& r, int bufferSize)
             if (mixValue == 0.0f)
             {
                 destData[i] = sourceDataA[i];
-            }else if (mixValue == 1.0f)
+            }
+            else if (mixValue == 1.0f)
             {
                 destData[i] = sourceDataB[i];
             }
