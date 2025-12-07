@@ -62,7 +62,8 @@ void MixNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    float mixValue = m_mix->value();
+    float mixValue = 0.0f;
+    m_mix->calculateSampleAccurateValues(r, &mixValue, 1);
 
     int numberOfChannels = std::min(inputBusA->numberOfChannels(), inputBusB->numberOfChannels());
     if (outputBus->numberOfChannels() != numberOfChannels)
