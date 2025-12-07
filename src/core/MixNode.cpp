@@ -62,8 +62,8 @@ void MixNode::process(ContextRenderLock& r, int bufferSize)
         return;
     }
 
-    float mixValue = 0.0f;
-    m_mix->calculateSampleAccurateValues(r, &mixValue, 1);
+    float mixValues[bufferSize];
+    m_mix->calculateSampleAccurateValues(r, mixValues, bufferSize);
 
     int numberOfChannels = std::min(inputBusA->numberOfChannels(), inputBusB->numberOfChannels());
     if (outputBus->numberOfChannels() != numberOfChannels)
@@ -74,36 +74,25 @@ void MixNode::process(ContextRenderLock& r, int bufferSize)
 
     numberOfChannels = std::min(numberOfChannels, outputBus->numberOfChannels());
 
-    if (mixValue == 0.0f)
+    for (int c = 0; c < numberOfChannels; ++c)
     {
-        for (int i = 0; i < numberOfChannels; ++i)
+        const float* sourceDataA = inputBusA->channel(c)->data();
+        const float* sourceDataB = inputBusB->channel(c)->data();
+        float* destData = outputBus->channel(c)->mutableData();
+
+        for (int i = 0; i < bufferSize; ++i)
         {
-            const float* sourceData = inputBusA->channel(i)->data();
-            float* destData = outputBus->channel(i)->mutableData();
-            std::memcpy(destData, sourceData, sizeof(float) * bufferSize);
-        }
-    }
-    else if (mixValue == 1.0f)
-    {
-        for (int i = 0; i < numberOfChannels; ++i)
-        {
-            const float* sourceData = inputBusB->channel(i)->data();
-            float* destData = outputBus->channel(i)->mutableData();
-            std::memcpy(destData, sourceData, sizeof(float) * bufferSize);
-        }
-    }
-    else
-    {
-        float gainA = 1.0f - mixValue;
-        float gainB = mixValue;
-        for (int i = 0; i < numberOfChannels; ++i)
-        {
-            const float* sourceDataA = inputBusA->channel(i)->data();
-            const float* sourceDataB = inputBusB->channel(i)->data();
-            float* destData = outputBus->channel(i)->mutableData();
-            for (int j = 0; j < bufferSize; ++j)
+            float mixValue = mixValues[i];
+            if (mixValue == 0.0f)
             {
-                destData[j] = sourceDataA[j] * gainA + sourceDataB[j] * gainB;
+                destData[i] = sourceDataA[i];
+            }else if (mixValue == 1.0f)
+            {
+                destData[i] = sourceDataB[i];
+            }
+            else
+            {
+                destData[i] = sourceDataA[i] * (1.0f - mixValue) + sourceDataB[i] * mixValue;
             }
         }
     }
