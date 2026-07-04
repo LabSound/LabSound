@@ -45,9 +45,9 @@ In the past, LabSound has been demonstrated to work on iOS, Android, and Linux v
 
 # Building
 
-Users of LabSound are expected to compile LabSound from source. While most dependencies are included as code in the repository, libnyquist is bundled as a git submodule so it is required that new users clone the repository with the `--recursive` option.
+Users of LabSound are expected to compile LabSound from source. Most dependencies are vendored as code in the repository under `third_party/` (including libsamplerate, kissfft, and ooura). The remaining dependencies — libnyquist and miniaudio — are downloaded automatically by CMake via `FetchContent` during the configure step, so a plain `git clone` is all that is needed; there are no git submodules and `--recursive` is not required.
 
-The submodules can be fetched after a clone with `git submodule update --init --recursive`
+Because libnyquist and miniaudio are fetched at configure time, network access is needed the first time you configure a fresh build directory. To build against a local checkout instead of fetching, pass `-DLIBNYQUIST_SOURCE_DIR=/path/to/libnyquist` and/or `-DMINIAUDIO_SOURCE_DIR=/path/to/miniaudio`.
 
 LabSound and libnyquist require a C++14 or greater compiler.
 
@@ -119,7 +119,7 @@ The reusable `TextureRecorderNode` sink and the `AudioTextureFixture` graph help
 
 # Using the Library
 
-Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although both the Visual Studio solution and the XCode workspace will build this dependency alongside the core library.
+Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although the CMake build will build this dependency alongside the core library.
 
 On OSX, new applications also require the following frameworks:
 + Cocoa

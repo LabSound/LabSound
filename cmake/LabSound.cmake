@@ -7,57 +7,48 @@
 # Will create a target named LabSound
 
 # backend selection
+#
+# Every backend (RtAudio, miniaudio, mock) is always built as a separate,
+# independently-linkable library, so an application can hot-swap between them at
+# link time. The LABSOUND_USE_* options only choose the per-platform DEFAULT
+# backend that the bundled examples link against (exported as
+# LABSOUND_DEFAULT_BACKEND below); they do not restrict what a consumer may link.
 if (IOS)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio as the default backend" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio as the default backend" OFF)
 elseif (APPLE)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio as the default backend" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio as the default backend" ON)
 elseif (WIN32)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio as the default backend" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio as the default backend" OFF)
 elseif (ANDROID)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" ON)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" OFF)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio as the default backend" ON)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio as the default backend" OFF)
 elseif (UNIX)
-    option(LABSOUND_USE_MINIAUDIO "Use miniaudio" OFF)
-    option(LABSOUND_USE_RTAUDIO "Use RtAudio" ON)
+    option(LABSOUND_USE_MINIAUDIO "Use miniaudio as the default backend" OFF)
+    option(LABSOUND_USE_RTAUDIO "Use RtAudio as the default backend" ON)
 else ()
-    message(FATAL, " Untested platform. Please try miniaudio and report results on the LabSound issues page")
+    message(FATAL_ERROR "Untested platform. Please try miniaudio and report results on the LabSound issues page")
 endif()
 
 if (LABSOUND_USE_MINIAUDIO AND LABSOUND_USE_RTAUDIO)
-    message(FATAL, " Specify only one backend")
-elseif(NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
-    message(FATAL, " Specify at least one backend")
+    message(FATAL_ERROR "Specify only one default backend (LABSOUND_USE_MINIAUDIO or LABSOUND_USE_RTAUDIO)")
+elseif (NOT LABSOUND_USE_MINIAUDIO AND NOT LABSOUND_USE_RTAUDIO)
+    message(FATAL_ERROR "Specify at least one default backend (LABSOUND_USE_MINIAUDIO or LABSOUND_USE_RTAUDIO)")
 endif()
 
 if (LABSOUND_USE_MINIAUDIO)
-    message(STATUS "Using miniaudio backend")
+    set(LABSOUND_DEFAULT_BACKEND LabSoundMiniAudio)
 elseif (LABSOUND_USE_RTAUDIO)
-    message(STATUS "Using RtAudio backend")
-    set(labsnd_backend
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/AudioDevice_RtAudio.h"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.cpp"
-        "${LABSOUND_ROOT}/src/backends/RtAudio/RtAudio.h"
-    )
+    set(LABSOUND_DEFAULT_BACKEND LabSoundRtAudio)
 endif()
+message(STATUS "LabSound default backend: ${LABSOUND_DEFAULT_BACKEND}")
 
-option(LABSOUND_INTERNAL_LIBSAMPLERATE "Use internal libsamplerate" ON)
-if (LABSOUND_INTERNAL_LIBSAMPLERATE)
-    set(LABSOUND_LSR "${LABSOUND_ROOT}/src/internal/src/libSampleRate.c")
-else()
-    find_package(libsamplerate)
-    if (NOT libsamplerate_FOUND)
-        message(INFO "libsamplerate not found, using submodule")
-        option(LIBSAMPLERATE_EXAMPLES "" OFF)
-        option(LIBSAMPLERATE_INSTALL "" ON)
-        option(BUILD_TESTING "" OFF) # suppress testing of libsamplerate
-        add_subdirectory("${LABSOUND_ROOT}/third_party/libsamplerate")
-    endif()
-    set(LABSOUND_LSR SampleRate::samplerate)
-endif()
+# libsamplerate is vendored under third_party/libsamplerate and compiled via the
+# amalgamation wrapper src/internal/src/libSampleRate.c (see the third_party and
+# third_party/libsamplerate/include include dirs below).
+set(LABSOUND_LSR "${LABSOUND_ROOT}/src/internal/src/libSampleRate.c")
 
 file(GLOB labsnd_core_h     "${LABSOUND_ROOT}/include/LabSound/core/*")
 file(GLOB labsnd_extended_h "${LABSOUND_ROOT}/include/LabSound/extended/*")
@@ -128,13 +119,13 @@ add_library(LabSoundMock STATIC
     add_library(LabSoundMiniAudio STATIC
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.mm"
         "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
-        "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
+        "${miniaudio_SOURCE_DIR}/miniaudio.h"
     )
 else()
     add_library(LabSoundMiniAudio STATIC
         "${LABSOUND_ROOT}/src/backends/miniaudio/AudioDevice_Miniaudio.cpp"
         "${LABSOUND_ROOT}/include/LabSound/backends/AudioDevice_Miniaudio.h"
-        "${LABSOUND_ROOT}/third_party/miniaudio/miniaudio.h"
+        "${miniaudio_SOURCE_DIR}/miniaudio.h"
     )
 endif()
 
@@ -241,7 +232,7 @@ if (NOT IOS)
         ${LABSOUND_ROOT}/src
         ${LABSOUND_ROOT}/src/internal
         ${LABSOUND_ROOT}/third_party
-        ${LABSOUND_ROOT}/third_party/libnyquist/include)
+        ${libnyquist_SOURCE_DIR}/include)
 endif()
 
 target_include_directories(LabSoundMock PUBLIC
@@ -252,7 +243,7 @@ target_include_directories(LabSoundMock PRIVATE
     ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
-    ${LABSOUND_ROOT}/third_party/libnyquist/include)
+    ${libnyquist_SOURCE_DIR}/include)
 
 target_include_directories(LabSoundMiniAudio PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
@@ -260,11 +251,11 @@ target_include_directories(LabSoundMiniAudio PUBLIC
 )
 
 target_include_directories(LabSoundMiniAudio PRIVATE
-    ${LABSOUND_ROOT}/third_party/miniaudio
+    ${miniaudio_SOURCE_DIR}
     ${LABSOUND_ROOT}/src
     ${LABSOUND_ROOT}/src/internal
     ${LABSOUND_ROOT}/third_party
-    ${LABSOUND_ROOT}/third_party/libnyquist/include)
+    ${libnyquist_SOURCE_DIR}/include)
 
 if (MSVC_IDE)
     # hack to get around the "Debug" and "Release" directories cmake tries to add on Windows
@@ -311,14 +302,11 @@ install(DIRECTORY
 source_group(include FILES "${LABSOUND_ROOT}/include/LabSound")
 source_group(include\\core FILES ${labsnd_core_h})
 source_group(include\\extended FILES ${labsnd_extended_h})
-source_group(src\\backends FILES ${labsnd_backend})
 source_group(src\\core FILES ${labsnd_core})
 source_group(src\\extended FILES ${labsnd_extended})
 source_group(src\\internal FILES ${labsnd_int_h})
 source_group(src\\internal\\src FILES ${labsnd_int_src})
-source_group(third_party\\kissfft FILES ${third_kissfft})
 source_group(third_party\\ooura FILES ${ooura_src})
-source_group(third_party\\rtaudio FILES ${third_rtaudio})
 
 add_library(LabSound::LabSound ALIAS LabSound)
 add_library(LabSoundMiniAudio::LabSoundMiniAudio ALIAS LabSoundMiniAudio)

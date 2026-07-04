@@ -53,8 +53,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -82,8 +80,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v4

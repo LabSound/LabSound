@@ -79,7 +79,7 @@ if (APPLE)
 endif()
 
 if (NOT IOS)
-target_link_libraries(LabSoundExample LabSound LabSoundRtAudio)
+target_link_libraries(LabSoundExample LabSound ${LABSOUND_DEFAULT_BACKEND})
 endif()
 
 if(MINGW)
@@ -133,7 +133,7 @@ elseif(UNIX)
 endif()
 
 if (NOT IOS)
-    target_link_libraries(audiotexture LabSound LabSoundRtAudio)
+    target_link_libraries(audiotexture LabSound ${LABSOUND_DEFAULT_BACKEND})
 endif()
 
 if(MINGW)
