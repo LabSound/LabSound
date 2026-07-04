@@ -10,7 +10,6 @@ include_guard()
 project(LabSound)
 
 set(LABSOUND_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
-
 set(CMAKE_INSTALL_MESSAGE LAZY)
 
 # default backend set up
@@ -35,9 +34,12 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
-# turn off building libnyquist samples
-set(LIBNYQUIST_BUILD_EXAMPLE OFF)
-add_subdirectory(third_party/libnyquist)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libnyquist.cmake)
+labsound_find_libnyquist()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/miniaudio.cmake)
+labsound_find_miniaudio()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libsamplerate.cmake)
+labsound_find_libsamplerate()
 
 include(cmake/LabSound.cmake)
 
