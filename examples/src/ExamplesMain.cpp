@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) try
         { Passing::pass, Skip::yes, new ex_osc_pop(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_playback_events(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_offline_rendering(context, NoInput) },
+        { Passing::pass, Skip::yes, new ex_audio_texture(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_tremolo(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_frequency_modulation(context, NoInput) },
         { Passing::pass, Skip::yes, new ex_runtime_graph_update(context, NoInput) },

@@ -96,3 +96,55 @@ set_property(TARGET LabSoundExample PROPERTY FOLDER "examples")
 install(TARGETS LabSoundExample
     BUNDLE DESTINATION bin
     RUNTIME DESTINATION bin)
+
+#-------------------------------------------------------------------------------
+# audiotexture - command line tool: audio file in, PNG out
+#-------------------------------------------------------------------------------
+
+add_executable(audiotexture "${LABSOUND_ROOT}/examples/src/AudioTextureTool.cpp")
+
+set(proj audiotexture)
+
+if(WIN32)
+    if(MSVC)
+        target_compile_options(${proj} PRIVATE /Zi)
+    endif(MSVC)
+    target_compile_definitions(${proj} PRIVATE __WINDOWS_WASAPI__=1)
+    target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SINF=1)
+elseif(APPLE)
+    target_link_libraries(${proj} ${DARWIN_LIBS})
+elseif(UNIX)
+    target_link_libraries(${proj} pthread)
+    target_compile_options(${proj} PRIVATE -fPIC)
+    target_compile_definitions(${proj} PRIVATE USE_KISS_FFT=1)
+    if(LABSOUND_JACK)
+        target_link_libraries(${proj} jack)
+        target_compile_definitions(${proj} PRIVATE __UNIX_JACK__=1)
+    endif()
+    if(LABSOUND_PULSE)
+        target_link_libraries(${proj} pulse pulse-simple)
+        target_compile_definitions(${proj} PRIVATE __LINUX_PULSE__=1)
+    endif()
+    if(LABSOUND_ASOUND)
+        target_link_libraries(${proj} asound)
+        target_compile_definitions(${proj} PRIVATE __LINUX_ASOUND__=1)
+    endif()
+    target_compile_definitions(${proj} PRIVATE HAVE_STDINT_H=1 HAVE_SETENV=1 HAVE_SINF=1)
+endif()
+
+if (NOT IOS)
+    target_link_libraries(audiotexture LabSound LabSoundRtAudio)
+endif()
+
+if(MINGW)
+    target_link_libraries(audiotexture mfuuid mfplat ksuser wmcodecdspuuid)
+endif(MINGW)
+
+set_target_properties(audiotexture PROPERTIES
+                      RUNTIME_OUTPUT_DIRECTORY bin)
+
+set_property(TARGET audiotexture PROPERTY FOLDER "examples")
+
+install(TARGETS audiotexture
+    BUNDLE DESTINATION bin
+    RUNTIME DESTINATION bin)

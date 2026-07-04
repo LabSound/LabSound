@@ -340,6 +340,11 @@ void LabSoundRegistryInit(lab::NodeRegistry& reg)
             SupersawNode::static_name(), SupersawNode::desc(),
             [](AudioContext& ac)->AudioNode* { return new SupersawNode(ac); },
             [](AudioNode* n) { delete n; });
+
+        reg.Register(
+            TextureRecorderNode::static_name(), TextureRecorderNode::desc(),
+            [](AudioContext& ac)->AudioNode* { return new TextureRecorderNode(ac); },
+            [](AudioNode* n) { delete n; });
     });
 }
 

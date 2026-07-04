@@ -92,6 +92,31 @@ cmake --build . --target install --config Release
 
 LabSound is bundled with many samples. Project files can be found in the `examples/` subfolder.
 
+# Audio Texture Utility
+
+`audiotexture` is a small command-line tool that renders an audio file to a PNG for visualization — useful, for example, for lining up animation to a dialogue track, or for cheaply pulling event peaks from a texture instead of re-running signal processing.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/LabSound/LabSound/master/assets/images/audio_texture.png"/>
+</p>
+
+The signal is split into three frequency bands — low (voicing/body), mid (vowel formants), and high (sibilants/plosive transients) — each compressed, then mapped to the red, green, and blue channels of a time-vs-magnitude image. Every column is a time slice drawn as a two-tone bar: a smoothed RMS-energy body capped by a sharp peak tip, so the overall envelope stays readable while transient events remain precisely located. A shadow-lifting color curve brings out quiet detail (breath, room tone) without distorting bar heights.
+
+```
+audiotexture <input-audio> [output.png] [width] [height] [mirror] [overlap] [gamma]
+```
+
+| argument | default | description |
+| --- | --- | --- |
+| `input-audio` | — | path to a wav/ogg/flac/mp3 file (decoded by libnyquist) |
+| `output.png` | `<input>.png` | output image path |
+| `width` / `height` | `1024` / `256` | image dimensions in pixels |
+| `mirror` | `0` | `1` fills symmetrically about the center for a waveform "pulse" look |
+| `overlap` | `2.0` | RMS smoothing window as a multiple of the per-column time slice (`>= 1.0`) |
+| `gamma` | `1.5` | color shadow-lift; `> 1` brightens dim detail, `1.0` disables it |
+
+The reusable `TextureRecorderNode` sink and the `AudioTextureFixture` graph helper that back the tool live in `LabSound/extended/TextureRecorderNode.h`.
+
 # Using the Library
 
 Users should link against `liblabsound.a` on OSX and `labsound.lib` on Windows. LabSound also requires symbols from libnyquist, although both the Visual Studio solution and the XCode workspace will build this dependency alongside the core library.

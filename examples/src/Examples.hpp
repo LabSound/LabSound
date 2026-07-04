@@ -299,6 +299,71 @@ struct ex_offline_rendering : public labsound_example
     }
 };
 
+//------------------------------
+//    ex_audio_texture
+//------------------------------
+
+// This sample renders a sample WAV through an AudioTextureFixture, which splits
+// the signal into three frequency bands (low/band/high), compresses each, and
+// maps the three levels to R/G/B of a time-vs-magnitude PNG. The graph is pulled
+// by an offline (null) destination, then writePNG() emits the image to disk.
+struct ex_audio_texture : public labsound_example
+{
+    ex_audio_texture(std::shared_ptr<lab::AudioContext> context, bool with_input)
+    : labsound_example(context, with_input) {}
+    virtual ~ex_audio_texture() = default;
+
+    virtual void play(int argc, char ** argv) override
+    {
+        lab::AudioContext& ac = *_context.get();
+        ac.disconnect(ac.destinationNode());
+        ac.synchronizeConnections();
+        _nodes.clear();
+
+        // A mono null destination keeps channel counts consistent with the
+        // fixture's mono texture-recorder sink.
+        AudioStreamConfig offlineConfig;
+        offlineConfig.device_index = 0;
+        offlineConfig.desired_samplerate = LABSOUND_DEFAULT_SAMPLERATE;
+        offlineConfig.desired_channels = 1;
+        AudioStreamConfig inputConfig = {};
+
+        std::shared_ptr<lab::AudioDestinationNode> renderNode =
+            std::make_shared<lab::AudioDestinationNode>(ac,
+                std::make_unique<lab::AudioDevice_Null>(inputConfig, offlineConfig));
+
+        // The fixture wires its texture recorder to ac.destinationNode(), so the
+        // offline render node must become the context destination first.
+        ac.setDestinationNode(renderNode);
+
+        std::shared_ptr<AudioBus> musicClip = MakeBusFromSampleFile("samples/stereo-music-clip.wav", argc, argv);
+        if (!musicClip)
+            return;
+
+        // build source -> 3 filters -> 3 compressors -> texture recorder -> destination
+        auto fixture = std::make_shared<lab::AudioTextureFixture>(ac, 1024, 256, true /*mirror*/);
+
+        std::shared_ptr<SampledAudioNode> musicClipNode;
+        {
+            ContextRenderLock r(_context.get(), "ex_audio_texture");
+            musicClipNode = std::make_shared<SampledAudioNode>(ac);
+            musicClipNode->setBus(musicClip);
+            fixture->connectInput(ac, musicClipNode);
+            musicClipNode->schedule(0.0);
+        }
+
+        fixture->startRecording();
+        auto bus = std::make_shared<lab::AudioBus>(1, AudioNode::ProcessingSizeInFrames);
+        renderNode->offlineRender(bus.get(), musicClip->length());
+        fixture->stopRecording();
+
+        if (fixture->writePNG("ex_audio_texture.png"))
+            printf("Wrote ex_audio_texture.png\n");
+        else
+            printf("Failed to write ex_audio_texture.png\n");
+    }
+};
+
 //////////////////////
 //    ex_tremolo    //
 //////////////////////
