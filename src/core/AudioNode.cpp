@@ -250,9 +250,11 @@ void AudioNodeScheduler::start(double when)
         return;
     }
 
-    // Round rather than truncate: when * sr such as 1024/44100*44100 = 1023.9999 truncates to 1023,
-    // placing the boundary one frame early.
-    _startWhen = _epoch + static_cast<uint64_t>(when * _sampleRate + 0.5);
+    // Absolute frame: `when` is an absolute time per the Web Audio spec, not relative to the scheduler's
+    // _epoch. _epoch is 0 for a freshly created source but becomes currentSampleFrame once the source has
+    // been pulled, so an already-connected source started later drifted by ~currentTime. Round rather than
+    // truncate (1024/44100*44100 = 1023.9999 would truncate to 1023, one frame early).
+    _startWhen = static_cast<uint64_t>(when * _sampleRate + 0.5);
     _playbackState = SchedulingState::SCHEDULED;
 }
 
@@ -282,8 +284,8 @@ void AudioNodeScheduler::stop(double when)
         when = 0;
 
     // let the scheduler know when to activate the STOPPING state
-    // Round (as in start()) to avoid a boundary one frame early.
-    _stopWhen = _epoch + static_cast<uint64_t>(when * _sampleRate + 0.5);
+    // Absolute frame (see start()).
+    _stopWhen = static_cast<uint64_t>(when * _sampleRate + 0.5);
 }
 
 void AudioNodeScheduler::reset()
