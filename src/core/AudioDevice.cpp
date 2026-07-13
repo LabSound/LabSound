@@ -155,9 +155,13 @@ void AudioDestinationNode::offlineRender(AudioBus * dst, int framesToProcess)
         render(asp, 0, dst, offlineRenderSizeQuantum, _last_info);
 
         // Update sampling info
-        const int index = 1 - (_last_info.current_sample_frame & 1);
-        const uint64_t t = _last_info.current_sample_frame & ~1;
-        _last_info.current_sample_frame = t + offlineRenderSizeQuantum + index;
+        // Advance by exactly one quantum. The previous (frame & ~1) + quantum + index dance drifted
+        // current_sample_frame by +1 every other quantum, so a scheduled stop boundary lost one frame of
+        // renderLength (exact-sample tests dropped the last frame, 1023). epoch[] still ping-pongs by
+        // quantum index (a double-buffered clock, used offline only by getOutputTimestamp-style queries;
+        // current_time is taken from the frame count).
+        const int index = static_cast<int>(_last_info.current_sample_frame / offlineRenderSizeQuantum) & 1;
+        _last_info.current_sample_frame += offlineRenderSizeQuantum;
         _last_info.current_time = _last_info.current_sample_frame / static_cast<double>(_last_info.sampling_rate);
         _last_info.epoch[index] += std::chrono::nanoseconds {
                 static_cast<uint64_t>(1.e9 * (double) framesToProcess / (double) offlineRenderSizeQuantum)};
