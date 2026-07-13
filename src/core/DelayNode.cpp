@@ -17,7 +17,7 @@ static AudioSettingDescriptor s_delayTimeSettings[] = {{"delayTime", "DELY", Set
 
 AudioNodeDescriptor * DelayNode::desc()
 {
-    static AudioNodeDescriptor d {nullptr, s_delayTimeSettings, 0};
+    static AudioNodeDescriptor d {nullptr, s_delayTimeSettings, 1};
     return &d;
 }
 
