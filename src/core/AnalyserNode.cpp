@@ -103,6 +103,11 @@ AnalyserNode::AnalyserNode(AudioContext & ac)
 AnalyserNode::~AnalyserNode()
 {
     uninitialize();
+    // shared_construction() raw-news _detail (which owns the RealtimeAnalyser and its FFT
+    // buffers); the destructor never freed it, leaking ~28KB per AnalyserNode. ~Detail
+    // cascades the delete to m_analyser.
+    delete _detail;
+    _detail = nullptr;
 }
 
 void AnalyserNode::setMinDecibels(double k)

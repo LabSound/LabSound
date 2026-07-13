@@ -109,8 +109,12 @@ const char * schedulingStateName(SchedulingState s)
 }
 
 
-const int start_envelope = 64;
-const int end_envelope = 64;
+// Web Audio requires scheduled sources to start/stop instantly at the scheduled time, with no implicit
+// fade. LabSound's 64-frame anti-pop envelope shifted start(t)/stop(t) boundaries by ~64 frames, which the
+// exact-frame offline fixes exposed. 0 == instant start/stop (spec-compliant). Anti-pop, if wanted, belongs
+// in a higher-level gain ramp, not implicitly here.
+const int start_envelope = 0;
+const int end_envelope = 0;
 
 AudioNodeScheduler::AudioNodeScheduler(float sampleRate)
     : _epoch(0)
@@ -124,8 +128,12 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length, const c
 {
     assert(node_name != nullptr);
     uint64_t proposed_epoch = r.context()->currentSampleFrame();
-    if (_epoch >= proposed_epoch)
+    // Force the first update through: the first offline quantum has currentSampleFrame == 0, equal to the
+    // initial _epoch of 0, so the original `>=` early-out skipped it and a start(0) source lost its first
+    // quantum. Subsequent updates keep the `>=` idempotency guard.
+    if (_firstUpdateDone && _epoch >= proposed_epoch)
         return false;
+    _firstUpdateDone = true;
 
     _epoch = proposed_epoch;
     _renderOffset = 0;
@@ -174,8 +182,11 @@ bool AudioNodeScheduler::update(ContextRenderLock & r, int epoch_length, const c
 
             if (_stopWhen <= _epoch)
             {
-                // exactly on start, or late, stop straight away, render a whole frame of fade out
-                _renderLength = epoch_length - _renderOffset;
+                // stop is at or before this quantum's start, so render nothing this quantum. (The original
+                // code rendered a whole quantum for the anti-pop fade-out, but the envelope is now 0;
+                // rendering a whole quantum would make an exact-boundary stop last one quantum too long,
+                // emitting audio at sample == stopWhen.)
+                _renderLength = 0;
                 LOG_PLAYBACK_STATE_TRANSITION(node_name, _playbackState, SchedulingState::STOPPING);
                 _playbackState = SchedulingState::STOPPING;
             }
@@ -239,7 +250,11 @@ void AudioNodeScheduler::start(double when)
         return;
     }
 
-    _startWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
+    // Absolute frame: `when` is an absolute time per the Web Audio spec, not relative to the scheduler's
+    // _epoch. _epoch is 0 for a freshly created source but becomes currentSampleFrame once the source has
+    // been pulled, so an already-connected source started later drifted by ~currentTime. Round rather than
+    // truncate (1024/44100*44100 = 1023.9999 would truncate to 1023, one frame early).
+    _startWhen = static_cast<uint64_t>(when * _sampleRate + 0.5);
     _playbackState = SchedulingState::SCHEDULED;
 }
 
@@ -269,7 +284,8 @@ void AudioNodeScheduler::stop(double when)
         when = 0;
 
     // let the scheduler know when to activate the STOPPING state
-    _stopWhen = _epoch + static_cast<uint64_t>(when * _sampleRate);
+    // Absolute frame (see start()).
+    _stopWhen = static_cast<uint64_t>(when * _sampleRate + 0.5);
 }
 
 void AudioNodeScheduler::reset()
