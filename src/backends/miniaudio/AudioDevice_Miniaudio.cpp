@@ -28,6 +28,7 @@
 
 #include "miniaudio.h"
 
+#include <mutex>
 #include <set>
 
 namespace lab
@@ -47,23 +48,69 @@ const int kRenderQuantum = AudioNode::ProcessingSizeInFrames;
 
 namespace
 {
+    // Reference-count the lifetime of the shared ma_context. g_context is a process-wide singleton (it
+    // hosts device enumeration and is passed to every ma_device_init), but the original
+    // ~AudioDevice_Miniaudio unconditionally called ma_context_uninit(&g_context). A page with two
+    // AudioContexts (e.g. SFX + music, which browsers allow) has two devices sharing it: the first device
+    // destroyed tears the shared context down, and the second device's destructor tears it down again.
+    // ma_context_uninit() does not zero the struct, so the second pass disconnects an already-freed backend
+    // context and PulseAudio aborts (`pa_atomic_load(&(c)->_ref) >= 1` failed at context.c); meanwhile any
+    // device still alive after the first teardown keeps running against a dangling context. Instead: init
+    // on demand when a reference is taken, and uninit only when the last reference is returned.
+    // g_context_mutex guards the ref count / init state (devices may be created and destroyed on different
+    // threads). g_devices is a pure value cache (strings/floats), independent of the context lifetime, so
+    // it is kept across inits.
     ma_context g_context;
     static std::vector<AudioDeviceInfo> g_devices;
     static bool g_must_init = true;
+    static int g_context_refs = 0;
+    static bool g_probed = false;
+    static std::mutex g_context_mutex;
 
-    void init_context()
+    // Caller must hold g_context_mutex.
+    bool init_context_locked()
     {
-        if (g_must_init)
+        if (!g_must_init)
+            return true;
+
+        LOG_TRACE("[LabSound] init_context() must_init");
+        if (ma_context_init(NULL, 0, NULL, &g_context) != MA_SUCCESS)
         {
-            LOG_TRACE("[LabSound] init_context() must_init");
-            if (ma_context_init(NULL, 0, NULL, &g_context) != MA_SUCCESS)
-            {
-                LOG_ERROR("[LabSound] init_context(): Failed to initialize miniaudio context");
-                return;
-            }
-            LOG_TRACE("[LabSound] init_context() succeeded");
-            g_must_init = false;
+            LOG_ERROR("[LabSound] init_context(): Failed to initialize miniaudio context");
+            return false;
         }
+        LOG_TRACE("[LabSound] init_context() succeeded");
+        g_must_init = false;
+        return true;
+    }
+
+    // Caller must hold g_context_mutex. Uninit only when the last reference is returned.
+    void release_context_locked()
+    {
+        if (g_context_refs <= 0)
+            return;
+        if (--g_context_refs == 0 && !g_must_init)
+        {
+            ma_context_uninit(&g_context);
+            g_must_init = true;
+        }
+    }
+
+    // Take a shared-context reference (initializing if needed). Each success must be paired with one
+    // release_context().
+    bool acquire_context()
+    {
+        std::lock_guard<std::mutex> lock(g_context_mutex);
+        if (!init_context_locked())
+            return false;
+        ++g_context_refs;
+        return true;
+    }
+
+    void release_context()
+    {
+        std::lock_guard<std::mutex> lock(g_context_mutex);
+        release_context_locked();
     }
 }
 
@@ -84,12 +131,20 @@ void PrintAudioDeviceList()
 
 std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
 {
-    init_context();
-    static bool probed = false;
-    if (probed)
+    // Hold a context reference for the duration of enumeration (otherwise, concurrently, another thread's
+    // device destructor could tear the context down mid-probe).
+    std::lock_guard<std::mutex> lock(g_context_mutex);
+    if (g_probed)
         return g_devices;
 
-    probed = true;
+    if (!init_context_locked())
+        return {};
+
+    ++g_context_refs;
+    struct ScopedRelease
+    {
+        ~ScopedRelease() { release_context_locked(); }
+    } scopedRelease;
 
     ma_result result;
     ma_device_info * pPlaybackDeviceInfos;
@@ -181,6 +236,8 @@ std::vector<AudioDeviceInfo> AudioDevice_Miniaudio::MakeAudioDeviceList()
         g_devices.push_back(lab_device_info);
     }
 
+    g_probed = true; // only cache on a successful probe (a failed probe retries next time; the original
+                     // code permanently returned an empty list after one failure)
     return g_devices;
 }
 
@@ -219,11 +276,24 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputCon
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
+    // Hold a shared-context reference for the device's lifetime (returned in the destructor; the last
+    // device out calls uninit).
+    if (!acquire_context())
+    {
+        LOG_ERROR("Unable to initialize miniaudio context");
+        return;
+    }
+    _holdsContextRef = true;
+
     if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
+        release_context(); // failed to open the device: return the reference immediately rather than
+                           // leaving the shared context tied to a half-dead device
+        _holdsContextRef = false;
         return;
     }
+    _deviceInitialized = true;
 
     authoritativeDeviceSampleRateAtRuntime = _outConfig.desired_samplerate;
 
@@ -236,10 +306,22 @@ AudioDevice_Miniaudio::AudioDevice_Miniaudio(const AudioStreamConfig & _inputCon
 
 AudioDevice_Miniaudio::~AudioDevice_Miniaudio()
 {
-    stop();
-    ma_device_uninit(_device);
-    ma_context_uninit(&g_context);
-    g_must_init = true;
+    // (1) Only tear down a ma_device that actually initialized (on a failed open, _device is a zeroed
+    // struct and stop()/uninit() on it just logs "Unable to stop audio device" noise). (2) Return the
+    // shared-context reference instead of unconditionally uninit-ing it: with multiple coexisting devices
+    // the original code let the first device destroyed tear down a context others were still using, and the
+    // second destructor tore it down again -> PulseAudio abort (see the note above).
+    if (_deviceInitialized)
+    {
+        stop();
+        ma_device_uninit(_device);
+        _deviceInitialized = false;
+    }
+    if (_holdsContextRef)
+    {
+        release_context();
+        _holdsContextRef = false;
+    }
     delete _renderBus;
     delete _inputBus;
     delete _ring;
@@ -268,11 +350,24 @@ void AudioDevice_Miniaudio::backendReinitialize()
     deviceConfig.wasapi.noAutoConvertSRC = true;
 #endif
 
+    // As in the constructor, reinitialization must hold a shared-context reference (not yet held if the
+    // constructor's device open failed).
+    if (!_holdsContextRef)
+    {
+        if (!acquire_context())
+        {
+            LOG_ERROR("Unable to initialize miniaudio context");
+            return;
+        }
+        _holdsContextRef = true;
+    }
+
     if (ma_device_init(&g_context, &deviceConfig, _device) != MA_SUCCESS)
     {
         LOG_ERROR("Unable to open audio playback device");
         return;
     }
+    _deviceInitialized = true;
 }
 
 

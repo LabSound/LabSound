@@ -447,6 +447,18 @@ void AudioContext::connect(std::shared_ptr<AudioNode> destination, std::shared_p
         throw std::out_of_range("Output index greater than available outputs");
     if (destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
+    if (m_isOfflineContext)
+    {
+        // Offline contexts have no realtime render thread while control code runs; the async pending
+        // queue only lands on the first rendered quantum, so a connect->disconnect sequence before
+        // startRendering() renders with stale topology (WPT audionode-disconnect). Apply graph edits
+        // synchronously (the same two steps as handlePreRenderTasks' Connect case).
+        ContextGraphLock gLock(this, "AudioContext::connect(offline)");
+        AudioNodeInput::connect(gLock, destination->input(destIdx), source->output(srcIdx));
+        if (!source->isScheduledNode())
+            source->_self->_scheduler.start(0);
+        return;
+    }
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Connect, destination, source, destIdx, srcIdx});
 }
 
@@ -458,6 +470,27 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> destination, std::share
         throw std::out_of_range("Output index greater than available outputs");
     if (destination && destIdx > destination->numberOfInputs())
         throw std::out_of_range("Input index greater than available inputs");
+    if (m_isOfflineContext)
+    {
+        // See connect(); this also skips the two-phase FinishDisconnect fade (a realtime anti-click
+        // nicety) -- offline disconnects must be sample-exact.
+        ContextGraphLock gLock(this, "AudioContext::disconnect(offline)");
+        if (destination && source)
+            AudioNodeInput::disconnect(gLock, destination->input(destIdx), source->output(srcIdx));
+        else if (destination)
+            for (int in = 0; in < destination->numberOfInputs(); ++in)
+            {
+                auto input = destination->input(in);
+                if (input) AudioNodeInput::disconnectAll(gLock, input);
+            }
+        else if (source)
+            for (int out = 0; out < source->numberOfOutputs(); ++out)
+            {
+                auto output = source->output(out);
+                if (output) AudioNodeOutput::disconnectAll(gLock, output);
+            }
+        return;
+    }
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, destination, source, destIdx, srcIdx});
 }
 
@@ -465,6 +498,22 @@ void AudioContext::disconnect(std::shared_ptr<AudioNode> node, int index)
 {
     if (!node)
         return;
+    if (m_isOfflineContext)
+    {
+        // Fully detach (inputs + outputs) synchronously.
+        ContextGraphLock gLock(this, "AudioContext::disconnect(offline)");
+        for (int in = 0; in < node->numberOfInputs(); ++in)
+        {
+            auto input = node->input(in);
+            if (input) AudioNodeInput::disconnectAll(gLock, input);
+        }
+        for (int out = 0; out < node->numberOfOutputs(); ++out)
+        {
+            auto output = node->output(out);
+            if (output) AudioNodeOutput::disconnectAll(gLock, output);
+        }
+        return;
+    }
     m_internal->pendingNodeConnections.enqueue({ConnectionOperationKind::Disconnect, node, std::shared_ptr<AudioNode>(), index, 0});
 }
 
@@ -493,6 +542,15 @@ void AudioContext::connectParam(std::shared_ptr<AudioParam> param, std::shared_p
         throw std::invalid_argument("No driving node supplied");
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
+    if (m_isOfflineContext)
+    {
+        // See connect().
+        ContextGraphLock gLock(this, "AudioContext::connectParam(offline)");
+        AudioParam::connect(gLock, param, driver->output(index));
+        if (!driver->isScheduledNode())
+            driver->_self->_scheduler.start(0);
+        return;
+    }
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Connect, param, driver, index});
 }
 
@@ -526,6 +584,13 @@ void AudioContext::disconnectParam(std::shared_ptr<AudioParam> param, std::share
     if (index >= driver->numberOfOutputs())
         throw std::out_of_range("Output index greater than available outputs on the driver");
 
+    if (m_isOfflineContext)
+    {
+        // See connect().
+        ContextGraphLock gLock(this, "AudioContext::disconnectParam(offline)");
+        AudioParam::disconnect(gLock, param, driver->output(index));
+        return;
+    }
     m_internal->pendingParamConnections.enqueue({ConnectionOperationKind::Disconnect, param, driver, index});
 }
 

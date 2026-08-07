@@ -53,6 +53,9 @@ public:
     // epoch is a long count at sample rate; 136 years at 48kHz
 
     std::atomic<uint64_t> _epoch{0}; // the epoch rendered currently in the busses
+    bool _firstUpdateDone = false;    // the first offline quantum has _epoch == proposed == 0, which the
+                                      // >= early-out below would skip, dropping the first quantum for a
+                                      // start(0) source; force the first update through (see update()).
     uint64_t _epochLength = 0;        // number of frames in current epoch
 
     // start and stop epoch (absolute, not relative)

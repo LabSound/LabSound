@@ -24,6 +24,14 @@ class AudioDevice_Miniaudio : public AudioDevice
     float * _scratch = nullptr;
     int _remainder = 0;
 
+    // See AudioDevice_Miniaudio.cpp: the shared ma_context is reference-counted (with multiple coexisting
+    // AudioContexts the original code let every device destructor tear the shared context down -> a second
+    // uninit -> PulseAudio abort). _holdsContextRef: whether this device holds a context reference.
+    // _deviceInitialized: whether the ma_device actually initialized (decides whether the destructor
+    // stop()s / uninit()s it).
+    bool _holdsContextRef = false;
+    bool _deviceInitialized = false;
+
 public:
 
 #ifdef _MSC_VER
